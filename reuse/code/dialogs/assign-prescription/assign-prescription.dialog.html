@@ -1,0 +1,126 @@
+<form [formGroup]="formGroup" (ngSubmit)="search()">
+  <h1 mat-dialog-title data-cy="prescription-assign-performer-title">{{'prescription.assignPerformer.title' | translate}}</h1>
+
+  <div mat-dialog-content>
+    <div>
+      <mat-form-field appearance="fill" *ngIf="formGroup.get('query')! as control">
+        <mat-label data-cy="prescription-assign-performer-label">{{'prescription.assignPerformer.performer' | translate}}</mat-label>
+        <input
+          type="text"
+          matInput
+          formControlName="query"
+          [dropSpecialCharacters]="queryIsNumeric"
+          data-cy="prescription-assign-performer"
+          [mask]="queryIsNumeric ? '0-00000-00-000||0-00000-00' : ''"
+          [placeholder]="'prescription.assignPerformer.searchPerformerPlaceHolder' | translate"
+          [validation]="queryIsNumeric"
+          maxlength="50"
+          (keyup)="onKeyUp($event)"
+        >
+        <mat-hint *ngIf="!queryIsNumeric" align="end">{{control.value?.length}} / {{caregiverNameMaxLength}}</mat-hint>
+        <mat-error
+          *ngIf="control.hasError('required')">{{ 'common.mandatory' | translate }}
+        </mat-error>
+        <mat-error
+          *ngIf="queryIsNumeric  && control.hasError('mask')">
+          {{ 'prescription.errors.invalidNihiiDigitsCount' | translate }}
+        </mat-error>
+        <mat-error
+          *ngIf="!queryIsNumeric && control.hasError('pattern')">{{ 'prescription.errors.invalidCaregiverNameCharacters' | translate }}
+        </mat-error>
+        <mat-error
+          *ngIf="!queryIsNumeric && !control.hasError('pattern') && control.hasError('maxlength')">{{ 'prescription.errors.invalidMaxLength' | translate:control.errors?.['maxlength']  }}
+        </mat-error>
+        <mat-error
+          *ngIf="!queryIsNumeric && !control.hasError('pattern') && control.hasError('minlength')">{{ 'prescription.errors.invalidMinLength' | translate:control.errors?.['minlength']  }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field appearance="fill" *ngIf="formGroup.get('cities')! as control">
+        <mat-label data-cy="prescription-assign-locations-label">{{'prescription.assignPerformer.locations' | translate}}</mat-label>
+        <mat-chip-grid #chipList formControlName="cities">
+          <mat-chip-row data-cy="prescription-selected-city" *ngFor="let city of formGroup.get('cities')!.value" [value]="city" (removed)="removeCity(city)">
+            {{city.zipCode}} - {{city.cityName | translation}}
+            <button data-cy="prescription-selected-city-remove" matChipRemove>
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip-row>
+          <ng-container *ngIf="(formGroup.get('cities')!.value?.length || 0) < 5">
+            <input
+              #searchInput
+              formControlName="searchCity"
+              [placeholder]="'prescription.assignPerformer.zipCodeOrCityName' | translate"
+              [matChipInputFor]="chipList"
+              [matChipInputAddOnBlur]="false"
+              [matAutocomplete]="auto"
+              (blur)="searchInput.value = ''; formGroup.get('searchCity')!.reset()"
+              data-cy="prescription-assign-search-city"
+            >
+            <mat-autocomplete
+              #auto="matAutocomplete"
+              [autoActiveFirstOption]="true"
+              (optionSelected)="addCity($event, searchInput)"
+            >
+              <ng-container *ngIf="cityOptions$ | async as cityOptions">
+                <mat-option data-cy="no-locality-found-message" *ngIf="!cityOptions?.length" [value]="null" class="warning">
+                  <mat-icon>warning</mat-icon>
+                  {{'prescription.assignPerformer.noResults' | translate}}</mat-option>
+                <mat-option *ngFor="let option of cityOptions" [value]="option">
+                  {{option.zipCode}} - {{option.cityName | translation}}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </ng-container>
+        </mat-chip-grid>
+        <mat-error
+          *ngIf="control.hasError('required') || control.hasError('minlength')">{{ 'common.mandatory' | translate }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </div>
+  <div mat-dialog-actions>
+    <button data-cy="prescription-assign-search-button" mat-raised-button
+            color="accent">{{'common.search' | translate}}</button>
+    <button data-cy="prescription-assign-cancel-button" mat-flat-button
+            [mat-dialog-close]="undefined">{{'common.cancel' | translate}}</button>
+  </div>
+</form>
+  <ng-container *ngIf="healthcareProvidersState$() as healthcareProviderState">
+    <app-overlay-spinner mode="inline" *ifStatusLoading="healthcareProviderState"></app-overlay-spinner>
+      <ng-container *ifStatusSuccess="healthcareProviderState">
+      <div class="results-bar">
+        <div data-cy="results-number">{{healthcareProviderState.data!.length}} {{'common.results' | translate:{count:healthcareProviderState.data!.length} }}</div>
+      </div>
+      <div class="results">
+        <table>
+          <tr class="result-item"
+               *ngFor="let healthcareProvider of healthcareProviderState.data!"
+               [attr.data-cy]="'result-professional-' + healthcareProviderState"
+               (click)="assign(healthcareProvider)"
+               (keydown.enter)="assign(healthcareProvider)"
+               tabindex="0"
+          >
+            <td data-cy="healthcareProvider-type">
+              <ng-container *ngIf="healthcareProvider.type === 'Professional'; else groupIcon">
+                <mat-icon>person</mat-icon>
+              </ng-container>
+              <ng-template #groupIcon>
+                <mat-icon>groups</mat-icon>
+              </ng-template>
+            </td>
+            <td data-cy="professional-name">
+              <b>{{healthcareProvider.type === 'Professional' ? (healthcareProvider.firstName + ' ' + healthcareProvider.lastName) : healthcareProvider.name}}</b>
+            </td>
+            <ng-container *ngIf="healthcareProvider.address">
+              <td data-cy="professional-address-street">{{healthcareProvider.address!.streetName || ''}} {{healthcareProvider.address!.houseNumber || ''}}</td>
+              <td data-cy="professional-address-postalCode">{{healthcareProvider.address!.zipCode || ''}}</td>
+              <td data-cy="professional-address-city">{{healthcareProvider.address!.city || ''}}</td>
+            </ng-container>
+          </tr>
+        </table>
+      </div>
+    </ng-container>
+  </ng-container>
+
+<app-overlay-spinner mode="dialog" *ngIf="loading"></app-overlay-spinner>

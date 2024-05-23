@@ -1,0 +1,26 @@
+<form (ngSubmit)="finishExecution()" [formGroup]="formGroup">
+  <h1 mat-dialog-title>{{'prescription.finishExecution.title' | translate}}</h1>
+  <div mat-dialog-content>
+    <mat-form-field *ngIf="formGroup.get('endDate') as control" appearance="fill">
+      <mat-label>{{ 'prescription.finishExecution.endDate' | translate }}</mat-label>
+      <input [formControlName]="'endDate'" [matDatepicker]="picker" [max]="maxDate" [min]="minDate" matInput
+             type="text" data-cy="end-date-execution-prescription">
+      <mat-datepicker-toggle [for]="picker" matSuffix></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error
+        *ngIf="control.hasError('matDatepickerMin')">{{ 'prescription.errors.dateMustBeLaterOrEqualTo' | translate:{date: (minDate | date)} }}</mat-error>
+      <mat-error
+        *ngIf="control.hasError('matDatepickerMax')">{{ 'prescription.errors.dateMustBeEarlierOrEqualTo' | translate: {date: (maxDate | date)} }}</mat-error>
+      <mat-error
+        *ngIf="control.hasError('matDatepickerParse')">{{ 'prescription.errors.invalidDateFormat' | translate }}</mat-error>
+    </mat-form-field>
+  </div>
+  <div mat-dialog-actions>
+    <button color="accent" data-cy="dialog-confirm-button"
+            mat-raised-button>{{'common.confirm' | translate}}</button>
+    <button [mat-dialog-close]="undefined" data-cy="dialog-cancel-button" mat-flat-button
+            type="button">{{'common.cancel' | translate}}</button>
+  </div>
+</form>
+
+<app-overlay-spinner *ngIf="loading" mode="dialog"></app-overlay-spinner>
