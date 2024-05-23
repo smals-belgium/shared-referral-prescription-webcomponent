@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>HealixWcListPrescriptions</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="keycloak.js"></script>
+</head>
+<body>
+  <script>
+    window.referralPrescriptionEnv = 'test';
+    var keycloak = new Keycloak({
+      url: 'http://vasiam.test.paas.vasdc.be/auth',
+      realm: 'MOOSE_UHMEP',
+      clientId: 'uhmep-webapp'
+    });
+    keycloak.init({onLoad: 'login-required', checkLoginIframe: false}).then(function (authenticated) {
+      console.log(authenticated ? 'authenticated' : 'not authenticated');
+      const listElement = document.createElement('nihdi-list-referral-prescriptions');
+      listElement.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'nl-BE';
+      listElement.patientSsin = '90122712173';
+      listElement.getToken = () => Promise.resolve(keycloak.token);
+      listElement.addEventListener('prescriptionsCreated', () => {
+        document.body.removeChild(listElement);
+        setTimeout(() => {
+          alert('Prescription(s) were created. Refresh to start again.');
+        }, 100);
+      });
+      document.body.append(listElement);
+    }).catch(function () {
+      alert('failed to initialize');
+    });
+  </script>
+</body>
+</html>

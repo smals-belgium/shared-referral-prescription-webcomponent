@@ -1,0 +1,25 @@
+:host {
+  display: flex;
+  align-items: center;
+}
+
+.pages {
+  display: flex;
+  column-gap: 2px;
+
+  > .spacer {
+    padding: 0.5rem;
+    min-width: 2.5rem;
+    text-align: center;
+  }
+
+  > button {
+    min-width: 2.5rem;
+
+    &.active {
+      pointer-events: none;
+      cursor: default;
+    }
+  }
+
+}

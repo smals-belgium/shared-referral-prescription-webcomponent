@@ -6,17 +6,43 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Testing the News Web Component</title>
   <base href="/">
-  <link rel="stylesheet" href="./dist/build/wc-prescription-details.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!--  <link rel="stylesheet" href="./dist/build/wc-prescription-details.css">-->
+  <link rel="stylesheet" href="./dist/build/wc-list-prescriptions.css">
+  <script src="./dist/wc-prescription-details/browser/keycloak.js"></script>
 </head>
 <body>
-<nihdi-referral-prescription-details
-  lang="nl"
-  [prescriptionId]="123"
-  intent="proposel"
-></nihdi-referral-prescription-details>
+<script>
+  window.referralPrescriptionEnv = 'test';
+  var keycloak = new Keycloak({
+    url: 'http://vasiam.test.paas.vasdc.be/auth',
+    realm: 'MOOSE_UHMEP',
+    clientId: 'uhmep-webapp'
+  });
+  keycloak.init({onLoad: 'login-required', checkLoginIframe: false}).then(function (authenticated) {
+    console.log(authenticated ? 'authenticated' : 'not authenticated');
+    // const create = document.createElement('nihdi-referral-prescription-details');
+    // create.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'nl-BE';
+    // create.prescriptionId = '4aeabaf9-7979-434e-b0d7-b31e1acab773';
+    // create.getToken = () => Promise.resolve(keycloak.token);
+    // document.body.append(create);
+    const listElement = document.createElement('nihdi-list-referral-prescriptions');
+    listElement.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'nl-BE';
+    listElement.patientSsin = '90122712173';
+    listElement.getToken = () => Promise.resolve(keycloak.token);
+    listElement.addEventListener('prescriptionsCreated', () => {
+      document.body.removeChild(listElement);
+      setTimeout(() => {
+        alert('Prescription(s) were created. Refresh to start again.');
+      }, 100);
+    });
+    document.body.append(listElement);
+  }).catch(function () {
+    alert('failed to initialize');
+  });
+</script>
 
-
-<script src="./dist/build/wc-prescription-details.js" type="module"></script>
-
+<script src="./dist/build/wc-list-prescriptions.js" type="module"></script>
 </body>
 </html>

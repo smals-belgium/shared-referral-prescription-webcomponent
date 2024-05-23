@@ -1,0 +1,68 @@
+table {
+  width: 100%;
+  border-spacing: 0 1rem;
+  box-sizing: border-box;
+}
+
+tr {
+  &.inactive {
+    opacity: 0.9;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    td {
+      background-color: #efefef;
+    }
+  }
+}
+
+tr:not(:first-of-type) {
+  box-shadow: 0 1px 14px #0000001f;
+  border-radius: 1rem;
+
+  &:hover td {
+    background-color: #fafafa;
+  }
+}
+
+th {
+  text-align: left;
+  padding: 0 1rem;
+}
+
+td {
+  background-color: white;
+  padding: 1rem;
+  cursor: pointer;
+  transition: .2s background-color, .2s opacity;
+
+  &:first-of-type {
+    border-radius: 10px 0 0 10px;
+  }
+
+  &:last-of-type {
+    border-radius: 0 10px 10px 0;
+  }
+}
+
+tr.no-prescriptions {
+  > td {
+    text-align: center;
+    cursor: none;
+    border-radius: 10px;
+  }
+}
+
+.status{
+  padding: 0.25rem 1rem;
+  border-style: solid;
+  border-radius: 1rem;
+  border-width: 2px;
+  text-align: center;
+}
+
+.assignedIcon{
+  text-align: center;
+}

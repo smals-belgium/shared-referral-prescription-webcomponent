@@ -1,0 +1,47 @@
+<table>
+  <tr>
+    <th data-cy="overview-author-title">{{'prescription.author' | translate}}</th>
+    <th data-cy="overview-patient-title">{{'prescription.assigned' | translate}}</th>
+    <th data-cy="overview-typeOfCare-title">{{'prescription.typeOfCare' | translate}}</th>
+    <th data-cy="overview-startDate-title">{{'prescription.start' | translate}}</th>
+    <th data-cy="overview-startDate-title">{{'prescription.end' | translate}}</th>
+    <th data-cy="overview-startDate-title">{{'prescription.status' | translate}}</th>
+  </tr>
+  <tr *ngIf="prescriptions.total === 0" class="no-prescriptions">
+    <td colspan="6" *hideIfProfessional>{{'prescription.noPrescriptionsForUser' | translate}}</td>
+    <td colspan="6" *showIfProfessional>{{'prescription.noPrescriptionsForPatient' | translate}}</td>
+  </tr>
+  <tr
+    *ngFor="let prescription of prescriptions.items"
+    [class.inactive]="prescription.status === 'DONE' || prescription.status === 'CANCELLED' || prescription.status === 'EXPIRED'"
+    [attr.data-cy]="'prescription-row-' + prescription.id"
+    (click)="clickPrescription.emit(prescription)"
+  >
+    <td [attr.data-cy]="'author-cell-' + prescription.id" [attr.translate]="'no'">
+      <ng-container *ngIf="prescription.requester">
+        {{prescription.requester.firstName}} {{prescription.requester.lastName}}<br>
+        ({{prescription.requester.nihdi | formatNihdi}})
+      </ng-container>
+    </td>
+    <td [attr.data-cy]="'caregiver-cell-' + prescription.id" [attr.translate]="'no'">
+      <div class="assignedIcon">
+        <ng-container *ngIf="prescription.assigned">
+          <mat-icon>check</mat-icon>
+        </ng-container>
+        <ng-container *ngIf="!prescription.assigned">
+          <mat-icon>horizontal_rule</mat-icon>
+        </ng-container>
+      </div>
+    </td>
+    <td [attr.data-cy]="'typeOfCare-cell-' + prescription.id"><b>{{prescription.templateCode | templateName}}</b></td>
+    <td [attr.data-cy]="'startDate-cell-' + prescription.id">{{prescription.period.start | date:'D'}}</td>
+    <td [attr.data-cy]="'endDate-cell-' + prescription.id">{{prescription.period.end | date:'D'}}</td>
+
+    <td
+      [attr.data-cy]="'status-cell-' + prescription.id">
+      <div class="status" data-cy="prescription-status" [ngStyle]="{'border-color': getStatusBorderColor(prescription.status!), 'background-color': getStatusBorderColor(prescription.status!)}">
+        {{'prescription.statuses.' + prescription.status | translate}}
+      </div>
+    </td>
+  </tr>
+</table>

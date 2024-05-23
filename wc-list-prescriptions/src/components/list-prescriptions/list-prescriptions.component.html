@@ -1,0 +1,96 @@
+<div class="container" *ngIf="viewState$() as viewState">
+  <app-error-card
+    *ifStatusError="viewState"
+    [message]="'prescription.errors.failedToLoadPrescriptions' | translate"
+    [error]="viewState.error.prescriptions || viewState.error.templates"
+    (clickRetry)="retryFailedCalls(viewState.error)"
+    data-cy="failed-prescription-error-message"
+  ></app-error-card>
+
+  <ng-container *ifStatusSuccess="viewState">
+    <div *ngIf="intent=='order'; else proposal">
+      <div class="page-info">
+        <app-active-page
+          data-cy="numberOfPrescriptions"
+          [page]="viewState.params!['prescriptions']!['page']"
+          [pageSize]="viewState.params!['prescriptions']!['pageSize']"
+          [total]="viewState.data!.prescriptions!.total"
+          [label]="'prescription.pagination.prescriptions' | translate:{count:viewState.data!.prescriptions!.total}"
+        ></app-active-page>
+
+        <div class="page-size">
+          {{'prescription.pagination.pageSize' | translate}}:
+          <mat-select
+            data-cy="select-prescription-pagination"
+            [value]="viewState.params!['prescriptions']!['pageSize'] || 10"
+            (selectionChange)="loadData(1, $event.value)"
+          >
+            <mat-option [value]="10">10</mat-option>
+            <mat-option [value]="20">20</mat-option>
+            <mat-option [value]="50">50</mat-option>
+            <mat-option [value]="100">100</mat-option>
+          </mat-select>
+        </div>
+      </div>
+
+        <app-prescriptions-table
+          [prescriptions]="viewState.data!.prescriptions!"
+          (clickPrescription)="clickOpenPrescriptionDetails.emit($event)"
+        ></app-prescriptions-table>
+        <div class="pagination">
+        <app-paginator
+          [total]="viewState.data!.prescriptions!.total"
+          [page]="viewState.params!['prescriptions']!['page'] || 1"
+          [pageSize]="viewState.params!['prescriptions']!['pageSize'] || 10"
+          (changePage)="loadData($event, viewState.params!['prescriptions']!['pageSize'])"
+        ></app-paginator>
+      </div>
+    </div>
+
+    <ng-template #proposal>
+      <div class="page-info">
+        <app-active-page
+          data-cy="numberOfProposals"
+          [page]="viewState.params!['proposals']!['page']"
+          [pageSize]="viewState.params!['proposals']!['pageSize']"
+          [total]="viewState.data!.proposals!.total"
+          [label]="'proposal.pagination.proposals' | translate:{count:viewState.data!.proposals!.total}"
+        ></app-active-page>
+
+        <div class="page-size">
+          {{'proposal.pagination.pageSize' | translate}}:
+          <mat-select
+            data-cy="select-proposals-pagination"
+            [value]="viewState.params!['proposals']!['pageSize'] || 10"
+            (selectionChange)="loadData(1, $event.value)"
+          >
+            <mat-option [value]="10">10</mat-option>
+            <mat-option [value]="20">20</mat-option>
+            <mat-option [value]="50">50</mat-option>
+            <mat-option [value]="100">100</mat-option>
+          </mat-select>
+        </div>
+      </div>
+
+      <app-prescriptions-table
+        [prescriptions]="viewState.data!.proposals!"
+        (clickPrescription)="clickOpenPrescriptionDetails.emit($event)"
+      ></app-prescriptions-table>
+      <div class="pagination">
+        <app-paginator
+          [total]="viewState.data!.proposals!.total"
+          [page]="viewState.params!['proposals']!['page'] || 1"
+          [pageSize]="viewState.params!['proposals']!['pageSize'] || 10"
+          (changePage)="loadData($event, viewState.params!['proposals']!['pageSize'])"
+        ></app-paginator>
+      </div>
+    </ng-template>
+  </ng-container>
+
+  <app-overlay-spinner
+    *ifStatusLoading="viewState"
+    [mode]="viewState.status === 'UPDATING' ? 'page' : 'inline'"
+  ></app-overlay-spinner>
+</div>
+
+<app-overlay-spinner *ngIf="loading"></app-overlay-spinner>
