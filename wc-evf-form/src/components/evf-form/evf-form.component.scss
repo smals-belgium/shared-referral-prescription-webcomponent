@@ -1,0 +1,116 @@
+@use '@angular/material' as mat;
+@use '../../../../node_modules/@smals/vas-evaluation-form-ui-material' as evf;
+
+$app-primary: mat.define-palette(mat.$light-blue-palette, 800);
+$app-accent: mat.define-palette(mat.$light-blue-palette, A200, A100, A400);
+$app-warn: mat.define-palette(mat.$red-palette);
+$app-theme: mat.define-light-theme((
+  color: (
+    primary: $app-primary,
+    accent: $app-accent,
+    warn: $app-warn,
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+@include mat.core();
+@include mat.ripple-theme($app-theme);
+@include mat.button-theme($app-theme);
+@include mat.core-theme($app-theme);
+@include mat.form-field-theme($app-theme);
+@include mat.radio-theme($app-theme);
+@include mat.datepicker-theme($app-theme);
+@include mat.input-theme($app-theme);
+@include mat.select-theme($app-theme);
+@include mat.icon-theme($app-theme);
+@include mat.progress-spinner-theme($app-theme);
+@include evf.evf-theme($app-primary, 800, 600, 700);
+
+.evf-element-wrapper > div:first-of-type {
+  font-weight: bold;
+}
+
+@media (min-width: 768px) {
+  .evf-element-wrapper {
+    display: flex;
+    align-items: flex-start;
+    column-gap: 1rem;
+
+    > div {
+      flex-basis: 0;
+
+      &:first-of-type {
+        display: flex;
+        justify-content: flex-end;
+        flex-grow: 3;
+        text-align: right;
+        padding-top: 15px;
+      }
+
+      &:last-of-type {
+        flex-grow: 7;
+      }
+    }
+  }
+}
+
+evf-dynamic-form {
+  evf-radio {
+    .radio-item-wrapper {
+      .evf-element-wrapper {
+        flex-direction: column;
+
+        > div {
+          &:first-of-type {
+            padding: 0 !important;
+          }
+
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+.infoblock {
+  display: flex;
+  background-color: mat.get-color-from-palette($app-primary, 50);
+  border-radius: 10px;
+  padding: 12px;
+  margin: 8px 0;
+
+  i {
+    color: mat.get-color-from-palette($app-primary, 600);
+  }
+
+  span {
+    display: block;
+    margin: 2px 6px;
+  }
+
+  p {
+    &:first-of-type {
+      margin-top: 0;
+    }
+
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}

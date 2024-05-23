@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>WcEvfForm</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style type="text/css">
+    body {
+      font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <script>
+      const evfForm = document.createElement('nihdi-referral-prescription-form');
+      evfForm.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'nl-BE';
+      evfForm.template = {
+        "id" : 33,
+        "version" : "1",
+        "commonTranslationsId" : 1,
+        "extraData" : {
+          "welcome" : {
+            "en" : "Template 12 : Hygienic care",
+            "nl" : "Template 12 : Hygiënische zorg",
+            "fr" : "Template 12 : Soins hygiéniques"
+          },
+          "fhir" : {
+            "mapping" : {
+              "default" : {
+                "resourceType" : "ServiceRequest",
+                "meta" : {
+                  "profile" : [ "https://www.ehealth.fgov.be/standards/fhir/referral/StructureDefinition/be-referralprescription" ]
+                },
+                "code" : {
+                  "coding" : [ {
+                    "system" : "http://snomed.info/sct",
+                    "code" : "225964003"
+                  } ],
+                  "text" : "Assisting with personal hygiene"
+                },
+                "category" : {
+                  "coding" : [ {
+                    "system" : "http://snomed.info/sct",
+                    "code" : "9632001"
+                  } ],
+                  "text" : "Nursing procedure"
+                },
+                "intent" : "order",
+                "priority" : "routine"
+              }
+            }
+          }
+        },
+        "elements" : [ {
+          "id" : "templateInfo",
+          "viewType" : "info",
+          "bodyTranslationId" : "templateInfo"
+        }, {
+          "id" : "row",
+          "viewType" : "row",
+          "labelTranslationId" : "validityPeriod",
+          "tooltipTranslationId" : "validityPeriodTooltip",
+          "elements" : [ {
+            "id" : "startDate",
+            "dataType" : {
+              "type" : "date",
+              "format" : "yearMonthDay"
+            },
+            "viewType" : "date",
+            "labelTranslationId" : "startDate",
+            "validations" : [ {
+              "name" : "required"
+            }, {
+              "name" : "minValue",
+              "minValue" : "${now | transformDate:minus(5,day) | transformDate:startOf(day)}"
+            }, {
+              "name" : "maxValue",
+              "maxValue" : "${now | transformDate:plus(1,year)}"
+            } ],
+            "fhir" : {
+              "mapping" : [ {
+                "fhirPath" : "extension(url=https://www.ehealth.fgov.be/standards/fhir/referral/StructureDefinition/be-ext-validity-period)[0].valuePeriod.start",
+                "mappingType" : "response"
+              } ]
+            },
+            "sideEffects" : [ {
+              "name" : "setValue",
+              "target" : "endDate",
+              "value" : "${responses:startDate | transformDate:plus(1,year) | transformDate:minus(1, day) | formatDate:yyyy-MM-dd}",
+              "condition" : null
+            } ],
+            "defaultValue" : "${now | parseDate}"
+          }, {
+            "id" : "endDate",
+            "dataType" : {
+              "type" : "date",
+              "format" : "yearMonthDay"
+            },
+            "viewType" : "date",
+            "labelTranslationId" : "endDate",
+            "validations" : [ {
+              "name" : "required"
+            }, {
+              "name" : "compare",
+              "operator" : ">",
+              "compareTo" : "${responses:startDate}"
+            }, {
+              "name" : "compare",
+              "operator" : "<=",
+              "compareTo" : "${responses:startDate | transformDate:plus(1, year) | transformDate:minus(1, day) | transformDate:endOf(day)}"
+            } ],
+            "fhir" : {
+              "mapping" : [ {
+                "fhirPath" : "extension(url=https://www.ehealth.fgov.be/standards/fhir/referral/StructureDefinition/be-ext-validity-period)[0].valuePeriod.end",
+                "mappingType" : "response"
+              } ]
+            },
+            "sideEffects" : [ {
+              "name" : "setValue",
+              "target" : "treatmentValidityEndDate",
+              "value" : "${responses:endDate}",
+              "condition" : null
+            } ],
+            "defaultValue" : "${now | transformDate:plus(1,year) | transformDate:minus(1, day)}"
+          } ]
+        }, {
+          "id" : "treatmentValidityEndDate",
+          "dataType" : {
+            "type" : "date",
+            "format" : "yearMonthDay"
+          },
+          "viewType" : "date",
+          "viewMode" : "hidden",
+          "labelTranslationId" : "treatmentValidityEndDate",
+          "tooltipTranslationId" : "treatmentValidityEndDateTooltip",
+          "validations" : [ {
+            "name" : "required"
+          }, {
+            "name" : "compare",
+            "operator" : ">",
+            "compareTo" : "${responses:startDate}"
+          }, {
+            "name" : "compare",
+            "operator" : "<=",
+            "compareTo" : "${responses:startDate | transformDate:plus(1, year) | transformDate:minus(1, day) | transformDate:endOf(day)}"
+          } ],
+          "fhir" : {
+            "mapping" : [ {
+              "fhirPath" : "extension(url=https://www.ehealth.fgov.be/standards/fhir/StructureDefinition/be-ext-lastest-end-date)[1].valueDateTime",
+              "mappingType" : "response"
+            } ]
+          },
+          "defaultValue" : "${now | transformDate:plus(1,year) | transformDate:minus(1, day)}"
+        }, {
+          "viewType" : "occurrenceTiming",
+          "labelTranslationId" : "frequency",
+          "elements" : [ {
+            "id" : "frequencyRow",
+            "viewType" : "row",
+            "labelTranslationId" : "frequency",
+            "elements" : [ {
+              "id" : "frequencyNumber",
+              "dataType" : {
+                "type" : "number"
+              },
+              "viewType" : "number",
+              "labelTranslationId" : "frequencyNumber",
+              "placeholderTranslationId" : "frequencyNumberPlaceholder",
+              "validations" : [ {
+                "name" : "required"
+              }, {
+                "name" : "minValue",
+                "minValue" : 1
+              }, {
+                "name" : "maxValue",
+                "maxValue" : 99
+              }, {
+                "name" : "maxDecimals",
+                "maxDecimals" : 0
+              } ],
+              "custom" : {
+                "suffixTranslationId" : "frequencyNumberSuffix"
+              },
+              "fhir" : {
+                "mapping" : [ {
+                  "fhirPath" : "occurrenceTiming.repeat.frequency",
+                  "mappingType" : "response"
+                } ]
+              }
+            }, {
+              "id" : "frequencyPeriod",
+              "dataType" : {
+                "type" : "string"
+              },
+              "viewType" : "select",
+              "labelTranslationId" : "frequencyPeriod",
+              "validations" : [ {
+                "name" : "required"
+              } ],
+              "responses" : [ {
+                "value" : "d",
+                "labelTranslationId" : "frequencyDay"
+              }, {
+                "value" : "wk",
+                "labelTranslationId" : "frequencyWeek"
+              }, {
+                "value" : "mo",
+                "labelTranslationId" : "frequencyMonth"
+              } ],
+              "fhir" : {
+                "mapping" : [ {
+                  "fhirPath" : "occurrenceTiming.repeat.periodUnit",
+                  "mappingType" : "response"
+                }, {
+                  "fhirPath" : "occurrenceTiming.repeat.period",
+                  "mappingType" : "fhirConstant",
+                  "fhirConstant" : 1
+                } ]
+              }
+            } ]
+          } ]
+        }, {
+          "id" : "numberOfPrestations",
+          "dataType" : {
+            "type" : "number"
+          },
+          "viewType" : "number",
+          "labelTranslationId" : "numberOfPrestations",
+          "placeholderTranslationId" : "numberOfPrestationsPlaceholder",
+          "validations" : [ {
+            "name" : "required"
+          }, {
+            "name" : "minValue",
+            "minValue" : 1
+          }, {
+            "name" : "maxValue",
+            "maxValue" : 10000
+          }, {
+            "name" : "maxDecimals",
+            "maxDecimals" : 0
+          } ],
+          "fhir" : {
+            "mapping" : [ {
+              "fhirPath" : "occurrenceTiming.repeat.count",
+              "mappingType" : "response"
+            } ]
+          }
+        }, {
+          "id" : "feedbackRequired",
+          "dataType" : {
+            "type" : "boolean"
+          },
+          "viewType" : "radio",
+          "labelTranslationId" : "feedbackRequired",
+          "responses" : [ {
+            "value" : true,
+            "labelTranslationId" : "yes"
+          }, {
+            "value" : false,
+            "labelTranslationId" : "no"
+          } ],
+          "fhir" : {
+            "mapping" : [ {
+              "fhirPath" : "extension(url=https://www.ehealth.fgov.be/standards/fhir/referral/StructureDefinition/be-ext-feedback-to-prescriber)[0].valueBoolean",
+              "mappingType" : "response"
+            } ]
+          },
+          "defaultValue" : false
+        }, {
+          "id" : "diagnosis",
+          "dataType" : {
+            "type" : "string"
+          },
+          "viewType" : "textarea",
+          "labelTranslationId" : "diagnosis",
+          "validations" : [ {
+            "name" : "required"
+          }, {
+            "name" : "maxLength",
+            "maxLength" : 350
+          }, {
+            "name" : "pattern",
+            "pattern" : "[\\w\\d\\s\\t\\n\\r\\.\\,\\;\\?\\!\\:\\'\"\\(\\)\\-ùéèé@]+",
+            "errorTranslationId" : "patternErrorSpecificsPointsOfAttention"
+          } ],
+          "fhir" : {
+            "mapping" : [ {
+              "fhirPath" : "reasonCode[0].coding[0].display",
+              "mappingType" : "response"
+            } ]
+          }
+        }, {
+          "id" : "medicalReason",
+          "dataType" : {
+            "type" : "string"
+          },
+          "viewType" : "textarea",
+          "labelTranslationId" : "medicalReason",
+          "validations" : [ {
+            "name" : "maxLength",
+            "maxLength" : 350
+          }, {
+            "name" : "pattern",
+            "pattern" : "[\\w\\d\\s\\t\\n\\r\\.\\,\\;\\?\\!\\:\\'\"\\(\\)\\-ùéèé@]+",
+            "errorTranslationId" : "patternErrorSpecificsPointsOfAttention"
+          } ],
+          "fhir" : {
+            "mapping" : [ {
+              "fhirPath" : "note(extension=(code=410666004))[0].authorReference",
+              "mappingType" : "fhirConstant",
+              "fhirConstant" : {
+                "identifier" : {
+                  "use" : "official",
+                  "system" : "https://www.ehealth.fgov.be/standards/fhir/core/NamingSystem/be-ssin"
+                },
+                "reference" : "Practitioner",
+                "type" : "Practitioner"
+              }
+            }, {
+              "fhirPath" : "note(extension=(code=410666004))[0].text",
+              "mappingType" : "response"
+            }, {
+              "fhirPath" : "note(extension=(code=410666004))[0].extension[0].valueCodeableConcept.coding[0].code",
+              "mappingType" : "fhirConstant",
+              "fhirConstant" : "410666004"
+            }, {
+              "fhirPath" : "note(extension=(code=410666004))[0].extension[0].valueCodeableConcept.coding[0].system",
+              "mappingType" : "fhirConstant",
+              "fhirConstant" : "http://snomed.info/sct"
+            }, {
+              "fhirPath" : "note(extension=(code=410666004))[0].extension[0].url",
+              "mappingType" : "fhirConstant",
+              "fhirConstant" : "https://www.ehealth.fgov.be/standards/fhir/core/StructureDefinition/be-ext-codeableconcept"
+            } ]
+          }
+        }, {
+          "id" : "contraindications",
+          "dataType" : {
+            "type" : "string"
+          },
+          "viewType" : "textarea",
+          "labelTranslationId" : "contraindications",
+          "validations" : [ {
+            "name" : "maxLength",
+            "maxLength" : 350
+          }, {
+            "name" : "pattern",
+            "pattern" : "[\\w\\d\\s\\t\\n\\r\\.\\,\\;\\?\\!\\:\\'\"\\(\\)\\-ùéèé@]+",
+            "errorTranslationId" : "patternErrorSpecificsPointsOfAttention"
+          } ],
+          "fhir" : {
+            "mapping" : [ {
+              "fhirPath" : "note(extension=(code=103306004))[0].authorReference",
+              "mappingType" : "fhirConstant",
+              "fhirConstant" : {
+                "identifier" : {
+                  "use" : "official",
+                  "system" : "https://www.ehealth.fgov.be/standards/fhir/core/NamingSystem/be-ssin"
+                },
+                "reference" : "Practitioner",
+                "type" : "Practitioner"
+              }
+            }, {
+              "fhirPath" : "note(extension=(code=103306004))[0].text",
+              "mappingType" : "response"
+            }, {
+              "fhirPath" : "note(extension=(code=103306004))[0].extension[0].valueCodeableConcept.coding[0].code",
+              "mappingType" : "fhirConstant",
+              "fhirConstant" : "103306004"
+            }, {
+              "fhirPath" : "note(extension=(code=103306004))[0].extension[0].valueCodeableConcept.coding[0].system",
+              "mappingType" : "fhirConstant",
+              "fhirConstant" : "http://snomed.info/sct"
+            }, {
+              "fhirPath" : "note(extension=(code=103306004))[0].extension[0].url",
+              "mappingType" : "fhirConstant",
+              "fhirConstant" : "https://www.ehealth.fgov.be/standards/fhir/core/StructureDefinition/be-ext-codeableconcept"
+            } ]
+          }
+        }, {
+          "id" : "generalRemarks",
+          "dataType" : {
+            "type" : "string"
+          },
+          "viewType" : "textarea",
+          "labelTranslationId" : "generalRemarks",
+          "validations" : [ {
+            "name" : "maxLength",
+            "maxLength" : 350
+          }, {
+            "name" : "pattern",
+            "pattern" : "[\\w\\d\\s\\t\\n\\r\\.\\,\\;\\?\\!\\:\\'\"\\(\\)\\-ùéèé@]+",
+            "errorTranslationId" : "patternErrorSpecificsPointsOfAttention"
+          } ],
+          "fhir" : {
+            "mapping" : [ {
+              "fhirPath" : "note(extension=(code=772786005))[0].authorReference",
+              "mappingType" : "fhirConstant",
+              "fhirConstant" : {
+                "identifier" : {
+                  "use" : "official",
+                  "system" : "https://www.ehealth.fgov.be/standards/fhir/core/NamingSystem/be-ssin"
+                },
+                "reference" : "Practitioner",
+                "type" : "Practitioner"
+              }
+            }, {
+              "fhirPath" : "note(extension=(code=772786005))[0].text",
+              "mappingType" : "response"
+            }, {
+              "fhirPath" : "note(extension=(code=772786005))[0].extension[0].valueCodeableConcept.coding[0].code",
+              "mappingType" : "fhirConstant",
+              "fhirConstant" : "772786005"
+            }, {
+              "fhirPath" : "note(extension=(code=772786005))[0].extension[0].valueCodeableConcept.coding[0].system",
+              "mappingType" : "fhirConstant",
+              "fhirConstant" : "http://snomed.info/sct"
+            }, {
+              "fhirPath" : "note(extension=(code=772786005))[0].extension[0].url",
+              "mappingType" : "fhirConstant",
+              "fhirConstant" : "https://www.ehealth.fgov.be/standards/fhir/core/StructureDefinition/be-ext-codeableconcept"
+            } ]
+          }
+        } ],
+        "translations" : {
+          "templateInfo" : {
+            "nl" : "> - Vergoedingsregels zijn afhankelijk van de score van de verpleegkundige op de Katz-schaal en melding aan de medisch adviseur via de verpleegkundige.\n > - Aanwezigheid van nachtelijke urine-incontinentie en incontinentie occasionele urine: attest vereist\n > - Desoriëntatie in tijd en ruimte: certificaat vereist",
+            "fr" : "> - Les règles de remboursement dépendent du score de l'infirmière sur l'échelle de Katz et de la notification du médecin conseil par l'intermédiaire de l'infirmière.\n > - Présence d'incontinence urinaire nocturne et d'incontinence urinaire occasionnelle : certificat requis\n > - Désorientation dans le temps et l'espace : certificat requis"
+          }
+        },
+        "commonTranslations" : {
+          "no" : {
+            "nl" : "Nee",
+            "fr" : "Non"
+          },
+          "day" : {
+            "nl" : "dag",
+            "fr" : "jour(s)"
+          },
+          "yes" : {
+            "nl" : "Ja",
+            "fr" : "Oui"
+          },
+          "week" : {
+            "nl" : "week",
+            "fr" : "semaine(s)"
+          },
+          "every" : {
+            "nl" : "Om de",
+            "fr" : "Tou(te)s les"
+          },
+          "month" : {
+            "nl" : "maand",
+            "fr" : "mois"
+          },
+          "nurse" : {
+            "nl" : "Verpleeger/verpleegster",
+            "fr" : "Infirmier·ère"
+          },
+          "friday" : {
+            "nl" : "vrijdagen",
+            "fr" : "vendredis"
+          },
+          "monday" : {
+            "nl" : "maandagen",
+            "fr" : "lundis"
+          },
+          "repeat" : {
+            "nl" : "herhaling(en) om te",
+            "fr" : "réalisation(s) tou(te)s les"
+          },
+          "sunday" : {
+            "nl" : "zondagen",
+            "fr" : "dimanches"
+          },
+          "endDate" : {
+            "nl" : "Vervaldatum",
+            "fr" : "Fin de validité"
+          },
+          "tuesday" : {
+            "nl" : "dinsdagen",
+            "fr" : "mardis"
+          },
+          "everyDay" : {
+            "nl" : "Om de",
+            "fr" : "Tous les"
+          },
+          "interval" : {
+            "nl" : "Interval",
+            "fr" : "Intervalle"
+          },
+          "repeatOn" : {
+            "nl" : "op",
+            "fr" : "le"
+          },
+          "saturday" : {
+            "nl" : "zaterdagen",
+            "fr" : "samedis"
+          },
+          "thursday" : {
+            "nl" : "donderdagen",
+            "fr" : "jeudis"
+          },
+          "diagnosis" : {
+            "nl" : "Diagnose",
+            "fr" : "Diagnostic"
+          },
+          "frequency" : {
+            "nl" : "Frequentie",
+            "fr" : "Fréquence"
+          },
+          "startDate" : {
+            "nl" : "Startdatum van geldigheid",
+            "fr" : "Début de validité"
+          },
+          "wednesday" : {
+            "nl" : "woensdagen",
+            "fr" : "mercredis"
+          },
+          "intervalDay" : {
+            "nl" : "Specifieke dag(en)",
+            "fr" : "Jour(s) spécifique(s)"
+          },
+          "frequencyDay" : {
+            "nl" : "dag",
+            "fr" : "jour"
+          },
+          "frequencyType" : {
+            "nl" : "Frequentie",
+            "fr" : "Type de fréquence"
+          },
+          "frequencyWeek" : {
+            "nl" : "Week",
+            "fr" : "semaine"
+          },
+          "medicalReason" : {
+            "nl" : "Medische reden",
+            "fr" : "Raisons médicales"
+          },
+          "frequencyMonth" : {
+            "nl" : "maand",
+            "fr" : "mois"
+          },
+          "generalRemarks" : {
+            "nl" : "Algemene opmerkingen",
+            "fr" : "Remarques générales"
+          },
+          "intervalPeriod" : {
+            "nl" : "Periode",
+            "fr" : "Période"
+          },
+          "validityPeriod" : {
+            "nl" : "Period van geldigheid",
+            "fr" : "Période de validité"
+          },
+          "customFrequency" : {
+            "nl" : "Custom",
+            "fr" : "Custom"
+          },
+          "frequencyNumber" : {
+            "nl" : "Aantal herhaling",
+            "fr" : "Nombre de répétitions"
+          },
+          "frequencyPeriod" : {
+            "nl" : "Periode",
+            "fr" : "Période"
+          },
+          "intervalTooltip" : {
+            "nl" : "Bijv.: elke 3 dagen, elke week, elke maandag, ...",
+            "fr" : "Ex: Tous les 3 jours, toutes les semaines, tous les lundis, ..."
+          },
+          "feedbackRequired" : {
+            "nl" : "Feedback vereist",
+            "fr" : "Feedback exigé"
+          },
+          "quantityByPeriod" : {
+            "nl" : "Hoeveelheid per periode",
+            "fr" : "Quantité par période"
+          },
+          "contraindications" : {
+            "nl" : "Contra-indicaties",
+            "fr" : "Contre-indications"
+          },
+          "patternErrorDates" : {
+            "nl" : "Ongeldig formaat: dd/mm/jjjj",
+            "fr" : "Format invalide: jj/mm/aaaa"
+          },
+          "treatmentDuration" : {
+            "nl" : "Duur",
+            "fr" : "Durée"
+          },
+          "intervalPeriodUnit" : {
+            "nl" : "Eenheid",
+            "fr" : "Unité"
+          },
+          "treatmentPeriodRow" : {
+            "nl" : "Periode",
+            "fr" : "Période"
+          },
+          "numberOfPrestations" : {
+            "nl" : "Maximum aantal zittingen",
+            "fr" : "Nombre maximal de séances"
+          },
+          "treatmentPeriodUnit" : {
+            "nl" : "Eenheid",
+            "fr" : "Unité"
+          },
+          "treatmentDurationRow" : {
+            "nl" : "Duur van de behandeling",
+            "fr" : "Durée du traitement"
+          },
+          "frequencyNumberSuffix" : {
+            "nl" : "X per",
+            "fr" : "X par"
+          },
+          "validityPeriodTooltip" : {
+            "nl" : "Dit is de periode waarin de verwerking moet beginnen.",
+            "fr" : "Il s'agit de la période durant laquelle le traitement doit débuter."
+          },
+          "quantityByPeriodTooltip" : {
+            "nl" : "Bijv.: 3x per dag, 1x per week, ...",
+            "fr" : "Ex: 3x par jour, 1x par semaine, ..."
+          },
+          "treatmentPeriodQuantity" : {
+            "nl" : "Hoeveelheid",
+            "fr" : "Quantité"
+          },
+          "treatmentValidityEndDate" : {
+            "nl" : "Einddatum van de uitvoerbaarheid",
+            "fr" : "Date de fin d'exécution"
+          },
+          "intervalPeriodPlaceholder" : {
+            "nl" : "1 tot 99",
+            "fr" : "1 à 99"
+          },
+          "frequencyNumberPlaceholder" : {
+            "nl" : "1 tot 99",
+            "fr" : "1 à 99"
+          },
+          "treatmentDurationPeriodUnit" : {
+            "nl" : "Periode",
+            "fr" : "Période"
+          },
+          "treatmentDurationPlaceholder" : {
+            "nl" : "1 tot 365",
+            "fr" : "1 à 365"
+          },
+          "numberOfPrestationsPlaceholder" : {
+            "nl" : "1 tot 10000",
+            "fr" : "1 à 10000"
+          },
+          "treatmentValidityEndDateTooltip" : {
+            "nl" : "Dit is de datum waarop de verwerking voltooid moet zijn.",
+            "fr" : "Il s'agit de la date à laquelle le traitement doit être terminé."
+          },
+          "treatmentPeriodQuantityPlaceholder" : {
+            "nl" : "1 tot 365",
+            "fr" : "1 à 365"
+          },
+          "patternErrorSpecificsPointsOfAttention" : {
+            "nl" : "Ongeldige tekens gevonden!\n Enkel de volgende tekens zijn toegestaan: a-Z, 0-9, \"?!,.;:-@",
+            "fr" : "Caractère(s) non autorisé(s) détecté(s)!\nSeul les caractères suivants sont autorisés : a-Z, 0-9, \"?!,.;:-@"
+          }
+        }
+      };
+      document.body.append(evfForm);
+  </script>
+</body>
+</html>

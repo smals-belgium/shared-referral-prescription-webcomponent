@@ -1,0 +1,19 @@
+<div class="container">
+  <h2>{{'prescription.create.action' | translate}}</h2>
+
+  <ng-container *ngIf="patientState$() as patientState">
+    <app-create-multiple-prescriptions
+      *ifStatusSuccess="patientState"
+      [createPrescriptionForms]="prescriptionForms()"
+      [patient]="patientState!.data!"
+      [lang]="lang"
+      (clickAddPrescription)="addPrescription()"
+      (clickDeletePrescription)="deletePrescriptionForm($event)"
+      (clickPublish)="publishPrescriptions()"
+      (clickCancel)="cancelCreation()"
+    ></app-create-multiple-prescriptions>
+  </ng-container>
+
+</div>
+
+<app-overlay-spinner *ngIf="loading()"></app-overlay-spinner>
