@@ -1,0 +1,18 @@
+<form [formGroup]="formGroup" (ngSubmit)="submit()">
+  <h1 mat-dialog-title>{{'prescription.selectTemplate.prescriptionModel' | translate}}</h1>
+
+  <div mat-dialog-content *ngIf="viewState$() as viewState">
+    <app-overlay-spinner *ifStatusLoading="viewState" mode="dialog"></app-overlay-spinner>
+    <ng-container *ifStatusSuccess="viewState">
+      <app-select-prescription-type
+        [formGroup]="formGroup"
+        [templates]="viewState.data!.templates"
+        [showTitle]="false"
+      ></app-select-prescription-type>
+    </ng-container>
+  </div>
+  <div mat-dialog-actions>
+    <button data-cy="choose-template-confirm-button" mat-raised-button color="accent">{{'common.confirm' | translate}}</button>
+    <button data-cy="choose-template-cancel-button" mat-flat-button [mat-dialog-close]="undefined">{{'common.cancel' | translate}}</button>
+  </div>
+</form>

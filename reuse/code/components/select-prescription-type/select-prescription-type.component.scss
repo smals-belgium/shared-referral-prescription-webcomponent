@@ -1,0 +1,21 @@
+:host {
+  display: block;
+
+  .title {
+    font-size: 1.2em;
+  }
+
+  .invalid {
+    color: #f44336;
+  }
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+::ng-deep {
+  .option-with-highlight > span {
+    background-color: rgba(2, 119, 189, 0.2);
+  }
+}

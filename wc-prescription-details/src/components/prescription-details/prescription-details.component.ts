@@ -382,7 +382,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
       return;
     }
     const scripts = [
-      'assets/webcomponents/pdfmake/index.js'
+      'dist/build/pdfmake.js'
     ]
     scripts.forEach((src) => {
       const script = this.renderer.createElement('script');
@@ -397,7 +397,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
       return;
     }
     const scripts = [
-      'assets/webcomponents/evf-form-details/index.js'
+      'dist/build/evf-form-details.js'
     ]
     scripts.forEach((src) => {
       const script = this.renderer.createElement('script');

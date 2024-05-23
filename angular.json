@@ -156,6 +156,83 @@
         }
       }
     },
+    "wc-create-prescription": {
+      "projectType": "application",
+      "root": "wc-create-prescription",
+      "sourceRoot": "wc-create-prescription/src",
+      "prefix": "healix",
+      "architect": {
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "wc-create-prescription:build:production"
+            },
+            "development": {
+              "buildTarget": "wc-create-prescription:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/wc-create-prescription",
+            "index": "wc-create-prescription/src/index.html",
+            "browser": "wc-create-prescription/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "wc-create-prescription/tsconfig.lib.json",
+            "inlineStyleLanguage": "scss",
+            "outputHashing": "all",
+            "optimization": {
+              "fonts": false
+            },
+            "assets": [
+              {
+                "glob": "{index.js,main-*.js,scripts-*.js,polyfills-*.js,runtime-*.js,styles-*.css}",
+                "input": "dist/wc-evf-form/browser",
+                "output": "./assets/webcomponents/evf-form"
+              },
+              {
+                "glob": "keycloak.js",
+                "input": "./node_modules/keycloak-js/dist/",
+                "output": "./"
+              }
+            ],
+            "styles": [
+              "wc-create-prescription/src/styles.scss"
+            ],
+            "scripts": [
+              "node_modules/marked/marked.min.js"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1mb",
+                  "maximumError": "2mb"
+                }
+              ],
+              "outputHashing": "all",
+              "optimization": {
+                "fonts": false
+              }
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
+    },
     "wc-pdfmake": {
       "projectType": "application",
       "schematics": {
@@ -263,6 +340,67 @@
             },
             "development": {
               "buildTarget": "wc-evf-form-details:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    },
+    "wc-evf-form": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "wc-evf-form",
+      "sourceRoot": "wc-evf-form/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/wc-evf-form",
+            "index": "wc-evf-form/src/index.html",
+            "browser": "wc-evf-form/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "wc-evf-form/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "wc-evf-form/src/favicon.ico",
+              "wc-evf-form/src/assets"
+            ],
+            "styles": [
+              "wc-evf-form/src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "all",
+              "optimization": {
+                "fonts": false
+              }
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "wc-evf-form:build:production"
+            },
+            "development": {
+              "buildTarget": "wc-evf-form:build:development"
             }
           },
           "defaultConfiguration": "development"

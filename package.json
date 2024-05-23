@@ -4,10 +4,15 @@
   "scripts": {
     "ng": "ng",
     "start": "npm run serve:wc:details",
-    "build:wc:details": "ng build wc-evf-form-details && ng build wc-pdfmake && ng build wc-prescription-details --configuration production --output-hashing none && vite build --mode development -c ./wc-prescription-details/vite.config.mjs",
-    "serve:wc:details": "ng serve wc-prescription-details",
-    "build:wc:list": "ng build wc-list-prescriptions --configuration production --output-hashing none && vite build --mode development -c ./wc-list-prescriptions/vite.config.mjs",
+    "build:wc:details": "npm run build:wc:evfdetails && npm run build:wc:pdf && ng build wc-prescription-details --configuration production --output-hashing none && vite build --mode production -c ./wc-prescription-details/vite.config.mjs",
+    "serve:wc:details": "npm run build:wc:evfdetails && npm run build:wc:pdf && ng serve wc-prescription-details",
+    "build:wc:list": "ng build wc-list-prescriptions --configuration production --output-hashing none && vite build --mode production -c ./wc-list-prescriptions/vite.config.mjs",
     "serve:wc:list": "ng serve wc-list-prescriptions",
+    "build:wc:create": "npm run build:wc:evfform && ng build wc-create-prescription --configuration production --output-hashing none && vite build --mode production -c ./wc-create-prescription/vite.config.mjs",
+    "serve:wc:create": "npm run build:wc:evfform && ng serve wc-create-prescription",
+    "build:wc:evfdetails": "ng build wc-evf-form-details --configuration production --output-hashing none && vite build --mode production -c ./wc-evf-form-details/vite.config.mjs",
+    "build:wc:pdf": "ng build wc-pdfmake --configuration production --output-hashing none && vite build --mode production -c ./wc-pdfmake/vite.config.mjs",
+    "build:wc:evfform": "ng build wc-evf-form --configuration production --output-hashing none && vite build --mode production -c ./wc-evf-form/vite.config.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

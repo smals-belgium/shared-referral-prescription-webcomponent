@@ -1,15 +1,16 @@
 # web-components
 
 ## Description
+
 This project contains 3 webcomponents with the following html-tags:
 - wc-prescription-details: <nihdi-referral-prescription-details>
 - wc-list-prescriptions: <nihdi-list-referral-prescriptions>
-- wc-prescription-create: <nihdi-referral-prescription-create>
+- wc-prescription-create: <nihdi-create-referral-prescription>
 
 To implement them, just include the js and css file. 
 - wc-prescription-details: ./dist/build/wc-prescription-details.js and ./dist/build/wc-prescription-details.css
 - wc-prescription-list: ./dist/build/wc-list-prescriptions.js and ./dist/build/wc-list-prescriptions.js
-- wc-prescription-create: ./dist/build/wc-prescription-create.js and ./dist/build/wc-prescription-create.js
+- wc-prescription-create: ./dist/build/wc-create-prescription.js and ./dist/build/wc-create-prescription.js
 
 An example can be found in the index.html.
 
@@ -27,6 +28,11 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 Run `ng build:wc:details`, `ng build:wc:list` or `ng build:wc:create` to build the wc prescription component. The build artifacts will be stored in the `dist/` directory.
 The `dist/build` directory will contain a js and css file needed to implement in your html file in order for the webcomponent to be available.
+
+## Running server
+
+Update the index.html to include the correct webcomponent.
+Run `serve --listen 4200` to run de index.html example page.
 
 ## Running unit tests
 

@@ -4,7 +4,7 @@ import {createCustomElement} from "@angular/elements";
 import {PrescriptionDetailsWebComponent} from "./components/prescription-details/prescription-details.component";
 import {provideAnimations} from "@angular/platform-browser/animations";
 import {provideHttpClient, withInterceptors} from "@angular/common/http";
-import {ConfigurationService} from "@smals/ngx-configuration-service";
+import { ConfigurationService } from '@reuse/code/services/configuration.service';
 import {WcConfigurationService} from "@reuse/code/services/wc-configuration.service";
 import { provideCore } from '@reuse/code/providers/core.provider';
 import { apiUrlInterceptor } from '@reuse/code/services/api-url.interceptor';
@@ -17,7 +17,8 @@ import {TranslateCompiler, TranslateLoader, TranslateModule} from "@ngx-translat
 import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-compiler';
 
 (async () => {
-  const app = createApplication({providers:[
+  const app = createApplication({
+    providers:[
       provideAnimations(),
       provideCore(),
       provideHttpClient(withInterceptors([apiUrlInterceptor])),
