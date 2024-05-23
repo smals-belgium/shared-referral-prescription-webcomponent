@@ -1,0 +1,16 @@
+<evf-form-detail-group
+  *ngIf="elementGroup"
+  [elementControls]="elementGroup.childElementControls"
+  [options]="{showDividers: false, detailLayout: detailLayout}"
+></evf-form-detail-group>
+
+<ng-template #detailLayout let-content="content" let-label="label">
+  <div class="info-item">
+    <div>
+      <ng-container *ngTemplateOutlet="label"></ng-container>
+    </div>
+    <div>
+      <ng-container *ngTemplateOutlet="content"></ng-container>
+    </div>
+  </div>
+</ng-template>
