@@ -15,7 +15,9 @@ An example can be found in the index.html.
 
 ## Development server
 
-Run `ng serve:wc:details` for a dev server. Navigate to `http://localhost:4200/`. The wc prescription details component will automatically reload if you change any of the source files.
+- Run `ng serve:wc:details` for a dev server. Navigate to `http://localhost:4200/`. The wc prescription details component will automatically reload if you change any of the source files.
+- Run `ng serve:wc:list` for a dev server. Navigate to `http://localhost:4200/`. The wc prescription list component will automatically reload if you change any of the source files.
+- Run `ng serve:wc:create` for a dev server. Navigate to `http://localhost:4200/`. The wc prescription create component will automatically reload if you change any of the source files.
 
 ## Code scaffolding
 
@@ -23,7 +25,7 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 ## Build
 
-Run `ng build:wc:details` to build the wc prescription details. The build artifacts will be stored in the `dist/` directory.
+Run `ng build:wc:details`, `ng build:wc:list` or `ng build:wc:create` to build the wc prescription component. The build artifacts will be stored in the `dist/` directory.
 The `dist/build` directory will contain a js and css file needed to implement in your html file in order for the webcomponent to be available.
 
 ## Running unit tests
