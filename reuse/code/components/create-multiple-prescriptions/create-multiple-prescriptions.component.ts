@@ -23,7 +23,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { DataState, LoadingStatus, Person, ReadPrescription } from '../../interfaces';
+import {DataState, LoadingStatus, OccurrenceTiming, Person, ReadPrescription} from '../../interfaces';
 
 export interface CreatePrescriptionForm {
   trackId: number;
@@ -84,10 +84,24 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges {
     }
   }
 
+  mapResponsesToRepeatObject(responses: Record<string, any>) {
+    const occurrenceTiming: OccurrenceTiming = responses['occurrenceTiming']
+    if(!occurrenceTiming) return responses;
+
+    const repeat = occurrenceTiming.repeat
+    if(!repeat) return responses
+
+    if(!repeat.count) return {...responses, ...repeat}
+
+    const maxSessions = {nbSessions: repeat.count}
+    return {...responses, ...maxSessions, ...repeat}
+  }
+
   setElementGroup(prescriptionForm: CreatePrescriptionForm, formTemplate: FormTemplate, elementGroup: ElementGroup) {
     prescriptionForm.elementGroup = elementGroup;
     if (prescriptionForm.initialPrescription) {
-      const responses = removeNulls(prescriptionForm.initialPrescription?.responses || {});
+      let responses = removeNulls(prescriptionForm.initialPrescription?.responses || {});
+      responses = this.mapResponsesToRepeatObject(responses)
       elementGroup.setValue({
         ...elementGroup.getOutputValue(),
         ...responses
