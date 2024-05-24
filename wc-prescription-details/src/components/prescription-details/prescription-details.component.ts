@@ -26,7 +26,7 @@ import {
   LoadingStatus,
   PerformerTask,
   Person,
-  ReadPrescription, Status,
+  ReadPrescription, Status, UserInfo,
 } from '@reuse/code/interfaces';
 import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
 import { AuthService } from '@reuse/code/services/auth.service';
@@ -78,6 +78,7 @@ interface ViewState {
   performerTask?: PerformerTask;
   template: EvfTemplate;
   templateVersion: FormTemplate;
+  currentUser: UserInfo;
 }
 
 @Component({
@@ -158,6 +159,12 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
         ? this.templateVersionsStateService.getState('READ_' + templateCode)()
         : {status: LoadingStatus.LOADING};
     }),
+    currentUser: computed(() => {
+      const token = this.tokenClaims$()
+      return token
+        ? {status: LoadingStatus.SUCCESS, data: token}
+        : {status: LoadingStatus.LOADING};
+    })
   });
 
   loading = false;

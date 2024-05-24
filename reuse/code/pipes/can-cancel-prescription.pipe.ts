@@ -10,9 +10,10 @@ export class CanCancelPrescriptionPipe {
   ) {
   }
 
-  transform(prescription: ReadPrescription): boolean {
+  transform(prescription: ReadPrescription, currentUserSsin: string): boolean {
     return this.accessMatrixState.hasAtLeastOnePermission(['cancelPrescription'], prescription.templateCode)
       && prescription.status != null
-      && [Status.DRAFT, Status.OPEN, Status.PENDING, Status.IN_PROGRESS].includes(prescription.status);
+      && [Status.DRAFT, Status.OPEN, Status.PENDING, Status.IN_PROGRESS].includes(prescription.status)
+      && prescription.requester?.ssin === currentUserSsin;
   }
 }
