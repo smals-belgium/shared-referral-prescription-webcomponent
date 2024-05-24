@@ -239,7 +239,8 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
         assignedOrganizations: prescription.organizationTasks?.map(o => o.organizationNihdi)
       },
       width: '100vw',
-      maxWidth: '750px'
+      maxWidth: '750px',
+      maxHeight: '100vh'
     });
   }
 
