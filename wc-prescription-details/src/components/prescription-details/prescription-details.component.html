@@ -210,7 +210,7 @@
                               <mat-icon>cancel</mat-icon>
                               {{'prescription.cancelExecution.action' | translate}}</button>
                             <button
-                              *ngIf="prescription | canTransferAssignation:performertask"
+                              *ngIf="prescription | canTransferAssignation:performertask:viewState.data?.currentUser?.ssin"
                               mat-raised-button
                               (click)="openTransferAssignationDialog(prescription, performertask)"
                               data-cy="prescription-transfer-assignation-button"
