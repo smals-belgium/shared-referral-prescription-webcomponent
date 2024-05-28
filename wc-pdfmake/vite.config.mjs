@@ -11,9 +11,10 @@ export default defineConfig({
         assetFileNames: "[name].[ext]",
       },
       input: {
-        "wc-pdfmake": path.resolve(__dirname, 'build.js')
+        "pdfmake": path.resolve(__dirname, 'build.js')
       }
     },
-    outDir: './../dist/build'
+    outDir: './../dist/pdfmake/build',
+    emptyOutDir: true
   }
 });

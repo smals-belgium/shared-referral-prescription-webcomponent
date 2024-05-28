@@ -14,6 +14,7 @@ export default defineConfig({
         "evf-form": path.resolve(__dirname, 'build.js')
       }
     },
-    outDir: './../dist/build'
+    outDir: './../dist/evf-form/build',
+    emptyOutDir: true
   }
 });

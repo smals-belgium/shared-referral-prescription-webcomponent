@@ -333,8 +333,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
   }
 
   openRejectAssignationDialog(prescription: ReadPrescription, task: PerformerTask, patient: Person): void {
-    console.log(prescription);
-    console.log(task);
     this.dialog.open(RejectAssignationDialog, {
       data: {
         prescription: prescription,
@@ -389,13 +387,20 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
     if (customElements.get('nihdi-referral-prescription-pdf') != undefined) {
       return;
     }
+
+    const htmlCollection = document.getElementsByTagName('script');
+    const script = Array.from(htmlCollection).find(e => e.src.includes('wc-create-prescription.js'))
+
+    if(!script) return;
+    const url = script.src.replace('wc-prescription-details.js','');
+
     const scripts = [
-      'dist/build/pdfmake.js'
+      'assets/pdfmake/pdfmake.js'
     ]
     scripts.forEach((src) => {
       const script = this.renderer.createElement('script');
       script.type = `text/javascript`;
-      script.src = this.appUrl + '/' + src;
+      script.src = url + '/' + src;
       this.renderer.appendChild(this._document.body, script);
     });
   }
@@ -404,13 +409,19 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
     if (customElements.get('nihdi-referral-prescription-form-details') != undefined) {
       return;
     }
+    const htmlCollection = document.getElementsByTagName('script');
+    const script = Array.from(htmlCollection).find(e => e.src.includes('wc-create-prescription.js'))
+
+    if(!script) return;
+    const url = script.src.replace('wc-prescription-details.js','');
+
     const scripts = [
-      'dist/build/evf-form-details.js'
+      'assets/evf-form-details/evf-form-details.js'
     ]
     scripts.forEach((src) => {
       const script = this.renderer.createElement('script');
       script.type = `text/javascript`;
-      script.src = this.appUrl + '/' + src;
+      script.src = url + '/' + src;
       this.renderer.appendChild(this._document.body, script);
     });
   }

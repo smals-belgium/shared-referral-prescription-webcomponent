@@ -347,13 +347,20 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     if (customElements.get('nihdi-referral-prescription-form') != undefined) {
       return;
     }
+
+    const htmlCollection = document.getElementsByTagName('script');
+    const script = Array.from(htmlCollection).find(e => e.src.includes('wc-create-prescription.js'))
+
+    if(!script) return;
+    const url = script.src.replace('wc-create-prescription.js','');
     const scripts = [
-     'dist/build/evf-form.js',
+      'assets/evf-form/evf-form.js'
     ]
+
     scripts.forEach((src) => {
       const script = this.renderer.createElement('script');
       script.type = `text/javascript`;
-      script.src = this.appUrl + '/' + src;
+      script.src = url + src;
       this.renderer.appendChild(this._document.body, script);
     });
   }
