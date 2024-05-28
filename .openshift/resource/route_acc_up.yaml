@@ -1,0 +1,29 @@
+# Public route on the lb
+apiVersion: v1
+kind: Route
+metadata:
+  name: referral-prescription-web-components-lb-public
+  labels:
+    deploymentconfig: &deploymentconfig referral-prescription-web-components-up
+spec:
+  host: wwwacc.referral-prescription.ehealth.fgov.be
+  path: /web-components
+  to:
+    kind: Service
+    name: *deploymentconfig
+    weight: 100
+---
+# Public route on up AZ
+apiVersion: v1
+kind: Route
+metadata:
+  name: referral-prescription-web-components-up-public
+  labels:
+    deploymentconfig: &deploymentconfig referral-prescription-web-components-up
+spec:
+  host: wwwacc.referral-prescription.up.ehealth.fgov.be
+  path: /web-components
+  to:
+    kind: Service
+    name: *deploymentconfig
+    weight: 100
