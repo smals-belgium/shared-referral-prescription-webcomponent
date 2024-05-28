@@ -1,0 +1,10 @@
+<evf-form-detail-layout [options]="options">
+  <evf-detail-label
+    *ngIf="element.labelTranslationId && options.showLabel"
+    [labelId]="element.labelTranslationId"
+    [interpolationData]="interpolationData"
+  ></evf-detail-label>
+  <div class="value">
+    {{elementControl.value | occurrenceTiming}}
+  </div>
+</evf-form-detail-layout>

@@ -1,0 +1,23 @@
+<h1 mat-dialog-title>{{'prescription.create.cancelPrescriptionsCreation.title' | translate}}</h1>
+
+<div mat-dialog-content>
+  <mat-checkbox
+    [checked]="formsToDelete.length === prescriptionForms.length"
+    [indeterminate]="formsToDelete.length > 0 && formsToDelete.length !== prescriptionForms.length"
+    (change)="toggleDeleteAll($event.checked)"
+  >
+    {{'prescription.create.cancelPrescriptionsCreation.cancelAll' | translate}}
+  </mat-checkbox>
+  <div class="checkbox-list">
+    <div *ngFor="let prescriptionForm of prescriptionForms">
+      <mat-checkbox
+        [checked]="formsToDelete.includes(prescriptionForm.trackId)"
+        (change)="toggleDeleteForm(prescriptionForm.trackId)"
+      >{{prescriptionForm.templateCode | templateName}}</mat-checkbox>
+    </div>
+  </div>
+</div>
+<div mat-dialog-actions>
+  <button type="button" mat-raised-button (click)="cancelPrescriptions()" color="accent">{{'common.confirm' | translate}}</button>
+  <button type="button" mat-button [mat-dialog-close]="undefined">{{'common.close' | translate}}</button>
+</div>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Healix - Web components - Prescription details</title>
+  <base href="/"/>
+
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="keycloak.js"></script>
+</head>
+<body>
+<script>
+  window.referralPrescriptionEnv = 'local';
+  var keycloak = new Keycloak({
+    url: 'http://vasiam.test.paas.vasdc.be/auth',
+    realm: 'MOOSE_UHMEP',
+    clientId: 'uhmep-webapp'
+  });
+  keycloak.init({onLoad: 'login-required', checkLoginIframe: false}).then(function (authenticated) {
+    console.log(authenticated ? 'authenticated' : 'not authenticated');
+    const create = document.createElement('nihdi-referral-prescription-details');
+    create.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'nl-BE';
+    create.prescriptionId = '4aeabaf9-7979-434e-b0d7-b31e1acab773';
+    create.getToken = () => Promise.resolve(keycloak.token);
+    document.body.append(create);
+  }).catch(function () {
+    alert('failed to initialize');
+  });
+</script>
+</body>
+</html>

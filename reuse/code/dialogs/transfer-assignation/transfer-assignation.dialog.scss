@@ -1,0 +1,55 @@
+:host {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+
+  .results {
+    overflow-y: auto;
+    max-height: calc(100vh - 500px);
+    min-height: 60px;
+
+    > table {
+      width: 100%;
+      border-spacing: 0;
+    }
+  }
+
+  .result-item {
+    transition: .2s background-color;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    &:first-of-type > td {
+      border-top: 0;
+    }
+
+    > td {
+      border-top: 1px dotted rgba(0, 0, 0, 0.1);
+      padding: 1rem;
+      cursor: pointer;
+    }
+  }
+
+  .results-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    column-gap: 1rem;
+    margin: 2rem 0 0 0;
+    padding: 1rem 24px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  mat-form-field {
+    min-width: 280px;
+  }
+
+  mat-option.warning {
+    color: #f44336;
+  }
+
+  ::ng-deep .mat-mdc-dialog-actions {
+    padding: 0 24px 20px 24px;
+  }
+}

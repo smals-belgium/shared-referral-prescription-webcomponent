@@ -1,0 +1,17 @@
+:host {
+  textarea {
+    max-height: 50vh;
+  }
+
+  div[mat-dialog-content] {
+    --mdc-dialog-supporting-text-color: black;
+  }
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  ::ng-deep .mat-mdc-dialog-actions {
+    padding: 0 24px 20px 24px;
+  }
+}

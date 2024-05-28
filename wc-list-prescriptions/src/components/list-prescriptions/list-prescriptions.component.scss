@@ -1,0 +1,70 @@
+@use '@angular/material' as mat;
+
+$app-primary: mat.define-palette(mat.$light-blue-palette, 800);
+$app-accent: mat.define-palette(mat.$light-blue-palette, A200, A100, A400);
+$app-warn: mat.define-palette(mat.$red-palette);
+$app-theme: mat.define-light-theme((
+  color: (
+    primary: $app-primary,
+    accent: $app-accent,
+    warn: $app-warn,
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+:host {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+@include mat.ripple();
+@include mat.icon-theme($app-theme);
+@include mat.button-theme($app-theme);
+@include mat.fab-theme($app-theme);
+@include mat.icon-button-theme($app-theme);
+@include mat.ripple-theme($app-theme);
+@include mat.progress-spinner-theme($app-theme);
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.page-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+
+  > * {
+    padding: .25rem 0;
+  }
+}
+
+.page-size {
+  display: flex;
+  column-gap: 0.5rem;
+  align-items: center;
+
+  mat-select {
+    background-color: white;
+    padding: 0.5rem;
+    border-radius: 5px;
+  }
+}

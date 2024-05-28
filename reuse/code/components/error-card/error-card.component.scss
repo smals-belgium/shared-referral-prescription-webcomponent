@@ -1,0 +1,10 @@
+:host {
+  display: block;
+  border-radius: 1rem;
+  padding: 1rem;
+  background-color: rgba(255, 0, 0, 0.04);
+
+  .message {
+    white-space: pre-wrap;
+  }
+}

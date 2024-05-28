@@ -1,0 +1,336 @@
+{
+  "common": {
+    "yes": "Oui",
+    "no": "Non",
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "delete": "Supprimer",
+    "patient": "Patient",
+    "category": "Catégorie",
+    "typeOfPrescription": "Type de prescription",
+    "chooseFromList": "Choisissez dans cette liste",
+    "tryAgain": "Ré-essayer",
+    "goBack": "Retour",
+    "filter": "Filtrer",
+    "results": "{count, plural, one{résultat} other{résultats}}",
+    "search": "Rechercher",
+    "start": "Commencer",
+    "professions": {
+      "NURSE": "Infirmière",
+      "PHYSICIAN": "Médecin"
+    },
+    "lastName": "Nom",
+    "firstName": "Prénom",
+    "dateOfBirth": "Né(e) le",
+    "ssin": "ID",
+    "gender": "Sexe",
+    "genders": {
+      "M": "M",
+      "F": "F"
+    },
+    "somethingWentWrong": "Une erreur s'est produite. Veuillez ré-essayer.",
+    "forbiddenAction": "Vous n'êtes pas autorisé(e) à effectuer cette action.",
+    "forbiddenResource": "Vous n'êtes pas autorisé(e) à consulter cette page.",
+    "notFoundResource": "La page demandée n'existe pas.",
+    "mandatory": "Champ obligatoire"
+  },
+  "evf": {
+    "deleteCareGiver": "Supprimer prestataire",
+    "sureDeleteCareGiver": "Êtes-vous sûr(e) de vouloir supprimer ce prestataire?"
+  },
+  "prescription": {
+    "selectTemplate": {
+      "prescriptionModel": "Modèle de prescription",
+      "pickOptionFromList": "Choisissez une option dans la liste",
+      "noOptions": "Aucune type de prescription"
+    },
+    "create": {
+      "action": "Nouvelle prescription",
+      "success": "Prescription créée avec succès.",
+      "allSuccess": "{count} {count, plural, one{prescription créée} other{prescriptions créées}} avec succès.",
+      "allFailed": "Une erreur s'est produite pendant la creation des prescriptions. Veuillez vérifier votre saisie et réessayer.",
+      "someSuccessSomeFailed": "{successCount} {successCount, plural, one{prescription créée} other{prescriptions  créées}} avec succès. {failedCount} {failedCount, plural, one{prescription n'a pas été créée} other{prescriptions n'ont pas été créées}} en raison d'une erreur. Veuillez vérifier votre saisie et réessayer.",
+      "addPrescription": "Prescription additionnelle",
+      "publish": "Publier",
+      "deletePrescription": {
+        "title": "Annulation de la prescription",
+        "message": "Voulez-vous confirmer l'annulation de la prescription \"{templateName}\" ?"
+      },
+      "cancelPrescriptionsCreation": {
+        "title": "Annuler une ou plusieurs prescriptions",
+        "cancelAll": "Annuler tout"
+      },
+      "cancelCreation": "Êtes-vous sûr de vouloir annuler la création de cette prescription ?"
+    },
+    "print": {
+      "content-electronic-prescription": "Contenu de la prescription électronique",
+      "guideline": "Veuillez présenter ce document à votre médecin soignant. Il vous est possible de scanner le code QR pour avoir accès au détail présent dans la prescription digital.",
+      "nihdi": "N° INAMI",
+      "niss": "NISS",
+      "patient": "Bénéficiaire",
+      "prescriber": "Prescripteur",
+      "proof-of-electronic-prescription": "Preuve de prescription électronique",
+      "remark": "Attention: Aucun ajout manuscrit à ce document ne sera pris en compte. "
+    },
+    "author": "Auteur",
+    "patient": "Patient",
+    "typeOfCare": "Type de soin",
+    "services": "Prestations",
+    "frequency": "Fréquence",
+    "start": "Début",
+    "end": "Fin",
+    "validityPeriod": "Période de validité",
+    "consultDetails": "Voir détails",
+    "assign": "Assigner",
+    "transfer": "Transférer",
+    "assignMe": "Prendre en charge",
+    "reject": "Rejeter",
+    "duplicate": "Dupliquer",
+    "careGivers": "Prestataire(s) de soins",
+    "assigned": "Assignée",
+    "noPrescriptionsForPatient": "Ce patient ne possède pas encore de prescription.",
+    "noPrescriptionsForUser": "Vous ne possèdez pas encore de prescription.",
+    "assignPerformer": {
+      "title": "Assigner à un prestataire ou une organisation",
+      "success": "{firstName} {lastName} a été assigné comme prestataire.",
+      "successOrganization": "{name} a été assigné comme organisation.",
+      "meSuccess": "Vous avez été assigné comme prestataire.",
+      "performer": "Prestataire",
+      "searchPerformerPlaceHolder": "N° INAMI, nom",
+      "locations": "Localisation(s)",
+      "zipCodeOrCityName": "Code postal ou commune",
+      "noResults": "Aucune commune trouvée",
+      "organization": "Organisation"
+    },
+    "transferAssignation": {
+      "title": "Transférer l'assignation",
+      "success": "{firstName} {lastName} a été assigné comme prestataire.",
+      "performer": "Prestataire",
+      "searchPerformerPlaceHolder": "N° INAMI, nom",
+      "locations": "Localisation(s)",
+      "zipCodeOrCityName": "Code postal ou commune",
+      "noResults": "Aucune commune trouvée"
+    },
+    "cancel": {
+      "action": "Annuler",
+      "title": "Annuler la prescription",
+      "message": "Êtes-vous sûr de vouloir annuler la prescription \"{templateName}\" de {firstName} {lastName} ?",
+      "success": "Prescription annulée avec succès.",
+      "reason": "Raison"
+    },
+    "rejectAssignation": {
+      "action": "Rejeter",
+      "title": "Rejeter l'assignation",
+      "message": "Êtes-vous sûr de vouloir rejeter l'assignation à la prescription \"{templateName}\" de {firstName} {lastName} ?",
+      "success": "Assignation rejetée avec succès."
+    },
+    "cancelExecution": {
+      "action": "Annuler",
+      "title": "Annuler l'exécution",
+      "message": "Êtes-vous sûr de vouloir annuler l'exécution de la prescription \"{templateName}\" de {firstName} {lastName} ?",
+      "success": "Exécution annulée avec succès.",
+      "reason": "Raison"
+    },
+    "interruptExecution": {
+      "action": "Interrompre",
+      "title": "Interrompre l'exécution",
+      "message": "Êtes-vous sûr de vouloir interrompre l'exécution de la prescription \"{templateName}\" de {firstName} {lastName} ?",
+      "success": "Exécution interrompue avec succès."
+    },
+    "startExecution": {
+      "action": "Exécuter",
+      "title": "Exécuter la prescription",
+      "startDate": "Date de début",
+      "success": "L'exécution a commencé."
+    },
+    "restartExecution": {
+      "action": "Reprendre",
+      "title": "Reprendre l'exécution",
+      "message": "Êtes-vous sûr de vouloir reprendre l'exécution de la prescription \"{templateName}\" de {firstName} {lastName} ?",
+      "success": "L'exécution a repris."
+    },
+    "finishExecution": {
+      "action": "Clôturer",
+      "title": "Clôturer la prescription",
+      "endDate": "Date de fin",
+      "success": "Prescription clôturée avec succès."
+    },
+    "frequencyTypes": {
+      "iterative": "Itérative",
+      "weekly": "Hebdomadaire"
+    },
+    "status": "Statut",
+    "prescriptionDate": "Prescrit le",
+    "pagination": {
+      "prescriptions": "{count, plural, one{prescription} other{prescriptions}}",
+      "pageSize": "Nbr/page"
+    },
+    "statuses": {
+      "DRAFT": "Brouillon",
+      "BLACKLISTED": "Liste noire",
+      "PENDING": "En attente",
+      "OPEN": "Ouvert",
+      "CANCELLED": "Annulé",
+      "EXPIRED": "Expiré",
+      "IN_PROGRESS": "En cours",
+      "DONE": "Clôturé",
+      "null": "Inconnu"
+    },
+    "errors": {
+      "failedToLoadPrescription": "Une erreur s'est produite pendant le chargement de la prescription.",
+      "failedToLoadPrescriptions": "Une erreur s'est produite pendant le chargement des prescriptions.",
+      "invalidFhirString": "Caractère(s) interdit(s)",
+      "invalidMaxLength": "{requiredLength} caractères maximum",
+      "invalidMinLength": "{requiredLength} caractères minimum",
+      "invalidNihiiDigitsCount": "Le N° INAMI doit contenir 8 ou 11 chiffres.",
+      "invalidCaregiverNameCharacters": "Caractère(s) interdit(s)",
+      "dateMustBeEarlierOrEqualTo": "La date ne peut pas être après le {date}",
+      "dateMustBeLaterOrEqualTo": "La date ne peut pas être avant le {date}",
+      "invalidDateFormat": "Format invalide: jj/mm/aaaa"
+    },
+    "categories": {
+      "bandagisterie": "Bandagisterie",
+      "dentistry": "Dentisterie",
+      "physiotherapy":  "Kinésithérapie",
+      "orthopedics": "Orthopedie",
+      "otolaryngology":  "Oto-rhino-laryngologie",
+      "radiology": "Radiologie",
+      "nursingCare":  "Soins infirmiers"
+    }
+  },
+  "proposal": {
+  "selectTemplate": {
+    "proposalModel": "Modèle de proposition",
+    "pickOptionFromList": "Choisissez une option dans la liste",
+    "noOptions": "Aucune type de proposition"
+  },
+  "create": {
+    "action": "Nouvelle proposisiton",
+    "success": "Proposition créée avec succès.",
+    "allSuccess": "{count} {count, plural, one{proposition créée} other{propositions créées}} avec succès.",
+    "allFailed": "Une erreur s'est produite pendant la creation des propositions. Veuillez vérifier votre saisie et réessayer.",
+    "someSuccessSomeFailed": "{successCount} {successCount, plural, one{proposition créée} other{propositions  créées}} avec succès. {failedCount} {failedCount, plural, one{proposition n'a pas été créée} other{propositions n'ont pas été créées}} en raison d'une erreur. Veuillez vérifier votre saisie et réessayer.",
+    "addProposal": "Proposition additionnelle",
+    "publish": "Publier",
+    "deleteProposal": {
+      "title": "Annulation de la proposition",
+      "message": "Voulez-vous confirmer l'annulation de la proposition \"{templateName}\" ?"
+    },
+    "cancelProposalsCreation": {
+      "title": "Annuler une ou plusieurs propositions",
+      "cancelAll": "Annuler tout"
+    },
+    "cancelCreation": "Êtes-vous sûr de vouloir annuler la création de cette proposition ?"
+  },
+  "print": {
+    "content-electronic-proposal": "Contenu de la proposisiton électronique",
+    "guideline": "Veuillez présenter ce document à votre médecin soignant. Il vous est possible de scanner le code QR pour avoir accès au détail présent dans la proposisiton digital.",
+    "nihdi": "N° INAMI",
+    "niss": "NISS",
+    "patient": "Bénéficiaire",
+    "prescriber": "Prescripteur",
+    "proof-of-electronic-proposal": "Preuve de proposisiton électronique",
+    "remark": "Attention: Aucun ajout manuscrit à ce document ne sera pris en compte. "
+  },
+  "author": "Auteur",
+  "patient": "Patient",
+  "typeOfCare": "Type de soin",
+  "services": "Prestations",
+  "frequency": "Fréquence",
+  "start": "Début",
+  "end": "Fin",
+  "validityPeriod": "Période de validité",
+  "consultDetails": "Voir détails",
+  "assign": "Assigner",
+  "transfer": "Transférer",
+  "assignMe": "Prendre en charge",
+  "reject": "Rejeter",
+  "duplicate": "Dupliquer",
+  "careGivers": "Prestataire(s) de soins",
+  "assigned": "Assignée",
+  "noProposalsForPatient": "Ce patient ne possède pas encore de proposisiton.",
+  "noProposalsForUser": "Vous ne possèdez pas encore de proposisiton.",
+  "assignPerformer": {
+    "title": "Assigner à un prestataire ou une organisation",
+    "success": "{firstName} {lastName} a été assigné comme prestataire.",
+    "successOrganization": "{name} a été assigné comme organisation.",
+    "meSuccess": "Vous avez été assigné comme prestataire.",
+    "performer": "Prestataire",
+    "searchPerformerPlaceHolder": "N° INAMI, nom",
+    "locations": "Localisation(s)",
+    "zipCodeOrCityName": "Code postal ou commune",
+    "noResults": "Aucune commune trouvée",
+    "organization": "Organisation"
+  },
+  "transferAssignation": {
+    "title": "Transférer l'assignation",
+    "success": "{firstName} {lastName} a été assigné comme prestataire.",
+    "performer": "Prestataire",
+    "searchPerformerPlaceHolder": "N° INAMI, nom",
+    "locations": "Localisation(s)",
+    "zipCodeOrCityName": "Code postal ou commune",
+    "noResults": "Aucune commune trouvée"
+  },
+  "cancel": {
+    "action": "Annuler",
+    "title": "Annuler la proposisiton",
+    "message": "Êtes-vous sûr de vouloir annuler la proposisiton \"{templateName}\" de {firstName} {lastName} ?",
+    "success": "Proposal annulée avec succès.",
+    "reason": "Raison"
+  },
+  "frequencyTypes": {
+    "iterative": "Itérative",
+    "weekly": "Hebdomadaire"
+  },
+  "status": "Statut",
+  "proposalDate": "Rédigé le",
+  "pagination": {
+    "proposals": "{count, plural, one{proposisiton} other{proposisitons}}",
+    "pageSize": "Nbr/page"
+  },
+  "statuses": {
+    "DRAFT": "Brouillon",
+    "BLACKLISTED": "Liste noire",
+    "PENDING": "En attente",
+    "OPEN": "Ouvert",
+    "CANCELLED": "Annulé",
+    "EXPIRED": "Expiré",
+    "IN_PROGRESS": "En cours",
+    "DONE": "Clôturé",
+    "null": "Inconnu"
+  },
+  "errors": {
+    "failedToLoadProposal": "Une erreur s'est produite pendant le chargement de la proposisiton.",
+    "failedToLoadProposals": "Une erreur s'est produite pendant le chargement des proposisitons.",
+    "invalidFhirString": "Caractère(s) interdit(s)",
+    "invalidMaxLength": "{requiredLength} caractères maximum",
+    "invalidMinLength": "{requiredLength} caractères minimum",
+    "invalidNihiiDigitsCount": "Le N° INAMI doit contenir 8 ou 11 chiffres.",
+    "invalidCaregiverNameCharacters": "Caractère(s) interdit(s)",
+    "dateMustBeEarlierOrEqualTo": "La date ne peut pas être après le {date}",
+    "dateMustBeLaterOrEqualTo": "La date ne peut pas être avant le {date}",
+    "invalidDateFormat": "Format invalide: jj/mm/aaaa"
+  },
+  "categories": {
+    "bandagisterie": "Bandagisterie",
+    "dentistry": "Dentisterie",
+    "physiotherapy":  "Kinésithérapie",
+    "orthopedics": "Orthopedie",
+    "otolaryngology":  "Oto-rhino-laryngologie",
+    "radiology": "Radiologie",
+    "nursingCare":  "Soins infirmiers"
+  }
+},
+  "performerTask": {
+    "statuses": {
+      "ONHOLD": "Interrompu",
+      "READY": "Prêt",
+      "CANCELLED": "Annulé",
+      "FAILED": "Echoué",
+      "INPROGRESS": "En cours",
+      "COMPLETED": "Terminé",
+      "null": "Inconnu"
+    }
+  }
+}

@@ -1,0 +1,411 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "wc-prescription-details": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "wc-prescription-details",
+      "sourceRoot": "wc-prescription-details/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/wc-prescription-details",
+            "index": "wc-prescription-details/src/index.html",
+            "browser": "wc-prescription-details/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "wc-prescription-details/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "{index.js,main-*.js,scripts-*.js,polyfills-*.js,runtime-*.js,styles-*.css}",
+                "input": "dist/wc-evf-form-details/browser",
+                "output": "./assets/webcomponents/evf-form-details"
+              },
+              {
+                "glob": "{main.js,polyfills.js,styles.css}",
+                "input": "./dist/wc-pdfmake/",
+                "output": "./assets/webcomponents/pdfmake/"
+              },
+              {
+                "glob": "keycloak.js",
+                "input": "./node_modules/keycloak-js/dist/",
+                "output": "./"
+              }
+            ],
+            "styles": [
+              "wc-prescription-details/src/styles.scss"
+            ],
+            "scripts": [
+              "node_modules/marked/marked.min.js"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1mb",
+                  "maximumError": "3mb"
+                }
+              ],
+              "outputHashing": "all",
+              "optimization": {
+                "fonts": false
+              }
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "wc-prescription-details:build:production"
+            },
+            "development": {
+              "buildTarget": "wc-prescription-details:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    },
+    "wc-list-prescriptions": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "wc-list-prescriptions",
+      "sourceRoot": "/wc-list-prescriptions/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/wc-list-prescriptions",
+            "index": "wc-list-prescriptions/src/index.html",
+            "browser": "/wc-list-prescriptions/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "wc-list-prescriptions/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "keycloak.js",
+                "input": "./node_modules/keycloak-js/dist/",
+                "output": "./"
+              }
+            ],
+            "styles": [
+              "wc-list-prescriptions/src/styles.scss"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1mb",
+                  "maximumError": "2mb"
+                }
+              ],
+              "outputHashing": "all",
+              "optimization": {
+                "fonts": false
+              }
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "wc-list-prescriptions:build:production"
+            },
+            "development": {
+              "buildTarget": "wc-list-prescriptions:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    },
+    "wc-create-prescription": {
+      "projectType": "application",
+      "root": "wc-create-prescription",
+      "sourceRoot": "wc-create-prescription/src",
+      "prefix": "healix",
+      "architect": {
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "wc-create-prescription:build:production"
+            },
+            "development": {
+              "buildTarget": "wc-create-prescription:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/wc-create-prescription",
+            "index": "wc-create-prescription/src/index.html",
+            "browser": "wc-create-prescription/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "wc-create-prescription/tsconfig.lib.json",
+            "inlineStyleLanguage": "scss",
+            "outputHashing": "all",
+            "optimization": {
+              "fonts": false
+            },
+            "assets": [
+              {
+                "glob": "{index.js,main-*.js,scripts-*.js,polyfills-*.js,runtime-*.js,styles-*.css}",
+                "input": "dist/wc-evf-form/browser",
+                "output": "./assets/webcomponents/evf-form"
+              },
+              {
+                "glob": "keycloak.js",
+                "input": "./node_modules/keycloak-js/dist/",
+                "output": "./"
+              }
+            ],
+            "styles": [
+              "wc-create-prescription/src/styles.scss"
+            ],
+            "scripts": [
+              "node_modules/marked/marked.min.js"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1mb",
+                  "maximumError": "2mb"
+                }
+              ],
+              "outputHashing": "all",
+              "optimization": {
+                "fonts": false
+              }
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
+    },
+    "wc-pdfmake": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "wc-pdfmake",
+      "sourceRoot": "wc-pdfmake/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/wc-pdfmake",
+            "index": "wc-pdfmake/src/index.html",
+            "browser": "wc-pdfmake/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "wc-pdfmake/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "wc-pdfmake/src/favicon.ico",
+              "wc-pdfmake/src/assets"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "ngx-build-plus:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "wc-pdfmake:build:production"
+            },
+            "development": {
+              "browserTarget": "wc-pdfmake:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    },
+    "wc-evf-form-details": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "wc-evf-form-details",
+      "sourceRoot": "wc-evf-form-details/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/wc-evf-form-details",
+            "index": "wc-evf-form-details/src/index.html",
+            "browser": "wc-evf-form-details/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "wc-evf-form-details/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "wc-evf-form-details/src/favicon.ico",
+              "wc-evf-form-details/src/assets"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "all",
+              "optimization": {
+                "fonts": false
+              }
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "wc-evf-form-details:build:production"
+            },
+            "development": {
+              "buildTarget": "wc-evf-form-details:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    },
+    "wc-evf-form": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "wc-evf-form",
+      "sourceRoot": "wc-evf-form/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/wc-evf-form",
+            "index": "wc-evf-form/src/index.html",
+            "browser": "wc-evf-form/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "wc-evf-form/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "wc-evf-form/src/favicon.ico",
+              "wc-evf-form/src/assets"
+            ],
+            "styles": [
+              "wc-evf-form/src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "all",
+              "optimization": {
+                "fonts": false
+              }
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "wc-evf-form:build:production"
+            },
+            "development": {
+              "buildTarget": "wc-evf-form:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    }
+  }
+}
