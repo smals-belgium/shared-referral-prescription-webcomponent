@@ -10,7 +10,7 @@
     "serve:wc:details": "npm run build:wc:evfdetails && npm run build:wc:pdf && ng serve wc-prescription-details",
     "build:wc:list": "ng build wc-list-prescriptions --configuration production --output-hashing none && vite build --mode production -c ./wc-list-prescriptions/vite.config.mjs && rm -rf ./dist/wc-list-prescriptions/browser",
     "serve:wc:list": "ng serve wc-list-prescriptions",
-    "build:wc:create": "npm run build:wc:evfform && ",
+    "build:wc:create": "npm run build:wc:evfform && npm run build:wc:create:no-deps",
     "build:wc:create:no-deps": "ng build wc-create-prescription --configuration production --output-hashing none && vite build --mode production -c ./wc-create-prescription/vite.config.mjs && rm -rf ./dist/wc-create-prescription/browser",
     "serve:wc:create": "npm run build:wc:evfform && ng serve wc-create-prescription",
     "build:wc:evfdetails": "ng build wc-evf-form-details --configuration production --output-hashing none && vite build --mode production -c ./wc-evf-form-details/vite.config.mjs",
@@ -49,6 +49,7 @@
     "pdfmake": "^0.2.10",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
+    "vite": "^5.2.12",
     "zone.js": "~0.14.3"
   },
   "devDependencies": {
