@@ -18,6 +18,8 @@
     "build:wc:evfform": "ng build wc-evf-form --configuration production --output-hashing none && vite build --mode production -c ./wc-evf-form/vite.config.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "preversion": "rm -rf ./dist && ng test --bail",
+    "version": "npm run build",
     "postversion": "npm pack ."
   },
   "private": true,
