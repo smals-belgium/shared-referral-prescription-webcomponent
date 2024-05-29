@@ -3,7 +3,7 @@ kind: Route
 metadata:
   labels:
     deploymentconfig: &deploymentconfig referral-prescription-web-components
-  name: uhmep-referral-prescription-webapp
+  name: referral-prescription-web-components
 spec:
   host: referral-prescription.test.paas.vasdc.be
   path: /web-components
