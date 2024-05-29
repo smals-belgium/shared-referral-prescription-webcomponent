@@ -17,7 +17,8 @@
     "build:wc:pdf": "ng build wc-pdfmake --configuration production",
     "build:wc:evfform": "ng build wc-evf-form --configuration production",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "postversion": "npm pack ."
   },
   "private": true,
   "dependencies": {
