@@ -66,6 +66,9 @@
     "typescript": "~5.4.2",
     "vite-plugin-static-copy": "^1.0.5"
   },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.17.2"
+  },
   "files": [
     "dist/wc-create-prescription",
     "dist/wc-list-prescriptions",
