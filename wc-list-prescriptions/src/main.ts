@@ -49,5 +49,5 @@ import { WcAuthService } from '@reuse/code/services/wc-auth.service';
   const prescriptionListElement = createCustomElement(ListPrescriptionsWebComponent, {
     injector: (await app).injector,
   });
-  customElements.define('nihdi-list-referral-prescriptions', prescriptionListElement);
+  customElements.define('nihdi-referral-prescription-list', prescriptionListElement);
 })();

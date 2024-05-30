@@ -4,8 +4,8 @@
 
 This project contains 3 webcomponents with the following html-tags:
 - wc-prescription-details: <nihdi-referral-prescription-details>
-- wc-list-prescriptions: <nihdi-list-referral-prescriptions>
-- wc-prescription-create: <nihdi-create-referral-prescription>
+- wc-list-prescriptions: <nihdi-referral-prescription-list>
+- wc-prescription-create: <nihdi-referral-prescription-create>
 
 To implement them, just include the js and css file. 
 - wc-prescription-details: ./dist/build/wc-prescription-details.js and ./dist/build/wc-prescription-details.css
