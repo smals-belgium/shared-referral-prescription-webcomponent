@@ -361,6 +361,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
       const script = this.renderer.createElement('script');
       script.type = `text/javascript`;
       script.src = url + src;
+      script.type = 'module';
       this.renderer.appendChild(this._document.body, script);
     });
   }
