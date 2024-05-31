@@ -22,8 +22,8 @@
   <!-- Initialization of the authentication library -->
   var keycloak = new Keycloak({
     url: 'https://api-acpt.ehealth.fgov.be/auth',
-    realm: '--put-you-realm-here--',
-    clientId: `--put-you-client-id-here--`
+    realm: 'healthcare',
+    clientId: 'nihdi-uhmep-hcp-dev'
   });
   keycloak.init({onLoad: 'login-required', checkLoginIframe: false}).then(function (authenticated) {
     console.log(authenticated ? 'authenticated' : 'not authenticated');
