@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Route
+metadata:
+  name: referral-prescription-web-components-lb-public
+  labels:
+    deploymentconfig: &deploymentconfig referral-prescription-web-components-up
+spec:
+  host: referral-prescription.ehealth.fgov.be
+  to:
+    kind: Service
+    name: *deploymentconfig
+    weight: 100
+---
+apiVersion: v1
+kind: Route
+metadata:
+  name: referral-prescription-web-components-up-public
+  labels:
+    deploymentconfig: &deploymentconfig referral-prescription-web-components-up
+spec:
+  host: referral-prescription.up.ehealth.fgov.be
+  to:
+    kind: Service
+    name: *deploymentconfig
+    weight: 100

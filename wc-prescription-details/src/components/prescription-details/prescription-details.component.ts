@@ -430,7 +430,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
     }
 
     const htmlCollection = document.getElementsByTagName('script');
-    const script = Array.from(htmlCollection).find(e => e.src.includes('wc-create-prescription.js'))
+    const script = Array.from(htmlCollection).find(e => e.src.includes('wc-prescription-details.js'))
 
     if(!script) return;
     const url = script.src.replace('wc-prescription-details.js','');
@@ -441,7 +441,8 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
     scripts.forEach((src) => {
       const script = this.renderer.createElement('script');
       script.type = `text/javascript`;
-      script.src = url + '/' + src;
+      script.src = url + src;
+      script.type = 'module';
       this.renderer.appendChild(this._document.body, script);
     });
   }
@@ -451,7 +452,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
       return;
     }
     const htmlCollection = document.getElementsByTagName('script');
-    const script = Array.from(htmlCollection).find(e => e.src.includes('wc-create-prescription.js'))
+    const script = Array.from(htmlCollection).find(e => e.src.includes('wc-prescription-details.js'))
 
     if(!script) return;
     const url = script.src.replace('wc-prescription-details.js','');
@@ -462,7 +463,8 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
     scripts.forEach((src) => {
       const script = this.renderer.createElement('script');
       script.type = `text/javascript`;
-      script.src = url + '/' + src;
+      script.src = url + src;
+      script.type = 'module';
       this.renderer.appendChild(this._document.body, script);
     });
   }

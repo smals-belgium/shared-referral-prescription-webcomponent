@@ -1,2 +1,2 @@
-import "../dist/wc-evf-form-details/browser/polyfills";
-import "../dist/wc-evf-form-details/browser/main";
+import "../dist/wc-pdfmake/browser/polyfills";
+import "../dist/wc-pdfmake/browser/main";

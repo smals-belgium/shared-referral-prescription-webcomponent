@@ -7,62 +7,51 @@
   <title>Testing the News Web Component</title>
   <base href="/">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet"
+        href="https://referral-prescription.int.ext.vascloud.be/web-components/create-prescription/wc-create-prescription.css">
+  <script src="https://referral-prescription.int.ext.vascloud.be/web-components/create-prescription/keycloak.js"></script>
   <style>
     body {
       font-family: Roboto, "Helvetica Neue", sans-serif;
     }
   </style>
-
-<!--    <link rel="stylesheet" href="./dist/wc-prescription-details/build/wc-prescription-details.css">-->
-<!--  <link rel="stylesheet" href="./dist/wc-list-prescriptions/build/wc-list-prescriptions.css">-->
-  <link rel="stylesheet" href="./dist/wc-create-prescription/build/wc-create-prescription.css">
-
-  <script src="./dist/wc-create-prescription/build/keycloak.js"></script>
 </head>
 <body>
 <script>
-  window.referralPrescriptionEnv = 'local';
+  window.referralPrescriptionEnv = 'int';
+  <!-- Initialization of the authentication library -->
   var keycloak = new Keycloak({
-    url: 'http://vasiam.test.paas.vasdc.be/auth',
-    realm: 'MOOSE_UHMEP',
-    clientId: 'uhmep-webapp'
+    url: 'https://api-acpt.ehealth.fgov.be/auth',
+    realm: 'healthcare',
+    clientId: 'nihdi-uhmep-hcp-dev'
   });
   keycloak.init({onLoad: 'login-required', checkLoginIframe: false}).then(function (authenticated) {
     console.log(authenticated ? 'authenticated' : 'not authenticated');
-    // const details = document.createElement('nihdi-referral-prescription-details');
-    // details.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'nl-BE';
-    // details.prescriptionId = '7385d7b3-b883-435e-bfee-917f81ccda6e';
-    // details.getToken = () => Promise.resolve(keycloak.token);
-    // document.body.append(details);
-    // const listElement = document.createElement('nihdi-list-referral-prescriptions');
-    // listElement.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'nl-BE';
-    // listElement.patientSsin = '90122712173';
-    // listElement.getToken = () => Promise.resolve(keycloak.token);
-    // listElement.addEventListener('prescriptionsCreated', () => {
-    //   document.body.removeChild(listElement);
-    //   setTimeout(() => {
-    //     alert('Prescription(s) were created. Refresh to start again.');
-    //   }, 100);
-    // });
-    // document.body.append(listElement);
-    const create = document.createElement('nihdi-create-referral-prescription');
-    create.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'nl-BE';
+    <!-- Creation of the custom element -->
+    const create = document.createElement('nihdi-referral-prescription-create');
+    <!-- Input for the language -->
+    create.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'fr-BE';
+    create.intent = 'order';
+    <!-- Input for the patient SSIN -->
     create.patientSsin = '43100101456';
+    <!-- Callback method to get a token for the authentication library -->
     create.getToken = () => Promise.resolve(keycloak.token);
+    <!-- Listener function to get feedback from the Web Component after the prescription has been successfully created -->
     create.addEventListener('prescriptionsCreated', () => {
       document.body.removeChild(create);
       setTimeout(() => {
         alert('Prescription(s) were created. Refresh to start again.');
       }, 100);
     });
+    <!-- Adding the custom element to the HTML body -->
     document.body.append(create);
   }).catch(function () {
     alert('failed to initialize');
   });
 </script>
 
-<!--<script src="./dist/wc-prescription-details/build/wc-prescription-details.js" type="module"></script>-->
-<!--<script src="./dist/wc-list-prescriptions/build/wc-list-prescriptions.js" type="module"></script>-->
-<script src="./dist/wc-create-prescription/build/wc-create-prescription.js" type="module"></script>
+<!-- Web component script at the end -->
+<script src="https://referral-prescription.int.ext.vascloud.be/web-components/create-prescription/wc-create-prescription.js"
+        type="module"></script>
 </body>
 </html>
