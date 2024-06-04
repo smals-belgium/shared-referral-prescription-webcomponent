@@ -30,6 +30,7 @@
               mat-icon-button
               *ngIf="prescriptionForm.status !== 'SUCCESS' && createPrescriptionForms.length > 1"
               (click)="$event.stopPropagation(); clickDeletePrescription.emit({form: prescriptionForm, templateName: template})"
+              [attr.aria-label]="'prescription.ariaLabel.delete' | translate"
             >
               <mat-icon>delete</mat-icon>
             </button>

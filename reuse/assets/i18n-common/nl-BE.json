@@ -33,7 +33,18 @@
     "forbiddenAction": "U bent niet bevoegd om deze actie uit te voeren.",
     "forbiddenResource": "U heeft geen toegang tot deze pagina.",
     "notFoundResource": "De gevraagde pagina bestaat niet.",
-    "mandatory": "Verplicht veld"
+    "mandatory": "Verplicht veld",
+    "ariaLabel": {
+      "loading": "Laden"
+    }
+  },
+  "pagination": {
+    "ariaLabel": {
+      "firstPage": "Eerste pagina",
+      "lastPage": "Laatste pagina",
+      "nextPage": "Volgende pagina",
+      "previousPage": "Vorige pagina"
+    }
   },
   "evf": {
     "deleteCareGiver": "Zorgverlener verwijderen",
@@ -197,6 +208,14 @@
       "otolaryngology": "KNO-heelkunde",
       "radiology": "Radiologie",
       "nursingCare": "Verpleegkundige zorg"
+    },
+    "ariaLabel": {
+      "delete": "Verwijderen",
+      "removeCity": "Verwijder de stad",
+      "print": "Afdrukken",
+      "reject": "Het voorschrift afwijzen",
+      "interrupt": "Onderbreek de uitvoering",
+      "restart": "Herneem de uitvoering"
     }
   },
   "proposal": {

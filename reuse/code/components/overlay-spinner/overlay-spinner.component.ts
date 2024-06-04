@@ -1,14 +1,16 @@
 import { Component, HostBinding, Input } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {TranslateModule} from "@ngx-translate/core";
 
 @Component({
   standalone: true,
   selector: 'app-overlay-spinner',
   imports: [
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    TranslateModule
   ],
   template: `
-    <mat-progress-spinner color="primary" mode="indeterminate" diameter="75"></mat-progress-spinner>`,
+    <mat-progress-spinner color="primary" mode="indeterminate" diameter="75" [attr.aria-label]="'common.ariaLabel.loading' | translate"></mat-progress-spinner>`,
   styles: [`
     :host {
       display: flex;
