@@ -13,13 +13,15 @@ import { BaseState } from './base.state';
 import { tap } from 'rxjs/operators';
 import { Organization } from '../interfaces/organization.interface';
 import { HealthcareProvider } from '../interfaces/healthcareProvider.interface';
+import {ProposalService} from "../services/proposal.service";
 
 @Injectable({providedIn: 'root'})
 export class PrescriptionState extends BaseState<ReadPrescription> {
 
   constructor(
     private prescriptionService: PrescriptionService,
-    private performerTaskService: TaskService
+    private performerTaskService: TaskService,
+    private proposalService: ProposalService
   ) {
     super();
   }
@@ -119,6 +121,16 @@ export class PrescriptionState extends BaseState<ReadPrescription> {
 
   createPrescriptionFromProposal(proposalId: string, proposal: CreatePrescriptionRequest) {
     return this.prescriptionService.createPrescriptionFromProposal(proposalId, proposal)
+      .pipe(tap(() => this.loadPrescription(proposalId)));
+  }
+
+  rejectProposal(proposalId: string, reason: string) {
+    return this.proposalService.rejectProposal(proposalId, reason)
+      .pipe(tap(() => this.loadPrescription(proposalId)));
+  }
+
+  rejectProposalTask(proposalId: string, performerTaskId: string, reason: string) {
+    return this.proposalService.rejectProposalTask(performerTaskId, reason)
       .pipe(tap(() => this.loadPrescription(proposalId)));
   }
 }

@@ -73,6 +73,8 @@ import {
   InterruptExecutionPrescriptionDialog
 } from '@reuse/code/dialogs/interrupt-execution-prescription/interrupt-execution-prescription.dialog';
 import {CanApproveProposalPipe} from "@reuse/code/pipes/can-approve-proposal.pipe";
+import {CanRejectProposalPipe} from "@reuse/code/pipes/can-reject-proposal.pipe";
+import {RejectProposalDialog} from "@reuse/code/dialogs/reject-proposal/reject-proposal.dialog";
 
 interface ViewState {
   prescription: ReadPrescription;
@@ -117,7 +119,8 @@ interface ViewState {
     CanSelfAssignPipe,
     CanInterruptTreatmentPipe,
     CanRestartTreatmentPipe,
-    CanApproveProposalPipe
+    CanApproveProposalPipe,
+    CanRejectProposalPipe
   ]
 })
 
@@ -408,10 +411,10 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
     }
   }
 
-  approveProposal(prescription: ReadPrescription) {
+  approveProposal(proposal: ReadPrescription) {
     this.loading = true;
-    const prescriptionRequest = this.mapProposalToCreatePrescriptionRequest(prescription)
-    this.prescriptionStateService.createPrescriptionFromProposal(prescription.id, prescriptionRequest)
+    const prescriptionRequest = this.mapProposalToCreatePrescriptionRequest(proposal)
+    this.prescriptionStateService.createPrescriptionFromProposal(proposal.id, prescriptionRequest)
       .subscribe({
         next: () => {
           this.loading = false;
@@ -422,6 +425,17 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
           this.toastService.showSomethingWentWrong();
         }
       });
+  }
+
+  openRejectProposalDialog(proposal: ReadPrescription): void {
+    this.dialog.open(RejectProposalDialog, {
+      data: {
+        proposal: proposal
+      },
+      width: '100vw',
+      maxWidth: '500px'
+    });
+
   }
 
   private loadPrintWebComponent(): void {

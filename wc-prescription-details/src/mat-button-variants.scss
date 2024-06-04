@@ -2,6 +2,7 @@
 @use '@angular/material' as mat;
 
 $theme-success: mat.define-palette(mat.$green-palette);
+$theme-error: mat.define-palette(mat.$red-palette);
 $hue: darker-contrast;
 
 @mixin color($theme) {
@@ -9,6 +10,10 @@ $hue: darker-contrast;
     &.mat-mdc-raised-button.mat-success {
       background-color: mat.get-color-from-palette($theme-success, darker);
       color: mat.get-color-from-palette($theme-success, $hue);
+    }
+    &.mat-mdc-raised-button.mat-reject {
+      background-color: mat.get-color-from-palette($theme-error, darker);
+      color: mat.get-color-from-palette($theme-error, $hue);
     }
   }
 }

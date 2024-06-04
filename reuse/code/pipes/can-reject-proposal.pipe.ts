@@ -1,0 +1,16 @@
+import { Pipe } from '@angular/core';
+import { ReadPrescription } from '../interfaces';
+import { AccessMatrixState } from '../states/access-matrix.state';
+
+@Pipe({name: 'canRejectProposal', standalone: true})
+export class CanRejectProposalPipe {
+
+  constructor(
+    private accessMatrixState: AccessMatrixState,
+  ) {
+  }
+
+  transform(prescription: ReadPrescription): boolean {
+    return this.accessMatrixState.hasAtLeastOnePermission(['rejectProposal'], prescription.templateCode);
+  }
+}

@@ -4,6 +4,7 @@ export interface AccessMatrix {
   assignCaregiver: boolean;
   createPrescription: boolean;
   approveProposal: boolean;
+  rejectProposal: boolean;
   consultPrescription: boolean;
   cancelPrescription: boolean;
   createProposal: boolean;

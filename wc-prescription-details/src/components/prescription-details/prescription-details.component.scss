@@ -318,3 +318,12 @@ nihdi-referral-prescription-form-details {
     }
   }
 }
+.prescriber-actions {
+  button {
+    margin-right: 0.25rem;
+
+    &:last-of-type {
+      margin-right: 0;
+    }
+  }
+}

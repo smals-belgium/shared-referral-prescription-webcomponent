@@ -337,6 +337,18 @@
                   <mat-icon>done</mat-icon>
                   {{ 'proposal.approve.action' | translate }}
                 </button>
+
+                <button
+                  *ngIf="prescription | canRejectProposal"
+                  (click)="openRejectProposalDialog(prescription)"
+                  mat-raised-button
+                  type="button"
+                  color="reject"
+                  data-cy="reject-proposal-action-button"
+                >
+                  <mat-icon>close</mat-icon>
+                  {{ 'proposal.reject.action' | translate }}
+                </button>
               </div>
             </div>
           </div>

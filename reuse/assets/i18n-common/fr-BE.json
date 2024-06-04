@@ -245,7 +245,6 @@
   "assign": "Assigner",
   "transfer": "Transférer",
   "assignMe": "Prendre en charge",
-  "reject": "Rejeter",
   "duplicate": "Dupliquer",
   "careGivers": "Prestataire(s) de soins",
   "assigned": "Assignée",
@@ -275,6 +274,15 @@
   "approve": {
     "action": "Valider",
     "success": "La proposition a été approuvée."
+  },
+  "reject": {
+    "title": "Rejeter",
+    "action": "Refuser",
+    "success": "La proposition a été refusée.",
+    "dialog": {
+      "title": "Cause de rejet",
+      "reason": "Raison"
+    }
   },
   "cancel": {
     "action": "Annuler",
