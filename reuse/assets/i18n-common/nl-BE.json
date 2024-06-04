@@ -112,6 +112,10 @@
       "zipCodeOrCityName": "Postcode of gemeente",
       "noResults": "Geen gemeente gevonden"
     },
+    "approve": {
+      "action": "Goedkeuren",
+      "success": "Het voorstel werd goedgekeurd."
+    },
     "cancel": {
       "action": "Annuleren",
       "title": "Voorschrift annuleren",
@@ -162,6 +166,7 @@
     },
     "status": "Status",
     "prescriptionDate": "Voorgeschreven op",
+    "proposalInfoTitle": "Aangevraagd op {date} door {firstName} {lastName}.",
     "pagination": {
       "prescriptions": "{count, plural, one{voorschrift} other{voorschriften}}",
       "pageSize": "Aantal per pagina"

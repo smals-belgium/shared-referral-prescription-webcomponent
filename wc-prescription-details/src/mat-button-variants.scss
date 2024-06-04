@@ -1,0 +1,14 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+$theme-success: mat.define-palette(mat.$green-palette);
+$hue: darker-contrast;
+
+@mixin color($theme) {
+  button{
+    &.mat-mdc-raised-button.mat-success {
+      background-color: mat.get-color-from-palette($theme-success, darker);
+      color: mat.get-color-from-palette($theme-success, $hue);
+    }
+  }
+}

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { PrescriptionService } from '../services/prescription.service';
 import { TaskService } from '../services/fhir/task.service';
 import {
+  CreatePrescriptionRequest,
   PrescriptionCancellation,
   PrescriptionExecutionFinish,
   PrescriptionExecutionStart,
@@ -114,5 +115,10 @@ export class PrescriptionState extends BaseState<ReadPrescription> {
   interruptPrescriptionExecution(prescriptionId: string, performerTaskId: string) {
     return this.performerTaskService.interruptExecution(performerTaskId)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
+  }
+
+  createPrescriptionFromProposal(proposalId: string, proposal: CreatePrescriptionRequest) {
+    return this.prescriptionService.createPrescriptionFromProposal(proposalId, proposal)
+      .pipe(tap(() => this.loadPrescription(proposalId)));
   }
 }

@@ -17,6 +17,10 @@ export class PrescriptionService {
     return this.http.post<void>('/prescriptions', createPrescriptionRequest);
   }
 
+  createPrescriptionFromProposal(prescriptionId: string, createPrescriptionRequest: CreatePrescriptionRequest): Observable<void> {
+    return this.http.post<void>(`/prescriptions/${prescriptionId}`, createPrescriptionRequest);
+  }
+
   findAll(criteria: SearchPrescriptionCriteria | undefined, page: any, pageSize: any, includePerformer: boolean): Observable<PrescriptionSummaryList> {
     let params = new HttpParams()
       .set('page', page)
