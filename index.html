@@ -18,20 +18,17 @@
 <body>
 <script>
   const params = new URLSearchParams(window.location.search);
+  <!-- Setting the environment dynamically -->
   window.referralPrescriptionEnv = getEnvFromHost(window.location.host);
-  console.log('Using env : ', window.referralPrescriptionEnv);
   const keycloak = getKeycloakConfigurationForEnv(window.referralPrescriptionEnv);
-  console.log('Document has been loaded');
   keycloak.init({onLoad: 'login-required', checkLoginIframe: false}).then(function (authenticated) {
     <!-- Initialization of the authentication library -->
-    console.log(authenticated ? 'authenticated' : 'not authenticated');
     <!-- Creation of the custom element -->
     const create = document.createElement('nihdi-referral-prescription-create');
-    create.intent = params.get('intent');
-    console.log('Got intent : ', params.get('intent'));
+    <!-- Setting the intent input parameter -->
+    create.intent = params.get('intent') || 'order';  // By default, setting it as 'order'
     <!-- Input for the patient SSIN -->
     create.patientSsin = params.get('ssin');
-    console.log('Got ssin : ', params.get('ssin'));
     <!-- Input for the language -->
     create.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'fr-BE';
     <!-- Callback method to get a token for the authentication library -->
