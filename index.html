@@ -7,9 +7,8 @@
   <title>Testing the News Web Component</title>
   <base href="/">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet"
-        href="https://referral-prescription.int.ext.vascloud.be/web-components/create-prescription/wc-create-prescription.css">
-  <script src="https://referral-prescription.int.ext.vascloud.be/web-components/create-prescription/keycloak.js"></script>
+  <link rel="stylesheet" href="web-components/create-prescription/wc-create-prescription.css">
+  <script src="web-components/create-prescription/keycloak.js"></script>
   <style>
     body {
       font-family: Roboto, "Helvetica Neue", sans-serif;
@@ -18,23 +17,25 @@
 </head>
 <body>
 <script>
-  window.referralPrescriptionEnv = 'int';
-  <!-- Initialization of the authentication library -->
+  const params = new URLSearchParams(window.location.search);
+  console.log('Using env : ', params.get('env'));
+  window.referralPrescriptionEnv = params.get('env');
   var keycloak = new Keycloak({
     url: 'https://api-acpt.ehealth.fgov.be/auth',
     realm: 'healthcare',
     clientId: 'nihdi-uhmep-hcp-dev'
   });
+  console.log('Document has been loaded');
   keycloak.init({onLoad: 'login-required', checkLoginIframe: false}).then(function (authenticated) {
+    <!-- Initialization of the authentication library -->
     console.log(authenticated ? 'authenticated' : 'not authenticated');
-    const params = new URLSearchParams(window.location.search);
     <!-- Creation of the custom element -->
     const create = document.createElement('nihdi-referral-prescription-create');
-    params.forEach((value, key) => {
-      create.intent = params.get('intent');
-      <!-- Input for the patient SSIN -->
-      create.patientSsin = params.get('ssin');
-    });
+    create.intent = params.get('intent');
+    console.log('Got intent : ', params.get('intent'));
+    <!-- Input for the patient SSIN -->
+    create.patientSsin = params.get('ssin');
+    console.log('Got ssin : ', params.get('ssin'));
     <!-- Input for the language -->
     create.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'fr-BE';
     <!-- Callback method to get a token for the authentication library -->
@@ -54,7 +55,6 @@
 </script>
 
 <!-- Web component script at the end -->
-<script src="https://referral-prescription.int.ext.vascloud.be/web-components/create-prescription/wc-create-prescription.js"
-        type="module"></script>
+<script src="web-components/create-prescription/wc-create-prescription.js" type="module"></script>
 </body>
 </html>
