@@ -60,7 +60,7 @@
               <mat-chip-row data-cy="prescription-selected-city"
                             [value]="city" (removed)="removeCity(city)">
                 {{ city.zipCode }} - {{ city.cityName | translation }}
-                <button data-cy="prescription-selected-city-remove" matChipRemove>
+                <button data-cy="prescription-selected-city-remove" matChipRemove [attr.aria-label]="'prescription.ariaLabel.removeCity' | translate">
                   <mat-icon>cancel</mat-icon>
                 </button>
               </mat-chip-row>

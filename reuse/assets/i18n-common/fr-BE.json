@@ -33,7 +33,18 @@
     "forbiddenAction": "Vous n'êtes pas autorisé(e) à effectuer cette action.",
     "forbiddenResource": "Vous n'êtes pas autorisé(e) à consulter cette page.",
     "notFoundResource": "La page demandée n'existe pas.",
-    "mandatory": "Champ obligatoire"
+    "mandatory": "Champ obligatoire",
+    "ariaLabel": {
+      "loading": "Chargement"
+    }
+  },
+  "pagination": {
+    "ariaLabel": {
+      "firstPage": "Première page",
+      "lastPage": "Dernière page",
+      "nextPage": "Page suivante",
+      "previousPage": "Page précédente"
+    }
   },
   "evf": {
     "deleteCareGiver": "Supprimer prestataire",
@@ -197,6 +208,14 @@
       "otolaryngology":  "Oto-rhino-laryngologie",
       "radiology": "Radiologie",
       "nursingCare":  "Soins infirmiers"
+    },
+    "ariaLabel": {
+      "delete": "Supprimer",
+      "removeCity": "Supprimer la ville",
+      "print": "Imprimer",
+      "reject": "Rejeter la prescription",
+      "interrupt": "Interrompre l'exécution",
+      "restart": "Relancer l'exécution"
     }
   },
   "proposal": {

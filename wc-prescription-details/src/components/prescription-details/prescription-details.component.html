@@ -15,7 +15,7 @@
               <div class="prescription-header">
                 <div class="id" data-cy="prescription-id">Id : {{prescription.id}}</div>
                 <div class="default-info">
-                  <button data-cy="prescription-print-button" mat-icon-button (click)="print()">
+                  <button data-cy="prescription-print-button" mat-icon-button (click)="print()" [attr.aria-label]="'prescription.ariaLabel.print' | translate">
                     <mat-icon>print</mat-icon>
                   </button>
                   <div class="status" data-cy="prescription-status" [ngStyle]="{'border-color': getStatusBorderColor(prescription.status!), 'background-color': getStatusBorderColor(prescription.status!)}">{{'prescription.statuses.' + prescription.status | translate}}</div>
@@ -29,6 +29,7 @@
                   color="accent"
                   (click)="openCancelPrescriptionDialog(prescription, viewState.data!.patient)"
                   data-cy="prescription-cancel-treatment-button"
+                  [attr.aria-label]="'prescription.ariaLabel.reject' | translate"
                 ><mat-icon>cancel</mat-icon>
                   {{'prescription.cancel.action' | translate}}
                 </button>
@@ -166,6 +167,7 @@
                               (click)="openInterruptExecutionDialog(prescription, performertask, viewState.data!.patient)"
                               mat-icon-button
                               data-cy="prescription-interrupt-execution-button"
+                              [attr.aria-label]="'prescription.ariaLabel.interrupt' | translate"
                             >
                               <mat-icon>pause_circle</mat-icon>
                             </button>
@@ -174,6 +176,7 @@
                               (click)="openRestartExecutionDialog(prescription, performertask, viewState.data!.patient)"
                               mat-icon-button
                               data-cy="prescription-restart-execution-button"
+                              [attr.aria-label]="'prescription.ariaLabel.restart' | translate"
                             >
                               <mat-icon>play_circle</mat-icon>
                             </button>
@@ -243,6 +246,7 @@
                         (click)="openRejectAssignationDialog(prescription, task, viewState.data!.patient)"
                         mat-icon-button
                         data-cy="prescription-reject-assignation-button"
+                        [attr.aria-label]="'prescription.ariaLabel.reject' | translate"
                       >
                         <mat-icon>cancel</mat-icon>
                       </button>
@@ -251,6 +255,7 @@
                         (click)="openInterruptExecutionDialog(prescription, task, viewState.data!.patient)"
                         mat-icon-button
                         data-cy="prescription-interrupt-execution-button"
+                        [attr.aria-label]="'prescription.ariaLabel.interrupt' | translate"
                       >
                         <mat-icon>pause_circle</mat-icon>
                       </button>
@@ -259,6 +264,7 @@
                         (click)="openRestartExecutionDialog(prescription, task, viewState.data!.patient)"
                         mat-icon-button
                         data-cy="prescription-restart-execution-button"
+                        [attr.aria-label]="'prescription.ariaLabel.restart' | translate"
                       >
                         <mat-icon>play_circle</mat-icon>
                       </button>
