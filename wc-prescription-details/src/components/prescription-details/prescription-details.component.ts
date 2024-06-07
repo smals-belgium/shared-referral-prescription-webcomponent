@@ -21,6 +21,7 @@ import { DateAdapter } from '@angular/material/core';
 import { DateTime } from 'luxon';
 import { AsyncPipe, DOCUMENT, NgFor, NgIf, NgStyle } from '@angular/common';
 import {
+  CreatePrescriptionRequest,
   DataState,
   EvfTemplate,
   LoadingStatus,
@@ -71,6 +72,7 @@ import { RejectAssignationDialog } from '@reuse/code/dialogs/reject-assignation/
 import {
   InterruptExecutionPrescriptionDialog
 } from '@reuse/code/dialogs/interrupt-execution-prescription/interrupt-execution-prescription.dialog';
+import {CanApproveProposalPipe} from "@reuse/code/pipes/can-approve-proposal.pipe";
 
 interface ViewState {
   prescription: ReadPrescription;
@@ -114,7 +116,8 @@ interface ViewState {
     CanTransferAssignationPipe,
     CanSelfAssignPipe,
     CanInterruptTreatmentPipe,
-    CanRestartTreatmentPipe
+    CanRestartTreatmentPipe,
+    CanApproveProposalPipe
   ]
 })
 
@@ -381,6 +384,44 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
     } else {
       return 'lightgrey';
     }
+  }
+
+  mapResponses(prescriptionResponses: Record<string, any>) {
+    prescriptionResponses = {
+      ...prescriptionResponses['responses'],
+      ...prescriptionResponses['responses'].occurrenceTiming.repeat,
+      period: prescriptionResponses['responses'].occurrenceTiming.repeat.period,
+      validityStartDate: prescriptionResponses['period'].start,
+      validityEndDate: prescriptionResponses['period'].end
+    }
+
+    return prescriptionResponses
+  }
+
+  mapProposalToCreatePrescriptionRequest(proposal: ReadPrescription): CreatePrescriptionRequest {
+    const {id, patientIdentifier, templateCode , ...rest} = proposal
+    const responses = this.mapResponses({...rest})
+    return {
+      subject: patientIdentifier,
+      templateCode: templateCode,
+      responses: responses,
+    }
+  }
+
+  approveProposal(prescription: ReadPrescription) {
+    this.loading = true;
+    const prescriptionRequest = this.mapProposalToCreatePrescriptionRequest(prescription)
+    this.prescriptionStateService.createPrescriptionFromProposal(prescription.id, prescriptionRequest)
+      .subscribe({
+        next: () => {
+          this.loading = false;
+          this.toastService.show('proposal.approve.success');
+        },
+        error: () => {
+          this.loading = false;
+          this.toastService.showSomethingWentWrong();
+        }
+      });
   }
 
   private loadPrintWebComponent(): void {

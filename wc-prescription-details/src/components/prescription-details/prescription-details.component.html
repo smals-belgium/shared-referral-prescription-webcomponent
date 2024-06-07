@@ -310,6 +310,38 @@
           </div>
         </div>
 
+        <div class="card no-padding"
+             *ngIf="prescription.intent?.toLowerCase() === 'proposal'">
+          <div class="card-column">
+            <div>
+              <div class="prescriber-title">
+                <p>
+        <span data-cy="proposal-date-label">{{
+            'proposal.proposalInfoTitle' | translate: {
+              firstName: prescription.requester?.firstName,
+              lastName: prescription.requester?.lastName,
+              date: $any(prescription.authoredOn) | date: 'D'
+            }
+          }}</span>
+                </p>
+              </div>
+              <div class="prescriber-actions">
+                <button
+                  *ngIf="prescription | canApproveProposal"
+                  (click)="approveProposal(prescription)"
+                  mat-raised-button
+                  type="button"
+                  color="success"
+                  data-cy="approve-proposal-action-button"
+                >
+                  <mat-icon>done</mat-icon>
+                  {{ 'proposal.approve.action' | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <nihdi-referral-prescription-pdf
           *ngIf="printer"
           [lang]="lang"

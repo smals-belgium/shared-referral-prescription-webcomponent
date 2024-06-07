@@ -272,6 +272,10 @@
     "zipCodeOrCityName": "Code postal ou commune",
     "noResults": "Aucune commune trouvée"
   },
+  "approve": {
+    "action": "Valider",
+    "success": "La proposition a été approuvée."
+  },
   "cancel": {
     "action": "Annuler",
     "title": "Annuler la proposisiton",
@@ -285,6 +289,7 @@
   },
   "status": "Statut",
   "proposalDate": "Rédigé le",
+  "proposalInfoTitle": "Demandé le {date} par {firstName} {lastName}.",
   "pagination": {
     "proposals": "{count, plural, one{proposisiton} other{proposisitons}}",
     "pageSize": "Nbr/page"

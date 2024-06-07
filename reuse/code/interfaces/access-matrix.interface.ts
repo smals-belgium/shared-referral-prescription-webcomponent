@@ -3,6 +3,7 @@ export interface AccessMatrix {
   templateName: string;
   assignCaregiver: boolean;
   createPrescription: boolean;
+  approveProposal: boolean;
   consultPrescription: boolean;
   cancelPrescription: boolean;
   createProposal: boolean;
