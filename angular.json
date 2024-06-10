@@ -27,14 +27,14 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               {
-                "glob": "{index.js,main-*.js,scripts-*.js,polyfills-*.js,runtime-*.js,styles-*.css}",
-                "input": "dist/wc-evf-form-details/browser",
-                "output": "./assets/webcomponents/evf-form-details"
+                "glob": "**/*",
+                "input": "./dist/evf-form-details/build/",
+                "output": "./assets/evf-form-details/"
               },
               {
-                "glob": "{main.js,polyfills.js,styles.css}",
-                "input": "./dist/wc-pdfmake/",
-                "output": "./assets/webcomponents/pdfmake/"
+                "glob": "**/*",
+                "input": "./dist/pdfmake/build/",
+                "output": "./assets/pdfmake/"
               },
               {
                 "glob": "keycloak.js",
@@ -47,6 +47,10 @@
             ],
             "scripts": [
               "node_modules/marked/marked.min.js"
+            ],
+            "externalDependencies": [
+              "/assets/evf-form-details/evf-form-details.js",
+              "/assets/pdfmake/pdfmake.js"
             ]
           },
           "configurations": {
@@ -191,9 +195,9 @@
             },
             "assets": [
               {
-                "glob": "{index.js,main-*.js,scripts-*.js,polyfills-*.js,runtime-*.js,styles-*.css}",
-                "input": "dist/wc-evf-form/browser",
-                "output": "./assets/webcomponents/evf-form"
+                "glob": "**/*",
+                "input": "./dist/evf-form/build/",
+                "output": "./assets/evf-form/"
               },
               {
                 "glob": "keycloak.js",
@@ -206,6 +210,9 @@
             ],
             "scripts": [
               "node_modules/marked/marked.min.js"
+            ],
+            "externalDependencies": [
+              "/assets/evf-form/evf-form.js"
             ]
           },
           "configurations": {
