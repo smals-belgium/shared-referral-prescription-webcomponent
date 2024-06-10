@@ -10,6 +10,7 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { NgFor, NgIf } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import {TranslateModule} from "@ngx-translate/core";
 
 @Component({
   standalone: true,
@@ -21,7 +22,8 @@ import { MatIconModule } from '@angular/material/icon';
     MatButtonModule,
     MatIconModule,
     NgIf,
-    NgFor
+    NgFor,
+    TranslateModule
   ]
 })
 export class PaginatorComponent implements OnChanges {

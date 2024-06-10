@@ -266,7 +266,8 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
         assignedCareGivers: prescription.performerTasks?.map(c => c.careGiverSsin)
       },
       width: '100vw',
-      maxWidth: '750px'
+      maxWidth: '750px',
+      maxHeight: '100vh'
     });
   }
 
