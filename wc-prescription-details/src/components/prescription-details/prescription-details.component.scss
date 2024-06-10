@@ -129,7 +129,7 @@ h3 {
     > * {
       padding: 1rem;
 
-      &:last-child {
+      &:nth-child(n+2):last-child {
         flex-grow: 37;
         border-top: 2px dashed #e2e2e2;
       }
@@ -145,7 +145,7 @@ h3 {
           flex-grow: 63;
         }
 
-        &:last-child {
+        &:nth-child(n+2):last-child {
           flex-grow: 37;
           border-left: 2px dashed #e2e2e2;
           border-top: none;
