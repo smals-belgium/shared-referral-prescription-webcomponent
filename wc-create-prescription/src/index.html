@@ -22,6 +22,7 @@
     const create = document.createElement('nihdi-referral-prescription-create');
     create.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'nl-BE';
     create.patientSsin = '43100101456';
+    create.intent = 'intent';
     create.getToken = () => Promise.resolve(keycloak.token);
     create.addEventListener('prescriptionsCreated', () => {
       document.body.removeChild(create);
