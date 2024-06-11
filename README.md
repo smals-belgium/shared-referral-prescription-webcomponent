@@ -32,7 +32,8 @@ The `dist/build` directory will contain a js and css file needed to implement in
 ## Running server
 
 Update the index.html to include the correct webcomponent.
-Run `serve --cors` to run de index.html example page.
+Run `serve --listen 4200` to run de index.html example page.
+Run `serve --cors` to listen on localhost:3000 so it can be connected with the webapp.
 
 ## Running unit tests
 
