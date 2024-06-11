@@ -31,9 +31,9 @@ The `dist/build` directory will contain a js and css file needed to implement in
 
 ## Running server
 
-Update the index.html to include the correct webcomponent.
-Run `serve --listen 4200` to run de index.html example page.
-Run `serve --cors` to listen on localhost:3000 so it can be connected with the webapp.
+serve helps you serve a static site. You need to install serve globally. To do this, just run the command `npm install --global serve`.
+If you want to run a webcomponent from the index.html page you can run `serve --listen 4200` to run de index.html example page.
+If you want to connect all webcomponents to the webapp you need to build all components and then run `serve --cors` to listen on localhost:3000.
 
 ## Running unit tests
 
