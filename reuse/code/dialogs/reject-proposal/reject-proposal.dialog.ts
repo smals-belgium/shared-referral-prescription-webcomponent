@@ -54,7 +54,7 @@ export class RejectProposalDialog {
       const reason = this.formGroup.get('reason')?.value;
 
       this.loading = true;
-      if(!this.data.proposal.performerTasks || this.data.proposal.performerTasks.length <= 0) {
+      if(!this.data.proposal.performerTasks || this.data.proposal.performerTasks.length === 0) {
         this.prescriptionStateService
           .rejectProposal(this.data.proposal.id, reason!)
           .subscribe({
