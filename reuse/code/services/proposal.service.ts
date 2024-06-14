@@ -77,15 +77,15 @@ export class ProposalService {
   }
 
   rejectAssignation(prescriptionId: string, performerTaskId: string): Observable<void> {
-    return this.http.post<void>(`/proposals/${prescriptionId}/reject/${performerTaskId}`, {});
+    return this.http.post<void>(`/proposals/${prescriptionId}/rejections/${performerTaskId}`, {});
   }
 
   rejectProposal(proposalId: string, reason: string): Observable<void> {
-    return this.http.post<void>(`/proposals/${proposalId}/reject`, {reason: reason});
+    return this.http.post<void>(`/proposals/${proposalId}/rejections`, {reason: reason});
   }
 
   rejectProposalTask(performerTaskId: string, reason: string): Observable<void> {
-    return this.http.patch<void>(`/proposals/${performerTaskId}/reject`, {reason: reason});
+    return this.http.patch<void>(`/proposals/${performerTaskId}/rejections`, {reason: reason});
   }
 }
 

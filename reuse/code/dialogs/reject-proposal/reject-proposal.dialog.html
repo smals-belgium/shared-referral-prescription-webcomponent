@@ -1,0 +1,24 @@
+<form (ngSubmit)="rejectProposal()" [formGroup]="formGroup">
+  <h1 mat-dialog-title>{{ 'proposal.reject.dialog.title' | translate }}</h1>
+  <div mat-dialog-content>
+    <mat-form-field appearance="fill">
+      <mat-label>{{ 'proposal.reject.dialog.reason' | translate }}</mat-label>
+      <textarea
+        [formControlName]="'reason'"
+        matInput
+        rows="5"
+        data-cy="proposal-reject-reason-textarea"
+      ></textarea>
+      <mat-error
+        *ngIf="formGroup.get('reason')?.hasError('required')">{{ 'common.mandatory' | translate }}
+      </mat-error>
+    </mat-form-field>
+  </div>
+  <div mat-dialog-actions>
+    <button color="accent" data-cy="dialog-confirm-button" type="submit"
+            mat-raised-button>{{'common.confirm' | translate}}</button>
+    <button [mat-dialog-close]="undefined" data-cy="dialog-cancel-button" mat-flat-button
+            type="button">{{'common.cancel' | translate}}</button>
+  </div>
+  <app-overlay-spinner mode="dialog" *ngIf="loading"></app-overlay-spinner>
+</form>

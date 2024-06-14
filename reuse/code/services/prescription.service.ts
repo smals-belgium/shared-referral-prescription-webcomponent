@@ -81,7 +81,7 @@ export class PrescriptionService {
   }
 
   rejectAssignation(prescriptionId: string, performerTaskId: string): Observable<void> {
-    return this.http.post<void>(`/prescriptions/${prescriptionId}/reject/${performerTaskId}`, {});
+    return this.http.post<void>(`/prescriptions/${prescriptionId}/rejections/${performerTaskId}`, {});
   }
 }
 

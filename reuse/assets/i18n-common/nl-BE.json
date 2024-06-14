@@ -264,7 +264,6 @@
     "assign": "Toewijzen",
     "transfer": "Overmaken",
     "assignMe": "Neem de leiding",
-    "reject": "Afwijzen",
     "duplicate": "Dupliceren",
     "careGivers": "Zorgverlener(s)",
     "assigned": "Toegewezen",
@@ -294,6 +293,15 @@
     "approve": {
       "action": "Goedkeuren",
       "success": "Het voorstel werd goedgekeurd."
+    },
+    "reject": {
+      "title": "Afwijzen",
+      "action": "Weigeren",
+      "success": "Het voorstel werd geweigerd.",
+      "dialog": {
+        "title": "Reden van afwijzing",
+        "reason": "Reden"
+      }
     },
     "cancel": {
       "action": "Annuleren",
