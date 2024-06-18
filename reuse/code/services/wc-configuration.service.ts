@@ -7,7 +7,7 @@ import { ConfigurationService } from './configuration.service';
 })
 export class WcConfigurationService extends ConfigurationService {
 
-  private readonly referralPrescriptionEnvironment: 'local' | 'test' | 'int' | 'acc' | 'prod';
+  private readonly referralPrescriptionEnvironment: 'local' | 'test' | 'intExt' | 'intPub' | 'intPatient' | 'acc' | 'accIn' | 'accUp' | 'prod' | 'prodIn' | 'prodUp';
   private readonly configVariables: Record<string, any>;
 
   constructor() {
