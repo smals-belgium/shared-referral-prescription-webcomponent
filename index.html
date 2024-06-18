@@ -66,7 +66,7 @@
         realm: 'MOOSE_UHMEP',
         clientId: 'uhmep-webapp'
       });
-    } else if (env === 'int') {
+    } else if (env === 'intExt' || env === 'intPub') {
       return new Keycloak({
         url: 'https://api-acpt.ehealth.fgov.be/auth',
         realm: 'healthcare',
