@@ -50,7 +50,9 @@
     if (host.includes("referral-prescription.test.paas.vasdc.be")) {
       return 'test';
     } else if (host.includes("referral-prescription.int.ext.vascloud.be")) {
-      return 'int';
+      return 'intExt';
+    } else if (host.includes("referral-prescription.int.pub.vascloud.be")) {
+      return 'intPub';
     } else if (host.includes("wwwacc.referral-prescription.ehealth.fgov.be") ||
       host.includes("extranet-acpt.referral-prescription.ehealth.fgov.be")) {
       return 'acc';
