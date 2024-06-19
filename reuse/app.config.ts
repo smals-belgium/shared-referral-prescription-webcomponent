@@ -131,7 +131,7 @@ export const APP_CONFIG: AppConfig = {
       env: 'intPub',
       fhirGatewayUrl: 'https://uhmep-fhirgateway-v4.int.pub.vascloud.be',
       fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
-      apiUrl: 'https://referral-prescription.int.ext.vascloud.be/frontend/api',
+      apiUrl: 'https://referral-prescription.int.pub.vascloud.be/frontend/api',
       appUrl: 'https://referral-prescription.int.pub.vascloud.be/frontend/app',
       pseudoApiUrl: 'https://api-acpt.ehealth.fgov.be/pseudo/v1',
       keycloak: {
