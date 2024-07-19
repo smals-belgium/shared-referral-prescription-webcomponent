@@ -1,6 +1,7 @@
 import { defineConfig,splitVendorChunkPlugin } from "vite";
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import path from 'path'
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 
 export default defineConfig({
@@ -12,7 +13,12 @@ export default defineConfig({
           dest: './',
         },
       ],
-    }),],
+    }), nodePolyfills({
+      globals: {
+        Buffer: true,
+        global: true
+      }
+    })],
   root: "wc-list-prescriptions",
   build: {
     rollupOptions: {

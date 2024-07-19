@@ -1,10 +1,12 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { BlindResult, PseudoHelper } from '@smals/vas-integrations-pseudojs';
-import { map } from 'rxjs/operators';
-import { Buffer } from 'buffer';
-import { ConfigurationService } from './configuration.service';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Pseudonym, PseudonymisationHelper} from '@smals/vas-integrations-pseudojs';
+import {ConfigurationService} from './configuration.service';
+import {PseudonymisationClientImpl} from "./pseudonymisationClient.service";
+import {EHealthProblem} from "@smals/vas-integrations-pseudojs/app/internal/EHealthProblem";
+import {Curve} from "@smals/vas-integrations-pseudojs/app/Curve";
+import {from, Observable, of} from "rxjs";
+import {Base64} from "@smals/vas-integrations-pseudojs/app/utils/Base64";
 
 interface PseudoResponse {
   x: string;
@@ -19,8 +21,9 @@ interface PseudoResponse {
 @Injectable({providedIn: 'root'})
 export class PseudoService {
 
-  private readonly pseudoHelper = new PseudoHelper();
+  private readonly pseudoHelper = new PseudonymisationHelper(new PseudonymisationClientImpl(this.http, this.configService));
   private readonly pseudoApiUrl = this.configService.getEnvironmentVariable('pseudoApiUrl');
+  private readonly domain = this.pseudoHelper.createDomain('uhmep_v1', <Curve>'p521', this.pseudoApiUrl, 8);
 
   constructor(
     private http: HttpClient,
@@ -32,30 +35,33 @@ export class PseudoService {
     if (!this.configService.getEnvironmentVariable('enablePseudo')) {
       return of(value);
     }
-    const bufferSize = 8;
-    const blindResult = this.pseudoHelper.blindToBase64Point(value, bufferSize);
-    const body = {
-      x: blindResult.blindedPoint.x,
-      y: blindResult.blindedPoint.y,
-      crv: 'P-521',
-      id: crypto.randomUUID?.() || '1' // to test without HTTPS
-    }
-    return this.http.post<PseudoResponse>(this.pseudoApiUrl + '/domains/uhmep_v1/pseudonymize', body)
-      .pipe(
-        map((result) => ({
-          ...result,
-          ...this.getUnblindedPoint(result, blindResult)
-        })),
-        map((result) => Buffer.from(JSON.stringify(result)).toString('base64'))
-      );
+
+    let data = this.domain.valueFactory.fromString(value).pseudonymize().then(res => {
+      console.log(res)
+      if (res instanceof EHealthProblem) {
+         return Base64.encode(res)
+      }
+      return res.asString()
+    })
+
+
+    console.log(data)
+    return from(data)
   }
 
-  private getUnblindedPoint(result: PseudoResponse, blindResult: BlindResult) {
-    const unbldindedResult = this.pseudoHelper.unblindToBase64Point(result, blindResult.randomBigInt);
+  identify(value: string): Observable<string> {
+    const bn = Base64.decode(value)
 
-    return {
-      x: unbldindedResult.x,
-      y: unbldindedResult.y,
-    };
+
+    const data = this.domain.pseudonymInTransitFactory.from(bn as Pseudonym, bn.transitInfo).identify().then(res => {
+      console.log(res)
+      if (!(res instanceof EHealthProblem)) {
+        return res.asString()
+      }
+      return res.detail
+    })
+
+    console.log(data)
+    return from(data)
   }
 }
