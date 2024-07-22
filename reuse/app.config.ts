@@ -87,9 +87,7 @@ export const APP_CONFIG: AppConfig = {
         url: 'http://vasiam.test.paas.vasdc.be/auth',
         realm: 'MOOSE_UHMEP',
         clientId: 'uhmep-webapp',
-      },
-      enablePseudo: true,
-      pseudoApiUrl: 'https://api-acpt.ehealth.fgov.be/pseudo/v1'
+      }
     },
     test: {
       env: 'test',
