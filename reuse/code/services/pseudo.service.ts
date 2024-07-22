@@ -1,12 +1,19 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Pseudonym, PseudonymisationHelper} from '@smals/vas-integrations-pseudojs';
+import {Pseudonym, PseudonymInTransit, PseudonymisationHelper, Value} from '@smals/vas-integrations-pseudojs';
 import {ConfigurationService} from './configuration.service';
 import {PseudonymisationClientImpl} from "./pseudonymisationClient.service";
-import {EHealthProblem} from "@smals/vas-integrations-pseudojs/app/internal/EHealthProblem";
 import {Curve} from "@smals/vas-integrations-pseudojs/app/Curve";
 import {from, Observable, of} from "rxjs";
-import {Base64} from "@smals/vas-integrations-pseudojs/app/utils/Base64";
+import BN from 'bn.js';
+
+declare class EHealthProblem {
+  type: string;
+  title: string;
+  status: string;
+  detail: string;
+  inResponseTo: string;
+}
 
 interface PseudoResponse {
   x: string;
@@ -39,9 +46,9 @@ export class PseudoService {
     let data = this.domain.valueFactory.fromString(value).pseudonymize().then(res => {
       console.log(res)
       if (res instanceof EHealthProblem) {
-         return Base64.encode(res)
+         return this.encode(res as unknown as BN)
       }
-      return res.asString()
+      return (res as PseudonymInTransit).asString()
     })
 
 
@@ -50,18 +57,29 @@ export class PseudoService {
   }
 
   identify(value: string): Observable<string> {
-    const bn = Base64.decode(value)
+    const bn = this.decode(value)
 
 
-    const data = this.domain.pseudonymInTransitFactory.from(bn as Pseudonym, bn.transitInfo).identify().then(res => {
+    const data = this.domain.pseudonymInTransitFactory.from(bn as unknown as Pseudonym, (bn as any).transitInfo).identify().then(res => {
       console.log(res)
       if (!(res instanceof EHealthProblem)) {
-        return res.asString()
+        return (res as Value).asString()
       }
       return res.detail
     })
 
     console.log(data)
     return from(data)
+  }
+
+
+  private encode(bn: BN): string {
+    const bytes = bn.toArrayLike(Buffer, 'be', 66);
+    return Buffer.from(bytes).toString('base64');
+  }
+
+  private decode(base64: string): BN {
+    const bytes = Buffer.from(base64, 'base64').valueOf();
+    return new BN(bytes);
   }
 }
