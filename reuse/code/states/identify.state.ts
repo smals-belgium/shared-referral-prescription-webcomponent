@@ -4,7 +4,7 @@ import { BaseState } from './base.state';
 import {PseudoService} from "../services/pseudo.service";
 
 @Injectable({providedIn: 'root'})
-export class IdentifyState extends BaseState<Person> {
+export class IdentifyState extends BaseState<String> {
 
   constructor(
     private pseudoService: PseudoService
@@ -16,7 +16,7 @@ export class IdentifyState extends BaseState<Person> {
     this.load(this.pseudoService.identify(value));
   }
 
-  setSSIN(patient: Person): void {
-    this._state.set({status: LoadingStatus.SUCCESS, data: patient});
+  setSSIN(SSIN: String): void {
+    this._state.set({status: LoadingStatus.SUCCESS, data: SSIN});
   }
 }

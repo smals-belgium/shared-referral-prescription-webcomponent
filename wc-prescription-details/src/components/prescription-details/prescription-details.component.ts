@@ -138,7 +138,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
       const state = this.patientStateService.state();
       if(state.data?.ssin && state.data.ssin.length > 20) {
         const ssinState = this.identifyState.state()
-       const ssin = ssinState.data?.ssin
+       const ssin = ssinState.data
         if(!ssin) {
           return { ...ssinState, data: state.data };
         } else {
