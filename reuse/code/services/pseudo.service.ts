@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {PseudonymisationHelper, EHealthProblem} from '../../../pseudojs/src';
+import {PseudonymisationHelper, EHealthProblem} from '@smals/vas-integrations-pseudojs';
 import {ConfigurationService} from './configuration.service';
 import {PseudonymisationClientImpl} from "./pseudonymisationClient.service";
 import {Curve} from "@smals/vas-integrations-pseudojs/app/Curve";
