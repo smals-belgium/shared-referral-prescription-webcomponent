@@ -22,7 +22,7 @@ export class PseudonymisationClientImpl implements PseudonymisationClient {
   identify(domainKey: string, payload: string): Promise<string> {
     const request$ = this.http.post<{data: any}>(this.pseudoApiUrl + '/domains/' + domainKey + '/identify', payload).pipe(take(1));
 
-    return lastValueFrom(request$).then(response => JSON.stringify(response.data));
+    return lastValueFrom(request$).then(response => JSON.stringify(response));
   }
 
   identifyMultiple(domainKey: string, payload: string): Promise<string> {
@@ -34,7 +34,7 @@ export class PseudonymisationClientImpl implements PseudonymisationClient {
   pseudonymize(domainKey: string, payload: string): Promise<string> {
     const request$ = this.http.post<{data: any}>(this.pseudoApiUrl + '/domains/' + domainKey + '/pseudonymize', payload).pipe(take(1))
 
-    return lastValueFrom(request$).then(response => JSON.stringify(response.data))
+    return lastValueFrom(request$).then(response => JSON.stringify(response))
   }
 
   pseudonymizeMultiple(domainKey: string, payload: string): Promise<string> {

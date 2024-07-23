@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { LoadingStatus, Person } from '../interfaces';
 import { BaseState } from './base.state';
 import {PseudoService} from "../services/pseudo.service";
+import {from} from "rxjs";
 
 @Injectable({providedIn: 'root'})
 export class IdentifyState extends BaseState<String> {
@@ -13,7 +14,7 @@ export class IdentifyState extends BaseState<String> {
   }
 
   loadSSIN(value: string): void {
-    this.load(this.pseudoService.identify(value));
+    this.load(from(this.pseudoService.identify(value)));
   }
 
   setSSIN(SSIN: String): void {
