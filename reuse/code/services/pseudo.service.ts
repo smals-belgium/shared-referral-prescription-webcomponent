@@ -30,13 +30,4 @@ export class PseudoService {
       return res.asString()
     })
   }
-
-  async identify(value: string): Promise<string> {
-    return await this.domain.pseudonymInTransitFactory.fromSec1AndTransitInfo(value).identify().then(res => {
-      if (res instanceof EHealthProblem) {
-        throw new Error(res.detail)
-      }
-      return res.asString()
-    })
-  }
 }

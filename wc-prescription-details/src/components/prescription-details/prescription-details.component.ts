@@ -75,8 +75,6 @@ import {
 import {CanApproveProposalPipe} from "@reuse/code/pipes/can-approve-proposal.pipe";
 import {CanRejectProposalPipe} from "@reuse/code/pipes/can-reject-proposal.pipe";
 import {RejectProposalDialog} from "@reuse/code/dialogs/reject-proposal/reject-proposal.dialog";
-import {PseudoService} from "@reuse/code/services/pseudo.service";
-import {IdentifyState} from "@reuse/code/states/identify.state";
 
 interface ViewState {
   prescription: ReadPrescription;
@@ -134,24 +132,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
 
   readonly viewState$: Signal<DataState<ViewState>> = combineSignalDataState({
     prescription: this.prescriptionStateService.state,
-    patient: computed(() => {
-      const state = this.patientStateService.state();
-      if(state.data?.ssin && state.data.ssin.length > 20) {
-        const ssinState = this.identifyState.state()
-       const ssin = ssinState.data
-        if(!ssin) {
-          return { ...ssinState, data: state.data };
-        } else {
-          const person = {
-            ...state.data,
-            ssin
-          }
-          return { ...ssinState, data: person };
-        }
-      } else {
-        return state;
-      }
-    }),
+    patient: this.patientStateService.state,
     performerTask: computed(() => {
       const state = this.prescriptionStateService.state();
       const ssin = this.tokenClaims$()?.['ssin'];
@@ -217,8 +198,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
     private templatesStateService: TemplatesState,
     private templateVersionsStateService: TemplateVersionsState,
     private toastService: ToastService,
-    private pseudoService: PseudoService,
-    private identifyState: IdentifyState,
     @Inject(DOCUMENT) private _document: Document
   ) {
     this.dateAdapter.setLocale('fr-BE');
