@@ -32,7 +32,6 @@ import { PrescriptionSummary, PrescriptionSummaryList } from '@reuse/code/interf
 import { PseudoService } from '@reuse/code/services/pseudo.service';
 import { ProposalsState } from '@reuse/code/states/proposals.state';
 import {FormsModule} from "@angular/forms";
-import {IdentifyState} from "@reuse/code/states/identify.state";
 
 interface ViewState {
   prescriptions: PrescriptionSummaryList;
