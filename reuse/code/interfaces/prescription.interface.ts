@@ -66,14 +66,15 @@ export interface TemplateId {
 
 
 export const enum Status {
-  'DRAFT' = 'DRAFT',
-  'BLACKLISTED' = 'BLACKLISTED',
-  'PENDING' = 'PENDING',
-  'OPEN' = 'OPEN',
-  'CANCELLED' = 'CANCELLED',
-  'EXPIRED' = 'EXPIRED',
-  'IN_PROGRESS' = 'IN_PROGRESS',
-  'DONE' = 'DONE',
+  DRAFT = 'DRAFT',
+  BLACKLISTED = 'BLACKLISTED',
+  PENDING = 'PENDING',
+  OPEN = 'OPEN',
+  CANCELLED = 'CANCELLED',
+  EXPIRED = 'EXPIRED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  DONE = 'DONE',
+  ON_HOLD = 'ON_HOLD'
 }
 
 export interface PrescriptionCancellation {
