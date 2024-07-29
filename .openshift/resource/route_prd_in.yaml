@@ -6,7 +6,7 @@ metadata:
   labels:
     deploymentconfig: &deploymentconfig referral-prescription-web-components-in
 spec:
-  host: referral-prescription.ehealth.fgov.be
+  host: www.referral-prescription.ehealth.fgov.be
   path: /web-components
   to:
     kind: Service
@@ -21,7 +21,7 @@ metadata:
   labels:
     deploymentconfig: &deploymentconfig referral-prescription-web-components-in
 spec:
-  host: referral-prescription.in.ehealth.fgov.be
+  host: www.referral-prescription.in.ehealth.fgov.be
   path: /web-components
   to:
     kind: Service
