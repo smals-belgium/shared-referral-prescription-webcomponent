@@ -75,6 +75,7 @@ import {
 import {CanApproveProposalPipe} from "@reuse/code/pipes/can-approve-proposal.pipe";
 import {CanRejectProposalPipe} from "@reuse/code/pipes/can-reject-proposal.pipe";
 import {RejectProposalDialog} from "@reuse/code/dialogs/reject-proposal/reject-proposal.dialog";
+import {CanExtendPrescriptionPipe} from "@reuse/code/pipes/can-extend-prescription.pipe";
 
 interface ViewState {
   prescription: ReadPrescription;
@@ -120,7 +121,8 @@ interface ViewState {
     CanInterruptTreatmentPipe,
     CanRestartTreatmentPipe,
     CanApproveProposalPipe,
-    CanRejectProposalPipe
+    CanRejectProposalPipe,
+    CanExtendPrescriptionPipe
   ]
 })
 
@@ -184,6 +186,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
   @Input() getToken!: () => Promise<string>;
 
   @Output() clickDuplicate = new EventEmitter<ReadPrescription>();
+  @Output() clickExtend = new EventEmitter<ReadPrescription>();
 
   constructor(
     private translate: TranslateService,
