@@ -154,6 +154,7 @@
                                 <span style="font-size: 14px; color:#8f8f8f">{{performertask.executionPeriod?.end! | date: 'dd/MM/yyyy'}} - </span>
                               </ng-container>
                             </div>
+                            <div class="button-group">
                             <button
                               *ngIf="prescription | canRejectAssignation : performertask : viewState.data!.performerTask?.careGiverSsin"
                               (click)="openRejectAssignationDialog(prescription, performertask, viewState.data!.patient)"
@@ -180,8 +181,10 @@
                             >
                               <mat-icon>play_circle</mat-icon>
                             </button>
+                            </div>
                           </div>
                           <ng-container *ngIf="viewState.data!.performerTask == performertask">
+                            <div class="button-group">
                             <button
                               *ngIf="prescription | canStartTreatment:performertask"
                               (click)="openStartExecutionDialog(prescription, performertask)"
@@ -220,6 +223,7 @@
                             >
                               <mat-icon>forward</mat-icon>
                               {{'prescription.transfer' | translate}}</button>
+                            </div>
                           </ng-container>
                         </div>
                       </ng-container>
@@ -241,6 +245,7 @@
                         </ng-container>
                       </div>
 
+                      <div class="button-group">
                       <button
                         *ngIf="prescription | canRejectAssignation : task : viewState.data!.performerTask?.careGiverSsin"
                         (click)="openRejectAssignationDialog(prescription, task, viewState.data!.patient)"
@@ -268,8 +273,10 @@
                       >
                         <mat-icon>play_circle</mat-icon>
                       </button>
+                      </div>
                     </div>
                     <ng-container *ngIf="viewState.data!.performerTask == task">
+                      <div class="button-group">
                       <button
                         *ngIf="prescription | canStartTreatment:task"
                         (click)="openStartExecutionDialog(prescription, task)"
@@ -308,6 +315,7 @@
                       >
                         <mat-icon>forward</mat-icon>
                         {{'prescription.transfer' | translate}}</button>
+                      </div>
                     </ng-container>
                   </div>
                 </ng-container>
