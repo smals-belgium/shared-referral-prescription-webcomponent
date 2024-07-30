@@ -93,8 +93,17 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges {
 
     if(!repeat.count) return {...responses, ...repeat}
 
+    let dayPeriod = {}
+    if(repeat.when) {
+      if(repeat.when.length === 1) {
+        dayPeriod = { dayPeriod: repeat.when[0] }
+      } else {
+        dayPeriod = { dayPeriod: repeat.when }
+      }
+    }
+
     const maxSessions = {nbSessions: repeat.count}
-    return {...responses, ...maxSessions, ...repeat}
+    return {...responses, ...maxSessions, ...dayPeriod, ...repeat}
   }
 
   setElementGroup(prescriptionForm: CreatePrescriptionForm, formTemplate: FormTemplate, elementGroup: ElementGroup) {
