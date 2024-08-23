@@ -166,7 +166,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
         : {status: LoadingStatus.LOADING};
     }),
     currentUser: computed(() => {
-      const token = this.tokenClaims$()
+      const token = this.tokenClaims$()?.['userProfile']
       return token
         ? {status: LoadingStatus.SUCCESS, data: token}
         : {status: LoadingStatus.LOADING};
