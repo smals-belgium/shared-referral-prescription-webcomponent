@@ -95,7 +95,7 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges {
 
     let dayPeriod = {}
     if(repeat.when) {
-      if(repeat.when.length === 1) {
+      if(Array.isArray(repeat.when)) {
         dayPeriod = { dayPeriod: repeat.when[0] }
       } else {
         dayPeriod = { dayPeriod: repeat.when }
