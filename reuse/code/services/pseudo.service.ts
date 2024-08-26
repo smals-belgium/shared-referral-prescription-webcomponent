@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {PseudonymisationHelper, EHealthProblem} from '@smals/vas-integrations-pseudojs';
+import {PseudonymisationHelper, EHealthProblem, PseudonymInTransit} from '@smals/vas-integrations-pseudojs';
 import {ConfigurationService} from './configuration.service';
 import {PseudonymisationClientImpl} from "./pseudonymisationClient.service";
 import {Curve} from "@smals/vas-integrations-pseudojs/app/Curve";
@@ -23,11 +23,11 @@ export class PseudoService {
       return value;
     }
 
-    return await this.domain.valueFactory.fromString(value).pseudonymize().then(res => {
+    return await this.domain.valueFactory.fromString(value).pseudonymize().then((res: PseudonymInTransit | EHealthProblem) => {
       if (res instanceof EHealthProblem) {
         throw new Error(res.detail)
       }
-      return res.asString()
+      return res.transitInfo()
     })
   }
 }
