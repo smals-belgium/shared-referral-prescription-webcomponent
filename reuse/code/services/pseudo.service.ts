@@ -28,7 +28,7 @@ export class PseudoService {
       if (res instanceof EHealthProblem) {
         throw new Error(res.detail)
       }
-      return res.transitInfo.asString()
+      return res.asString()
     })
   }
 }
