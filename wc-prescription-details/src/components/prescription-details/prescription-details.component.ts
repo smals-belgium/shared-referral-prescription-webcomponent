@@ -135,7 +135,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
     patient: this.patientStateService.state,
     performerTask: computed(() => {
       const state = this.prescriptionStateService.state();
-      const ssin = this.tokenClaims$()?.['ssin'];
+      const ssin = this.tokenClaims$()?.['userProfile']['ssin'];
       if (!ssin || state.status !== LoadingStatus.SUCCESS) {
         return state;
       }
@@ -166,7 +166,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
         : {status: LoadingStatus.LOADING};
     }),
     currentUser: computed(() => {
-      const token = this.tokenClaims$()
+      const token = this.tokenClaims$()?.['userProfile']
       return token
         ? {status: LoadingStatus.SUCCESS, data: token}
         : {status: LoadingStatus.LOADING};
@@ -354,7 +354,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
 
   selfAssign(prescription: ReadPrescription): void {
     this.loading = true;
-    const ssin = this.tokenClaims$()?.['ssin'];
+    const ssin = this.tokenClaims$()?.['userProfile']['ssin'];
     this.prescriptionStateService.assignPrescriptionToMe(prescription.id, prescription.referralTask.id, {ssin})
       .subscribe({
         next: () => {

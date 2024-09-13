@@ -122,6 +122,6 @@ export class StartExecutionPrescriptionDialog {
 
   private getCurrentUserSsin(): Observable<string> {
     return this.authService.getClaims()
-      .pipe(map(claims => claims['ssin']));
+      .pipe(map(claims => claims['userProfile']['ssin']));
   }
 }
