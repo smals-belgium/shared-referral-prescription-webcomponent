@@ -21,7 +21,7 @@ export const apiUrlInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, 
     return authService.getAccessToken().pipe(
       mergeMap((accessToken) => next(req.clone({
         url: req.url.startsWith('http') ? req.url : `${apiUrl}${req.url}`,
-        headers: req.headers.set('Authorization', `Bearer ${accessToken}`),
+        headers: req.headers.set('Authorization', `Bearer ${accessToken}`).set('Content-Type', 'application/json; charset=utf-8'),
       })))
     );
   }
