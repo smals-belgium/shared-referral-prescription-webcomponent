@@ -1,22 +1,18 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {PseudonymisationHelper, EHealthProblem, Value, PseudonymInTransit, Domain} from '@smals-belgium-shared/pseudo-helper/dist';
 import {ConfigurationService} from './configuration.service';
-import {PseudonymisationClientImpl} from "./pseudonymisationClient.service";
-import {EHealthProblem, PseudonymInTransit, PseudonymisationHelper} from "@smals/vas-integrations-pseudojs";
-import {Curve} from "@smals/vas-integrations-pseudojs/app/Curve";
-
+import {Curve} from "@smals-belgium-shared/pseudo-helper/dist/app/Curve";
 
 @Injectable({providedIn: 'root'})
 export class PseudoService {
-
-  private readonly pseudoHelper = new PseudonymisationHelper(new PseudonymisationClientImpl(this.http, this.configService));
+  private pseudonymisationDomain: Domain;
   private readonly pseudoApiUrl = this.configService.getEnvironmentVariable('pseudoApiUrl');
-  private readonly domain = this.pseudoHelper.createDomain('uhmep_v1', <Curve>'p521', this.pseudoApiUrl, 8);
 
   constructor(
-    private http: HttpClient,
-    private configService: ConfigurationService
+    private configService: ConfigurationService,
+    private pseudomationHelper: PseudonymisationHelper,
   ) {
+    this.pseudonymisationDomain = this.pseudomationHelper.createDomain('uhmep_v1', <Curve>'p521', this.pseudoApiUrl, 8)
   }
 
   async pseudonymize(value: string): Promise<string> {
@@ -24,7 +20,20 @@ export class PseudoService {
       return value;
     }
 
-    return await this.domain.valueFactory.fromString(value).pseudonymize().then((res: PseudonymInTransit | EHealthProblem) => {
+    return await this.pseudonymisationDomain.valueFactory.fromString(value).pseudonymize().then((res: PseudonymInTransit | EHealthProblem) => {
+      if (res instanceof EHealthProblem) {
+        throw new Error(res.detail)
+      }
+      return res.asString()
+    })
+  }
+
+  async identify(value: string): Promise<string> {
+    if (!this.configService.getEnvironmentVariable('enablePseudo')) {
+      return value;
+    }
+
+    return await this.pseudonymisationDomain.pseudonymInTransitFactory.fromSec1AndTransitInfo(value).identify().then((res: Value | EHealthProblem) => {
       if (res instanceof EHealthProblem) {
         throw new Error(res.detail)
       }
