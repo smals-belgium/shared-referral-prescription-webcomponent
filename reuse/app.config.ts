@@ -88,6 +88,8 @@ export const APP_CONFIG: AppConfig = {
         realm: 'MOOSE_UHMEP',
         clientId: 'uhmep-webapp',
       }
+      // enablePseudo: true,
+      // pseudoApiUrl: 'http://uhmep-mockingbird.test.paas.vasdc.be/pseudo/v1'
     },
     test: {
       env: 'test',
