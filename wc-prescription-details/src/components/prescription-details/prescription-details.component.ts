@@ -138,6 +138,8 @@ interface ViewState {
 export class PrescriptionDetailsWebComponent implements OnChanges {
   private readonly templateCode$ = computed(() => this.prescriptionStateService.state().data?.templateCode);
   private readonly tokenClaims$ = toSignal(this.authService.getClaims());
+  private readonly isProfessional$ = toSignal(this.authService.isProfessional());
+
 
   readonly viewState$: Signal<DataState<ViewState>> = combineSignalDataState({
     prescription: this.prescriptionStateService.state,
@@ -145,7 +147,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
       const patientState = this.patientStateService.state();
       const identifyState = this.identifyState.state();
       const ssin = identifyState.data
-      const professional = this.tokenClaims$()?.['professional'];
+      const professional = this.isProfessional$();
       const userProfile = this.tokenClaims$()?.['userProfile'];
 
       if(professional) {
@@ -258,7 +260,8 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
 
       untracked(() => {
         if (ssin) {
-          if (this.tokenClaims$()?.['professional']) {
+          const professional = this.isProfessional$();
+          if (professional) {
             this.patientStateService.loadPatient(ssin.toString());
           }
         }
