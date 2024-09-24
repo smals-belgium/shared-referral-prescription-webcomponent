@@ -5,6 +5,7 @@ import { Buffer } from 'buffer';
 import { AuthExchangeService } from './auth-exchange.service';
 import { ConfigurationService } from './configuration.service';
 import { AuthService } from './auth.service';
+import {Discipline} from "../interfaces";
 
 @Injectable({providedIn: 'root'})
 export class WcAuthService extends AuthService {
@@ -54,7 +55,19 @@ export class WcAuthService extends AuthService {
 
   override isProfessional(): Observable<boolean> {
     return this.getClaims().pipe(
-      map((claims) => claims['professional'] != null)
+      map((claims) => this.userProfileHasProfessionalKey(claims['userProfile']))
     );
+  }
+
+  private userProfileHasProfessionalKey(userProfile: Record<string, any>): boolean {
+    let professional: boolean = false;
+
+    for(let value in Discipline) {
+      if(userProfile.hasOwnProperty(value.toLowerCase())) {
+        professional = true;
+      }
+    }
+
+    return professional;
   }
 }

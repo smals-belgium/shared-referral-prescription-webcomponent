@@ -12,7 +12,7 @@ export class PseudoService {
     private configService: ConfigurationService,
     private pseudomationHelper: PseudonymisationHelper,
   ) {
-    this.pseudonymisationDomain = this.pseudomationHelper.createDomain('uhmep_v1', <Curve>'p521', this.pseudoApiUrl, 8)
+    this.pseudonymisationDomain = this.pseudomationHelper.createDomain('uhmep_v1', <Curve>'p521', this.pseudoApiUrl, 8);
   }
 
   async pseudonymize(value: string): Promise<string> {
@@ -22,9 +22,9 @@ export class PseudoService {
 
     return await this.pseudonymisationDomain.valueFactory.fromString(value).pseudonymize().then((res: PseudonymInTransit | EHealthProblem) => {
       if (res instanceof EHealthProblem) {
-        throw new Error(res.detail)
+        throw new Error(res.detail);
       }
-      return res.asString()
+      return res.asString();
     })
   }
 
@@ -35,9 +35,9 @@ export class PseudoService {
 
     return await this.pseudonymisationDomain.pseudonymInTransitFactory.fromSec1AndTransitInfo(value).identify().then((res: Value | EHealthProblem) => {
       if (res instanceof EHealthProblem) {
-        throw new Error(res.detail)
+        throw new Error(res.detail);
       }
-      return res.asString()
+      return res.asString();
     })
   }
 }
