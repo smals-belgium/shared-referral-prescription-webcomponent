@@ -28,7 +28,7 @@ import {
   PerformerTask,
   Person,
   ReadPrescription,
-  Status,
+  Status, Token,
   UserInfo,
 } from '@reuse/code/interfaces';
 import {combineSignalDataState} from '@reuse/code/utils/rxjs.utils';
@@ -212,7 +212,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
   @Input() initialPrescriptionType?: string;
   @Input() prescriptionId!: string;
   @Input() intent!: string;
-  @Input() getToken!: () => Promise<string>;
+  @Input() getToken!: () => Promise<Token>;
 
   @Output() clickDuplicate = new EventEmitter<ReadPrescription>();
 
@@ -269,9 +269,19 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
     })
   }
 
+  getAccessToken = async () => {
+    const e = await this.getToken();
+    return e.accessToken;
+  }
+
+  getIdToken = async () => {
+    const e = await this.getToken();
+    return e.idToken;
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['getToken']) {
-      this.authService.init(this.getToken);
+      this.authService.init(this.getAccessToken, this.getIdToken);
       this.accessMatrixStateService.loadAccessMatrix();
       this.templatesStateService.loadTemplates();
     }
