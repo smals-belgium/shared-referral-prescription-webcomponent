@@ -1,10 +1,10 @@
 export interface AccessMatrix {
   quality: Quality;
   templateName: string;
-  assignCaregiver: boolean;
+  assignPrescription: boolean;
+  assignProposal: boolean;
   createPrescription: boolean;
-  approveProposal: boolean;
-  rejectProposal: boolean;
+  evaluateProposal: boolean;
   consultPrescription: boolean;
   cancelPrescription: boolean;
   createProposal: boolean;
@@ -12,7 +12,9 @@ export interface AccessMatrix {
   executeTreatment: boolean;
   interruptTreatment: boolean;
   revokeTreatment: boolean;
-  rejectAssignation: boolean;
+  removeAssignationPrescription: boolean;
+  removeAssignationProposal: boolean;
+  cancelProposal: boolean;
 }
 
 export type Permissions = keyof Omit<AccessMatrix, 'quality'|'templateName'>;

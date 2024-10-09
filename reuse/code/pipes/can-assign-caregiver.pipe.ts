@@ -11,8 +11,16 @@ export class CanAssignCaregiverPipe {
   }
 
   transform(prescription: ReadPrescription): boolean {
-    return this.accessMatrixState.hasAtLeastOnePermission(['assignCaregiver'], prescription.templateCode)
+    return this.hasAssignPermissions(prescription)
       && prescription.status != null
       && [Status.DRAFT, Status.PENDING, Status.OPEN, Status.IN_PROGRESS].includes(prescription.status);
+  }
+
+  private hasAssignPermissions(prescription: ReadPrescription) {
+    const intent = prescription.intent
+    if(intent === 'proposal') {
+      return this.accessMatrixState.hasAtLeastOnePermission(['assignProposal'], prescription.templateCode);
+    }
+    return this.accessMatrixState.hasAtLeastOnePermission(['assignPrescription'], prescription.templateCode)
   }
 }
