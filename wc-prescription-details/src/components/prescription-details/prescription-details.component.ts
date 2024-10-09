@@ -49,7 +49,7 @@ import {
   CancelExecutionPrescriptionDialog
 } from '@reuse/code/dialogs/cancel-execution-prescription/cancel-execution-prescription.dialog';
 import {CanCreatePrescriptionPipe} from '@reuse/code/pipes/can-create-prescription.pipe';
-import {CanCancelPrescriptionPipe} from '@reuse/code/pipes/can-cancel-prescription.pipe';
+import {CanCancelPrescriptionOrProposalPipe} from '@reuse/code/pipes/can-cancel-prescription-or-proposal.pipe';
 import {CanAssignCaregiverPipe} from '@reuse/code/pipes/can-assign-caregiver.pipe';
 import {CanRejectAssignationPipe} from '@reuse/code/pipes/can-reject-assignation.pipe';
 import {CanTransferAssignationPipe} from '@reuse/code/pipes/can-transfer-assignation.pipe';
@@ -123,7 +123,7 @@ interface ViewState {
     CanCancelTreatmentPipe,
     CanStartTreatmentPipe,
     CanAssignCaregiverPipe,
-    CanCancelPrescriptionPipe,
+    CanCancelPrescriptionOrProposalPipe,
     CanCreatePrescriptionPipe,
     CanRejectAssignationPipe,
     CanTransferAssignationPipe,
