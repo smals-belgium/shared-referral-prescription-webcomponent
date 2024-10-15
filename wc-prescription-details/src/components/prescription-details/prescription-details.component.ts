@@ -292,6 +292,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
     if (!templateCode || templatesState.status !== LoadingStatus.SUCCESS) {
       return {...templatesState, data: undefined};
     }
+
     return {
       ...templatesState,
       data: templatesState.data!.find((t) => t.code === templateCode)
