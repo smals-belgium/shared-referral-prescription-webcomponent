@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Testing the News Web Component</title>
+  <base href="/">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="web-components/create-prescription/wc-create-prescription.css">
+  <script src="web-components/create-prescription/keycloak.js"></script>
+  <style>
+    body {
+      font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+  </style>
+</head>
+<body>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  <!-- Setting the environment dynamically -->
+  const keycloak = getKeycloakConfigurationForEnv();
+  keycloak.init({onLoad: 'login-required', checkLoginIframe: false}).then(function (authenticated) {
+    <!-- Initialization of the authentication library -->
+    <!-- Creation of the custom element -->
+    const create = document.createElement('nihdi-referral-prescription-create');
+    <!-- Setting the intent input parameter -->
+    create.intent = params.get('intent') || 'order';  // By default, setting it as 'order'
+    <!-- Input for the patient SSIN -->
+    create.patientSsin = params.get('ssin');
+    <!-- Input for the language -->
+    create.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'fr-BE';
+    <!-- Callback method to get a token for the authentication library -->
+    create.getToken = () => Promise.resolve(keycloak.token);
+    <!-- Listener function to get feedback from the Web Component after the prescription has been successfully created -->
+    create.addEventListener('prescriptionsCreated', () => {
+      document.body.removeChild(create);
+      setTimeout(() => {
+        alert('Prescription(s) were created. Refresh to start again.');
+      }, 100);
+    });
+    <!-- Adding the custom element to the HTML body -->
+    document.body.append(create);
+  }).catch(function () {
+    alert('failed to initialize');
+  });
+
+  function getKeycloakConfigurationForEnv() {
+    return new Keycloak({
+      url: `${authorization_server_url}`,
+      realm: `${realm_name}`,
+      clientId: `${client_id}`
+    });
+  }
+</script>
+
+<!-- Web component script at the end -->
+<script src="web-components/create-prescription/wc-create-prescription.js" type="module"></script>
+</body>
+</html>
