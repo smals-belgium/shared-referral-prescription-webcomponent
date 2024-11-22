@@ -73,6 +73,7 @@ export interface Repeat {
   duration?: number;
   durationUnit?: UnitsOfTime;
   dayOfWeek?: Weekday[];
+  when?: string[];
 }
 
 export interface Requester {

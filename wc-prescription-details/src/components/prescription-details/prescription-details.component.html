@@ -42,6 +42,15 @@
                 ><mat-icon>control_point_duplicate</mat-icon>
                   {{'prescription.duplicate' | translate}}
                 </button>
+                <button
+                  *ngIf="prescription.templateCode | canExtendPrescription: prescription"
+                  mat-raised-button
+                  type="button"
+                  (click)="clickExtend.emit(prescription)"
+                  data-cy="prescription-extend-button"
+                ><mat-icon>edit_document</mat-icon>
+                  {{'prescription.extend' | translate}}
+                </button>
               </div>
               <h2 data-cy="prescription-type">{{prescription.templateCode | templateName}}</h2>
               <div class="row">

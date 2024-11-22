@@ -11,7 +11,8 @@ import {
   Output,
   Renderer2,
   Signal,
-  SimpleChanges, untracked,
+  SimpleChanges,
+  untracked,
   ViewEncapsulation
 } from '@angular/core';
 import {FormTemplate} from '@smals/vas-evaluation-form-ui-core';
@@ -85,6 +86,7 @@ import {
 import {CanApproveProposalPipe} from "@reuse/code/pipes/can-approve-proposal.pipe";
 import {CanRejectProposalPipe} from "@reuse/code/pipes/can-reject-proposal.pipe";
 import {RejectProposalDialog} from "@reuse/code/dialogs/reject-proposal/reject-proposal.dialog";
+import {CanExtendPrescriptionPipe} from "@reuse/code/pipes/can-extend-prescription.pipe";
 import {IdentifyState} from "@reuse/code/states/identify.state";
 
 interface ViewState {
@@ -131,7 +133,8 @@ interface ViewState {
     CanInterruptTreatmentPipe,
     CanRestartTreatmentPipe,
     CanApproveProposalPipe,
-    CanRejectProposalPipe
+    CanRejectProposalPipe,
+    CanExtendPrescriptionPipe
   ]
 })
 
@@ -215,6 +218,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
   @Input() getToken!: () => Promise<Token>;
 
   @Output() clickDuplicate = new EventEmitter<ReadPrescription>();
+  @Output() clickExtend = new EventEmitter<ReadPrescription>();
 
   constructor(
     private translate: TranslateService,

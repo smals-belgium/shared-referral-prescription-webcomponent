@@ -77,6 +77,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   @Input() patientSsin!: string;
   @Input() getToken!: () => Promise<string>;
   @Input() intent!: string;
+  @Input() extend?: boolean = false;
 
   @Output() prescriptionsCreated = new EventEmitter<void>();
   @Output() clickCancel = new EventEmitter<void>();
@@ -141,9 +142,22 @@ export class CreatePrescriptionWebComponent implements OnChanges {
         trackId: this.trackId++,
         templateCode: templateCode,
         formTemplateState$: this.getPrescriptionTemplateStream(templateCode),
-        initialPrescription
+        initialPrescription: this.updateResponses(initialPrescription)
       }
     ]);
+  }
+
+  updateResponses(initialPrescription?: ReadPrescription) {
+    if(!this.extend || !initialPrescription?.responses) {
+      return initialPrescription
+    }
+
+    if(initialPrescription.responses?.['prescriptionOriginId'] || !initialPrescription?.id){
+      return initialPrescription
+    }
+
+    initialPrescription.responses['prescriptionOriginId'] =  initialPrescription.id
+    return initialPrescription
   }
 
   deletePrescriptionForm({form, templateName}: { form: CreatePrescriptionForm; templateName: string }) {
