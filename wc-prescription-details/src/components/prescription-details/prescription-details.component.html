@@ -23,7 +23,7 @@
               </div>
               <div class="actions">
                 <button
-                  *ngIf="prescription | canCancelPrescription: viewState.data!.currentUser.ssin"
+                  *ngIf="prescription | canCancelPrescriptionOrProposal: viewState.data!.currentUser.ssin"
                   mat-raised-button
                   type="button"
                   color="accent"
@@ -145,7 +145,7 @@
                         <span style="font-size: 14px; color:#8f8f8f">{{task.executionPeriod?.start! | date: 'dd/MM/yyyy'}} - </span>
                       </ng-container>
                       <ng-container *ngIf="task.executionPeriod?.end">
-                        <span style="font-size: 14px; color:#8f8f8f">{{task.executionPeriod?.end! | date: 'dd/MM/yyyy'}} - </span>
+                        <span style="font-size: 14px; color:#8f8f8f">{{task.executionPeriod?.end! | date: 'dd/MM/yyyy'}}</span>
                       </ng-container>
                     </div>
                     <div class="organization-caregiver-list">
@@ -160,7 +160,7 @@
                                 <span style="font-size: 14px; color:#8f8f8f">{{performertask.executionPeriod?.start! | date: 'dd/MM/yyyy'}} - </span>
                               </ng-container>
                               <ng-container *ngIf="performertask.executionPeriod?.end">
-                                <span style="font-size: 14px; color:#8f8f8f">{{performertask.executionPeriod?.end! | date: 'dd/MM/yyyy'}} - </span>
+                                <span style="font-size: 14px; color:#8f8f8f">{{performertask.executionPeriod?.end! | date: 'dd/MM/yyyy'}}</span>
                               </ng-container>
                             </div>
                             <button
@@ -246,7 +246,7 @@
                           <span style="font-size: 14px; color:#8f8f8f">{{task.executionPeriod?.start! | date: 'dd/MM/yyyy'}} - </span>
                         </ng-container>
                         <ng-container *ngIf="task.executionPeriod?.end">
-                          <span style="font-size: 14px; color:#8f8f8f">{{task.executionPeriod?.end! | date: 'dd/MM/yyyy'}} - </span>
+                          <span style="font-size: 14px; color:#8f8f8f">{{task.executionPeriod?.end! | date: 'dd/MM/yyyy'}}</span>
                         </ng-container>
                       </div>
 
@@ -310,7 +310,7 @@
                         <mat-icon>cancel</mat-icon>
                         {{'prescription.cancelExecution.action' | translate}}</button>
                       <button
-                        *ngIf="prescription | canTransferAssignation:task"
+                        *ngIf="prescription | canTransferAssignation:task:viewState.data?.currentUser?.ssin"
                         mat-raised-button
                         (click)="openTransferAssignationDialog(prescription, task)"
                         data-cy="prescription-transfer-assignation-button"

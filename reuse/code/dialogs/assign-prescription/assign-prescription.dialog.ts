@@ -77,7 +77,7 @@ export class AssignPrescriptionDialog {
           criteria.query,
           criteria.zipCodes,
           ['NURSE'],
-          ['THIRD_PARTY_PAYING_GROUP', 'THIRD_PARTY_PAYING_GROUP', 'GUARD_POST', 'MEDICAL_HOUSE', 'HOME_SERVICES']
+          ['THIRD_PARTY_PAYING_GROUP', 'GUARD_POST', 'MEDICAL_HOUSE', 'HOME_SERVICES']
         ).pipe(
           catchError((error) => {
             console.error('Error fetching healthcare providers:', error);

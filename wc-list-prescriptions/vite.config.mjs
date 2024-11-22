@@ -12,7 +12,7 @@ export default defineConfig({
           dest: './',
         },
       ],
-    }),],
+    })],
   root: "wc-list-prescriptions",
   build: {
     rollupOptions: {

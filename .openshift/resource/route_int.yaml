@@ -32,7 +32,7 @@ kind: Route
 metadata:
   labels:
     deploymentconfig: &deploymentconfig referral-prescription-web-components
-  name: referral-prescription-web-components-ext
+  name: referral-prescription-patient-web-components-ext
 spec:
   host: referral-prescription-patient.int.ext.vascloud.be
   path: /web-components
@@ -46,7 +46,7 @@ kind: Route
 metadata:
   labels:
     deploymentconfig: &deploymentconfig referral-prescription-web-components
-  name: referral-prescription-web-components-pub
+  name: referral-prescription-patient-web-components-pub
 spec:
   host: referral-prescription-patient.int.pub.vascloud.be
   path: /web-components

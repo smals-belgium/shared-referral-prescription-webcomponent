@@ -200,51 +200,53 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     }
   }
 
-  private getPatientIdentifier(): Observable<string> {
+  private getPatientIdentifier(): Promise<string> {
     return this.pseudoService.pseudonymize(this.patientSsin);
   }
 
   private publishOnePrescription(): void {
     const prescriptionForm = this.prescriptionForms()[0];
-    this.getPatientIdentifier()
-      .pipe(
-        map((identifier) => this.toCreatePrescriptionRequest(
-          prescriptionForm.templateCode,
-          prescriptionForm.elementGroup!.getOutputValue(),
-          identifier
-        )),
-        switchMap((createPrescriptionRequest) => {
-          if(this.intent == 'order') {
-            return this.prescriptionService.create(createPrescriptionRequest);
-          }
-          else{
-            return this.proposalService.create(createPrescriptionRequest);
+    this.getPatientIdentifier().then(identifier => {
+      const createPrescriptionRequest = this.toCreatePrescriptionRequest(
+        prescriptionForm.templateCode,
+        prescriptionForm.elementGroup!.getOutputValue(),
+        identifier
+      )
+
+      if(this.intent == 'order') {
+        this.prescriptionService.create(createPrescriptionRequest).subscribe({
+          next: () => {
+            this.toastService.show('prescription.create.success');
+            this.prescriptionsCreated.emit();
+          },
+          error: (err) => {
+            console.error(err);
+            this.toastService.showSomethingWentWrong();
+            this.loading.set(false);
           }
         })
-      )
-      .subscribe({
-        next: () => {
-          if(this.intent == 'order') {
-            this.toastService.show('prescription.create.success');
-          }
-          else{
+      }
+      else{
+        this.proposalService.create(createPrescriptionRequest).subscribe({
+          next: () => {
             this.toastService.show('proposal.create.success');
+            this.prescriptionsCreated.emit();
+          },
+          error: (err) => {
+            console.error(err);
+            this.toastService.showSomethingWentWrong();
+            this.loading.set(false);
           }
-          this.prescriptionsCreated.emit();
-        },
-        error: (err) => {
-          console.error(err);
-          this.toastService.showSomethingWentWrong();
-          this.loading.set(false);
-        }
-      });
+        })
+      }
+    })
   }
 
   private publishMultiplePrescriptions(): void {
     this.loading.set(true);
-    this.getPatientIdentifier()
-      .pipe(mergeMap((identifier) => forkJoin(this.mapToCreatePrescriptionStreams(identifier))))
-      .subscribe((results) => this.handleCreateBulkResult(results));
+    this.getPatientIdentifier().then(identifier => {
+      forkJoin(this.mapToCreatePrescriptionStreams(identifier)).subscribe((results) => this.handleCreateBulkResult(results))
+    })
   }
 
   private mapToCreatePrescriptionStreams(identifier: string): Observable<{

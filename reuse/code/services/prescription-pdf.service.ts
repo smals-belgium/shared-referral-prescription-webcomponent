@@ -198,7 +198,6 @@ export class PrescriptionsPdfService {
         values: [this.formatDate(prescription.period.start, 'dd/MM/yyyy')+' - '+this.formatDate(prescription.period.end, 'dd/MM/yyyy')],
       }
     ];
-    console.log(templateVersion.elements);
     const dynamicValueLabels = templateVersion.elements
       .filter((q) => prescription.responses![q.id!] != null)
       .map((q) => ({

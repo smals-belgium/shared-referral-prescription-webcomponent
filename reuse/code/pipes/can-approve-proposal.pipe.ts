@@ -11,6 +11,6 @@ export class CanApproveProposalPipe {
   }
 
   transform(prescription: ReadPrescription): boolean {
-    return this.accessMatrixState.hasAtLeastOnePermission(['approveProposal'], prescription.templateCode);
+    return this.accessMatrixState.hasAtLeastOnePermission(['evaluateProposal'], prescription.templateCode);
   }
 }

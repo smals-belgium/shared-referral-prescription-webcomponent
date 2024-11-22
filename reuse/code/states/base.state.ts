@@ -24,7 +24,6 @@ export abstract class BaseState<T> {
           }
         },
         error: err => {
-          console.log(err)
           return subject.error(err)
         }
       });

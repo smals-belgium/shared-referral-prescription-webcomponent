@@ -1,5 +1,5 @@
 import {
-  Component,
+  Component, computed,
   EventEmitter,
   HostBinding,
   Input,
@@ -30,8 +30,8 @@ import { TemplatesState } from '@reuse/code/states/templates.state';
 import { AccessMatrixState } from '@reuse/code/states/access-matrix.state';
 import { PrescriptionSummary, PrescriptionSummaryList } from '@reuse/code/interfaces/prescription-summary.interface';
 import { PseudoService } from '@reuse/code/services/pseudo.service';
-import { Observable } from 'rxjs';
 import { ProposalsState } from '@reuse/code/states/proposals.state';
+import {FormsModule} from "@angular/forms";
 
 interface ViewState {
   prescriptions: PrescriptionSummaryList;
@@ -57,7 +57,8 @@ interface ViewState {
     IfStatusLoadingDirective,
     OverlaySpinnerComponent,
     AsyncPipe,
-    TranslateModule
+    TranslateModule,
+    FormsModule
   ]
 })
 export class ListPrescriptionsWebComponent implements OnChanges {
@@ -120,7 +121,7 @@ export class ListPrescriptionsWebComponent implements OnChanges {
 
   loadPrescriptions(page?: number, pageSize?: number) {
     if (this.patientSsin) {
-      this.getPatientIdentifier(this.patientSsin!).subscribe(identifier => {
+      this.getPatientIdentifier(this.patientSsin!).then((identifier) => {
         this.prescriptionsState.loadPrescriptions({
           patient: identifier,
           requester: this.requesterSsin,
@@ -138,13 +139,13 @@ export class ListPrescriptionsWebComponent implements OnChanges {
 
   loadProposals(page?: number, pageSize?: number) {
     if (this.patientSsin) {
-      this.getPatientIdentifier(this.patientSsin!).subscribe(identifier => {
+      this.getPatientIdentifier(this.patientSsin!).then((identifier) => {
         this.proposalsState.loadProposals({
           patient: identifier,
           requester: this.requesterSsin,
           performer: this.performerSsin
         }, page, pageSize);
-      });
+      })
     } else {
       this.proposalsState.loadProposals({
         patient: this.patientSsin,
@@ -163,7 +164,7 @@ export class ListPrescriptionsWebComponent implements OnChanges {
     }
   }
 
-  private getPatientIdentifier(identifier: string): Observable<string> {
+  private getPatientIdentifier(identifier: string): Promise<string> {
     return this.pseudoService.pseudonymize(identifier);
   }
 }

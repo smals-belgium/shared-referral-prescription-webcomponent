@@ -4,11 +4,13 @@
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
     "types": [
-      "jasmine"
+      "jest"
     ]
   },
   "include": [
-    "src/**/*.spec.ts",
-    "src/**/*.d.ts"
+    "reuse/code/**/*.spec.ts",
+    "reuse/code/**/*.d.ts",
+    "wc-prescription-details/src/***.spec.ts",
+    "wc-prescription-details/src/***.d.ts"
   ]
 }

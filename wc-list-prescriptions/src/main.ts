@@ -13,12 +13,14 @@ import { provideCore } from '@reuse/code/providers/core.provider';
 import { ConfigurationService } from '@reuse/code/services/configuration.service';
 import { AuthService } from '@reuse/code/services/auth.service';
 import { WcAuthService } from '@reuse/code/services/wc-auth.service';
+import {providePseudonymisation} from "@reuse/code/providers/pseudo.provider";
 
 (async () => {
   const app =  createApplication({
     providers: [
       provideCore(),
       provideHttpClient(withInterceptors([apiUrlInterceptor])),
+      providePseudonymisation(),
       {
         provide: ConfigurationService,
         useClass: WcConfigurationService,

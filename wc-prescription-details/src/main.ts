@@ -15,6 +15,7 @@ import { WcTranslateLoader } from '@reuse/code/services/translate.loader';
 import {MatDialogModule} from "@angular/material/dialog";
 import {TranslateCompiler, TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-compiler';
+import {providePseudonymisation} from "@reuse/code/providers/pseudo.provider";
 
 (async () => {
   const app = createApplication({
@@ -22,6 +23,7 @@ import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-comp
       provideAnimations(),
       provideCore(),
       provideHttpClient(withInterceptors([apiUrlInterceptor])),
+      providePseudonymisation(),
       {
         provide: ConfigurationService,
         useClass: WcConfigurationService,
