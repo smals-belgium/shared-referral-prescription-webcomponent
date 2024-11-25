@@ -4,6 +4,7 @@ import { BehaviorSubject, mergeMap, Observable, of, throwError } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
 import { DataState, LoadingStatus } from '../interfaces';
+import { Buffer } from 'buffer';
 
 interface OpenIdConfiguration {
   authority: string;
@@ -51,6 +52,13 @@ export class AuthExchangeService {
   }
 
   private executeNewAccessTokenExchange(config: OpenIdConfiguration, sourceAccessToken: string, targetClientId: string) {
+    let azp = config.clientId
+
+    if(sourceAccessToken) {
+      const parsedToken = JSON.parse(Buffer.from(sourceAccessToken.split('.')[1], 'base64').toString())
+      azp = parsedToken['azp'] || config.clientId;
+    }
+
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/x-www-form-urlencoded')
     const body = new HttpParams()
@@ -58,7 +66,7 @@ export class AuthExchangeService {
       .set('grant_type', 'urn:ietf:params:oauth:grant-type:token-exchange')
       .set('subject_token_type', 'urn:ietf:params:oauth:token-type:access_token')
       .set('subject_token', sourceAccessToken)
-      .set('client_id', config.clientId)
+      .set('client_id', azp)
       .set('audience', targetClientId);
 
 
