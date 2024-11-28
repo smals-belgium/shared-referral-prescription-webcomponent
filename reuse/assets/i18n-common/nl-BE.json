@@ -9,6 +9,7 @@
     "patient": "Patiënt",
     "category": "Categorie",
     "typeOfPrescription": "Type voorschrift",
+    "shortCode": "RefID",
     "chooseFromList": "Kies uit deze lijst",
     "tryAgain": "Opnieuw proberen",
     "goBack": "Terug",

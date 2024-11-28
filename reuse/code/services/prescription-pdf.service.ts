@@ -173,6 +173,12 @@ export class PrescriptionsPdfService {
             ]
           }],
           [{
+            fontSize: 11,
+            stack: [
+              this.boldNotBoldTextElement(this.translate.instant('common.shortCode') + ' ', prescription.shortCode ?? '', 'center')
+            ]
+          }],
+          [{
             text: this.translate.instant('prescription.print.content-electronic-prescription'),
             alignment: 'center',
             fontSize: 12,
@@ -278,8 +284,8 @@ export class PrescriptionsPdfService {
 
   private evfTranslate(template: FormTemplate, labelId: string, language: 'nl' | 'fr' | 'de' | 'en'): string {
     return template.translations?.[labelId]?.[language]
-      || template.commonTranslations?.[labelId]?.[language]
-      || 'Translation not found for "' + labelId + '"'
+      ?? template.commonTranslations?.[labelId]?.[language]
+      ?? 'Translation not found for "' + labelId + '"'
   }
 
   private getFontVfs(): Record<string, string> {
