@@ -68,6 +68,10 @@ export class WcAuthService extends AuthService {
       }
     }
 
+    if(userProfile.hasOwnProperty('organizations') && userProfile['organizations']?.['role_code'] === '144') {
+      professional = true;
+    }
+
     return professional;
   }
 }
