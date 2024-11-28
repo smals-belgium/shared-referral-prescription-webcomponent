@@ -40,6 +40,14 @@ export class PrescriptionService {
     return this.http.get<ReadPrescription>(`/prescriptions/${prescriptionId}`);
   }
 
+  findOneByShortCode(shortCode: string, ssin: string): Observable<ReadPrescription> {
+    let params = new HttpParams()
+      .set('ssin', ssin)
+      .set('shortCode', shortCode)
+
+    return this.http.get<ReadPrescription>(`/prescription`, {params});
+  }
+
   cancel(prescriptionId: string): Observable<void> {
     return this.http.post<void>(`/prescriptions/${prescriptionId}/cancel`, {});
   }

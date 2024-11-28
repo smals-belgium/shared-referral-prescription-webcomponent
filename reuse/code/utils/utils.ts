@@ -1,5 +1,6 @@
 const UuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i as RegExp;
 const SsinRegex = /^[0-9]{11}$/i as RegExp;
+const ShortCodeRegex = /^[a-zA-Z0-9]{4}[a-fA-F0-9]{2}$/ as RegExp;
 
 export function isSsin(value: string): boolean {
   return SsinRegex.test(value.replace(/[\s-.]/g, ''));
@@ -7,6 +8,10 @@ export function isSsin(value: string): boolean {
 
 export function isPrescriptionId(value: string): boolean {
   return UuidRegex.test(value);
+}
+
+export function isPrescriptionShortCode(value: string): boolean {
+  return ShortCodeRegex.test(value);
 }
 
 export function containsAtLeastOneDigit(value: string): boolean {

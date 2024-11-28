@@ -86,6 +86,8 @@ import {CanApproveProposalPipe} from "@reuse/code/pipes/can-approve-proposal.pip
 import {CanRejectProposalPipe} from "@reuse/code/pipes/can-reject-proposal.pipe";
 import {RejectProposalDialog} from "@reuse/code/dialogs/reject-proposal/reject-proposal.dialog";
 import {IdentifyState} from "@reuse/code/states/identify.state";
+import { isPrescriptionId, isPrescriptionShortCode, isSsin, validateSsinChecksum } from '@reuse/code/utils/utils';
+import { PseudoService } from '@reuse/code/services/pseudo.service';
 
 interface ViewState {
   prescription: ReadPrescription;
@@ -211,6 +213,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
   @Input() lang = 'fr-BE';
   @Input() initialPrescriptionType?: string;
   @Input() prescriptionId!: string;
+  @Input() patientSsin?: string;
   @Input() intent!: string;
   @Input() getToken!: () => Promise<Token>;
 
@@ -222,6 +225,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
     private dialog: MatDialog,
     private authService: AuthService,
     private configService: WcConfigurationService,
+    private pseudoService: PseudoService,
     private renderer: Renderer2,
     private accessMatrixStateService: AccessMatrixState,
     private prescriptionStateService: PrescriptionState,
@@ -289,13 +293,31 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
       this.dateAdapter.setLocale(this.lang);
       this.translate.use(this.lang);
     }
-    if (changes['prescriptionId']) {
+    if (changes['prescriptionId'] || changes['patientSsin']) {
       this.loadPrescription();
     }
   }
 
   loadPrescription(): void {
-    this.prescriptionStateService.loadPrescription(this.prescriptionId);
+    if (isPrescriptionId(this.prescriptionId)) {
+      this.prescriptionStateService.loadPrescription(this.prescriptionId);
+    } else if(this.patientSsin && isSsin(this.patientSsin)) {
+      if (!validateSsinChecksum(this.patientSsin)) {
+        this.toastService.show('prescription.errors.invalidSsinChecksum');
+        return;
+      }
+
+      if(!isPrescriptionShortCode(this.prescriptionId)) {
+        this.toastService.show('prescription.errors.invalidShortCode');
+        return;
+      }
+
+      this.getPatientIdentifier(this.patientSsin).then((identifier) => {
+        this.prescriptionStateService.loadPrescriptionByShortCode(this.prescriptionId, identifier);
+      });
+
+    }
+
   }
 
   private getPrescriptionTemplateStream(templateCode: string | undefined, templatesState: DataState<EvfTemplate[]>): DataState<EvfTemplate> {
@@ -548,5 +570,9 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
       script.type = 'module';
       this.renderer.appendChild(this._document.body, script);
     });
+  }
+
+  private getPatientIdentifier(identifier: string): Promise<string> {
+    return this.pseudoService.pseudonymize(identifier);
   }
 }

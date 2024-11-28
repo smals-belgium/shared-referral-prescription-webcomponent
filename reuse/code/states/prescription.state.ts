@@ -30,6 +30,10 @@ export class PrescriptionState extends BaseState<ReadPrescription> {
     this.load(this.prescriptionService.findOne(id));
   }
 
+  loadPrescriptionByShortCode(shortCode: string, ssin: string): void {
+    this.load(this.prescriptionService.findOneByShortCode(shortCode, ssin));
+  }
+
   assignPrescriptionPerformer(prescriptionId: string, referralTaskId: string, healthcareProvider: HealthcareProvider) {
     if(healthcareProvider.type === 'Professional') {
       return this.prescriptionService
