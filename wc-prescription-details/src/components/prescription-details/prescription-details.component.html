@@ -70,6 +70,18 @@
                 </div>
               </div>
 
+              @if (prescription.shortCode) {
+                <div class="row">
+                  <div class="info-item">
+                    <div data-cy="prescription-shortcode-label">{{'prescription.shortcode' | translate}}</div>
+                    <div data-cy="prescription-shortcode">
+                      {{prescription.shortCode}}
+                    </div>
+                  </div>
+                </div>
+              }
+
+
               <div class="row">
                 <div class="info-item">
                   <div data-cy="prescription-validity-period-label">{{'prescription.validityPeriod' | translate}}</div>
