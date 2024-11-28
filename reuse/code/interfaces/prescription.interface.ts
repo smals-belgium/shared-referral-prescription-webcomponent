@@ -15,7 +15,8 @@ export interface ReadPrescription {
   performerTasks: PerformerTask[];
   organizationTasks: OrganizationTask[];
   responses: Record<string, any>;
-  intent?: string
+  intent?: string;
+  shortCode?: string;
 }
 
 export interface ReferralTask {
