@@ -9,6 +9,7 @@
     "patient": "Patient",
     "category": "Catégorie",
     "typeOfPrescription": "Type de prescription",
+    "shortCode": "RefID",
     "chooseFromList": "Choisissez dans cette liste",
     "tryAgain": "Ré-essayer",
     "goBack": "Retour",
