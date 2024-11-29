@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overlay-spinner.component';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
@@ -10,6 +10,7 @@ import { ReadPrescription } from '../../interfaces';
 import { NgIf } from '@angular/common';
 import { PrescriptionState } from '../../states/prescription.state';
 import {ToastService} from "../../services/toast.service";
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   standalone: true,
@@ -29,13 +30,14 @@ import {ToastService} from "../../services/toast.service";
   templateUrl: './reject-proposal.dialog.html',
   styleUrl: './reject-proposal.dialog.scss'
 })
-export class RejectProposalDialog {
+export class RejectProposalDialog implements OnInit {
 
   readonly formGroup = new FormGroup({
     reason: new FormControl<string>('', Validators.required)
   });
 
   loading = false;
+  generatedUUID = '';
 
   constructor(
     private toastService: ToastService,
@@ -47,6 +49,10 @@ export class RejectProposalDialog {
 
   }
 
+  ngOnInit() {
+    this.generatedUUID = uuidv4();
+  }
+
 
   rejectProposal(): void {
     this.formGroup.markAllAsTouched();
@@ -56,7 +62,7 @@ export class RejectProposalDialog {
       this.loading = true;
       if(!this.data.proposal.performerTasks?.length) {
         this.prescriptionStateService
-          .rejectProposal(this.data.proposal.id, reason!)
+          .rejectProposal(this.data.proposal.id, reason!, this.generatedUUID)
           .subscribe({
             next: () => {
               this.loading = false;
@@ -73,7 +79,7 @@ export class RejectProposalDialog {
         const performerTasks =  this.data.proposal.performerTasks
         const lastPerformerTask = performerTasks[performerTasks.length-1]
         this.prescriptionStateService
-          .rejectProposalTask(this.data.proposal.id, lastPerformerTask.id, reason!)
+          .rejectProposalTask(this.data.proposal.id, lastPerformerTask.id, reason!, this.generatedUUID)
           .subscribe({
             next: () => {
               this.loading = false;

@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { DateTime } from 'luxon';
@@ -20,6 +20,7 @@ import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overla
 import { ToastService } from '../../services/toast.service';
 import { PrescriptionState } from '../../states/prescription.state';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { v4 as uuidv4 } from 'uuid';
 
 interface StartExecutionPrescriptionDialogData {
   prescription: ReadPrescription;
@@ -46,7 +47,7 @@ interface StartExecutionPrescriptionDialogData {
     AsyncPipe
   ]
 })
-export class StartExecutionPrescriptionDialog {
+export class StartExecutionPrescriptionDialog implements OnInit {
 
   readonly prescription: ReadPrescription;
   readonly performerTask: PerformerTask;
@@ -57,6 +58,7 @@ export class StartExecutionPrescriptionDialog {
   loading = false;
   readonly minDate;
   readonly maxDate = DateTime.now().toISO();
+  generatedUUID = '';
 
   constructor(
     private prescriptionStateService: PrescriptionState,
@@ -67,6 +69,10 @@ export class StartExecutionPrescriptionDialog {
       this.prescription = data.prescription;
       this.performerTask = data.performerTask;
       this.minDate = data.startTreatmentDate;
+  }
+
+  ngOnInit() {
+    this.generatedUUID = uuidv4();
   }
 
   startExecution(): void {
@@ -87,7 +93,7 @@ export class StartExecutionPrescriptionDialog {
 
   private startExecutionForTask(task: PerformerTask, executionStart: PrescriptionExecutionStart): void {
     this.prescriptionStateService
-      .startPrescriptionExecution(this.prescription.id, task.id, executionStart)
+      .startPrescriptionExecution(this.prescription.id, task.id, executionStart, this.generatedUUID)
       .subscribe({
         next: () => {
           this.toastService.show('prescription.startExecution.success');
@@ -106,6 +112,7 @@ export class StartExecutionPrescriptionDialog {
         this.prescription.id!,
         this.prescription.referralTask.id!,
         {ssin},
+        this.generatedUUID,
         executionStart
       )))
       .subscribe({

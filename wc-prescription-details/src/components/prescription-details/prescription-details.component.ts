@@ -7,7 +7,7 @@ import {
   HostBinding,
   Inject,
   Input,
-  OnChanges,
+  OnChanges, OnInit,
   Output,
   Renderer2,
   Signal,
@@ -15,12 +15,12 @@ import {
   untracked,
   ViewEncapsulation
 } from '@angular/core';
-import {FormTemplate} from '@smals/vas-evaluation-form-ui-core';
-import {MatDialog} from '@angular/material/dialog';
-import {TranslateModule, TranslateService} from '@ngx-translate/core';
-import {DateAdapter} from '@angular/material/core';
-import {DateTime} from 'luxon';
-import {AsyncPipe, DOCUMENT, NgFor, NgIf, NgStyle} from '@angular/common';
+import { FormTemplate } from '@smals/vas-evaluation-form-ui-core';
+import { MatDialog } from '@angular/material/dialog';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { DateAdapter } from '@angular/material/core';
+import { DateTime } from 'luxon';
+import { AsyncPipe, DOCUMENT, NgFor, NgIf, NgStyle } from '@angular/common';
 import {
   CreatePrescriptionRequest,
   DataState,
@@ -30,13 +30,13 @@ import {
   Person,
   ReadPrescription,
   Status, Token,
-  UserInfo,
+  UserInfo
 } from '@reuse/code/interfaces';
-import {combineSignalDataState} from '@reuse/code/utils/rxjs.utils';
-import {AuthService} from '@reuse/code/services/auth.service';
-import {WcConfigurationService} from '@reuse/code/services/wc-configuration.service';
-import {AssignPrescriptionDialog} from '@reuse/code/dialogs/assign-prescription/assign-prescription.dialog';
-import {CancelPrescriptionDialog} from '@reuse/code/dialogs/cancel-prescription/cancel-prescription.dialog';
+import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
+import { AuthService } from '@reuse/code/services/auth.service';
+import { WcConfigurationService } from '@reuse/code/services/wc-configuration.service';
+import { AssignPrescriptionDialog } from '@reuse/code/dialogs/assign-prescription/assign-prescription.dialog';
+import { CancelPrescriptionDialog } from '@reuse/code/dialogs/cancel-prescription/cancel-prescription.dialog';
 import {
   StartExecutionPrescriptionDialog
 } from '@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog';
@@ -49,47 +49,48 @@ import {
 import {
   CancelExecutionPrescriptionDialog
 } from '@reuse/code/dialogs/cancel-execution-prescription/cancel-execution-prescription.dialog';
-import {CanCreatePrescriptionPipe} from '@reuse/code/pipes/can-create-prescription.pipe';
-import {CanCancelPrescriptionOrProposalPipe} from '@reuse/code/pipes/can-cancel-prescription-or-proposal.pipe';
-import {CanAssignCaregiverPipe} from '@reuse/code/pipes/can-assign-caregiver.pipe';
-import {CanRejectAssignationPipe} from '@reuse/code/pipes/can-reject-assignation.pipe';
-import {CanTransferAssignationPipe} from '@reuse/code/pipes/can-transfer-assignation.pipe';
-import {CanStartTreatmentPipe} from '@reuse/code/pipes/can-start-treatment.pipe';
-import {CanRestartTreatmentPipe} from '@reuse/code/pipes/can-restart-treatment.pipe';
-import {CanCancelTreatmentPipe} from '@reuse/code/pipes/can-cancel-treatment.pipe';
-import {CanFinishTreatmentPipe} from '@reuse/code/pipes/can-finish-treatment.pipe';
-import {CanSelfAssignPipe} from '@reuse/code/pipes/can-self-assign.pipe';
-import {CanInterruptTreatmentPipe} from '@reuse/code/pipes/can-interrupt-treatment.pipe';
-import {TemplateNamePipe} from '@reuse/code/pipes/template-name.pipe';
-import {FormatNihdiPipe} from '@reuse/code/pipes/format-nihdi.pipe';
-import {FormatSsinPipe} from '@reuse/code/pipes/format-ssin.pipe';
-import {MatIconModule} from '@angular/material/icon';
-import {MatButtonModule} from '@angular/material/button';
-import {IfStatusSuccessDirective} from '@reuse/code/directives/if-status-success.directive';
-import {IfStatusErrorDirective} from '@reuse/code/directives/if-status-error.directive';
-import {OverlaySpinnerComponent} from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
-import {IfStatusLoadingDirective} from '@reuse/code/directives/if-status-loading.directive';
-import {ErrorCardComponent} from '@reuse/code/components/error-card/error-card.component';
-import {DatePipe} from '@reuse/code/pipes/date.pipe';
-import {PrescriptionState} from '@reuse/code/states/prescription.state';
-import {TemplatesState} from '@reuse/code/states/templates.state';
-import {TemplateVersionsState} from '@reuse/code/states/template-versions.state';
-import {AccessMatrixState} from '@reuse/code/states/access-matrix.state';
-import {toSignal} from '@angular/core/rxjs-interop';
-import {PatientState} from '@reuse/code/states/patient.state';
-import {TransferAssignationDialog} from '@reuse/code/dialogs/transfer-assignation/transfer-assignation.dialog';
-import {ToastService} from '@reuse/code/services/toast.service';
-import {RejectAssignationDialog} from '@reuse/code/dialogs/reject-assignation/reject-assignation.dialog';
+import { CanCreatePrescriptionPipe } from '@reuse/code/pipes/can-create-prescription.pipe';
+import { CanCancelPrescriptionOrProposalPipe } from '@reuse/code/pipes/can-cancel-prescription-or-proposal.pipe';
+import { CanAssignCaregiverPipe } from '@reuse/code/pipes/can-assign-caregiver.pipe';
+import { CanRejectAssignationPipe } from '@reuse/code/pipes/can-reject-assignation.pipe';
+import { CanTransferAssignationPipe } from '@reuse/code/pipes/can-transfer-assignation.pipe';
+import { CanStartTreatmentPipe } from '@reuse/code/pipes/can-start-treatment.pipe';
+import { CanRestartTreatmentPipe } from '@reuse/code/pipes/can-restart-treatment.pipe';
+import { CanCancelTreatmentPipe } from '@reuse/code/pipes/can-cancel-treatment.pipe';
+import { CanFinishTreatmentPipe } from '@reuse/code/pipes/can-finish-treatment.pipe';
+import { CanSelfAssignPipe } from '@reuse/code/pipes/can-self-assign.pipe';
+import { CanInterruptTreatmentPipe } from '@reuse/code/pipes/can-interrupt-treatment.pipe';
+import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
+import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
+import { FormatSsinPipe } from '@reuse/code/pipes/format-ssin.pipe';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
+import { IfStatusErrorDirective } from '@reuse/code/directives/if-status-error.directive';
+import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
+import { IfStatusLoadingDirective } from '@reuse/code/directives/if-status-loading.directive';
+import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
+import { DatePipe } from '@reuse/code/pipes/date.pipe';
+import { PrescriptionState } from '@reuse/code/states/prescription.state';
+import { TemplatesState } from '@reuse/code/states/templates.state';
+import { TemplateVersionsState } from '@reuse/code/states/template-versions.state';
+import { AccessMatrixState } from '@reuse/code/states/access-matrix.state';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { PatientState } from '@reuse/code/states/patient.state';
+import { TransferAssignationDialog } from '@reuse/code/dialogs/transfer-assignation/transfer-assignation.dialog';
+import { ToastService } from '@reuse/code/services/toast.service';
+import { RejectAssignationDialog } from '@reuse/code/dialogs/reject-assignation/reject-assignation.dialog';
 import {
   InterruptExecutionPrescriptionDialog
 } from '@reuse/code/dialogs/interrupt-execution-prescription/interrupt-execution-prescription.dialog';
-import {CanApproveProposalPipe} from "@reuse/code/pipes/can-approve-proposal.pipe";
-import {CanRejectProposalPipe} from "@reuse/code/pipes/can-reject-proposal.pipe";
-import {RejectProposalDialog} from "@reuse/code/dialogs/reject-proposal/reject-proposal.dialog";
-import {CanExtendPrescriptionPipe} from "@reuse/code/pipes/can-extend-prescription.pipe";
-import {IdentifyState} from "@reuse/code/states/identify.state";
+import { CanApproveProposalPipe } from '@reuse/code/pipes/can-approve-proposal.pipe';
+import { CanRejectProposalPipe } from '@reuse/code/pipes/can-reject-proposal.pipe';
+import { RejectProposalDialog } from '@reuse/code/dialogs/reject-proposal/reject-proposal.dialog';
+import { CanExtendPrescriptionPipe } from '@reuse/code/pipes/can-extend-prescription.pipe';
+import { IdentifyState } from '@reuse/code/states/identify.state';
 import { isPrescriptionId, isPrescriptionShortCode, isSsin, validateSsinChecksum } from '@reuse/code/utils/utils';
 import { PseudoService } from '@reuse/code/services/pseudo.service';
+import { v4 as uuidv4 } from 'uuid';
 
 interface ViewState {
   prescription: ReadPrescription;
@@ -140,7 +141,7 @@ interface ViewState {
   ]
 })
 
-export class PrescriptionDetailsWebComponent implements OnChanges {
+export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
   private readonly templateCode$ = computed(() => this.prescriptionStateService.state().data?.templateCode);
   private readonly tokenClaims$ = toSignal(this.authService.getClaims());
   private readonly isProfessional$ = toSignal(this.authService.isProfessional());
@@ -151,22 +152,22 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
     patient: computed(() => {
       const patientState = this.patientStateService.state();
       const identifyState = this.identifyState.state();
-      const ssin = identifyState.data
+      const ssin = identifyState.data;
       const professional = this.isProfessional$();
       const userProfile = this.tokenClaims$()?.['userProfile'];
 
-      if(professional) {
+      if (professional) {
         const person = {
           ...patientState.data,
           ssin: ssin
-        }
+        };
         return {...patientState, data: person};
       }
 
       const person = {
         ...userProfile,
         ssin: ssin
-      }
+      };
       return {...identifyState, data: person};
     }),
     performerTask: computed(() => {
@@ -202,7 +203,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
         : {status: LoadingStatus.LOADING};
     }),
     currentUser: computed(() => {
-      const token = this.tokenClaims$()?.['userProfile']
+      const token = this.tokenClaims$()?.['userProfile'];
       return token
         ? {status: LoadingStatus.SUCCESS, data: token}
         : {status: LoadingStatus.LOADING};
@@ -211,6 +212,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
 
   loading = false;
   printer = false;
+  generatedUUID = '';
 
   @HostBinding('attr.lang')
   @Input() lang = 'fr-BE';
@@ -242,7 +244,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
   ) {
     this.dateAdapter.setLocale('fr-BE');
     this.translate.setDefaultLang('fr-BE');
-    this.translate.use('fr-BE')
+    this.translate.use('fr-BE');
 
     this.loadWebComponents();
 
@@ -251,15 +253,15 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
       const prescription = this.prescriptionStateService.state()?.data;
 
       untracked(() => {
-        if(prescription) {
+        if (prescription) {
           if (prescription.patientIdentifier) {
-            this.identifyState.loadSSIN(prescription.patientIdentifier)
+            this.identifyState.loadSSIN(prescription.patientIdentifier);
           }
           this.templateVersionsStateService.loadTemplateVersion('READ_' + prescription.templateCode);
         }
 
 
-      })
+      });
     }, {allowSignalWrites: true});
 
     // Register a new effect based on identify state changes
@@ -273,19 +275,23 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
             this.patientStateService.loadPatient(ssin.toString());
           }
         }
-      })
-    })
+      });
+    });
+  }
+
+  ngOnInit() {
+    this.generatedUUID = uuidv4();
   }
 
   getAccessToken = async () => {
     const e = await this.getToken();
     return e.accessToken;
-  }
+  };
 
   getIdToken = async () => {
     const e = await this.getToken();
     return e.idToken;
-  }
+  };
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['getToken']) {
@@ -305,13 +311,13 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
   loadPrescription(): void {
     if (isPrescriptionId(this.prescriptionId)) {
       this.prescriptionStateService.loadPrescription(this.prescriptionId);
-    } else if(this.patientSsin && isSsin(this.patientSsin)) {
+    } else if (this.patientSsin && isSsin(this.patientSsin)) {
       if (!validateSsinChecksum(this.patientSsin)) {
         this.toastService.show('prescription.errors.invalidSsinChecksum');
         return;
       }
 
-      if(!isPrescriptionShortCode(this.prescriptionId)) {
+      if (!isPrescriptionShortCode(this.prescriptionId)) {
         this.toastService.show('prescription.errors.invalidShortCode');
         return;
       }
@@ -447,7 +453,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
   selfAssign(prescription: ReadPrescription): void {
     this.loading = true;
     const ssin = this.tokenClaims$()?.['userProfile']['ssin'];
-    this.prescriptionStateService.assignPrescriptionToMe(prescription.id, prescription.referralTask.id, {ssin})
+    this.prescriptionStateService.assignPrescriptionToMe(prescription.id, prescription.referralTask.id, {ssin}, this.generatedUUID)
       .subscribe({
         next: () => {
           this.loading = false;
@@ -489,25 +495,25 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
       period: prescriptionResponses['responses'].occurrenceTiming.repeat.period,
       validityStartDate: prescriptionResponses['period'].start,
       validityEndDate: prescriptionResponses['period'].end
-    }
+    };
 
-    return prescriptionResponses
+    return prescriptionResponses;
   }
 
   mapProposalToCreatePrescriptionRequest(proposal: ReadPrescription): CreatePrescriptionRequest {
-    const {id, patientIdentifier, templateCode, ...rest} = proposal
-    const responses = this.mapResponses({...rest})
+    const {id, patientIdentifier, templateCode, ...rest} = proposal;
+    const responses = this.mapResponses({...rest});
     return {
       subject: patientIdentifier,
       templateCode: templateCode,
-      responses: responses,
-    }
+      responses: responses
+    };
   }
 
   approveProposal(proposal: ReadPrescription) {
     this.loading = true;
-    const prescriptionRequest = this.mapProposalToCreatePrescriptionRequest(proposal)
-    this.prescriptionStateService.createPrescriptionFromProposal(proposal.id, prescriptionRequest)
+    const prescriptionRequest = this.mapProposalToCreatePrescriptionRequest(proposal);
+    this.prescriptionStateService.createPrescriptionFromProposal(proposal.id, prescriptionRequest, this.generatedUUID)
       .subscribe({
         next: () => {
           this.loading = false;
@@ -537,14 +543,14 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
     }
 
     const htmlCollection = document.getElementsByTagName('script');
-    const script = Array.from(htmlCollection).find(e => e.src.includes('wc-prescription-details.js'))
+    const script = Array.from(htmlCollection).find(e => e.src.includes('wc-prescription-details.js'));
 
     if (!script) return;
     const url = script.src.replace('wc-prescription-details.js', '');
 
     const scripts = [
       'assets/pdfmake/pdfmake.js'
-    ]
+    ];
     scripts.forEach((src) => {
       const script = this.renderer.createElement('script');
       script.type = `text/javascript`;
@@ -559,14 +565,14 @@ export class PrescriptionDetailsWebComponent implements OnChanges {
       return;
     }
     const htmlCollection = document.getElementsByTagName('script');
-    const script = Array.from(htmlCollection).find(e => e.src.includes('wc-prescription-details.js'))
+    const script = Array.from(htmlCollection).find(e => e.src.includes('wc-prescription-details.js'));
 
     if (!script) return;
     const url = script.src.replace('wc-prescription-details.js', '');
 
     const scripts = [
       'assets/evf-form-details/evf-form-details.js'
-    ]
+    ];
     scripts.forEach((src) => {
       const script = this.renderer.createElement('script');
       script.type = `text/javascript`;
