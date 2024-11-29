@@ -208,11 +208,11 @@
     "categories": {
       "bandagisterie": "Bandagisterie",
       "dentistry": "Dentisterie",
-      "physiotherapy":  "Kinésithérapie",
+      "physiotherapy": "Kinésithérapie",
       "orthopedics": "Orthopedie",
-      "otolaryngology":  "Oto-rhino-laryngologie",
+      "otolaryngology": "Oto-rhino-laryngologie",
       "radiology": "Radiologie",
-      "nursingCare":  "Soins infirmiers"
+      "nursingCare": "Soins infirmiers"
     },
     "ariaLabel": {
       "delete": "Supprimer",
@@ -224,142 +224,143 @@
     }
   },
   "proposal": {
-  "selectTemplate": {
-    "proposalModel": "Modèle de proposition",
-    "pickOptionFromList": "Choisissez une option dans la liste",
-    "noOptions": "Aucune type de proposition"
-  },
-  "create": {
-    "action": "Nouvelle proposisiton",
-    "success": "Proposition créée avec succès.",
-    "allSuccess": "{count} {count, plural, one{proposition créée} other{propositions créées}} avec succès.",
-    "allFailed": "Une erreur s'est produite pendant la creation des propositions. Veuillez vérifier votre saisie et réessayer.",
-    "someSuccessSomeFailed": "{successCount} {successCount, plural, one{proposition créée} other{propositions  créées}} avec succès. {failedCount} {failedCount, plural, one{proposition n'a pas été créée} other{propositions n'ont pas été créées}} en raison d'une erreur. Veuillez vérifier votre saisie et réessayer.",
-    "addProposal": "Proposition additionnelle",
-    "publish": "Publier",
-    "deleteProposal": {
-      "title": "Annulation de la proposition",
-      "message": "Voulez-vous confirmer l'annulation de la proposition \"{templateName}\" ?"
+    "selectTemplate": {
+      "proposalModel": "Modèle de proposition",
+      "pickOptionFromList": "Choisissez une option dans la liste",
+      "noOptions": "Aucune type de proposition"
     },
-    "cancelProposalsCreation": {
-      "title": "Annuler une ou plusieurs propositions",
-      "cancelAll": "Annuler tout"
+    "create": {
+      "action": "Nouvelle proposisiton",
+      "success": "Proposition créée avec succès.",
+      "allSuccess": "{count} {count, plural, one{proposition créée} other{propositions créées}} avec succès.",
+      "allFailed": "Une erreur s'est produite pendant la creation des propositions. Veuillez vérifier votre saisie et réessayer.",
+      "someSuccessSomeFailed": "{successCount} {successCount, plural, one{proposition créée} other{propositions  créées}} avec succès. {failedCount} {failedCount, plural, one{proposition n'a pas été créée} other{propositions n'ont pas été créées}} en raison d'une erreur. Veuillez vérifier votre saisie et réessayer.",
+      "addProposal": "Proposition additionnelle",
+      "publish": "Publier",
+      "deleteProposal": {
+        "title": "Annulation de la proposition",
+        "message": "Voulez-vous confirmer l'annulation de la proposition \"{templateName}\" ?"
+      },
+      "cancelProposalsCreation": {
+        "title": "Annuler une ou plusieurs propositions",
+        "cancelAll": "Annuler tout"
+      },
+      "cancelCreation": "Êtes-vous sûr de vouloir annuler la création de cette proposition ?"
     },
-    "cancelCreation": "Êtes-vous sûr de vouloir annuler la création de cette proposition ?"
-  },
-  "print": {
-    "content-electronic-proposal": "Contenu de la proposisiton électronique",
-    "guideline": "Veuillez présenter ce document à votre médecin soignant. Il vous est possible de scanner le code QR pour avoir accès au détail présent dans la proposisiton digital.",
-    "nihdi": "N° INAMI",
-    "niss": "NISS",
-    "patient": "Bénéficiaire",
-    "prescriber": "Prescripteur",
-    "proof-of-electronic-proposal": "Preuve de proposisiton électronique",
-    "remark": "Attention: Aucun ajout manuscrit à ce document ne sera pris en compte. "
-  },
-  "author": "Auteur",
-  "patient": "Patient",
-  "typeOfCare": "Type de soin",
-  "services": "Prestations",
-  "frequency": "Fréquence",
-  "start": "Début",
-  "end": "Fin",
-  "validityPeriod": "Période de validité",
-  "consultDetails": "Voir détails",
-  "assign": "Assigner",
-  "transfer": "Transférer",
-  "assignMe": "Prendre en charge",
-  "duplicate": "Dupliquer",
+    "print": {
+      "content-electronic-proposal": "Contenu de la proposisiton électronique",
+      "guideline": "Veuillez présenter ce document à votre médecin soignant. Il vous est possible de scanner le code QR pour avoir accès au détail présent dans la proposisiton digital.",
+      "nihdi": "N° INAMI",
+      "niss": "NISS",
+      "patient": "Bénéficiaire",
+      "prescriber": "Prescripteur",
+      "proof-of-electronic-proposal": "Preuve de proposisiton électronique",
+      "remark": "Attention: Aucun ajout manuscrit à ce document ne sera pris en compte. "
+    },
+    "author": "Auteur",
+    "patient": "Patient",
+    "typeOfCare": "Type de soin",
+    "services": "Prestations",
+    "frequency": "Fréquence",
+    "start": "Début",
+    "end": "Fin",
+    "validityPeriod": "Période de validité",
+    "consultDetails": "Voir détails",
+    "assign": "Assigner",
+    "transfer": "Transférer",
+    "assignMe": "Prendre en charge",
+    "duplicate": "Dupliquer",
     "extend": "Étendre",
-  "careGivers": "Prestataire(s) de soins",
-  "assigned": "Assignée",
-  "noProposalsForPatient": "Ce patient ne possède pas encore de proposisiton.",
-  "noProposalsForUser": "Vous ne possèdez pas encore de proposisiton.",
-  "assignPerformer": {
-    "title": "Assigner à un prestataire ou une organisation",
-    "success": "{firstName} {lastName} a été assigné comme prestataire.",
-    "successOrganization": "{name} a été assigné comme organisation.",
-    "meSuccess": "Vous avez été assigné comme prestataire.",
-    "performer": "Prestataire",
-    "searchPerformerPlaceHolder": "N° INAMI, nom",
-    "locations": "Localisation(s)",
-    "zipCodeOrCityName": "Code postal ou commune",
-    "noResults": "Aucune commune trouvée",
-    "organization": "Organisation"
-  },
-  "transferAssignation": {
-    "title": "Transférer l'assignation",
-    "success": "{firstName} {lastName} a été assigné comme prestataire.",
-    "performer": "Prestataire",
-    "searchPerformerPlaceHolder": "N° INAMI, nom",
-    "locations": "Localisation(s)",
-    "zipCodeOrCityName": "Code postal ou commune",
-    "noResults": "Aucune commune trouvée"
-  },
-  "approve": {
-    "action": "Valider",
-    "success": "La proposition a été approuvée."
-  },
-  "reject": {
-    "title": "Rejeter",
-    "action": "Refuser",
-    "success": "La proposition a été refusée.",
-    "dialog": {
-      "title": "Cause de rejet",
+    "careGivers": "Prestataire(s) de soins",
+    "assigned": "Assignée",
+    "noProposalsForPatient": "Ce patient ne possède pas encore de proposisiton.",
+    "noProposalsForUser": "Vous ne possèdez pas encore de proposisiton.",
+    "assignPerformer": {
+      "title": "Assigner à un prestataire ou une organisation",
+      "success": "{firstName} {lastName} a été assigné comme prestataire.",
+      "successOrganization": "{name} a été assigné comme organisation.",
+      "meSuccess": "Vous avez été assigné comme prestataire.",
+      "performer": "Prestataire",
+      "searchPerformerPlaceHolder": "N° INAMI, nom",
+      "locations": "Localisation(s)",
+      "zipCodeOrCityName": "Code postal ou commune",
+      "noResults": "Aucune commune trouvée",
+      "organization": "Organisation"
+    },
+    "transferAssignation": {
+      "title": "Transférer l'assignation",
+      "success": "{firstName} {lastName} a été assigné comme prestataire.",
+      "performer": "Prestataire",
+      "searchPerformerPlaceHolder": "N° INAMI, nom",
+      "locations": "Localisation(s)",
+      "zipCodeOrCityName": "Code postal ou commune",
+      "noResults": "Aucune commune trouvée"
+    },
+    "approve": {
+      "action": "Valider",
+      "success": "La proposition a été approuvée."
+    },
+    "reject": {
+      "title": "Rejeter",
+      "action": "Refuser",
+      "success": "La proposition a été refusée.",
+      "dialog": {
+        "title": "Cause de rejet",
+        "reason": "Raison"
+      }
+    },
+    "cancel": {
+      "action": "Annuler",
+      "title": "Annuler la proposisiton",
+      "message": "Êtes-vous sûr de vouloir annuler la proposisiton \"{templateName}\" de {firstName} {lastName} ?",
+      "success": "Proposal annulée avec succès.",
       "reason": "Raison"
+    },
+    "frequencyTypes": {
+      "iterative": "Itérative",
+      "weekly": "Hebdomadaire"
+    },
+    "status": "Statut",
+    "proposalDate": "Rédigé le",
+    "proposalInfoTitle": "Demandé le {date} par {firstName} {lastName}.",
+    "pagination": {
+      "proposals": "{count, plural, one{proposisiton} other{proposisitons}}",
+      "pageSize": "Nbr/page"
+    },
+    "statuses": {
+      "DRAFT": "Brouillon",
+      "BLACKLISTED": "Liste noire",
+      "PENDING": "En attente",
+      "OPEN": "Ouvert",
+      "CANCELLED": "Annulé",
+      "EXPIRED": "Expiré",
+      "IN_PROGRESS": "En cours",
+      "DONE": "Clôturé",
+      "null": "Inconnu"
+    },
+    "errors": {
+      "failedToLoadProposal": "Une erreur s'est produite pendant le chargement de la proposisiton.",
+      "failedToLoadProposals": "Une erreur s'est produite pendant le chargement des proposisitons.",
+      "invalidFhirString": "Caractère(s) interdit(s)",
+      "invalidMaxLength": "{requiredLength} caractères maximum",
+      "invalidMinLength": "{requiredLength} caractères minimum",
+      "invalidNihiiDigitsCount": "Le N° INAMI doit contenir 8 ou 11 chiffres.",
+      "invalidCaregiverNameCharacters": "Caractère(s) interdit(s)",
+      "dateMustBeEarlierOrEqualTo": "La date ne peut pas être après le {date}",
+      "dateMustBeLaterOrEqualTo": "La date ne peut pas être avant le {date}",
+      "invalidDateFormat": "Format invalide: jj/mm/aaaa",
+      "invalidUUID": "L'ID de la proposal n'est pas valide. Veuillez vérifier et essayer à nouveau."
+    },
+    "categories": {
+      "bandagisterie": "Bandagisterie",
+      "dentistry": "Dentisterie",
+      "physiotherapy": "Kinésithérapie",
+      "orthopedics": "Orthopedie",
+      "otolaryngology": "Oto-rhino-laryngologie",
+      "radiology": "Radiologie",
+      "nursingCare": "Soins infirmiers"
     }
   },
-  "cancel": {
-    "action": "Annuler",
-    "title": "Annuler la proposisiton",
-    "message": "Êtes-vous sûr de vouloir annuler la proposisiton \"{templateName}\" de {firstName} {lastName} ?",
-    "success": "Proposal annulée avec succès.",
-    "reason": "Raison"
-  },
-  "frequencyTypes": {
-    "iterative": "Itérative",
-    "weekly": "Hebdomadaire"
-  },
-  "status": "Statut",
-  "proposalDate": "Rédigé le",
-  "proposalInfoTitle": "Demandé le {date} par {firstName} {lastName}.",
-  "pagination": {
-    "proposals": "{count, plural, one{proposisiton} other{proposisitons}}",
-    "pageSize": "Nbr/page"
-  },
-  "statuses": {
-    "DRAFT": "Brouillon",
-    "BLACKLISTED": "Liste noire",
-    "PENDING": "En attente",
-    "OPEN": "Ouvert",
-    "CANCELLED": "Annulé",
-    "EXPIRED": "Expiré",
-    "IN_PROGRESS": "En cours",
-    "DONE": "Clôturé",
-    "null": "Inconnu"
-  },
-  "errors": {
-    "failedToLoadProposal": "Une erreur s'est produite pendant le chargement de la proposisiton.",
-    "failedToLoadProposals": "Une erreur s'est produite pendant le chargement des proposisitons.",
-    "invalidFhirString": "Caractère(s) interdit(s)",
-    "invalidMaxLength": "{requiredLength} caractères maximum",
-    "invalidMinLength": "{requiredLength} caractères minimum",
-    "invalidNihiiDigitsCount": "Le N° INAMI doit contenir 8 ou 11 chiffres.",
-    "invalidCaregiverNameCharacters": "Caractère(s) interdit(s)",
-    "dateMustBeEarlierOrEqualTo": "La date ne peut pas être après le {date}",
-    "dateMustBeLaterOrEqualTo": "La date ne peut pas être avant le {date}",
-    "invalidDateFormat": "Format invalide: jj/mm/aaaa"
-  },
-  "categories": {
-    "bandagisterie": "Bandagisterie",
-    "dentistry": "Dentisterie",
-    "physiotherapy":  "Kinésithérapie",
-    "orthopedics": "Orthopedie",
-    "otolaryngology":  "Oto-rhino-laryngologie",
-    "radiology": "Radiologie",
-    "nursingCare":  "Soins infirmiers"
-  }
-},
   "performerTask": {
     "statuses": {
       "ONHOLD": "Interrompu",

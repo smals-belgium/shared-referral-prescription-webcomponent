@@ -5,7 +5,7 @@
       *ifStatusError="viewState"
       [message]="'prescription.errors.failedToLoadPrescription' | translate"
       [error]="viewState.error.prescription"
-      (clickRetry)="loadPrescription()"
+      (clickRetry)="loadPrescriptionOrProposal()"
     ></app-error-card>
     <ng-container *ifStatusSuccess="viewState">
       <ng-container *ngIf="viewState.data!.prescription as prescription">
@@ -108,25 +108,27 @@
             <div>
               <div class="caregiver-actions">
                 <ng-container *ngIf="!viewState.data!.performerTask?.careGiverSsin">
-                  <button
-                    *ngIf="prescription | canSelfAssign"
-                    (click)="selfAssign(prescription)"
-                    mat-raised-button
-                    type="button"
-                    data-cy="prescription-self-assign-button"
-                  >
-                    <mat-icon>add_task</mat-icon>
-                    {{'prescription.assignMe' | translate}}</button>
-                  <button
-                    *ngIf="prescription | canStartTreatment"
-                    (click)="openStartExecutionDialog(prescription)"
-                    mat-raised-button
-                    type="button"
-                    color="accent"
-                    data-cy="prescription-start-execution-button"
-                  >
-                    <mat-icon>play_circle</mat-icon>
-                    {{'prescription.startExecution.action' | translate}}</button>
+                  @if(prescription.intent?.toLowerCase() !== 'proposal') {
+                    <button
+                      *ngIf="prescription | canSelfAssign"
+                      (click)="selfAssign(prescription)"
+                      mat-raised-button
+                      type="button"
+                      data-cy="prescription-self-assign-button"
+                    >
+                      <mat-icon>add_task</mat-icon>
+                      {{'prescription.assignMe' | translate}}</button>
+                    <button
+                      *ngIf="prescription | canStartTreatment"
+                      (click)="openStartExecutionDialog(prescription)"
+                      mat-raised-button
+                      type="button"
+                      color="accent"
+                      data-cy="prescription-start-execution-button"
+                    >
+                      <mat-icon>play_circle</mat-icon>
+                      {{'prescription.startExecution.action' | translate}}</button>
+                  }
                 </ng-container>
               </div>
               <div class="caregiver-title">

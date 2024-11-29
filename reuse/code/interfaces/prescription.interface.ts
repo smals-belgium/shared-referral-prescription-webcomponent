@@ -95,3 +95,7 @@ export interface SearchPrescriptionCriteria {
   requester?: string;
   performer?: string;
 }
+
+export interface ProposalApproveResponse {
+  prescriptionId?: string;
+}

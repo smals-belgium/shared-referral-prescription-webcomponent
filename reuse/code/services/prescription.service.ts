@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CreatePrescriptionRequest, ReadPrescription, SearchPrescriptionCriteria, ServiceRequest } from '../interfaces';
+import {
+  CreatePrescriptionRequest,
+  ProposalApproveResponse,
+  ReadPrescription,
+  SearchPrescriptionCriteria,
+  ServiceRequest
+} from '../interfaces';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { PrescriptionSummaryList } from '../interfaces/prescription-summary.interface';
 
@@ -16,11 +22,6 @@ export class PrescriptionService {
   create(createPrescriptionRequest: CreatePrescriptionRequest, generatedUUID: string): Observable<void> {
     const headers = new HttpHeaders().set('If-None-Match', generatedUUID);
     return this.http.post<void>('/prescriptions', createPrescriptionRequest, {headers: headers});
-  }
-
-  createPrescriptionFromProposal(prescriptionId: string, createPrescriptionRequest: CreatePrescriptionRequest, generatedUUID: string): Observable<void> {
-    const headers = new HttpHeaders().set('If-None-Match', generatedUUID);
-    return this.http.post<void>(`/prescriptions/${prescriptionId}`, createPrescriptionRequest, {headers: headers});
   }
 
   findAll(criteria: SearchPrescriptionCriteria | undefined, page: any, pageSize: any, includePerformer: boolean): Observable<PrescriptionSummaryList> {
