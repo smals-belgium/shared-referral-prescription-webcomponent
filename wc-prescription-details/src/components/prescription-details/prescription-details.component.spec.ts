@@ -1,6 +1,6 @@
 import { PrescriptionDetailsWebComponent } from "./prescription-details.component";
 import { ComponentFixture, fakeAsync, TestBed, tick } from "@angular/core/testing";
-import { provideHttpClient } from "@angular/common/http";
+import { HttpParams, provideHttpClient } from "@angular/common/http";
 import { HttpClientTestingModule, HttpTestingController, provideHttpClientTesting } from "@angular/common/http/testing";
 import { provideRouter } from "@angular/router";
 import { TranslateLoader, TranslateModule } from "@ngx-translate/core";
@@ -520,9 +520,11 @@ const referralTask = {
   id: "455"
 }
 
+const id = "08e267bf-46e3-459d-8216-d8720acc9f64";
+
 function prescriptionResponse(organisationTasks: any = null, referralTask: any = null, performerTask: PerformerTask[] | null = null) {
   return {
-    "id": "123",
+    "id": id,
     "patientIdentifier": "90122712173",
     "referralTask": referralTask,
     "performerTasks": performerTask,
@@ -655,6 +657,43 @@ describe('PrescriptionDetailsWebComponent', () => {
     expect(loader).toBeTruthy();
   });
 
+  it('should load a prescription based on shortCode and SSIN', async () => {
+    createFixture()
+    const mockResponse = prescriptionResponse()
+    await loadPrescriptionByShortCode(mockResponse, "CAF4FE", "90122712173")
+
+    const {debugElement} = fixture;
+    const divWithClassId = debugElement.query(By.css('.id')).nativeElement;
+    expect(divWithClassId.textContent).toContain(mockResponse.id);
+
+    const h2 = debugElement.query(By.css('h2')).nativeElement;
+    expect(h2.textContent).toContain(mockResponse.templateCode);
+  });
+
+  it('should show a toast message when shortCode is invalid', async () => {
+    const toasterSpy = jest.spyOn(toaster, 'show');
+
+    createFixture()
+
+    const mockResponse = prescriptionResponse()
+    await loadPrescriptionByShortCode(mockResponse, "CAF4", "90122712173", false)
+
+    expect(toasterSpy).toHaveBeenCalledTimes(1)
+    expect(toasterSpy).toHaveBeenCalledWith('prescription.errors.invalidShortCode')
+  });
+
+  it('should show a toast message when ssin is invalid', async () => {
+    const toasterSpy = jest.spyOn(toaster, 'show');
+
+    createFixture()
+
+    const mockResponse = prescriptionResponse()
+    await loadPrescriptionByShortCode(mockResponse, "CAF4FE", "90122712166", false)
+
+    expect(toasterSpy).toHaveBeenCalledTimes(1)
+    expect(toasterSpy).toHaveBeenCalledWith('prescription.errors.invalidSsinChecksum')
+  });
+
   it('should load a prescription', async () => {
     createFixture()
     const mockResponse = prescriptionResponse()
@@ -666,6 +705,29 @@ describe('PrescriptionDetailsWebComponent', () => {
 
     const h2 = debugElement.query(By.css('h2')).nativeElement;
     expect(h2.textContent).toContain(mockResponse.templateCode);
+  });
+
+
+  it('should load a proposals if intent is proposals', async () => {
+    createFixture()
+    component.prescriptionId = id
+    fixture.detectChanges();
+
+    const loadPrescriptionSpy = jest.spyOn(component, 'loadPrescription');
+    const loadProposalSpy = jest.spyOn(component, 'loadProposal');
+
+    component.loadPrescriptionOrProposal()
+
+    expect(loadPrescriptionSpy).toBeCalled()
+    httpMock.expectOne('/prescriptions/08e267bf-46e3-459d-8216-d8720acc9f64');
+
+    component.intent = 'Proposal'
+    fixture.detectChanges();
+
+    component.loadPrescriptionOrProposal();
+
+    expect(loadProposalSpy).toBeCalled();
+    httpMock.expectOne('/proposals/08e267bf-46e3-459d-8216-d8720acc9f64');
   });
 
   it('should request the persons call when user is professional', async () => {
@@ -683,15 +745,15 @@ describe('PrescriptionDetailsWebComponent', () => {
   it('should display the error card', async () => {
     createFixture()
     mockConfigService.getEnvironmentVariable.mockImplementationOnce(() => false)
-    component.prescriptionId = "123"
+    component.prescriptionId = id
     const changes = {
-      prescriptionId: "123"
+      prescriptionId: id
     }
 
     component.ngOnChanges(changes as unknown as SimpleChanges)
     fixture.detectChanges()
 
-    const req = httpMock.expectOne('/prescriptions/123');
+    const req = httpMock.expectOne('/prescriptions/08e267bf-46e3-459d-8216-d8720acc9f64');
     req.error(new ProgressEvent('error'), {status: 401});
 
     fixture.detectChanges()
@@ -951,75 +1013,39 @@ describe('PrescriptionDetailsWebComponent', () => {
     expect(color).toBe('lightgrey')
   })
 
-  it('should map the responses', () => {
-    createFixture()
-    const responses = {
-      period: {
-        "start": "2024-09-19T22:00:00.000+00:00",
-        "end": "2025-09-18T22:00:00.000+00:00"
-      },
-      responses: {
-        "feedback": false,
-        "parameterType": "otherParameterType",
-        "otherParameterType": "tmp_other_parameter",
-        "diagnosis": "test3",
-        "occurrenceTiming": {
-          "repeat": {
-            "count": 30,
-            "duration": 1,
-            "durationUnit": "mo",
-            "frequency": 1,
-            "period": 1,
-            "periodUnit": "d",
-            "when": [
-              "PC"
-            ]
-          }
-        }
-      }
+  const loadPrescriptionByShortCode = async (mockResponse: any, shortCode: string, ssin: string, loadRequests: boolean = true) => {
+    mockConfigService.getEnvironmentVariable.mockImplementationOnce(() => false)
+
+    component.prescriptionId = shortCode
+    component.patientSsin = ssin
+    const changes = {
+      prescriptionId: shortCode,
+      patientSsin: ssin
     }
 
-    const mockResponses = {
-      "feedback": false,
-      "parameterType": "otherParameterType",
-      "otherParameterType": "tmp_other_parameter",
-      "diagnosis": "test3",
-      "occurrenceTiming": {
-        "repeat": {
-          "count": 30,
-          "duration": 1,
-          "durationUnit": "mo",
-          "frequency": 1,
-          "period": 1,
-          "periodUnit": "d",
-          "when": [
-            "PC"
-          ]
-        }
-      },
-      "count": 30,
-      "duration": 1,
-      "durationUnit": "mo",
-      "frequency": 1,
-      "period": 1,
-      "periodUnit": "d",
-      "when": [
-        "PC"
-      ],
-      "validityStartDate": "2024-09-19T22:00:00.000+00:00",
-      "validityEndDate": "2025-09-18T22:00:00.000+00:00"
+    component.ngOnChanges(changes as unknown as SimpleChanges)
+    fixture.detectChanges()
+    await Promise.resolve()
+
+    if(loadRequests) {
+      prescriptionByShortCodeRequest(mockResponse, shortCode, ssin);
+
+      fixture.detectChanges()
+
+      templateRequest()
+      await Promise.resolve()
     }
-    const prescriptionResponses = component.mapResponses(responses)
-    expect(prescriptionResponses).toEqual(mockResponses)
-  })
+
+    fixture.detectChanges()
+  }
 
 
   const loadPrescription = async (mockResponse: any) => {
     mockConfigService.getEnvironmentVariable.mockImplementationOnce(() => false)
 
-    component.prescriptionId = "123"
+    component.prescriptionId = id
     const changes = {
-      prescriptionId: "123"
+      prescriptionId: id
     }
 
     component.ngOnChanges(changes as unknown as SimpleChanges)
@@ -1042,7 +1068,13 @@ describe('PrescriptionDetailsWebComponent', () => {
   }
 
   const prescriptionRequest = (mockResponse: any) => {
-    const req = httpMock.expectOne('/prescriptions/123');
+    const req = httpMock.expectOne('/prescriptions/08e267bf-46e3-459d-8216-d8720acc9f64');
+    expect(req.request.method).toBe('GET');
+    req.flush(mockResponse);
+  }
+
+  const prescriptionByShortCodeRequest = (mockResponse: any, shortCode: string, ssin: string) => {
+    const req = httpMock.expectOne('/prescription?ssin='+ssin+'&shortCode='+shortCode);
     expect(req.request.method).toBe('GET');
     req.flush(mockResponse);
   }

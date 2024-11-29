@@ -29,8 +29,9 @@ import {
   PerformerTask,
   Person,
   ReadPrescription,
-  Status, Token,
-  UserInfo
+  Status,
+  Token,
+  UserInfo,
 } from '@reuse/code/interfaces';
 import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
 import { AuthService } from '@reuse/code/services/auth.service';
@@ -83,17 +84,19 @@ import { RejectAssignationDialog } from '@reuse/code/dialogs/reject-assignation/
 import {
   InterruptExecutionPrescriptionDialog
 } from '@reuse/code/dialogs/interrupt-execution-prescription/interrupt-execution-prescription.dialog';
-import { CanApproveProposalPipe } from '@reuse/code/pipes/can-approve-proposal.pipe';
-import { CanRejectProposalPipe } from '@reuse/code/pipes/can-reject-proposal.pipe';
-import { RejectProposalDialog } from '@reuse/code/dialogs/reject-proposal/reject-proposal.dialog';
-import { CanExtendPrescriptionPipe } from '@reuse/code/pipes/can-extend-prescription.pipe';
-import { IdentifyState } from '@reuse/code/states/identify.state';
+import { CanApproveProposalPipe } from "@reuse/code/pipes/can-approve-proposal.pipe";
+import { CanRejectProposalPipe } from "@reuse/code/pipes/can-reject-proposal.pipe";
+import { RejectProposalDialog } from "@reuse/code/dialogs/reject-proposal/reject-proposal.dialog";
+import { CanExtendPrescriptionPipe } from "@reuse/code/pipes/can-extend-prescription.pipe";
+import { IdentifyState } from "@reuse/code/states/identify.state";
+import { ProposalState } from '@reuse/code/states/proposal.state';
 import { isPrescriptionId, isPrescriptionShortCode, isSsin, validateSsinChecksum } from '@reuse/code/utils/utils';
 import { PseudoService } from '@reuse/code/services/pseudo.service';
 import { v4 as uuidv4 } from 'uuid';
 
 interface ViewState {
   prescription: ReadPrescription;
+  proposal: ReadPrescription;
   patient: Person;
   performerTask?: PerformerTask;
   template: EvfTemplate;
@@ -142,13 +145,23 @@ interface ViewState {
 })
 
 export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
-  private readonly templateCode$ = computed(() => this.prescriptionStateService.state().data?.templateCode);
+  private readonly templateCode$ = computed(() => {
+    if(this.intent?.toLowerCase() === 'proposal') {
+      return this.proposalSateService.state().data?.templateCode
+    }
+    return this.prescriptionStateService.state().data?.templateCode
+  });
   private readonly tokenClaims$ = toSignal(this.authService.getClaims());
   private readonly isProfessional$ = toSignal(this.authService.isProfessional());
 
 
   readonly viewState$: Signal<DataState<ViewState>> = combineSignalDataState({
-    prescription: this.prescriptionStateService.state,
+    prescription: computed(() => {
+      if(this.intent?.toLowerCase() === 'proposal') {
+        return this.proposalSateService.state()
+      }
+      return this.prescriptionStateService.state()
+    }),
     patient: computed(() => {
       const patientState = this.patientStateService.state();
       const identifyState = this.identifyState.state();
@@ -171,7 +184,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
       return {...identifyState, data: person};
     }),
     performerTask: computed(() => {
-      const state = this.prescriptionStateService.state();
+      const state = this.intent?.toLowerCase() === 'proposal' ? this.proposalSateService.state() : this.prescriptionStateService.state();
       const ssin = this.tokenClaims$()?.['userProfile']['ssin'];
       if (!ssin || state.status !== LoadingStatus.SUCCESS) {
         return state;
@@ -224,6 +237,8 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
 
   @Output() clickDuplicate = new EventEmitter<ReadPrescription>();
   @Output() clickExtend = new EventEmitter<ReadPrescription>();
+  @Output() proposalApproved = new EventEmitter<{ prescriptionId: string }>();
+  @Output() proposalRejected = new EventEmitter<boolean>();
 
   constructor(
     private translate: TranslateService,
@@ -235,6 +250,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
     private renderer: Renderer2,
     private accessMatrixStateService: AccessMatrixState,
     private prescriptionStateService: PrescriptionState,
+    private proposalSateService: ProposalState,
     private patientStateService: PatientState,
     private templatesStateService: TemplatesState,
     private templateVersionsStateService: TemplateVersionsState,
@@ -250,7 +266,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
 
     // Register a new effect based on prescription state changes
     effect(() => {
-      const prescription = this.prescriptionStateService.state()?.data;
+      const prescription = this.intent?.toLowerCase() === 'proposal' ? this.proposalSateService.state()?.data : this.prescriptionStateService.state()?.data;
 
       untracked(() => {
         if (prescription) {
@@ -304,7 +320,15 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
       this.translate.use(this.lang);
     }
     if (changes['prescriptionId'] || changes['patientSsin']) {
-      this.loadPrescription();
+      this.loadPrescriptionOrProposal()
+    }
+  }
+
+  loadProposal() {
+    if (isPrescriptionId(this.prescriptionId)) {
+      this.proposalSateService.loadProposal(this.prescriptionId);
+    } else if(this.patientSsin && isSsin(this.patientSsin)) {
+      this.toastService.show('proposals.errors.invalidUUID');
     }
   }
 
@@ -325,9 +349,15 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
       this.getPatientIdentifier(this.patientSsin).then((identifier) => {
         this.prescriptionStateService.loadPrescriptionByShortCode(this.prescriptionId, identifier);
       });
-
     }
+  }
 
+  loadPrescriptionOrProposal(): void {
+    if(this.intent?.toLowerCase() === 'proposal') {
+      this.loadProposal();
+    } else {
+      this.loadPrescription();
+    }
   }
 
   private getPrescriptionTemplateStream(templateCode: string | undefined, templatesState: DataState<EvfTemplate[]>): DataState<EvfTemplate> {
@@ -447,7 +477,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
       width: '100vw',
       maxWidth: '500px'
     });
-
   }
 
   selfAssign(prescription: ReadPrescription): void {
@@ -488,36 +517,16 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
     }
   }
 
-  mapResponses(prescriptionResponses: Record<string, any>) {
-    prescriptionResponses = {
-      ...prescriptionResponses['responses'],
-      ...prescriptionResponses['responses'].occurrenceTiming.repeat,
-      period: prescriptionResponses['responses'].occurrenceTiming.repeat.period,
-      validityStartDate: prescriptionResponses['period'].start,
-      validityEndDate: prescriptionResponses['period'].end
-    };
-
-    return prescriptionResponses;
-  }
-
-  mapProposalToCreatePrescriptionRequest(proposal: ReadPrescription): CreatePrescriptionRequest {
-    const {id, patientIdentifier, templateCode, ...rest} = proposal;
-    const responses = this.mapResponses({...rest});
-    return {
-      subject: patientIdentifier,
-      templateCode: templateCode,
-      responses: responses
-    };
-  }
-
   approveProposal(proposal: ReadPrescription) {
     this.loading = true;
-    const prescriptionRequest = this.mapProposalToCreatePrescriptionRequest(proposal);
-    this.prescriptionStateService.createPrescriptionFromProposal(proposal.id, prescriptionRequest, this.generatedUUID)
+    this.prescriptionStateService.approveProposal(proposal.id, this.generatedUUID)
       .subscribe({
-        next: () => {
-          this.loading = false;
+        next: (value) => {
           this.toastService.show('proposal.approve.success');
+          if(value.prescriptionId) {
+            this.proposalApproved.next({prescriptionId: value.prescriptionId})
+          }
+          this.loading = false;
         },
         error: () => {
           this.loading = false;

@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CreatePrescriptionRequest, ReadPrescription, SearchPrescriptionCriteria, ServiceRequest } from '../interfaces';
+import {
+  CreatePrescriptionRequest,
+  ProposalApproveResponse,
+  ReadPrescription,
+  SearchPrescriptionCriteria,
+  ServiceRequest
+} from '../interfaces';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { PrescriptionSummaryList } from '../interfaces/prescription-summary.interface';
 
@@ -86,9 +92,14 @@ export class ProposalService {
     return this.http.post<void>(`/proposals/${prescriptionId}/rejections/${performerTaskId}`, {}, {headers: headers});
   }
 
+  approveProposal(proposalId: string, generatedUUID: string): Observable<ProposalApproveResponse> {
+    const headers = new HttpHeaders().set('If-None-Match', generatedUUID);
+    return this.http.post<ProposalApproveResponse>(`/proposals/${proposalId}/approve`, {}, {headers: headers});
+  }
+
   rejectProposal(proposalId: string, reason: string, generatedUUID: string): Observable<void> {
     const headers = new HttpHeaders().set('If-None-Match', generatedUUID);
-    return this.http.post<void>(`/proposals/${proposalId}/rejections`, {reason: reason}, {headers: headers});
+    return this.http.post<void>(`/proposals/${proposalId}/reject`, {reason: reason}, {headers: headers});
   }
 
   rejectProposalTask(performerTaskId: string, reason: string, generatedUUID: string): Observable<void> {

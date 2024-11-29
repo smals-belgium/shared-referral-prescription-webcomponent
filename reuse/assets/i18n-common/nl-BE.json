@@ -385,7 +385,8 @@
       "invalidCaregiverNameCharacters": "Ongeldige tekens",
       "dateMustBeEarlierOrEqualTo": "Datum mag niet na {date} liggen",
       "dateMustBeLaterOrEqualTo": "Datum mag niet voor {date} liggen",
-      "invalidDateFormat": "Ongeldig formaat: dd/mm/jjjj"
+      "invalidDateFormat": "Ongeldig formaat: dd/mm/jjjj",
+      "invalidUUID": "Proposal ID is ongeldig. Gelieve dit na te kijken en opnieuw te proberen."
     },
     "categories": {
       "bandagisterie": "Bandagisterie",
