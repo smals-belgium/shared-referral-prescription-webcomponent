@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
@@ -8,6 +8,7 @@ import { PerformerTask, Person, ReadPrescription } from '../../interfaces';
 import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overlay-spinner.component';
 import { ToastService } from '../../services/toast.service';
 import { PrescriptionState } from '../../states/prescription.state';
+import { v4 as uuidv4 } from 'uuid';
 
 interface InterruptExecutionPrescriptionDialogData {
   prescription: ReadPrescription;
@@ -28,12 +29,13 @@ interface InterruptExecutionPrescriptionDialogData {
     NgIf
   ]
 })
-export class InterruptExecutionPrescriptionDialog {
+export class InterruptExecutionPrescriptionDialog implements OnInit {
 
   prescription: ReadPrescription;
   performerTask: PerformerTask;
   patient: Person;
   loading = false;
+  generatedUUID = '';
 
   constructor(
     private prescriptionStateService: PrescriptionState,
@@ -46,10 +48,14 @@ export class InterruptExecutionPrescriptionDialog {
     this.performerTask = data.performerTask;
   }
 
+  ngOnInit() {
+    this.generatedUUID = uuidv4();
+  }
+
   interruptPrescriptionExecution(): void {
     this.loading = true;
     this.prescriptionStateService
-      .interruptPrescriptionExecution(this.prescription.id!, this.performerTask.id)
+      .interruptPrescriptionExecution(this.prescription.id!, this.performerTask.id, this.generatedUUID)
       .subscribe({
         next: () => {
           this.toastService.show('prescription.interruptExecution.success');

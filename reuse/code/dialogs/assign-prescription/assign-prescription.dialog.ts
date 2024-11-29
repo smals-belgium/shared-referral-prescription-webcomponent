@@ -1,4 +1,4 @@
-import { Component, Inject, signal } from '@angular/core';
+import { Component, Inject, OnInit, signal } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { debounceTime, of, switchMap } from 'rxjs';
@@ -28,6 +28,7 @@ import { toDataState } from '../../utils/rxjs.utils';
 import { HealthcareProviderService } from '../../services/healthcareProvider.service';
 import { Organization } from '../../interfaces/organization.interface';
 import { HealthcareProvider } from '../../interfaces/healthcareProvider.interface';
+import { v4 as uuidv4 } from 'uuid';
 
 interface AssignPrescriptionDialogData {
   prescriptionId?: string,
@@ -65,7 +66,7 @@ interface AssignPrescriptionDialogData {
     provideNgxMask()
   ]
 })
-export class AssignPrescriptionDialog {
+export class AssignPrescriptionDialog implements OnInit {
 
   private readonly nameValidators = [Validators.minLength(2), CaregiverNamePatternValidator];
   private readonly searchCriteria$ = signal<{ query: string, zipCodes: string[] }>({query: '', zipCodes: []});
@@ -110,6 +111,7 @@ export class AssignPrescriptionDialog {
   readonly caregiverNameMaxLength = 50;
   queryIsNumeric = false;
   loading = false;
+  generatedUUID = '';
 
 
   constructor(
@@ -121,6 +123,10 @@ export class AssignPrescriptionDialog {
     @Inject(MAT_DIALOG_DATA) private data: AssignPrescriptionDialogData
   ) {
     this.setValidators();
+  }
+
+  ngOnInit() {
+    this.generatedUUID = uuidv4();
   }
 
   private setValidators(): void {
@@ -181,7 +187,7 @@ export class AssignPrescriptionDialog {
   private updatePrescription(healthcareProvider: HealthcareProvider): void {
     this.loading = true;
 
-    this.prescriptionStateService.assignPrescriptionPerformer(this.data.prescriptionId!, this.data.referralTaskId!, healthcareProvider)
+    this.prescriptionStateService.assignPrescriptionPerformer(this.data.prescriptionId!, this.data.referralTaskId!, healthcareProvider, this.generatedUUID)
       .subscribe({
         next: () => {
           if(healthcareProvider.type === 'Professional') {

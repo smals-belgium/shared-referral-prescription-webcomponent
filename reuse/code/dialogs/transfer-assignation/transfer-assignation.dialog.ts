@@ -1,4 +1,4 @@
-import { Component, Inject, signal } from '@angular/core';
+import { Component, Inject, OnInit, signal } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { debounceTime, Observable, of, switchMap } from 'rxjs';
@@ -26,6 +26,7 @@ import { PrescriptionState } from '../../states/prescription.state';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { ProfessionalService } from '../../services/professional.service';
 import { toDataState } from '../../utils/rxjs.utils';
+import { v4 as uuidv4 } from 'uuid';
 
 interface TransferAssignation {
   prescriptionId?: string,
@@ -63,7 +64,7 @@ interface TransferAssignation {
     provideNgxMask()
   ]
 })
-export class TransferAssignationDialog {
+export class TransferAssignationDialog implements OnInit {
 
   private readonly nameValidators = [Validators.minLength(2), CaregiverNamePatternValidator];
   private readonly searchCriteria$ = signal<{ query: string, zipCodes: string[] }>({query: '', zipCodes: []});
@@ -87,6 +88,7 @@ export class TransferAssignationDialog {
   readonly caregiverNameMaxLength = 50;
   queryIsNumeric = false;
   loading = false;
+  generatedUUID = '';
 
   constructor(
     private prescriptionStateService: PrescriptionState,
@@ -97,6 +99,10 @@ export class TransferAssignationDialog {
     @Inject(MAT_DIALOG_DATA) private data: TransferAssignation
   ) {
     this.setValidators();
+  }
+
+  ngOnInit() {
+    this.generatedUUID = uuidv4();
   }
 
   private setValidators(): void {
@@ -156,7 +162,7 @@ export class TransferAssignationDialog {
 
   private updatePrescription(professional: Professional): void {
     this.loading = true;
-    this.prescriptionStateService.transferAssignation(this.data.prescriptionId!, this.data.referralTaskId!, this.data.performerTaskId!, professional)
+    this.prescriptionStateService.transferAssignation(this.data.prescriptionId!, this.data.referralTaskId!, this.data.performerTaskId!, professional, this.generatedUUID)
       .subscribe({
         next: () => {
           this.toastService.show('prescription.assignPerformer.success', {interpolation: professional});

@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
@@ -8,6 +8,7 @@ import { Person, PrescriptionCancellation, ReadPrescription } from '../../interf
 import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overlay-spinner.component';
 import { ToastService } from '../../services/toast.service';
 import { PrescriptionState } from '../../states/prescription.state';
+import { v4 as uuidv4 } from 'uuid';
 
 interface CancelPrescriptionDialogData {
   prescription: ReadPrescription;
@@ -27,11 +28,12 @@ interface CancelPrescriptionDialogData {
     NgIf
   ]
 })
-export class CancelPrescriptionDialog {
+export class CancelPrescriptionDialog implements OnInit {
 
   readonly prescription: ReadPrescription;
   readonly patient: Person;
   loading = false;
+  generatedUUID = '';
 
   constructor(
     private prescriptionStateService: PrescriptionState,
@@ -43,6 +45,10 @@ export class CancelPrescriptionDialog {
     this.patient = data.patient;
   }
 
+  ngOnInit() {
+    this.generatedUUID = uuidv4();
+  }
+
   cancelPrescription(): void {
     const cancellation = {
       reason: undefined,
@@ -50,7 +56,7 @@ export class CancelPrescriptionDialog {
 
     this.loading = true;
     this.prescriptionStateService
-      .cancelPrescription(this.prescription.id, cancellation)
+      .cancelPrescription(this.prescription.id, cancellation, this.generatedUUID)
       .subscribe({
         next: () => {
           this.toastService.show('prescription.cancel.success');

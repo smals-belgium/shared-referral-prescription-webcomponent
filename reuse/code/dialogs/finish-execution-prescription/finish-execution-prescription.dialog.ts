@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { DateTime } from 'luxon';
@@ -13,6 +13,7 @@ import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overla
 import { ToastService } from '../../services/toast.service';
 import { PerformerTask, ReadPrescription, PrescriptionExecutionFinish } from '../../interfaces';
 import { PrescriptionState } from '../../states/prescription.state';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   standalone: true,
@@ -31,7 +32,7 @@ import { PrescriptionState } from '../../states/prescription.state';
     NgIf
   ]
 })
-export class FinishExecutionPrescriptionDialog {
+export class FinishExecutionPrescriptionDialog implements OnInit {
 
   readonly formGroup = new FormGroup({
     endDate: new FormControl<DateTime>(DateTime.now())
@@ -39,6 +40,7 @@ export class FinishExecutionPrescriptionDialog {
   loading = false;
   readonly minDate = this.data.startExecutionDate;
   readonly maxDate = DateTime.now().toISO();
+  generatedUUID = '';
 
   constructor(
     private prescriptionStateService: PrescriptionState,
@@ -52,6 +54,10 @@ export class FinishExecutionPrescriptionDialog {
   ) {
   }
 
+  ngOnInit() {
+    this.generatedUUID = uuidv4();
+  }
+
   finishExecution(): void {
     this.formGroup.markAllAsTouched();
     if (this.formGroup.valid) {
@@ -61,7 +67,7 @@ export class FinishExecutionPrescriptionDialog {
       };
       this.loading = true;
       this.prescriptionStateService
-        .finishPrescriptionExecution(this.data.prescription.id!, this.data.performerTask.id, executionFinish)
+        .finishPrescriptionExecution(this.data.prescription.id!, this.data.performerTask.id, executionFinish, this.generatedUUID)
         .subscribe({
           next: () => {
             this.toastService.show('prescription.finishExecution.success');

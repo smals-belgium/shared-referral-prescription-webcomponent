@@ -5,7 +5,7 @@ import {
   HostBinding,
   Inject,
   Input,
-  OnChanges,
+  OnChanges, OnInit,
   Output,
   Renderer2,
   Signal,
@@ -47,6 +47,7 @@ import { PatientState } from '@reuse/code/states/patient.state';
 import { TemplateVersionsState } from '@reuse/code/states/template-versions.state';
 import { WcConfigurationService } from '@reuse/code/services/wc-configuration.service';
 import { ProposalService } from '@reuse/code/services/proposal.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   templateUrl: './create-prescription.component.html',
@@ -61,7 +62,7 @@ import { ProposalService } from '@reuse/code/services/proposal.service';
     TranslateModule
   ]
 })
-export class CreatePrescriptionWebComponent implements OnChanges {
+export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
 
   private readonly appUrl = this.configService.getEnvironmentVariable('appUrl');
   private trackId = 0;
@@ -69,6 +70,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   readonly patientState$ = this.patientStateService.state;
   prescriptionForms = signal<CreatePrescriptionForm[]>([]);
   loading = signal(false);
+  generatedUUID = '';
 
   @HostBinding('attr.lang')
   @Input() lang = 'fr-BE';
@@ -103,6 +105,10 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     this.translate.setDefaultLang('fr-BE');
     this.translate.use('fr-BE')
     this.loadWebComponents();
+  }
+
+  ngOnInit() {
+    this.generatedUUID = uuidv4();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -214,7 +220,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
       )
 
       if(this.intent == 'order') {
-        this.prescriptionService.create(createPrescriptionRequest).subscribe({
+        this.prescriptionService.create(createPrescriptionRequest, this.generatedUUID).subscribe({
           next: () => {
             this.toastService.show('prescription.create.success');
             this.prescriptionsCreated.emit();
@@ -227,7 +233,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
         })
       }
       else{
-        this.proposalService.create(createPrescriptionRequest).subscribe({
+        this.proposalService.create(createPrescriptionRequest, this.generatedUUID).subscribe({
           next: () => {
             this.toastService.show('proposal.create.success');
             this.prescriptionsCreated.emit();
@@ -259,7 +265,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
       .map((f) => {
         const createPrescriptionRequest = this.toCreatePrescriptionRequest(f.templateCode, f.elementGroup!.getOutputValue(), identifier);
         if(this.intent == 'order') {
-          return this.prescriptionService.create(createPrescriptionRequest).pipe(
+          return this.prescriptionService.create(createPrescriptionRequest, this.generatedUUID).pipe(
             map(() => ({trackId: f.trackId, status: LoadingStatus.SUCCESS, error: undefined})),
             catchError((error) => {
               console.error(error);
@@ -268,7 +274,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
           );
         }
         else{
-          return this.proposalService.create(createPrescriptionRequest).pipe(
+          return this.proposalService.create(createPrescriptionRequest, this.generatedUUID).pipe(
             map(() => ({trackId: f.trackId, status: LoadingStatus.SUCCESS, error: undefined})),
             catchError((error) => {
               console.error(error);

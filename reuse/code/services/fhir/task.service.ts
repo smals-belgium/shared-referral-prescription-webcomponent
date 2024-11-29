@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { DateTime } from 'luxon';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { PrescriptionExecutionFinish, PrescriptionExecutionStart } from '../../interfaces';
 
 @Injectable({providedIn: 'root'})
@@ -20,7 +20,8 @@ export class TaskService {
     return this.http.get<any>('fhir://Task', {params});
   }
 
-  assign(prescriptionId: string, referralTaskId: string, cargiver: { ssin: string; role: string; }): Observable<void> {
+  assign(prescriptionId: string, referralTaskId: string, cargiver: { ssin: string; role: string; }, generatedUUID: string): Observable<void> {
+    const headers = new HttpHeaders().set('If-None-Match', generatedUUID);
     const body = {
       resourceType: 'Task',
       meta: {
@@ -44,32 +45,36 @@ export class TaskService {
       }
     };
 
-    return this.http.post<void>('fhir://Task', body);
+    return this.http.post<void>('fhir://Task', body, {headers: headers});
   }
 
-  startExecution(performerTaskId: string, executionStart: PrescriptionExecutionStart): Observable<void> {
+  startExecution(performerTaskId: string, executionStart: PrescriptionExecutionStart, generatedUUID: string): Observable<void> {
+    const headers = new HttpHeaders().set('If-None-Match', generatedUUID);
     const body = {
       'start': executionStart.startDate
     };
-    return this.http.patch<void>(`/prescriptions/${performerTaskId}/start`, body);
+    return this.http.patch<void>(`/prescriptions/${performerTaskId}/start`, body, {headers: headers});
   }
 
-  restartExecution(performerTaskId: string): Observable<void> {
+  restartExecution(performerTaskId: string, generatedUUID: string): Observable<void> {
     return this.http.patch<void>(`/prescriptions/${performerTaskId}/restart`, {});
   }
 
-  finishExecution(performerTaskId: string, executionEnd: PrescriptionExecutionFinish): Observable<void> {
+  finishExecution(performerTaskId: string, executionEnd: PrescriptionExecutionFinish, generatedUUID: string): Observable<void> {
+    const headers = new HttpHeaders().set('If-None-Match', generatedUUID);
     const body = {
       'end': executionEnd.endDate
     };
-    return this.http.patch<void>(`/prescriptions/${performerTaskId}/finish`, body);
+    return this.http.patch<void>(`/prescriptions/${performerTaskId}/finish`, body, {headers: headers});
   }
 
-  cancelExecution(performerTaskId: string): Observable<void> {
-    return this.http.patch<void>(`/prescriptions/${performerTaskId}/cancel`, {});
+  cancelExecution(performerTaskId: string, generatedUUID: string): Observable<void> {
+    const headers = new HttpHeaders().set('If-None-Match', generatedUUID);
+    return this.http.patch<void>(`/prescriptions/${performerTaskId}/cancel`, {}, {headers: headers});
   }
 
-  interruptExecution(performerTaskId: string): Observable<void> {
-    return this.http.patch<void>(`/prescriptions/${performerTaskId}/interrupt`, {});
+  interruptExecution(performerTaskId: string, generatedUUID: string): Observable<void> {
+    const headers = new HttpHeaders().set('If-None-Match', generatedUUID);
+    return this.http.patch<void>(`/prescriptions/${performerTaskId}/interrupt`, {}, {headers: headers});
   }
 }

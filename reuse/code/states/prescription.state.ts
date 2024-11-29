@@ -34,13 +34,13 @@ export class PrescriptionState extends BaseState<ReadPrescription> {
     this.load(this.prescriptionService.findOneByShortCode(shortCode, ssin));
   }
 
-  assignPrescriptionPerformer(prescriptionId: string, referralTaskId: string, healthcareProvider: HealthcareProvider) {
+  assignPrescriptionPerformer(prescriptionId: string, referralTaskId: string, healthcareProvider: HealthcareProvider, generatedUUID: string) {
     if(healthcareProvider.type === 'Professional') {
       return this.prescriptionService
         .assignCaregiver(prescriptionId, referralTaskId, {
           ssin: (healthcareProvider as Professional).ssin!,
           role: (healthcareProvider as Professional).profession
-        })
+        }, generatedUUID)
         .pipe(tap(() => this.loadPrescription(prescriptionId)));
     }
     else{
@@ -48,7 +48,7 @@ export class PrescriptionState extends BaseState<ReadPrescription> {
         .assignOrganization(prescriptionId, referralTaskId, {
           nihdi: (healthcareProvider as Organization).nihdi!,
           institutionTypeCode: (healthcareProvider as Organization).institutionTypeCode!
-        })
+        }, generatedUUID)
         .pipe(tap(() => this.loadPrescription(prescriptionId)));
     }
   }
@@ -57,84 +57,84 @@ export class PrescriptionState extends BaseState<ReadPrescription> {
 
   assignPrescriptionToMe(prescriptionId: string, referralTaskId: string, professional: {
     ssin: string
-  }) {
+  }, generatedUUID: string) {
     return this.prescriptionService
       .assignCaregiver(prescriptionId, referralTaskId, {
         ssin: professional.ssin!,
         role: 'NURSE'
-      })
+      }, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
   assignAndStartPrescriptionExecution(prescriptionId: string, referralTaskId: string, professional: {
     ssin: string
-  }, executionStart: PrescriptionExecutionStart) {
+  }, generatedUUID: string, executionStart: PrescriptionExecutionStart) {
     return this.prescriptionService
       .assignCaregiver(prescriptionId, referralTaskId, {
         ssin: professional.ssin!,
         role: 'NURSE'
-      }, executionStart.startDate)
+      }, generatedUUID, executionStart.startDate)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
   transferAssignation(prescriptionId: string, referralTaskId: string, performerTaskId: string, professional: {
     ssin: string
-  }) {
+  }, generatedUUID: string) {
     return this.prescriptionService
       .transferAssignation(prescriptionId, referralTaskId, performerTaskId, {
         ssin: professional.ssin!,
         role: 'NURSE'
-      })
+      }, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
-  cancelPrescription(prescriptionId: string, _cancellation: PrescriptionCancellation) {
-    return this.prescriptionService.cancel(prescriptionId)
+  cancelPrescription(prescriptionId: string, _cancellation: PrescriptionCancellation, generatedUUID: string) {
+    return this.prescriptionService.cancel(prescriptionId, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
-  rejectAssignation(prescriptionId: string, performerTaskId: string) {
-    return this.prescriptionService.rejectAssignation(prescriptionId, performerTaskId)
+  rejectAssignation(prescriptionId: string, performerTaskId: string, generatedUUID: string) {
+    return this.prescriptionService.rejectAssignation(prescriptionId, performerTaskId, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
-  startPrescriptionExecution(prescriptionId: string, performerTaskId: string, executionStart: PrescriptionExecutionStart) {
-    return this.performerTaskService.startExecution(performerTaskId, executionStart)
+  startPrescriptionExecution(prescriptionId: string, performerTaskId: string, executionStart: PrescriptionExecutionStart, generatedUUID: string) {
+    return this.performerTaskService.startExecution(performerTaskId, executionStart, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
-  restartExecution(prescriptionId: string, performerTaskId: string) {
-    return this.performerTaskService.restartExecution(performerTaskId)
+  restartExecution(prescriptionId: string, performerTaskId: string, generatedUUID: string) {
+    return this.performerTaskService.restartExecution(performerTaskId, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
-  finishPrescriptionExecution(prescriptionId: string, performerTaskId: string, executionFinish: PrescriptionExecutionFinish) {
-    return this.performerTaskService.finishExecution(performerTaskId, executionFinish)
+  finishPrescriptionExecution(prescriptionId: string, performerTaskId: string, executionFinish: PrescriptionExecutionFinish, generatedUUID: string) {
+    return this.performerTaskService.finishExecution(performerTaskId, executionFinish, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
-  cancelPrescriptionExecution(prescriptionId: string, performerTaskId: string) {
-    return this.performerTaskService.cancelExecution(performerTaskId)
+  cancelPrescriptionExecution(prescriptionId: string, performerTaskId: string, generatedUUID: string) {
+    return this.performerTaskService.cancelExecution(performerTaskId, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
-  interruptPrescriptionExecution(prescriptionId: string, performerTaskId: string) {
-    return this.performerTaskService.interruptExecution(performerTaskId)
+  interruptPrescriptionExecution(prescriptionId: string, performerTaskId: string, generatedUUID: string) {
+    return this.performerTaskService.interruptExecution(performerTaskId, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
-  createPrescriptionFromProposal(proposalId: string, proposal: CreatePrescriptionRequest) {
-    return this.prescriptionService.createPrescriptionFromProposal(proposalId, proposal)
+  createPrescriptionFromProposal(proposalId: string, proposal: CreatePrescriptionRequest, generatedUUID: string) {
+    return this.prescriptionService.createPrescriptionFromProposal(proposalId, proposal, generatedUUID)
       .pipe(tap(() => this.loadPrescription(proposalId)));
   }
 
-  rejectProposal(proposalId: string, reason: string) {
-    return this.proposalService.rejectProposal(proposalId, reason)
+  rejectProposal(proposalId: string, reason: string, generatedUUID: string) {
+    return this.proposalService.rejectProposal(proposalId, reason, generatedUUID)
       .pipe(tap(() => this.loadPrescription(proposalId)));
   }
 
-  rejectProposalTask(proposalId: string, performerTaskId: string, reason: string) {
-    return this.proposalService.rejectProposalTask(performerTaskId, reason)
+  rejectProposalTask(proposalId: string, performerTaskId: string, reason: string, generatedUUID: string) {
+    return this.proposalService.rejectProposalTask(performerTaskId, reason, generatedUUID)
       .pipe(tap(() => this.loadPrescription(proposalId)));
   }
 }
