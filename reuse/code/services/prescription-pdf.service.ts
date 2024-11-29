@@ -57,13 +57,6 @@ export class PrescriptionsPdfService {
             }
           }
         ],
-        background: (_currentPage, _pageSize) => {
-          return {
-            qr: window.location.protocol + '//' + window.location.host + '/prescriptions/' + prescription.id + '/details',
-            fit: 140,
-            margin: [460, 680, 0, 0]
-          }
-        },
         footer: [
           {
             layout: 'footerLine',
