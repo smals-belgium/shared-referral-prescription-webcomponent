@@ -12,7 +12,7 @@ import {
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DateAdapter, MatOptionModule } from '@angular/material/core';
 import { DateTime } from 'luxon';
-import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
+import { combineSignalDataState, toDataState } from '@reuse/code/utils/rxjs.utils';
 import { AuthService } from '@reuse/code/services/auth.service';
 import { DataState, EvfTemplate } from '@reuse/code/interfaces';
 import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
@@ -63,12 +63,15 @@ interface ViewState {
 })
 export class ListPrescriptionsWebComponent implements OnChanges {
 
-  readonly viewState$: Signal<DataState<ViewState>> = combineSignalDataState({
-    prescriptions: this.prescriptionsState.state,
+  readonly viewStateProposals$: Signal<DataState<ViewState>> = combineSignalDataState({
     proposals: this.proposalsState.state,
     templates: this.templatesState.state
   });
-  loading = false;
+
+  readonly viewStatePrescriptions$: Signal<DataState<ViewState>> = combineSignalDataState({
+    prescriptions: this.prescriptionsState.state,
+    templates: this.templatesState.state
+  });
 
   @HostBinding('attr.lang')
   @Input() lang?: string;
@@ -155,8 +158,8 @@ export class ListPrescriptionsWebComponent implements OnChanges {
     }
   }
 
-  retryFailedCalls(error: { prescriptions?: any, templates?: any }) {
-    if (error.prescriptions) {
+  retryFailedCalls(error: { prescriptions?: any, templates?: any, proposals?: any }) {
+    if (error.prescriptions || error.proposals) {
       this.loadData();
     }
     if (error.templates) {
