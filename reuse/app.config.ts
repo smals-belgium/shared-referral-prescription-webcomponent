@@ -54,27 +54,27 @@ export const APP_CONFIG: AppConfig = {
     },
     {
       env: 'acc',
-      domain: ['wwwacc.referral-prescription.ehealth.fgov.be']
+      domain: ['wwwacc.referral-prescription-patient.ehealth.fgov.be', 'wwwacc.referral-prescription.ehealth.fgov.be']
     },
     {
       env: 'accIn',
-      domain: ['wwwacc.referral-prescription.in.ehealth.fgov.be']
+      domain: ['wwwacc.referral-prescription-patient.in.ehealth.fgov.be', 'wwwacc.referral-prescription.in.ehealth.fgov.be']
     },
     {
       env: 'accUp',
-      domain: ['wwwacc.referral-prescription.up.ehealth.fgov.be']
+      domain: ['wwwacc.referral-prescription-patient.up.ehealth.fgov.be', 'wwwacc.referral-prescription.up.ehealth.fgov.be']
     },
     {
       env: 'prod',
-      domain: ['www.referral-prescription.ehealth.fgov.be']
+      domain: ['www.referral-prescription-patient.ehealth.fgov.be', 'www.referral-prescription.ehealth.fgov.be']
     },
     {
       env: 'prodIn',
-      domain: ['www.referral-prescription.in.ehealth.fgov.be']
+      domain: ['www.referral-prescription-patient.in.ehealth.fgov.be', 'www.referral-prescription.in.ehealth.fgov.be']
     },
     {
       env: 'prodUp',
-      domain: ['www.referral-prescription.up.ehealth.fgov.be']
+      domain: ['www.referral-prescription-patient.up.ehealth.fgov.be', 'www.referral-prescription.up.ehealth.fgov.be']
     }
   ],
   variables: {

@@ -1,3 +1,8 @@
+# ======================================= #
+# Route configuration for the pro web app #
+# --------------------------------------- #
+#       Public API route on the lb        #
+# ======================================= #
 apiVersion: v1
 kind: Route
 metadata:
@@ -5,20 +10,57 @@ metadata:
   labels:
     deploymentconfig: &deploymentconfig referral-prescription-web-components-up
 spec:
-  host: referral-prescription.ehealth.fgov.be
+  host: www.referral-prescription.ehealth.fgov.be
+  path: /web-components
   to:
     kind: Service
     name: *deploymentconfig
     weight: 100
 ---
+#       Public route on availability zone 'UP'        #
 apiVersion: v1
 kind: Route
 metadata:
   name: referral-prescription-web-components-up-public
   labels:
-    deploymentconfig: &deploymentconfig referral-prescription-web-components-up
+    deploymentconfig: *deploymentconfig
 spec:
-  host: referral-prescription.up.ehealth.fgov.be
+  host: www.referral-prescription.up.ehealth.fgov.be
+  path: /web-components
+  to:
+    kind: Service
+    name: *deploymentconfig
+    weight: 100
+---
+# =========================================== #
+# Route configuration for the patient web app #
+# ------------------------------------------- #
+#         Public API route on the lb          #
+# =========================================== #
+apiVersion: v1
+kind: Route
+metadata:
+  labels:
+    deploymentconfig: *deploymentconfig
+  name: referral-prescription-patient-web-components-lb-public
+spec:
+  host: www.referral-prescription-patient.ehealth.fgov.be
+  path: /web-components
+  to:
+    kind: Service
+    name: *deploymentconfig
+    weight: 100
+---
+#       Public route on availability zone 'UP'
+apiVersion: v1
+kind: Route
+metadata:
+  labels:
+    deploymentconfig: *deploymentconfig
+  name: referral-prescription-patient-web-components-up-public
+spec:
+  host: www.referral-prescription-patient.up.ehealth.fgov.be
+  path: /web-components
   to:
     kind: Service
     name: *deploymentconfig
