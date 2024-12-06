@@ -94,7 +94,7 @@ export const APP_CONFIG: AppConfig = {
       pseudoApiUrl: 'http://uhmep-mockingbird.test.paas.vasdc.be/pseudo/v1'
     },
     testDemo: {
-      env: 'test-demo',
+      env: 'testDemo',
       fhirGatewayUrl: 'http://referral-prescription-fakeapi-v4.test.paas.vasdc.be',
       apiUrl: 'http://uhmep-frontend-webapi-demo-v4.test.paas.vasdc.be/frontend/api',
       keycloak: {
@@ -104,7 +104,7 @@ export const APP_CONFIG: AppConfig = {
       }
     },
     intExt: {
-      env: 'int-ext',
+      env: 'intExt',
       fhirGatewayUrl: 'https://uhmep-fhirgateway-v4.int.pub.vascloud.be',
       fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
       apiUrl: 'https://referral-prescription.int.ext.vascloud.be/frontend/api',
@@ -117,7 +117,7 @@ export const APP_CONFIG: AppConfig = {
       enablePseudo: true
     },
     intPub: {
-      env: 'int-pub',
+      env: 'intPub',
       fhirGatewayUrl: 'https://uhmep-fhirgateway-v4.int.pub.vascloud.be',
       fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
       apiUrl: 'https://referral-prescription.int.pub.vascloud.be/frontend/api',
@@ -143,7 +143,7 @@ export const APP_CONFIG: AppConfig = {
       enablePseudo: true
     },
     accIn: {
-      env: 'acc-in',
+      env: 'accIn',
       fhirGatewayUrl: 'https://fhirgateway.uhmep.acc.in.ext.vasha.be',
       fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
       apiUrl: 'https://wwwacc.referral-prescription.in.ehealth.fgov.be/frontend/api',
@@ -156,7 +156,7 @@ export const APP_CONFIG: AppConfig = {
       enablePseudo: true
     },
     accUp: {
-      env: 'acc-up',
+      env: 'accUp',
       fhirGatewayUrl: 'https://fhirgateway.uhmep.acc.up.ext.vasha.be',
       fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
       apiUrl: 'https://wwwacc.referral-prescription.up.ehealth.fgov.be/frontend/api',
