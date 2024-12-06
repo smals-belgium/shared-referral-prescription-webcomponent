@@ -64,7 +64,6 @@ import { v4 as uuidv4 } from 'uuid';
 })
 export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
 
-  private readonly appUrl = this.configService.getEnvironmentVariable('appUrl');
   private trackId = 0;
 
   readonly patientState$ = this.patientStateService.state;

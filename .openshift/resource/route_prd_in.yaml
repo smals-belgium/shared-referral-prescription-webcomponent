@@ -1,6 +1,4 @@
 # ======================================= #
-# Route configuration for the pro web app #
-# --------------------------------------- #
 #       Public API route on the lb        #
 # ======================================= #
 apiVersion: v1
@@ -17,7 +15,9 @@ spec:
     name: *deploymentconfig
     weight: 100
 ---
-#       Public route on availability zone 'IN'        #
+# ============================================== #
+#     Public route on availability zone 'IN'     #
+# ============================================== #
 apiVersion: v1
 kind: Route
 metadata:
@@ -26,40 +26,6 @@ metadata:
     deploymentconfig: *deploymentconfig
 spec:
   host: www.referral-prescription.in.ehealth.fgov.be
-  path: /web-components
-  to:
-    kind: Service
-    name: *deploymentconfig
-    weight: 100
----
-# =========================================== #
-# Route configuration for the patient web app #
-# ------------------------------------------- #
-#         Public API route on the lb          #
-# =========================================== #
-apiVersion: v1
-kind: Route
-metadata:
-  labels:
-    deploymentconfig: *deploymentconfig
-  name: referral-prescription-patient-web-components-lb-public
-spec:
-  host: www.referral-prescription-patient.ehealth.fgov.be
-  path: /web-components
-  to:
-    kind: Service
-    name: *deploymentconfig
-    weight: 100
----
-#       Public route on availability zone 'IN'
-apiVersion: v1
-kind: Route
-metadata:
-  labels:
-    deploymentconfig: *deploymentconfig
-  name: referral-prescription-patient-web-components-in-public
-spec:
-  host: www.referral-prescription-patient.in.ehealth.fgov.be
   path: /web-components
   to:
     kind: Service
