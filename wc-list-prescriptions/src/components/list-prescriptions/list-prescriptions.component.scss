@@ -61,6 +61,7 @@ $app-theme: mat.define-light-theme((
   display: flex;
   column-gap: 0.5rem;
   align-items: center;
+  min-width: 195px;
 
   mat-select {
     background-color: white;
