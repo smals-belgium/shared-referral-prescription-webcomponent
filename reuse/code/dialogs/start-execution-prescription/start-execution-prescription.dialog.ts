@@ -68,7 +68,11 @@ export class StartExecutionPrescriptionDialog implements OnInit {
     @Inject(MAT_DIALOG_DATA) private data: StartExecutionPrescriptionDialogData) {
       this.prescription = data.prescription;
       this.performerTask = data.performerTask;
-      this.minDate = data.startTreatmentDate;
+      const minDate = new Date();
+      const day = minDate.getDate() - 5;
+      minDate.setDate(day);
+
+      this.minDate = data.startTreatmentDate || minDate.toISOString();
   }
 
   ngOnInit() {
