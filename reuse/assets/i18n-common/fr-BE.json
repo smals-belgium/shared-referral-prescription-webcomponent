@@ -324,7 +324,7 @@
     "proposalDate": "Rédigé le",
     "proposalInfoTitle": "Demandé le {date} par {firstName} {lastName}.",
     "pagination": {
-      "proposals": "{count, plural, one{proposisiton} other{proposisitons}}",
+      "proposals": "{count, plural, one{proposition} other{propositions}}",
       "pageSize": "Nbr/page"
     },
     "statuses": {
