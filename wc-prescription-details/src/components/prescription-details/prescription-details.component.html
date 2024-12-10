@@ -23,7 +23,7 @@
               </div>
               <div class="actions">
                 <button
-                  *ngIf="prescription | canCancelPrescriptionOrProposal: viewState.data!.currentUser?.ssin"
+                  *ngIf="prescription | canCancelPrescriptionOrProposal: viewState.data!.patient.ssin: viewState.data!.currentUser?.ssin"
                   mat-raised-button
                   type="button"
                   color="accent"
