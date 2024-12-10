@@ -1,12 +1,12 @@
 import { Pipe } from '@angular/core';
-import { ReadPrescription, Status } from '../interfaces';
+import { ReadPrescription, Status, TaskStatus } from '../interfaces';
 import { AccessMatrixState } from '../states/access-matrix.state';
 
 /**
  * This pipe determines whether a proposal or a prescription can be canceled.
  *
  * The access matrix needs to have removePrescription or removeProposal depending on the intent
- * The status of the prescription can be DRAFT, OPEN, PENDING or IN_PROGRESS
+ * The status of the prescription needs to be OPEN
  * The requester and the patient assigned to the prescription can reject a prescription or proposal
  *
  * Example usage:
@@ -30,8 +30,7 @@ export class CanCancelPrescriptionOrProposalPipe {
       return false;
 
     return this.hasCancelPermissions(prescription)
-      && prescription.status != null
-      && [Status.DRAFT, Status.OPEN, Status.PENDING, Status.IN_PROGRESS].includes(prescription.status)
+      && prescription.status === Status.OPEN
       && this.checkIfCurrentUserIsPatientOrAssignedCaregiver(currentUserSsin, patientSsin, prescription.requester?.ssin);
   }
 
