@@ -10,7 +10,10 @@ export class CanCancelPrescriptionOrProposalPipe {
   ) {
   }
 
-  transform(prescription: ReadPrescription, currentUserSsin: string): boolean {
+  transform(prescription: ReadPrescription, currentUserSsin?: string): boolean {
+    if(!currentUserSsin) {
+      return false;
+    }
     return this.hasCancelPermissions(prescription)
       && prescription.status != null
       && [Status.DRAFT, Status.OPEN, Status.PENDING, Status.IN_PROGRESS].includes(prescription.status)

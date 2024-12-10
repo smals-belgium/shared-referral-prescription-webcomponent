@@ -23,7 +23,7 @@
               </div>
               <div class="actions">
                 <button
-                  *ngIf="prescription | canCancelPrescriptionOrProposal: viewState.data!.currentUser.ssin"
+                  *ngIf="prescription | canCancelPrescriptionOrProposal: viewState.data!.currentUser?.ssin"
                   mat-raised-button
                   type="button"
                   color="accent"
@@ -178,7 +178,7 @@
                               </ng-container>
                             </div>
                             <button
-                              *ngIf="prescription | canRejectAssignation : performertask : viewState.data!.performerTask?.careGiverSsin"
+                              *ngIf="prescription | canRejectAssignation : performertask : viewState.data!.patient.ssin : viewState.data!.currentUser?.ssin"
                               (click)="openRejectAssignationDialog(prescription, performertask, viewState.data!.patient)"
                               mat-icon-button
                               data-cy="prescription-reject-assignation-button"
@@ -265,7 +265,7 @@
                       </div>
 
                       <button
-                        *ngIf="prescription | canRejectAssignation : task : viewState.data!.performerTask?.careGiverSsin"
+                        *ngIf="prescription | canRejectAssignation : task : viewState.data!.patient.ssin : viewState.data!.currentUser?.ssin"
                         (click)="openRejectAssignationDialog(prescription, task, viewState.data!.patient)"
                         mat-icon-button
                         data-cy="prescription-reject-assignation-button"
