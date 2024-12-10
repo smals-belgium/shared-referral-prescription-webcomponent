@@ -196,7 +196,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
       }
 
       const organizationTask = state.data!.organizationTasks?.find(ot =>
-        ot.performerTasks.some(pt => pt.careGiverSsin === ssin)
+        ot.performerTasks?.some(pt => pt.careGiverSsin === ssin)
       );
       const nestedPerformerTask = organizationTask?.performerTasks.find(t => t.careGiverSsin === ssin);
 
