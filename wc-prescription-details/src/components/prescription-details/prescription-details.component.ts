@@ -528,8 +528,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
     })
       .beforeClosed()
       .subscribe((data) => {
-        console.log(data)
-        if(data.prescriptionId) {
+        if(data?.prescriptionId) {
           this.proposalApproved.next({prescriptionId: data.prescriptionId})
         }
       });
