@@ -123,8 +123,8 @@ export class PrescriptionState extends BaseState<ReadPrescription> {
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
-  approveProposal(proposalId: string, generatedUUID: string) {
-    return this.proposalService.approveProposal(proposalId, generatedUUID);
+  approveProposal(proposalId: string, reason: string, generatedUUID: string) {
+    return this.proposalService.approveProposal(proposalId, reason, generatedUUID);
   }
 
   rejectProposal(proposalId: string, reason: string, generatedUUID: string) {

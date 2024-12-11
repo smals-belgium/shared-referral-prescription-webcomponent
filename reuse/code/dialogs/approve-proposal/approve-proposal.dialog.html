@@ -1,13 +1,13 @@
-<form (ngSubmit)="rejectProposal()" [formGroup]="formGroup">
-  <h1 mat-dialog-title>{{ 'proposal.reject.dialog.title' | translate }}</h1>
+<form (ngSubmit)="approveProposal()" [formGroup]="formGroup">
+  <h1 mat-dialog-title>{{ 'proposal.approve.dialog.title' | translate }}</h1>
   <div mat-dialog-content>
     <mat-form-field appearance="fill">
-      <mat-label>{{ 'proposal.reject.dialog.reason' | translate }}</mat-label>
+      <mat-label>{{ 'proposal.approve.dialog.reason' | translate }}</mat-label>
       <textarea
         [formControlName]="'reason'"
         matInput
         rows="5"
-        data-cy="proposal-reject-reason-textarea"
+        data-cy="proposal-approve-reason-textarea"
       ></textarea>
       <mat-error
         *ngIf="formGroup.get('reason')?.hasError('required')">{{ 'common.mandatory' | translate }}
@@ -16,7 +16,7 @@
   </div>
   <div mat-dialog-actions>
     <button color="accent" data-cy="dialog-confirm-button" type="submit"
-            mat-raised-button  [disabled]="formGroup.get('reason')?.invalid">{{'common.confirm' | translate}}</button>
+            mat-raised-button [disabled]="formGroup.get('reason')?.invalid">{{'common.confirm' | translate}}</button>
     <button [mat-dialog-close]="undefined" data-cy="dialog-cancel-button" mat-flat-button
             type="button">{{'common.cancel' | translate}}</button>
   </div>
