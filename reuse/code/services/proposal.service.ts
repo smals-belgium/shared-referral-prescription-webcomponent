@@ -92,9 +92,9 @@ export class ProposalService {
     return this.http.post<void>(`/proposals/${prescriptionId}/rejections/${performerTaskId}`, {}, {headers: headers});
   }
 
-  approveProposal(proposalId: string, generatedUUID: string): Observable<ProposalApproveResponse> {
+  approveProposal(proposalId: string, reason: string, generatedUUID: string): Observable<ProposalApproveResponse> {
     const headers = new HttpHeaders().set('If-None-Match', generatedUUID);
-    return this.http.post<ProposalApproveResponse>(`/proposals/${proposalId}/approve`, {}, {headers: headers});
+    return this.http.post<ProposalApproveResponse>(`/proposals/${proposalId}/approve`, {reason: reason}, {headers: headers});
   }
 
   rejectProposal(proposalId: string, reason: string, generatedUUID: string): Observable<void> {

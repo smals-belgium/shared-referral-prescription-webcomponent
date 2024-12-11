@@ -93,6 +93,7 @@ import { ProposalState } from '@reuse/code/states/proposal.state';
 import { isPrescriptionId, isPrescriptionShortCode, isSsin, validateSsinChecksum } from '@reuse/code/utils/utils';
 import { PseudoService } from '@reuse/code/services/pseudo.service';
 import { v4 as uuidv4 } from 'uuid';
+import { ApproveProposalDialog } from '@reuse/code/dialogs/approve-proposal/approve-proposal.dialog';
 
 interface ViewState {
   prescription: ReadPrescription;
@@ -517,20 +518,19 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
     }
   }
 
-  approveProposal(proposal: ReadPrescription) {
-    this.loading = true;
-    this.prescriptionStateService.approveProposal(proposal.id, this.generatedUUID)
-      .subscribe({
-        next: (value) => {
-          this.toastService.show('proposal.approve.success');
-          if(value.prescriptionId) {
-            this.proposalApproved.next({prescriptionId: value.prescriptionId})
-          }
-          this.loading = false;
-        },
-        error: () => {
-          this.loading = false;
-          this.toastService.showSomethingWentWrong();
+  openApproveProposalDialog(proposal: ReadPrescription): void {
+    this.dialog.open(ApproveProposalDialog, {
+      data: {
+        proposal: proposal
+      },
+      width: '100vw',
+      maxWidth: '500px'
+    })
+      .beforeClosed()
+      .subscribe((data) => {
+        console.log(data)
+        if(data.prescriptionId) {
+          this.proposalApproved.next({prescriptionId: data.prescriptionId})
         }
       });
   }
@@ -543,7 +543,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
       width: '100vw',
       maxWidth: '500px'
     });
-
   }
 
   private loadPrintWebComponent(): void {

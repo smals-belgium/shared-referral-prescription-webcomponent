@@ -298,7 +298,11 @@
     },
     "approve": {
       "action": "Goedkeuren",
-      "success": "Het voorstel werd goedgekeurd."
+      "success": "Het voorstel werd goedgekeurd.",
+      "dialog": {
+        "title": "Reden van goedkeuring",
+        "reason": "Reden"
+      }
     },
     "reject": {
       "title": "Afwijzen",

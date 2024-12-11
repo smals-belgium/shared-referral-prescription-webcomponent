@@ -357,7 +357,7 @@
               <div class="prescriber-actions">
                 <button
                   *ngIf="prescription | canApproveProposal"
-                  (click)="approveProposal(prescription)"
+                  (click)="openApproveProposalDialog(prescription)"
                   mat-raised-button
                   type="button"
                   color="success"

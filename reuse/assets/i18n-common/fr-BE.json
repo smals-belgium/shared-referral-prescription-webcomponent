@@ -298,7 +298,11 @@
     },
     "approve": {
       "action": "Valider",
-      "success": "La proposition a été approuvée."
+      "success": "La proposition a été approuvée.",
+      "dialog": {
+        "title": "Cause de approuvée",
+        "reason": "Raison"
+      }
     },
     "reject": {
       "title": "Rejeter",
