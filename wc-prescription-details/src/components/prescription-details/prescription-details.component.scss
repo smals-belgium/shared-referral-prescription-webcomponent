@@ -317,6 +317,15 @@ nihdi-referral-prescription-form-details {
       margin-bottom: 0;
     }
   }
+  evf-form-detail-group{
+    evf-response-list-detail {
+      .check{
+        .mat-icon{
+          display: none;
+        }
+      }
+    }
+  }
 }
 .prescriber-actions {
   button {
