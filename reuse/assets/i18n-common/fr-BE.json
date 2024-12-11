@@ -300,7 +300,7 @@
       "action": "Valider",
       "success": "La proposition a été approuvée.",
       "dialog": {
-        "title": "Cause de approuvée",
+        "title": "Motif de l'approbation",
         "reason": "Raison"
       }
     },
