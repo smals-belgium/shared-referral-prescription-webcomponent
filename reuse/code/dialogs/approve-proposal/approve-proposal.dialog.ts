@@ -51,7 +51,7 @@ export class ApproveProposalDialog implements OnInit {
 
   constructor(
     private toastService: ToastService,
-    private prescriptionStateService: PrescriptionState,
+    private proposalStateService: ProposalState,
     private dialogRef: MatDialogRef<ApproveProposalDialog>,
     @Inject(MAT_DIALOG_DATA) private data: {
       proposal: ReadPrescription
@@ -70,7 +70,7 @@ export class ApproveProposalDialog implements OnInit {
       const reason = this.formGroup.get('reason')?.value;
 
       this.loading = true;
-      this.prescriptionStateService.approveProposal(this.data.proposal.id, reason!, this.generatedUUID)
+      this.proposalStateService.approveProposal(this.data.proposal.id, reason!, this.generatedUUID)
         .subscribe({
           next: (value) => {
             this.toastService.show('proposal.approve.success');

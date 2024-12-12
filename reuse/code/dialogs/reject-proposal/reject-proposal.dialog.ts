@@ -11,6 +11,7 @@ import { NgIf } from '@angular/common';
 import { PrescriptionState } from '../../states/prescription.state';
 import {ToastService} from "../../services/toast.service";
 import { v4 as uuidv4 } from 'uuid';
+import { ProposalState } from '../../states/proposal.state';
 
 @Component({
   standalone: true,
@@ -41,7 +42,7 @@ export class RejectProposalDialog implements OnInit {
 
   constructor(
     private toastService: ToastService,
-    private prescriptionStateService: PrescriptionState,
+    private proposalStateService: ProposalState,
     private dialogRef: MatDialogRef<RejectProposalDialog>,
     @Inject(MAT_DIALOG_DATA) private data: {
       proposal: ReadPrescription
@@ -61,7 +62,7 @@ export class RejectProposalDialog implements OnInit {
 
       this.loading = true;
       if(!this.data.proposal.performerTasks?.length) {
-        this.prescriptionStateService
+        this.proposalStateService
           .rejectProposal(this.data.proposal.id, reason!, this.generatedUUID)
           .subscribe({
             next: () => {
@@ -78,7 +79,7 @@ export class RejectProposalDialog implements OnInit {
         this.loading = false;
         const performerTasks =  this.data.proposal.performerTasks
         const lastPerformerTask = performerTasks[performerTasks.length-1]
-        this.prescriptionStateService
+        this.proposalStateService
           .rejectProposalTask(this.data.proposal.id, lastPerformerTask.id, reason!, this.generatedUUID)
           .subscribe({
             next: () => {

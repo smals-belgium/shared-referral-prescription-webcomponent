@@ -20,8 +20,7 @@ export class PrescriptionState extends BaseState<ReadPrescription> {
 
   constructor(
     private prescriptionService: PrescriptionService,
-    private performerTaskService: TaskService,
-    private proposalService: ProposalService
+    private performerTaskService: TaskService
   ) {
     super();
   }
@@ -52,8 +51,6 @@ export class PrescriptionState extends BaseState<ReadPrescription> {
         .pipe(tap(() => this.loadPrescription(prescriptionId)));
     }
   }
-
-
 
   assignPrescriptionToMe(prescriptionId: string, referralTaskId: string, professional: {
     ssin: string
@@ -121,19 +118,5 @@ export class PrescriptionState extends BaseState<ReadPrescription> {
   interruptPrescriptionExecution(prescriptionId: string, performerTaskId: string, generatedUUID: string) {
     return this.performerTaskService.interruptExecution(performerTaskId, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
-  }
-
-  approveProposal(proposalId: string, reason: string, generatedUUID: string) {
-    return this.proposalService.approveProposal(proposalId, reason, generatedUUID);
-  }
-
-  rejectProposal(proposalId: string, reason: string, generatedUUID: string) {
-    return this.proposalService.rejectProposal(proposalId, reason, generatedUUID)
-      .pipe(tap(() => this.loadPrescription(proposalId)));
-  }
-
-  rejectProposalTask(proposalId: string, performerTaskId: string, reason: string, generatedUUID: string) {
-    return this.proposalService.rejectProposalTask(performerTaskId, reason, generatedUUID)
-      .pipe(tap(() => this.loadPrescription(proposalId)));
   }
 }
