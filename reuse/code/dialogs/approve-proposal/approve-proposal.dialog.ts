@@ -1,10 +1,10 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastService } from '../../services/toast.service';
-import { PrescriptionState } from '../../states/prescription.state';
 import {
   MAT_DIALOG_DATA,
-  MatDialogActions, MatDialogClose,
+  MatDialogActions,
+  MatDialogClose,
   MatDialogContent,
   MatDialogRef,
   MatDialogTitle
@@ -17,6 +17,7 @@ import { MatInput } from '@angular/material/input';
 import { NgIf } from '@angular/common';
 import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overlay-spinner.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { ProposalState } from '../../states/proposal.state';
 
 @Component({
   selector: 'approve-proposal',
@@ -55,14 +56,11 @@ export class ApproveProposalDialog implements OnInit {
     private dialogRef: MatDialogRef<ApproveProposalDialog>,
     @Inject(MAT_DIALOG_DATA) private data: {
       proposal: ReadPrescription
-    }) {
-
-  }
+    }) {}
 
   ngOnInit() {
     this.generatedUUID = uuidv4();
   }
-
 
   approveProposal(): void {
     this.formGroup.markAllAsTouched();
