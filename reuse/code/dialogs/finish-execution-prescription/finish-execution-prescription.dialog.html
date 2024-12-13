@@ -17,7 +17,7 @@
   </div>
   <div mat-dialog-actions>
     <button color="accent" data-cy="dialog-confirm-button"
-            mat-raised-button>{{'common.confirm' | translate}}</button>
+            mat-raised-button [disabled]="formGroup.get('endDate')?.invalid">{{'common.confirm' | translate}}</button>
     <button [mat-dialog-close]="undefined" data-cy="dialog-cancel-button" mat-flat-button
             type="button">{{'common.cancel' | translate}}</button>
   </div>
