@@ -22,10 +22,10 @@ describe('CanTransferAssignationPipe', () => {
     expect(result).toBe(false);
   });
 
-  it('should return false if prescription status is not OPEN nor IN_PROGRESS', () => {
+  it('should return false if prescription status is not OPEN, nor PENDING, nor IN_PROGRESS', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
     const prescription = { status: Status.BLACKLISTED } as ReadPrescription;
-    const task = { status: TaskStatus.READY, careGiverSsin: currentUserSsin } as PerformerTask;
+    const task = { careGiverSsin: currentUserSsin } as PerformerTask;
 
     const result = pipe.transform(prescription, task, currentUserSsin);
     expect(result).toBe(false);
@@ -38,19 +38,10 @@ describe('CanTransferAssignationPipe', () => {
     expect(result).toBe(false);
   });
 
-  it('should return false if task status is not READY nor INPROGRESS', () => {
-    mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
-    const prescription = { status: Status.OPEN } as ReadPrescription;
-    const task = { status: TaskStatus.COMPLETED, careGiverSsin: currentUserSsin } as PerformerTask;
-
-    const result = pipe.transform(prescription, task, currentUserSsin);
-    expect(result).toBe(false);
-  });
-
   it('should return false if task.careGiverSsin does not match currentUserSsin', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
     const prescription = { status: Status.IN_PROGRESS } as ReadPrescription;
-    const task = { status: TaskStatus.READY, careGiverSsin: careGiverSsin } as PerformerTask;
+    const task = { careGiverSsin: careGiverSsin } as PerformerTask;
 
     const result = pipe.transform(prescription, task, currentUserSsin);
     expect(result).toBe(false);
@@ -64,7 +55,7 @@ describe('CanTransferAssignationPipe', () => {
       status: Status.OPEN,
     } as ReadPrescription;
 
-    const task = { status: TaskStatus.READY, careGiverSsin: currentUserSsin } as PerformerTask;
+    const task = { careGiverSsin: currentUserSsin } as PerformerTask;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
     const result = pipe.transform(prescription, task, currentUserSsin);
@@ -80,7 +71,7 @@ describe('CanTransferAssignationPipe', () => {
       status: Status.IN_PROGRESS,
     } as ReadPrescription;
 
-    const task = { status: TaskStatus.INPROGRESS, careGiverSsin: currentUserSsin } as PerformerTask;
+    const task = { careGiverSsin: currentUserSsin } as PerformerTask;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
     const result = pipe.transform(prescription, task, currentUserSsin);
@@ -96,7 +87,7 @@ describe('CanTransferAssignationPipe', () => {
       status: Status.OPEN,
     } as ReadPrescription;
 
-    const task = { status: TaskStatus.READY, careGiverSsin: currentUserSsin } as PerformerTask;
+    const task = { careGiverSsin: currentUserSsin } as PerformerTask;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
@@ -111,7 +102,7 @@ describe('CanTransferAssignationPipe', () => {
       status: Status.OPEN,
     } as ReadPrescription;
 
-    const task = { status: TaskStatus.INPROGRESS, careGiverSsin: currentUserSsin } as PerformerTask;
+    const task = { careGiverSsin: currentUserSsin } as PerformerTask;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(false);
 
