@@ -87,7 +87,7 @@ export const APP_CONFIG: AppConfig = {
     intExtPatient: {
       env: 'intExtPatient',
       fhirGatewayUrl: 'https://uhmep-fhirgateway-v4.int.pub.vascloud.be',
-      fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
+      fhirGatewayClientId: 'nihdi-uhmep-fhir-patient',
       apiUrl: 'https://referral-prescription.int.pub.vascloud.be/frontend/api',
       pseudoApiUrl: 'https://api-acpt.ehealth.fgov.be/pseudo/v1',
       keycloak: {
@@ -113,7 +113,7 @@ export const APP_CONFIG: AppConfig = {
     accPatient: {
       env: 'accPatient',
       fhirGatewayUrl: 'https://extranet-acpt.referral-prescription.ehealth.fgov.be/backend/application/fhirgateway/uhmep/v1',
-      fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
+      fhirGatewayClientId: 'nihdi-uhmep-fhir-patient',
       apiUrl: 'https://wwwacc.referral-prescription.ehealth.fgov.be/frontend/api',
       pseudoApiUrl: 'https://api-acpt.ehealth.fgov.be/pseudo/v1',
       keycloak: {
@@ -139,7 +139,7 @@ export const APP_CONFIG: AppConfig = {
     accInPatient: {
       env: 'accInPatient',
       fhirGatewayUrl: 'https://fhirgateway.uhmep.acc.in.ext.vasha.be',
-      fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
+      fhirGatewayClientId: 'nihdi-uhmep-fhir-patient',
       apiUrl: 'https://wwwacc.referral-prescription.in.ehealth.fgov.be/frontend/api',
       pseudoApiUrl: 'https://api-acpt.ehealth.fgov.be/pseudo/v1',
       keycloak: {
