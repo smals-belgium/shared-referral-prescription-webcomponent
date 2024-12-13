@@ -23,7 +23,7 @@ kind: Route
 metadata:
   name: referral-prescription-web-components-up-public
   labels:
-    deploymentconfig: *deploymentconfig
+    deploymentconfig: &deploymentconfig referral-prescription-web-components-up
 spec:
   host: www.referral-prescription.up.ehealth.fgov.be
   path: /web-components
