@@ -7,6 +7,7 @@ import { AccessMatrixState } from '../states/access-matrix.state';
  *
  * The access matrix needs to have assignPrescription or assignProposal depending on the intent
  * The status of the prescription needs to be OPEN, PENDING or IN PROGRESS
+ * The status of the performerTask needs to be READY or IN PROGRESS
  * The current user must be the caregiver assigned to the task
  *
  * Example usage:
@@ -31,6 +32,7 @@ export class CanTransferAssignationPipe {
       && prescription.status != null
       && [Status.OPEN, Status.PENDING, Status.IN_PROGRESS].includes(prescription.status)
       && task != null
+      && [TaskStatus.READY, TaskStatus.INPROGRESS].includes(task.status)
       && task.careGiverSsin == currentUserSsin;
   }
 
