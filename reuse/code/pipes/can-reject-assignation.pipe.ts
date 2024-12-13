@@ -7,6 +7,7 @@ import { AccessMatrixState } from '../states/access-matrix.state';
  *
  * The access matrix needs to have removeAssignationPrescription or removeAssignationProposal depending on the intent
  * The status of the prescription can be OPEN or PENDING or IN_PROGRESS
+ * The status of the performerTask needs to be READY
  * The caregiver assigned to the task and the patient assigned to the prescription can reject an assignation
  *
  * Example usage:
@@ -28,6 +29,7 @@ export class CanRejectAssignationPipe {
       return false;
     return this.hasAssignPermissions(prescription)
       && prescription.status != null && [Status.OPEN, Status.PENDING, Status.IN_PROGRESS].includes(prescription.status)
+      && task?.status === TaskStatus.READY
       && this.checkIfCurrentUserIsPatientOrAssignedCaregiver(currentUserSsin, patientSsin, task.careGiver.ssin);
   }
 

@@ -27,7 +27,16 @@ describe('CanRejectAssignationPipe', () => {
   it('should return false if the prescription status is not OPEN nor PENDING nor IN_PROGRESS', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
     const prescription = { status: Status.BLACKLISTED } as ReadPrescription;
-    const task = { careGiver: { ssin: caregiverSsin } } as PerformerTask;
+    const task = { status: TaskStatus.READY, careGiver: { ssin: caregiverSsin } } as PerformerTask;
+
+    const result = pipe.transform(prescription, task, patientSsin, currentUserSsin);
+    expect(result).toBe(false);
+  });
+
+  it('should return false if the task status is not READY', () => {
+    mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
+    const prescription = { status: Status.OPEN } as ReadPrescription;
+    const task = { status: TaskStatus.COMPLETED, careGiver: { ssin: caregiverSsin } } as PerformerTask;
 
     const result = pipe.transform(prescription, task, patientSsin, currentUserSsin);
     expect(result).toBe(false);
