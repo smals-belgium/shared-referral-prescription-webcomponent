@@ -23,7 +23,7 @@
               </div>
               <div class="actions">
                 <button
-                  *ngIf="prescription | canCancelPrescriptionOrProposal: viewState.data!.patient.ssin: viewState.data!.currentUser?.ssin"
+                  *ngIf="prescription | canCancelPrescriptionOrProposal: viewState.data!.patient.ssin: viewState.data!.currentUser"
                   mat-raised-button
                   type="button"
                   color="accent"
@@ -178,7 +178,7 @@
                               </ng-container>
                             </div>
                             <button
-                              *ngIf="prescription | canRejectAssignation : performertask : viewState.data!.patient.ssin : viewState.data!.currentUser?.ssin"
+                              *ngIf="prescription | canRejectAssignation : performertask : viewState.data!.patient.ssin : viewState.data!.currentUser"
                               (click)="openRejectAssignationDialog(prescription, performertask, viewState.data!.patient)"
                               mat-icon-button
                               data-cy="prescription-reject-assignation-button"
@@ -186,7 +186,7 @@
                               <mat-icon>cancel</mat-icon>
                             </button>
                             <button
-                              *ngIf="prescription | canInterruptTreatment : performertask : viewState.data!.performerTask?.careGiverSsin"
+                              *ngIf="prescription | canInterruptTreatment : performertask : viewState.data!.currentUser"
                               (click)="openInterruptExecutionDialog(prescription, performertask, viewState.data!.patient)"
                               mat-icon-button
                               data-cy="prescription-interrupt-execution-button"
@@ -226,7 +226,7 @@
                               <mat-icon>event_busy</mat-icon>
                               {{'prescription.finishExecution.action' | translate}}</button>
                             <button
-                              *ngIf="prescription | canCancelTreatment:performertask"
+                              *ngIf="prescription | canCancelTreatment:performertask:viewState.data?.currentUser"
                               (click)="openCancelExecutionDialog(prescription, performertask, viewState.data!.patient)"
                               mat-raised-button
                               type="button"
@@ -236,7 +236,7 @@
                               <mat-icon>cancel</mat-icon>
                               {{'prescription.cancelExecution.action' | translate}}</button>
                             <button
-                              *ngIf="prescription | canTransferAssignation:performertask:viewState.data?.currentUser?.ssin"
+                              *ngIf="prescription | canTransferAssignation:performertask:viewState.data?.currentUser"
                               mat-raised-button
                               (click)="openTransferAssignationDialog(prescription, performertask)"
                               data-cy="prescription-transfer-assignation-button"
@@ -265,7 +265,7 @@
                       </div>
 
                       <button
-                        *ngIf="prescription | canRejectAssignation : task : viewState.data!.patient.ssin : viewState.data!.currentUser?.ssin"
+                        *ngIf="prescription | canRejectAssignation : task : viewState.data!.patient.ssin : viewState.data!.currentUser"
                         (click)="openRejectAssignationDialog(prescription, task, viewState.data!.patient)"
                         mat-icon-button
                         data-cy="prescription-reject-assignation-button"
@@ -274,7 +274,7 @@
                         <mat-icon>cancel</mat-icon>
                       </button>
                       <button
-                        *ngIf="prescription | canInterruptTreatment : task : viewState.data!.performerTask?.careGiverSsin"
+                        *ngIf="prescription | canInterruptTreatment : task : viewState.data!.currentUser"
                         (click)="openInterruptExecutionDialog(prescription, task, viewState.data!.patient)"
                         mat-icon-button
                         data-cy="prescription-interrupt-execution-button"
@@ -314,7 +314,7 @@
                         <mat-icon>event_busy</mat-icon>
                         {{'prescription.finishExecution.action' | translate}}</button>
                       <button
-                        *ngIf="prescription | canCancelTreatment:task"
+                        *ngIf="prescription | canCancelTreatment:task:viewState.data?.currentUser"
                         (click)="openCancelExecutionDialog(prescription, task, viewState.data!.patient)"
                         mat-raised-button
                         type="button"
@@ -324,7 +324,7 @@
                         <mat-icon>cancel</mat-icon>
                         {{'prescription.cancelExecution.action' | translate}}</button>
                       <button
-                        *ngIf="prescription | canTransferAssignation:task:viewState.data?.currentUser?.ssin"
+                        *ngIf="prescription | canTransferAssignation:task:viewState.data?.currentUser"
                         mat-raised-button
                         (click)="openTransferAssignationDialog(prescription, task)"
                         data-cy="prescription-transfer-assignation-button"

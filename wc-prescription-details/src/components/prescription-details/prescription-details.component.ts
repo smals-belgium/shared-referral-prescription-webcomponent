@@ -28,7 +28,7 @@ import {
   LoadingStatus,
   PerformerTask,
   Person,
-  ReadPrescription,
+  ReadPrescription, Role,
   Status,
   Token,
   UserInfo,
@@ -218,8 +218,10 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
     }),
     currentUser: computed(() => {
       const token = this.tokenClaims$()?.['userProfile'];
+      const professional = this.isProfessional$();
+
       return token
-        ? {status: LoadingStatus.SUCCESS, data: token}
+        ? {status: LoadingStatus.SUCCESS, data: {...token, role: professional ? Role.professional : Role.patient}}
         : {status: LoadingStatus.LOADING};
     })
   });

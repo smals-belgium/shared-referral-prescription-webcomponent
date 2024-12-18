@@ -1,5 +1,5 @@
 import { Pipe } from '@angular/core';
-import { ReadPrescription, Status, TaskStatus } from '../interfaces';
+import { ReadPrescription, Role, Status, UserInfo } from '../interfaces';
 import { AccessMatrixState } from '../states/access-matrix.state';
 
 /**
@@ -7,11 +7,11 @@ import { AccessMatrixState } from '../states/access-matrix.state';
  *
  * The access matrix needs to have removePrescription or removeProposal depending on the intent
  * The status of the prescription needs to be OPEN
- * The requester and the patient assigned to the prescription can reject a prescription or proposal
+ * The requester and the patient assigned to the prescription can reject a prescription or proposal if they are logged in with the corresponding role
  *
  * Example usage:
  * ```html
- * <button *ngIf="prescription | canCancelPrescriptionOrProposal : patientSSIN : currentUserSSIN">Cancel</button>
+ * <button *ngIf="prescription | canCancelPrescriptionOrProposal : patientSSIN : currentUser">Cancel</button>
  * ```
  *
  * @pipe
@@ -25,13 +25,13 @@ export class CanCancelPrescriptionOrProposalPipe {
   ) {
   }
 
-  transform(prescription: ReadPrescription, patientSsin: string, currentUserSsin?: string): boolean {
-    if (!currentUserSsin)
+  transform(prescription: ReadPrescription, patientSsin: string, currentUser?: UserInfo): boolean {
+    if (!currentUser)
       return false;
 
     return this.hasCancelPermissions(prescription)
       && prescription.status === Status.OPEN
-      && this.checkIfCurrentUserIsPatientOrAssignedCaregiver(currentUserSsin, patientSsin, prescription.requester?.ssin);
+      && this.checkIfCurrentUserIsPatientOrAssignedCaregiver(currentUser, patientSsin, prescription.requester?.ssin);
   }
 
   private hasCancelPermissions(prescription: ReadPrescription) {
@@ -42,9 +42,12 @@ export class CanCancelPrescriptionOrProposalPipe {
     return this.accessMatrixState.hasAtLeastOnePermission(['cancelPrescription'], prescription.templateCode)
   }
 
-  private checkIfCurrentUserIsPatientOrAssignedCaregiver(currentUserSsin:string, patientSsin:string, caregiverSsin?: string) {
-    if(!caregiverSsin)
-      return false
-    return currentUserSsin === caregiverSsin || currentUserSsin === patientSsin
+  private checkIfCurrentUserIsPatientOrAssignedCaregiver(currentUser: UserInfo, patientSsin: string, caregiverSsin?: string): boolean {
+    if (!caregiverSsin) return false;
+
+    const isPatient = currentUser.role === Role.patient && currentUser.ssin === patientSsin;
+    const isCaregiver = currentUser.role !== Role.patient && currentUser.ssin === caregiverSsin;
+
+    return isPatient || isCaregiver;
   }
 }

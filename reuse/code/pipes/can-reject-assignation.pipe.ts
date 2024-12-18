@@ -1,5 +1,5 @@
 import { Pipe } from '@angular/core';
-import { PerformerTask, ReadPrescription, Status, TaskStatus } from '../interfaces';
+import { PerformerTask, ReadPrescription, Role, Status, TaskStatus, UserInfo } from '../interfaces';
 import { AccessMatrixState } from '../states/access-matrix.state';
 
 /**
@@ -8,11 +8,11 @@ import { AccessMatrixState } from '../states/access-matrix.state';
  * The access matrix needs to have removeAssignationPrescription or removeAssignationProposal depending on the intent
  * The status of the prescription can be OPEN or PENDING or IN_PROGRESS
  * The status of the performerTask needs to be READY
- * The caregiver assigned to the task and the patient assigned to the prescription can reject an assignation
+ * The caregiver assigned to the task and the patient assigned to the prescription can reject an assignation if they are logged in with the corresponding role
  *
  * Example usage:
  * ```html
- * <button *ngIf="assignation | canRejectAssignation : performertask : patientSSIN : currentUserSSIN">Reject</button>
+ * <button *ngIf="assignation | canRejectAssignation : performertask : patientSSIN : currentUser">Reject</button>
  * ```
  *
  * @pipe
@@ -24,17 +24,23 @@ export class CanRejectAssignationPipe {
   constructor(private accessMatrixState: AccessMatrixState) {
   }
 
-  transform(prescription: ReadPrescription, task: PerformerTask, patientSsin: string, currentUserSsin?: string): boolean {
-    if (!currentUserSsin)
+  transform(prescription: ReadPrescription, task: PerformerTask, patientSsin: string, currentUser?: UserInfo): boolean {
+    if (!currentUser)
       return false;
+
     return this.hasAssignPermissions(prescription)
       && prescription.status != null && [Status.OPEN, Status.PENDING, Status.IN_PROGRESS].includes(prescription.status)
       && task?.status === TaskStatus.READY
-      && this.checkIfCurrentUserIsPatientOrAssignedCaregiver(currentUserSsin, patientSsin, task.careGiver.ssin);
+      && this.checkIfCurrentUserIsPatientOrAssignedCaregiver(currentUser, patientSsin, task.careGiver.ssin);
   }
 
-  private checkIfCurrentUserIsPatientOrAssignedCaregiver(currentUserSsin:string, patientSsin:string, caregiverSsin: string) {
-    return currentUserSsin === caregiverSsin || currentUserSsin === patientSsin
+  private checkIfCurrentUserIsPatientOrAssignedCaregiver(currentUser: UserInfo, patientSsin: string, caregiverSsin?: string): boolean {
+      if (!caregiverSsin) return false;
+
+      const isPatient = currentUser.role === Role.patient && currentUser.ssin === patientSsin;
+      const isCaregiver = currentUser.role !== Role.patient && currentUser.ssin === caregiverSsin;
+
+      return isPatient || isCaregiver;
   }
 
   private hasAssignPermissions(prescription: ReadPrescription) {

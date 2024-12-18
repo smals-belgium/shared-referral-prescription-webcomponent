@@ -1,10 +1,31 @@
 import { CanCancelPrescriptionOrProposalPipe } from './can-cancel-prescription-or-proposal.pipe';
-import { ReadPrescription, Status } from '../interfaces';
+import { Discipline, ReadPrescription, Role, Status, UserInfo } from '../interfaces';
 import { AccessMatrixState } from '../states/access-matrix.state';
 
-const requesterSsin = '123';
-const patientSsin = '456';
-const currentUserSsin = '789';
+const requester: UserInfo = {
+  discipline: Discipline.NURSE,
+  firstName: '',
+  lastName: '',
+  professional: true,
+  ssin: '123',
+  role: Role.professional
+};
+const patient: UserInfo = {
+  discipline: Discipline.PATIENT,
+  firstName: '',
+  lastName: '',
+  professional: true,
+  ssin: '456',
+  role: Role.patient
+};
+const currentUser: UserInfo = {
+  discipline: Discipline.NURSE,
+  firstName: '',
+  lastName: '',
+  professional: true,
+  ssin: '789',
+  role: Role.professional
+};
 
 describe('CanCancelPrescriptionOrProposal', () => {
   let pipe: CanCancelPrescriptionOrProposalPipe;
@@ -18,22 +39,22 @@ describe('CanCancelPrescriptionOrProposal', () => {
     pipe = new CanCancelPrescriptionOrProposalPipe(mockAccessMatrixState);
   });
 
-  it('should return false if currentUserSsin is not provided', () => {
-    const result = pipe.transform({} as ReadPrescription, patientSsin);
+  it('should return false if currentUser is not provided', () => {
+    const result = pipe.transform({} as ReadPrescription, patient.ssin);
     expect(result).toBe(false);
   });
 
   it('should return false if the prescription has no status', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
     const prescription = {} as ReadPrescription;
-    const result = pipe.transform(prescription, patientSsin, patientSsin);
+    const result = pipe.transform(prescription, patient.ssin, patient);
     expect(result).toBe(false);
   });
 
   it('should return false if prescription status is not OPEN', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
     const prescription = { status: Status.BLACKLISTED } as ReadPrescription;
-    const result = pipe.transform(prescription, patientSsin, patientSsin);
+    const result = pipe.transform(prescription, patient.ssin, patient);
     expect(result).toBe(false);
   });
 
@@ -42,7 +63,7 @@ describe('CanCancelPrescriptionOrProposal', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
     const prescription = { intent: 'proposal', status: Status.OPEN , templateCode: 'template1' } as ReadPrescription;
 
-    pipe.transform(prescription, patientSsin, currentUserSsin);
+    pipe.transform(prescription, patient.ssin, currentUser);
 
     expect(mockAccessMatrixState.hasAtLeastOnePermission).toHaveBeenCalledWith(['cancelProposal'], 'template1');
   });
@@ -51,20 +72,34 @@ describe('CanCancelPrescriptionOrProposal', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
     const prescription = { intent: 'prescription',status: Status.OPEN, templateCode: 'template2' } as ReadPrescription;
 
-    pipe.transform(prescription, patientSsin, currentUserSsin);
+    pipe.transform(prescription, patient.ssin, currentUser);
 
     expect(mockAccessMatrixState.hasAtLeastOnePermission).toHaveBeenCalledWith(['cancelPrescription'], 'template2');
   });
 
-  it('should return false if currentUserSsin is neither the patient nor the caregiver', () => {
+  it('should return false if currentUser is neither the patient nor the caregiver', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
     const prescription = {
       status: Status.OPEN,
-      requester: { ssin: requesterSsin },
+      requester: { ssin: requester.ssin },
     } as ReadPrescription;
 
-    const result = pipe.transform(prescription, patientSsin, currentUserSsin);
+    const result = pipe.transform(prescription, patient.ssin, currentUser);
+    expect(result).toBe(false);
+  });
+
+  it('should return false if currentUser is logged in as a nurse but has the same ssin as the patient', () => {
+    mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
+
+    const nurse = {...currentUser, ssin: patient.ssin}
+
+    const prescription = {
+      status: Status.OPEN,
+      requester: { ssin: requester.ssin },
+    } as ReadPrescription;
+
+    const result = pipe.transform(prescription, patient.ssin, nurse);
     expect(result).toBe(false);
   });
 
@@ -75,10 +110,10 @@ describe('CanCancelPrescriptionOrProposal', () => {
       intent: 'prescription',
       status: Status.OPEN,
       templateCode: 'template1',
-      requester: { ssin: requesterSsin },
+      requester: { ssin: requester.ssin },
     } as ReadPrescription;
 
-    const result = pipe.transform(prescription, patientSsin, requesterSsin);
+    const result = pipe.transform(prescription, patient.ssin, requester);
     expect(result).toBe(true);
   });
 
