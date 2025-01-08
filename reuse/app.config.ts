@@ -46,7 +46,7 @@ export const APP_CONFIG: AppConfig = {
         clientId: 'uhmep-webapp'
       },
       enablePseudo: true,
-      pseudoApiUrl: 'http://uhmep-mockingbird.test.paas.vasdc.be/pseudo/v1'
+      pseudoApiUrl: 'https://uhmep-mockingbird.test.ext.vascloud.be/pseudo/v1'
     },
     testDemo: {
       env: 'testDemo',
