@@ -39,7 +39,7 @@ export const APP_CONFIG: AppConfig = {
     test: {
       env: 'test',
       fhirGatewayUrl: 'https://referral-prescription-v4.test.ext.vascloud.be/backend/application/fhirgateway/uhmep/v1',
-      apiUrl: 'http://referral-prescription.test.paas.vasdc.be/frontend/api',
+      apiUrl: 'https://referral-prescription.test.ext.vascloud.be/frontend/api',
       keycloak: {
         url: 'https://vasiam.test.ext.vascloud.be/auth',
         realm: 'MOOSE_UHMEP',
