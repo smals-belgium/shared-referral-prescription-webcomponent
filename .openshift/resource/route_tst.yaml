@@ -5,7 +5,7 @@ metadata:
     deploymentconfig: &deploymentconfig referral-prescription-web-components
   name: referral-prescription-web-components
 spec:
-  host: referral-prescription.test.paas.vasdc.be
+  host: referral-prescription.test.ext.vascloud.be
   path: /web-components
   to:
     kind: Service
