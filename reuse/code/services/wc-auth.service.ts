@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, first, from, mergeMap, Observable, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, first, from, mergeMap, Observable, switchMap } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Buffer } from 'buffer';
 import { AuthExchangeService } from './auth-exchange.service';
@@ -63,27 +63,27 @@ export class WcAuthService extends AuthService {
         map((token) => (typeof token === 'string') ? JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString()) : token))
   }
 
+  getResourceAccess(): Observable<Record<string, any>> {
+    return this.getAccessToken().pipe(
+      map((token) => JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString())))
+  }
+
   override isProfessional(): Observable<boolean> {
-    return this.getClaims().pipe(
-      map((claims) => this.userProfileHasProfessionalKey(claims?.['userProfile']))
+    return combineLatest([this.getClaims(), this.getResourceAccess()]).pipe(
+      map(([claims, accessToken]) => {
+        return this.userProfileHasProfessionalKey(claims?.['userProfile'], accessToken?.['resource_access']);
+      })
     );
   }
 
-  private userProfileHasProfessionalKey(userProfile?: Record<string, any>): boolean {
-    if(!userProfile) return false
+  private userProfileHasProfessionalKey(userProfile?: Record<string, any>, resourceAccess?: Record<string, any>): boolean {
+    if (!userProfile || !resourceAccess) return false;
 
-    let professional: boolean = false;
+    const hasProfessionalKey = Object.values(Discipline).some((discipline) =>
+      Object.hasOwn(userProfile, discipline.toLowerCase())
+    );
 
-    for(let value in Discipline) {
-      if(userProfile.hasOwnProperty(value.toLowerCase())) {
-        professional = true;
-      }
-    }
+    return hasProfessionalKey || resourceAccess['nihdi-uhmep-api']?.roles?.includes('admin') || false;
 
-    if(userProfile.hasOwnProperty('organizations') && userProfile['organizations']?.['role_code'] === '144') {
-      professional = true;
-    }
-
-    return professional;
   }
 }
