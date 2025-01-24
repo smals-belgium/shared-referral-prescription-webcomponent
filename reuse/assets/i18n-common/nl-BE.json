@@ -203,7 +203,8 @@
       "dateMustBeLaterOrEqualTo": "Datum mag niet voor {date} liggen",
       "invalidDateFormat": "Ongeldig formaat: dd/mm/jjjj",
       "invalidSsinChecksum": "Rijksregisternummer is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
-      "invalidShortCode": "Voorschrift ID is ongeldig. Gelieve dit na te kijken en opnieuw te proberen."
+      "invalidShortCode": "Voorschrift ID is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
+      "decryptionFailed": "Het decoderen van de vrije tekstvelden is mislukt. Probeer het opnieuw."
     },
     "categories": {
       "bandagisterie": "Bandagisterie",

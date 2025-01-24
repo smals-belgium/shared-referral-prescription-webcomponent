@@ -30,4 +30,8 @@ export class ProposalState extends BaseState<ReadPrescription> {
     return this.proposalService.rejectProposalTask(performerTaskId, reason, generatedUUID)
       .pipe(tap(() => this.loadProposal(proposalId)));
   }
+
+  resetProposal() {
+    this.reset()
+  }
 }

@@ -13,6 +13,7 @@ export class PdfMakeWebComponent implements OnChanges {
   @HostBinding('attr.lang')
   @Input() lang?: string;
   @Input() prescription!: ReadPrescription;
+  @Input() responses!: Record<string, any>;
   @Input() patient!: Person;
   @Input() template!: EvfTemplate;
   @Input() templateVersion!: FormTemplate;
@@ -32,6 +33,7 @@ export class PdfMakeWebComponent implements OnChanges {
     if (changes['prescription'] && this.prescription && this.template && this.templateVersion) {
       this.prescriptionPdfService.printPDF(
         this.prescription,
+        this.responses,
         this.patient,
         this.template,
         this.templateVersion,

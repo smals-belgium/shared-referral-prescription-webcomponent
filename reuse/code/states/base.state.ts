@@ -29,4 +29,12 @@ export abstract class BaseState<T> {
       });
     return subject.asObservable();
   }
+
+  protected reset() {
+    this._state.set({
+      status: LoadingStatus.INITIAL,
+      data: undefined,
+      error: null
+    });
+  }
 }

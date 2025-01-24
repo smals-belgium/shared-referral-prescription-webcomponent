@@ -14,6 +14,7 @@ import { tap } from 'rxjs/operators';
 import { Organization } from '../interfaces/organization.interface';
 import { HealthcareProvider } from '../interfaces/healthcareProvider.interface';
 import {ProposalService} from "../services/proposal.service";
+import { of } from 'rxjs';
 
 @Injectable({providedIn: 'root'})
 export class PrescriptionState extends BaseState<ReadPrescription> {
@@ -27,6 +28,10 @@ export class PrescriptionState extends BaseState<ReadPrescription> {
 
   loadPrescription(id: string): void {
     this.load(this.prescriptionService.findOne(id));
+  }
+
+  resetPrescription() {
+    this.reset()
   }
 
   loadPrescriptionByShortCode(shortCode: string, ssin: string): void {

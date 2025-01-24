@@ -5,7 +5,8 @@ import {
   HostBinding,
   Inject,
   Input,
-  OnChanges, OnInit,
+  OnChanges,
+  OnInit,
   Output,
   Renderer2,
   Signal,
@@ -15,7 +16,7 @@ import {
 import { FormTemplate } from '@smals/vas-evaluation-form-ui-core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '@reuse/code/services/auth.service';
-import { catchError, filter, forkJoin, mergeMap, Observable, of, switchMap } from 'rxjs';
+import { catchError, concatMap, filter, forkJoin, from, Observable, of, switchMap } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { DateAdapter } from '@angular/material/core';
@@ -47,6 +48,7 @@ import { PatientState } from '@reuse/code/states/patient.state';
 import { TemplateVersionsState } from '@reuse/code/states/template-versions.state';
 import { WcConfigurationService } from '@reuse/code/services/wc-configuration.service';
 import { ProposalService } from '@reuse/code/services/proposal.service';
+import { EncryptionService } from '@reuse/code/services/encryption.service';
 import { v4 as uuidv4 } from 'uuid';
 
 @Component({
@@ -69,6 +71,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
   readonly patientState$ = this.patientStateService.state;
   prescriptionForms = signal<CreatePrescriptionForm[]>([]);
   loading = signal(false);
+  cryptoKey: CryptoKey | undefined;
+  pseudomizedKey: string | undefined;
   generatedUUID = '';
 
   @HostBinding('attr.lang')
@@ -98,6 +102,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
     private proposalService: ProposalService,
     private configService: WcConfigurationService,
     private renderer: Renderer2,
+    private encryptionService: EncryptionService,
     @Inject(DOCUMENT) private _document: Document
   ) {
     this.dateAdapter.setLocale('fr-BE');
@@ -105,9 +110,37 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
     this.translate.use('fr-BE')
     this.loadWebComponents();
   }
-
   ngOnInit() {
     this.generatedUUID = uuidv4();
+  }
+
+  private initializeEncryptionKey(): Observable<void> {
+    return from(
+      (async () => {
+        try {
+          this.cryptoKey = await this.encryptionService.generateKey();
+          this.pseudomizedKey = await this.pseudomyzeEncryptionKey();
+        } catch (error) {
+          console.error('Failed to initialize encryption key:', error);
+          this.cryptoKey = undefined;
+          this.pseudomizedKey = undefined;
+        }
+      })()
+    );
+  }
+
+  private async pseudomyzeEncryptionKey(): Promise<string | undefined> {
+    if (!this.cryptoKey) return undefined;
+
+    try {
+      const exportedKey = await this.encryptionService.exportKey(this.cryptoKey);
+      const byteArray = new Uint8Array(exportedKey);
+      const byteArrToVal = this.pseudoService.byteArrayToValue(byteArray);
+      return this.pseudoService.pseudonymizeValue(byteArrToVal);
+    } catch (error) {
+      console.error('Failed to pseudonymize encryption key:', error);
+      return undefined;
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -197,7 +230,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
     this.prescriptionForms.update((prescriptionForms) => prescriptionForms.map((t) => ({...t, submitted: true})));
     if (this.prescriptionForms().every((f) => f.elementGroup!.valid)) {
       this.loading.set(true);
-      if (this.prescriptionForms.length === 1) {
+      if (this.prescriptionForms().length === 1) {
         this.publishOnePrescription();
       } else {
         this.publishMultiplePrescriptions();
@@ -205,53 +238,62 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
     }
   }
 
-  private getPatientIdentifier(): Promise<string> {
-    return this.pseudoService.pseudonymize(this.patientSsin);
+  private getPatientIdentifier(): Observable<string> {
+    return from(this.pseudoService.pseudonymize(this.patientSsin));
   }
 
   private publishOnePrescription(): void {
     const prescriptionForm = this.prescriptionForms()[0];
-    this.getPatientIdentifier().then(identifier => {
-      const createPrescriptionRequest = this.toCreatePrescriptionRequest(
-        prescriptionForm.templateCode,
-        prescriptionForm.elementGroup!.getOutputValue(),
-        identifier
+    this.initializeEncryptionKey().pipe(
+      concatMap(() =>
+        this.getPatientIdentifier().pipe(
+          switchMap(identifier =>
+            this.toCreatePrescriptionRequest(
+              prescriptionForm.templateCode,
+              prescriptionForm.elementGroup!.getOutputValue(),
+              identifier
+            )
+          ),
+          switchMap(createPrescriptionRequest => {
+            if (this.intent === 'order') {
+              return this.prescriptionService.create(createPrescriptionRequest, this.generatedUUID);
+            } else {
+              return this.proposalService.create(createPrescriptionRequest, this.generatedUUID);
+            }
+          })
+        )
       )
-
-      if(this.intent == 'order') {
-        this.prescriptionService.create(createPrescriptionRequest, this.generatedUUID).subscribe({
-          next: () => {
-            this.toastService.show('prescription.create.success');
-            this.prescriptionsCreated.emit();
-          },
-          error: (err) => {
-            console.error(err);
-            this.toastService.showSomethingWentWrong();
-            this.loading.set(false);
-          }
-        })
+    ).subscribe({
+      next: () => {
+        this.toastService.show(this.intent === 'order' ? 'prescription.create.success' : 'proposal.create.success');
+        this.prescriptionsCreated.emit();
+      },
+      error: err => {
+        console.error(err);
+        this.toastService.showSomethingWentWrong();
+        this.loading.set(false);
       }
-      else{
-        this.proposalService.create(createPrescriptionRequest, this.generatedUUID).subscribe({
-          next: () => {
-            this.toastService.show('proposal.create.success');
-            this.prescriptionsCreated.emit();
-          },
-          error: (err) => {
-            console.error(err);
-            this.toastService.showSomethingWentWrong();
-            this.loading.set(false);
-          }
-        })
-      }
-    })
+    });
   }
 
   private publishMultiplePrescriptions(): void {
     this.loading.set(true);
-    this.getPatientIdentifier().then(identifier => {
-      forkJoin(this.mapToCreatePrescriptionStreams(identifier)).subscribe((results) => this.handleCreateBulkResult(results))
-    })
+    this.initializeEncryptionKey().pipe(
+      concatMap(() =>
+        this.getPatientIdentifier().pipe(
+          switchMap(identifier => {
+            const streams = this.mapToCreatePrescriptionStreams(identifier);
+            return forkJoin(streams); // Combine all prescription creation streams into one
+          })
+        )
+      )
+    ).subscribe({
+      next: results => this.handleCreateBulkResult(results),
+      error: error => {
+        console.error('Error during bulk prescription creation:', error);
+        this.loading.set(false); // Stop loading on error
+      }
+    });
   }
 
   private mapToCreatePrescriptionStreams(identifier: string): Observable<{
@@ -260,37 +302,105 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
     error?: any;
   }>[] {
     return this.prescriptionForms()
-      .filter((f) => f.status !== LoadingStatus.SUCCESS)
-      .map((f) => {
-        const createPrescriptionRequest = this.toCreatePrescriptionRequest(f.templateCode, f.elementGroup!.getOutputValue(), identifier);
-        if(this.intent == 'order') {
-          return this.prescriptionService.create(createPrescriptionRequest, this.generatedUUID).pipe(
-            map(() => ({trackId: f.trackId, status: LoadingStatus.SUCCESS, error: undefined})),
-            catchError((error) => {
-              console.error(error);
-              return of({trackId: f.trackId, status: LoadingStatus.ERROR, error})
-            })
-          );
-        }
-        else{
-          return this.proposalService.create(createPrescriptionRequest, this.generatedUUID).pipe(
-            map(() => ({trackId: f.trackId, status: LoadingStatus.SUCCESS, error: undefined})),
-            catchError((error) => {
-              console.error(error);
-              return of({trackId: f.trackId, status: LoadingStatus.ERROR, error})
-            })
-          );
-        }
+      .filter(f => f.status !== LoadingStatus.SUCCESS)
+      .map(f => {
+        const createPrescriptionRequest$ = this.toCreatePrescriptionRequest(
+          f.templateCode,
+          f.elementGroup!.getOutputValue(),
+          identifier
+        );
 
+        return createPrescriptionRequest$.pipe(
+          switchMap(createPrescriptionRequest => {
+            if (this.intent === 'order') {
+              return this.prescriptionService.create(createPrescriptionRequest, this.generatedUUID).pipe(
+                map(() => ({
+                  trackId: f.trackId,
+                  status: LoadingStatus.SUCCESS,
+                  error: undefined
+                })),
+                catchError(error => {
+                  console.error('Error creating prescription (order):', error);
+                  return of({
+                    trackId: f.trackId,
+                    status: LoadingStatus.ERROR,
+                    error,
+                  });
+                })
+              );
+            } else {
+              return this.proposalService.create(createPrescriptionRequest, this.generatedUUID).pipe(
+                map(() => ({
+                  trackId: f.trackId,
+                  status: LoadingStatus.SUCCESS,
+                  error: undefined
+                })),
+                catchError(error => {
+                  console.error('Error creating prescription (proposal):', error);
+                  return of({
+                    trackId: f.trackId,
+                    status: LoadingStatus.ERROR,
+                    error,
+                  });
+                })
+              );
+            }
+          })
+        );
       });
   }
 
-  private toCreatePrescriptionRequest(templateCode: string, responses: Record<string, any>, subject: string): CreatePrescriptionRequest {
-    return {
-      templateCode,
-      responses,
-      subject
+  private encryptFreeTextInResponses(templateCode: string, responses: Record<string, any>): Observable<Record<string, any>> {
+    const template = this.getPrescriptionTemplateStream(templateCode)()?.data;
+    if (!template || !this.cryptoKey) {
+      return of(responses);
     }
+
+    const encryptionTasks = Object.entries(responses).map(([key, value]) => {
+      const formElement = template.elements.find(e => e.id === key);
+
+      if (formElement?.tags?.includes('freeText')) {
+        return this.encryptionService.encryptText(this.cryptoKey!, value).pipe(
+          map(encryptedValue => ({ [key]: encryptedValue })),
+          catchError(error => {
+            console.error(`Error encrypting key "${key}":`, error);
+            return of({ [key]: value });
+          })
+        );
+      } else {
+        return of({ [key]: value });
+      }
+    });
+
+    return forkJoin(encryptionTasks).pipe(
+      map(results => {
+        return results.reduce((acc, curr) => Object.assign(acc, curr), {});
+      })
+    );
+  }
+
+  private toCreatePrescriptionRequest(
+    templateCode: string,
+    responses: Record<string, any>,
+    subject: string
+  ): Observable<CreatePrescriptionRequest> {
+    return this.encryptFreeTextInResponses(templateCode, responses).pipe(
+      map(encryptedResponses => {
+        if (!this.pseudomizedKey) {
+          console.warn('Pseudomized key is not set. The request will proceed without it.');
+        }
+        return {
+          templateCode,
+          responses: encryptedResponses,
+          pseudomizedKey: this.pseudomizedKey || undefined,
+          subject,
+        };
+      }),
+      catchError(error => {
+        console.error('Failed to create prescription request:', error);
+        throw error;
+      })
+    );
   }
 
   private handleCreateBulkResult(results: { trackId: number; status: LoadingStatus; error?: any; }[]): void {

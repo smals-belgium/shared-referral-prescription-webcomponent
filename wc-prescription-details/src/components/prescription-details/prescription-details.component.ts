@@ -7,13 +7,16 @@ import {
   HostBinding,
   Inject,
   Input,
-  OnChanges, OnInit,
+  OnChanges, OnDestroy,
+  OnInit,
   Output,
   Renderer2,
+  signal,
   Signal,
   SimpleChanges,
   untracked,
-  ViewEncapsulation
+  ViewEncapsulation,
+  WritableSignal
 } from '@angular/core';
 import { FormTemplate } from '@smals/vas-evaluation-form-ui-core';
 import { MatDialog } from '@angular/material/dialog';
@@ -91,12 +94,17 @@ import { CanExtendPrescriptionPipe } from "@reuse/code/pipes/can-extend-prescrip
 import { IdentifyState } from "@reuse/code/states/identify.state";
 import { ProposalState } from '@reuse/code/states/proposal.state';
 import { isPrescriptionId, isPrescriptionShortCode, isSsin, validateSsinChecksum } from '@reuse/code/utils/utils';
+import { EncryptionService } from '@reuse/code/services/encryption.service';
 import { PseudoService } from '@reuse/code/services/pseudo.service';
+import { catchError, concatMap, from, map, Observable, of, throwError } from 'rxjs';
+import { EncryptionState } from '@reuse/code/states/encryption.state';
 import { v4 as uuidv4 } from 'uuid';
 import { ApproveProposalDialog } from '@reuse/code/dialogs/approve-proposal/approve-proposal.dialog';
+import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-responses-state.interface';
 
 interface ViewState {
   prescription: ReadPrescription;
+  decryptedResponses: Record<string, any>;
   proposal: ReadPrescription;
   patient: Person;
   performerTask?: PerformerTask;
@@ -145,7 +153,7 @@ interface ViewState {
   ]
 })
 
-export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
+export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDestroy {
   private readonly templateCode$ = computed(() => {
     if(this.intent?.toLowerCase() === 'proposal') {
       return this.proposalSateService.state().data?.templateCode
@@ -154,14 +162,57 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
   });
   private readonly tokenClaims$ = toSignal(this.authService.getClaims());
   private readonly isProfessional$ = toSignal(this.authService.isProfessional());
-
+  private readonly decryptedResponses$: WritableSignal<DecryptedResponsesState> = signal({
+    data: null,
+    error: null,
+  });
 
   readonly viewState$: Signal<DataState<ViewState>> = combineSignalDataState({
+    cryptoKey: computed(() => this.encryptionStateService.state()),
     prescription: computed(() => {
-      if(this.intent?.toLowerCase() === 'proposal') {
-        return this.proposalSateService.state()
+      const prescriptionState = this.intent?.toLowerCase() === 'proposal' ? this.proposalSateService.state() : this.prescriptionStateService.state();
+      const templateCode = this.templateCode$();
+      const cryptoKey = this.encryptionStateService.state().data;
+      const template = this.templateVersionsStateService.getState('READ_' + templateCode)()?.data;
+
+      if (!cryptoKey || !template) {
+        return { data: prescriptionState.data, status: LoadingStatus.LOADING };
       }
-      return this.prescriptionStateService.state()
+
+      if (prescriptionState.status !== LoadingStatus.SUCCESS) {
+        return prescriptionState;
+      }
+
+      const prescription = prescriptionState.data;
+
+      if (template && cryptoKey && prescription?.responses) {
+        this.decryptResponses(cryptoKey, prescription.responses, template).subscribe({
+          next: (decryptedResponses) => {
+            this.decryptedResponses$.set({ data: decryptedResponses, error: null });
+          },
+          error: () => {
+            this.decryptedResponses$.set({ data: null, error: 'Decryption failed' });
+          },
+        });
+
+        return {
+          ...prescriptionState,
+          status: LoadingStatus.SUCCESS,
+        };
+      }
+
+      return prescriptionState;
+    }),
+    decryptedResponses: computed(() => {
+      const responses = this.decryptedResponses$();
+
+      if (responses?.error) {
+        return { ...responses, status: LoadingStatus.ERROR };
+      }
+
+      return responses
+        ? {status: LoadingStatus.SUCCESS, data: responses.data}
+        : {status: LoadingStatus.LOADING};
     }),
     patient: computed(() => {
       const patientState = this.patientStateService.state();
@@ -229,6 +280,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
   loading = false;
   printer = false;
   generatedUUID = '';
+  responses: Record<string, any> | undefined;
 
   @HostBinding('attr.lang')
   @Input() lang = 'fr-BE';
@@ -249,7 +301,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
     private dialog: MatDialog,
     private authService: AuthService,
     private configService: WcConfigurationService,
-    private pseudoService: PseudoService,
     private renderer: Renderer2,
     private accessMatrixStateService: AccessMatrixState,
     private prescriptionStateService: PrescriptionState,
@@ -259,6 +310,9 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
     private templateVersionsStateService: TemplateVersionsState,
     private toastService: ToastService,
     private identifyState: IdentifyState,
+    private encryptionService: EncryptionService,
+    private pseudoService: PseudoService,
+    private encryptionStateService: EncryptionState,
     @Inject(DOCUMENT) private _document: Document
   ) {
     this.dateAdapter.setLocale('fr-BE');
@@ -276,6 +330,11 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
           if (prescription.patientIdentifier) {
             this.identifyState.loadSSIN(prescription.patientIdentifier);
           }
+
+          if (prescription.pseudomizedKey) {
+            this.getPrescriptionKey(prescription.pseudomizedKey)
+          }
+
           this.templateVersionsStateService.loadTemplateVersion('READ_' + prescription.templateCode);
         }
 
@@ -305,12 +364,12 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
   getAccessToken = async () => {
     const e = await this.getToken();
     return e.accessToken;
-  };
+  }
 
   getIdToken = async () => {
     const e = await this.getToken();
     return e.idToken;
-  };
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['getToken']) {
@@ -480,6 +539,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
       width: '100vw',
       maxWidth: '500px'
     });
+
   }
 
   selfAssign(prescription: ReadPrescription): void {
@@ -530,10 +590,10 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
     })
       .beforeClosed()
       .subscribe((data) => {
-        if(data?.prescriptionId) {
+        if (data?.prescriptionId) {
           this.proposalApproved.next({prescriptionId: data.prescriptionId})
         }
-      });
+      })
   }
 
   openRejectProposalDialog(proposal: ReadPrescription): void {
@@ -544,6 +604,86 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
       width: '100vw',
       maxWidth: '500px'
     });
+  }
+
+  private decryptResponses(
+    cryptoKey: CryptoKey,
+    responses: Record<string, any>,
+    template: FormTemplate
+  ): Observable<Record<string, any>> {
+    const decryptedResponses: Record<string, any> = {};
+
+    return new Observable(observer => {
+      const entries = Object.entries(responses);
+
+      from(entries).pipe(
+        concatMap(([key, value]) => {
+          const formElement = template.elements.find(e => e.id === key);
+
+          if (formElement?.tags?.includes('freeText')) {
+            return this.encryptionService.decryptText(value, cryptoKey).pipe(
+              map(decrypted => {
+                decryptedResponses[key] = decrypted;
+                return decryptedResponses;
+              }),
+              catchError((error) => {
+                return throwError(() => new Error(`Decryption failed for key "${key}": ${error.message}`));
+              })
+            );
+          } else {
+            decryptedResponses[key] = value;
+            return of(decryptedResponses);
+          }
+        })
+      ).subscribe({
+        next: (updatedResponses) => {
+          if (Object.keys(updatedResponses).length === entries.length) {
+            observer.next(updatedResponses);
+            observer.complete();
+          }
+        },
+        error: (err) => {
+          observer.error(err);
+        }
+      });
+    });
+  }
+
+  async getPrescriptionKey(pseudomizedKey: string): Promise<void> {
+    try {
+      const pseudoInTransit = this.pseudoService.toPseudonymInTransit(pseudomizedKey);
+      const uint8Array = await this.pseudoService.identifyPseudonymInTransit(pseudoInTransit)
+
+      this.encryptionStateService.loadCryptoKey(uint8Array);
+    } catch (error) {
+      const errorMsg = new Error('Error loading prescription key', {cause: error});
+      this.encryptionStateService.setCryptoKeyError(errorMsg)
+    }
+  }
+
+  handleDuplicateClick() {
+    const prescription = this.viewState$().data?.prescription;
+    const responses = this.viewState$().data?.decryptedResponses;
+    if(prescription && responses) {
+      const duplicatedData = {...prescription, responses: responses}
+      this.clickDuplicate.emit(duplicatedData)
+    }
+  }
+
+  handleExtendClick() {
+    const prescription = this.viewState$().data?.prescription;
+    const responses = this.viewState$().data?.decryptedResponses;
+    if(prescription && responses) {
+      const duplicatedData = {...prescription, responses: responses}
+      this.clickExtend.emit(duplicatedData)
+    }
+  }
+
+  showRetryButton() {
+    const error = this.viewState$().error;
+
+    // Check if error is an object and only has the key "decryptedResponses" and then return false
+    return !(error && typeof error === 'object' && Object.keys(error).length === 1 && error.hasOwnProperty('decryptedResponses'));
   }
 
   private loadPrintWebComponent(): void {
@@ -593,5 +733,14 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit {
 
   private getPatientIdentifier(identifier: string): Promise<string> {
     return this.pseudoService.pseudonymize(identifier);
+  }
+
+  ngOnDestroy() {
+    this.encryptionStateService.resetCryptoKey()
+    if(this.intent?.toLowerCase() === 'proposal') {
+      this.proposalSateService.resetProposal();
+    } else {
+      this.prescriptionStateService.resetPrescription();
+    }
   }
 }

@@ -203,7 +203,8 @@
       "dateMustBeLaterOrEqualTo": "La date ne peut pas être avant le {date}",
       "invalidDateFormat": "Format invalide: jj/mm/aaaa",
       "invalidSsinChecksum": "Le numéro de registre national n'est pas valide. Veuillez vérifier et essayer à nouveau.",
-      "invalidShortCode": "L'ID de la prescription n'est pas valide. Veuillez vérifier et essayer à nouveau."
+      "invalidShortCode": "L'ID de la prescription n'est pas valide. Veuillez vérifier et essayer à nouveau.",
+      "decryptionFailed": "Le décodage des champs de texte libre a échoué. Ré-essayer."
     },
     "categories": {
       "bandagisterie": "Bandagisterie",
