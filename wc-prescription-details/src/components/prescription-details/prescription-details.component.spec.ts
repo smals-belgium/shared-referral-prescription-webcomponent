@@ -1,6 +1,6 @@
 import { PrescriptionDetailsWebComponent } from "./prescription-details.component";
 import { ComponentFixture, fakeAsync, TestBed, tick } from "@angular/core/testing";
-import { HttpParams, provideHttpClient } from "@angular/common/http";
+import { provideHttpClient } from "@angular/common/http";
 import { HttpClientTestingModule, HttpTestingController, provideHttpClientTesting } from "@angular/common/http/testing";
 import { provideRouter } from "@angular/router";
 import { TranslateLoader, TranslateModule } from "@ngx-translate/core";
@@ -17,7 +17,7 @@ import { CancelPrescriptionDialog } from "@reuse/code/dialogs/cancel-prescriptio
 import {
   StartExecutionPrescriptionDialog
 } from "@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog";
-import { PerformerTask, ReadPrescription, Status, TaskStatus } from "@reuse/code/interfaces";
+import { LoadingStatus, PerformerTask, ReadPrescription, Status, TaskStatus } from "@reuse/code/interfaces";
 import { TransferAssignationDialog } from '@reuse/code/dialogs/transfer-assignation/transfer-assignation.dialog';
 import {
   RestartExecutionPrescriptionDialog
@@ -35,6 +35,8 @@ import { RejectAssignationDialog } from '@reuse/code/dialogs/reject-assignation/
 import { ToastService } from '@reuse/code/services/toast.service';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper/dist';
+import { PseudoService } from '@reuse/code/services/pseudo.service';
+import { EncryptionState } from '@reuse/code/states/encryption.state';
 
 const mockTemplate = {
   "id": 39,
@@ -453,7 +455,8 @@ const mockTemplate = {
       "type": "string"
     },
     "viewType": "textarea",
-    "labelTranslationId": "diagnosis"
+    "labelTranslationId": "diagnosis",
+    "tags": ["freeText"]
   }, {
     "id": "medicalReason",
     "dataType": {
@@ -525,6 +528,7 @@ const id = "08e267bf-46e3-459d-8216-d8720acc9f64";
 function prescriptionResponse(organisationTasks: any = null, referralTask: any = null, performerTask: PerformerTask[] | null = null) {
   return {
     "id": id,
+    "pseudomizedKey": "AwEK7P6okCUkHGUJkOoxAaG18nm32Q7D8QamJrLx0hT3Y9D_kzGp1dfP0N4GVKRNo8lC4elrCmVp--U_YWQwB-1Nng:eyJhdWQiOiJ1aG1lcF92MSIsImVuYyI6IkEyNTZHQ00iLCJhbGciOiJkaXIiLCJraWQiOiJhYzA1YjMyOS0zOGE5LTQ1MTQtOGUwYy0yMjQ1NzI5MjhlYjkifQ..wkVQQRM16H7YZO4J.v2gjyhopsk98zx51T14orcF7-95wkfl-vt1NEtPMO0czPDOL5aGdELipaehk3nqQCv_yh3fagz-kPOYnfNpEJhfszbGpStUC_0zTeM3yzUR9RxSYaMbQ-Vi_5QleVPNvjEpjmsV_-NAIK1ruYMCVQ_3j-kKT_aedROHMuJ7ZsbEdHJDoAhQC.Onsq-h5dRbG9DULPbr_zqw",
     "patientIdentifier": "90122712173",
     "referralTask": referralTask,
     "performerTasks": performerTask,
@@ -556,7 +560,7 @@ function prescriptionResponse(organisationTasks: any = null, referralTask: any =
     },
     "responses": {
       "feedback": false,
-      "diagnosis": "diagnose test 8",
+      "diagnosis": "SGVsbG8=",
       "occurrenceTiming": {
         "repeat": {
           "count": 12,
@@ -603,7 +607,22 @@ const mockPseudoClient = {
   pseudonymizeMultiple: jest.fn()
 }
 
-function MockPseudoHelperFactory() { return new PseudonymisationHelper(mockPseudoClient) }
+function MockPseudoHelperFactory() {
+  return new PseudonymisationHelper(mockPseudoClient)
+}
+
+const encryptionStateService = {
+  loadCryptoKey: jest.fn(),
+  state: jest.fn().mockReturnValue({
+    data: of('mockCryptoKey'), // Emits mock data
+  }),
+  resetCryptoKey: jest.fn()
+};
+
+// Mock the 'uuid' module
+jest.mock('uuid', () => ({
+  v4: jest.fn(),
+}));
 
 describe('PrescriptionDetailsWebComponent', () => {
   let component: PrescriptionDetailsWebComponent;
@@ -611,6 +630,19 @@ describe('PrescriptionDetailsWebComponent', () => {
   let httpMock: HttpTestingController;
   let dialog: MatDialog
   let toaster: ToastService
+  let pseudoService: PseudoService
+
+  beforeAll(() => {
+    Object.defineProperty(window, 'crypto', {
+      value: {
+        subtle: {
+          importKey: jest.fn(), // Mock the `importKey` function
+          decrypt: jest.fn(),
+          getRandomValues: jest.fn()
+        },
+      },
+    });
+  })
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -627,7 +659,8 @@ describe('PrescriptionDetailsWebComponent', () => {
         {provide: ConfigurationService, useValue: mockConfigService},
         {provide: AuthService, useValue: mockAuthService},
         MatDialog,
-        {provide: PseudonymisationHelper, useValue: MockPseudoHelperFactory()}
+        {provide: PseudonymisationHelper, useValue: MockPseudoHelperFactory()},
+        {provide: EncryptionState, useValue: encryptionStateService}
       ],
     })
       .compileComponents();
@@ -635,6 +668,7 @@ describe('PrescriptionDetailsWebComponent', () => {
     httpMock = TestBed.inject(HttpTestingController);
     dialog = TestBed.inject(MatDialog);
     toaster = TestBed.inject(ToastService);
+    pseudoService = TestBed.inject(PseudoService)
   })
 
   afterEach(() => {
@@ -658,9 +692,15 @@ describe('PrescriptionDetailsWebComponent', () => {
   });
 
   it('should load a prescription based on shortCode and SSIN', async () => {
-    createFixture()
-    const mockResponse = prescriptionResponse()
-    await loadPrescriptionByShortCode(mockResponse, "CAF4FE", "90122712173")
+    loadCrypto();
+    createFixture();
+    const mockResponse = prescriptionResponse();
+    await loadPrescriptionByShortCode(mockResponse, "CAF4FE", "90122712173");
+
+    expect(component.viewState$().status).toBe(LoadingStatus.SUCCESS)
+    fixture.detectChanges()
+
+    expect(component.viewState$().data?.decryptedResponses['diagnosis']).not.toBe("SGVsbG8=");
 
     const {debugElement} = fixture;
     const divWithClassId = debugElement.query(By.css('.id')).nativeElement;
@@ -695,9 +735,15 @@ describe('PrescriptionDetailsWebComponent', () => {
   });
 
   it('should load a prescription', async () => {
-    createFixture()
-    const mockResponse = prescriptionResponse()
-    await loadPrescription(mockResponse)
+    loadCrypto();
+    createFixture();
+    const mockResponse = prescriptionResponse();
+    await loadPrescription(mockResponse);
+
+    expect(component.viewState$().status).toBe(LoadingStatus.SUCCESS)
+    fixture.detectChanges()
+
+    expect(component.viewState$().data?.decryptedResponses['diagnosis']).not.toBe("SGVsbG8=");
 
     const {debugElement} = fixture;
     const divWithClassId = debugElement.query(By.css('.id')).nativeElement;
@@ -731,16 +777,17 @@ describe('PrescriptionDetailsWebComponent', () => {
   });
 
   it('should request the persons call when user is professional', async () => {
+    loadCrypto();
     mockAuthService.isProfessional.mockImplementationOnce(() => of(true))
     createFixture()
 
-    const mockResponse = prescriptionResponse()
-    await loadPrescription(mockResponse)
+      const mockResponse = prescriptionResponse()
+      await loadPrescription(mockResponse)
 
-    const req = httpMock.expectOne('/persons/90122712173');
-    expect(req.request.method).toBe('GET');
-    req.flush({});
-  });
+      const req = httpMock.expectOne('/persons/90122712173');
+      expect(req.request.method).toBe('GET');
+      req.flush({});
+    });
 
   it('should display the error card', async () => {
     createFixture()
@@ -750,268 +797,268 @@ describe('PrescriptionDetailsWebComponent', () => {
       prescriptionId: id
     }
 
-    component.ngOnChanges(changes as unknown as SimpleChanges)
-    fixture.detectChanges()
+      component.ngOnChanges(changes as unknown as SimpleChanges)
+      fixture.detectChanges()
 
-    const req = httpMock.expectOne('/prescriptions/08e267bf-46e3-459d-8216-d8720acc9f64');
-    req.error(new ProgressEvent('error'), {status: 401});
+      const req = httpMock.expectOne('/prescriptions/08e267bf-46e3-459d-8216-d8720acc9f64');
+      req.error(new ProgressEvent('error'), {status: 401});
 
-    fixture.detectChanges()
+      fixture.detectChanges()
 
-    const {debugElement} = fixture;
-    const errorCard = debugElement.query(By.css('app-error-card'));
-    expect(errorCard).toBeTruthy();
-  });
+      const {debugElement} = fixture;
+      const errorCard = debugElement.query(By.css('app-error-card'));
+      expect(errorCard).toBeTruthy();
+    });
 
-  it('should load templates and the access matrix when the token changes', async () => {
-    createFixture()
-    mockConfigService.getEnvironmentVariable.mockImplementationOnce(() => false)
-    const tokenFn = jest.fn()
-    component.getToken = tokenFn
-    const changes = {
-      getToken: tokenFn
-    }
+    it('should load templates and the access matrix when the token changes', async () => {
+      createFixture()
+      mockConfigService.getEnvironmentVariable.mockImplementationOnce(() => false)
+      const tokenFn = jest.fn()
+      component.getToken = tokenFn
+      const changes = {
+        getToken: tokenFn
+      }
 
-    component.ngOnChanges(changes as unknown as SimpleChanges)
-    fixture.detectChanges()
+      component.ngOnChanges(changes as unknown as SimpleChanges)
+      fixture.detectChanges()
 
-    const accessReq = httpMock.expectOne('/accessMatrix');
-    expect(accessReq.request.method).toBe('GET');
+      const accessReq = httpMock.expectOne('/accessMatrix');
+      expect(accessReq.request.method).toBe('GET');
 
-    const templateReq = httpMock.expectOne('/templates');
-    expect(templateReq.request.method).toBe('GET');
-  });
+      const templateReq = httpMock.expectOne('/templates');
+      expect(templateReq.request.method).toBe('GET');
+    });
 
-  it('should open the dialogs when functions are called', fakeAsync (() => {
-    createFixture()
-    const openDialogSpy = jest.spyOn(dialog, 'open');
+    it('should open the dialogs when functions are called', fakeAsync(() => {
+      createFixture()
+      const openDialogSpy = jest.spyOn(dialog, 'open');
 
-    const mockResponse = prescriptionResponse([organisationTask], referralTask, [mockPerformerTask]) as unknown as ReadPrescription
+      const mockResponse = prescriptionResponse([organisationTask], referralTask, [mockPerformerTask]) as unknown as ReadPrescription
 
-    const prescriptionTaskPatient = {
-      prescription: mockResponse,
-      performerTask: mockPerformerTask,
-      patient: mockPerson
-    }
-
-    const prescriptionTaskExecutionDate = {
-      prescription: mockResponse,
-      performerTask: mockPerformerTask,
-      startExecutionDate: mockPerformerTask.executionPeriod?.start
-    }
-
-    const prescriptionTaskCaregiver = {
-      prescriptionId: mockResponse.id,
-      referralTaskId: referralTask.id,
-      assignedCareGivers: [mockPerformerTask.careGiverSsin],
-    }
-
-    //openAssignDialog
-    component.openAssignDialog(mockResponse);
-
-    const paramsAssign = {
-      data: {
-        ...prescriptionTaskCaregiver,
-        assignedOrganizations: [organisationTask.organizationNihdi]
-      },
-      width: '100vw',
-      maxWidth: '750px',
-      maxHeight: '100vh'
-    }
-
-    expect(openDialogSpy).toHaveBeenCalledTimes(1);
-    expect(openDialogSpy).toHaveBeenCalledWith(AssignPrescriptionDialog, paramsAssign);
-
-    tick()
-    httpMock.expectOne('/healthCareProviders?discipline=NURSE&institutionType=THIRD_PARTY_PAYING_GROUP,GUARD_POST,MEDICAL_HOUSE,HOME_SERVICES')
-
-    // openTransferAssignationDialog
-    component.openTransferAssignationDialog(mockResponse, mockPerformerTask)
-
-    const paramsTransfer = {
-      data: {
-        ...prescriptionTaskCaregiver,
-        performerTaskId: mockPerformerTask.id,
-      },
-      width: '100vw',
-      maxWidth: '750px',
-      maxHeight: '100vh'
-    }
-
-    expect(openDialogSpy).toHaveBeenCalledTimes(2);
-    expect(openDialogSpy).toHaveBeenCalledWith(TransferAssignationDialog, paramsTransfer);
-
-    // openCancelPrescriptionDialog
-    component.openCancelPrescriptionDialog(mockResponse, mockPerson)
-
-    const paramsCancel = {
-      data: {
+      const prescriptionTaskPatient = {
         prescription: mockResponse,
+        performerTask: mockPerformerTask,
         patient: mockPerson
-      },
-      width: '100vw',
-      maxWidth: '500px'
-    }
+      }
 
-    expect(openDialogSpy).toHaveBeenCalledTimes(3);
-    expect(openDialogSpy).toHaveBeenCalledWith(CancelPrescriptionDialog, paramsCancel);
-
-    //openStartExecutionDialog
-    component.openStartExecutionDialog(mockResponse)
-
-    const paramsStartExecution = {
-      data: {
+      const prescriptionTaskExecutionDate = {
         prescription: mockResponse,
-        performerTask: undefined,
-        startExecutionDate: undefined
-      },
-      minWidth: '320px'
-    }
+        performerTask: mockPerformerTask,
+        startExecutionDate: mockPerformerTask.executionPeriod?.start
+      }
 
-    expect(openDialogSpy).toHaveBeenCalledTimes(4);
-    expect(openDialogSpy).toHaveBeenCalledWith(StartExecutionPrescriptionDialog, paramsStartExecution);
+      const prescriptionTaskCaregiver = {
+        prescriptionId: mockResponse.id,
+        referralTaskId: referralTask.id,
+        assignedCareGivers: [mockPerformerTask.careGiverSsin],
+      }
 
-    //openStartExecutionDialog with task
-    component.openStartExecutionDialog(mockResponse, mockPerformerTask)
+      //openAssignDialog
+      component.openAssignDialog(mockResponse);
 
-    const paramsStartExecutionWithTask = {
-      data: prescriptionTaskExecutionDate,
-      minWidth: '320px'
-    }
+      const paramsAssign = {
+        data: {
+          ...prescriptionTaskCaregiver,
+          assignedOrganizations: [organisationTask.organizationNihdi]
+        },
+        width: '100vw',
+        maxWidth: '750px',
+        maxHeight: '100vh'
+      }
 
-    expect(openDialogSpy).toHaveBeenCalledTimes(5);
-    expect(openDialogSpy).toHaveBeenCalledWith(StartExecutionPrescriptionDialog, paramsStartExecutionWithTask);
+      expect(openDialogSpy).toHaveBeenCalledTimes(1);
+      expect(openDialogSpy).toHaveBeenCalledWith(AssignPrescriptionDialog, paramsAssign);
 
-    // openRestartExecutionDialog
-    component.openRestartExecutionDialog(mockResponse, mockPerformerTask, mockPerson)
+      tick()
+      httpMock.expectOne('/healthCareProviders?discipline=NURSE&institutionType=THIRD_PARTY_PAYING_GROUP,GUARD_POST,MEDICAL_HOUSE,HOME_SERVICES')
 
-    const paramsRestartExecution = {
-      data: prescriptionTaskPatient,
-      minWidth: '320px'
-    }
+      // openTransferAssignationDialog
+      component.openTransferAssignationDialog(mockResponse, mockPerformerTask)
 
-    expect(openDialogSpy).toHaveBeenCalledTimes(6);
-    expect(openDialogSpy).toHaveBeenCalledWith(RestartExecutionPrescriptionDialog, paramsRestartExecution);
+      const paramsTransfer = {
+        data: {
+          ...prescriptionTaskCaregiver,
+          performerTaskId: mockPerformerTask.id,
+        },
+        width: '100vw',
+        maxWidth: '750px',
+        maxHeight: '100vh'
+      }
 
-    // openFinishExecutionDialog
-    component.openFinishExecutionDialog(mockResponse, mockPerformerTask)
+      expect(openDialogSpy).toHaveBeenCalledTimes(2);
+      expect(openDialogSpy).toHaveBeenCalledWith(TransferAssignationDialog, paramsTransfer);
 
-    const paramsFinishExecution = {
-      data: prescriptionTaskExecutionDate,
-      minWidth: '320px'
-    }
+      // openCancelPrescriptionDialog
+      component.openCancelPrescriptionDialog(mockResponse, mockPerson)
 
-    expect(openDialogSpy).toHaveBeenCalledTimes(7);
-    expect(openDialogSpy).toHaveBeenCalledWith(FinishExecutionPrescriptionDialog, paramsFinishExecution);
+      const paramsCancel = {
+        data: {
+          prescription: mockResponse,
+          patient: mockPerson
+        },
+        width: '100vw',
+        maxWidth: '500px'
+      }
 
-    // openCancelExecutionDialog
-    component.openCancelExecutionDialog(mockResponse, mockPerformerTask, mockPerson)
+      expect(openDialogSpy).toHaveBeenCalledTimes(3);
+      expect(openDialogSpy).toHaveBeenCalledWith(CancelPrescriptionDialog, paramsCancel);
 
-    const paramsCancelExecution = {
-      data: prescriptionTaskPatient,
-      width: '100vw',
-      maxWidth: '500px'
-    }
+      //openStartExecutionDialog
+      component.openStartExecutionDialog(mockResponse)
 
-    expect(openDialogSpy).toHaveBeenCalledTimes(8);
-    expect(openDialogSpy).toHaveBeenCalledWith(CancelExecutionPrescriptionDialog, paramsCancelExecution);
+      const paramsStartExecution = {
+        data: {
+          prescription: mockResponse,
+          performerTask: undefined,
+          startExecutionDate: undefined
+        },
+        minWidth: '320px'
+      }
 
-    // openInterruptExecutionDialog
-    component.openInterruptExecutionDialog(mockResponse, mockPerformerTask, mockPerson)
+      expect(openDialogSpy).toHaveBeenCalledTimes(4);
+      expect(openDialogSpy).toHaveBeenCalledWith(StartExecutionPrescriptionDialog, paramsStartExecution);
 
-    const paramsInterruptExecution = {
-      data: prescriptionTaskPatient,
-      width: '100vw',
-      maxWidth: '500px'
-    }
+      //openStartExecutionDialog with task
+      component.openStartExecutionDialog(mockResponse, mockPerformerTask)
 
-    expect(openDialogSpy).toHaveBeenCalledTimes(9);
-    expect(openDialogSpy).toHaveBeenCalledWith(InterruptExecutionPrescriptionDialog, paramsInterruptExecution);
+      const paramsStartExecutionWithTask = {
+        data: prescriptionTaskExecutionDate,
+        minWidth: '320px'
+      }
 
-    // openRejectAssignationDialog
-    component.openRejectAssignationDialog(mockResponse, mockPerformerTask, mockPerson)
+      expect(openDialogSpy).toHaveBeenCalledTimes(5);
+      expect(openDialogSpy).toHaveBeenCalledWith(StartExecutionPrescriptionDialog, paramsStartExecutionWithTask);
 
-    const paramsRejectExecution = {
-      data: prescriptionTaskPatient,
-      width: '100vw',
-      maxWidth: '500px'
-    }
+      // openRestartExecutionDialog
+      component.openRestartExecutionDialog(mockResponse, mockPerformerTask, mockPerson)
 
-    expect(openDialogSpy).toHaveBeenCalledTimes(10);
-    expect(openDialogSpy).toHaveBeenCalledWith(RejectAssignationDialog, paramsRejectExecution);
-  }));
+      const paramsRestartExecution = {
+        data: prescriptionTaskPatient,
+        minWidth: '320px'
+      }
 
-  it('should show a toaster when you selfAssign is called successfully', async () => {
-    createFixture()
-    const toasterSpy = jest.spyOn(toaster, 'show');
+      expect(openDialogSpy).toHaveBeenCalledTimes(6);
+      expect(openDialogSpy).toHaveBeenCalledWith(RestartExecutionPrescriptionDialog, paramsRestartExecution);
 
-    const mockResponse = prescriptionResponse([organisationTask], referralTask) as unknown as ReadPrescription
+      // openFinishExecutionDialog
+      component.openFinishExecutionDialog(mockResponse, mockPerformerTask)
 
-    expect(component.loading).toBe(false)
+      const paramsFinishExecution = {
+        data: prescriptionTaskExecutionDate,
+        minWidth: '320px'
+      }
 
-    component.selfAssign(mockResponse)
-    expect(component.loading).toBe(true)
+      expect(openDialogSpy).toHaveBeenCalledTimes(7);
+      expect(openDialogSpy).toHaveBeenCalledWith(FinishExecutionPrescriptionDialog, paramsFinishExecution);
 
-    const body = {
-      ssin: mockPerson.ssin,
-      role: 'NURSE',
-      executionStartDate: undefined
-    };
-    const req = httpMock.expectOne(`/prescriptions/${mockResponse.id}/assign/${referralTask.id}`);
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toStrictEqual(body)
-    req.flush({});
+      // openCancelExecutionDialog
+      component.openCancelExecutionDialog(mockResponse, mockPerformerTask, mockPerson)
 
-    prescriptionRequest({})
+      const paramsCancelExecution = {
+        data: prescriptionTaskPatient,
+        width: '100vw',
+        maxWidth: '500px'
+      }
 
-    expect(component.loading).toBe(false)
-    expect(toasterSpy).toHaveBeenCalledTimes(1)
-    expect(toasterSpy).toHaveBeenCalledWith('prescription.assignPerformer.meSuccess')
+      expect(openDialogSpy).toHaveBeenCalledTimes(8);
+      expect(openDialogSpy).toHaveBeenCalledWith(CancelExecutionPrescriptionDialog, paramsCancelExecution);
 
-    await Promise.resolve();
-    httpMock.expectOne('/templates/READ_undefined/versions/latest')
-  })
+      // openInterruptExecutionDialog
+      component.openInterruptExecutionDialog(mockResponse, mockPerformerTask, mockPerson)
 
-  it('should call loadPrintWebComponent when printer is false', () => {
-    createFixture()
-    const loadPrintWebComponentSpy = jest.spyOn(PrescriptionDetailsWebComponent.prototype as any, 'loadPrintWebComponent');
+      const paramsInterruptExecution = {
+        data: prescriptionTaskPatient,
+        width: '100vw',
+        maxWidth: '500px'
+      }
 
-    expect(component.printer).toBe(false)
-    component.print()
-    expect(component.printer).toBe(true)
-    expect(loadPrintWebComponentSpy).toHaveBeenCalled();
-  })
+      expect(openDialogSpy).toHaveBeenCalledTimes(9);
+      expect(openDialogSpy).toHaveBeenCalledWith(InterruptExecutionPrescriptionDialog, paramsInterruptExecution);
 
-  it('should NOT call loadPrintWebComponent when printer is true', () => {
-    createFixture()
-    const loadPrintWebComponentSpy = jest.spyOn(PrescriptionDetailsWebComponent.prototype as any, 'loadPrintWebComponent');
+      // openRejectAssignationDialog
+      component.openRejectAssignationDialog(mockResponse, mockPerformerTask, mockPerson)
 
-    component.printer = true
-    component.print()
-    expect(loadPrintWebComponentSpy).not.toHaveBeenCalled();
-  })
+      const paramsRejectExecution = {
+        data: prescriptionTaskPatient,
+        width: '100vw',
+        maxWidth: '500px'
+      }
 
-  it('should return the correct border color', () => {
-    createFixture()
-    let color = component.getStatusBorderColor(Status.BLACKLISTED)
-    expect(color).toBe('red')
-    color = component.getStatusBorderColor(Status.CANCELLED)
-    expect(color).toBe('red')
-    color = component.getStatusBorderColor(Status.EXPIRED)
-    expect(color).toBe('red')
+      expect(openDialogSpy).toHaveBeenCalledTimes(10);
+      expect(openDialogSpy).toHaveBeenCalledWith(RejectAssignationDialog, paramsRejectExecution);
+    }));
 
-    color = component.getStatusBorderColor(Status.PENDING)
-    expect(color).toBe('orange')
+    it('should show a toaster when you selfAssign is called successfully', async () => {
+      createFixture()
+      const toasterSpy = jest.spyOn(toaster, 'show');
 
-    color = component.getStatusBorderColor(Status.IN_PROGRESS)
-    expect(color).toBe('#40c4ff')
+      const mockResponse = prescriptionResponse([organisationTask], referralTask) as unknown as ReadPrescription
 
-    color = component.getStatusBorderColor(Status.DONE)
-    expect(color).toBe('limegreen')
+      expect(component.loading).toBe(false)
 
-    color = component.getStatusBorderColor(Status.DRAFT)
-    expect(color).toBe('lightgrey')
-  })
+      component.selfAssign(mockResponse)
+      expect(component.loading).toBe(true)
+
+      const body = {
+        ssin: mockPerson.ssin,
+        role: 'NURSE',
+        executionStartDate: undefined
+      };
+      const req = httpMock.expectOne(`/prescriptions/${mockResponse.id}/assign/${referralTask.id}`);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toStrictEqual(body)
+      req.flush({});
+
+      prescriptionRequest({})
+
+      expect(component.loading).toBe(false)
+      expect(toasterSpy).toHaveBeenCalledTimes(1)
+      expect(toasterSpy).toHaveBeenCalledWith('prescription.assignPerformer.meSuccess')
+
+      await Promise.resolve();
+      httpMock.expectOne('/templates/READ_undefined/versions/latest')
+    })
+
+    it('should call loadPrintWebComponent when printer is false', () => {
+      createFixture()
+      const loadPrintWebComponentSpy = jest.spyOn(PrescriptionDetailsWebComponent.prototype as any, 'loadPrintWebComponent');
+
+      expect(component.printer).toBe(false)
+      component.print()
+      expect(component.printer).toBe(true)
+      expect(loadPrintWebComponentSpy).toHaveBeenCalled();
+    })
+
+    it('should NOT call loadPrintWebComponent when printer is true', () => {
+      createFixture()
+      const loadPrintWebComponentSpy = jest.spyOn(PrescriptionDetailsWebComponent.prototype as any, 'loadPrintWebComponent');
+
+      component.printer = true
+      component.print()
+      expect(loadPrintWebComponentSpy).not.toHaveBeenCalled();
+    })
+
+    it('should return the correct border color', () => {
+      createFixture()
+      let color = component.getStatusBorderColor(Status.BLACKLISTED)
+      expect(color).toBe('red')
+      color = component.getStatusBorderColor(Status.CANCELLED)
+      expect(color).toBe('red')
+      color = component.getStatusBorderColor(Status.EXPIRED)
+      expect(color).toBe('red')
+
+      color = component.getStatusBorderColor(Status.PENDING)
+      expect(color).toBe('orange')
+
+      color = component.getStatusBorderColor(Status.IN_PROGRESS)
+      expect(color).toBe('#40c4ff')
+
+      color = component.getStatusBorderColor(Status.DONE)
+      expect(color).toBe('limegreen')
+
+      color = component.getStatusBorderColor(Status.DRAFT)
+      expect(color).toBe('lightgrey')
+    })
 
   const loadPrescriptionByShortCode = async (mockResponse: any, shortCode: string, ssin: string, loadRequests: boolean = true) => {
     mockConfigService.getEnvironmentVariable.mockImplementationOnce(() => false)
@@ -1061,11 +1108,11 @@ describe('PrescriptionDetailsWebComponent', () => {
     fixture.detectChanges()
   }
 
-  const templateRequest = () => {
-    const templateRed = httpMock.expectOne('/templates/READ_GENERIC/versions/latest');
-    expect(templateRed.request.method).toBe('GET');
-    templateRed.flush(mockTemplate);
-  }
+    const templateRequest = () => {
+      const templateRed = httpMock.expectOne('/templates/READ_GENERIC/versions/latest');
+      expect(templateRed.request.method).toBe('GET');
+      templateRed.flush(mockTemplate);
+    }
 
   const prescriptionRequest = (mockResponse: any) => {
     const req = httpMock.expectOne('/prescriptions/08e267bf-46e3-459d-8216-d8720acc9f64');
@@ -1079,10 +1126,22 @@ describe('PrescriptionDetailsWebComponent', () => {
     req.flush(mockResponse);
   }
 
-  const createFixture = () => {
-    fixture = TestBed.createComponent(PrescriptionDetailsWebComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  }
 
-});
+    const createFixture = () => {
+      fixture = TestBed.createComponent(PrescriptionDetailsWebComponent);
+      component = fixture.componentInstance;
+      component.generatedUUID = '123e4567-e89b-12d3-a456-426614174000';
+      fixture.detectChanges();
+    }
+
+    const loadCrypto = () => {
+      const key = new Uint8Array([1, 2, 3, 4]);
+      const promiseUint8Array = Promise.resolve(key);
+      jest.spyOn(pseudoService, 'identifyPseudonymInTransit').mockReturnValue(promiseUint8Array);
+
+      const promiseCryptoKey = Promise.resolve({} as CryptoKey);
+      jest.spyOn(window.crypto.subtle, 'importKey').mockReturnValue(promiseCryptoKey);
+      jest.spyOn(window.crypto.subtle, 'decrypt').mockReturnValue(Promise.resolve(new ArrayBuffer(16)));
+    }
+
+  });

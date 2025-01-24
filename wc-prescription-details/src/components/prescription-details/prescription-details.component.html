@@ -5,6 +5,7 @@
       *ifStatusError="viewState"
       [message]="'prescription.errors.failedToLoadPrescription' | translate"
       [error]="viewState.error.prescription"
+      [showRetry]="showRetryButton()"
       (clickRetry)="loadPrescriptionOrProposal()"
     ></app-error-card>
     <ng-container *ifStatusSuccess="viewState">
@@ -37,7 +38,7 @@
                   *ngIf="prescription.templateCode | canCreatePrescription"
                   mat-raised-button
                   type="button"
-                  (click)="clickDuplicate.emit(prescription)"
+                  (click)="handleDuplicateClick()"
                   data-cy="prescription-duplicate-button"
                 ><mat-icon>control_point_duplicate</mat-icon>
                   {{'prescription.duplicate' | translate}}
@@ -46,7 +47,7 @@
                   *ngIf="prescription | canExtendPrescription"
                   mat-raised-button
                   type="button"
-                  (click)="clickExtend.emit(prescription)"
+                  (click)="handleExtendClick()"
                   data-cy="prescription-extend-button"
                 ><mat-icon>edit_document</mat-icon>
                   {{'prescription.extend' | translate}}
@@ -99,11 +100,13 @@
                   </div>
                 </div>
               </div>
-              <nihdi-referral-prescription-form-details
-                [lang]="lang"
-                [template]="viewState.data!.templateVersion"
-                [responses]="prescription.responses"
-              ></nihdi-referral-prescription-form-details>
+              @if(viewState.data!.decryptedResponses) {
+                <nihdi-referral-prescription-form-details
+                  [lang]="lang"
+                  [template]="viewState.data!.templateVersion"
+                  [responses]="viewState.data!.decryptedResponses"
+                ></nihdi-referral-prescription-form-details>
+              }
             </div>
             <div>
               <div class="caregiver-actions">
@@ -387,6 +390,7 @@
           *ngIf="printer"
           [lang]="lang"
           [prescription]="prescription"
+          [responses]="viewState.data!.decryptedResponses"
           [patient]="viewState.data!.patient"
           [template]="viewState.data!.template"
           [templateVersion]="viewState.data!.templateVersion"

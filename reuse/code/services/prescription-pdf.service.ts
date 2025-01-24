@@ -15,7 +15,7 @@ export class PrescriptionsPdfService {
   ) {
   }
 
-  printPDF(prescription: ReadPrescription, patient: Person, template: EvfTemplate, templateVersion: FormTemplate, language: string) {
+  printPDF(prescription: ReadPrescription, responses: Record<string, any>, patient: Person, template: EvfTemplate, templateVersion: FormTemplate, language: string) {
     pdfMake.createPdf(
       {
         pageSize: 'A4',
@@ -51,7 +51,7 @@ export class PrescriptionsPdfService {
                   }
                 ],
                 [
-                  [this.generatePrescriptionInfoTable(prescription, templateVersion, template, language.substring(0, 2) as keyof FormTranslation)]
+                  [this.generatePrescriptionInfoTable(prescription, responses, templateVersion, template, language.substring(0, 2) as keyof FormTranslation)]
                 ]
               ]
             }
@@ -182,7 +182,7 @@ export class PrescriptionsPdfService {
     };
   }
 
-  private generatePrescriptionInfoTable(prescription: ReadPrescription, templateVersion: FormTemplate, template: EvfTemplate, language: keyof FormTranslation): ContentTable {
+  private generatePrescriptionInfoTable(prescription: ReadPrescription, responses: Record<string, any>, templateVersion: FormTemplate, template: EvfTemplate, language: keyof FormTranslation): ContentTable {
     const valueLabels = [
       {
         label: this.translate.instant('common.typeOfPrescription'),
@@ -198,10 +198,10 @@ export class PrescriptionsPdfService {
       }
     ];
     const dynamicValueLabels = templateVersion.elements
-      .filter((q) => prescription.responses![q.id!] != null)
+      .filter((q) => responses![q.id!] != null)
       .map((q) => ({
         label: this.evfTranslate(templateVersion, q.labelTranslationId!, language),
-        values: this.getResponseLabels(prescription.responses![q.id!], q, templateVersion, prescription, language)
+        values: this.getResponseLabels(responses![q.id!], q, templateVersion, responses, language)
       }));
     return [...valueLabels, ...dynamicValueLabels].reduce((acc, cur: any) => {
       if (acc.table.body.length === 0 || !Array.isArray(acc.table.body[acc.table.body.length - 1][1])) {
@@ -232,9 +232,9 @@ export class PrescriptionsPdfService {
     } as ContentTable);
   }
 
-  private getResponseLabels(value: any, element: FormElement, templateVersion: FormTemplate, prescription: ReadPrescription, language: keyof FormTranslation) {
+  private getResponseLabels(value: any, element: FormElement, templateVersion: FormTemplate, responses: Record<string, any>, language: keyof FormTranslation) {
     if (element.viewType === 'occurrenceTiming') {
-      return [translateOccurrenceTiming(prescription.responses['occurrenceTiming'], language as 'nl' | 'fr')];
+      return [translateOccurrenceTiming(responses['occurrenceTiming'], language as 'nl' | 'fr')];
     } else if (element.responses?.length) {
       if (Array.isArray(value)) {
         return value.map((v) => {
