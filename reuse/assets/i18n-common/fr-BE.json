@@ -110,7 +110,7 @@
       "success": "{firstName} {lastName} a été assigné comme prestataire.",
       "successOrganization": "{name} a été assigné comme organisation.",
       "meSuccess": "Vous avez été assigné comme prestataire.",
-      "performer": "Prestataire",
+      "performer": "Prestataire ou organisation",
       "searchPerformerPlaceHolder": "N° INAMI, nom",
       "locations": "Localisation(s)",
       "zipCodeOrCityName": "Code postal ou commune",
