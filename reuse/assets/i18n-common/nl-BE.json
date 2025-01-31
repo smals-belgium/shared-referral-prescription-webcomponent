@@ -110,7 +110,7 @@
       "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
       "successOrganization": "{name} is toegewezen als organisatie.",
       "meSuccess": "U bent toegewezen als zorgverlener.",
-      "performer": "Zorgverlener",
+      "performer": "Zorgverlener of organisatie",
       "searchPerformerPlaceHolder": "RIZIV nummer, naam",
       "locations": "Locaties",
       "zipCodeOrCityName": "Postcode of gemeente",
