@@ -44,7 +44,7 @@ export class CanRejectAssignationPipe {
   }
 
   private hasAssignPermissions(prescription: ReadPrescription) {
-    const intent = prescription.intent
+    const intent = prescription.intent?.toLowerCase()
     if(intent === 'proposal') {
       return this.accessMatrixState.hasAtLeastOnePermission(['removeAssignationProposal'], prescription.templateCode);
     }

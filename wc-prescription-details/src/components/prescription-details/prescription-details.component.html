@@ -35,7 +35,7 @@
                   {{'prescription.cancel.action' | translate}}
                 </button>
                 <button
-                  *ngIf="prescription.templateCode | canCreatePrescription"
+                  *ngIf="prescription | canDuplicatePrescription: viewState.data!.currentUser"
                   mat-raised-button
                   type="button"
                   (click)="handleDuplicateClick()"
@@ -44,7 +44,7 @@
                   {{'prescription.duplicate' | translate}}
                 </button>
                 <button
-                  *ngIf="prescription | canExtendPrescription"
+                  *ngIf="prescription | canExtendPrescription: viewState.data!.currentUser"
                   mat-raised-button
                   type="button"
                   (click)="handleExtendClick()"

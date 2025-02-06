@@ -100,6 +100,7 @@ import { catchError, concatMap, from, map, Observable, of, throwError } from 'rx
 import { EncryptionState } from '@reuse/code/states/encryption.state';
 import { v4 as uuidv4 } from 'uuid';
 import { ApproveProposalDialog } from '@reuse/code/dialogs/approve-proposal/approve-proposal.dialog';
+import { CanDuplicatePrescriptionPipe } from '@reuse/code/pipes/can-duplicate-prescription.pipe';
 import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-responses-state.interface';
 
 interface ViewState {
@@ -149,7 +150,8 @@ interface ViewState {
     CanRestartTreatmentPipe,
     CanApproveProposalPipe,
     CanRejectProposalPipe,
-    CanExtendPrescriptionPipe
+    CanExtendPrescriptionPipe,
+    CanDuplicatePrescriptionPipe
   ]
 })
 

@@ -5,9 +5,9 @@ import { AccessMatrixState } from '../states/access-matrix.state';
 /**
  * This pipe determines whether a proposal or a prescription can be canceled.
  *
- * The access matrix needs to have removePrescription or removeProposal depending on the intent
+ * The access matrix needs to have cancelPrescription or cancelProposal depending on the intent
  * The status of the prescription needs to be OPEN
- * The requester and the patient assigned to the prescription can reject a prescription or proposal if they are logged in with the corresponding role
+ * The requester and the patient assigned to the prescription can cancel a prescription or proposal if they are logged in with the corresponding role
  *
  * Example usage:
  * ```html
@@ -35,7 +35,7 @@ export class CanCancelPrescriptionOrProposalPipe {
   }
 
   private hasCancelPermissions(prescription: ReadPrescription) {
-    const intent = prescription.intent
+    const intent = prescription.intent?.toLowerCase()
     if(intent === 'proposal') {
       return this.accessMatrixState.hasAtLeastOnePermission(['cancelProposal'], prescription.templateCode);
     }

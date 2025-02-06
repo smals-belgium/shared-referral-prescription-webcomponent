@@ -17,7 +17,7 @@ export class CanAssignCaregiverPipe {
   }
 
   private hasAssignPermissions(prescription: ReadPrescription) {
-    const intent = prescription.intent
+    const intent = prescription.intent?.toLowerCase()
     if(intent === 'proposal') {
       return this.accessMatrixState.hasAtLeastOnePermission(['assignProposal'], prescription.templateCode);
     }
