@@ -24,6 +24,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import {DataState, LoadingStatus, OccurrenceTiming, Person, ReadPrescription} from '../../interfaces';
+import { ErrorCard } from '../../interfaces/error-card.interface';
+import { ErrorCardComponent } from '../error-card/error-card.component';
 
 export interface CreatePrescriptionForm {
   trackId: number;
@@ -56,7 +58,8 @@ export interface CreatePrescriptionForm {
     CreatePrescriptionCardComponent,
     AsyncPipe,
     TemplateNamePipe,
-    FormatSsinPipe
+    FormatSsinPipe,
+    ErrorCardComponent
   ]
 })
 export class CreateMultiplePrescriptionsComponent implements OnChanges {
@@ -66,6 +69,11 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges {
   @Input() lang!: string;
   @Input() patient!: Person;
   @Input() createPrescriptionForms: CreatePrescriptionForm[] = [];
+  @Input() errorCard: ErrorCard = {
+    show: false,
+    message: '',
+    errorResponse: undefined
+  };
 
   @Output() clickAddPrescription = new EventEmitter<void>();
   @Output() clickDeletePrescription = new EventEmitter<{ form: CreatePrescriptionForm; templateName: string }>();

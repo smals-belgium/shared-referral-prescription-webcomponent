@@ -14,6 +14,8 @@ import { ToastService } from '../../services/toast.service';
 import { PerformerTask, ReadPrescription, PrescriptionExecutionFinish } from '../../interfaces';
 import { PrescriptionState } from '../../states/prescription.state';
 import { v4 as uuidv4 } from 'uuid';
+import { ErrorCardComponent } from '../../components/error-card/error-card.component';
+import { BaseDialog } from '../base.dialog';
 
 @Component({
   standalone: true,
@@ -29,10 +31,11 @@ import { v4 as uuidv4 } from 'uuid';
     OverlaySpinnerComponent,
     TranslationPipe,
     DatePipe,
-    NgIf
+    NgIf,
+    ErrorCardComponent
   ]
 })
-export class FinishExecutionPrescriptionDialog implements OnInit {
+export class FinishExecutionPrescriptionDialog extends BaseDialog implements OnInit {
 
   readonly formGroup = new FormGroup({
     endDate: new FormControl<DateTime>(DateTime.now())
@@ -45,13 +48,14 @@ export class FinishExecutionPrescriptionDialog implements OnInit {
   constructor(
     private prescriptionStateService: PrescriptionState,
     private toastService: ToastService,
-    private dialogRef: MatDialogRef<FinishExecutionPrescriptionDialog>,
+    dialogRef: MatDialogRef<FinishExecutionPrescriptionDialog>,
     @Inject(MAT_DIALOG_DATA) private data: {
       prescription: ReadPrescription,
       performerTask: PerformerTask,
       startExecutionDate: string
     }
   ) {
+    super(dialogRef)
   }
 
   ngOnInit() {
@@ -70,12 +74,13 @@ export class FinishExecutionPrescriptionDialog implements OnInit {
         .finishPrescriptionExecution(this.data.prescription.id!, this.data.performerTask.id, executionFinish, this.generatedUUID)
         .subscribe({
           next: () => {
+            this.closeErrorCard();
             this.toastService.show('prescription.finishExecution.success');
-            this.dialogRef.close();
+            this.closeDialog(true);
           },
-          error: () => {
+          error: (err) => {
             this.loading = false;
-            this.toastService.showSomethingWentWrong();
+            this.showErrorCard('common.somethingWentWrong', err)
           }
         });
     }

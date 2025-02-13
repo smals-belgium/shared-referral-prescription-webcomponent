@@ -27,6 +27,8 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { ProfessionalService } from '../../services/professional.service';
 import { toDataState } from '../../utils/rxjs.utils';
 import { v4 as uuidv4 } from 'uuid';
+import { BaseDialog } from '../base.dialog';
+import { ErrorCardComponent } from '../../components/error-card/error-card.component';
 
 interface TransferAssignation {
   prescriptionId?: string,
@@ -58,13 +60,14 @@ interface TransferAssignation {
     FormatNihdiPipe,
     NgIf,
     NgFor,
-    AsyncPipe
+    AsyncPipe,
+    ErrorCardComponent
   ],
   providers: [
     provideNgxMask()
   ]
 })
-export class TransferAssignationDialog implements OnInit {
+export class TransferAssignationDialog extends BaseDialog implements OnInit {
 
   private readonly nameValidators = [Validators.minLength(2), CaregiverNamePatternValidator];
   private readonly searchCriteria$ = signal<{ query: string, zipCodes: string[] }>({query: '', zipCodes: []});
@@ -95,9 +98,10 @@ export class TransferAssignationDialog implements OnInit {
     private professionalService: ProfessionalService,
     private toastService: ToastService,
     private geographyService: GeographyService,
-    private dialogRef: MatDialogRef<TransferAssignationDialog>,
+    dialogRef: MatDialogRef<TransferAssignationDialog>,
     @Inject(MAT_DIALOG_DATA) private data: TransferAssignation
   ) {
+    super(dialogRef)
     this.setValidators();
   }
 
@@ -154,7 +158,7 @@ export class TransferAssignationDialog implements OnInit {
 
   assign(professional: Professional): void {
     if (!this.data?.prescriptionId) {
-      this.dialogRef.close(professional);
+      this.closeDialog(professional);
     } else {
       this.updatePrescription(professional);
     }
@@ -165,12 +169,13 @@ export class TransferAssignationDialog implements OnInit {
     this.prescriptionStateService.transferAssignation(this.data.prescriptionId!, this.data.referralTaskId!, this.data.performerTaskId!, professional, this.generatedUUID)
       .subscribe({
         next: () => {
+          this.closeErrorCard();
           this.toastService.show('prescription.assignPerformer.success', {interpolation: professional});
-          this.dialogRef.close(professional);
+          this.closeDialog(professional);
         },
-        error: () => {
+        error: (err) => {
           this.loading = false;
-          this.toastService.showSomethingWentWrong();
+          this.showErrorCard('common.somethingWentWrong', err)
         }
       });
   }

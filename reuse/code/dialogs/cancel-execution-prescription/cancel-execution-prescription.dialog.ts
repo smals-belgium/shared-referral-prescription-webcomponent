@@ -9,6 +9,8 @@ import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overla
 import { ToastService } from '../../services/toast.service';
 import { PrescriptionState } from '../../states/prescription.state';
 import { v4 as uuidv4 } from 'uuid';
+import { ErrorCard } from '../../interfaces/error-card.interface';
+import { ErrorCardComponent } from '../../components/error-card/error-card.component';
 
 interface CancelExecutionPrescriptionDialogData {
   prescription: ReadPrescription;
@@ -26,7 +28,8 @@ interface CancelExecutionPrescriptionDialogData {
     MatButtonModule,
     OverlaySpinnerComponent,
     TemplateNamePipe,
-    NgIf
+    NgIf,
+    ErrorCardComponent
   ]
 })
 export class CancelExecutionPrescriptionDialog implements OnInit {
@@ -36,6 +39,11 @@ export class CancelExecutionPrescriptionDialog implements OnInit {
   performerTask: PerformerTask;
   loading = false;
   generatedUUID = '';
+  errorCard: ErrorCard = {
+    show: false,
+    message: '',
+    errorResponse: undefined
+  };
 
   constructor(
     private prescriptionStateService: PrescriptionState,
@@ -58,13 +66,26 @@ export class CancelExecutionPrescriptionDialog implements OnInit {
       .cancelPrescriptionExecution(this.prescription.id!, this.performerTask.id, this.generatedUUID)
       .subscribe({
         next: () => {
+          this.closeErrorCard();
           this.toastService.show('prescription.cancelExecution.success');
           this.dialogRef.close(true);
         },
-        error: () => {
+        error: (err) => {
           this.loading = false;
-          this.toastService.showSomethingWentWrong();
+          this.errorCard = {
+            show: true,
+            message: 'common.somethingWentWrong',
+            errorResponse: err
+          };
         }
       });
+  }
+
+  private closeErrorCard(): void {
+    this.errorCard = {
+      show: false,
+      message: '',
+      errorResponse: undefined
+    };
   }
 }

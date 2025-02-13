@@ -12,6 +12,8 @@ import { PrescriptionState } from '../../states/prescription.state';
 import {ToastService} from "../../services/toast.service";
 import { v4 as uuidv4 } from 'uuid';
 import { ProposalState } from '../../states/proposal.state';
+import { ErrorCardComponent } from '../../components/error-card/error-card.component';
+import { BaseDialog } from '../base.dialog';
 
 @Component({
   standalone: true,
@@ -26,12 +28,13 @@ import { ProposalState } from '../../states/proposal.state';
     MatError,
     MatLabel,
     FormsModule,
-    NgIf
+    NgIf,
+    ErrorCardComponent
   ],
   templateUrl: './reject-proposal.dialog.html',
   styleUrl: './reject-proposal.dialog.scss'
 })
-export class RejectProposalDialog implements OnInit {
+export class RejectProposalDialog extends BaseDialog implements OnInit {
 
   readonly formGroup = new FormGroup({
     reason: new FormControl<string>('', Validators.required)
@@ -43,11 +46,11 @@ export class RejectProposalDialog implements OnInit {
   constructor(
     private toastService: ToastService,
     private proposalStateService: ProposalState,
-    private dialogRef: MatDialogRef<RejectProposalDialog>,
+    dialogRef: MatDialogRef<RejectProposalDialog>,
     @Inject(MAT_DIALOG_DATA) private data: {
       proposal: ReadPrescription
     }) {
-
+    super(dialogRef)
   }
 
   ngOnInit() {
@@ -67,12 +70,13 @@ export class RejectProposalDialog implements OnInit {
           .subscribe({
             next: () => {
               this.loading = false;
+              this.closeErrorCard();
               this.toastService.show('proposal.reject.success');
-              this.dialogRef.close();
+              this.closeDialog(true);
             },
-            error: () => {
+            error: (err) => {
               this.loading = false;
-              this.toastService.showSomethingWentWrong();
+              this.showErrorCard('common.somethingWentWrong', err)
             }
           });
       } else {
@@ -84,12 +88,13 @@ export class RejectProposalDialog implements OnInit {
           .subscribe({
             next: () => {
               this.loading = false;
+              this.closeErrorCard();
               this.toastService.show('proposal.reject.success');
-              this.dialogRef.close();
+              this.closeDialog(true);
             },
-            error: () => {
+            error: (err) => {
               this.loading = false;
-              this.toastService.showSomethingWentWrong();
+              this.showErrorCard('common.somethingWentWrong', err)
             }
           });
       }

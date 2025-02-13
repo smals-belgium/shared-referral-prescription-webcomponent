@@ -1,6 +1,13 @@
 <div class="wrapper">
   <h1 mat-dialog-title>{{'prescription.interruptExecution.title' | translate}}</h1>
   <div mat-dialog-content>
+    @if(errorCard.show){
+      <app-error-card
+        [message]="errorCard.message | translate : errorCard.translationOptions"
+        [error]="errorCard.errorResponse"
+        [showRetry]="false"
+      ></app-error-card>
+    }
     <div>{{'prescription.interruptExecution.message' | translate: {
         firstName: patient.firstName,
         lastName: patient.lastName,

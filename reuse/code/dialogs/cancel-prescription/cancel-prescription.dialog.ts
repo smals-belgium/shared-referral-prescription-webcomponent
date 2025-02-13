@@ -9,6 +9,8 @@ import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overla
 import { ToastService } from '../../services/toast.service';
 import { PrescriptionState } from '../../states/prescription.state';
 import { v4 as uuidv4 } from 'uuid';
+import { ErrorCardComponent } from '../../components/error-card/error-card.component';
+import { BaseDialog } from '../base.dialog';
 
 interface CancelPrescriptionDialogData {
   prescription: ReadPrescription;
@@ -25,10 +27,11 @@ interface CancelPrescriptionDialogData {
     MatButtonModule,
     OverlaySpinnerComponent,
     TemplateNamePipe,
-    NgIf
+    NgIf,
+    ErrorCardComponent
   ]
 })
-export class CancelPrescriptionDialog implements OnInit {
+export class CancelPrescriptionDialog extends BaseDialog implements OnInit {
 
   readonly prescription: ReadPrescription;
   readonly patient: Person;
@@ -38,9 +41,10 @@ export class CancelPrescriptionDialog implements OnInit {
   constructor(
     private prescriptionStateService: PrescriptionState,
     private toastService: ToastService,
-    private dialogRef: MatDialogRef<CancelPrescriptionDialog>,
+    dialogRef: MatDialogRef<CancelPrescriptionDialog>,
     @Inject(MAT_DIALOG_DATA) private data: CancelPrescriptionDialogData,
   ) {
+    super(dialogRef)
     this.prescription = data.prescription;
     this.patient = data.patient;
   }
@@ -59,12 +63,13 @@ export class CancelPrescriptionDialog implements OnInit {
       .cancelPrescription(this.prescription.id, cancellation, this.generatedUUID)
       .subscribe({
         next: () => {
+          this.closeErrorCard();
           this.toastService.show('prescription.cancel.success');
-          this.dialogRef.close(true);
+          this.closeDialog(true);
         },
-        error: () => {
+        error: (err) => {
           this.loading = false;
-          this.toastService.showSomethingWentWrong();
+          this.showErrorCard('common.somethingWentWrong', err)
         },
       });
   }

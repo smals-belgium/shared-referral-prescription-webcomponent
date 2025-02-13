@@ -1,10 +1,9 @@
-:host {
-  display: block;
-  border-radius: 1rem;
-  padding: 1rem;
-  background-color: rgba(255, 0, 0, 0.04);
+.message {
+  white-space: pre-wrap;
+}
 
-  .message {
-    white-space: pre-wrap;
-  }
+.error-card {
+  background-color: var(--mat-sys-error-container);
+  padding: var(--uhmep-sys-padding-md);
+  margin-bottom: var(--uhmep-sys-margin-md);
 }

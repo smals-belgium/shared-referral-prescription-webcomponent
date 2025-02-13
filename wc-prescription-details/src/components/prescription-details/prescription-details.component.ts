@@ -207,6 +207,11 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     }),
     decryptedResponses: computed(() => {
       const responses = this.decryptedResponses$();
+      const prescriptionState = this.intent?.toLowerCase() === 'proposal' ? this.proposalSateService.state() : this.prescriptionStateService.state();
+
+      if (prescriptionState.status === LoadingStatus.SUCCESS && !prescriptionState.data?.pseudomizedKey) {
+        return { ...responses, error: 'Pseudomized key missing', status: LoadingStatus.ERROR };
+      }
 
       if (responses?.error) {
         return { ...responses, status: LoadingStatus.ERROR };

@@ -9,6 +9,8 @@ import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overla
 import { ToastService } from '../../services/toast.service';
 import { PrescriptionState } from '../../states/prescription.state';
 import { v4 as uuidv4 } from 'uuid';
+import { ErrorCardComponent } from '../../components/error-card/error-card.component';
+import { BaseDialog } from '../base.dialog';
 
 interface InterruptExecutionPrescriptionDialogData {
   prescription: ReadPrescription;
@@ -26,10 +28,11 @@ interface InterruptExecutionPrescriptionDialogData {
     MatButtonModule,
     OverlaySpinnerComponent,
     TemplateNamePipe,
-    NgIf
+    NgIf,
+    ErrorCardComponent
   ]
 })
-export class InterruptExecutionPrescriptionDialog implements OnInit {
+export class InterruptExecutionPrescriptionDialog extends BaseDialog implements OnInit {
 
   prescription: ReadPrescription;
   performerTask: PerformerTask;
@@ -40,9 +43,10 @@ export class InterruptExecutionPrescriptionDialog implements OnInit {
   constructor(
     private prescriptionStateService: PrescriptionState,
     private toastService: ToastService,
-    private dialogRef: MatDialogRef<InterruptExecutionPrescriptionDialog>,
+    dialogRef: MatDialogRef<InterruptExecutionPrescriptionDialog>,
     @Inject(MAT_DIALOG_DATA) private data: InterruptExecutionPrescriptionDialogData
   ) {
+    super(dialogRef)
     this.prescription = data.prescription;
     this.patient = data.patient;
     this.performerTask = data.performerTask;
@@ -58,12 +62,13 @@ export class InterruptExecutionPrescriptionDialog implements OnInit {
       .interruptPrescriptionExecution(this.prescription.id!, this.performerTask.id, this.generatedUUID)
       .subscribe({
         next: () => {
+          this.closeErrorCard();
           this.toastService.show('prescription.interruptExecution.success');
-          this.dialogRef.close(true);
+          this.closeDialog(true);
         },
-        error: () => {
+        error: (err) => {
           this.loading = false;
-          this.toastService.showSomethingWentWrong();
+          this.showErrorCard('common.somethingWentWrong', err)
         }
       });
   }

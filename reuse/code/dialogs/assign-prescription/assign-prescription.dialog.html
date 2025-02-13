@@ -2,6 +2,13 @@
   <h1 mat-dialog-title data-cy="prescription-assign-performer-title">{{'prescription.assignPerformer.title' | translate}}</h1>
 
   <div mat-dialog-content>
+    @if(errorCard.show){
+      <app-error-card
+        [message]="errorCard.message | translate : errorCard.translationOptions"
+        [error]="errorCard.errorResponse"
+        [showRetry]="false"
+      ></app-error-card>
+    }
     <div>
       <mat-form-field appearance="fill" *ngIf="formGroup.get('query')! as control">
         <mat-label data-cy="prescription-assign-performer-label">{{'prescription.assignPerformer.performer' | translate}}</mat-label>
