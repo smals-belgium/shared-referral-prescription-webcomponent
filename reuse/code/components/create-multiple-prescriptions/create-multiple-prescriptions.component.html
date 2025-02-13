@@ -9,6 +9,14 @@
     </div>
   </div>
 
+  @if(errorCard.show){
+    <app-error-card
+      [message]="errorCard.message | translate : errorCard.translationOptions"
+      [error]="errorCard.errorResponse"
+      [showRetry]="false"
+    ></app-error-card>
+  }
+
   <mat-accordion [hideToggle]="createPrescriptionForms.length === 1" togglePosition="before">
     <mat-expansion-panel
       *ngFor="let prescriptionForm of createPrescriptionForms; trackBy: trackByFn; let last = last"

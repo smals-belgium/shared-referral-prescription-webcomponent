@@ -29,6 +29,9 @@ import { HealthcareProviderService } from '../../services/healthcareProvider.ser
 import { Organization } from '../../interfaces/organization.interface';
 import { HealthcareProvider } from '../../interfaces/healthcareProvider.interface';
 import { v4 as uuidv4 } from 'uuid';
+import { ErrorCardComponent } from '../../components/error-card/error-card.component';
+import { ErrorCard } from '../../interfaces/error-card.interface';
+import { BaseDialog } from '../base.dialog';
 
 interface AssignPrescriptionDialogData {
   prescriptionId?: string,
@@ -60,13 +63,14 @@ interface AssignPrescriptionDialogData {
     FormatNihdiPipe,
     NgIf,
     NgFor,
-    AsyncPipe
+    AsyncPipe,
+    ErrorCardComponent
   ],
   providers: [
     provideNgxMask()
   ]
 })
-export class AssignPrescriptionDialog implements OnInit {
+export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
 
   private readonly nameValidators = [Validators.minLength(2), CaregiverNamePatternValidator];
   private readonly searchCriteria$ = signal<{ query: string, zipCodes: string[] }>({query: '', zipCodes: []});
@@ -113,15 +117,15 @@ export class AssignPrescriptionDialog implements OnInit {
   loading = false;
   generatedUUID = '';
 
-
   constructor(
     private prescriptionStateService: PrescriptionState,
     private healthcareProviderService: HealthcareProviderService,
     private toastService: ToastService,
     private geographyService: GeographyService,
-    private dialogRef: MatDialogRef<AssignPrescriptionDialog>,
+    dialogRef: MatDialogRef<AssignPrescriptionDialog>,
     @Inject(MAT_DIALOG_DATA) private data: AssignPrescriptionDialogData
   ) {
+    super(dialogRef);
     this.setValidators();
   }
 
@@ -178,7 +182,7 @@ export class AssignPrescriptionDialog implements OnInit {
 
   assign(healthcareProvider: HealthcareProvider): void {
     if (!this.data?.prescriptionId) {
-      this.dialogRef.close(healthcareProvider);
+      this.closeDialog(healthcareProvider);
     } else {
       this.updatePrescription(healthcareProvider);
     }
@@ -190,17 +194,18 @@ export class AssignPrescriptionDialog implements OnInit {
     this.prescriptionStateService.assignPrescriptionPerformer(this.data.prescriptionId!, this.data.referralTaskId!, healthcareProvider, this.generatedUUID)
       .subscribe({
         next: () => {
+          this.closeErrorCard();
           if(healthcareProvider.type === 'Professional') {
             this.toastService.show('prescription.assignPerformer.success', {interpolation: healthcareProvider});
           }
           else{
             this.toastService.show('prescription.assignPerformer.successOrganization', {interpolation: healthcareProvider});
           }
-          this.dialogRef.close(healthcareProvider);
+          this.closeDialog(healthcareProvider);
         },
-        error: () => {
+        error: (err) => {
           this.loading = false;
-          this.toastService.showSomethingWentWrong();
+          this.showErrorCard('common.somethingWentWrong', err)
         }
       });
 

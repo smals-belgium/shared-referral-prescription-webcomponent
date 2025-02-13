@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { NgIf } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
+import { MatCard, MatCardActions, MatCardContent } from '@angular/material/card';
 
 @Component({
   standalone: true,
@@ -23,7 +24,10 @@ import { TranslateModule } from '@ngx-translate/core';
     TranslateModule,
     MatIconModule,
     MatButtonModule,
-    NgIf
+    NgIf,
+    MatCard,
+    MatCardContent,
+    MatCardActions
   ]
 })
 export class ErrorCardComponent implements OnChanges {

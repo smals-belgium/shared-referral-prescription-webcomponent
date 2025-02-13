@@ -21,6 +21,8 @@ import { ToastService } from '../../services/toast.service';
 import { PrescriptionState } from '../../states/prescription.state';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { v4 as uuidv4 } from 'uuid';
+import { ErrorCardComponent } from '../../components/error-card/error-card.component';
+import { BaseDialog } from '../base.dialog';
 
 interface StartExecutionPrescriptionDialogData {
   prescription: ReadPrescription;
@@ -44,10 +46,11 @@ interface StartExecutionPrescriptionDialogData {
     OverlaySpinnerComponent,
     DatePipe,
     NgIf,
-    AsyncPipe
+    AsyncPipe,
+    ErrorCardComponent
   ]
 })
-export class StartExecutionPrescriptionDialog implements OnInit {
+export class StartExecutionPrescriptionDialog extends BaseDialog implements OnInit {
 
   readonly prescription: ReadPrescription;
   readonly performerTask: PerformerTask;
@@ -64,8 +67,9 @@ export class StartExecutionPrescriptionDialog implements OnInit {
     private prescriptionStateService: PrescriptionState,
     private authService: AuthService,
     private toastService: ToastService,
-    private dialogRef: MatDialogRef<StartExecutionPrescriptionDialog>,
+    dialogRef: MatDialogRef<StartExecutionPrescriptionDialog>,
     @Inject(MAT_DIALOG_DATA) private data: StartExecutionPrescriptionDialogData) {
+    super(dialogRef)
       this.prescription = data.prescription;
       this.performerTask = data.performerTask;
       const minDate = new Date();
@@ -100,12 +104,13 @@ export class StartExecutionPrescriptionDialog implements OnInit {
       .startPrescriptionExecution(this.prescription.id, task.id, executionStart, this.generatedUUID)
       .subscribe({
         next: () => {
+          this.closeErrorCard();
           this.toastService.show('prescription.startExecution.success');
-          this.dialogRef.close();
+          this.closeDialog(true);
         },
-        error: () => {
+        error: (err) => {
           this.loading = false;
-          this.toastService.showSomethingWentWrong();
+          this.showErrorCard('common.somethingWentWrong', err)
         }
       });
   }
@@ -121,12 +126,13 @@ export class StartExecutionPrescriptionDialog implements OnInit {
       )))
       .subscribe({
         next: () => {
+          this.closeErrorCard();
           this.toastService.show('prescription.startExecution.success');
-          this.dialogRef.close();
+          this.closeDialog(true);
         },
-        error: () => {
+        error: (err) => {
           this.loading = false;
-          this.toastService.showSomethingWentWrong();
+          this.showErrorCard('common.somethingWentWrong', err)
         }
       });
   }

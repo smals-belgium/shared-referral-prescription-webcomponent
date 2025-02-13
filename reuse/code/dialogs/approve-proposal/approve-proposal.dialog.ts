@@ -18,6 +18,8 @@ import { NgIf } from '@angular/common';
 import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overlay-spinner.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { ProposalState } from '../../states/proposal.state';
+import { ErrorCardComponent } from '../../components/error-card/error-card.component';
+import { BaseDialog } from '../base.dialog';
 
 @Component({
   selector: 'approve-proposal',
@@ -36,12 +38,13 @@ import { ProposalState } from '../../states/proposal.state';
     OverlaySpinnerComponent,
     TranslateModule,
     ReactiveFormsModule,
-    MatDialogClose
+    MatDialogClose,
+    ErrorCardComponent
   ],
   templateUrl: './approve-proposal.dialog.html',
   styleUrl: './approve-proposal.dialog.scss'
 })
-export class ApproveProposalDialog implements OnInit {
+export class ApproveProposalDialog extends BaseDialog implements OnInit {
 
   readonly formGroup = new FormGroup({
     reason: new FormControl<string>('', Validators.required)
@@ -53,10 +56,12 @@ export class ApproveProposalDialog implements OnInit {
   constructor(
     private toastService: ToastService,
     private proposalStateService: ProposalState,
-    private dialogRef: MatDialogRef<ApproveProposalDialog>,
+    dialogRef: MatDialogRef<ApproveProposalDialog>,
     @Inject(MAT_DIALOG_DATA) private data: {
       proposal: ReadPrescription
-    }) {}
+    }) {
+    super(dialogRef);
+  }
 
   ngOnInit() {
     this.generatedUUID = uuidv4();
@@ -71,15 +76,16 @@ export class ApproveProposalDialog implements OnInit {
       this.proposalStateService.approveProposal(this.data.proposal.id, reason!, this.generatedUUID)
         .subscribe({
           next: (value) => {
+            this.closeErrorCard();
             this.toastService.show('proposal.approve.success');
             this.loading = false;
             if(value.prescriptionId) {
-              this.dialogRef.close({prescriptionId: value.prescriptionId});
+              this.closeDialog({prescriptionId: value.prescriptionId});
             }
           },
-          error: () => {
+          error: (err) => {
             this.loading = false;
-            this.toastService.showSomethingWentWrong();
+            this.showErrorCard('common.somethingWentWrong', err)
           }
         });
     }

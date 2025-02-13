@@ -50,6 +50,9 @@ import { WcConfigurationService } from '@reuse/code/services/wc-configuration.se
 import { ProposalService } from '@reuse/code/services/proposal.service';
 import { EncryptionService } from '@reuse/code/services/encryption.service';
 import { v4 as uuidv4 } from 'uuid';
+import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
+import { IfStatusErrorDirective } from '@reuse/code/directives/if-status-error.directive';
+import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
 
 @Component({
   templateUrl: './create-prescription.component.html',
@@ -61,7 +64,9 @@ import { v4 as uuidv4 } from 'uuid';
     CreateMultiplePrescriptionsComponent,
     OverlaySpinnerComponent,
     AsyncPipe,
-    TranslateModule
+    TranslateModule,
+    ErrorCardComponent,
+    IfStatusErrorDirective
   ]
 })
 export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
@@ -74,6 +79,12 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
   cryptoKey: CryptoKey | undefined;
   pseudomizedKey: string | undefined;
   generatedUUID = '';
+
+  errorCard: ErrorCard = {
+    show: false,
+    message: '',
+    errorResponse: undefined
+  };
 
   @HostBinding('attr.lang')
   @Input() lang = 'fr-BE';
@@ -110,6 +121,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
     this.translate.use('fr-BE')
     this.loadWebComponents();
   }
+
   ngOnInit() {
     this.generatedUUID = uuidv4();
   }
@@ -265,12 +277,17 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
       )
     ).subscribe({
       next: () => {
+        this.closeErrorCard();
         this.toastService.show(this.intent === 'order' ? 'prescription.create.success' : 'proposal.create.success');
         this.prescriptionsCreated.emit();
       },
       error: err => {
         console.error(err);
-        this.toastService.showSomethingWentWrong();
+        this.errorCard = {
+          show: true,
+          message: 'common.somethingWentWrong',
+          errorResponse: err
+        };
         this.loading.set(false);
       }
     });
@@ -407,19 +424,24 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
     const successCount = results.filter((r) => r.status === LoadingStatus.SUCCESS).length;
     const failedCount = results.filter((r) => r.status === LoadingStatus.ERROR).length;
     if (failedCount === 0) {
-      if(this.intent == 'order') {
-        this.toastService.show('prescription.create.allSuccess', {interpolation: {count: successCount}});
-      }
-      else{
-        this.toastService.show('proposal.create.allSuccess', {interpolation: {count: successCount}});
-      }
+      this.toastService.show(this.intent === 'order' ? 'prescription.create.allSuccess' : 'proposal.create.allSuccess', {interpolation: {count: successCount}});
       this.prescriptionsCreated.emit();
     } else if (successCount === 0) {
       if(this.intent == 'order') {
-        this.toastService.show('prescription.create.allFailed', {interpolation: {count: failedCount}});
+        this.errorCard = {
+          show: true,
+          message: 'prescription.create.allFailed',
+          translationOptions: {count: failedCount},
+          errorResponse: undefined
+        };
       }
       else{
-        this.toastService.show('proposal.create.allFailed', {interpolation: {count: failedCount}});
+        this.errorCard = {
+          show: true,
+          message: 'proposal.create.allFailed',
+          translationOptions: {count: failedCount},
+          errorResponse: undefined
+        };
       }
       this.prescriptionForms.update((prescriptionForms) => prescriptionForms.map((t) => ({
         ...t,
@@ -429,14 +451,20 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
       this.loading.set(false);
     } else {
       if(this.intent == 'order') {
-        this.toastService.show('prescription.create.someSuccessSomeFailed', {
-          interpolation: {successCount, failedCount}
-        });
+        this.errorCard = {
+          show: true,
+          message: 'prescription.create.someSuccessSomeFailed',
+          translationOptions: {successCount, failedCount},
+          errorResponse: undefined
+        };
       }
       else{
-        this.toastService.show('proposal.create.someSuccessSomeFailed', {
-          interpolation: {successCount, failedCount}
-        });
+        this.errorCard = {
+          show: true,
+          message: 'proposal.create.someSuccessSomeFailed',
+          translationOptions: {successCount, failedCount},
+          errorResponse: undefined
+        };
       }
 
       this.prescriptionForms.update((prescriptionForms) => prescriptionForms.map((t) => ({
@@ -472,6 +500,14 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
         .pipe(filter(result => result === true))
         .subscribe(() => this.clickCancel.emit());
     }
+  }
+
+  closeErrorCard(): void {
+    this.errorCard = {
+      show: false,
+      message: '',
+      errorResponse: undefined
+    };
   }
 
   private loadWebComponents(): void {

@@ -1,6 +1,13 @@
 <form (ngSubmit)="rejectProposal()" [formGroup]="formGroup">
   <h1 mat-dialog-title>{{ 'proposal.reject.dialog.title' | translate }}</h1>
   <div mat-dialog-content>
+    @if(errorCard.show){
+      <app-error-card
+        [message]="errorCard.message | translate : errorCard.translationOptions"
+        [error]="errorCard.errorResponse"
+        [showRetry]="false"
+      ></app-error-card>
+    }
     <mat-form-field appearance="fill">
       <mat-label>{{ 'proposal.reject.dialog.reason' | translate }}</mat-label>
       <textarea
