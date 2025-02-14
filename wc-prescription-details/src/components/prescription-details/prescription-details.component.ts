@@ -188,15 +188,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       const prescription = prescriptionState.data;
 
       if (template && cryptoKey && prescription?.responses) {
-        this.decryptResponses(cryptoKey, prescription.responses, template).subscribe({
-          next: (decryptedResponses) => {
-            this.decryptedResponses$.set({ data: decryptedResponses, error: null });
-          },
-          error: () => {
-            this.decryptedResponses$.set({ data: null, error: 'Decryption failed' });
-          },
-        });
-
         return {
           ...prescriptionState,
           status: LoadingStatus.SUCCESS,
@@ -362,6 +353,27 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
         }
       });
     });
+
+    // Register a new effect based on prescription, template and key state changes
+    effect(() => {
+      const prescription = this.intent?.toLowerCase() === 'proposal' ? this.proposalSateService.state()?.data : this.prescriptionStateService.state()?.data;
+      const templateCode = this.templateCode$();
+      const cryptoKey = this.encryptionStateService.state().data;
+      const template = this.templateVersionsStateService.getState('READ_' + templateCode)()?.data;
+
+      untracked(() => {
+        if (template && cryptoKey && prescription?.responses) {
+          this.decryptResponses(cryptoKey, prescription.responses, template).subscribe({
+            next: (decryptedResponses) => {
+              this.decryptedResponses$.set({ data: decryptedResponses, error: null });
+            },
+            error: () => {
+              this.decryptedResponses$.set({ data: null, error: 'Decryption failed' });
+            },
+          });
+        }
+      });
+    }, { allowSignalWrites: true });
   }
 
   ngOnInit() {
