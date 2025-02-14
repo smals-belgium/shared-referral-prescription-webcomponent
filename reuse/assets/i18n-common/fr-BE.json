@@ -189,7 +189,9 @@
       "EXPIRED": "Expiré",
       "IN_PROGRESS": "En cours",
       "DONE": "Clôturé",
-      "null": "Inconnu"
+      "null": "Inconnu",
+      "APPROVED": "Approuvé",
+      "REJECTED": "Refusé"
     },
     "errors": {
       "failedToLoadPrescription": "Une erreur s'est produite pendant le chargement de la prescription.",
@@ -341,7 +343,9 @@
       "EXPIRED": "Expiré",
       "IN_PROGRESS": "En cours",
       "DONE": "Clôturé",
-      "null": "Inconnu"
+      "null": "Inconnu",
+      "APPROVED": "Approuvé",
+      "REJECTED": "Refusé"
     },
     "errors": {
       "failedToLoadProposal": "Une erreur s'est produite pendant le chargement de la proposisiton.",

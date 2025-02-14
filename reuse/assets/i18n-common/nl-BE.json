@@ -189,7 +189,9 @@
       "EXPIRED": "Niet meer geldig",
       "IN_PROGRESS": "In uitvoering",
       "DONE": "Afgesloten",
-      "null": "Niet gekend"
+      "null": "Niet gekend",
+      "APPROVED": "Goedgekeurd",
+      "REJECTED": "Geweigerd"
     },
     "errors": {
       "failedToLoadPrescription": "Er is iets misgegaan tijdens het laden van het voorschrift.",
@@ -378,7 +380,9 @@
       "EXPIRED": "Niet meer geldig",
       "IN_PROGRESS": "In uitvoering",
       "DONE": "Afgesloten",
-      "null": "Niet gekend"
+      "null": "Niet gekend",
+      "APPROVED": "Goedgekeurd",
+      "REJECTED": "Geweigerd"
     },
     "errors": {
       "failedToLoadPrescription": "Er is iets misgegaan tijdens het laden van het voorstel.",
