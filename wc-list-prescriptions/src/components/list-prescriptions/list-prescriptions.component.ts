@@ -32,10 +32,16 @@ import { PrescriptionSummary, PrescriptionSummaryList } from '@reuse/code/interf
 import { PseudoService } from '@reuse/code/services/pseudo.service';
 import { ProposalsState } from '@reuse/code/states/proposals.state';
 import {FormsModule} from "@angular/forms";
+import {
+  PrescriptionModelsTableComponent
+} from '@reuse/code/components/prescription-models-table/prescription-models-table.component';
+import { PrescriptionModel, PrescriptionModelRequest } from '@reuse/code/interfaces/prescription-modal.inteface';
+import { ModelsState } from '@reuse/code/states/models.state';
 
 interface ViewState {
   prescriptions: PrescriptionSummaryList;
   proposals: PrescriptionSummaryList;
+  models: PrescriptionModelRequest;
   templates: EvfTemplate[];
 }
 
@@ -58,7 +64,8 @@ interface ViewState {
     OverlaySpinnerComponent,
     AsyncPipe,
     TranslateModule,
-    FormsModule
+    FormsModule,
+    PrescriptionModelsTableComponent
   ]
 })
 export class ListPrescriptionsWebComponent implements OnChanges {
@@ -73,6 +80,11 @@ export class ListPrescriptionsWebComponent implements OnChanges {
     templates: this.templatesState.state
   });
 
+  readonly viewStateModels$: Signal<DataState<ViewState>> = combineSignalDataState({
+    models: this.modelsState.state,
+    templates: this.templatesState.state
+  });
+
   @HostBinding('attr.lang')
   @Input() lang?: string;
   @Input() patientSsin?: string;
@@ -82,6 +94,7 @@ export class ListPrescriptionsWebComponent implements OnChanges {
   @Input() intent!: string;
 
   @Output() clickOpenPrescriptionDetails = new EventEmitter<PrescriptionSummary>();
+  @Output() clickOpenModelDetails = new EventEmitter<PrescriptionModel>();
 
   constructor(
     private translate: TranslateService,
@@ -91,7 +104,8 @@ export class ListPrescriptionsWebComponent implements OnChanges {
     private accessMatrixState: AccessMatrixState,
     private prescriptionsState: PrescriptionsState,
     private proposalsState: ProposalsState,
-    private templatesState: TemplatesState
+    private templatesState: TemplatesState,
+    private modelsState: ModelsState
   ) {
     this.dateAdapter.setLocale('fr-BE');
     this.translate.setDefaultLang('fr-BE');
@@ -114,11 +128,14 @@ export class ListPrescriptionsWebComponent implements OnChanges {
   }
 
   loadData(page?: number, pageSize?: number){
-    if(this.intent == 'order'){
+    if(this.intent.toLowerCase() === 'order'){
       this.loadPrescriptions(page, pageSize)
     }
-    else{
+    else if(this.intent.toLowerCase() === 'proposal'){
       this.loadProposals(page, pageSize)
+    }
+    else if(this.intent.toLowerCase() === 'model'){
+      this.loadModels(page, pageSize)
     }
   }
 
@@ -158,8 +175,13 @@ export class ListPrescriptionsWebComponent implements OnChanges {
     }
   }
 
-  retryFailedCalls(error: { prescriptions?: any, templates?: any, proposals?: any }) {
-    if (error.prescriptions || error.proposals) {
+  loadModels(page?: number, pageSize?: number) {
+    const pg = page ? page -1 : 0;
+    this.modelsState.loadModels(pg, pageSize || 10);
+  }
+
+  retryFailedCalls(error: { prescriptions?: any, templates?: any, proposals?: any, models?: any }) {
+    if (error.prescriptions || error.proposals || error.models) {
       this.loadData();
     }
     if (error.templates) {

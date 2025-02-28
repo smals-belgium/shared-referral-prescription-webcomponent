@@ -1,0 +1,9 @@
+.message {
+  white-space: pre-wrap;
+}
+
+.success-card {
+  background-color: var(--mat-sys-success-container);
+  padding: var(--uhmep-sys-padding-md);
+  margin-bottom: var(--uhmep-sys-margin-md);
+}

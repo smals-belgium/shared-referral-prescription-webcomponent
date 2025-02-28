@@ -23,9 +23,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DateAdapter } from '@angular/material/core';
 import { DateTime } from 'luxon';
-import { AsyncPipe, DOCUMENT, NgFor, NgIf, NgStyle } from '@angular/common';
+import { DOCUMENT, NgFor, NgIf, NgStyle } from '@angular/common';
 import {
-  CreatePrescriptionRequest,
   DataState,
   EvfTemplate,
   LoadingStatus,
@@ -53,7 +52,6 @@ import {
 import {
   CancelExecutionPrescriptionDialog
 } from '@reuse/code/dialogs/cancel-execution-prescription/cancel-execution-prescription.dialog';
-import { CanCreatePrescriptionPipe } from '@reuse/code/pipes/can-create-prescription.pipe';
 import { CanCancelPrescriptionOrProposalPipe } from '@reuse/code/pipes/can-cancel-prescription-or-proposal.pipe';
 import { CanAssignCaregiverPipe } from '@reuse/code/pipes/can-assign-caregiver.pipe';
 import { CanRejectAssignationPipe } from '@reuse/code/pipes/can-reject-assignation.pipe';
@@ -131,7 +129,6 @@ interface ViewState {
     MatButtonModule,
     MatIconModule,
     NgFor,
-    AsyncPipe,
     DatePipe,
     TranslateModule,
     FormatSsinPipe,
@@ -142,7 +139,6 @@ interface ViewState {
     CanStartTreatmentPipe,
     CanAssignCaregiverPipe,
     CanCancelPrescriptionOrProposalPipe,
-    CanCreatePrescriptionPipe,
     CanRejectAssignationPipe,
     CanTransferAssignationPipe,
     CanSelfAssignPipe,

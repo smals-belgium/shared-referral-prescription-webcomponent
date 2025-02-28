@@ -1,4 +1,4 @@
-@if(intent === 'order') {
+@if(intent.toLowerCase() === 'order') {
   @if(viewStatePrescriptions$(); as prescriptionState) {
     <div class="container">
       <app-error-card
@@ -58,7 +58,7 @@
     </div>
   }
 
-} @else {
+} @else if (intent.toLowerCase() === 'proposal') {
   @if(viewStateProposals$(); as proposalState) {
     <div class="container">
       <app-error-card
@@ -110,6 +110,63 @@
               (changePage)="loadData($event, proposalState.params!['proposals']?.['pageSize'])"
             ></app-paginator>
           </div>
+      </ng-container>
+    </div>
+  }
+} @else if (intent.toLowerCase() === 'model') {
+  @if(viewStateModels$(); as modelState) {
+    <div class="container">
+      <app-error-card
+        *ifStatusError="modelState"
+        [message]="'models.errors.failedToLoadModels' | translate"
+        [error]="modelState.error.models || modelState.error.templates"
+        (clickRetry)="retryFailedCalls(modelState.error)"
+        data-cy="failed-models-error-message"
+      ></app-error-card>
+
+      <app-overlay-spinner *ifStatusLoading="modelState" [mode]="modelState.status === 'UPDATING' ? 'page' : 'inline'"></app-overlay-spinner>
+
+      <ng-container *ifStatusSuccess="modelState">
+        <div class="page-info">
+          <app-active-page
+            data-cy="numberOfModels"
+            [page]="modelState.params!['models']?.['page'] || 1"
+            [pageSize]="modelState.params!['models']?.['pageSize'] || 10"
+            [total]="modelState.data!.models.totalElements || 0"
+            [label]="'prescription.model.pagination.models' | translate:{count:modelState.data!.models.totalElements || 0}"
+          ></app-active-page>
+
+          <div class="page-size">
+            {{'prescription.model.pagination.pageSize' | translate}}:
+            <mat-select
+              data-cy="select-models-pagination"
+              [value]="modelState.params!['models']?.['pageSize'] || 10"
+              (selectionChange)="loadData(1, $event.value)"
+            >
+              <mat-option [value]="10">10</mat-option>
+              <mat-option [value]="15">15</mat-option>
+              <mat-option [value]="20">20</mat-option>
+              <mat-option [value]="25">25</mat-option>
+            </mat-select>
+          </div>
+        </div>
+
+        @if(modelState.data?.models) {
+          <app-prescription-models-table
+            [prescriptionModels]="modelState.data!.models.content"
+            (clickPrescriptionModel)="clickOpenModelDetails.emit($event)"
+            [page]="modelState.params!['models']?.['page'] || 1"
+            [pageSize]="modelState.params!['models']?.['pageSize'] || 10"
+          ></app-prescription-models-table>
+        }
+        <div class="pagination">
+          <app-paginator
+            [total]="modelState.data!.models.totalElements || 0"
+            [page]="modelState.params!['models']?.['page'] || 1"
+            [pageSize]="modelState.params!['models']?.['pageSize'] || 10"
+            (changePage)="loadData($event, modelState.params!['models']?.['pageSize'])"
+          ></app-paginator>
+        </div>
       </ng-container>
     </div>
   }

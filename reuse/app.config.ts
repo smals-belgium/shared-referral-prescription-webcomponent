@@ -32,9 +32,9 @@ export const APP_CONFIG: AppConfig = {
         url: 'http://vasiam.test.paas.vasdc.be/auth',
         realm: 'MOOSE_UHMEP',
         clientId: 'uhmep-webapp'
-      }
-      // enablePseudo: true,
-      // pseudoApiUrl: 'http://uhmep-mockingbird.test.paas.vasdc.be/pseudo/v1'
+      },
+      enablePseudo: true,
+      pseudoApiUrl: 'http://uhmep-mockingbird.test.paas.vasdc.be/pseudo/v1'
     },
     test: {
       env: 'test',

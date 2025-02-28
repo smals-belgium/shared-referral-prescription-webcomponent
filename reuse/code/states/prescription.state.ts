@@ -125,3 +125,4 @@ export class PrescriptionState extends BaseState<ReadPrescription> {
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 }
+

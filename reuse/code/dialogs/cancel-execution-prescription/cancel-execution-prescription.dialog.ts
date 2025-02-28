@@ -7,10 +7,10 @@ import { TemplateNamePipe } from '../../pipes/template-name.pipe';
 import { PerformerTask, Person, ReadPrescription } from '../../interfaces';
 import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overlay-spinner.component';
 import { ToastService } from '../../services/toast.service';
-import { PrescriptionState } from '../../states/prescription.state';
 import { v4 as uuidv4 } from 'uuid';
 import { ErrorCard } from '../../interfaces/error-card.interface';
 import { ErrorCardComponent } from '../../components/error-card/error-card.component';
+import { PrescriptionState } from '../../states/prescription.state';
 
 interface CancelExecutionPrescriptionDialogData {
   prescription: ReadPrescription;

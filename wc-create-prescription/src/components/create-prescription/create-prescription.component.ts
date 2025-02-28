@@ -11,7 +11,7 @@ import {
   Renderer2,
   Signal,
   signal,
-  SimpleChanges
+  SimpleChanges, ViewEncapsulation
 } from '@angular/core';
 import { FormTemplate } from '@smals/vas-evaluation-form-ui-core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -28,8 +28,7 @@ import {
 } from '@reuse/code/dialogs/cancel-creation/cancel-creation.dialog';
 import { CreatePrescriptionRequest, DataState, LoadingStatus, ReadPrescription } from '@reuse/code/interfaces';
 import {
-  CreateMultiplePrescriptionsComponent,
-  CreatePrescriptionForm
+  CreateMultiplePrescriptionsComponent
 } from '@reuse/code/components/create-multiple-prescriptions/create-multiple-prescriptions.component';
 import { ToastService } from '@reuse/code/services/toast.service';
 import { PrescriptionService } from '@reuse/code/services/prescription.service';
@@ -46,27 +45,30 @@ import { AccessMatrixState } from '@reuse/code/states/access-matrix.state';
 import { TemplatesState } from '@reuse/code/states/templates.state';
 import { PatientState } from '@reuse/code/states/patient.state';
 import { TemplateVersionsState } from '@reuse/code/states/template-versions.state';
-import { WcConfigurationService } from '@reuse/code/services/wc-configuration.service';
 import { ProposalService } from '@reuse/code/services/proposal.service';
 import { EncryptionService } from '@reuse/code/services/encryption.service';
 import { v4 as uuidv4 } from 'uuid';
-import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
-import { IfStatusErrorDirective } from '@reuse/code/directives/if-status-error.directive';
+import {
+  CreatePrescriptionModelComponent
+} from '@reuse/code/components/create-prescription-model/create-prescription-model.component';
+import { PrescriptionModel } from '@reuse/code/interfaces/prescription-modal.inteface';
+import { PrescriptionModelService } from '@reuse/code/services/prescription-model.service';
+import { CreatePrescriptionForm } from '@reuse/code/interfaces/create-prescription-form.interface';
 import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
 
 @Component({
   templateUrl: './create-prescription.component.html',
+  styleUrls: ['./create-prescription.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
+  encapsulation: ViewEncapsulation.ShadowDom,
   imports: [
     NgIf,
     IfStatusSuccessDirective,
     CreateMultiplePrescriptionsComponent,
     OverlaySpinnerComponent,
-    AsyncPipe,
     TranslateModule,
-    ErrorCardComponent,
-    IfStatusErrorDirective
+    CreatePrescriptionModelComponent
   ]
 })
 export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
@@ -90,13 +92,15 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
   @Input() lang = 'fr-BE';
   @Input() initialPrescriptionType?: string;
   @Input() initialPrescription?: ReadPrescription;
-  @Input() patientSsin!: string;
+  @Input() initialModelId?: string;
+  @Input() patientSsin?: string;
   @Input() getToken!: () => Promise<string>;
   @Input() intent!: string;
   @Input() extend?: boolean = false;
 
   @Output() prescriptionsCreated = new EventEmitter<void>();
   @Output() clickCancel = new EventEmitter<void>();
+  @Output() modelCreated = new EventEmitter<void>();
 
   constructor(
     private authService: AuthService,
@@ -107,11 +111,11 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
     private accessMatrixStateService: AccessMatrixState,
     private templatesStateService: TemplatesState,
     private templateVersionsStateService: TemplateVersionsState,
+    private prescriptionModelService: PrescriptionModelService,
     private patientStateService: PatientState,
     private pseudoService: PseudoService,
     private prescriptionService: PrescriptionService,
     private proposalService: ProposalService,
-    private configService: WcConfigurationService,
     private renderer: Renderer2,
     private encryptionService: EncryptionService,
     @Inject(DOCUMENT) private _document: Document
@@ -165,12 +169,32 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
       this.dateAdapter.setLocale(this.lang);
       this.translate.use(this.lang!);
     }
-    if (changes['patientSsin']) {
+    if (changes['patientSsin'] && this.patientSsin) {
       this.patientStateService.loadPatient(this.patientSsin);
     }
     if (changes['initialPrescriptionType']?.firstChange && this.initialPrescriptionType) {
-      this.addPrescriptionForm(this.initialPrescriptionType, this.initialPrescription);
+      if(this.initialModelId) {
+        this.findModelById(this.initialPrescriptionType, this.initialModelId)
+      } else {
+        this.addPrescriptionForm(this.initialPrescriptionType, this.initialPrescription);
+      }
     }
+  }
+
+  findModelById(templateCode: string, modelId: string) {
+    this.prescriptionModelService.findById(modelId)
+      .subscribe({
+        next: (prescriptionModel) => {
+          if(prescriptionModel !== null) {
+            this.addPrescriptionFormByModel(templateCode, prescriptionModel);
+          } else {
+            this.toastService.showSomethingWentWrong();
+          }
+        },
+        error: () => {
+          this.toastService.showSomethingWentWrong()
+        }
+      });
   }
 
   addPrescription(): void {
@@ -181,7 +205,14 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
     })
       .beforeClosed()
       .pipe(filter((result) => result?.templateCode != null))
-      .subscribe((result) => this.addPrescriptionForm(result!.templateCode));
+      .subscribe((result) =>
+      {
+        if (result?.model && result?.templateCode) {
+          this.findModelById(result.templateCode, result.model.id.toString())
+        } else if (result?.templateCode) {
+          this.addPrescriptionForm(result!.templateCode);
+        }
+      });
   }
 
   private addPrescriptionForm(templateCode: string, initialPrescription?: ReadPrescription): void {
@@ -193,6 +224,24 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
         templateCode: templateCode,
         formTemplateState$: this.getPrescriptionTemplateStream(templateCode),
         initialPrescription: this.updateResponses(initialPrescription)
+      }
+    ]);
+  }
+
+
+
+  private addPrescriptionFormByModel(templateCode: string, model: PrescriptionModel) {
+    this.templateVersionsStateService.loadTemplateVersion(templateCode);
+    this.prescriptionForms.update((prescriptionForms) => [
+      ...prescriptionForms,
+      {
+        trackId: this.trackId++,
+        templateCode: templateCode,
+        formTemplateState$: this.getPrescriptionTemplateStream(templateCode),
+        initialPrescription: undefined,
+        modelResponses: model.modelData,
+        modelName: model.label,
+        modelId: model.id
       }
     ]);
   }
@@ -251,6 +300,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
   }
 
   private getPatientIdentifier(): Observable<string> {
+    if(!this.patientSsin) { return of('') }
     return from(this.pseudoService.pseudonymize(this.patientSsin));
   }
 
@@ -500,6 +550,10 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
         .pipe(filter(result => result === true))
         .subscribe(() => this.clickCancel.emit());
     }
+  }
+
+  modelSaved() {
+    this.modelCreated.emit();
   }
 
   closeErrorCard(): void {
