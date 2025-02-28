@@ -48,4 +48,31 @@
       <mat-error *ngIf="control?.hasError('pickOptionFromList')">{{'prescription.selectTemplate.pickOptionFromList' | translate}}</mat-error>
     </mat-form-field>
   </div>
+
+  <div
+    data-cy="model-label"
+    [class.invalid]="formGroup.get('model')?.touched && formGroup.get('model')?.invalid"
+  ><b>{{'common.prescriptionModel' | translate}} <span *ngIf="isRequiredField('model')">*</span></b></div>
+  <div *ngIf="modelOptions$ | async as modelOption">
+    <mat-form-field appearance="fill" *ngIf="formGroup.get('model') as control">
+      <input
+        type="text"
+        matInput
+        formControlName="model"
+        data-cy="prescription-create-model"
+        [placeholder]="'-- ' + ('common.chooseFromList' | translate)+ ' --'"
+        [matAutocomplete]="typeAuto"
+      >
+      <button *ngIf="control?.value" matSuffix mat-icon-button (click)="control?.setValue('')">
+        <mat-icon>close</mat-icon>
+      </button>
+      <mat-autocomplete autoActiveFirstOption #typeAuto="matAutocomplete" [displayWith]="displayModelWith">
+        <mat-option *ngFor="let option of modelOption" [value]="option">
+          <div class="option-with-highlight" [innerHTML]="option.label | highlightFilter:control.value"></div>
+        </mat-option>
+        <mat-option *ngIf="modelOption.length === 0 && !control.value?.code"><i>-- {{'prescription.selectModel.noOptions' | translate}} --</i></mat-option>
+      </mat-autocomplete>
+      <mat-error *ngIf="control?.hasError('pickOptionFromList')">{{'prescription.selectModel.pickOptionFromList' | translate}}</mat-error>
+    </mat-form-field>
+  </div>
 </div>

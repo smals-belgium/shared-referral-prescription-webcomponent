@@ -1,0 +1,34 @@
+.wrapper {
+  background-color: white;
+  padding: 1rem;
+}
+
+.form-model-group{
+  display: flex;
+  flex-direction: column;
+  mat-label {
+    font-weight: var(--uhmep-mat-label-font-weight, bold);
+  }
+}
+
+@media (min-width: 768px) {
+  .form-model-group {
+    display: flex;
+    align-items: flex-start;
+    column-gap: 1rem;
+    flex-direction: row;
+
+    mat-label {
+      flex-basis: 0;
+      display: flex;
+      justify-content: flex-end;
+      flex-grow: 4;
+      text-align: right;
+      padding-top: 15px;
+    }
+
+    mat-form-field {
+       flex-grow: 7;
+     }
+  }
+}

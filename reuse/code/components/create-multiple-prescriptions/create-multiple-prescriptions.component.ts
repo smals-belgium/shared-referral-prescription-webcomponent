@@ -5,8 +5,8 @@ import {
   EventEmitter,
   Input,
   OnChanges,
+  OnDestroy,
   Output,
-  Signal,
   SimpleChanges,
   ViewChild
 } from '@angular/core';
@@ -14,28 +14,24 @@ import { ElementGroup, FormTemplate, removeNulls } from '@smals/vas-evaluation-f
 import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
 import { FormatSsinPipe } from '../../pipes/format-ssin.pipe';
 import { TemplateNamePipe } from '../../pipes/template-name.pipe';
-import { CreatePrescriptionCardComponent } from '../create-prescription-card/create-prescription-card.component';
 import { IfStatusSuccessDirective } from '../../directives/if-status-success.directive';
 import { IfStatusErrorDirective } from '../../directives/if-status-error.directive';
 import { OverlaySpinnerComponent } from '../overlay-spinner/overlay-spinner.component';
 import { IfStatusLoadingDirective } from '../../directives/if-status-loading.directive';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
-import {DataState, LoadingStatus, OccurrenceTiming, Person, ReadPrescription} from '../../interfaces';
-import { ErrorCard } from '../../interfaces/error-card.interface';
+import { LoadingStatus, OccurrenceTiming, Person } from '../../interfaces';
 import { ErrorCardComponent } from '../error-card/error-card.component';
-
-export interface CreatePrescriptionForm {
-  trackId: number;
-  templateCode: string;
-  elementGroup?: ElementGroup;
-  formTemplateState$: Signal<DataState<FormTemplate>>;
-  submitted?: boolean;
-  status?: LoadingStatus;
-  initialPrescription?: ReadPrescription;
-}
+import { SuccessCardComponent } from '../success-card/success-card.component';
+import { PrescriptionModelState } from '../../states/prescriptionModel.state';
+import {
+  CreatePrescriptionModelDialog
+} from '../../dialogs/create-prescription-modal/create-prescription-model.dialog';
+import { MatDialog } from '@angular/material/dialog';
+import { HttpErrorResponse } from '@angular/common/http';
+import { CreatePrescriptionForm } from '../../interfaces/create-prescription-form.interface';
+import { ErrorCard } from '../../interfaces/error-card.interface';
 
 @Component({
   selector: 'app-create-multiple-prescriptions',
@@ -47,26 +43,25 @@ export interface CreatePrescriptionForm {
   imports: [
     TranslateModule,
     MatExpansionModule,
-    NgFor,
-    NgIf,
     MatIconModule,
     MatButtonModule,
     IfStatusLoadingDirective,
     OverlaySpinnerComponent,
     IfStatusErrorDirective,
     IfStatusSuccessDirective,
-    CreatePrescriptionCardComponent,
-    AsyncPipe,
     TemplateNamePipe,
     FormatSsinPipe,
-    ErrorCardComponent
+    ErrorCardComponent,
+    SuccessCardComponent
   ]
 })
-export class CreateMultiplePrescriptionsComponent implements OnChanges {
+export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestroy {
 
   readonly trackByFn = (index: number, item: CreatePrescriptionForm) => item?.trackId;
+  modelState = this.prescriptionModelState.modalState;
 
   @Input() lang!: string;
+  @Input() intent!: string;
   @Input() patient!: Person;
   @Input() createPrescriptionForms: CreatePrescriptionForm[] = [];
   @Input() errorCard: ErrorCard = {
@@ -81,6 +76,9 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges {
   @Output() clickCancel = new EventEmitter<void>();
 
   @ViewChild(MatAccordion, {static: true}) accordion!: MatAccordion;
+
+  constructor(private prescriptionModelState: PrescriptionModelState, private dialog: MatDialog) {
+  }
 
   get numberOfPrescriptionsToCreate(): number {
     return this.createPrescriptionForms.filter((f) => f.status !== LoadingStatus.SUCCESS).length;
@@ -116,8 +114,9 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges {
 
   setElementGroup(prescriptionForm: CreatePrescriptionForm, formTemplate: FormTemplate, elementGroup: ElementGroup) {
     prescriptionForm.elementGroup = elementGroup;
-    if (prescriptionForm.initialPrescription) {
-      let responses = removeNulls(prescriptionForm.initialPrescription?.responses || {});
+    if (prescriptionForm.initialPrescription || prescriptionForm.modelResponses) {
+      const initialResponses = prescriptionForm.initialPrescription?.responses || prescriptionForm.modelResponses
+      let responses = removeNulls(initialResponses || {});
       responses = this.mapResponsesToRepeatObject(responses)
       elementGroup.setValue({
         ...elementGroup.getOutputValue(),
@@ -125,4 +124,43 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges {
       });
     }
   }
+
+  getResponses(prescriptionForm: CreatePrescriptionForm) {
+    if (prescriptionForm.initialPrescription) {
+      let responses = removeNulls(prescriptionForm.initialPrescription?.responses || {});
+      responses = this.mapResponsesToRepeatObject(responses)
+
+      return {...prescriptionForm.elementGroup?.getOutputValue(), ...responses}
+    } else {
+      return prescriptionForm.elementGroup?.getOutputValue();
+    }
+  }
+
+  handleClick(prescriptionForm: CreatePrescriptionForm, template?: FormTemplate) {
+    if(!template) {
+      this.prescriptionModelState.setModalState(LoadingStatus.ERROR, undefined, new HttpErrorResponse({
+        error: "No templateCode found."
+      }))
+    }
+    const responses = this.getResponses(prescriptionForm);
+
+    this.dialog.open<CreatePrescriptionModelDialog, any>(CreatePrescriptionModelDialog, {
+      data: {
+        template: template,
+        templateCode: prescriptionForm.templateCode,
+        responses: responses
+      }
+    }).afterClosed().subscribe((createdSuccessfully: boolean) => {
+      if(createdSuccessfully){
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+    })
+  }
+
+  ngOnDestroy() {
+    this.prescriptionModelState.setInitialState();
+  }
+
+  protected readonly LoadingStatus = LoadingStatus;
 }

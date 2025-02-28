@@ -37,7 +37,8 @@
     "mandatory": "Verplicht veld",
     "ariaLabel": {
       "loading": "Laden"
-    }
+    },
+    "prescriptionModel": "Sjabloon"
   },
   "pagination": {
     "ariaLabel": {
@@ -57,6 +58,11 @@
       "pickOptionFromList": "Kies een optie uit de lijst",
       "noOptions": "Geen voorschriften"
     },
+    "selectModel": {
+      "prescriptionModel": "Sjabloon",
+      "pickOptionFromList": "Kies een optie uit de lijst",
+      "noOptions": "Geen sjabloon"
+    },
     "create": {
       "action": "Nieuw voorschrift",
       "success": "Voorschrift succesvol aangemaakt.",
@@ -74,6 +80,34 @@
         "cancelAll": "Alles annuleren"
       },
       "cancelCreation": "Bent u zeker dat u het aanmaken van dit voorschrift wil annuleren?"
+    },
+    "model": {
+      "title": "Sjabloon",
+      "create": {
+        "title": "Opslaan als sjabloon",
+        "success": "Model met naam \"{name}\" succesvol aangemaakt.",
+        "dialog": {
+          "title": "Wilt u het voorschrift opslaan als een sjabloon?",
+          "label": "Sjabloonnaam",
+          "labelNotUnique": "De sjabloonnaam is niet uniek."
+        }
+      },
+      "update": {
+        "title": "Update sjabloon"
+      },
+      "delete": {
+        "title": "Verwijder sjabloon",
+        "message": "Bent u zeker dat u het sjabloon \"{templateName}\" wil verwijderen?"
+      },
+      "creationDate": "Aangemaakt op",
+      "label": "Sjabloon naam",
+      "template": "Gebaseerd op",
+      "actions": "Acties",
+      "noModels": "Geen sjablonen beschikbaar.",
+      "pagination": {
+        "models": "{count, plural, one{sjabloon} other{sjablonen}}",
+        "pageSize": "Aantal per pagina"
+      }
     },
     "print": {
       "content-electronic-prescription": "Inhoud van het elektronisch voorschrift",
@@ -206,7 +240,8 @@
       "invalidDateFormat": "Ongeldig formaat: dd/mm/jjjj",
       "invalidSsinChecksum": "Rijksregisternummer is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
       "invalidShortCode": "Voorschrift ID is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
-      "decryptionFailed": "Het decoderen van de vrije tekstvelden is mislukt. Probeer het opnieuw."
+      "decryptionFailed": "Het decoderen van de vrije tekstvelden is mislukt. Probeer het opnieuw.",
+      "failedToCreateModel": "Het model kon niet worden aangemaakt. Probeer het later opnieuw."
     },
     "categories": {
       "bandagisterie": "Bandagisterie",

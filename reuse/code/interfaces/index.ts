@@ -9,3 +9,4 @@ export * from './user-info.interface';
 export * from './task.interface';
 export * from './fhir.interface';
 export * from './service-request.interface';
+export {CreatePrescriptionModel} from "./prescription-modal.inteface";

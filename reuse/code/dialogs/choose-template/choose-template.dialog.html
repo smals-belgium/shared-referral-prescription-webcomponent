@@ -6,7 +6,8 @@
     <ng-container *ifStatusSuccess="viewState">
       <app-select-prescription-type
         [formGroup]="formGroup"
-        [templates]="viewState.data!.templates"
+        [templates]="viewState.data!.templates!"
+        [models]="viewState.data!.models.content"
         [showTitle]="false"
       ></app-select-prescription-type>
     </ng-container>

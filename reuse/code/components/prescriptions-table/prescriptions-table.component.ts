@@ -11,6 +11,16 @@ import { HideIfProfessionalDirective } from '../../directives/hide-if-profession
 import { ShowIfProfessionalDirective } from '../../directives/show-if-professional.directive';
 import { PrescriptionSummary, PrescriptionSummaryList } from '../../interfaces/prescription-summary.interface';
 import { Status } from '../../interfaces';
+import {
+  MatCell, MatCellDef,
+  MatColumnDef,
+  MatFooterCell, MatFooterCellDef, MatFooterRow, MatFooterRowDef,
+  MatHeaderCell, MatHeaderCellDef,
+  MatHeaderRow, MatHeaderRowDef,
+  MatRow, MatRowDef,
+  MatTable
+} from '@angular/material/table';
+import { MatChip } from '@angular/material/chips';
 
 @Component({
   standalone: true,
@@ -28,9 +38,22 @@ import { Status } from '../../interfaces';
     TemplateNamePipe,
     HideIfProfessionalDirective,
     ShowIfProfessionalDirective,
-    NgIf,
-    NgFor,
-    NgStyle
+    NgStyle,
+    MatTable,
+    MatColumnDef,
+    MatHeaderCell,
+    MatCell,
+    MatChip,
+    MatFooterCell,
+    MatHeaderRow,
+    MatRow,
+    MatFooterRow,
+    MatHeaderRowDef,
+    MatRowDef,
+    MatFooterCellDef,
+    MatHeaderCellDef,
+    MatCellDef,
+    MatFooterRowDef
   ]
 })
 export class PrescriptionsTableComponent {
@@ -38,6 +61,8 @@ export class PrescriptionsTableComponent {
   @Input() prescriptions!: PrescriptionSummaryList;
 
   @Output() clickPrescription = new EventEmitter<PrescriptionSummary>();
+
+  displayedColumns: string[] = ['author', 'assigned', 'typeOfCare', 'start', 'end', 'status']
 
   getStatusBorderColor(status: Status): string {
     if (status === 'BLACKLISTED' || status === 'CANCELLED'|| status === 'EXPIRED') {
@@ -52,5 +77,4 @@ export class PrescriptionsTableComponent {
       return 'lightgrey';
     }
   }
-
 }
