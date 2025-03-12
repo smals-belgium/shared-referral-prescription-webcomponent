@@ -12,7 +12,7 @@ import {
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DateAdapter, MatOptionModule } from '@angular/material/core';
 import { DateTime } from 'luxon';
-import { combineSignalDataState, toDataState } from '@reuse/code/utils/rxjs.utils';
+import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
 import { AuthService } from '@reuse/code/services/auth.service';
 import { DataState, EvfTemplate } from '@reuse/code/interfaces';
 import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
@@ -24,7 +24,6 @@ import { ActivePageComponent } from '@reuse/code/components/active-page/active-p
 import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
 import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
 import { IfStatusErrorDirective } from '@reuse/code/directives/if-status-error.directive';
-import { AsyncPipe, NgIf } from '@angular/common';
 import { PrescriptionsState } from '@reuse/code/states/prescriptions.state';
 import { TemplatesState } from '@reuse/code/states/templates.state';
 import { AccessMatrixState } from '@reuse/code/states/access-matrix.state';
@@ -51,7 +50,6 @@ interface ViewState {
   encapsulation: ViewEncapsulation.ShadowDom,
   standalone: true,
   imports: [
-    NgIf,
     IfStatusErrorDirective,
     ErrorCardComponent,
     IfStatusSuccessDirective,
@@ -62,7 +60,6 @@ interface ViewState {
     PaginatorComponent,
     IfStatusLoadingDirective,
     OverlaySpinnerComponent,
-    AsyncPipe,
     TranslateModule,
     FormsModule,
     PrescriptionModelsTableComponent
