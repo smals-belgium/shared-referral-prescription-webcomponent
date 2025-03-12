@@ -132,8 +132,8 @@
             data-cy="numberOfModels"
             [page]="modelState.params!['models']?.['page'] || 1"
             [pageSize]="modelState.params!['models']?.['pageSize'] || 10"
-            [total]="modelState.data!.models.totalElements || 0"
-            [label]="'prescription.model.pagination.models' | translate:{count:modelState.data!.models.totalElements || 0}"
+            [total]="modelState.data!.models?.totalElements || 0"
+            [label]="'prescription.model.pagination.models' | translate:{count:modelState.data!.models?.totalElements || 0}"
           ></app-active-page>
 
           <div class="page-size">
@@ -161,7 +161,7 @@
         }
         <div class="pagination">
           <app-paginator
-            [total]="modelState.data!.models.totalElements || 0"
+            [total]="modelState.data!.models?.totalElements || 0"
             [page]="modelState.params!['models']?.['page'] || 1"
             [pageSize]="modelState.params!['models']?.['pageSize'] || 10"
             (changePage)="loadData($event, modelState.params!['models']?.['pageSize'])"
