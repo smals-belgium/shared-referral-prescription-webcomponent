@@ -1,62 +1,6 @@
-import { combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { DataState, LoadingStatus } from '../interfaces';
 import { computed, Signal } from '@angular/core';
-
-export function combineLatestMap(sources$: Record<string, Observable<any>>): Observable<Record<string, any>> {
-  return combineLatest(Object.values(sources$))
-    .pipe(map((results: DataState<any>[]) => {
-      const merged: Record<string, any> = {};
-      Object.keys(sources$).forEach((key: string, index: number) => {
-        merged[key] = results[index];
-      });
-      return merged;
-
-    }));
-}
-
-export function combineDataState<T>(states: Record<string, Observable<DataState<any>>>): Observable<DataState<T>> {
-  return combineLatest(Object.values(states))
-    .pipe(map((results: DataState<any>[]) => {
-      const merged: { status: LoadingStatus, data?: any, params?: any, error?: any } = {
-        status: LoadingStatus.SUCCESS,
-        data: {},
-        error: {},
-        params: {}
-      };
-      Object.keys(states).forEach((key: string, index: number) => {
-        const result = results[index];
-        merged.params[key] = result.params;
-        switch (result.status) {
-          case LoadingStatus.ERROR:
-            merged.status = LoadingStatus.ERROR;
-            merged.error[key] = result.error;
-            break;
-          case LoadingStatus.LOADING:
-            if (merged.status !== LoadingStatus.ERROR) {
-              merged.status = LoadingStatus.LOADING;
-            }
-            break;
-          case LoadingStatus.INITIAL:
-            if (merged.status !== LoadingStatus.ERROR && merged.status !== LoadingStatus.LOADING) {
-              merged.status = LoadingStatus.INITIAL;
-            }
-            break;
-          case LoadingStatus.UPDATING:
-            merged.data[key] = result.data;
-            if (merged.status !== LoadingStatus.ERROR && merged.status !== LoadingStatus.LOADING && merged.status !== LoadingStatus.INITIAL) {
-              merged.status = LoadingStatus.UPDATING;
-            }
-            break;
-          case LoadingStatus.SUCCESS:
-            merged.data[key] = result.data;
-            merged.error[key] = result.error;
-            break;
-        }
-      });
-      return merged;
-    }));
-}
 
 export function combineSignalDataState<T>(states: Record<string, Signal<DataState<any>>>): Signal<DataState<T>> {
   return computed(
