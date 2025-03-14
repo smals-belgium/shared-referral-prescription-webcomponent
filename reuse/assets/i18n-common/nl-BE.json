@@ -121,6 +121,7 @@
     },
     "author": "Auteur",
     "patient": "Patiënt",
+    "note": "Notitie",
     "shortcode": "RefID",
     "typeOfCare": "Type zorg",
     "services": "Beurten",

@@ -18,6 +18,7 @@ export interface ReadPrescription {
   intent?: string;
   pseudomizedKey?: string;
   shortCode?: string;
+  note?:string;
 }
 
 export interface ReferralTask {

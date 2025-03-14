@@ -107,6 +107,17 @@
                   [responses]="viewState.data!.decryptedResponses"
                 ></nihdi-referral-prescription-form-details>
               }
+
+              @if(prescription.note) {
+              <div class="row">
+                <div class="info-item">
+                  <div data-cy="prescription-note-label">{{'prescription.note' | translate}}</div>
+                  <div data-cy="prescription-note">
+                    {{prescription.note}}
+                  </div>
+                </div>
+              </div>
+              }
             </div>
             <div>
               <div class="caregiver-actions">
