@@ -415,5 +415,10 @@
       "COMPLETED": "Terminé",
       "null": "Inconnu"
     }
+  },
+  "models": {
+    "errors": {
+      "failedToLoadModels": "Impossible de charger les modèles."
+    }
   }
 }

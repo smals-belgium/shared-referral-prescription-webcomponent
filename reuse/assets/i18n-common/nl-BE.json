@@ -442,6 +442,11 @@
       "nursingCare": "Verpleegkundige zorg"
     }
   },
+  "models": {
+    "errors": {
+      "failedToLoadModels": "Het laden van de sjablonen is mislukt."
+    }
+  },
   "performerTask": {
     "statuses": {
       "ONHOLD": "Onderbroken",
