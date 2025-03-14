@@ -22,12 +22,13 @@
       flex-basis: 0;
       display: flex;
       justify-content: flex-end;
-      flex-grow: 4;
+      flex-grow: 3;
       text-align: right;
       padding-top: 15px;
     }
 
     mat-form-field {
+      flex-basis: 0;
        flex-grow: 7;
      }
   }

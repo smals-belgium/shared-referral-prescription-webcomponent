@@ -114,7 +114,7 @@ export class SelectPrescriptionTypeComponent implements OnChanges {
     );
 
     if (models) {
-      const modelsForTemplate$ = this.getModelsByTemplate(formGroup.get('template')!);
+      const modelsForTemplate$ = this.getModelsByTemplateAndCategory(formGroup.get('template')!, templatesForCategory$);
       this.modelOptions$ = this.setupFilteredOptions(formGroup.get('model')!, modelsForTemplate$, (model) => model.label);
     }
   }
@@ -150,8 +150,15 @@ export class SelectPrescriptionTypeComponent implements OnChanges {
     );
   }
 
-  private getModelsByTemplate(templateControl: AbstractControl) {
-    return templateControl.valueChanges.pipe(startWith(null), map((template) => getFilteredModels(this.models!, template)));
+  private getModelsByTemplateAndCategory(templateControl: AbstractControl, templatesForCategory$: Observable<EvfTemplate[]>) {
+    const modelsForTemplates$ = templateControl.valueChanges.pipe(startWith(null), map((template) => getFilteredModels(this.models!, template)));
+
+    return templatesForCategory$.pipe(
+      combineLatestWith(modelsForTemplates$),
+      map(([categoryTemplates, models]) =>
+        models.filter(model => categoryTemplates.some((categoryTemplate) => model.templateId === categoryTemplate.id))
+      )
+    );
   }
 
   isRequiredField(field: string) {

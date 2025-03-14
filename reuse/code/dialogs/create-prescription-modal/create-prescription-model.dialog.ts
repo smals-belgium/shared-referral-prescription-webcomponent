@@ -1,6 +1,5 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ToastService } from '../../services/toast.service';
+import { Component, effect, Inject, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -9,7 +8,7 @@ import {
   MatDialogRef,
   MatDialogTitle
 } from '@angular/material/dialog';
-import { CreatePrescriptionRequest, LoadingStatus } from '../../interfaces';
+import { LoadingStatus } from '../../interfaces';
 import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
 import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overlay-spinner.component';
 import { TranslateModule } from '@ngx-translate/core';
@@ -18,8 +17,8 @@ import { PrescriptionModelState } from '../../states/prescriptionModel.state';
 import { MatInput } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
 import { FormTemplate } from '@smals/vas-evaluation-form-ui-core';
-import { DatePipe } from '@angular/common';
 import { UniqueModelNameValidator } from '../../directives/unique-model-name.directive';
+import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 
 @Component({
   selector: 'create-prescription-model',
@@ -38,7 +37,7 @@ import { UniqueModelNameValidator } from '../../directives/unique-model-name.dir
     MatLabel,
     MatError
   ],
-  providers: [DatePipe],
+  providers: [TemplateNamePipe],
   templateUrl: './create-prescription-model.dialog.html',
   styleUrl: './create-prescription-model.dialog.scss'
 })
@@ -53,28 +52,29 @@ export class CreatePrescriptionModelDialog implements OnInit {
     private prescriptionModelState: PrescriptionModelState,
     private prescriptionModalService: PrescriptionModelService,
     private dialogRef: MatDialogRef<CreatePrescriptionModelDialog>,
-    private datePipe: DatePipe,
+    private templateNamePipe: TemplateNamePipe,
     @Inject(MAT_DIALOG_DATA) private data: {
       template: FormTemplate,
       templateCode: string,
       responses: Record<string, any>
-    }) {}
+    }) {
+
+    effect(() => {
+      const defaultName = this.templateNamePipe.transform(this.data.templateCode);
+      if (defaultName) {
+        this.formGroup.get('name')?.setValue(defaultName);
+      }
+    });
+  }
 
   ngOnInit() {
-    const date = new Date();
-    const formattedDate = this.datePipe.transform(date,"dd-MM-yyyy");
-
-    const nameControl = new FormControl<string>(formattedDate || '', {
-      validators: Validators.required,
-      asyncValidators: [this.nameValidator.validate.bind(this.nameValidator)],
-      updateOn: 'change',
-    });
-
     this.formGroup = this.fb.group({
-      name: nameControl
+      name: new FormControl<string>('', {
+        validators: Validators.required,
+        asyncValidators: [this.nameValidator.validate.bind(this.nameValidator)],
+        updateOn: 'change',
+      })
     })
-
-
   }
 
   createPrescriptionModel(): void {
