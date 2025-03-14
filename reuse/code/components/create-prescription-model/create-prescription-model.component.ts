@@ -179,18 +179,27 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
       });
   }
 
-  private filterElements(elements: FormElement[]) {
-    return elements
-      .map(element => {
-        if (element.elements) {
-          element.elements = this.filterElements(element.elements);
-        }
-        return element;
-      })
-      .filter(element =>
-        !(element.tags && element.tags.includes("freeText")) &&
-        !(element.dataType && element.dataType.type === "date")
-      );
+  private filterElements(elements: FormElement[]): FormElement[] {
+    return elements.reduce((filteredElements, element) => {
+      if (element.elements) {
+        element.elements = this.filterElements(element.elements);
+      }
+
+      if (element.validations) {
+        element.validations = element.validations.filter(validation => validation.name !== "required");
+      }
+
+      const shouldInclude =
+        !(element.tags?.includes("freeText")) &&
+        !(element.dataType?.type === "date") &&
+        !(element.elements && element.elements.length === 0);
+
+      if (shouldInclude) {
+        filteredElements.push(element);
+      }
+
+      return filteredElements;
+    }, [] as FormElement[]);
   }
 
   getTemplateData(formTemplateState: DataState<FormTemplate>) {
