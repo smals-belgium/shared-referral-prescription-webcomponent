@@ -1,0 +1,25 @@
+.npm:
+  image: gcloud-docker-internet.repo.gcloud.belgium.be/node:18-alpine
+  tags:
+    - docker
+
+cache:
+  key:
+    files:
+      - package-lock.json
+  paths:
+    - .npm/
+    - node_modules/
+
+stages:
+  - 'test'
+
+test:
+  stage: test
+  script:
+    - echo "Running the install step"
+    - npm install
+    - echo "Running test step"
+    - npm run test
+  except:
+    - master

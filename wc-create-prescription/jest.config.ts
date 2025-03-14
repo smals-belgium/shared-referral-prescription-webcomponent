@@ -1,8 +1,3 @@
-/**
- * For a detailed explanation regarding each configuration property, visit:
- * https://jestjs.io/docs/configuration
- */
-
 import type {Config} from 'jest';
 import {config as jestBaseConfig} from '../jest.base.config' ;
 
@@ -10,7 +5,7 @@ const config: Config = {
   ...jestBaseConfig,
 
   // The directory where Jest should output its coverage files
-  coverageDirectory: "<rootDir>/wc-prescription-details/coverage",
+  coverageDirectory: "<rootDir>/wc-create-prescription/coverage",
 
   setupFilesAfterEnv: ['./setup-jest.ts'],
 
@@ -20,11 +15,11 @@ const config: Config = {
     "^jose": require.resolve("jose"),
   },
   collectCoverageFrom: [
-    "wc-prescription-details/src/components/**/*.ts"
+    "wc-create-prescription/src/components/**/*.ts"
   ],
   transform: {
     '^.+\\.(ts|html)$': ['ts-jest', {
-      tsconfig: '<rootDir>/wc-prescription-details/tsconfig.spec.json',
+      tsconfig: '<rootDir>/wc-create-prescription/tsconfig.spec.json',
     }],
   },
 };

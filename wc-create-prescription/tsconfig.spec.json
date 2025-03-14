@@ -4,11 +4,14 @@
   "compilerOptions": {
     "outDir": "../../out-tsc/spec",
     "types": [
-      "jest"
-    ]
+      "jest",
+      "node"
+    ],
+    "emitDecoratorMetadata": true,
+    "typeRoots": ["../node_modules/@types", "../node_modules/@types/node"]
   },
   "include": [
-    "**/*.spec.ts",
-    "**/*.d.ts"
+    "src/**/*.spec.ts",
+    "src/**/*.d.ts"
   ]
 }

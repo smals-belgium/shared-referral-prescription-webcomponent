@@ -367,7 +367,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
       });
   }
 
-  private encryptFreeTextInResponses(templateCode: string, responses: Record<string, any>): Observable<Record<string, any>> {
+  protected encryptFreeTextInResponses(templateCode: string, responses: Record<string, any>): Observable<Record<string, any>> {
     const template = this.getPrescriptionTemplateStream(templateCode)()?.data;
     if (!template || !this.cryptoKey) {
       return of(responses);
@@ -396,7 +396,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
     );
   }
 
-  private toCreatePrescriptionRequest(
+  protected toCreatePrescriptionRequest(
     templateCode: string,
     responses: Record<string, any>,
     subject: string
@@ -420,7 +420,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
     );
   }
 
-  private handleCreateBulkResult(results: { trackId: number; status: LoadingStatus; error?: any; }[]): void {
+  protected handleCreateBulkResult(results: { trackId: number; status: LoadingStatus; error?: any; }[]): void {
     const successCount = results.filter((r) => r.status === LoadingStatus.SUCCESS).length;
     const failedCount = results.filter((r) => r.status === LoadingStatus.ERROR).length;
     if (failedCount === 0) {
@@ -477,13 +477,13 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
   }
 
   cancelCreation(): void {
-    if (this.prescriptionForms.length > 1) {
+    if (this.prescriptionForms().length > 1) {
       this.dialog.open<CancelCreationDialog, CancelCreationDialogData, CancelCreationDialogResult>(CancelCreationDialog, {
         data: {prescriptionForms: this.prescriptionForms()}
       }).beforeClosed().subscribe(result => {
         if (!result) {
           return;
-        } else if (result.formsToDelete.length === this.prescriptionForms.length) {
+        } else if (result.formsToDelete.length === this.prescriptionForms().length) {
           this.clickCancel.emit();
         } else if (result.formsToDelete.length > 0) {
           this.prescriptionForms.update((prescriptionForms) => prescriptionForms.filter(f => !result.formsToDelete.includes(f.trackId)));

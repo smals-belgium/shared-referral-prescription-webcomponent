@@ -10,7 +10,7 @@ const config: Config = {
   ...jestBaseConfig,
 
   // The directory where Jest should output its coverage files
-  coverageDirectory: "<rootDir>/wc-prescription-details/coverage",
+  coverageDirectory: "<rootDir>/wc-list-prescriptions/coverage",
 
   setupFilesAfterEnv: ['./setup-jest.ts'],
 
@@ -20,11 +20,11 @@ const config: Config = {
     "^jose": require.resolve("jose"),
   },
   collectCoverageFrom: [
-    "wc-prescription-details/src/components/**/*.ts"
+    "wc-list-prescriptions/src/components/**/*.ts"
   ],
   transform: {
     '^.+\\.(ts|html)$': ['ts-jest', {
-      tsconfig: '<rootDir>/wc-prescription-details/tsconfig.spec.json',
+      tsconfig: '<rootDir>/wc-list-prescriptions/tsconfig.spec.json',
     }],
   },
 };

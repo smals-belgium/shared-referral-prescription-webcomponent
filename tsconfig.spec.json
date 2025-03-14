@@ -7,10 +7,5 @@
       "jest"
     ]
   },
-  "include": [
-    "reuse/code/**/*.spec.ts",
-    "reuse/code/**/*.d.ts",
-    "wc-prescription-details/src/***.spec.ts",
-    "wc-prescription-details/src/***.d.ts"
-  ]
+  "include": ["**/*.ts", "setup-jest.ts"]
 }

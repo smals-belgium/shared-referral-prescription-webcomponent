@@ -45,7 +45,6 @@ interface ViewState {
   encapsulation: ViewEncapsulation.ShadowDom,
   standalone: true,
   imports: [
-    NgIf,
     IfStatusErrorDirective,
     ErrorCardComponent,
     IfStatusSuccessDirective,
