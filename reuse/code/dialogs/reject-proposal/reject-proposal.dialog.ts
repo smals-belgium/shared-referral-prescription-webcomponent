@@ -37,7 +37,7 @@ import { BaseDialog } from '../base.dialog';
 export class RejectProposalDialog extends BaseDialog implements OnInit {
 
   readonly formGroup = new FormGroup({
-    reason: new FormControl<string>('', Validators.required)
+    reason: new FormControl<string>('')
   });
 
   loading = false;

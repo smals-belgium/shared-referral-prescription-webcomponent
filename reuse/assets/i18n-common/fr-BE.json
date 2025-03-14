@@ -121,6 +121,7 @@
     },
     "author": "Auteur",
     "patient": "Patient",
+    "note": "Note",
     "shortcode": "RefID",
     "typeOfCare": "Type de soin",
     "services": "Prestations",
