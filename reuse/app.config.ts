@@ -67,7 +67,7 @@ export const APP_CONFIG: AppConfig = {
       keycloak: {
         url: 'https://api-acpt.ehealth.fgov.be/auth',
         realm: 'healthcare',
-        clientId: 'nihdi-uhmep-hcp'
+        clientId: 'nihdi-uhmep-hcp-dev'
       },
       enablePseudo: true
     },
@@ -80,7 +80,7 @@ export const APP_CONFIG: AppConfig = {
       keycloak: {
         url: 'https://api-acpt.ehealth.fgov.be/auth',
         realm: 'healthcare',
-        clientId: 'nihdi-uhmep-hcp'
+        clientId: 'nihdi-uhmep-hcp-dev'
       },
       enablePseudo: true
     },
@@ -93,7 +93,7 @@ export const APP_CONFIG: AppConfig = {
       keycloak: {
         url: 'https://api-acpt.ehealth.fgov.be/auth',
         realm: 'healthcare',
-        clientId: 'nihdi-uhmep-patient'
+        clientId: 'nihdi-uhmep-patient-dev'
       },
       enablePseudo: true
     },
