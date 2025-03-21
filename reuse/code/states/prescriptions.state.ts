@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { SearchPrescriptionCriteria } from '../interfaces';
 import { BaseState } from './base.state';
 import { PrescriptionSummaryList } from '../interfaces/prescription-summary.interface';
-import {PrescriptionService} from "../services/prescription.service";
+import { PrescriptionService } from "../services/prescription.service";
 
 @Injectable({providedIn: 'root'})
 export class PrescriptionsState extends BaseState<PrescriptionSummaryList> {
@@ -23,6 +23,7 @@ export class PrescriptionsState extends BaseState<PrescriptionSummaryList> {
     page = criteria?.patient === currentParams?.['criteria']?.['patient']
       ? page || currentParams?.['page'] || 1
       : page || 1;
+
     const params = {page, pageSize, criteria};
     this.load(
       this.prescriptionService.findAll(params.criteria, params.page, params.pageSize, false),

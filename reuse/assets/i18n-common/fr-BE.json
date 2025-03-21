@@ -109,6 +109,9 @@
         "pageSize": "Nbr/page"
       }
     },
+    "filter": {
+      "historicToggle": "Archief"
+    },
     "print": {
       "content-electronic-prescription": "Contenu de la prescription électronique",
       "guideline": "Veuillez présenter ce document à votre médecin soignant. Il vous est possible de scanner le code QR pour avoir accès au détail présent dans la prescription digital.",

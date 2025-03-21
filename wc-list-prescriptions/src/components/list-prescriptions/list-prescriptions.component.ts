@@ -1,10 +1,12 @@
 import {
-  Component, computed,
+  Component,
   EventEmitter,
   HostBinding,
   Input,
   OnChanges,
+  OnDestroy,
   Output,
+  signal,
   Signal,
   SimpleChanges,
   ViewEncapsulation
@@ -30,12 +32,15 @@ import { AccessMatrixState } from '@reuse/code/states/access-matrix.state';
 import { PrescriptionSummary, PrescriptionSummaryList } from '@reuse/code/interfaces/prescription-summary.interface';
 import { PseudoService } from '@reuse/code/services/pseudo.service';
 import { ProposalsState } from '@reuse/code/states/proposals.state';
-import {FormsModule} from "@angular/forms";
+import { FormsModule } from "@angular/forms";
 import {
   PrescriptionModelsTableComponent
 } from '@reuse/code/components/prescription-models-table/prescription-models-table.component';
 import { PrescriptionModel, PrescriptionModelRequest } from '@reuse/code/interfaces/prescription-modal.inteface';
 import { ModelsState } from '@reuse/code/states/models.state';
+import {
+  ToggleHistoricPrescriptionsComponent
+} from '@reuse/code/components/toggle-historic-prescriptions/toggle-historic-prescriptions.component';
 
 interface ViewState {
   prescriptions: PrescriptionSummaryList;
@@ -62,10 +67,13 @@ interface ViewState {
     OverlaySpinnerComponent,
     TranslateModule,
     FormsModule,
-    PrescriptionModelsTableComponent
+    PrescriptionModelsTableComponent,
+    ToggleHistoricPrescriptionsComponent
   ]
 })
-export class ListPrescriptionsWebComponent implements OnChanges {
+export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
+
+  protected readonly searchCriteria$ = signal<{ historical: boolean }>({historical: false});
 
   readonly viewStateProposals$: Signal<DataState<ViewState>> = combineSignalDataState({
     proposals: this.proposalsState.state,
@@ -92,6 +100,7 @@ export class ListPrescriptionsWebComponent implements OnChanges {
 
   @Output() clickOpenPrescriptionDetails = new EventEmitter<PrescriptionSummary>();
   @Output() clickOpenModelDetails = new EventEmitter<PrescriptionModel>();
+
 
   constructor(
     private translate: TranslateService,
@@ -142,14 +151,16 @@ export class ListPrescriptionsWebComponent implements OnChanges {
         this.prescriptionsState.loadPrescriptions({
           patient: identifier,
           requester: this.requesterSsin,
-          performer: this.performerSsin
+          performer: this.performerSsin,
+          historical: this.searchCriteria$().historical
         }, page, pageSize);
       });
     } else {
       this.prescriptionsState.loadPrescriptions({
         patient: this.patientSsin,
         requester: this.requesterSsin,
-        performer: this.performerSsin
+        performer: this.performerSsin,
+        historical: this.searchCriteria$().historical
       }, page, pageSize);
     }
   }
@@ -160,14 +171,16 @@ export class ListPrescriptionsWebComponent implements OnChanges {
         this.proposalsState.loadProposals({
           patient: identifier,
           requester: this.requesterSsin,
-          performer: this.performerSsin
+          performer: this.performerSsin,
+          historical: this.searchCriteria$().historical
         }, page, pageSize);
       })
     } else {
       this.proposalsState.loadProposals({
         patient: this.patientSsin,
         requester: this.requesterSsin,
-        performer: this.performerSsin
+        performer: this.performerSsin,
+        historical: this.searchCriteria$().historical
       }, page, pageSize);
     }
   }
@@ -188,5 +201,17 @@ export class ListPrescriptionsWebComponent implements OnChanges {
 
   private getPatientIdentifier(identifier: string): Promise<string> {
     return this.pseudoService.pseudonymize(identifier);
+  }
+
+  handleHistoricPrescriptions(showHistoricPrescriptions: boolean) {
+    this.searchCriteria$.set({
+      historical: showHistoricPrescriptions
+    })
+    this.loadData(1);
+  }
+
+  ngOnDestroy() {
+    console.log('ngOndestroy')
+    this.searchCriteria$.set({historical: false});
   }
 }

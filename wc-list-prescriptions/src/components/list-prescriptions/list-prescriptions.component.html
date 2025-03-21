@@ -12,6 +12,8 @@
       <app-overlay-spinner *ifStatusLoading="prescriptionState"  [mode]="prescriptionState.status === 'UPDATING' ? 'page' : 'inline'"></app-overlay-spinner>
 
       <ng-container *ifStatusSuccess="prescriptionState">
+        <app-toggle-historic-prescriptions (toggleChanged)="handleHistoricPrescriptions($event)"
+                                           [isChecked]="searchCriteria$().historical"></app-toggle-historic-prescriptions>
         <div>
           <div class="page-info">
             <app-active-page
@@ -72,6 +74,8 @@
       <app-overlay-spinner *ifStatusLoading="proposalState" [mode]="proposalState.status === 'UPDATING' ? 'page' : 'inline'"></app-overlay-spinner>
 
       <ng-container *ifStatusSuccess="proposalState">
+        <app-toggle-historic-prescriptions (toggleChanged)="handleHistoricPrescriptions($event)"
+                                           [isChecked]="searchCriteria$().historical"></app-toggle-historic-prescriptions>
           <div class="page-info">
             <app-active-page
               data-cy="numberOfProposals"

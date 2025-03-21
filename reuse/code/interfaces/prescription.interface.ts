@@ -78,7 +78,9 @@ export const enum Status {
   EXPIRED = 'EXPIRED',
   IN_PROGRESS = 'IN_PROGRESS',
   DONE = 'DONE',
-  ON_HOLD = 'ON_HOLD'
+  ON_HOLD = 'ON_HOLD',
+  ENTERED_IN_ERROR = 'ENTERED_IN_ERROR',
+  INACTIVE = 'INACTIVE'
 }
 
 export interface PrescriptionCancellation {
@@ -97,6 +99,7 @@ export interface SearchPrescriptionCriteria {
   patient?: string;
   requester?: string;
   performer?: string;
+  historical?: boolean;
 }
 
 export interface ProposalApproveResponse {

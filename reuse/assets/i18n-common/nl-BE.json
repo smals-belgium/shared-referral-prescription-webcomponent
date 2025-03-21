@@ -109,6 +109,9 @@
         "pageSize": "Aantal per pagina"
       }
     },
+    "filter": {
+      "historicToggle": "Historique"
+    },
     "print": {
       "content-electronic-prescription": "Inhoud van het elektronisch voorschrift",
       "guideline": "Gelieve dit document voor te leggen aan uw behandelende arts. U kunt de QR-code scannen om toegang te krijgen tot de gegevens in het digitale recept.",
