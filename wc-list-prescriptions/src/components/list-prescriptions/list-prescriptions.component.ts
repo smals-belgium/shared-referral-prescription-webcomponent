@@ -211,7 +211,6 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log('ngOndestroy')
     this.searchCriteria$.set({historical: false});
   }
 }
