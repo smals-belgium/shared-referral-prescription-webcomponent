@@ -15,11 +15,15 @@ import { CreatePrescriptionWebComponent } from './create-prescription.component'
 import { Observable, of, throwError } from 'rxjs';
 import { PseudonymisationHelper, Value } from '@smals-belgium-shared/pseudo-helper/dist';
 import { ElementGroup, FormTemplate } from '@smals/vas-evaluation-form-ui-core';
-import { DataState, LoadingStatus, Person, ReadPrescription, ReferralTask } from '@reuse/code/interfaces';
-import { EncryptionService } from '@reuse/code/services/encryption.service';
 import {
-  CreatePrescriptionForm
-} from '@reuse/code/components/create-multiple-prescriptions/create-multiple-prescriptions.component';
+  CreatePrescriptionForm,
+  DataState,
+  LoadingStatus,
+  Person,
+  ReadPrescription,
+  ReferralTask
+} from '@reuse/code/interfaces';
+import { EncryptionService } from '@reuse/code/services/encryption.service';
 import { CreatePrescriptionExtendedWebComponent } from './create-prescription-extended.component';
 import { By } from '@angular/platform-browser';
 import { ConfirmDialog } from '@reuse/code/dialogs/confirm/confirm.dialog';
