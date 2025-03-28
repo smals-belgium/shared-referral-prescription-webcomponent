@@ -35,11 +35,6 @@
                 "glob": "**/*",
                 "input": "./dist/pdfmake/build/",
                 "output": "./assets/pdfmake/"
-              },
-              {
-                "glob": "keycloak.js",
-                "input": "./node_modules/keycloak-js/dist/",
-                "output": "./"
               }
             ],
             "styles": [
@@ -129,13 +124,7 @@
             ],
             "tsConfig": "wc-list-prescriptions/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": [
-              {
-                "glob": "keycloak.js",
-                "input": "./node_modules/keycloak-js/dist/",
-                "output": "./"
-              }
-            ],
+            "assets": [],
             "styles": [
               "wc-list-prescriptions/src/styles.scss"
             ]
@@ -232,11 +221,6 @@
                 "glob": "**/*",
                 "input": "./dist/evf-form/build/",
                 "output": "./assets/evf-form/"
-              },
-              {
-                "glob": "keycloak.js",
-                "input": "./node_modules/keycloak-js/dist/",
-                "output": "./"
               }
             ],
             "styles": [

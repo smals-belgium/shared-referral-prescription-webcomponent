@@ -14,7 +14,7 @@ import { DateAdapter, MatOptionModule } from '@angular/material/core';
 import { DateTime } from 'luxon';
 import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
 import { AuthService } from '@reuse/code/services/auth.service';
-import { DataState, EvfTemplate } from '@reuse/code/interfaces';
+import { DataState, EvfTemplate, Token } from '@reuse/code/interfaces';
 import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
 import { IfStatusLoadingDirective } from '@reuse/code/directives/if-status-loading.directive';
 import { PaginatorComponent } from '@reuse/code/components/paginator/paginator.component';
@@ -87,7 +87,7 @@ export class ListPrescriptionsWebComponent implements OnChanges {
   @Input() patientSsin?: string;
   @Input() requesterSsin?: string;
   @Input() performerSsin?: string;
-  @Input() getToken!: () => Promise<string>;
+  @Input() getToken!: (targetClientId?: string) => Token;
   @Input() intent!: string;
 
   @Output() clickOpenPrescriptionDetails = new EventEmitter<PrescriptionSummary>();
@@ -109,9 +109,19 @@ export class ListPrescriptionsWebComponent implements OnChanges {
     this.translate.use('fr-BE')
   }
 
+  getAccessToken = () => {
+    const e = this.getToken();
+    return e.accessToken;
+  }
+
+  getAuthExchangeToken = (targetClientId?: string) => {
+    const e = this.getToken(targetClientId);
+    return e.getAuthExchangeToken;
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['getToken']) {
-      this.authService.init(this.getToken);
+      this.authService.init(this.getAccessToken, this.getAuthExchangeToken);
       this.accessMatrixState.loadAccessMatrix();
       this.templatesState.loadTemplates();
     }

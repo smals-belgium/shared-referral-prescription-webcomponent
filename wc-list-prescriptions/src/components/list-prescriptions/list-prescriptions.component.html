@@ -1,4 +1,4 @@
-@if(intent.toLowerCase() === 'order') {
+@if (intent?.toLowerCase() === 'order') {
   @if(viewStatePrescriptions$(); as prescriptionState) {
     <div class="container">
       <app-error-card
@@ -58,7 +58,7 @@
     </div>
   }
 
-} @else if (intent.toLowerCase() === 'proposal') {
+} @else if (intent?.toLowerCase() === 'proposal') {
   @if(viewStateProposals$(); as proposalState) {
     <div class="container">
       <app-error-card
@@ -113,7 +113,7 @@
       </ng-container>
     </div>
   }
-} @else if (intent.toLowerCase() === 'model') {
+} @else if (intent?.toLowerCase() === 'model') {
   @if(viewStateModels$(); as modelState) {
     <div class="container">
       <app-error-card

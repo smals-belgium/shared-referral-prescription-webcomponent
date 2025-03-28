@@ -14,11 +14,6 @@ interface AppConfigVariables {
   pseudoApiUrl?: string;
   enablePseudo?: boolean;
   enableSentry?: boolean;
-  keycloak: {
-    url: string;
-    realm: string;
-    clientId: string;
-  };
 }
 
 export const APP_CONFIG: AppConfig = {
@@ -28,11 +23,6 @@ export const APP_CONFIG: AppConfig = {
       env: 'local',
       fhirGatewayUrl: 'http://referral-prescription-fakeapi-v4.test.paas.vasdc.be',
       apiUrl: 'http://localhost:8080/frontend/api',
-      keycloak: {
-        url: 'http://vasiam.test.paas.vasdc.be/auth',
-        realm: 'MOOSE_UHMEP',
-        clientId: 'uhmep-webapp'
-      },
       enablePseudo: true,
       pseudoApiUrl: 'http://uhmep-mockingbird.test.paas.vasdc.be/pseudo/v1'
     },
@@ -40,11 +30,6 @@ export const APP_CONFIG: AppConfig = {
       env: 'test',
       fhirGatewayUrl: 'https://referral-prescription-v4.test.ext.vascloud.be/backend/application/fhirgateway/uhmep/v1',
       apiUrl: 'https://referral-prescription.test.ext.vascloud.be/frontend/api',
-      keycloak: {
-        url: 'https://vasiam.test.ext.vascloud.be/auth',
-        realm: 'MOOSE_UHMEP',
-        clientId: 'uhmep-webapp'
-      },
       enablePseudo: true,
       pseudoApiUrl: 'https://uhmep-mockingbird.test.ext.vascloud.be/pseudo/v1'
     },
@@ -52,11 +37,7 @@ export const APP_CONFIG: AppConfig = {
       env: 'testDemo',
       fhirGatewayUrl: 'http://referral-prescription-fakeapi-v4.test.paas.vasdc.be',
       apiUrl: 'http://uhmep-frontend-webapi-demo-v4.test.paas.vasdc.be/frontend/api',
-      keycloak: {
-        url: 'http://vasiam.test.paas.vasdc.be/auth',
-        realm: 'MOOSE_NIHII',
-        clientId: 'uhmep-fake-client'
-      }
+
     },
     intExtHcp: {
       env: 'intExtHcp',
@@ -64,11 +45,6 @@ export const APP_CONFIG: AppConfig = {
       fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
       apiUrl: 'https://referral-prescription.int.ext.vascloud.be/frontend/api',
       pseudoApiUrl: 'https://api-acpt.ehealth.fgov.be/pseudo/v1',
-      keycloak: {
-        url: 'https://api-acpt.ehealth.fgov.be/auth',
-        realm: 'healthcare',
-        clientId: 'nihdi-uhmep-hcp-dev'
-      },
       enablePseudo: true
     },
     intPubHcp: {
@@ -77,11 +53,6 @@ export const APP_CONFIG: AppConfig = {
       fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
       apiUrl: 'https://referral-prescription.int.pub.vascloud.be/frontend/api',
       pseudoApiUrl: 'https://api-acpt.ehealth.fgov.be/pseudo/v1',
-      keycloak: {
-        url: 'https://api-acpt.ehealth.fgov.be/auth',
-        realm: 'healthcare',
-        clientId: 'nihdi-uhmep-hcp-dev'
-      },
       enablePseudo: true
     },
     intExtPatient: {
@@ -90,11 +61,6 @@ export const APP_CONFIG: AppConfig = {
       fhirGatewayClientId: 'nihdi-uhmep-fhir-patient',
       apiUrl: 'https://referral-prescription.int.pub.vascloud.be/frontend/api',
       pseudoApiUrl: 'https://api-acpt.ehealth.fgov.be/pseudo/v1',
-      keycloak: {
-        url: 'https://api-acpt.ehealth.fgov.be/auth',
-        realm: 'healthcare',
-        clientId: 'nihdi-uhmep-patient-dev'
-      },
       enablePseudo: true
     },
     accHcp: {
@@ -103,11 +69,6 @@ export const APP_CONFIG: AppConfig = {
       fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
       apiUrl: 'https://wwwacc.referral-prescription.ehealth.fgov.be/frontend/api',
       pseudoApiUrl: 'https://api-acpt.ehealth.fgov.be/pseudo/v1',
-      keycloak: {
-        url: 'https://api-acpt.ehealth.fgov.be/auth',
-        realm: 'healthcare',
-        clientId: 'nihdi-uhmep-hcp'
-      },
       enablePseudo: true
     },
     accPatient: {
@@ -116,11 +77,6 @@ export const APP_CONFIG: AppConfig = {
       fhirGatewayClientId: 'nihdi-uhmep-fhir-patient',
       apiUrl: 'https://wwwacc.referral-prescription.ehealth.fgov.be/frontend/api',
       pseudoApiUrl: 'https://api-acpt.ehealth.fgov.be/pseudo/v1',
-      keycloak: {
-        url: 'https://api-acpt.ehealth.fgov.be/auth',
-        realm: 'healthcare',
-        clientId: 'nihdi-uhmep-patient'
-      },
       enablePseudo: true
     },
     accInHcp: {
@@ -129,11 +85,6 @@ export const APP_CONFIG: AppConfig = {
       fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
       apiUrl: 'https://wwwacc.referral-prescription.in.ehealth.fgov.be/frontend/api',
       pseudoApiUrl: 'https://api-acpt.ehealth.fgov.be/pseudo/v1',
-      keycloak: {
-        url: 'https://api-acpt.ehealth.fgov.be/auth',
-        realm: 'healthcare',
-        clientId: 'nihdi-uhmep-hcp'
-      },
       enablePseudo: true
     },
     accInPatient: {
@@ -142,11 +93,6 @@ export const APP_CONFIG: AppConfig = {
       fhirGatewayClientId: 'nihdi-uhmep-fhir-patient',
       apiUrl: 'https://wwwacc.referral-prescription.in.ehealth.fgov.be/frontend/api',
       pseudoApiUrl: 'https://api-acpt.ehealth.fgov.be/pseudo/v1',
-      keycloak: {
-        url: 'https://api-acpt.ehealth.fgov.be/auth',
-        realm: 'healthcare',
-        clientId: 'nihdi-uhmep-patient'
-      },
       enablePseudo: true
     },
     accUpHcp: {
@@ -155,11 +101,6 @@ export const APP_CONFIG: AppConfig = {
       fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
       apiUrl: 'https://wwwacc.referral-prescription.up.ehealth.fgov.be/frontend/api',
       pseudoApiUrl: 'https://api-acpt.ehealth.fgov.be/pseudo/v1',
-      keycloak: {
-        url: 'https://api-acpt.ehealth.fgov.be/auth',
-        realm: 'healthcare',
-        clientId: 'nihdi-uhmep-hcp'
-      },
       enablePseudo: true
     },
     accUpPatient: {
@@ -168,11 +109,6 @@ export const APP_CONFIG: AppConfig = {
       fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
       apiUrl: 'https://wwwacc.referral-prescription.up.ehealth.fgov.be/frontend/api',
       pseudoApiUrl: 'https://api-acpt.ehealth.fgov.be/pseudo/v1',
-      keycloak: {
-        url: 'https://api-acpt.ehealth.fgov.be/auth',
-        realm: 'healthcare',
-        clientId: 'nihdi-uhmep-patient'
-      },
       enablePseudo: true
     },
     prodHcp: {
@@ -181,11 +117,6 @@ export const APP_CONFIG: AppConfig = {
       fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
       apiUrl: 'https://www.referral-prescription.ehealth.fgov.be/frontend/api',
       pseudoApiUrl: 'https://api.ehealth.fgov.be/pseudo/v1',
-      keycloak: {
-        url: 'https://api.ehealth.fgov.be/auth',
-        realm: 'healthcare',
-        clientId: 'nihdi-uhmep-hcp'
-      },
       enablePseudo: true
     },
     prodPatient: {
@@ -194,11 +125,6 @@ export const APP_CONFIG: AppConfig = {
       fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
       apiUrl: 'https://www.referral-prescription.ehealth.fgov.be/frontend/api',
       pseudoApiUrl: 'https://api.ehealth.fgov.be/pseudo/v1',
-      keycloak: {
-        url: 'https://api.ehealth.fgov.be/auth',
-        realm: 'healthcare',
-        clientId: 'nihdi-uhmep-patient'
-      },
       enablePseudo: true
     },
     prodInHcp: {
@@ -207,11 +133,6 @@ export const APP_CONFIG: AppConfig = {
       fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
       apiUrl: 'https://www.referral-prescription.in.ehealth.fgov.be/frontend/api',
       pseudoApiUrl: 'https://api.ehealth.fgov.be/pseudo/v1',
-      keycloak: {
-        url: 'https://api.ehealth.fgov.be/auth',
-        realm: 'healthcare',
-        clientId: 'nihdi-uhmep-hcp'
-      },
       enablePseudo: true
     },
     prodInPatient: {
@@ -220,11 +141,6 @@ export const APP_CONFIG: AppConfig = {
       fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
       apiUrl: 'https://www.referral-prescription.in.ehealth.fgov.be/frontend/api',
       pseudoApiUrl: 'https://api.ehealth.fgov.be/pseudo/v1',
-      keycloak: {
-        url: 'https://api.ehealth.fgov.be/auth',
-        realm: 'healthcare',
-        clientId: 'nihdi-uhmep-hcp'
-      },
       enablePseudo: true
     },
     prodUpHcp: {
@@ -233,11 +149,6 @@ export const APP_CONFIG: AppConfig = {
       fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
       apiUrl: 'https://www.referral-prescription.up.ehealth.fgov.be/frontend/api',
       pseudoApiUrl: 'https://api.ehealth.fgov.be/pseudo/v1',
-      keycloak: {
-        url: 'https://api.ehealth.fgov.be/auth',
-        realm: 'healthcare',
-        clientId: 'nihdi-uhmep-hcp'
-      },
       enablePseudo: true
     },
     prodUpPatient: {
@@ -246,11 +157,6 @@ export const APP_CONFIG: AppConfig = {
       fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
       apiUrl: 'https://www.referral-prescription.up.ehealth.fgov.be/frontend/api',
       pseudoApiUrl: 'https://api.ehealth.fgov.be/pseudo/v1',
-      keycloak: {
-        url: 'https://api.ehealth.fgov.be/auth',
-        realm: 'healthcare',
-        clientId: 'nihdi-uhmep-patient'
-      },
       enablePseudo: true
     }
   }

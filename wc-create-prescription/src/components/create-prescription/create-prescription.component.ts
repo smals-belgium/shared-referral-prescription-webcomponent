@@ -26,7 +26,7 @@ import {
   CancelCreationDialogData,
   CancelCreationDialogResult
 } from '@reuse/code/dialogs/cancel-creation/cancel-creation.dialog';
-import { CreatePrescriptionRequest, DataState, LoadingStatus, ReadPrescription } from '@reuse/code/interfaces';
+import { CreatePrescriptionRequest, DataState, LoadingStatus, ReadPrescription, Token } from '@reuse/code/interfaces';
 import {
   CreateMultiplePrescriptionsComponent
 } from '@reuse/code/components/create-multiple-prescriptions/create-multiple-prescriptions.component';
@@ -94,7 +94,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
   @Input() initialPrescription?: ReadPrescription;
   @Input() initialModelId?: string;
   @Input() patientSsin?: string;
-  @Input() getToken!: () => Promise<string>;
+  @Input() getToken!: (targetClientId?: string) => Token;
   @Input() intent!: string;
   @Input() extend?: boolean = false;
 
@@ -159,9 +159,19 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
     }
   }
 
+  getAccessToken = () => {
+    const e = this.getToken();
+    return e.accessToken;
+  }
+
+  getAuthExchangeToken = (targetClientId?: string) => {
+    const e = this.getToken(targetClientId);
+    return e.getAuthExchangeToken;
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['getToken']) {
-      this.authService.init(this.getToken);
+      this.authService.init(this.getAccessToken, this.getAuthExchangeToken);
       this.accessMatrixStateService.loadAccessMatrix();
       this.templatesStateService.loadTemplates();
     }
