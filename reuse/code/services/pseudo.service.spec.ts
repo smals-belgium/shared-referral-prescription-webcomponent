@@ -1,8 +1,9 @@
 import { PseudoService } from './pseudo.service';
 import { ConfigurationService } from './configuration.service';
-import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
-import {TestBed} from "@angular/core/testing";
-import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper/dist';
+import { HttpTestingController, provideHttpClientTesting } from "@angular/common/http/testing";
+import { TestBed } from "@angular/core/testing";
+import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 const env: Record<string, any> = {
   enablePseudo: true,
@@ -29,10 +30,10 @@ describe('PseudoService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [PseudoService, { provide: ConfigurationService, useValue: mockConfigService },
-        {provide: PseudonymisationHelper, useValue: MockPseudoHelperFactory()}],
-    });
+    imports: [],
+    providers: [PseudoService, { provide: ConfigurationService, useValue: mockConfigService },
+        { provide: PseudonymisationHelper, useValue: MockPseudoHelperFactory() }, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
     pseudoService = TestBed.inject(PseudoService);
     httpMock = TestBed.inject(HttpTestingController);
   });

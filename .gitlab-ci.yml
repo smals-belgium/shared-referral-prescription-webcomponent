@@ -1,5 +1,5 @@
 .npm:
-  image: gcloud-docker-internet.repo.gcloud.belgium.be/node:18-alpine
+  image: gcloud-docker-internet.repo.gcloud.belgium.be/node:20-alpine
   tags:
     - docker
 
@@ -15,8 +15,7 @@ stages:
   - 'test'
 
 test:
-  extends:
-    - .npm
+  extends: .npm
   stage: test
   script:
     - echo "Running the install step"

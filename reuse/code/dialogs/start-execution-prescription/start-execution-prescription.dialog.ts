@@ -6,16 +6,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { TranslateModule } from '@ngx-translate/core';
-import { AsyncPipe, NgIf } from '@angular/common';
+import { NgIf } from '@angular/common';
 import { DatePipe } from '../../pipes/date.pipe';
-import { TranslationPipe } from '../../pipes/translation.pipe';
 import { AuthService } from '../../services/auth.service';
 import { map, Observable, switchMap } from 'rxjs';
-import {
-  PerformerTask,
-  PrescriptionExecutionStart,
-  ReadPrescription
-} from '../../interfaces';
+import { PerformerTask, PrescriptionExecutionStart, ReadPrescription } from '../../interfaces';
 import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overlay-spinner.component';
 import { ToastService } from '../../services/toast.service';
 import { PrescriptionState } from '../../states/prescription.state';
@@ -31,24 +26,21 @@ interface StartExecutionPrescriptionDialogData {
 }
 
 @Component({
-  standalone: true,
-  templateUrl: './start-execution-prescription.dialog.html',
-  styleUrls: ['./start-execution-prescription.dialog.scss'],
-  imports: [
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    TranslateModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatInputModule,
-    TranslationPipe,
-    MatDatepickerModule,
-    OverlaySpinnerComponent,
-    DatePipe,
-    NgIf,
-    AsyncPipe,
-    ErrorCardComponent
-  ]
+    templateUrl: './start-execution-prescription.dialog.html',
+    styleUrls: ['./start-execution-prescription.dialog.scss'],
+    imports: [
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        TranslateModule,
+        MatDialogModule,
+        MatButtonModule,
+        MatInputModule,
+        MatDatepickerModule,
+        OverlaySpinnerComponent,
+        DatePipe,
+        NgIf,
+        ErrorCardComponent
+    ]
 })
 export class StartExecutionPrescriptionDialog extends BaseDialog implements OnInit {
 

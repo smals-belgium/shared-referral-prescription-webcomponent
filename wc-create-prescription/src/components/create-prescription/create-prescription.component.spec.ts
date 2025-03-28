@@ -1,34 +1,28 @@
-import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { PseudoService } from '@reuse/code/services/pseudo.service';
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { DateAdapter, MatNativeDateModule } from '@angular/material/core';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClient, HttpErrorResponse, provideHttpClient } from '@angular/common/http';
-import { provideRouter } from '@angular/router';
-import { importProvidersFrom, Signal, SimpleChange, SimpleChanges } from '@angular/core';
-import { ConfigurationService } from '@reuse/code/services/configuration.service';
-import { AuthService } from '@reuse/code/services/auth.service';
-import { CreatePrescriptionWebComponent } from './create-prescription.component';
-import { Observable, of, throwError } from 'rxjs';
-import { PseudonymisationHelper, Value } from '@smals-belgium-shared/pseudo-helper/dist';
-import { ElementGroup, FormTemplate } from '@smals/vas-evaluation-form-ui-core';
-import {
-  CreatePrescriptionForm,
-  DataState,
-  LoadingStatus,
-  Person,
-  ReadPrescription,
-  ReferralTask
-} from '@reuse/code/interfaces';
-import { EncryptionService } from '@reuse/code/services/encryption.service';
-import { CreatePrescriptionExtendedWebComponent } from './create-prescription-extended.component';
-import { By } from '@angular/platform-browser';
-import { ConfirmDialog } from '@reuse/code/dialogs/confirm/confirm.dialog';
-import { ToastService } from '@reuse/code/services/toast.service';
-import { CancelCreationDialog } from '@reuse/code/dialogs/cancel-creation/cancel-creation.dialog';
+import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {MatDialog, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import {PseudoService} from '@reuse/code/services/pseudo.service';
+import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {DateAdapter, MatNativeDateModule} from '@angular/material/core';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {HttpClient, HttpErrorResponse, provideHttpClient} from '@angular/common/http';
+import {provideRouter} from '@angular/router';
+import {importProvidersFrom, Signal, SimpleChange, SimpleChanges} from '@angular/core';
+import {ConfigurationService} from '@reuse/code/services/configuration.service';
+import {AuthService} from '@reuse/code/services/auth.service';
+import {CreatePrescriptionWebComponent} from './create-prescription.component';
+import {Observable, of, throwError} from 'rxjs';
+import {PseudonymisationHelper, Value} from '@smals-belgium-shared/pseudo-helper';
+import {ElementGroup, FormTemplate} from '@smals/vas-evaluation-form-ui-core';
+import {DataState, LoadingStatus, Person, ReadPrescription, ReferralTask} from '@reuse/code/interfaces';
+import {EncryptionService} from '@reuse/code/services/encryption.service';
+import {CreatePrescriptionExtendedWebComponent} from './create-prescription-extended.component';
+import {By} from '@angular/platform-browser';
+import {ConfirmDialog} from '@reuse/code/dialogs/confirm/confirm.dialog';
+import {ToastService} from '@reuse/code/services/toast.service';
+import {CancelCreationDialog} from '@reuse/code/dialogs/cancel-creation/cancel-creation.dialog';
+import {CreatePrescriptionForm} from '@reuse/code/interfaces/create-prescription-form.interface';
 
 class FakeLoader implements TranslateLoader {
   getTranslation(lang: string): Observable<any> {
@@ -104,7 +98,7 @@ describe('CreatePrescriptionWebComponent', () => {
     await TestBed.configureTestingModule({
       imports: [CreatePrescriptionExtendedWebComponent, CreatePrescriptionWebComponent, TranslateModule.forRoot({
         loader: {provide: TranslateLoader, useClass: FakeLoader},
-      }), HttpClientTestingModule, MatDatepickerModule,
+      }), MatDatepickerModule,
         MatNativeDateModule, MatDialogModule, NoopAnimationsModule],
       providers: [
         provideHttpClient(),
@@ -486,7 +480,10 @@ describe('CreatePrescriptionWebComponent', () => {
 
   it('should return initialPrescription unchanged if extend is false', () => {
     createFixture('mockPseudomizedKey');
-    component.extend = false;
+    component.initialValues = {
+      intent: 'order',
+      extend: false
+    };
     const prescription: ReadPrescription = {
       authoredOn: '',
       organizationTasks: [],
@@ -506,7 +503,10 @@ describe('CreatePrescriptionWebComponent', () => {
 
   it('should return initialPrescription unchanged if responses is undefined', () => {
     createFixture('mockPseudomizedKey');
-    component.extend = true;
+    component.initialValues = {
+      intent: 'order',
+      extend: true
+    };
     const prescription: ReadPrescription = {
       authoredOn: '',
       organizationTasks: [],
@@ -526,7 +526,10 @@ describe('CreatePrescriptionWebComponent', () => {
 
   it('should return initialPrescription unchanged if prescriptionOriginId already exists', () => {
     createFixture('mockPseudomizedKey');
-    component.extend = true;
+    component.initialValues = {
+      intent: 'order',
+      extend: true
+    };
     const prescription: ReadPrescription = {
       authoredOn: '',
       organizationTasks: [],
@@ -546,7 +549,10 @@ describe('CreatePrescriptionWebComponent', () => {
 
   it('should return initialPrescription unchanged if initialPrescription.id is undefined', () => {
     createFixture('mockPseudomizedKey');
-    component.extend = true;
+    component.initialValues = {
+      intent: 'order',
+      extend: true
+    };
     const prescription: ReadPrescription = {
       authoredOn: '',
       organizationTasks: [],
@@ -566,7 +572,10 @@ describe('CreatePrescriptionWebComponent', () => {
 
   it('should set prescriptionOriginId to initialPrescription.id when conditions are met', () => {
     createFixture('mockPseudomizedKey');
-    component.extend = true;
+    component.initialValues = {
+      intent: 'order',
+      extend: true
+    };
     const prescription: ReadPrescription = {
       authoredOn: '',
       organizationTasks: [],
@@ -688,7 +697,9 @@ describe('CreatePrescriptionWebComponent', () => {
       {trackId: 2, status: LoadingStatus.SUCCESS}
     ];
 
-    component.intent = 'order';
+    component.initialValues = {
+      intent: 'order'
+    };
     component.handleCreateBulkResultExtended(results);
 
     expect(toasterSpy).toHaveBeenCalledWith(
@@ -710,7 +721,9 @@ describe('CreatePrescriptionWebComponent', () => {
     const prescriptionFormsUpdateSpy = jest.spyOn(component.prescriptionForms, 'update');
     const componentLoadingSetSpy = jest.spyOn(component.loading, 'set');
 
-    component.intent = 'order';
+    component.initialValues = {
+      intent: 'order'
+    };
     component.handleCreateBulkResultExtended(results);
 
     expect(component.errorCard).toEqual({
@@ -741,7 +754,9 @@ describe('CreatePrescriptionWebComponent', () => {
     const prescriptionFormsUpdateSpy = jest.spyOn(component.prescriptionForms, 'update');
     const componentLoadingSetSpy = jest.spyOn(component.loading, 'set');
 
-    component.intent = 'proposal';
+    component.initialValues = {
+      intent: 'proposal'
+    };
     component.handleCreateBulkResultExtended(results);
 
     expect(component.errorCard).toEqual({
@@ -772,7 +787,9 @@ describe('CreatePrescriptionWebComponent', () => {
     const prescriptionFormsUpdateSpy = jest.spyOn(component.prescriptionForms, 'update');
     const componentLoadingSetSpy = jest.spyOn(component.loading, 'set');
 
-    component.intent = 'order';
+    component.initialValues = {
+      intent: 'order'
+    };
     component.handleCreateBulkResultExtended(results);
 
     expect(component.errorCard).toEqual({
@@ -800,7 +817,9 @@ describe('CreatePrescriptionWebComponent', () => {
     const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {
     });
 
-    component.intent = 'proposal';
+    component.initialValues = {
+      intent: 'proposal'
+    };
     component.handleCreateBulkResultExtended(results);
 
     expect(component.errorCard).toEqual({
@@ -819,9 +838,10 @@ describe('CreatePrescriptionWebComponent', () => {
   const createFixture = (pseudomizedKey?: string) => {
     fixture = TestBed.createComponent(CreatePrescriptionExtendedWebComponent);
     component = fixture.componentInstance;
-    component.generatedUUID = '123e4567-e89b-12d3-a456-426614174000';
     component.pseudomizedKey = pseudomizedKey;
-    component.intent = 'order';
+    component.initialValues = {
+      intent: 'order'
+    };
 
     if (pseudomizedKey) {
       jest.spyOn(pseudoService, 'byteArrayToValue').mockReturnValue({pseudonymize: jest.fn()} as unknown as Value);

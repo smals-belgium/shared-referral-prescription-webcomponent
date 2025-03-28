@@ -1,18 +1,18 @@
 <div class="container">
-  @if(intent === 'model') {
+  @if (initialValues?.intent === 'model') {
     <h2>{{'prescription.model.title' | translate}}</h2>
     <app-create-prescription-model
       [prescriptionForm]="prescriptionForms()[0]"
       [lang]="lang"
       (modelSaved)="modelSaved()"
     ></app-create-prescription-model>
-  } @else if(patientState$()) {
+  } @else if (patientState$() && initialValues?.intent) {
     <h2>{{'prescription.create.action' | translate}}</h2>
 
         <app-create-multiple-prescriptions
           *ifStatusSuccess="patientState$()"
           [createPrescriptionForms]="prescriptionForms()"
-          [intent]="intent"
+          [intent]="initialValues!.intent"
           [errorCard]="errorCard"
           [patient]="patientState$()!.data!"
           [lang]="lang"

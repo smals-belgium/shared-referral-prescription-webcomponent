@@ -4,6 +4,7 @@ import { DataState, LoadingStatus } from './data-state.interface';
 import { ReadPrescription } from './prescription.interface';
 
 export interface CreatePrescriptionForm {
+  generatedUUID: string;
   trackId: number;
   templateCode: string;
   elementGroup?: ElementGroup;

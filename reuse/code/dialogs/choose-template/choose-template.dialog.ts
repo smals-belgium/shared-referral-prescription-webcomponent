@@ -2,14 +2,13 @@ import { Component, computed, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { AsyncPipe, NgIf } from '@angular/common';
+import { NgIf } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { AccessMatrix, DataState, EvfTemplate, LoadingStatus } from '../../interfaces';
 import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overlay-spinner.component';
 import {
   SelectPrescriptionTypeComponent
 } from '../../components/select-prescription-type/select-prescription-type.component';
-import { IfStatusErrorDirective } from '../../directives/if-status-error.directive';
 import { IfStatusLoadingDirective } from '../../directives/if-status-loading.directive';
 import { IfStatusSuccessDirective } from '../../directives/if-status-success.directive';
 import { combineSignalDataState } from '../../utils/rxjs.utils';
@@ -31,22 +30,19 @@ interface ViewState {
 }
 
 @Component({
-  templateUrl: './choose-template.dialog.html',
-  styleUrls: ['./choose-template.dialog.scss'],
-  standalone: true,
-  imports: [
-    TranslateModule,
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatButtonModule,
-    OverlaySpinnerComponent,
-    SelectPrescriptionTypeComponent,
-    IfStatusLoadingDirective,
-    IfStatusSuccessDirective,
-    IfStatusErrorDirective,
-    NgIf,
-    AsyncPipe
-  ]
+    templateUrl: './choose-template.dialog.html',
+    styleUrls: ['./choose-template.dialog.scss'],
+    imports: [
+        TranslateModule,
+        ReactiveFormsModule,
+        MatDialogModule,
+        MatButtonModule,
+        OverlaySpinnerComponent,
+        SelectPrescriptionTypeComponent,
+        IfStatusLoadingDirective,
+        IfStatusSuccessDirective,
+        NgIf,
+    ]
 })
 export class ChooseTemplateDialog implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();

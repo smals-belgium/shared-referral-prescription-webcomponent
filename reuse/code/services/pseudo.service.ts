@@ -1,7 +1,13 @@
-import {Injectable} from '@angular/core';
-import {PseudonymisationHelper, EHealthProblem, Value, PseudonymInTransit, Domain} from '@smals-belgium-shared/pseudo-helper/dist';
-import {ConfigurationService} from './configuration.service';
-import {Curve} from "@smals-belgium-shared/pseudo-helper/dist/app/Curve";
+import { Injectable } from '@angular/core';
+import {
+  Curve,
+  Domain,
+  EHealthProblem,
+  PseudonymInTransit,
+  PseudonymisationHelper,
+  Value
+} from '@smals-belgium-shared/pseudo-helper';
+import { ConfigurationService } from './configuration.service';
 
 @Injectable({providedIn: 'root'})
 export class PseudoService {

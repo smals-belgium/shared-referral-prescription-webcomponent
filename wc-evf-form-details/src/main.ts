@@ -5,7 +5,7 @@ import { createCustomElement } from '@angular/elements';
 import { provideCore } from '@reuse/code/providers/core.provider';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { EvfFormDetailsWebComponent } from './components/evf-details/evf-form-details.component';
-import {provideHttpClient} from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 
 
 (async () => {

@@ -1,6 +1,6 @@
-import {ErrorHandler} from '@angular/core';
-import * as Sentry from '@sentry/angular-ivy';
-import {ConfigurationService} from './configuration.service';
+import { ErrorHandler } from '@angular/core';
+import * as Sentry from '@sentry/angular';
+import { ConfigurationService } from './configuration.service';
 
 export function getErrorHandlerFromConfiguration(configurationService: ConfigurationService): ErrorHandler {
   if (!!configurationService.getEnvironmentVariable('enableSentry')) {

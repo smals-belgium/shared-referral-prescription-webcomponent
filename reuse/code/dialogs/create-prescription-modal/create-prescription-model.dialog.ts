@@ -22,7 +22,6 @@ import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 
 @Component({
   selector: 'create-prescription-model',
-  standalone: true,
   imports: [
     ReactiveFormsModule,
     MatDialogTitle,

@@ -115,42 +115,41 @@ interface ViewState {
 }
 
 @Component({
-  templateUrl: './prescription-details.component.html',
-  styleUrls: ['./prescription-details.component.scss'],
-  encapsulation: ViewEncapsulation.ShadowDom,
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  standalone: true,
-  imports: [
-    NgIf,
-    NgStyle,
-    IfStatusLoadingDirective,
-    OverlaySpinnerComponent,
-    ErrorCardComponent,
-    IfStatusErrorDirective,
-    IfStatusSuccessDirective,
-    MatButtonModule,
-    MatIconModule,
-    NgFor,
-    DatePipe,
-    TranslateModule,
-    FormatSsinPipe,
-    FormatNihdiPipe,
-    TemplateNamePipe,
-    CanFinishTreatmentPipe,
-    CanCancelTreatmentPipe,
-    CanStartTreatmentPipe,
-    CanAssignCaregiverPipe,
-    CanCancelPrescriptionOrProposalPipe,
-    CanRejectAssignationPipe,
-    CanTransferAssignationPipe,
-    CanSelfAssignPipe,
-    CanInterruptTreatmentPipe,
-    CanRestartTreatmentPipe,
-    CanApproveProposalPipe,
-    CanRejectProposalPipe,
-    CanExtendPrescriptionPipe,
-    CanDuplicatePrescriptionPipe
-  ]
+    templateUrl: './prescription-details.component.html',
+    styleUrls: ['./prescription-details.component.scss'],
+    encapsulation: ViewEncapsulation.ShadowDom,
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    imports: [
+        NgIf,
+        NgStyle,
+        IfStatusLoadingDirective,
+        OverlaySpinnerComponent,
+        ErrorCardComponent,
+        IfStatusErrorDirective,
+        IfStatusSuccessDirective,
+        MatButtonModule,
+        MatIconModule,
+        NgFor,
+        DatePipe,
+        TranslateModule,
+        FormatSsinPipe,
+        FormatNihdiPipe,
+        TemplateNamePipe,
+        CanFinishTreatmentPipe,
+        CanCancelTreatmentPipe,
+        CanStartTreatmentPipe,
+        CanAssignCaregiverPipe,
+        CanCancelPrescriptionOrProposalPipe,
+        CanRejectAssignationPipe,
+        CanTransferAssignationPipe,
+        CanSelfAssignPipe,
+        CanInterruptTreatmentPipe,
+        CanRestartTreatmentPipe,
+        CanApproveProposalPipe,
+        CanRejectProposalPipe,
+        CanExtendPrescriptionPipe,
+        CanDuplicatePrescriptionPipe
+    ]
 })
 
 export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDestroy {
@@ -332,7 +331,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
 
       });
-    }, {allowSignalWrites: true});
+    });
 
     // Register a new effect based on identify state changes
     effect(() => {
@@ -367,7 +366,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
           });
         }
       });
-    }, {allowSignalWrites: true});
+    });
   }
 
   ngOnInit() {
@@ -613,52 +612,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     });
   }
 
-  async getPrescriptionKey(pseudomizedKey: string): Promise<void> {
-    try {
-      const pseudoInTransit = this.pseudoService.toPseudonymInTransit(pseudomizedKey);
-      const uint8Array = await this.pseudoService.identifyPseudonymInTransit(pseudoInTransit)
-
-      this.encryptionStateService.loadCryptoKey(uint8Array);
-    } catch (error) {
-      const errorMsg = new Error('Error loading prescription key', {cause: error});
-      this.encryptionStateService.setCryptoKeyError(errorMsg)
-    }
-  }
-
-  handleDuplicateClick() {
-    const prescription = this.viewState$().data?.prescription;
-    const responses = this.viewState$().data?.decryptedResponses;
-    if (prescription && responses) {
-      const duplicatedData = {...prescription, responses: responses}
-      this.clickDuplicate.emit(duplicatedData)
-    }
-  }
-
-  handleExtendClick() {
-    const prescription = this.viewState$().data?.prescription;
-    const responses = this.viewState$().data?.decryptedResponses;
-    if (prescription && responses) {
-      const duplicatedData = {...prescription, responses: responses}
-      this.clickExtend.emit(duplicatedData)
-    }
-  }
-
-  showRetryButton() {
-    const error = this.viewState$().error;
-
-    // Check if error is an object and only has the key "decryptedResponses" and then return false
-    return !(error && typeof error === 'object' && Object.keys(error).length === 1 && error.hasOwnProperty('decryptedResponses'));
-  }
-
-  ngOnDestroy() {
-    this.encryptionStateService.resetCryptoKey()
-    if (this.intent?.toLowerCase() === 'proposal') {
-      this.proposalSateService.resetProposal();
-    } else {
-      this.prescriptionStateService.resetPrescription();
-    }
-  }
-
   private getPrescriptionTemplateStream(templateCode: string | undefined, templatesState: DataState<EvfTemplate[]>): DataState<EvfTemplate> {
     if (!templateCode || templatesState.status !== LoadingStatus.SUCCESS) {
       return {...templatesState, data: undefined};
@@ -713,6 +666,43 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     });
   }
 
+  async getPrescriptionKey(pseudomizedKey: string): Promise<void> {
+    try {
+      const pseudoInTransit = this.pseudoService.toPseudonymInTransit(pseudomizedKey);
+      const uint8Array = await this.pseudoService.identifyPseudonymInTransit(pseudoInTransit)
+
+      this.encryptionStateService.loadCryptoKey(uint8Array);
+    } catch (error) {
+      const errorMsg = new Error('Error loading prescription key', {cause: error});
+      this.encryptionStateService.setCryptoKeyError(errorMsg)
+    }
+  }
+
+  handleDuplicateClick() {
+    const prescription = this.viewState$().data?.prescription;
+    const responses = this.viewState$().data?.decryptedResponses;
+    if(prescription && responses) {
+      const duplicatedData = {...prescription, responses: responses}
+      this.clickDuplicate.emit(duplicatedData)
+    }
+  }
+
+  handleExtendClick() {
+    const prescription = this.viewState$().data?.prescription;
+    const responses = this.viewState$().data?.decryptedResponses;
+    if(prescription && responses) {
+      const duplicatedData = {...prescription, responses: responses}
+      this.clickExtend.emit(duplicatedData)
+    }
+  }
+
+  showRetryButton() {
+    const error = this.viewState$().error;
+
+    // Check if error is an object and only has the key "decryptedResponses" and then return false
+    return !(error && typeof error === 'object' && Object.keys(error).length === 1 && error.hasOwnProperty('decryptedResponses'));
+  }
+
   private loadPrintWebComponent(): void {
     if (customElements.get('nihdi-referral-prescription-pdf') != undefined) {
       return;
@@ -760,5 +750,14 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
   private getPatientIdentifier(identifier: string): Promise<string> {
     return this.pseudoService.pseudonymize(identifier);
+  }
+
+  ngOnDestroy() {
+    this.encryptionStateService.resetCryptoKey()
+    if(this.intent?.toLowerCase() === 'proposal') {
+      this.proposalSateService.resetProposal();
+    } else {
+      this.prescriptionStateService.resetPrescription();
+    }
   }
 }

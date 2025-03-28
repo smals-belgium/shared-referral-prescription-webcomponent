@@ -1,9 +1,9 @@
-import {HttpClient} from "@angular/common/http";
-import {ConfigurationService} from "../services/configuration.service";
-import {map, retry, take} from "rxjs/operators";
-import {lastValueFrom} from "rxjs";
-import {PseudonymisationClient} from '@smals-belgium-shared/pseudo-helper/dist';
-import {Injectable} from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { ConfigurationService } from "../services/configuration.service";
+import { map, retry, take } from "rxjs/operators";
+import { lastValueFrom } from "rxjs";
+import { PseudonymisationClient } from '@smals-belgium-shared/pseudo-helper';
+import { Injectable } from "@angular/core";
 
 @Injectable({providedIn: 'root'})
 export class PseudoClient implements PseudonymisationClient {

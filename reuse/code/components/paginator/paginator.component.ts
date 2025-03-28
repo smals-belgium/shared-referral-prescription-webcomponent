@@ -13,18 +13,17 @@ import { MatIconModule } from '@angular/material/icon';
 import {TranslateModule} from "@ngx-translate/core";
 
 @Component({
-  standalone: true,
-  selector: 'app-paginator',
-  templateUrl: './paginator.component.html',
-  styleUrls: ['./paginator.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MatButtonModule,
-    MatIconModule,
-    NgIf,
-    NgFor,
-    TranslateModule
-  ]
+    selector: 'app-paginator',
+    templateUrl: './paginator.component.html',
+    styleUrls: ['./paginator.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        MatButtonModule,
+        MatIconModule,
+        NgIf,
+        NgFor,
+        TranslateModule
+    ]
 })
 export class PaginatorComponent implements OnChanges {
 

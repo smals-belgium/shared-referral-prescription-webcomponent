@@ -34,26 +34,25 @@ import { CreatePrescriptionForm } from '../../interfaces/create-prescription-for
 import { ErrorCard } from '../../interfaces/error-card.interface';
 
 @Component({
-  selector: 'app-create-multiple-prescriptions',
-  templateUrl: './create-multiple-prescriptions.component.html',
-  styleUrls: ['./create-multiple-prescriptions.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [
-    TranslateModule,
-    MatExpansionModule,
-    MatIconModule,
-    MatButtonModule,
-    IfStatusLoadingDirective,
-    OverlaySpinnerComponent,
-    IfStatusErrorDirective,
-    IfStatusSuccessDirective,
-    TemplateNamePipe,
-    FormatSsinPipe,
-    ErrorCardComponent,
-    SuccessCardComponent
-  ]
+    selector: 'app-create-multiple-prescriptions',
+    templateUrl: './create-multiple-prescriptions.component.html',
+    styleUrls: ['./create-multiple-prescriptions.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    imports: [
+        TranslateModule,
+        MatExpansionModule,
+        MatIconModule,
+        MatButtonModule,
+        IfStatusLoadingDirective,
+        OverlaySpinnerComponent,
+        IfStatusErrorDirective,
+        IfStatusSuccessDirective,
+        TemplateNamePipe,
+        FormatSsinPipe,
+        ErrorCardComponent,
+        SuccessCardComponent
+    ]
 })
 export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestroy {
 

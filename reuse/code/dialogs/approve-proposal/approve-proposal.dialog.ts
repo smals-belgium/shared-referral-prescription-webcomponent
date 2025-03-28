@@ -22,27 +22,26 @@ import { ErrorCardComponent } from '../../components/error-card/error-card.compo
 import { BaseDialog } from '../base.dialog';
 
 @Component({
-  selector: 'approve-proposal',
-  standalone: true,
-  imports: [
-    FormsModule,
-    MatButton,
-    MatDialogActions,
-    MatDialogContent,
-    MatDialogTitle,
-    MatError,
-    MatFormField,
-    MatInput,
-    MatLabel,
-    NgIf,
-    OverlaySpinnerComponent,
-    TranslateModule,
-    ReactiveFormsModule,
-    MatDialogClose,
-    ErrorCardComponent
-  ],
-  templateUrl: './approve-proposal.dialog.html',
-  styleUrl: './approve-proposal.dialog.scss'
+    selector: 'approve-proposal',
+    imports: [
+        FormsModule,
+        MatButton,
+        MatDialogActions,
+        MatDialogContent,
+        MatDialogTitle,
+        MatError,
+        MatFormField,
+        MatInput,
+        MatLabel,
+        NgIf,
+        OverlaySpinnerComponent,
+        TranslateModule,
+        ReactiveFormsModule,
+        MatDialogClose,
+        ErrorCardComponent
+    ],
+    templateUrl: './approve-proposal.dialog.html',
+    styleUrl: './approve-proposal.dialog.scss'
 })
 export class ApproveProposalDialog extends BaseDialog implements OnInit {
 

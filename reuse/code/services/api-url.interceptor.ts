@@ -1,5 +1,5 @@
 import {inject} from '@angular/core';
-import {HttpEvent, HttpHandlerFn, HttpInterceptorFn, HttpRequest} from '@angular/common/http';
+import { HttpEvent, HttpHandlerFn, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import {mergeMap, Observable} from 'rxjs';
 import {AuthService} from './auth.service';
 import {ConfigurationService} from './configuration.service';

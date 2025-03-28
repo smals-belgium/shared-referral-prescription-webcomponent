@@ -6,7 +6,6 @@ import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/ma
 import { catchError, map } from 'rxjs/operators';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { IfStatusErrorDirective } from '../../directives/if-status-error.directive';
 import { IfStatusLoadingDirective } from '../../directives/if-status-loading.directive';
 import { IfStatusSuccessDirective } from '../../directives/if-status-success.directive';
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
@@ -38,34 +37,32 @@ interface TransferAssignation {
 }
 
 @Component({
-  standalone: true,
-  templateUrl: './transfer-assignation.dialog.html',
-  styleUrls: ['./transfer-assignation.dialog.scss'],
-  imports: [
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    NgxMaskDirective,
-    MatDialogModule,
-    MatButtonModule,
-    MatChipsModule,
-    TranslateModule,
-    MatAutocompleteModule,
-    MatIconModule,
-    OverlaySpinnerComponent,
-    IfStatusLoadingDirective,
-    IfStatusErrorDirective,
-    IfStatusSuccessDirective,
-    TranslationPipe,
-    FormatNihdiPipe,
-    NgIf,
-    NgFor,
-    AsyncPipe,
-    ErrorCardComponent
-  ],
-  providers: [
-    provideNgxMask()
-  ]
+    templateUrl: './transfer-assignation.dialog.html',
+    styleUrls: ['./transfer-assignation.dialog.scss'],
+    imports: [
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        NgxMaskDirective,
+        MatDialogModule,
+        MatButtonModule,
+        MatChipsModule,
+        TranslateModule,
+        MatAutocompleteModule,
+        MatIconModule,
+        OverlaySpinnerComponent,
+        IfStatusLoadingDirective,
+        IfStatusSuccessDirective,
+        TranslationPipe,
+        FormatNihdiPipe,
+        NgIf,
+        NgFor,
+        AsyncPipe,
+        ErrorCardComponent
+    ],
+    providers: [
+        provideNgxMask()
+    ]
 })
 export class TransferAssignationDialog extends BaseDialog implements OnInit {
 

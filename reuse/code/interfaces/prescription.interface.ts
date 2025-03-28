@@ -102,3 +102,11 @@ export interface SearchPrescriptionCriteria {
 export interface ProposalApproveResponse {
   prescriptionId?: string;
 }
+
+export interface CreatePrescriptionInitialValues {
+  intent: string;
+  initialPrescriptionType?: string;
+  initialPrescription?: ReadPrescription;
+  initialModelId?: string;
+  extend?: boolean;
+}

@@ -18,18 +18,17 @@ interface CancelPrescriptionDialogData {
 }
 
 @Component({
-  standalone: true,
-  templateUrl: './cancel-prescription.dialog.html',
-  styleUrls: ['./cancel-prescription.dialog.scss'],
-  imports: [
-    TranslateModule,
-    MatDialogModule,
-    MatButtonModule,
-    OverlaySpinnerComponent,
-    TemplateNamePipe,
-    NgIf,
-    ErrorCardComponent
-  ]
+    templateUrl: './cancel-prescription.dialog.html',
+    styleUrls: ['./cancel-prescription.dialog.scss'],
+    imports: [
+        TranslateModule,
+        MatDialogModule,
+        MatButtonModule,
+        OverlaySpinnerComponent,
+        TemplateNamePipe,
+        NgIf,
+        ErrorCardComponent
+    ]
 })
 export class CancelPrescriptionDialog extends BaseDialog implements OnInit {
 

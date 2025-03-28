@@ -1,9 +1,8 @@
-import { defineConfig,splitVendorChunkPlugin } from "vite";
+import {defineConfig} from "vite";
 import path from 'path'
 
 
 export default defineConfig({
-  plugins: [splitVendorChunkPlugin()],
   root: "wc-list-prescriptions",
   build: {
     rollupOptions: {

@@ -1,5 +1,5 @@
 import {
-  Component, computed,
+  Component,
   EventEmitter,
   HostBinding,
   Input,
@@ -30,7 +30,7 @@ import { AccessMatrixState } from '@reuse/code/states/access-matrix.state';
 import { PrescriptionSummary, PrescriptionSummaryList } from '@reuse/code/interfaces/prescription-summary.interface';
 import { PseudoService } from '@reuse/code/services/pseudo.service';
 import { ProposalsState } from '@reuse/code/states/proposals.state';
-import {FormsModule} from "@angular/forms";
+import { FormsModule } from "@angular/forms";
 import {
   PrescriptionModelsTableComponent
 } from '@reuse/code/components/prescription-models-table/prescription-models-table.component';
@@ -45,25 +45,24 @@ interface ViewState {
 }
 
 @Component({
-  templateUrl: './list-prescriptions.component.html',
-  styleUrls: ['./list-prescriptions.component.scss'],
-  encapsulation: ViewEncapsulation.ShadowDom,
-  standalone: true,
-  imports: [
-    IfStatusErrorDirective,
-    ErrorCardComponent,
-    IfStatusSuccessDirective,
-    ActivePageComponent,
-    MatSelectModule,
-    MatOptionModule,
-    PrescriptionsTableComponent,
-    PaginatorComponent,
-    IfStatusLoadingDirective,
-    OverlaySpinnerComponent,
-    TranslateModule,
-    FormsModule,
-    PrescriptionModelsTableComponent
-  ]
+    templateUrl: './list-prescriptions.component.html',
+    styleUrls: ['./list-prescriptions.component.scss'],
+    encapsulation: ViewEncapsulation.ShadowDom,
+    imports: [
+        IfStatusErrorDirective,
+        ErrorCardComponent,
+        IfStatusSuccessDirective,
+        ActivePageComponent,
+        MatSelectModule,
+        MatOptionModule,
+        PrescriptionsTableComponent,
+        PaginatorComponent,
+        IfStatusLoadingDirective,
+        OverlaySpinnerComponent,
+        TranslateModule,
+        FormsModule,
+        PrescriptionModelsTableComponent
+    ]
 })
 export class ListPrescriptionsWebComponent implements OnChanges {
 

@@ -8,17 +8,16 @@ import { NgIf } from '@angular/common';
 import { OccurrenceTimingPipe } from '../../../pipes/occurrence-timing.pipe';
 
 @Component({
-  selector: 'evf-occurrence-timing-detail',
-  templateUrl: './occurrence-timing-detail.component.html',
-  styleUrls: ['./occurrence-timing-detail.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
-  imports: [
-    EvfFormDetailLayoutComponent,
-    EvfDetailLabelComponent,
-    NgIf,
-    OccurrenceTimingPipe
-  ]
+    selector: 'evf-occurrence-timing-detail',
+    templateUrl: './occurrence-timing-detail.component.html',
+    styleUrls: ['./occurrence-timing-detail.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        EvfFormDetailLayoutComponent,
+        EvfDetailLabelComponent,
+        NgIf,
+        OccurrenceTimingPipe
+    ]
 })
 export class OccurrenceTimingDetailComponent extends EvfBaseFormDetailComponent {
 }

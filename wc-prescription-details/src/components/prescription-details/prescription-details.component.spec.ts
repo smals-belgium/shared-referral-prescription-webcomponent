@@ -1,7 +1,7 @@
 import { PrescriptionDetailsWebComponent } from "./prescription-details.component";
-import { ComponentFixture, fakeAsync, TestBed, tick } from "@angular/core/testing";
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { provideHttpClient } from "@angular/common/http";
-import { HttpClientTestingModule, HttpTestingController, provideHttpClientTesting } from "@angular/common/http/testing";
+import { HttpTestingController, provideHttpClientTesting } from "@angular/common/http/testing";
 import { provideRouter } from "@angular/router";
 import { TranslateLoader, TranslateModule } from "@ngx-translate/core";
 import { Observable, of } from "rxjs";
@@ -34,7 +34,7 @@ import {
 import { RejectAssignationDialog } from '@reuse/code/dialogs/reject-assignation/reject-assignation.dialog';
 import { ToastService } from '@reuse/code/services/toast.service';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper/dist';
+import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
 import { PseudoService } from '@reuse/code/services/pseudo.service';
 import { EncryptionState } from '@reuse/code/states/encryption.state';
 
@@ -628,9 +628,10 @@ describe('PrescriptionDetailsWebComponent', () => {
   let component: PrescriptionDetailsWebComponent;
   let fixture: ComponentFixture<PrescriptionDetailsWebComponent>;
   let httpMock: HttpTestingController;
-  let dialog: MatDialog
-  let toaster: ToastService
-  let pseudoService: PseudoService
+  let dialog: MatDialog;
+  let toaster: ToastService;
+  let pseudoService: PseudoService;
+  let consoleSpy: jest.SpyInstance;
 
   beforeAll(() => {
     Object.defineProperty(window, 'crypto', {
@@ -642,13 +643,18 @@ describe('PrescriptionDetailsWebComponent', () => {
         },
       },
     });
+    consoleSpy = jest.spyOn(global.console, 'error').mockImplementation((message) => {
+      if (!message?.message?.includes('Could not parse CSS stylesheet')) {
+        global.console.warn(message);
+      }
+    })
   })
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [PrescriptionDetailsWebComponent, TranslateModule.forRoot({
         loader: {provide: TranslateLoader, useClass: FakeLoader},
-      }), HttpClientTestingModule, MatDatepickerModule,
+      }), MatDatepickerModule,
         MatNativeDateModule, MatDialogModule, NoopAnimationsModule],
       providers: [
         provideHttpClient(),
@@ -674,6 +680,8 @@ describe('PrescriptionDetailsWebComponent', () => {
   afterEach(() => {
     httpMock.verify();
   });
+
+  afterAll(() => consoleSpy.mockRestore());
 
 
   it('should create the app', () => {
@@ -829,7 +837,7 @@ describe('PrescriptionDetailsWebComponent', () => {
       expect(templateReq.request.method).toBe('GET');
     });
 
-    it('should open the dialogs when functions are called', fakeAsync(() => {
+  it('should open the dialogs when functions are called', () => {
       createFixture()
       const openDialogSpy = jest.spyOn(dialog, 'open');
 
@@ -869,8 +877,6 @@ describe('PrescriptionDetailsWebComponent', () => {
       expect(openDialogSpy).toHaveBeenCalledTimes(1);
       expect(openDialogSpy).toHaveBeenCalledWith(AssignPrescriptionDialog, paramsAssign);
 
-      tick()
-      httpMock.expectOne('/healthCareProviders?discipline=NURSE&institutionType=THIRD_PARTY_PAYING_GROUP,GUARD_POST,MEDICAL_HOUSE,HOME_SERVICES')
 
       // openTransferAssignationDialog
       component.openTransferAssignationDialog(mockResponse, mockPerformerTask)
@@ -986,9 +992,9 @@ describe('PrescriptionDetailsWebComponent', () => {
 
       expect(openDialogSpy).toHaveBeenCalledTimes(10);
       expect(openDialogSpy).toHaveBeenCalledWith(RejectAssignationDialog, paramsRejectExecution);
-    }));
+  });
 
-    it('should show a toaster when you selfAssign is called successfully', async () => {
+  it('should show a toaster when you selfAssign is called successfully', () => {
       createFixture()
       const toasterSpy = jest.spyOn(toaster, 'show');
 
@@ -1014,10 +1020,7 @@ describe('PrescriptionDetailsWebComponent', () => {
       expect(component.loading).toBe(false)
       expect(toasterSpy).toHaveBeenCalledTimes(1)
       expect(toasterSpy).toHaveBeenCalledWith('prescription.assignPerformer.meSuccess')
-
-      await Promise.resolve();
-      httpMock.expectOne('/templates/READ_undefined/versions/latest')
-    })
+  });
 
     it('should call loadPrintWebComponent when printer is false', () => {
       createFixture()

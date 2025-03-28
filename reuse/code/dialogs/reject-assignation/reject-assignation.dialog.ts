@@ -19,18 +19,17 @@ interface RejectAssignationDialogData {
 }
 
 @Component({
-  standalone: true,
-  templateUrl: './reject-assignation.dialog.html',
-  styleUrls: ['./reject-assignation.dialog.scss'],
-  imports: [
-    TranslateModule,
-    MatDialogModule,
-    MatButtonModule,
-    OverlaySpinnerComponent,
-    TemplateNamePipe,
-    NgIf,
-    ErrorCardComponent
-  ]
+    templateUrl: './reject-assignation.dialog.html',
+    styleUrls: ['./reject-assignation.dialog.scss'],
+    imports: [
+        TranslateModule,
+        MatDialogModule,
+        MatButtonModule,
+        OverlaySpinnerComponent,
+        TemplateNamePipe,
+        NgIf,
+        ErrorCardComponent
+    ]
 })
 export class RejectAssignationDialog extends BaseDialog implements OnInit {
 
