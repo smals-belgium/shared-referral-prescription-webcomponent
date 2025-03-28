@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { AbstractControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { AsyncPipe, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslationPipe } from '../../pipes/translation.pipe';
 import { combineLatestWith, Observable, startWith } from 'rxjs';
@@ -16,23 +16,20 @@ import { EvfTemplate } from '../../interfaces';
 import { PrescriptionModel } from '../../interfaces/prescription-modal.inteface';
 
 @Component({
-  standalone: true,
-  selector: 'app-select-prescription-type',
-  templateUrl: './select-prescription-type.component.html',
-  styleUrls: ['./select-prescription-type.component.scss'],
-  imports: [
-    MatAutocompleteModule,
-    MatInputModule,
-    MatIconModule,
-    MatButtonModule,
-    TranslateModule,
-    TranslationPipe,
-    ReactiveFormsModule,
-    HighlightFilterPipe,
-    NgFor,
-    NgIf,
-    AsyncPipe
-  ]
+    selector: 'app-select-prescription-type',
+    templateUrl: './select-prescription-type.component.html',
+    styleUrls: ['./select-prescription-type.component.scss'],
+    imports: [
+      MatAutocompleteModule,
+      MatInputModule,
+      MatIconModule,
+      MatButtonModule,
+      TranslateModule,
+      TranslationPipe,
+      ReactiveFormsModule,
+      HighlightFilterPipe,
+      AsyncPipe,
+    ]
 })
 export class SelectPrescriptionTypeComponent implements OnChanges {
 
@@ -93,7 +90,7 @@ export class SelectPrescriptionTypeComponent implements OnChanges {
   }
 
   private setupAutocompleteOptions(): void {
-    const { formGroup, templates, models, evfCurrentLang: currentLang } = this;
+    const {formGroup, models, evfCurrentLang: currentLang} = this;
 
     this.categoryOptions$ = this.setupFilteredOptions(
       formGroup.get('category')!,

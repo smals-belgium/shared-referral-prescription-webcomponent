@@ -1,10 +1,10 @@
-import {defineConfig, splitVendorChunkPlugin} from "vite";
-import { viteStaticCopy } from 'vite-plugin-static-copy'
+import {defineConfig} from "vite";
+import {viteStaticCopy} from 'vite-plugin-static-copy'
 import path from 'path'
 
 
 export default defineConfig({
-  plugins: [splitVendorChunkPlugin(),
+  plugins: [
     viteStaticCopy({
       targets: [
         {

@@ -8,32 +8,29 @@ import { MatInputModule } from '@angular/material/input';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgIf } from '@angular/common';
 import { DatePipe } from '../../pipes/date.pipe';
-import { TranslationPipe } from '../../pipes/translation.pipe';
 import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overlay-spinner.component';
 import { ToastService } from '../../services/toast.service';
-import { PerformerTask, ReadPrescription, PrescriptionExecutionFinish } from '../../interfaces';
+import { PerformerTask, PrescriptionExecutionFinish, ReadPrescription } from '../../interfaces';
 import { PrescriptionState } from '../../states/prescription.state';
 import { v4 as uuidv4 } from 'uuid';
 import { ErrorCardComponent } from '../../components/error-card/error-card.component';
 import { BaseDialog } from '../base.dialog';
 
 @Component({
-  standalone: true,
-  templateUrl: 'finish-execution-prescription.dialog.html',
-  styleUrls: ['finish-execution-prescription.dialog.scss'],
-  imports: [
-    ReactiveFormsModule,
-    TranslateModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatDatepickerModule,
-    MatInputModule,
-    OverlaySpinnerComponent,
-    TranslationPipe,
-    DatePipe,
-    NgIf,
-    ErrorCardComponent
-  ]
+    templateUrl: 'finish-execution-prescription.dialog.html',
+    styleUrls: ['finish-execution-prescription.dialog.scss'],
+    imports: [
+        ReactiveFormsModule,
+        TranslateModule,
+        MatDialogModule,
+        MatButtonModule,
+        MatDatepickerModule,
+        MatInputModule,
+        OverlaySpinnerComponent,
+        DatePipe,
+        NgIf,
+        ErrorCardComponent
+    ]
 })
 export class FinishExecutionPrescriptionDialog extends BaseDialog implements OnInit {
 

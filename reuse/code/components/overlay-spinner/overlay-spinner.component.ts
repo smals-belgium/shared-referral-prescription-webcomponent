@@ -3,15 +3,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {TranslateModule} from "@ngx-translate/core";
 
 @Component({
-  standalone: true,
-  selector: 'app-overlay-spinner',
-  imports: [
-    MatProgressSpinnerModule,
-    TranslateModule
-  ],
-  template: `
+    selector: 'app-overlay-spinner',
+    imports: [
+        MatProgressSpinnerModule,
+        TranslateModule
+    ],
+    template: `
     <mat-progress-spinner color="primary" mode="indeterminate" diameter="75" [attr.aria-label]="'common.ariaLabel.loading' | translate"></mat-progress-spinner>`,
-  styles: [`
+    styles: [`
     :host {
       display: flex;
       min-width: 150px;

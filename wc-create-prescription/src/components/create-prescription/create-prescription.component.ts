@@ -6,12 +6,12 @@ import {
   Inject,
   Input,
   OnChanges,
-  OnInit,
   Output,
   Renderer2,
   Signal,
   signal,
-  SimpleChanges, ViewEncapsulation
+  SimpleChanges,
+  ViewEncapsulation
 } from '@angular/core';
 import { FormTemplate } from '@smals/vas-evaluation-form-ui-core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -26,7 +26,14 @@ import {
   CancelCreationDialogData,
   CancelCreationDialogResult
 } from '@reuse/code/dialogs/cancel-creation/cancel-creation.dialog';
-import { CreatePrescriptionRequest, DataState, LoadingStatus, ReadPrescription, Token } from '@reuse/code/interfaces';
+import {
+  CreatePrescriptionInitialValues,
+  CreatePrescriptionRequest,
+  DataState,
+  LoadingStatus,
+  ReadPrescription,
+  Token
+} from '@reuse/code/interfaces';
 import {
   CreateMultiplePrescriptionsComponent
 } from '@reuse/code/components/create-multiple-prescriptions/create-multiple-prescriptions.component';
@@ -39,7 +46,7 @@ import {
 import { ConfirmDialog, ConfirmDialogData } from '@reuse/code/dialogs/confirm/confirm.dialog';
 import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
 import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
-import { AsyncPipe, DOCUMENT, NgIf } from '@angular/common';
+import { DOCUMENT, NgIf } from '@angular/common';
 import { PseudoService } from '@reuse/code/services/pseudo.service';
 import { AccessMatrixState } from '@reuse/code/states/access-matrix.state';
 import { TemplatesState } from '@reuse/code/states/templates.state';
@@ -57,21 +64,21 @@ import { CreatePrescriptionForm } from '@reuse/code/interfaces/create-prescripti
 import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
 
 @Component({
-  templateUrl: './create-prescription.component.html',
-  styleUrls: ['./create-prescription.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
-  encapsulation: ViewEncapsulation.ShadowDom,
-  imports: [
-    NgIf,
-    IfStatusSuccessDirective,
-    CreateMultiplePrescriptionsComponent,
-    OverlaySpinnerComponent,
-    TranslateModule,
-    CreatePrescriptionModelComponent
-  ]
+    templateUrl: './create-prescription.component.html',
+    styleUrls: ['./create-prescription.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    encapsulation: ViewEncapsulation.ShadowDom,
+    imports: [
+        NgIf,
+        IfStatusSuccessDirective,
+        CreateMultiplePrescriptionsComponent,
+        OverlaySpinnerComponent,
+        TranslateModule,
+        CreatePrescriptionModelComponent
+    ]
 })
-export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
+export class CreatePrescriptionWebComponent implements OnChanges {
 
   private trackId = 0;
 
@@ -80,7 +87,6 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
   loading = signal(false);
   cryptoKey: CryptoKey | undefined;
   pseudomizedKey: string | undefined;
-  generatedUUID = '';
 
   errorCard: ErrorCard = {
     show: false,
@@ -90,9 +96,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
 
   @HostBinding('attr.lang')
   @Input() lang = 'fr-BE';
-  @Input() initialPrescriptionType?: string;
-  @Input() initialPrescription?: ReadPrescription;
-  @Input() initialModelId?: string;
+  @Input() initialValues?: CreatePrescriptionInitialValues;
   @Input() patientSsin?: string;
   @Input() getToken!: (targetClientId?: string) => Token;
   @Input() intent!: string;
@@ -124,10 +128,6 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
     this.translate.setDefaultLang('fr-BE');
     this.translate.use('fr-BE')
     this.loadWebComponents();
-  }
-
-  ngOnInit() {
-    this.generatedUUID = uuidv4();
   }
 
   private initializeEncryptionKey(): Observable<void> {
@@ -171,23 +171,38 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['getToken']) {
-      this.authService.init(this.getAccessToken, this.getAuthExchangeToken);
-      this.accessMatrixStateService.loadAccessMatrix();
-      this.templatesStateService.loadTemplates();
+      this.handleTokenChange();
     }
+
     if (changes['lang']) {
-      this.dateAdapter.setLocale(this.lang);
-      this.translate.use(this.lang!);
+      this.handleLanguageChange();
     }
+
     if (changes['patientSsin'] && this.patientSsin) {
       this.patientStateService.loadPatient(this.patientSsin);
     }
-    if (changes['initialPrescriptionType']?.firstChange && this.initialPrescriptionType) {
-      if(this.initialModelId) {
-        this.findModelById(this.initialPrescriptionType, this.initialModelId)
-      } else {
-        this.addPrescriptionForm(this.initialPrescriptionType, this.initialPrescription);
-      }
+
+    if (changes['initialValues'] && this.initialValues) {
+      this.handlePrescriptionChanges(this.initialValues);
+    }
+  }
+
+  private handleTokenChange(): void {
+    this.authService.init(this.getAccessToken, this.getAuthExchangeToken);
+    this.accessMatrixStateService.loadAccessMatrix();
+    this.templatesStateService.loadTemplates();
+  }
+
+  private handleLanguageChange(): void {
+    this.dateAdapter.setLocale(this.lang);
+    this.translate.use(this.lang!);
+  }
+
+  private handlePrescriptionChanges(initialValues: CreatePrescriptionInitialValues): void {
+    if (initialValues.initialModelId) {
+      this.findModelById(initialValues.initialPrescriptionType!, initialValues.initialModelId)
+    } else {
+      this.addPrescriptionForm(initialValues.initialPrescriptionType!, initialValues.initialPrescription);
     }
   }
 
@@ -230,6 +245,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
     this.prescriptionForms.update((prescriptionForms) => [
       ...prescriptionForms,
       {
+        generatedUUID: uuidv4(),
         trackId: this.trackId++,
         templateCode: templateCode,
         formTemplateState$: this.getPrescriptionTemplateStream(templateCode),
@@ -238,13 +254,12 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
     ]);
   }
 
-
-
   private addPrescriptionFormByModel(templateCode: string, model: PrescriptionModel) {
     this.templateVersionsStateService.loadTemplateVersion(templateCode);
     this.prescriptionForms.update((prescriptionForms) => [
       ...prescriptionForms,
       {
+        generatedUUID: uuidv4(),
         trackId: this.trackId++,
         templateCode: templateCode,
         formTemplateState$: this.getPrescriptionTemplateStream(templateCode),
@@ -257,7 +272,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
   }
 
   updateResponses(initialPrescription?: ReadPrescription) {
-    if(!this.extend || !initialPrescription?.responses) {
+    if (!this.initialValues?.extend || !initialPrescription?.responses) {
       return initialPrescription
     }
 
@@ -327,10 +342,10 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
             )
           ),
           switchMap(createPrescriptionRequest => {
-            if (this.intent === 'order') {
-              return this.prescriptionService.create(createPrescriptionRequest, this.generatedUUID);
+            if (this.initialValues?.intent.toLowerCase() === 'order') {
+              return this.prescriptionService.create(createPrescriptionRequest, prescriptionForm.generatedUUID);
             } else {
-              return this.proposalService.create(createPrescriptionRequest, this.generatedUUID);
+              return this.proposalService.create(createPrescriptionRequest, prescriptionForm.generatedUUID);
             }
           })
         )
@@ -338,7 +353,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
     ).subscribe({
       next: () => {
         this.closeErrorCard();
-        this.toastService.show(this.intent === 'order' ? 'prescription.create.success' : 'proposal.create.success');
+        this.toastService.show(this.initialValues?.intent.toLowerCase() === 'order' ? 'prescription.create.success' : 'proposal.create.success');
         this.prescriptionsCreated.emit();
       },
       error: err => {
@@ -389,8 +404,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
 
         return createPrescriptionRequest$.pipe(
           switchMap(createPrescriptionRequest => {
-            if (this.intent === 'order') {
-              return this.prescriptionService.create(createPrescriptionRequest, this.generatedUUID).pipe(
+            if (this.initialValues?.intent.toLowerCase() === 'order') {
+              return this.prescriptionService.create(createPrescriptionRequest, f.generatedUUID).pipe(
                 map(() => ({
                   trackId: f.trackId,
                   status: LoadingStatus.SUCCESS,
@@ -406,7 +421,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
                 })
               );
             } else {
-              return this.proposalService.create(createPrescriptionRequest, this.generatedUUID).pipe(
+              return this.proposalService.create(createPrescriptionRequest, f.generatedUUID).pipe(
                 map(() => ({
                   trackId: f.trackId,
                   status: LoadingStatus.SUCCESS,
@@ -484,10 +499,10 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
     const successCount = results.filter((r) => r.status === LoadingStatus.SUCCESS).length;
     const failedCount = results.filter((r) => r.status === LoadingStatus.ERROR).length;
     if (failedCount === 0) {
-      this.toastService.show(this.intent === 'order' ? 'prescription.create.allSuccess' : 'proposal.create.allSuccess', {interpolation: {count: successCount}});
+      this.toastService.show(this.initialValues?.intent.toLowerCase() === 'order' ? 'prescription.create.allSuccess' : 'proposal.create.allSuccess', {interpolation: {count: successCount}});
       this.prescriptionsCreated.emit();
     } else if (successCount === 0) {
-      if(this.intent == 'order') {
+      if (this.initialValues?.intent.toLowerCase() == 'order') {
         this.errorCard = {
           show: true,
           message: 'prescription.create.allFailed',
@@ -510,7 +525,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit {
       results.forEach((t, i) => console.error(i, t.error));
       this.loading.set(false);
     } else {
-      if(this.intent == 'order') {
+      if (this.initialValues?.intent.toLowerCase() == 'order') {
         this.errorCard = {
           show: true,
           message: 'prescription.create.someSuccessSomeFailed',

@@ -19,18 +19,17 @@ interface InterruptExecutionPrescriptionDialogData {
 }
 
 @Component({
-  standalone: true,
-  templateUrl: './interrupt-execution-prescription.dialog.html',
-  styleUrls: ['./interrupt-execution-prescription.dialog.scss'],
-  imports: [
-    TranslateModule,
-    MatDialogModule,
-    MatButtonModule,
-    OverlaySpinnerComponent,
-    TemplateNamePipe,
-    NgIf,
-    ErrorCardComponent
-  ]
+    templateUrl: './interrupt-execution-prescription.dialog.html',
+    styleUrls: ['./interrupt-execution-prescription.dialog.scss'],
+    imports: [
+        TranslateModule,
+        MatDialogModule,
+        MatButtonModule,
+        OverlaySpinnerComponent,
+        TemplateNamePipe,
+        NgIf,
+        ErrorCardComponent
+    ]
 })
 export class InterruptExecutionPrescriptionDialog extends BaseDialog implements OnInit {
 

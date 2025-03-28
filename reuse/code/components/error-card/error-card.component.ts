@@ -10,25 +10,22 @@ import {
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { NgIf } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatCard, MatCardActions, MatCardContent } from '@angular/material/card';
 
 @Component({
-  standalone: true,
-  selector: 'app-error-card',
-  templateUrl: './error-card.component.html',
-  styleUrls: ['./error-card.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    TranslateModule,
-    MatIconModule,
-    MatButtonModule,
-    NgIf,
-    MatCard,
-    MatCardContent,
-    MatCardActions
-  ]
+    selector: 'app-error-card',
+    templateUrl: './error-card.component.html',
+    styleUrls: ['./error-card.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        TranslateModule,
+        MatIconModule,
+        MatButtonModule,
+        MatCard,
+        MatCardContent,
+        MatCardActions
+    ]
 })
 export class ErrorCardComponent implements OnChanges {
 

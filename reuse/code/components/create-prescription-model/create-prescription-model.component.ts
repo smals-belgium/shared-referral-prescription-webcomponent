@@ -33,28 +33,27 @@ import { UniqueModelNameValidator } from '../../directives/unique-model-name.dir
 
 
 @Component({
-  selector: 'app-create-prescription-model',
-  templateUrl: './create-prescription-model.component.html',
-  styleUrls: ['./create-prescription-model.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [
-    ReactiveFormsModule,
-    MatIcon,
-    ErrorCardComponent,
-    SuccessCardComponent,
-    OverlaySpinnerComponent,
-    MatFormField,
-    MatInput,
-    MatButton,
-    MatLabel,
-    TranslateModule,
-    TemplateNamePipe,
-    IfStatusSuccessDirective,
-    IfStatusErrorDirective,
-    IfStatusLoadingDirective
-  ]
+    selector: 'app-create-prescription-model',
+    templateUrl: './create-prescription-model.component.html',
+    styleUrls: ['./create-prescription-model.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    imports: [
+        ReactiveFormsModule,
+        MatIcon,
+        ErrorCardComponent,
+        SuccessCardComponent,
+        OverlaySpinnerComponent,
+        MatFormField,
+        MatInput,
+        MatButton,
+        MatLabel,
+        TranslateModule,
+        TemplateNamePipe,
+        IfStatusSuccessDirective,
+        IfStatusErrorDirective,
+        IfStatusLoadingDirective
+    ]
 })
 export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
 

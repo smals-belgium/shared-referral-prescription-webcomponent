@@ -23,16 +23,15 @@ import { DateAdapter } from '@angular/material/core';
 import { DateTime } from 'luxon';
 
 @Component({
-  templateUrl: './evf-form.component.html',
-  styleUrls: ['./evf-form.component.scss'],
-  encapsulation: ViewEncapsulation.ShadowDom,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
-  imports: [
-    EvfDynamicFormComponent,
-    NgTemplateOutlet,
-    NgIf
-  ]
+    templateUrl: './evf-form.component.html',
+    styleUrls: ['./evf-form.component.scss'],
+    encapsulation: ViewEncapsulation.ShadowDom,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        EvfDynamicFormComponent,
+        NgTemplateOutlet,
+        NgIf
+    ]
 })
 export class EvfFormWebComponent implements OnChanges, OnInit {
 

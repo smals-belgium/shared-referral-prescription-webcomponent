@@ -11,7 +11,7 @@ import { provideRouter } from '@angular/router';
 import { importProvidersFrom, SimpleChange, SimpleChanges } from '@angular/core';
 import { ConfigurationService } from '@reuse/code/services/configuration.service';
 import { AuthService } from '@reuse/code/services/auth.service';
-import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper/dist';
+import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
 import { ListPrescriptionsWebComponent } from './list-prescriptions.component';
 import { Observable, of } from 'rxjs';
 import { LoadingStatus, PrescriptionModelRequest } from '@reuse/code/interfaces';
@@ -82,6 +82,7 @@ describe('ListPrescriptionsWebComponent', () => {
     httpMock = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(ListPrescriptionsWebComponent);
     component = fixture.componentInstance;
+    component.intent = 'order';
     fixture.detectChanges();
   })
 
@@ -114,20 +115,39 @@ describe('ListPrescriptionsWebComponent', () => {
     const {debugElement} = fixture;
     let prescriptionTable = debugElement.query(By.css('app-prescriptions-table'));
     expect(prescriptionTable).toBeNull();
-
     component.intent = 'order';
-    component.viewStatePrescriptions$().data = {
-      prescriptions: {} as PrescriptionSummaryList,
-      templates: [],
-      proposals: {} as PrescriptionSummaryList,
-      models: {} as PrescriptionModelRequest
+    component.patientSsin = 'ssin';
+
+    const expectedState = {
+      data: {
+        prescriptions: {} as PrescriptionSummaryList,
+        templates: [],
+        proposals: {} as PrescriptionSummaryList,
+        models: {} as PrescriptionModelRequest
+      },
+      error: {},
+      params: {
+        prescriptions: {
+          criteria: {
+            patient: 'ssin',
+            performer: undefined,
+            requester: undefined,
+          },
+          page: 1,
+          pageSize: 10,
+        }
+      },
+      status: LoadingStatus.SUCCESS
     };
-    component.viewStatePrescriptions$().status = LoadingStatus.SUCCESS;
+
+    jest.spyOn(component, 'viewStatePrescriptions$').mockReturnValue(expectedState);
 
     fixture.detectChanges();
 
-    prescriptionTable = debugElement.query(By.css('app-prescriptions-table')).nativeElement;
+    prescriptionTable = debugElement.query(By.css('app-prescriptions-table'));
     expect(prescriptionTable).toBeTruthy();
+
+    expect(component.viewStatePrescriptions$()).toEqual(expectedState);
   });
 
   it('should call loadProposals if intent is proposal', () => {

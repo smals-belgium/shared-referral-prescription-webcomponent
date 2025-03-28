@@ -19,18 +19,17 @@ interface CancelExecutionPrescriptionDialogData {
 }
 
 @Component({
-  standalone: true,
-  templateUrl: './cancel-execution-prescription.dialog.html',
-  styleUrls: ['./cancel-execution-prescription.dialog.scss'],
-  imports: [
-    TranslateModule,
-    MatDialogModule,
-    MatButtonModule,
-    OverlaySpinnerComponent,
-    TemplateNamePipe,
-    NgIf,
-    ErrorCardComponent
-  ]
+    templateUrl: './cancel-execution-prescription.dialog.html',
+    styleUrls: ['./cancel-execution-prescription.dialog.scss'],
+    imports: [
+        TranslateModule,
+        MatDialogModule,
+        MatButtonModule,
+        OverlaySpinnerComponent,
+        TemplateNamePipe,
+        NgIf,
+        ErrorCardComponent
+    ]
 })
 export class CancelExecutionPrescriptionDialog implements OnInit {
 

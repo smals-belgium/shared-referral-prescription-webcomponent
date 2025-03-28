@@ -1,8 +1,8 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ConfigurationService } from '../services/configuration.service';
 import { PseudoClient } from './pseudo.client';
-import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper/dist';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 const env: Record<string, any> = {
   enablePseudo: true,
@@ -19,11 +19,14 @@ describe('PseudoClient', () => {
 
     beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [HttpClientTestingModule],
-        providers: [
-          PseudoClient,
-          { provide: ConfigurationService, useValue: mockConfigService }],
-      });
+    imports: [],
+    providers: [
+        PseudoClient,
+        { provide: ConfigurationService, useValue: mockConfigService },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
       service = TestBed.inject(PseudoClient);
       httpMock = TestBed.inject(HttpTestingController);
     });

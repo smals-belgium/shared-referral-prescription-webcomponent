@@ -16,23 +16,22 @@ import { ErrorCardComponent } from '../../components/error-card/error-card.compo
 import { BaseDialog } from '../base.dialog';
 
 @Component({
-  standalone: true,
-  imports: [
-    OverlaySpinnerComponent,
-    MatDialogModule,
-    TranslateModule,
-    MatButton,
-    ReactiveFormsModule,
-    MatFormField,
-    MatInput,
-    MatError,
-    MatLabel,
-    FormsModule,
-    NgIf,
-    ErrorCardComponent
-  ],
-  templateUrl: './reject-proposal.dialog.html',
-  styleUrl: './reject-proposal.dialog.scss'
+    imports: [
+        OverlaySpinnerComponent,
+        MatDialogModule,
+        TranslateModule,
+        MatButton,
+        ReactiveFormsModule,
+        MatFormField,
+        MatInput,
+        MatError,
+        MatLabel,
+        FormsModule,
+        NgIf,
+        ErrorCardComponent
+    ],
+    templateUrl: './reject-proposal.dialog.html',
+    styleUrl: './reject-proposal.dialog.scss'
 })
 export class RejectProposalDialog extends BaseDialog implements OnInit {
 
