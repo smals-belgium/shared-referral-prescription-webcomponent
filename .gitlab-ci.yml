@@ -15,6 +15,8 @@ stages:
   - 'test'
 
 test:
+  extends:
+    - .npm
   stage: test
   script:
     - echo "Running the install step"

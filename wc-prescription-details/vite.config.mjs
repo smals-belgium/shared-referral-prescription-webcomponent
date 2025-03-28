@@ -8,10 +8,6 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: './../dist/wc-prescription-details/browser/keycloak.js',
-          dest: './',
-        },
-        {
           src: './../dist/evf-form-details/build/evf-form-details.js',
           dest: './assets/evf-form-details',
         },

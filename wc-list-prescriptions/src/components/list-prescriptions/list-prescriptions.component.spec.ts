@@ -14,7 +14,7 @@ import { AuthService } from '@reuse/code/services/auth.service';
 import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper/dist';
 import { ListPrescriptionsWebComponent } from './list-prescriptions.component';
 import { Observable, of } from 'rxjs';
-import { LoadingStatus } from '@reuse/code/interfaces';
+import { LoadingStatus, PrescriptionModelRequest } from '@reuse/code/interfaces';
 import { PrescriptionSummaryList } from '@reuse/code/interfaces/prescription-summary.interface';
 import { By } from '@angular/platform-browser';
 
@@ -119,7 +119,8 @@ describe('ListPrescriptionsWebComponent', () => {
     component.viewStatePrescriptions$().data = {
       prescriptions: {} as PrescriptionSummaryList,
       templates: [],
-      proposals: {} as PrescriptionSummaryList
+      proposals: {} as PrescriptionSummaryList,
+      models: {} as PrescriptionModelRequest
     };
     component.viewStatePrescriptions$().status = LoadingStatus.SUCCESS;
 

@@ -164,7 +164,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   @Input() prescriptionId!: string;
   @Input() patientSsin?: string;
   @Input() intent!: string;
-  @Input() getToken!: () => Promise<Token>;
+  @Input() getToken!: (targetClientId?: string) => Token;
   @Output() clickDuplicate = new EventEmitter<ReadPrescription>();
   @Output() clickExtend = new EventEmitter<ReadPrescription>();
   @Output() proposalApproved = new EventEmitter<{ prescriptionId: string }>();
@@ -374,19 +374,24 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     this.generatedUUID = uuidv4();
   }
 
-  getAccessToken = async () => {
-    const e = await this.getToken();
+  getAccessToken = () => {
+    const e = this.getToken();
     return e.accessToken;
   }
 
-  getIdToken = async () => {
-    const e = await this.getToken();
+  getIdToken = () => {
+    const e = this.getToken();
     return e.idToken;
+  }
+
+  getAuthExchangeToken = (targetClientId?: string) => {
+    const e = this.getToken(targetClientId);
+    return e.getAuthExchangeToken;
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['getToken']) {
-      this.authService.init(this.getAccessToken, this.getIdToken);
+      this.authService.init(this.getAccessToken, this.getAuthExchangeToken, this.getIdToken);
       this.accessMatrixStateService.loadAccessMatrix();
       this.templatesStateService.loadTemplates();
     }

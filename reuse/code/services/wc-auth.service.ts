@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, first, from, mergeMap, Observable, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, first, from, mergeMap, Observable, of, switchMap } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Buffer } from 'buffer';
-import { AuthExchangeService } from './auth-exchange.service';
-import { ConfigurationService } from './configuration.service';
 import { AuthService } from './auth.service';
 import {Discipline, IdToken} from "../interfaces";
 
@@ -11,51 +9,36 @@ import {Discipline, IdToken} from "../interfaces";
 export class WcAuthService extends AuthService {
 
   private readonly ready$ = new BehaviorSubject<boolean>(false);
-  private _getToken!: () => Promise<string>;
-  private _getIdToken!: () => Promise<IdToken>;
+  private _getToken!: () => string;
+  private _getIdToken!: () => IdToken;
+  private _getAuthExchangeToken!: (targetClientId?: string) => Observable<string>;
 
   constructor(
-    private configService: ConfigurationService,
-    private authExchangeService: AuthExchangeService
   ) {
     super();
   }
 
-  override init(getToken: () => Promise<string>, getIdToken?: () => Promise<IdToken>): void {
+  override init(getToken: () => string, getAuthExchangeToken: (targetClientId?: string) => Observable<string>, getIdToken?: () => IdToken): void {
     this._getToken = getToken;
     if(getIdToken) {
       this._getIdToken = getIdToken;
     }
+    this._getAuthExchangeToken = getAuthExchangeToken;
     this.ready$.next(true);
-  }
-
-  private getToken(): Observable<string> {
-    return this.ready$.pipe(
-      first((ready) => ready),
-      switchMap(() => this._getToken())
-    );
   }
 
   private getIdToken(): Observable<IdToken | string> {
     return this.ready$.pipe(
       first((ready) => ready),
-      switchMap(() => typeof this._getIdToken === "function" ? this._getIdToken() : this._getToken())
+      switchMap(async () => typeof this._getIdToken === "function" ? this._getIdToken() : this._getToken())
     );
   }
 
   override getAccessToken(targetClientId?: string): Observable<string> {
-    const keycloakConfig = this.configService.getEnvironmentVariable('keycloak');
-    if (targetClientId) {
-      const config = {
-        authority: keycloakConfig.url + '/realms/' + keycloakConfig.realm,
-        clientId: keycloakConfig.clientId
-      }
-      return from(this.getToken()).pipe(
-        mergeMap((token) => this.authExchangeService.exchangeAccessToken(config, token, targetClientId))
-      );
-    } else {
-      return from(this.getToken());
-    }
+    return this.ready$.pipe(
+      first((ready) => ready),
+      switchMap( () => this._getAuthExchangeToken(targetClientId))
+    );
   }
 
   override getClaims(): Observable<Record<string, any>> {
