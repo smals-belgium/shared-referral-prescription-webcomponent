@@ -17,7 +17,14 @@ import { CancelPrescriptionDialog } from "@reuse/code/dialogs/cancel-prescriptio
 import {
   StartExecutionPrescriptionDialog
 } from "@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog";
-import { LoadingStatus, PerformerTask, ReadPrescription, Status, TaskStatus } from "@reuse/code/interfaces";
+import {
+  Description,
+  LoadingStatus,
+  PerformerTask,
+  ReadPrescription,
+  Status,
+  TaskStatus
+} from "@reuse/code/interfaces";
 import { TransferAssignationDialog } from '@reuse/code/dialogs/transfer-assignation/transfer-assignation.dialog';
 import {
   RestartExecutionPrescriptionDialog
@@ -484,21 +491,54 @@ const mockTemplate = {
 }
 
 const mockPerformerTask: PerformerTask = {
-  "status": TaskStatus.READY,
-  "id": "345",
-  "executionPeriod": {
-    "start": undefined,
-    "end": undefined
+  status: TaskStatus.READY,
+  id: "345",
+  executionPeriod: {
+    start: undefined,
+    end: undefined
   },
-  "careGiverSsin": "85011300242",
-  "careGiver": {
-    "nihdi": "45369373428",
-    "address": {},
-    "ssin": "85011300242",
-    "firstName": "Ann",
-    "lastName": "Verhofstadt",
-    "profession": "NURSE",
-    "type": "Professional"
+  careGiverSsin: "85011300242",
+  careGiver: {
+    address: {
+      municipality: {
+        municipalityDe: "",
+        municipalityFr: "",
+        municipalityNl: "",
+      },
+      zipCode: "",
+      street: {
+        streetDe: "",
+        streetFr: "",
+        streetNl: "",
+      },
+      houseNumber: "",
+      box: "",
+    },
+    id: {
+      ssin: "85011300242",
+      profession: "NURSE",
+      qualificationCode: "940"
+    },
+    healthcarePerson: {
+      lastName: "Ann",
+      firstName: "Verhofstadt",
+    },
+    healthcareQualification: {
+      descriptionFr: "",
+      descriptionNl: "",
+      descriptionDe: ""
+    },
+    healthcareStatus: {
+      code: "",
+      descriptionFr: "",
+      descriptionNl: "",
+      descriptionDe: ""
+    },
+    type: 'Professional',
+    licenseToPractice: true,
+    subscriptionEndDate: "12-03-2029",
+    visaActive: true,
+    visaEndDate: ""
   }
 }
 

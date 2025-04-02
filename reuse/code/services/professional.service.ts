@@ -19,9 +19,4 @@ export class ProfessionalService {
     return this.http.get<Professional[]>(`/professionals`, {params});
   }
 
-  findAllBySsin(ssins: string[]): Observable<Professional[]> {
-    const params = ssins.reduce((acc, cur) => acc.append('ssin', cur), new HttpParams());
-    return this.http.get<Professional[]>(`/professionals`, {params});
-  }
-
 }

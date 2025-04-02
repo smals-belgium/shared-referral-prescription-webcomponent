@@ -82,7 +82,9 @@ describe('CanCancelPrescriptionOrProposal', () => {
 
     const prescription = {
       status: Status.OPEN,
-      requester: { ssin: requester.ssin },
+      requester: {
+        id: { ssin: requester.ssin }
+      }
     } as ReadPrescription;
 
     const result = pipe.transform(prescription, patient.ssin, currentUser);
@@ -96,7 +98,9 @@ describe('CanCancelPrescriptionOrProposal', () => {
 
     const prescription = {
       status: Status.OPEN,
-      requester: { ssin: requester.ssin },
+      requester: {
+        id: { ssin: requester.ssin }
+      }
     } as ReadPrescription;
 
     const result = pipe.transform(prescription, patient.ssin, nurse);
@@ -110,7 +114,9 @@ describe('CanCancelPrescriptionOrProposal', () => {
       intent: 'prescription',
       status: Status.OPEN,
       templateCode: 'template1',
-      requester: { ssin: requester.ssin },
+      requester: {
+        id: { ssin: requester.ssin }
+      }
     } as ReadPrescription;
 
     const result = pipe.transform(prescription, patient.ssin, requester);

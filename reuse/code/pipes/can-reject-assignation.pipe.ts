@@ -31,7 +31,7 @@ export class CanRejectAssignationPipe {
     return this.hasAssignPermissions(prescription)
       && prescription.status != null && [Status.OPEN, Status.PENDING, Status.IN_PROGRESS].includes(prescription.status)
       && task?.status === TaskStatus.READY
-      && this.checkIfCurrentUserIsPatientOrAssignedCaregiver(currentUser, patientSsin, task.careGiver.ssin);
+      && this.checkIfCurrentUserIsPatientOrAssignedCaregiver(currentUser, patientSsin, task.careGiver.id.ssin);
   }
 
   private checkIfCurrentUserIsPatientOrAssignedCaregiver(currentUser: UserInfo, patientSsin: string, caregiverSsin?: string): boolean {

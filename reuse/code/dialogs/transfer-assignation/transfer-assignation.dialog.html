@@ -109,7 +109,7 @@
     </div>
   </div>
   <div mat-dialog-actions>
-    <button data-cy="prescription-assign-search-button" mat-raised-button
+    <button data-cy="prescription-assign-search-button" mat-raised-button type="submit"
             color="accent">{{ 'common.search' | translate }}
     </button>
     <button data-cy="prescription-assign-cancel-button" mat-flat-button
@@ -128,19 +128,21 @@
       <table>
         <tr class="result-item"
              *ngFor="let professional of professionalState.data!"
-             [attr.data-cy]="'result-professional-' + professional.nihdi"
+             [attr.data-cy]="'result-professional-' + (professional.nihii8 || professional.nihii11) + professional.id.qualificationCode"
              (click)="assign(professional)"
              (keydown.enter)="assign(professional)"
              tabindex="0"
         >
-          <td data-cy="professional-name"><b>{{professional.firstName}} {{professional.lastName}}</b></td>
-          <td data-cy="professional-nihdi" *ngIf="professional.nihdi">{{professional.nihdi | formatNihdi}}</td>
-          <ng-container *ngIf="professional.address">
-            <td data-cy="professional-address-street">{{professional.address!.streetName || ''}} {{professional.address!.houseNumber || ''}}</td>
-            <td data-cy="professional-address-postalCode">{{professional.address!.zipCode || ''}}</td>
-            <td data-cy="professional-address-city">{{professional.address!.city || ''}}</td>
-          </ng-container>
-        </tr>
+          <td data-cy="professional-name"><b>{{professional.healthcarePerson.firstName}} {{professional.healthcarePerson.lastName}}</b></td>
+          <td data-cy="professional-nihdi" *ngIf="professional.nihii8">{{professional.nihii8 | formatNihdi: professional.id.qualificationCode}}</td>
+          <td data-cy="professional-nihdi" *ngIf="professional.nihii11">{{ professional.nihii11 | formatNihdi: professional.id.qualificationCode}}</td>
+
+          @if(professional.address) {
+            <td data-cy="professional-address-street">{{ professional.address.street | formatMultilingualObject: 'street': currentLang }} {{professional.address.houseNumber || ''}} {{professional.address.box || ''}}</td>
+            <td data-cy="professional-address-postalCode">{{professional.address.zipCode || ''}}</td>
+            <td data-cy="professional-address-city">{{ professional.address.municipality | formatMultilingualObject: 'municipality': currentLang}}</td>
+          }
+      </tr>
       </table>
     </div>
   </ng-container>

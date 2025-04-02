@@ -64,9 +64,14 @@
                 <div class="info-item">
                   <div data-cy="prescription-author-label">{{'prescription.author' | translate}}</div>
                   <div data-cy="prescription-author">
-                    {{prescription.requester?.firstName}} {{prescription.requester?.lastName}}
-                    <ng-container *ngIf=" prescription.requester?.profession">({{'common.professions.' + prescription.requester?.profession | translate }})<br></ng-container>
-                    {{prescription.requester?.nihdi | formatNihdi}}
+                    {{prescription.requester?.healthcarePerson?.firstName}} {{prescription.requester?.healthcarePerson?.lastName}}
+                    <ng-container *ngIf="prescription.requester?.id?.profession">({{'common.professions.' + prescription.requester?.id?.profession | translate }})<br></ng-container>
+                    <ng-container *ngIf="prescription.requester?.nihii8">
+                      {{prescription.requester!.nihii8 | formatNihdi: prescription.requester?.id?.qualificationCode }}
+                    </ng-container>
+                    <ng-container *ngIf="prescription.requester?.nihii11">
+                      {{prescription.requester!.nihii11 | formatNihdi: prescription.requester?.id?.qualificationCode}}
+                    </ng-container>
                   </div>
                 </div>
               </div>
@@ -165,9 +170,9 @@
               <div class="caregiver-list" *ngIf="(prescription.performerTasks && prescription.performerTasks.length > 0) || (prescription.organizationTasks && prescription.organizationTasks.length > 0)" data-cy="prescription-assign-to-list">
                 <ng-container *ngFor="let task of prescription.organizationTasks">
                   <div class="organization-row " data-cy="prescription-assign-to">
-                    <div class="caregiver-name"><b>{{task.organization.name}}</b>
-                      <ng-container *ngIf="task.organization.nihdi">
-                        ({{task.organization.nihdi! | formatNihdi}})
+                    <div class="caregiver-name"><b>{{task.organization.organizationName | formatMultilingualObject: 'name': currentLang}}</b>
+                      <ng-container *ngIf="task.organization.nihii8 || task.organization.nihii11">
+                        ({{ task.organization.nihii8 ?? task.organization.nihii11 | formatNihdi: task.organization.qualificationCode }})
                       </ng-container><br>
                       <ng-container *ngIf="task.executionPeriod?.start">
                         <span style="font-size: 14px; color:#8f8f8f">{{task.executionPeriod?.start! | date: 'dd/MM/yyyy'}} - </span>
@@ -180,9 +185,12 @@
                       <ng-container *ngFor="let performertask of task.performerTasks">
                         <div class="organization-caregiver-row">
                           <div class="organization-caregiver-name-row" data-cy="prescription-assign-to">
-                            <div class="caregiver-name">{{performertask.careGiver.firstName}} {{performertask.careGiver.lastName}}
-                              <ng-container *ngIf="performertask.careGiver.nihdi">
-                                ({{performertask.careGiver.nihdi! | formatNihdi}})
+                            <div class="caregiver-name">{{performertask.careGiver.healthcarePerson.firstName}} {{performertask.careGiver.healthcarePerson.lastName}}
+                              <ng-container *ngIf="performertask.careGiver.nihii8">
+                                ({{performertask.careGiver.nihii8 | formatNihdi: performertask.careGiver.id.qualificationCode}})
+                              </ng-container><br>
+                              <ng-container *ngIf="performertask.careGiver.nihii11">
+                                ({{performertask.careGiver.nihii11 | formatNihdi: performertask.careGiver.id.qualificationCode}})
                               </ng-container><br>
                               <ng-container *ngIf="performertask.executionPeriod?.start">
                                 <span style="font-size: 14px; color:#8f8f8f">{{performertask.executionPeriod?.start! | date: 'dd/MM/yyyy'}} - </span>
@@ -266,9 +274,12 @@
                 <ng-container *ngFor="let task of prescription.performerTasks">
                   <div class="caregiver-row">
                     <div class="caregiver-name-row" data-cy="prescription-assign-to">
-                      <div class="caregiver-name"><b>{{task.careGiver.firstName}} {{task.careGiver.lastName}}</b>
-                        <ng-container *ngIf="task.careGiver.nihdi">
-                          ({{task.careGiver.nihdi! | formatNihdi}})
+                      <div class="caregiver-name"><b>{{task.careGiver.healthcarePerson.firstName}} {{task.careGiver.healthcarePerson.lastName}}</b>
+                        <ng-container *ngIf="task.careGiver.nihii8">
+                          ({{task.careGiver.nihii8 | formatNihdi: task.careGiver.id.qualificationCode}})
+                        </ng-container><br>
+                        <ng-container *ngIf="task.careGiver.nihii11">
+                          ({{task.careGiver.nihii11 | formatNihdi: task.careGiver.id.qualificationCode}})
                         </ng-container><br>
                         <ng-container *ngIf="task.executionPeriod?.start">
                           <span style="font-size: 14px; color:#8f8f8f">{{task.executionPeriod?.start! | date: 'dd/MM/yyyy'}} - </span>
@@ -361,8 +372,8 @@
                 <p>
         <span data-cy="proposal-date-label">{{
             'proposal.proposalInfoTitle' | translate: {
-              firstName: prescription.requester?.firstName,
-              lastName: prescription.requester?.lastName,
+              firstName: prescription.requester?.healthcarePerson?.firstName || '',
+              lastName: prescription.requester?.healthcarePerson?.lastName || '',
               date: $any(prescription.authoredOn) | date: 'D'
             }
           }}</span>

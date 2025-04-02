@@ -42,16 +42,18 @@ export class PrescriptionState extends BaseState<ReadPrescription> {
     if(healthcareProvider.type === 'Professional') {
       return this.prescriptionService
         .assignCaregiver(prescriptionId, referralTaskId, {
-          ssin: (healthcareProvider as Professional).ssin!,
-          role: (healthcareProvider as Professional).profession
+          ssin: (healthcareProvider as Professional).id!.ssin!,
+          role: (healthcareProvider as Professional).id!.profession!
         }, generatedUUID)
         .pipe(tap(() => this.loadPrescription(prescriptionId)));
     }
     else{
+      const ho = healthcareProvider as Organization
+      const nihdi = (ho.nihii8 ?? ho.nihii8) + ho.qualificationCode;
       return this.prescriptionService
         .assignOrganization(prescriptionId, referralTaskId, {
-          nihdi: (healthcareProvider as Organization).nihdi!,
-          institutionTypeCode: (healthcareProvider as Organization).institutionTypeCode!
+          nihdi: nihdi,
+          institutionTypeCode: ho.qualificationCode
         }, generatedUUID)
         .pipe(tap(() => this.loadPrescription(prescriptionId)));
     }
