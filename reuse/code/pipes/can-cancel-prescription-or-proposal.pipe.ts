@@ -31,7 +31,7 @@ export class CanCancelPrescriptionOrProposalPipe {
 
     return this.hasCancelPermissions(prescription)
       && prescription.status === Status.OPEN
-      && this.checkIfCurrentUserIsPatientOrAssignedCaregiver(currentUser, patientSsin, prescription.requester?.ssin);
+      && this.checkIfCurrentUserIsPatientOrAssignedCaregiver(currentUser, patientSsin, prescription.requester?.id.ssin);
   }
 
   private hasCancelPermissions(prescription: ReadPrescription) {

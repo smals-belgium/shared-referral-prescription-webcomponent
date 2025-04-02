@@ -102,6 +102,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ApproveProposalDialog } from '@reuse/code/dialogs/approve-proposal/approve-proposal.dialog';
 import { CanDuplicatePrescriptionPipe } from '@reuse/code/pipes/can-duplicate-prescription.pipe';
 import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-responses-state.interface';
+import {FormatMultilingualObjectPipe} from "@reuse/code/pipes/format-multilingual-object.pipe";
 
 interface ViewState {
   prescription: ReadPrescription;
@@ -115,6 +116,7 @@ interface ViewState {
 }
 
 @Component({
+    standalone: true,
     templateUrl: './prescription-details.component.html',
     styleUrls: ['./prescription-details.component.scss'],
     encapsulation: ViewEncapsulation.ShadowDom,
@@ -148,8 +150,9 @@ interface ViewState {
         CanApproveProposalPipe,
         CanRejectProposalPipe,
         CanExtendPrescriptionPipe,
-        CanDuplicatePrescriptionPipe
-    ]
+        CanDuplicatePrescriptionPipe,
+        FormatMultilingualObjectPipe
+  ]
 })
 
 export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDestroy {
@@ -157,6 +160,8 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   printer = false;
   generatedUUID = '';
   responses: Record<string, any> | undefined;
+  currentLang?: string;
+
   @HostBinding('attr.lang')
   @Input() lang = 'fr-BE';
   @Input() initialPrescriptionType?: string;
@@ -306,6 +311,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     private encryptionStateService: EncryptionState,
     @Inject(DOCUMENT) private _document: Document
   ) {
+    this.currentLang = this.translate.currentLang
     this.dateAdapter.setLocale('fr-BE');
     this.translate.setDefaultLang('fr-BE');
     this.translate.use('fr-BE');

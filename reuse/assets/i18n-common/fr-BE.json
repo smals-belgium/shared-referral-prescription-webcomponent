@@ -21,6 +21,13 @@
       "NURSE": "Infirmière",
       "PHYSICIAN": "Médecin"
     },
+    "organizations": {
+      "THIRD_PARTY_PAYING_GROUP": "Groupement avec un n° INAMI tiers payant (infirmiers, sages-femmes e.a.)",
+      "GROUPOFDOCTORS": "Groupement de médecins généralistes au même lieu d'installation",
+      "GUARD_POST": "Poste de garde",
+      "MEDICAL_HOUSE": "Maison médicale",
+      "HOME_SERVICES": "Service de soins intégrés à domicile"
+    },
     "lastName": "Nom",
     "firstName": "Prénom",
     "dateOfBirth": "Né(e) le",
@@ -147,6 +154,7 @@
       "meSuccess": "Vous avez été assigné comme prestataire.",
       "performer": "Prestataire ou organisation",
       "searchPerformerPlaceHolder": "N° INAMI, nom",
+      "select": "Sélectionner",
       "locations": "Localisation(s)",
       "zipCodeOrCityName": "Code postal ou commune",
       "noResults": "Aucune commune trouvée",

@@ -4,4 +4,5 @@ export interface Person {
   ssin: string;
   birthDate?: string;
   gender?: 'M' | 'F';
+  profession?: string;
 }

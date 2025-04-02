@@ -21,6 +21,13 @@
       "NURSE": "Verpleegkundige",
       "PHYSICIAN": "Arts"
     },
+    "organizations": {
+      "THIRD_PARTY_PAYING_GROUP": "Groepering met een RIZIV-nr derdebetaler (verpleegkundigen, vroedvrouwen, e.a.)",
+      "GROUPOFDOCTORS": "Groepering van huisartsen op dezelfde installatieplaats",
+      "GUARD_POST": "Wachtpost",
+      "MEDICAL_HOUSE": "Medische huis",
+      "HOME_SERVICES": "Geïntegreerde diensten thuisverzorging"
+    },
     "lastName": "Naam",
     "firstName": "Voornaam",
     "dateOfBirth": "Geboren op",
@@ -147,6 +154,7 @@
       "meSuccess": "U bent toegewezen als zorgverlener.",
       "performer": "Zorgverlener of organisatie",
       "searchPerformerPlaceHolder": "RIZIV nummer, naam",
+      "select": "Selecteren",
       "locations": "Locaties",
       "zipCodeOrCityName": "Postcode of gemeente",
       "noResults": "Geen gemeente gevonden",

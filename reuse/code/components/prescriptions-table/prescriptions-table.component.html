@@ -3,8 +3,8 @@
     <th data-cy="overview-author-title" mat-header-cell *matHeaderCellDef>{{'prescription.author' | translate}}</th>
     <td [attr.data-cy]="'author-cell-' + prescription.id" [attr.translate]="'no'" mat-cell *matCellDef="let prescription">
       @if(prescription.requester){
-        {{prescription.requester.firstName}} {{prescription.requester.lastName}}<br>
-        ({{prescription.requester.nihdi | formatNihdi}})
+        {{prescription.requester.healthcarePerson.firstName}} {{prescription.requester.healthcarePerson.lastName}}<br>
+        ({{(prescription.requester.nihii8 || prescription.requester.nihii11) | formatNihdi: prescription.requester.id.qualificationCode}})
       }
     </td>
   </ng-container>

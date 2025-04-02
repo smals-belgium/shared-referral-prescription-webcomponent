@@ -42,7 +42,9 @@ describe('CanRejectAssignationPipe', () => {
   it('should return false if the prescription status is not OPEN nor PENDING nor IN_PROGRESS', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
     const prescription = { status: Status.BLACKLISTED } as ReadPrescription;
-    const task = { status: TaskStatus.READY, careGiver: { ssin: caregiverSsin } } as PerformerTask;
+    const task = { status: TaskStatus.READY, careGiver: {
+        id: { ssin: caregiverSsin }
+      } } as PerformerTask;
 
     const result = pipe.transform(prescription, task, patient.ssin, currentUser);
     expect(result).toBe(false);
@@ -51,7 +53,9 @@ describe('CanRejectAssignationPipe', () => {
   it('should return false if the task status is not READY', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
     const prescription = { status: Status.OPEN } as ReadPrescription;
-    const task = { status: TaskStatus.COMPLETED, careGiver: { ssin: caregiverSsin } } as PerformerTask;
+    const task = { status: TaskStatus.COMPLETED, careGiver: {
+        id: { ssin: caregiverSsin }
+      } } as PerformerTask;
 
     const result = pipe.transform(prescription, task, patient.ssin, currentUser);
     expect(result).toBe(false);
@@ -60,7 +64,9 @@ describe('CanRejectAssignationPipe', () => {
   it('should return false if currentUser is not the patient nor the caregiver', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
     const prescription = { status: Status.OPEN } as ReadPrescription;
-    const task = { status: TaskStatus.READY, careGiver: { ssin: caregiverSsin } } as PerformerTask;
+    const task = { status: TaskStatus.READY, careGiver: {
+        id: { ssin: caregiverSsin }
+      }} as PerformerTask;
 
     const anotherUser = {...currentUser, ssin: 'anotherSsin'}
 
@@ -75,7 +81,9 @@ describe('CanRejectAssignationPipe', () => {
       status: Status.OPEN,
     } as ReadPrescription;
 
-    const task = { status: TaskStatus.READY, careGiver: { ssin: currentUser.ssin } } as PerformerTask;
+    const task = { status: TaskStatus.READY, careGiver: {
+        id: { ssin: currentUser.ssin }
+      } } as PerformerTask;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
     const result = pipe.transform(prescription, task, patient.ssin, currentUser);
@@ -90,7 +98,9 @@ describe('CanRejectAssignationPipe', () => {
       status: Status.IN_PROGRESS,
     } as ReadPrescription;
 
-    const task = { status: TaskStatus.READY, careGiver: { ssin: currentUser.ssin } } as PerformerTask;
+    const task = { status: TaskStatus.READY, careGiver: {
+        id: { ssin: currentUser.ssin }
+      } } as PerformerTask;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
     const result = pipe.transform(prescription, task, patient.ssin, currentUser);
@@ -105,7 +115,9 @@ describe('CanRejectAssignationPipe', () => {
       status: Status.OPEN,
     } as ReadPrescription;
 
-    const task = { status: TaskStatus.READY, careGiver: { ssin: currentUser.ssin } } as PerformerTask;
+    const task = { status: TaskStatus.READY, careGiver: {
+        id: { ssin: currentUser.ssin }
+      } } as PerformerTask;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
@@ -120,7 +132,9 @@ describe('CanRejectAssignationPipe', () => {
       status: Status.OPEN,
     } as ReadPrescription;
 
-    const task = { status: TaskStatus.READY, careGiver: { ssin: currentUser.ssin } } as PerformerTask;
+    const task = { status: TaskStatus.READY, careGiver: {
+        id: { ssin: currentUser.ssin }
+      } } as PerformerTask;
     const nurse = {...currentUser, ssin: patient.ssin}
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
@@ -136,7 +150,9 @@ describe('CanRejectAssignationPipe', () => {
       status: Status.OPEN,
     } as ReadPrescription;
 
-    const task = { status: TaskStatus.READY, careGiver: { ssin: currentUser.ssin } } as PerformerTask;
+    const task = { status: TaskStatus.READY, careGiver: {
+        id: { ssin: currentUser.ssin }
+      } } as PerformerTask;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(false);
 
