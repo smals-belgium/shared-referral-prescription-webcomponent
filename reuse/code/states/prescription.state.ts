@@ -53,7 +53,7 @@ export class PrescriptionState extends BaseState<ReadPrescription> {
       return this.prescriptionService
         .assignOrganization(prescriptionId, referralTaskId, {
           nihdi: nihdi,
-          institutionTypeCode: ho.qualificationCode
+          institutionTypeCode: ho.typeCode
         }, generatedUUID)
         .pipe(tap(() => this.loadPrescription(prescriptionId)));
     }
