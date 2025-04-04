@@ -65,25 +65,29 @@
                   <div data-cy="prescription-author-label">{{'prescription.author' | translate}}</div>
                   <div data-cy="prescription-author">
                     {{prescription.requester?.healthcarePerson?.firstName}} {{prescription.requester?.healthcarePerson?.lastName}}
-                    <ng-container *ngIf="prescription.requester?.id?.profession">({{'common.professions.' + prescription.requester?.id?.profession | translate }})<br></ng-container>
-                    <ng-container *ngIf="prescription.requester?.nihii8">
+                    @if (prescription.requester?.id?.profession) {
+                      ({{ 'common.professions.' + prescription.requester?.id?.profession | translate }})<br>
+                    }
+                    @if (prescription.requester?.nihii8) {
                       {{prescription.requester!.nihii8 | formatNihdi: prescription.requester?.id?.qualificationCode }}
-                    </ng-container>
-                    <ng-container *ngIf="prescription.requester?.nihii11">
+                    } @else if (prescription.requester?.nihii11) {
                       {{prescription.requester!.nihii11 | formatNihdi: prescription.requester?.id?.qualificationCode}}
-                    </ng-container>
+                    }
                   </div>
                 </div>
               </div>
-              <div class="row" *ngIf="viewState.data!.patient as patient">
-                <div class="info-item">
-                  <div data-cy="prescription-patient-label">{{'prescription.patient' | translate}}</div>
-                  <div data-cy="prescription-patient">
-                    {{patient.firstName || ''}} {{patient.lastName || ''}}<br>
-                    {{patient.ssin | formatSsin}}
+              @if (viewState.data!.patient; as patient) {
+                <div class="row">
+                  <div class="info-item">
+                    <div data-cy="prescription-patient-label">{{ 'prescription.patient' | translate }}</div>
+                    <div data-cy="prescription-patient">
+                      {{ patient.firstName || '' }} {{ patient.lastName || '' }}<br>
+                      {{ patient.ssin | formatSsin }}
+                    </div>
                   </div>
                 </div>
-              </div>
+              }
+
 
               @if (prescription.shortCode) {
                 <div class="row">
@@ -186,18 +190,18 @@
                         <div class="organization-caregiver-row">
                           <div class="organization-caregiver-name-row" data-cy="prescription-assign-to">
                             <div class="caregiver-name">{{performertask.careGiver.healthcarePerson.firstName}} {{performertask.careGiver.healthcarePerson.lastName}}
-                              <ng-container *ngIf="performertask.careGiver.nihii8">
+                              @if (performertask.careGiver.nihii8) {
                                 ({{performertask.careGiver.nihii8 | formatNihdi: performertask.careGiver.id.qualificationCode}})
-                              </ng-container><br>
-                              <ng-container *ngIf="performertask.careGiver.nihii11">
+                                <br>
+                              } @else if (performertask.careGiver.nihii11) {
                                 ({{performertask.careGiver.nihii11 | formatNihdi: performertask.careGiver.id.qualificationCode}})
-                              </ng-container><br>
-                              <ng-container *ngIf="performertask.executionPeriod?.start">
+                              }<br>
+                              @if (performertask.executionPeriod?.start) {
                                 <span style="font-size: 14px; color:#8f8f8f">{{performertask.executionPeriod?.start! | date: 'dd/MM/yyyy'}} - </span>
-                              </ng-container>
-                              <ng-container *ngIf="performertask.executionPeriod?.end">
+                              }
+                              @if (performertask.executionPeriod?.end) {
                                 <span style="font-size: 14px; color:#8f8f8f">{{performertask.executionPeriod?.end! | date: 'dd/MM/yyyy'}}</span>
-                              </ng-container>
+                              }
                             </div>
                             <button
                               *ngIf="prescription | canRejectAssignation : performertask : viewState.data!.patient.ssin : viewState.data!.currentUser"
@@ -275,18 +279,18 @@
                   <div class="caregiver-row">
                     <div class="caregiver-name-row" data-cy="prescription-assign-to">
                       <div class="caregiver-name"><b>{{task.careGiver.healthcarePerson.firstName}} {{task.careGiver.healthcarePerson.lastName}}</b>
-                        <ng-container *ngIf="task.careGiver.nihii8">
+                        @if (task.careGiver.nihii8) {
                           ({{task.careGiver.nihii8 | formatNihdi: task.careGiver.id.qualificationCode}})
-                        </ng-container><br>
-                        <ng-container *ngIf="task.careGiver.nihii11">
+                          <br>
+                        } @else if (task.careGiver.nihii11) {
                           ({{task.careGiver.nihii11 | formatNihdi: task.careGiver.id.qualificationCode}})
-                        </ng-container><br>
-                        <ng-container *ngIf="task.executionPeriod?.start">
+                        }<br>
+                        @if (task.executionPeriod?.start) {
                           <span style="font-size: 14px; color:#8f8f8f">{{task.executionPeriod?.start! | date: 'dd/MM/yyyy'}} - </span>
-                        </ng-container>
-                        <ng-container *ngIf="task.executionPeriod?.end">
+                        }
+                        @if (task.executionPeriod?.end) {
                           <span style="font-size: 14px; color:#8f8f8f">{{task.executionPeriod?.end! | date: 'dd/MM/yyyy'}}</span>
-                        </ng-container>
+                        }
                       </div>
 
                       <button
