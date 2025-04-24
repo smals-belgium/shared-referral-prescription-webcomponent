@@ -21,28 +21,30 @@
 <body>
 <script>
   const params = new URLSearchParams(window.location.search);
-  <!-- Setting the environment dynamically -->
+  // Setting the environment dynamically
+  // IMPORTANT Make sure you replace the client ID at the end with your own and the redirect URI with the one you submitted in the I.AM
+  // Connect documentation
   const keycloak = getKeycloakConfigurationForEnv();
   keycloak.init({onLoad: 'login-required', checkLoginIframe: false}).then(function (authenticated) {
-    <!-- Initialization of the authentication library -->
-    <!-- Creation of the custom element -->
+    // Initialization of the authentication library
+    // Creation of the custom element
     const create = document.createElement('nihdi-referral-prescription-create');
-    <!-- Setting the intent input parameter -->
+    // Setting the intent input parameter
     create.intent = params.get('intent') || 'order';  // By default, setting it as 'order'
-    <!-- Input for the patient SSIN -->
+    // Input for the patient SSIN
     create.patientSsin = params.get('ssin');
-    <!-- Input for the language -->
+    // Input for the language
     create.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'fr-BE';
-    <!-- Callback method to get a token for the authentication library -->
+    // Callback method to get a token for the authentication library
     create.getToken = () => Promise.resolve(keycloak.token);
-    <!-- Listener function to get feedback from the Web Component after the prescription has been successfully created -->
+    // Listener function to get feedback from the Web Component after the prescription has been successfully created
     create.addEventListener('prescriptionsCreated', () => {
       document.body.removeChild(create);
       setTimeout(() => {
         alert('Prescription(s) were created. Refresh to start again.');
       }, 100);
     });
-    <!-- Adding the custom element to the HTML body -->
+    // Adding the custom element to the HTML body
     document.body.append(create);
   }).catch(function () {
     alert('failed to initialize');
