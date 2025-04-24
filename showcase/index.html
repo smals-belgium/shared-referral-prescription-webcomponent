@@ -24,8 +24,12 @@
   // Setting the environment dynamically
   // IMPORTANT Make sure you replace the client ID at the end with your own and the redirect URI with the one you submitted in the I.AM
   // Connect documentation
-  const keycloak = getKeycloakConfigurationForEnv();
-  keycloak.init({onLoad: 'login-required', checkLoginIframe: false}).then(function (authenticated) {
+  const keycloak = getKeycloakConfigurationForEnv('https://api-acpt.ehealth.fgov.be/auth', 'healthcare', 'myClientId');
+  keycloak.init({
+    onLoad: 'login-required',
+    redirectUri: 'http://myredirecturi.com',
+    checkLoginIframe: false
+  }).then(function (authenticated) {
     // Initialization of the authentication library
     // Creation of the custom element
     const create = document.createElement('nihdi-referral-prescription-create');
@@ -50,7 +54,7 @@
     alert('failed to initialize');
   });
 
-  function getKeycloakConfigurationForEnv() {
+  function getKeycloakConfigurationForEnv(authorization_server_url, realm_name, client_id) {
     return new Keycloak({
       url: `${authorization_server_url}`,
       realm: `${realm_name}`,
