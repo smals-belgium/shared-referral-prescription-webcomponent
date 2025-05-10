@@ -7,8 +7,11 @@
   <title>Testing the News Web Component</title>
   <base href="/">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="web-components/create-prescription/wc-create-prescription.css">
-  <script src="web-components/create-prescription/keycloak.js"></script>
+  <link rel="stylesheet" href="https://wwwacc.referral-prescription.in.ehealth.fgov.be/web-components/create-prescription/wc-create-prescription.css">
+  
+  <!-- Required packages -->
+  <script src="https://cdn.jsdelivr.net/npm/keycloak-js@25.0.6/dist/keycloak.min.js"></script>
+  
   <style>
     body {
       font-family: Roboto, "Helvetica Neue", sans-serif;
@@ -18,34 +21,40 @@
 <body>
 <script>
   const params = new URLSearchParams(window.location.search);
-  <!-- Setting the environment dynamically -->
-  const keycloak = getKeycloakConfigurationForEnv();
-  keycloak.init({onLoad: 'login-required', checkLoginIframe: false}).then(function (authenticated) {
-    <!-- Initialization of the authentication library -->
-    <!-- Creation of the custom element -->
+  // Setting the environment dynamically
+  // IMPORTANT Make sure you replace the client ID at the end with your own and the redirect URI with the one you submitted in the I.AM
+  // Connect documentation
+  const keycloak = getKeycloakConfigurationForEnv('https://api-acpt.ehealth.fgov.be/auth', 'healthcare', 'myClientId');
+  keycloak.init({
+    onLoad: 'login-required',
+    redirectUri: 'http://myredirecturi.com',
+    checkLoginIframe: false
+  }).then(function (authenticated) {
+    // Initialization of the authentication library
+    // Creation of the custom element
     const create = document.createElement('nihdi-referral-prescription-create');
-    <!-- Setting the intent input parameter -->
+    // Setting the intent input parameter
     create.intent = params.get('intent') || 'order';  // By default, setting it as 'order'
-    <!-- Input for the patient SSIN -->
+    // Input for the patient SSIN
     create.patientSsin = params.get('ssin');
-    <!-- Input for the language -->
+    // Input for the language
     create.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'fr-BE';
-    <!-- Callback method to get a token for the authentication library -->
+    // Callback method to get a token for the authentication library
     create.getToken = () => Promise.resolve(keycloak.token);
-    <!-- Listener function to get feedback from the Web Component after the prescription has been successfully created -->
+    // Listener function to get feedback from the Web Component after the prescription has been successfully created
     create.addEventListener('prescriptionsCreated', () => {
       document.body.removeChild(create);
       setTimeout(() => {
         alert('Prescription(s) were created. Refresh to start again.');
       }, 100);
     });
-    <!-- Adding the custom element to the HTML body -->
+    // Adding the custom element to the HTML body
     document.body.append(create);
   }).catch(function () {
     alert('failed to initialize');
   });
 
-  function getKeycloakConfigurationForEnv() {
+  function getKeycloakConfigurationForEnv(authorization_server_url, realm_name, client_id) {
     return new Keycloak({
       url: `${authorization_server_url}`,
       realm: `${realm_name}`,
@@ -55,6 +64,6 @@
 </script>
 
 <!-- Web component script at the end -->
-<script src="web-components/create-prescription/wc-create-prescription.js" type="module"></script>
+<script src="https://wwwacc.referral-prescription.in.ehealth.fgov.be/web-components/create-prescription/wc-create-prescription.js" type="module"></script>
 </body>
 </html>
