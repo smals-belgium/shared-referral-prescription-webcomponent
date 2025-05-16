@@ -7,12 +7,18 @@ import { ConfigurationService } from './configuration.service';
 })
 export class WcConfigurationService extends ConfigurationService {
 
-  private readonly referralPrescriptionEnvironment: 'local' | 'test' | 'intExt' | 'intPub' | 'intPatient' | 'acc' | 'accIn' | 'accUp' | 'prod' | 'prodIn' | 'prodUp';
+  private readonly referralPrescriptionEnvironment:
+    'local' |
+    'testHcp' | 'testPatient' |
+    'intExtHcp' | 'intExtPatient' | 'intPubHcp' | 'intPubPatient' |
+    'accHcp' | 'accPatient' | 'accInHcp' | 'accInPatient' | 'accUpHcp' | 'accUpPatient' |
+    'prodHcp' | 'prodPatient' | 'prodInHcp' | 'prodInPatient' | 'prodUpHcp' | 'prodUpPatient';
+
   private readonly configVariables: Record<string, any>;
 
   constructor() {
     super();
-    this.referralPrescriptionEnvironment = (window as any).referralPrescriptionEnv || 'prod';
+    this.referralPrescriptionEnvironment = (window as any).referralPrescriptionEnv || 'prodHcp';
     this.configVariables = APP_CONFIG.variables[this.referralPrescriptionEnvironment] || {};
   }
 
