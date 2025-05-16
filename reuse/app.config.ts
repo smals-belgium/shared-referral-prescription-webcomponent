@@ -19,30 +19,46 @@ interface AppConfigVariables {
 export const APP_CONFIG: AppConfig = {
   environments: [],
   variables: {
-    local: {
-      env: 'local',
+    localPatient: {
+      env: 'localPatient',
       fhirGatewayUrl: 'http://referral-prescription-fakeapi-v4.test.paas.vasdc.be',
       apiUrl: 'http://localhost:8080/frontend/api',
       enablePseudo: true,
       pseudoApiUrl: 'http://uhmep-mockingbird.test.paas.vasdc.be/pseudo/v1'
     },
-    test: {
-      env: 'test',
+    localHcp: {
+      env: 'localHcp',
+      fhirGatewayUrl: 'http://referral-prescription-fakeapi-v4.test.paas.vasdc.be',
+      apiUrl: 'http://localhost:8080/frontend/api',
+      enablePseudo: true,
+      pseudoApiUrl: 'http://uhmep-mockingbird.test.paas.vasdc.be/pseudo/v1'
+    },
+    testHcp: {
+      env: 'testHcp',
       fhirGatewayUrl: 'https://referral-prescription-v4.test.ext.vascloud.be/backend/application/fhirgateway/uhmep/v1',
       apiUrl: 'https://referral-prescription.test.ext.vascloud.be/frontend/api',
       enablePseudo: true,
       pseudoApiUrl: 'https://uhmep-mockingbird.test.ext.vascloud.be/pseudo/v1'
     },
-    testDemo: {
-      env: 'testDemo',
-      fhirGatewayUrl: 'http://referral-prescription-fakeapi-v4.test.paas.vasdc.be',
-      apiUrl: 'http://uhmep-frontend-webapi-demo-v4.test.paas.vasdc.be/frontend/api',
-
+    testPatient: {
+      env: 'testPatient',
+      fhirGatewayUrl: 'https://referral-prescription-v4.test.ext.vascloud.be/backend/application/fhirgateway/uhmep/v1',
+      apiUrl: 'https://referral-prescription.test.ext.vascloud.be/frontend/api',
+      enablePseudo: true,
+      pseudoApiUrl: 'https://uhmep-mockingbird.test.ext.vascloud.be/pseudo/v1'
     },
     intExtHcp: {
       env: 'intExtHcp',
       fhirGatewayUrl: 'https://uhmep-fhirgateway-v4.int.pub.vascloud.be',
       fhirGatewayClientId: 'nihdi-uhmep-fhir-hcp',
+      apiUrl: 'https://referral-prescription.int.ext.vascloud.be/frontend/api',
+      pseudoApiUrl: 'https://api-acpt.ehealth.fgov.be/pseudo/v1',
+      enablePseudo: true
+    },
+    intExtPatient: {
+      env: 'intExtPatient',
+      fhirGatewayUrl: 'https://uhmep-fhirgateway-v4.int.pub.vascloud.be',
+      fhirGatewayClientId: 'nihdi-uhmep-fhir-patient',
       apiUrl: 'https://referral-prescription.int.ext.vascloud.be/frontend/api',
       pseudoApiUrl: 'https://api-acpt.ehealth.fgov.be/pseudo/v1',
       enablePseudo: true
@@ -55,8 +71,8 @@ export const APP_CONFIG: AppConfig = {
       pseudoApiUrl: 'https://api-acpt.ehealth.fgov.be/pseudo/v1',
       enablePseudo: true
     },
-    intExtPatient: {
-      env: 'intExtPatient',
+    intPubPatient: {
+      env: 'intPubPatient',
       fhirGatewayUrl: 'https://uhmep-fhirgateway-v4.int.pub.vascloud.be',
       fhirGatewayClientId: 'nihdi-uhmep-fhir-patient',
       apiUrl: 'https://referral-prescription.int.pub.vascloud.be/frontend/api',
