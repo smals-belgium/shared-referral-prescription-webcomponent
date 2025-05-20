@@ -6,9 +6,7 @@ import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/ma
 import { catchError, map } from 'rxjs/operators';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { IfStatusLoadingDirective } from '../../directives/if-status-loading.directive';
-import { IfStatusSuccessDirective } from '../../directives/if-status-success.directive';
-import { AsyncPipe, NgFor, NgIf,  KeyValuePipe, NgClass } from '@angular/common';
+import { AsyncPipe, KeyValuePipe, NgClass } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormatNihdiPipe } from '../../pipes/format-nihdi.pipe';
 import { TranslationPipe } from '../../pipes/translation.pipe';
@@ -50,49 +48,52 @@ interface AssignPrescriptionDialogData {
 }
 
 @Component({
-    standalone: true,
-    templateUrl: './assign-prescription.dialog.html',
-    styleUrls: ['./assign-prescription.dialog.scss'],
-    imports: [
-        ReactiveFormsModule,
-        MatFormFieldModule,
-        MatInputModule,
-        NgxMaskDirective,
-        MatDialogModule,
-        MatButtonModule,
-        MatChipsModule,
-        TranslateModule,
-        MatAutocompleteModule,
-        MatIconModule,
-        OverlaySpinnerComponent,
-        IfStatusLoadingDirective,
-        IfStatusSuccessDirective,
-        TranslationPipe,
-        NgIf,
-        NgFor,
-        TranslationPipe,
-        FormatNihdiPipe,
-        AsyncPipe,
-        ActivePageComponent,
-        MatSelect,
-        SsinOrOrganizationIdPipe,
-        ShowDetailsPipe,
-        FormatSsinPipe,
-        NgClass,
-        PaginatorComponent,
-        KeyValuePipe,
-        MatButtonToggleModule,
-        FormatMultilingualObjectPipe,
-        ErrorCardComponent
-    ],
-    providers: [
-        provideNgxMask()
-    ]
+  standalone: true,
+  templateUrl: './assign-prescription.dialog.html',
+  styleUrls: ['./assign-prescription.dialog.scss'],
+  imports: [
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    NgxMaskDirective,
+    MatDialogModule,
+    MatButtonModule,
+    MatChipsModule,
+    TranslateModule,
+    MatAutocompleteModule,
+    MatIconModule,
+    OverlaySpinnerComponent,
+    TranslationPipe,
+    TranslationPipe,
+    FormatNihdiPipe,
+    AsyncPipe,
+    ActivePageComponent,
+    MatSelect,
+    SsinOrOrganizationIdPipe,
+    ShowDetailsPipe,
+    FormatSsinPipe,
+    NgClass,
+    PaginatorComponent,
+    KeyValuePipe,
+    MatButtonToggleModule,
+    FormatMultilingualObjectPipe,
+    ErrorCardComponent
+  ],
+  providers: [
+    provideNgxMask(),
+    FormatMultilingualObjectPipe
+  ]
 })
 export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
 
   private readonly nameValidators = [Validators.minLength(2), CaregiverNamePatternValidator];
-  readonly searchCriteria$ = signal<{ query: string, zipCodes: string[],  professionalType: ProfessionalType, page?: number, pageSize?: number } | null>(null);
+  readonly searchCriteria$ = signal<{
+    query: string,
+    zipCodes: string[],
+    professionalType: ProfessionalType,
+    page?: number,
+    pageSize?: number
+  } | null>(null);
   readonly isLoading = signal(false);
 
   filterProfessionalType: ProfessionalType[] = ["CAREGIVER", "ORGANIZATION"]
@@ -103,39 +104,39 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
       switchMap((criteria) => {
         this.isLoading.set(true)
         return criteria ? this.healthcareProviderService.findAll(
-            criteria.query,
-            criteria.zipCodes,
-            criteria.professionalType !== "ORGANIZATION" ? ['NURSE'] : [],
-            criteria.professionalType !== "CAREGIVER" ? ['THIRD_PARTY_PAYING_GROUP', 'GUARD_POST', 'MEDICAL_HOUSE', 'HOME_SERVICES'] : [],
-            criteria.page,
-            criteria.pageSize
-          ).pipe(
-            catchError((error) => {
-              console.error('Error fetching healthcare providers:', error);
-              return of([]);
-            })
-          ) : of([]);
+          criteria.query,
+          criteria.zipCodes,
+          criteria.professionalType !== "ORGANIZATION" ? ['NURSE'] : [],
+          criteria.professionalType !== "CAREGIVER" ? ['THIRD_PARTY_PAYING_GROUP', 'GUARD_POST', 'MEDICAL_HOUSE', 'HOME_SERVICES'] : [],
+          criteria.page,
+          criteria.pageSize
+        ).pipe(
+          catchError((error) => {
+            console.error('Error fetching healthcare providers:', error);
+            return of([]);
+          })
+        ) : of([]);
       }),
-      map((healthcareProvider) =>  {
-        if(healthcareProvider && 'healthcareProfessionals' in healthcareProvider && 'healthcareOrganizations' in healthcareProvider) {
+      map((healthcareProvider) => {
+        if (healthcareProvider && 'healthcareProfessionals' in healthcareProvider && 'healthcareOrganizations' in healthcareProvider) {
           const allItems: (Professional | Organization)[] = [...healthcareProvider.healthcareProfessionals, ...healthcareProvider.healthcareOrganizations];
-          const items =  allItems.map(hp => {
-            if(this.isProfessional(hp)) {
-              if(!hp.phoneNumbers) return hp
+          const items = allItems.map(hp => {
+            if (this.isProfessional(hp)) {
+              if (!hp.phoneNumbers) return hp
 
               const mobileNumber = hp.phoneNumbers.mobileNumber
-              if(!mobileNumber || mobileNumber.length === 0) {
+              if (!mobileNumber || mobileNumber.length === 0) {
                 delete hp.phoneNumbers['mobileNumber'];
               }
 
               const telephoneNumbers = hp.phoneNumbers.telephoneNumbers
-              if(telephoneNumbers) {
+              if (telephoneNumbers) {
                 hp.phoneNumbers.telephoneNumbers = Object.fromEntries(Object.entries(telephoneNumbers).filter(([_, phoneNumber]) => phoneNumber && phoneNumber.length > 0))
-                if(Object.keys(hp.phoneNumbers.telephoneNumbers).length === 0) {
+                if (Object.keys(hp.phoneNumbers.telephoneNumbers).length === 0) {
                   delete hp.phoneNumbers['telephoneNumbers'];
                 }
               }
-              if(!telephoneNumbers) {
+              if (!telephoneNumbers) {
                 delete hp.phoneNumbers['telephoneNumbers'];
               }
             }
@@ -196,7 +197,8 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
     dialogRef: MatDialogRef<AssignPrescriptionDialog>,
     @Inject(MAT_DIALOG_DATA) private data: AssignPrescriptionDialogData,
     private translate: TranslateService,
-    private organizationService: OrganizationService
+    private organizationService: OrganizationService,
+    private readonly formatMultilingualObject: FormatMultilingualObjectPipe
   ) {
     super(dialogRef);
     this.currentLang = this.translate.currentLang
@@ -238,7 +240,7 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
     }
   }
 
-  loadData(page?: number, pageSize?: number){
+  loadData(page?: number, pageSize?: number) {
     const values = this.formGroup.value;
     const zipCodes = values.cities?.map(c => c.zipCode) || [];
     this.searchCriteria$.set({
@@ -298,14 +300,15 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
     this.prescriptionStateService.assignPrescriptionPerformer(this.data.prescriptionId!, this.data.referralTaskId!, healthcareProvider, this.generatedUUID)
       .subscribe({
         next: () => {
-          const interpolation = 'healthcarePerson' in healthcareProvider ? healthcareProvider.healthcarePerson : healthcareProvider.organizationName;
+          const name = 'healthcarePerson' in healthcareProvider
+            ? healthcareProvider.healthcarePerson
+            : this.getOrganizationNameTranslation(healthcareProvider);
 
           this.closeErrorCard();
-          if(healthcareProvider.type === 'Professional') {
-            this.toastService.show('prescription.assignPerformer.success', {interpolation});
-          }
-          else{
-            this.toastService.show('prescription.assignPerformer.successOrganization', {interpolation});
+          if (healthcareProvider.type === 'Professional') {
+            this.toastService.show('prescription.assignPerformer.success', {interpolation: name});
+          } else {
+            this.toastService.show('prescription.assignPerformer.successOrganization', {interpolation: name});
           }
           this.closeDialog(healthcareProvider);
         },
@@ -315,6 +318,10 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
         }
       });
 
+  }
+
+  private getOrganizationNameTranslation(healthcareProvider: Organization): { name: string } {
+    return {name: this.formatMultilingualObject.transform(healthcareProvider.organizationName, "name", this.currentLang)}
   }
 
   removeCity(city: any) {
@@ -336,17 +343,17 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
     this.formGroup.get('query')!.updateValueAndValidity();
   }
 
-  showDetailsOfHealthcareProvider(event: Event, healthcareProvider: Professional | Organization){
+  showDetailsOfHealthcareProvider(event: Event, healthcareProvider: Professional | Organization) {
     event.stopPropagation();
 
     const ssinOrOrganizationIdPipe = new SsinOrOrganizationIdPipe();
     let ssinOrOrganization = ssinOrOrganizationIdPipe.transform(healthcareProvider);
 
-    if(!ssinOrOrganization) return;
+    if (!ssinOrOrganization) return;
 
-    if(this.visibleDetailsOfHealthcareProvider.includes(ssinOrOrganization)) {
+    if (this.visibleDetailsOfHealthcareProvider.includes(ssinOrOrganization)) {
       const index = this.visibleDetailsOfHealthcareProvider.findIndex(e => e === ssinOrOrganization);
-      if(index < 0) return;
+      if (index < 0) return;
       const visibleDetailsArr = [...this.visibleDetailsOfHealthcareProvider];
       visibleDetailsArr.splice(index, 1);
       this.visibleDetailsOfHealthcareProvider = visibleDetailsArr;
@@ -358,29 +365,29 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
   }
 
   hasStreet(street: Street): boolean {
-    const { streetFr, streetNl, streetDe } = street;
+    const {streetFr, streetNl, streetDe} = street;
     return streetFr.length > 0 || streetNl.length > 0 || streetDe.length > 0;
   }
 
   hasName(healthcareProvider: Organization | Professional): boolean {
-    if(this.isProfessional(healthcareProvider)) {
+    if (this.isProfessional(healthcareProvider)) {
       return !!(healthcareProvider.healthcareQualification.descriptionFr || healthcareProvider.healthcareQualification.descriptionNl || healthcareProvider.healthcareQualification.descriptionDe);
     }
     return false;
   }
 
   hasPhoneNumbers(healthcareProvider: Organization | Professional) {
-    if(this.isProfessional(healthcareProvider)){
+    if (this.isProfessional(healthcareProvider)) {
       return healthcareProvider.phoneNumbers && Object.keys(healthcareProvider.phoneNumbers).length > 0;
     }
     return false;
   }
 
   getColSpan(healthcareProvider: Organization | Professional) {
-    if(this.isProfessional(healthcareProvider)){
-      if(!healthcareProvider.phoneNumbers || Object.keys(healthcareProvider.phoneNumbers).length <= 0) {
+    if (this.isProfessional(healthcareProvider)) {
+      if (!healthcareProvider.phoneNumbers || Object.keys(healthcareProvider.phoneNumbers).length <= 0) {
         return 5;
-      } else if(!healthcareProvider.phoneNumbers?.telephoneNumbers || !healthcareProvider.phoneNumbers?.mobileNumber) {
+      } else if (!healthcareProvider.phoneNumbers?.telephoneNumbers || !healthcareProvider.phoneNumbers?.mobileNumber) {
         return 3;
       } else {
         return 1;
