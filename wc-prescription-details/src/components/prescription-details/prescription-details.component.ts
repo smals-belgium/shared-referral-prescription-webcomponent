@@ -102,7 +102,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ApproveProposalDialog } from '@reuse/code/dialogs/approve-proposal/approve-proposal.dialog';
 import { CanDuplicatePrescriptionPipe } from '@reuse/code/pipes/can-duplicate-prescription.pipe';
 import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-responses-state.interface';
-import {FormatMultilingualObjectPipe} from "@reuse/code/pipes/format-multilingual-object.pipe";
+import { FormatMultilingualObjectPipe } from "@reuse/code/pipes/format-multilingual-object.pipe";
 
 interface ViewState {
   prescription: ReadPrescription;
@@ -216,7 +216,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       const responses = this.decryptedResponses$();
       const prescriptionState = this.intent?.toLowerCase() === 'proposal' ? this.proposalSateService.state() : this.prescriptionStateService.state();
 
-      if (prescriptionState.status === LoadingStatus.SUCCESS && !prescriptionState.data?.pseudomizedKey) {
+      if (prescriptionState.status === LoadingStatus.SUCCESS && !prescriptionState.data?.pseudonymizedKey) {
         return {...responses, error: 'Pseudomized key missing', status: LoadingStatus.ERROR};
       }
 
@@ -328,8 +328,8 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
             this.identifyState.loadSSIN(prescription.patientIdentifier);
           }
 
-          if (prescription.pseudomizedKey) {
-            this.getPrescriptionKey(prescription.pseudomizedKey)
+          if (prescription.pseudonymizedKey) {
+            this.getPrescriptionKey(prescription.pseudonymizedKey)
           }
 
           this.templateVersionsStateService.loadTemplateVersion('READ_' + prescription.templateCode);
@@ -672,12 +672,13 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     });
   }
 
-  async getPrescriptionKey(pseudomizedKey: string): Promise<void> {
+  async getPrescriptionKey(pseudonymizedKey: string): Promise<void> {
     try {
-      const pseudoInTransit = this.pseudoService.toPseudonymInTransit(pseudomizedKey);
-      const uint8Array = await this.pseudoService.identifyPseudonymInTransit(pseudoInTransit)
-
-      this.encryptionStateService.loadCryptoKey(uint8Array);
+      const pseudoInTransit = this.pseudoService.toPseudonymInTransit(pseudonymizedKey);
+      if(pseudoInTransit) {
+        const uint8Array = await this.pseudoService.identifyPseudonymInTransit(pseudoInTransit)
+        this.encryptionStateService.loadCryptoKey(uint8Array);
+      }
     } catch (error) {
       const errorMsg = new Error('Error loading prescription key', {cause: error});
       this.encryptionStateService.setCryptoKeyError(errorMsg)

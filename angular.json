@@ -48,6 +48,7 @@
               "/assets/pdfmake/pdfmake.js"
             ],
             "allowedCommonJsDependencies": [
+              "localforage",
               "buffer",
               "@messageformat/core",
               "elliptic",
@@ -245,6 +246,7 @@
               "/assets/evf-form/evf-form.js"
             ],
             "allowedCommonJsDependencies": [
+              "localforage",
               "buffer",
               "@messageformat/core",
               "elliptic",

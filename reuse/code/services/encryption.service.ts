@@ -28,9 +28,13 @@ export class EncryptionService {
   }
 
   importKey(key: Uint8Array) {
+    if (key.length !== 32) {
+      throw new Error("Invalid key length: Expected 32 bytes for AES-256");
+    }
+
     return from(window.crypto.subtle.importKey(
       "raw",
-      key.slice(0, 32), // Ensure key is 256 bits (32 bytes)
+      key,
       "AES-GCM",
       false,
       ["decrypt"]
