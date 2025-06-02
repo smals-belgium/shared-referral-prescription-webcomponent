@@ -35,7 +35,8 @@
     "gender": "Sexe",
     "genders": {
       "M": "M",
-      "F": "F"
+      "F": "F",
+      "null": "Inconnu"
     },
     "somethingWentWrong": "Une erreur s'est produite. Veuillez ré-essayer.",
     "forbiddenAction": "Vous n'êtes pas autorisé(e) à effectuer cette action.",
@@ -44,6 +45,9 @@
     "mandatory": "Champ obligatoire",
     "ariaLabel": {
       "loading": "Chargement"
+    },
+    "errors": {
+      "pseudoDisabled": "Il n'est pas possible de créer une prescription."
     },
     "prescriptionModel": "Modèle"
   },
@@ -277,7 +281,7 @@
       "noOptions": "Aucune type de proposition"
     },
     "create": {
-      "action": "Nouvelle proposisiton",
+      "action": "Nouvelle proposition",
       "success": "Proposition créée avec succès.",
       "allSuccess": "{count} {count, plural, one{proposition créée} other{propositions créées}} avec succès.",
       "allFailed": "Une erreur s'est produite pendant la creation des propositions. Veuillez vérifier votre saisie et réessayer.",
@@ -295,13 +299,13 @@
       "cancelCreation": "Êtes-vous sûr de vouloir annuler la création de cette proposition ?"
     },
     "print": {
-      "content-electronic-proposal": "Contenu de la proposisiton électronique",
-      "guideline": "Veuillez présenter ce document à votre médecin soignant. Il vous est possible de scanner le code QR pour avoir accès au détail présent dans la proposisiton digital.",
+      "content-electronic-proposal": "Contenu de la proposition électronique",
+      "guideline": "Veuillez présenter ce document à votre médecin soignant. Il vous est possible de scanner le code QR pour avoir accès au détail présent dans la proposition digital.",
       "nihdi": "N° INAMI",
       "niss": "NISS",
       "patient": "Bénéficiaire",
       "prescriber": "Prescripteur",
-      "proof-of-electronic-proposal": "Preuve de proposisiton électronique",
+      "proof-of-electronic-proposal": "Preuve de proposition électronique",
       "remark": "Attention: Aucun ajout manuscrit à ce document ne sera pris en compte. "
     },
     "author": "Auteur",
@@ -320,8 +324,8 @@
     "extend": "Étendre",
     "careGivers": "Prestataire(s) de soins",
     "assigned": "Assignée",
-    "noProposalsForPatient": "Ce patient ne possède pas encore de proposisiton.",
-    "noProposalsForUser": "Vous ne possèdez pas encore de proposisiton.",
+    "noProposalsForPatient": "Ce patient ne possède pas encore de proposition.",
+    "noProposalsForUser": "Vous ne possèdez pas encore de proposition.",
     "assignPerformer": {
       "title": "Assigner à un prestataire ou une organisation",
       "success": "{firstName} {lastName} a été assigné comme prestataire.",
@@ -362,8 +366,8 @@
     },
     "cancel": {
       "action": "Annuler",
-      "title": "Annuler la proposisiton",
-      "message": "Êtes-vous sûr de vouloir annuler la proposisiton \"{templateName}\" de {firstName} {lastName} ?",
+      "title": "Annuler la proposition",
+      "message": "Êtes-vous sûr de vouloir annuler la proposition \"{templateName}\" de {firstName} {lastName} ?",
       "success": "Proposal annulée avec succès.",
       "reason": "Raison"
     },
@@ -392,8 +396,8 @@
       "REJECTED": "Refusé"
     },
     "errors": {
-      "failedToLoadProposal": "Une erreur s'est produite pendant le chargement de la proposisiton.",
-      "failedToLoadProposals": "Une erreur s'est produite pendant le chargement des proposisitons.",
+      "failedToLoadProposal": "Une erreur s'est produite pendant le chargement de la proposition.",
+      "failedToLoadProposals": "Une erreur s'est produite pendant le chargement des propositions.",
       "invalidFhirString": "Caractère(s) interdit(s)",
       "invalidMaxLength": "{requiredLength} caractères maximum",
       "invalidMinLength": "{requiredLength} caractères minimum",

@@ -568,7 +568,7 @@ const id = "08e267bf-46e3-459d-8216-d8720acc9f64";
 function prescriptionResponse(organisationTasks: any = null, referralTask: any = null, performerTask: PerformerTask[] | null = null) {
   return {
     "id": id,
-    "pseudomizedKey": "AwEK7P6okCUkHGUJkOoxAaG18nm32Q7D8QamJrLx0hT3Y9D_kzGp1dfP0N4GVKRNo8lC4elrCmVp--U_YWQwB-1Nng:eyJhdWQiOiJ1aG1lcF92MSIsImVuYyI6IkEyNTZHQ00iLCJhbGciOiJkaXIiLCJraWQiOiJhYzA1YjMyOS0zOGE5LTQ1MTQtOGUwYy0yMjQ1NzI5MjhlYjkifQ..wkVQQRM16H7YZO4J.v2gjyhopsk98zx51T14orcF7-95wkfl-vt1NEtPMO0czPDOL5aGdELipaehk3nqQCv_yh3fagz-kPOYnfNpEJhfszbGpStUC_0zTeM3yzUR9RxSYaMbQ-Vi_5QleVPNvjEpjmsV_-NAIK1ruYMCVQ_3j-kKT_aedROHMuJ7ZsbEdHJDoAhQC.Onsq-h5dRbG9DULPbr_zqw",
+    "pseudonymizedKey": "AwEK7P6okCUkHGUJkOoxAaG18nm32Q7D8QamJrLx0hT3Y9D_kzGp1dfP0N4GVKRNo8lC4elrCmVp--U_YWQwB-1Nng:eyJhdWQiOiJ1aG1lcF92MSIsImVuYyI6IkEyNTZHQ00iLCJhbGciOiJkaXIiLCJraWQiOiJhYzA1YjMyOS0zOGE5LTQ1MTQtOGUwYy0yMjQ1NzI5MjhlYjkifQ..wkVQQRM16H7YZO4J.v2gjyhopsk98zx51T14orcF7-95wkfl-vt1NEtPMO0czPDOL5aGdELipaehk3nqQCv_yh3fagz-kPOYnfNpEJhfszbGpStUC_0zTeM3yzUR9RxSYaMbQ-Vi_5QleVPNvjEpjmsV_-NAIK1ruYMCVQ_3j-kKT_aedROHMuJ7ZsbEdHJDoAhQC.Onsq-h5dRbG9DULPbr_zqw",
     "patientIdentifier": "90122712173",
     "referralTask": referralTask,
     "performerTasks": performerTask,
@@ -656,7 +656,8 @@ const encryptionStateService = {
   state: jest.fn().mockReturnValue({
     data: of('mockCryptoKey'), // Emits mock data
   }),
-  resetCryptoKey: jest.fn()
+  resetCryptoKey: jest.fn(),
+  setCryptoKeyError: jest.fn()
 };
 
 // Mock the 'uuid' module

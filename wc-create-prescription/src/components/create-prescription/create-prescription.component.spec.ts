@@ -1,28 +1,28 @@
-import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
-import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {MatDialog, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
-import {PseudoService} from '@reuse/code/services/pseudo.service';
-import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import {DateAdapter, MatNativeDateModule} from '@angular/material/core';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {HttpClient, HttpErrorResponse, provideHttpClient} from '@angular/common/http';
-import {provideRouter} from '@angular/router';
-import {importProvidersFrom, Signal, SimpleChange, SimpleChanges} from '@angular/core';
-import {ConfigurationService} from '@reuse/code/services/configuration.service';
-import {AuthService} from '@reuse/code/services/auth.service';
-import {CreatePrescriptionWebComponent} from './create-prescription.component';
-import {Observable, of, throwError} from 'rxjs';
-import {PseudonymisationHelper, Value} from '@smals-belgium-shared/pseudo-helper';
-import {ElementGroup, FormTemplate} from '@smals/vas-evaluation-form-ui-core';
-import {DataState, LoadingStatus, Person, ReadPrescription, ReferralTask} from '@reuse/code/interfaces';
-import {EncryptionService} from '@reuse/code/services/encryption.service';
-import {CreatePrescriptionExtendedWebComponent} from './create-prescription-extended.component';
-import {By} from '@angular/platform-browser';
-import {ConfirmDialog} from '@reuse/code/dialogs/confirm/confirm.dialog';
-import {ToastService} from '@reuse/code/services/toast.service';
-import {CancelCreationDialog} from '@reuse/code/dialogs/cancel-creation/cancel-creation.dialog';
-import {CreatePrescriptionForm} from '@reuse/code/interfaces/create-prescription-form.interface';
+import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { PseudoService } from '@reuse/code/services/pseudo.service';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { DateAdapter, MatNativeDateModule } from '@angular/material/core';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClient, HttpErrorResponse, provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
+import { importProvidersFrom, Signal, SimpleChange, SimpleChanges } from '@angular/core';
+import { ConfigurationService } from '@reuse/code/services/configuration.service';
+import { AuthService } from '@reuse/code/services/auth.service';
+import { CreatePrescriptionWebComponent } from './create-prescription.component';
+import { Observable, of, throwError } from 'rxjs';
+import { PseudonymisationHelper, Value } from '@smals-belgium-shared/pseudo-helper';
+import { ElementGroup, FormTemplate } from '@smals/vas-evaluation-form-ui-core';
+import { DataState, LoadingStatus, Person, ReadPrescription, ReferralTask } from '@reuse/code/interfaces';
+import { EncryptionService } from '@reuse/code/services/encryption.service';
+import { CreatePrescriptionExtendedWebComponent } from './create-prescription-extended.component';
+import { By } from '@angular/platform-browser';
+import { ConfirmDialog } from '@reuse/code/dialogs/confirm/confirm.dialog';
+import { ToastService } from '@reuse/code/services/toast.service';
+import { CancelCreationDialog } from '@reuse/code/dialogs/cancel-creation/cancel-creation.dialog';
+import { CreatePrescriptionForm } from '@reuse/code/interfaces/create-prescription-form.interface';
 
 class FakeLoader implements TranslateLoader {
   getTranslation(lang: string): Observable<any> {
@@ -205,7 +205,7 @@ describe('CreatePrescriptionWebComponent', () => {
 
   }));
 
-  it('should log a warning if pseudomizedKey is not set', (done) => {
+  it('should log a warning if pseudonymizedKey is not set', (done) => {
     createFixture(undefined);
 
     const templateCode = 'template123';
@@ -224,7 +224,7 @@ describe('CreatePrescriptionWebComponent', () => {
         expect(result).toEqual({
           templateCode,
           responses: mockEncryptedResponses,
-          pseudomizedKey: undefined,
+          pseudonymizedKey: undefined,
           subject,
         });
 
@@ -835,15 +835,16 @@ describe('CreatePrescriptionWebComponent', () => {
     consoleErrorMock.mockRestore();
   });
 
-  const createFixture = (pseudomizedKey?: string) => {
+  const createFixture = (pseudonymizedKey?: string) => {
     fixture = TestBed.createComponent(CreatePrescriptionExtendedWebComponent);
     component = fixture.componentInstance;
-    component.pseudomizedKey = pseudomizedKey;
+    component.pseudonymizedKey = pseudonymizedKey;
     component.initialValues = {
       intent: 'order'
     };
+    component.isEnabled$ = of(true);
 
-    if (pseudomizedKey) {
+    if (pseudonymizedKey) {
       jest.spyOn(pseudoService, 'byteArrayToValue').mockReturnValue({pseudonymize: jest.fn()} as unknown as Value);
       jest.spyOn(pseudoService, 'pseudonymizeValue').mockReturnValue(Promise.resolve('mockPseudomizedKey'));
     }

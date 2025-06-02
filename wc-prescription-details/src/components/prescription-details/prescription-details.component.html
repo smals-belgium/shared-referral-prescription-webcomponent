@@ -81,8 +81,12 @@
                   <div class="info-item">
                     <div data-cy="prescription-patient-label">{{ 'prescription.patient' | translate }}</div>
                     <div data-cy="prescription-patient">
-                      {{ patient.firstName || '' }} {{ patient.lastName || '' }}<br>
-                      {{ patient.ssin | formatSsin }}
+                      {{patient.firstName || ''}} {{patient.lastName || ''}}<br/>
+                      {{patient.ssin | formatSsin}}
+                      @if(prescription.templateCode === 'ANNEX_82') {
+                        <br/>{{patient.birthDate | date: 'dd/MM/yyyy'}}
+                        <br/>{{'common.gender' | translate}}: {{'common.genders.'+patient.gender | translate}}
+                      }
                     </div>
                   </div>
                 </div>
@@ -99,7 +103,6 @@
                   </div>
                 </div>
               }
-
 
               <div class="row">
                 <div class="info-item">

@@ -46,12 +46,13 @@ import {
 import { ConfirmDialog, ConfirmDialogData } from '@reuse/code/dialogs/confirm/confirm.dialog';
 import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
 import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
-import { DOCUMENT, NgIf } from '@angular/common';
+import { AsyncPipe, DOCUMENT, NgIf } from '@angular/common';
 import { PseudoService } from '@reuse/code/services/pseudo.service';
 import { AccessMatrixState } from '@reuse/code/states/access-matrix.state';
 import { TemplatesState } from '@reuse/code/states/templates.state';
 import { PatientState } from '@reuse/code/states/patient.state';
 import { TemplateVersionsState } from '@reuse/code/states/template-versions.state';
+import { WcConfigurationService } from '@reuse/code/services/wc-configuration.service';
 import { ProposalService } from '@reuse/code/services/proposal.service';
 import { EncryptionService } from '@reuse/code/services/encryption.service';
 import { v4 as uuidv4 } from 'uuid';
@@ -62,6 +63,9 @@ import { PrescriptionModel } from '@reuse/code/interfaces/prescription-modal.int
 import { PrescriptionModelService } from '@reuse/code/services/prescription-model.service';
 import { CreatePrescriptionForm } from '@reuse/code/interfaces/create-prescription-form.interface';
 import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
+import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
+import { HttpErrorResponse } from '@angular/common/http';
+
 
 @Component({
     templateUrl: './create-prescription.component.html',
@@ -69,16 +73,23 @@ import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
     encapsulation: ViewEncapsulation.ShadowDom,
-    imports: [
-        NgIf,
-        IfStatusSuccessDirective,
-        CreateMultiplePrescriptionsComponent,
-        OverlaySpinnerComponent,
-        TranslateModule,
-        CreatePrescriptionModelComponent
-    ]
+  imports: [
+    NgIf,
+    IfStatusSuccessDirective,
+    CreateMultiplePrescriptionsComponent,
+    OverlaySpinnerComponent,
+    AsyncPipe,
+    TranslateModule,
+    CreatePrescriptionModelComponent,
+    ErrorCardComponent
+  ]
 })
 export class CreatePrescriptionWebComponent implements OnChanges {
+  isEnabled$: Observable<boolean>;
+  errorResponseBadGateway = new HttpErrorResponse({
+    status: 502,
+    statusText: 'Bad Gateway'
+  });
 
   private trackId = 0;
 
@@ -86,7 +97,8 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   prescriptionForms = signal<CreatePrescriptionForm[]>([]);
   loading = signal(false);
   cryptoKey: CryptoKey | undefined;
-  pseudomizedKey: string | undefined;
+  pseudonymizedKey: string | undefined;
+  generatedUUID = '';
 
   errorCard: ErrorCard = {
     show: false,
@@ -122,8 +134,21 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     private proposalService: ProposalService,
     private renderer: Renderer2,
     private encryptionService: EncryptionService,
+    private configService: WcConfigurationService,
     @Inject(DOCUMENT) private _document: Document
   ) {
+    this.isEnabled$ = of(this.configService.getEnvironmentVariable('enablePseudo')).pipe(
+      map((value: boolean) => {
+        if (value) {
+          this.initializeWebComponent();
+        }
+        return value;
+      })
+    );
+  }
+
+
+  private initializeWebComponent() {
     this.dateAdapter.setLocale('fr-BE');
     this.translate.setDefaultLang('fr-BE');
     this.translate.use('fr-BE')
@@ -135,11 +160,11 @@ export class CreatePrescriptionWebComponent implements OnChanges {
       (async () => {
         try {
           this.cryptoKey = await this.encryptionService.generateKey();
-          this.pseudomizedKey = await this.pseudomyzeEncryptionKey();
+          this.pseudonymizedKey = await this.pseudomyzeEncryptionKey();
         } catch (error) {
           console.error('Failed to initialize encryption key:', error);
           this.cryptoKey = undefined;
-          this.pseudomizedKey = undefined;
+          this.pseudonymizedKey = undefined;
         }
       })()
     );
@@ -152,7 +177,11 @@ export class CreatePrescriptionWebComponent implements OnChanges {
       const exportedKey = await this.encryptionService.exportKey(this.cryptoKey);
       const byteArray = new Uint8Array(exportedKey);
       const byteArrToVal = this.pseudoService.byteArrayToValue(byteArray);
-      return this.pseudoService.pseudonymizeValue(byteArrToVal);
+      if(byteArray && byteArrToVal !== null){
+        return this.pseudoService.pseudonymizeValue(byteArrToVal);
+      } else {
+        return undefined
+      }
     } catch (error) {
       console.error('Failed to pseudonymize encryption key:', error);
       return undefined;
@@ -357,12 +386,11 @@ export class CreatePrescriptionWebComponent implements OnChanges {
         this.prescriptionsCreated.emit();
       },
       error: err => {
-        console.error(err);
-        this.errorCard = {
-          show: true,
-          message: 'common.somethingWentWrong',
-          errorResponse: err
-        };
+          this.errorCard = {
+            show: true,
+            message: err?.error?.detail || 'common.somethingWentWrong',
+            errorResponse: err
+          };
         this.loading.set(false);
       }
     });
@@ -478,13 +506,13 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   ): Observable<CreatePrescriptionRequest> {
     return this.encryptFreeTextInResponses(templateCode, responses).pipe(
       map(encryptedResponses => {
-        if (!this.pseudomizedKey) {
+        if (!this.pseudonymizedKey) {
           console.warn('Pseudomized key is not set. The request will proceed without it.');
         }
         return {
           templateCode,
           responses: encryptedResponses,
-          pseudomizedKey: this.pseudomizedKey || undefined,
+          pseudonymizedKey: this.pseudonymizedKey || undefined,
           subject,
         };
       }),

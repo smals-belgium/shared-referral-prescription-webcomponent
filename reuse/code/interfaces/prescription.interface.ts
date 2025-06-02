@@ -16,7 +16,7 @@ export interface ReadPrescription {
   organizationTasks: OrganizationTask[];
   responses: Record<string, any>;
   intent?: string;
-  pseudomizedKey?: string;
+  pseudonymizedKey?: string;
   shortCode?: string;
   note?:string;
 }
@@ -60,7 +60,7 @@ export interface CreatePrescriptionRequest {
   subject: string;
   templateCode: string;
   responses: Record<string, any>;
-  pseudomizedKey: string | undefined;
+  pseudonymizedKey: string | undefined;
 }
 
 export interface TemplateId {
