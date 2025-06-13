@@ -1,5 +1,6 @@
 <div class="wrapper">
   <div class="patient">
+    @if (patient) {
     <div data-cy="patient-label">
       {{'common.patient' | translate}}
     </div>
@@ -7,6 +8,7 @@
       <div data-cy="patient-name" [attr.translate]="'no'">{{patient.firstName}} {{patient.lastName}}</div>
       <div data-cy="patient-ssin" [attr.translate]="'no'">{{patient.ssin | formatSsin}}</div>
     </div>
+    }
   </div>
 
   @if(errorCard.show){
@@ -79,6 +81,9 @@
               [submitted]="!!prescriptionForm.submitted"
               [template]="formTemplateState.data!"
               (changeElementGroup)="setElementGroup(prescriptionForm, formTemplateState.data!, $any($event)?.detail)"
+              [status]="status"
+              [patient]="patient"
+              [getToken]="getToken"
             ></nihdi-referral-prescription-form>
 
             @if(intent.toLowerCase() === 'order'){
@@ -104,10 +109,12 @@
     <div>
       <div class="spacer">&nbsp;</div>
       <div>
+        @if (createPrescriptionForms?.[0]?.templateCode !== 'ANNEX_82') {
         <button (click)="clickAddPrescription.emit()" mat-raised-button data-cy="prescription-create-add">
           <mat-icon color="accent">add_box</mat-icon>
           {{'prescription.create.addPrescription' | translate}}
         </button>
+        }
       </div>
     </div>
   </div>

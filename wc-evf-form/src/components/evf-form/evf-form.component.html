@@ -1,11 +1,16 @@
-<evf-dynamic-form
-  *ngIf="parsedTemplate"
-  [template]="parsedTemplate"
-  [elementLayout]="elementLayout"
-  [submitted]="submitted"
-  [showButtons]="false"
-  (changeElementGroup)="setElementGroup($event)"
-></evf-dynamic-form>
+@if (status !== undefined) {
+  <evf-dynamic-form
+    *ngIf="parsedTemplate"
+    [template]="parsedTemplate"
+    [elementLayout]="elementLayout"
+    [submitted]="submitted"
+    [showButtons]="false"
+    [metadata]="{
+    pssActive: status
+    }"
+    (changeElementGroup)="setElementGroup($event)"
+  ></evf-dynamic-form>
+}
 
 <ng-template #elementLayout let-content="content" let-elementControl="elementControl" let-label="label" let-body="body" let-subLabel="subLabel">
   <div [class.evf-element-wrapper]="!['row', 'radio'].includes(elementControl.parent?.element?.viewType)">

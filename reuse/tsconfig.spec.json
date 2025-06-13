@@ -8,7 +8,15 @@
       "node"
     ],
     "emitDecoratorMetadata": true,
-    "typeRoots": ["../node_modules/@types", "../node_modules/@types/node"]
+    "typeRoots": [
+      "../node_modules/@types",
+      "../node_modules/@types/node"
+    ],
+    "paths": {
+      "@reuse/*": [
+        "reuse/*"
+      ]
+    }
   },
   "include": [
     "**/*.spec.ts",

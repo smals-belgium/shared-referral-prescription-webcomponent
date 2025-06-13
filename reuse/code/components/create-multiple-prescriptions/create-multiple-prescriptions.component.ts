@@ -21,7 +21,7 @@ import { IfStatusLoadingDirective } from '../../directives/if-status-loading.dir
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
-import { LoadingStatus, OccurrenceTiming, Person } from '../../interfaces';
+import { LoadingStatus, OccurrenceTiming, Person, Token } from '../../interfaces';
 import { ErrorCardComponent } from '../error-card/error-card.component';
 import { SuccessCardComponent } from '../success-card/success-card.component';
 import { PrescriptionModelState } from '../../states/prescriptionModel.state';
@@ -39,20 +39,20 @@ import { ErrorCard } from '../../interfaces/error-card.interface';
     styleUrls: ['./create-multiple-prescriptions.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    imports: [
-        TranslateModule,
-        MatExpansionModule,
-        MatIconModule,
-        MatButtonModule,
-        IfStatusLoadingDirective,
-        OverlaySpinnerComponent,
-        IfStatusErrorDirective,
-        IfStatusSuccessDirective,
-        TemplateNamePipe,
-        FormatSsinPipe,
-        ErrorCardComponent,
-        SuccessCardComponent
-    ]
+  imports: [
+    TranslateModule,
+    MatExpansionModule,
+    MatIconModule,
+    MatButtonModule,
+    IfStatusLoadingDirective,
+    OverlaySpinnerComponent,
+    IfStatusErrorDirective,
+    IfStatusSuccessDirective,
+    TemplateNamePipe,
+    FormatSsinPipe,
+    ErrorCardComponent,
+    SuccessCardComponent
+  ]
 })
 export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestroy {
 
@@ -61,7 +61,8 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
 
   @Input() lang!: string;
   @Input() intent!: string;
-  @Input() patient!: Person;
+  @Input() patient?: Person;
+  @Input() status: boolean = false;
   @Input() createPrescriptionForms: CreatePrescriptionForm[] = [];
   @Input() errorCard: ErrorCard = {
     show: false,
@@ -73,6 +74,7 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
   @Output() clickDeletePrescription = new EventEmitter<{ form: CreatePrescriptionForm; templateName: string }>();
   @Output() clickPublish = new EventEmitter<void>();
   @Output() clickCancel = new EventEmitter<void>();
+  @Input() getToken!: (targetClientId?: string) => Token;
 
   @ViewChild(MatAccordion, {static: true}) accordion!: MatAccordion;
 
