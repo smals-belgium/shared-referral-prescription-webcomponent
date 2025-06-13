@@ -31,8 +31,7 @@ import {
   CreatePrescriptionRequest,
   DataState,
   LoadingStatus,
-  ReadPrescription,
-  Token
+  ReadPrescription
 } from '@reuse/code/interfaces';
 import {
   CreateMultiplePrescriptionsComponent
@@ -68,11 +67,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 
 @Component({
-    templateUrl: './create-prescription.component.html',
-    styleUrls: ['./create-prescription.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
-    encapsulation: ViewEncapsulation.ShadowDom,
+  templateUrl: './create-prescription.component.html',
+  styleUrls: ['./create-prescription.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  encapsulation: ViewEncapsulation.ShadowDom,
   imports: [
     NgIf,
     IfStatusSuccessDirective,
@@ -110,7 +109,9 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   @Input() lang = 'fr-BE';
   @Input() initialValues?: CreatePrescriptionInitialValues;
   @Input() patientSsin?: string;
-  @Input() getToken!: (targetClientId?: string) => Token;
+  @Input() services!: {
+    getAccessToken: (audience?: string) => Promise<string | null>
+  };
   @Input() intent!: string;
   @Input() extend?: boolean = false;
 
@@ -151,7 +152,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   private initializeWebComponent() {
     this.dateAdapter.setLocale('fr-BE');
     this.translate.setDefaultLang('fr-BE');
-    this.translate.use('fr-BE')
+    this.translate.use('fr-BE');
     this.loadWebComponents();
   }
 
@@ -160,7 +161,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
       (async () => {
         try {
           this.cryptoKey = await this.encryptionService.generateKey();
-          this.pseudonymizedKey = await this.pseudomyzeEncryptionKey();
+          this.pseudonymizedKey = await this.pseudonymizeEncryptionKey();
         } catch (error) {
           console.error('Failed to initialize encryption key:', error);
           this.cryptoKey = undefined;
@@ -170,7 +171,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     );
   }
 
-  private async pseudomyzeEncryptionKey(): Promise<string | undefined> {
+  private async pseudonymizeEncryptionKey(): Promise<string | undefined> {
     if (!this.cryptoKey) return undefined;
 
     try {
@@ -188,18 +189,8 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     }
   }
 
-  getAccessToken = () => {
-    const e = this.getToken();
-    return e.accessToken;
-  }
-
-  getAuthExchangeToken = (targetClientId?: string) => {
-    const e = this.getToken(targetClientId);
-    return e.getAuthExchangeToken;
-  }
-
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['getToken']) {
+    if (changes['services']) {
       this.handleTokenChange();
     }
 
@@ -217,7 +208,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   }
 
   private handleTokenChange(): void {
-    this.authService.init(this.getAccessToken, this.getAuthExchangeToken);
+    this.authService.init(this.services.getAccessToken);
     this.accessMatrixStateService.loadAccessMatrix();
     this.templatesStateService.loadTemplates();
   }
@@ -229,7 +220,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
 
   private handlePrescriptionChanges(initialValues: CreatePrescriptionInitialValues): void {
     if (initialValues.initialModelId) {
-      this.findModelById(initialValues.initialPrescriptionType!, initialValues.initialModelId)
+      this.findModelById(initialValues.initialPrescriptionType!, initialValues.initialModelId);
     } else {
       this.addPrescriptionForm(initialValues.initialPrescriptionType!, initialValues.initialPrescription);
     }
@@ -239,14 +230,14 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     this.prescriptionModelService.findById(modelId)
       .subscribe({
         next: (prescriptionModel) => {
-          if(prescriptionModel !== null) {
+          if (prescriptionModel !== null) {
             this.addPrescriptionFormByModel(templateCode, prescriptionModel);
           } else {
             this.toastService.showSomethingWentWrong();
           }
         },
         error: () => {
-          this.toastService.showSomethingWentWrong()
+          this.toastService.showSomethingWentWrong();
         }
       });
   }
@@ -259,10 +250,9 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     })
       .beforeClosed()
       .pipe(filter((result) => result?.templateCode != null))
-      .subscribe((result) =>
-      {
+      .subscribe((result) => {
         if (result?.model && result?.templateCode) {
-          this.findModelById(result.templateCode, result.model.id.toString())
+          this.findModelById(result.templateCode, result.model.id.toString());
         } else if (result?.templateCode) {
           this.addPrescriptionForm(result!.templateCode);
         }
@@ -302,15 +292,15 @@ export class CreatePrescriptionWebComponent implements OnChanges {
 
   updateResponses(initialPrescription?: ReadPrescription) {
     if (!this.initialValues?.extend || !initialPrescription?.responses) {
-      return initialPrescription
+      return initialPrescription;
     }
 
-    if(initialPrescription.responses?.['prescriptionOriginId'] || !initialPrescription?.id){
-      return initialPrescription
+    if (initialPrescription.responses?.['prescriptionOriginId'] || !initialPrescription?.id) {
+      return initialPrescription;
     }
 
-    initialPrescription.responses['prescriptionOriginId'] =  initialPrescription.id
-    return initialPrescription
+    initialPrescription.responses['prescriptionOriginId'] = initialPrescription.id;
+    return initialPrescription;
   }
 
   deletePrescriptionForm({form, templateName}: { form: CreatePrescriptionForm; templateName: string }) {
@@ -354,7 +344,9 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   }
 
   private getPatientIdentifier(): Observable<string> {
-    if(!this.patientSsin) { return of('') }
+    if (!this.patientSsin) {
+      return of('');
+    }
     return from(this.pseudoService.pseudonymize(this.patientSsin));
   }
 
@@ -444,7 +436,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
                   return of({
                     trackId: f.trackId,
                     status: LoadingStatus.ERROR,
-                    error,
+                    error
                   });
                 })
               );
@@ -460,7 +452,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
                   return of({
                     trackId: f.trackId,
                     status: LoadingStatus.ERROR,
-                    error,
+                    error
                   });
                 })
               );
@@ -481,14 +473,14 @@ export class CreatePrescriptionWebComponent implements OnChanges {
 
       if (formElement?.tags?.includes('freeText')) {
         return this.encryptionService.encryptText(this.cryptoKey!, value).pipe(
-          map(encryptedValue => ({ [key]: encryptedValue })),
+          map(encryptedValue => ({[key]: encryptedValue})),
           catchError(error => {
             console.error(`Error encrypting key "${key}":`, error);
-            return of({ [key]: value });
+            return of({[key]: value});
           })
         );
       } else {
-        return of({ [key]: value });
+        return of({[key]: value});
       }
     });
 
@@ -537,8 +529,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
           translationOptions: {count: failedCount},
           errorResponse: undefined
         };
-      }
-      else{
+      } else {
         this.errorCard = {
           show: true,
           message: 'proposal.create.allFailed',
@@ -560,8 +551,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
           translationOptions: {successCount, failedCount},
           errorResponse: undefined
         };
-      }
-      else{
+      } else {
         this.errorCard = {
           show: true,
           message: 'proposal.create.someSuccessSomeFailed',
@@ -623,13 +613,13 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     }
 
     const htmlCollection = document.getElementsByTagName('script');
-    const script = Array.from(htmlCollection).find(e => e.src.includes('wc-create-prescription.js'))
+    const script = Array.from(htmlCollection).find(e => e.src.includes('wc-create-prescription.js'));
 
-    if(!script) return;
-    const url = script.src.replace('wc-create-prescription.js','');
+    if (!script) return;
+    const url = script.src.replace('wc-create-prescription.js', '');
     const scripts = [
       'assets/evf-form/evf-form.js'
-    ]
+    ];
 
     scripts.forEach((src) => {
       const script = this.renderer.createElement('script');

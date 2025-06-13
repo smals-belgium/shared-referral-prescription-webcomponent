@@ -1,6 +1,6 @@
 import {inject} from '@angular/core';
 import { HttpEvent, HttpHandlerFn, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
-import {mergeMap, Observable} from 'rxjs';
+import { filter, mergeMap, Observable } from 'rxjs';
 import {AuthService} from './auth.service';
 import {ConfigurationService} from './configuration.service';
 import { Buffer } from 'buffer';
@@ -25,6 +25,7 @@ export const apiUrlInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, 
     );
   }
   return authService.getAccessToken(exchangeToClientId).pipe(
+    filter(token => token !== null),
     mergeMap((accessToken) =>{
       const token = JSON.parse(Buffer.from(accessToken.split('.')[1], 'base64').toString());
       const authUrl = token.iss;

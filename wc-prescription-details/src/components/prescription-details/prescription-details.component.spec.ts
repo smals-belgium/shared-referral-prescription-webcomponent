@@ -18,13 +18,13 @@ import {
   StartExecutionPrescriptionDialog
 } from "@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog";
 import {
-  Description,
+  IdToken,
   LoadingStatus,
   PerformerTask,
   ReadPrescription,
   Status,
   TaskStatus
-} from "@reuse/code/interfaces";
+} from '@reuse/code/interfaces';
 import { TransferAssignationDialog } from '@reuse/code/dialogs/transfer-assignation/transfer-assignation.dialog';
 import {
   RestartExecutionPrescriptionDialog
@@ -862,14 +862,16 @@ describe('PrescriptionDetailsWebComponent', () => {
     it('should load templates and the access matrix when the token changes', async () => {
       createFixture()
       mockConfigService.getEnvironmentVariable.mockImplementationOnce(() => false)
-      const tokenFn = jest.fn()
-      component.getToken = tokenFn
+      component.services = {
+        getAccessToken : () => Promise.resolve('ey...ab'),
+        getIdToken : () => ({} as IdToken)
+      }
       const changes = {
-        getToken: tokenFn
+        services: component.services
       }
 
-      component.ngOnChanges(changes as unknown as SimpleChanges)
-      fixture.detectChanges()
+      component.ngOnChanges(changes as unknown as SimpleChanges);
+      fixture.detectChanges();
 
       const accessReq = httpMock.expectOne('/accessMatrix');
       expect(accessReq.request.method).toBe('GET');

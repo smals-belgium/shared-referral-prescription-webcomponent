@@ -28,14 +28,14 @@ import { DOCUMENT, NgFor, NgIf, NgStyle } from '@angular/common';
 import {
   DataState,
   EvfTemplate,
+  IdToken,
   LoadingStatus,
   PerformerTask,
   Person,
   ReadPrescription,
   Role,
   Status,
-  Token,
-  UserInfo,
+  UserInfo
 } from '@reuse/code/interfaces';
 import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
 import { AuthService } from '@reuse/code/services/auth.service';
@@ -87,11 +87,11 @@ import { RejectAssignationDialog } from '@reuse/code/dialogs/reject-assignation/
 import {
   InterruptExecutionPrescriptionDialog
 } from '@reuse/code/dialogs/interrupt-execution-prescription/interrupt-execution-prescription.dialog';
-import { CanApproveProposalPipe } from "@reuse/code/pipes/can-approve-proposal.pipe";
-import { CanRejectProposalPipe } from "@reuse/code/pipes/can-reject-proposal.pipe";
-import { RejectProposalDialog } from "@reuse/code/dialogs/reject-proposal/reject-proposal.dialog";
-import { CanExtendPrescriptionPipe } from "@reuse/code/pipes/can-extend-prescription.pipe";
-import { IdentifyState } from "@reuse/code/states/identify.state";
+import { CanApproveProposalPipe } from '@reuse/code/pipes/can-approve-proposal.pipe';
+import { CanRejectProposalPipe } from '@reuse/code/pipes/can-reject-proposal.pipe';
+import { RejectProposalDialog } from '@reuse/code/dialogs/reject-proposal/reject-proposal.dialog';
+import { CanExtendPrescriptionPipe } from '@reuse/code/pipes/can-extend-prescription.pipe';
+import { IdentifyState } from '@reuse/code/states/identify.state';
 import { ProposalState } from '@reuse/code/states/proposal.state';
 import { isPrescriptionId, isPrescriptionShortCode, isSsin, validateSsinChecksum } from '@reuse/code/utils/utils';
 import { EncryptionService } from '@reuse/code/services/encryption.service';
@@ -102,7 +102,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ApproveProposalDialog } from '@reuse/code/dialogs/approve-proposal/approve-proposal.dialog';
 import { CanDuplicatePrescriptionPipe } from '@reuse/code/pipes/can-duplicate-prescription.pipe';
 import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-responses-state.interface';
-import { FormatMultilingualObjectPipe } from "@reuse/code/pipes/format-multilingual-object.pipe";
+import { FormatMultilingualObjectPipe } from '@reuse/code/pipes/format-multilingual-object.pipe';
 
 interface ViewState {
   prescription: ReadPrescription;
@@ -116,42 +116,42 @@ interface ViewState {
 }
 
 @Component({
-    standalone: true,
-    templateUrl: './prescription-details.component.html',
-    styleUrls: ['./prescription-details.component.scss'],
-    encapsulation: ViewEncapsulation.ShadowDom,
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    imports: [
-        NgIf,
-        NgStyle,
-        IfStatusLoadingDirective,
-        OverlaySpinnerComponent,
-        ErrorCardComponent,
-        IfStatusErrorDirective,
-        IfStatusSuccessDirective,
-        MatButtonModule,
-        MatIconModule,
-        NgFor,
-        DatePipe,
-        TranslateModule,
-        FormatSsinPipe,
-        FormatNihdiPipe,
-        TemplateNamePipe,
-        CanFinishTreatmentPipe,
-        CanCancelTreatmentPipe,
-        CanStartTreatmentPipe,
-        CanAssignCaregiverPipe,
-        CanCancelPrescriptionOrProposalPipe,
-        CanRejectAssignationPipe,
-        CanTransferAssignationPipe,
-        CanSelfAssignPipe,
-        CanInterruptTreatmentPipe,
-        CanRestartTreatmentPipe,
-        CanApproveProposalPipe,
-        CanRejectProposalPipe,
-        CanExtendPrescriptionPipe,
-        CanDuplicatePrescriptionPipe,
-        FormatMultilingualObjectPipe
+  standalone: true,
+  templateUrl: './prescription-details.component.html',
+  styleUrls: ['./prescription-details.component.scss'],
+  encapsulation: ViewEncapsulation.ShadowDom,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [
+    NgIf,
+    NgStyle,
+    IfStatusLoadingDirective,
+    OverlaySpinnerComponent,
+    ErrorCardComponent,
+    IfStatusErrorDirective,
+    IfStatusSuccessDirective,
+    MatButtonModule,
+    MatIconModule,
+    NgFor,
+    DatePipe,
+    TranslateModule,
+    FormatSsinPipe,
+    FormatNihdiPipe,
+    TemplateNamePipe,
+    CanFinishTreatmentPipe,
+    CanCancelTreatmentPipe,
+    CanStartTreatmentPipe,
+    CanAssignCaregiverPipe,
+    CanCancelPrescriptionOrProposalPipe,
+    CanRejectAssignationPipe,
+    CanTransferAssignationPipe,
+    CanSelfAssignPipe,
+    CanInterruptTreatmentPipe,
+    CanRestartTreatmentPipe,
+    CanApproveProposalPipe,
+    CanRejectProposalPipe,
+    CanExtendPrescriptionPipe,
+    CanDuplicatePrescriptionPipe,
+    FormatMultilingualObjectPipe
   ]
 })
 
@@ -168,22 +168,25 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   @Input() prescriptionId!: string;
   @Input() patientSsin?: string;
   @Input() intent!: string;
-  @Input() getToken!: (targetClientId?: string) => Token;
+  @Input() services!: {
+    getAccessToken: (audience?: string) => Promise<string | null>,
+    getIdToken: () => IdToken
+  };
   @Output() clickDuplicate = new EventEmitter<ReadPrescription>();
   @Output() clickExtend = new EventEmitter<ReadPrescription>();
   @Output() proposalApproved = new EventEmitter<{ prescriptionId: string }>();
   @Output() proposalRejected = new EventEmitter<boolean>();
   private readonly templateCode$ = computed(() => {
     if (this.intent?.toLowerCase() === 'proposal') {
-      return this.proposalSateService.state().data?.templateCode
+      return this.proposalSateService.state().data?.templateCode;
     }
-    return this.prescriptionStateService.state().data?.templateCode
+    return this.prescriptionStateService.state().data?.templateCode;
   });
   private readonly tokenClaims$ = toSignal(this.authService.getClaims());
   private readonly isProfessional$ = toSignal(this.authService.isProfessional());
   private readonly decryptedResponses$: WritableSignal<DecryptedResponsesState> = signal({
     data: null,
-    error: null,
+    error: null
   });
   readonly viewState$: Signal<DataState<ViewState>> = combineSignalDataState({
     cryptoKey: computed(() => this.encryptionStateService.state()),
@@ -206,7 +209,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       if (template && cryptoKey && prescription?.responses) {
         return {
           ...prescriptionState,
-          status: LoadingStatus.SUCCESS,
+          status: LoadingStatus.SUCCESS
         };
       }
 
@@ -311,7 +314,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     private encryptionStateService: EncryptionState,
     @Inject(DOCUMENT) private _document: Document
   ) {
-    this.currentLang = this.translate.currentLang
+    this.currentLang = this.translate.currentLang;
     this.dateAdapter.setLocale('fr-BE');
     this.translate.setDefaultLang('fr-BE');
     this.translate.use('fr-BE');
@@ -329,13 +332,11 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
           }
 
           if (prescription.pseudonymizedKey) {
-            this.getPrescriptionKey(prescription.pseudonymizedKey)
+            this.getPrescriptionKey(prescription.pseudonymizedKey);
           }
 
           this.templateVersionsStateService.loadTemplateVersion('READ_' + prescription.templateCode);
         }
-
-
       });
     });
 
@@ -368,7 +369,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
             },
             error: () => {
               this.decryptedResponses$.set({data: null, error: 'Decryption failed'});
-            },
+            }
           });
         }
       });
@@ -379,24 +380,9 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     this.generatedUUID = uuidv4();
   }
 
-  getAccessToken = () => {
-    const e = this.getToken();
-    return e.accessToken;
-  }
-
-  getIdToken = () => {
-    const e = this.getToken();
-    return e.idToken;
-  }
-
-  getAuthExchangeToken = (targetClientId?: string) => {
-    const e = this.getToken(targetClientId);
-    return e.getAuthExchangeToken;
-  }
-
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['getToken']) {
-      this.authService.init(this.getAccessToken, this.getAuthExchangeToken, this.getIdToken);
+    if (changes['services']) {
+      this.authService.init(this.services.getAccessToken, this.services.getIdToken);
       this.accessMatrixStateService.loadAccessMatrix();
       this.templatesStateService.loadTemplates();
     }
@@ -405,7 +391,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       this.translate.use(this.lang);
     }
     if (changes['prescriptionId'] || changes['patientSsin']) {
-      this.loadPrescriptionOrProposal()
+      this.loadPrescriptionOrProposal();
     }
   }
 
@@ -603,9 +589,9 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       .beforeClosed()
       .subscribe((data) => {
         if (data?.prescriptionId) {
-          this.proposalApproved.next({prescriptionId: data.prescriptionId})
+          this.proposalApproved.next({prescriptionId: data.prescriptionId});
         }
-      })
+      });
   }
 
   openRejectProposalDialog(proposal: ReadPrescription): void {
@@ -681,25 +667,25 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       }
     } catch (error) {
       const errorMsg = new Error('Error loading prescription key', {cause: error});
-      this.encryptionStateService.setCryptoKeyError(errorMsg)
+      this.encryptionStateService.setCryptoKeyError(errorMsg);
     }
   }
 
   handleDuplicateClick() {
     const prescription = this.viewState$().data?.prescription;
     const responses = this.viewState$().data?.decryptedResponses;
-    if(prescription && responses) {
-      const duplicatedData = {...prescription, responses: responses}
-      this.clickDuplicate.emit(duplicatedData)
+    if (prescription && responses) {
+      const duplicatedData = {...prescription, responses: responses};
+      this.clickDuplicate.emit(duplicatedData);
     }
   }
 
   handleExtendClick() {
     const prescription = this.viewState$().data?.prescription;
     const responses = this.viewState$().data?.decryptedResponses;
-    if(prescription && responses) {
-      const duplicatedData = {...prescription, responses: responses}
-      this.clickExtend.emit(duplicatedData)
+    if (prescription && responses) {
+      const duplicatedData = {...prescription, responses: responses};
+      this.clickExtend.emit(duplicatedData);
     }
   }
 
@@ -760,8 +746,8 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   }
 
   ngOnDestroy() {
-    this.encryptionStateService.resetCryptoKey()
-    if(this.intent?.toLowerCase() === 'proposal') {
+    this.encryptionStateService.resetCryptoKey();
+    if (this.intent?.toLowerCase() === 'proposal') {
       this.proposalSateService.resetProposal();
     } else {
       this.prescriptionStateService.resetPrescription();
