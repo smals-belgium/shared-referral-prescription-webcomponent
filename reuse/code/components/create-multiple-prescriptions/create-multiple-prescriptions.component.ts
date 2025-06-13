@@ -21,7 +21,7 @@ import { IfStatusLoadingDirective } from '../../directives/if-status-loading.dir
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
-import { LoadingStatus, OccurrenceTiming, Person, Token } from '../../interfaces';
+import { LoadingStatus, OccurrenceTiming, Person } from '../../interfaces';
 import { ErrorCardComponent } from '../error-card/error-card.component';
 import { SuccessCardComponent } from '../success-card/success-card.component';
 import { PrescriptionModelState } from '../../states/prescriptionModel.state';
@@ -74,7 +74,9 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
   @Output() clickDeletePrescription = new EventEmitter<{ form: CreatePrescriptionForm; templateName: string }>();
   @Output() clickPublish = new EventEmitter<void>();
   @Output() clickCancel = new EventEmitter<void>();
-  @Input() getToken!: (targetClientId?: string) => Token;
+  @Input() services!: {
+    getAccessToken: (audience?: string) => Promise<string | null>
+  }
 
   @ViewChild(MatAccordion, {static: true}) accordion!: MatAccordion;
 
