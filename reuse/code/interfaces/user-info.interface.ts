@@ -54,5 +54,5 @@ export interface IdToken {
 export interface Token {
   accessToken: string,
   idToken: IdToken
-  getAuthExchangeToken: Observable<string>
+  getAuthExchangeToken: Promise<string>
 }

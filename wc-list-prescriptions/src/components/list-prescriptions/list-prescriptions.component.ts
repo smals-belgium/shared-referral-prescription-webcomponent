@@ -4,6 +4,7 @@ import {
   HostBinding,
   Input,
   OnChanges,
+  OnInit,
   Output,
   Signal,
   SimpleChanges,
@@ -14,7 +15,7 @@ import { DateAdapter, MatOptionModule } from '@angular/material/core';
 import { DateTime } from 'luxon';
 import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
 import { AuthService } from '@reuse/code/services/auth.service';
-import { DataState, EvfTemplate, Token } from '@reuse/code/interfaces';
+import { DataState, EvfTemplate } from '@reuse/code/interfaces';
 import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
 import { IfStatusLoadingDirective } from '@reuse/code/directives/if-status-loading.directive';
 import { PaginatorComponent } from '@reuse/code/components/paginator/paginator.component';
@@ -30,7 +31,7 @@ import { AccessMatrixState } from '@reuse/code/states/access-matrix.state';
 import { PrescriptionSummary, PrescriptionSummaryList } from '@reuse/code/interfaces/prescription-summary.interface';
 import { PseudoService } from '@reuse/code/services/pseudo.service';
 import { ProposalsState } from '@reuse/code/states/proposals.state';
-import { FormsModule } from "@angular/forms";
+import { FormsModule } from '@angular/forms';
 import {
   PrescriptionModelsTableComponent
 } from '@reuse/code/components/prescription-models-table/prescription-models-table.component';
@@ -45,24 +46,24 @@ interface ViewState {
 }
 
 @Component({
-    templateUrl: './list-prescriptions.component.html',
-    styleUrls: ['./list-prescriptions.component.scss'],
-    encapsulation: ViewEncapsulation.ShadowDom,
-    imports: [
-        IfStatusErrorDirective,
-        ErrorCardComponent,
-        IfStatusSuccessDirective,
-        ActivePageComponent,
-        MatSelectModule,
-        MatOptionModule,
-        PrescriptionsTableComponent,
-        PaginatorComponent,
-        IfStatusLoadingDirective,
-        OverlaySpinnerComponent,
-        TranslateModule,
-        FormsModule,
-        PrescriptionModelsTableComponent
-    ]
+  templateUrl: './list-prescriptions.component.html',
+  styleUrls: ['./list-prescriptions.component.scss'],
+  encapsulation: ViewEncapsulation.ShadowDom,
+  imports: [
+    IfStatusErrorDirective,
+    ErrorCardComponent,
+    IfStatusSuccessDirective,
+    ActivePageComponent,
+    MatSelectModule,
+    MatOptionModule,
+    PrescriptionsTableComponent,
+    PaginatorComponent,
+    IfStatusLoadingDirective,
+    OverlaySpinnerComponent,
+    TranslateModule,
+    FormsModule,
+    PrescriptionModelsTableComponent
+  ]
 })
 export class ListPrescriptionsWebComponent implements OnChanges {
 
@@ -86,7 +87,7 @@ export class ListPrescriptionsWebComponent implements OnChanges {
   @Input() patientSsin?: string;
   @Input() requesterSsin?: string;
   @Input() performerSsin?: string;
-  @Input() getToken!: (targetClientId?: string) => Token;
+  @Input() services! : { getAccessToken: (audience?: string) => Promise<string | null> };
   @Input() intent!: string;
 
   @Output() clickOpenPrescriptionDetails = new EventEmitter<PrescriptionSummary>();
@@ -105,22 +106,12 @@ export class ListPrescriptionsWebComponent implements OnChanges {
   ) {
     this.dateAdapter.setLocale('fr-BE');
     this.translate.setDefaultLang('fr-BE');
-    this.translate.use('fr-BE')
-  }
-
-  getAccessToken = () => {
-    const e = this.getToken();
-    return e.accessToken;
-  }
-
-  getAuthExchangeToken = (targetClientId?: string) => {
-    const e = this.getToken(targetClientId);
-    return e.getAuthExchangeToken;
+    this.translate.use('fr-BE');
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['getToken']) {
-      this.authService.init(this.getAccessToken, this.getAuthExchangeToken);
+    if (changes['services']) {
+      this.authService.init(this.services.getAccessToken);
       this.accessMatrixState.loadAccessMatrix();
       this.templatesState.loadTemplates();
     }
@@ -133,15 +124,13 @@ export class ListPrescriptionsWebComponent implements OnChanges {
     }
   }
 
-  loadData(page?: number, pageSize?: number){
-    if(this.intent.toLowerCase() === 'order'){
-      this.loadPrescriptions(page, pageSize)
-    }
-    else if(this.intent.toLowerCase() === 'proposal'){
-      this.loadProposals(page, pageSize)
-    }
-    else if(this.intent.toLowerCase() === 'model'){
-      this.loadModels(page, pageSize)
+  loadData(page?: number, pageSize?: number) {
+    if (this.intent.toLowerCase() === 'order') {
+      this.loadPrescriptions(page, pageSize);
+    } else if (this.intent.toLowerCase() === 'proposal') {
+      this.loadProposals(page, pageSize);
+    } else if (this.intent.toLowerCase() === 'model') {
+      this.loadModels(page, pageSize);
     }
   }
 
@@ -171,7 +160,7 @@ export class ListPrescriptionsWebComponent implements OnChanges {
           requester: this.requesterSsin,
           performer: this.performerSsin
         }, page, pageSize);
-      })
+      });
     } else {
       this.proposalsState.loadProposals({
         patient: this.patientSsin,
@@ -182,7 +171,7 @@ export class ListPrescriptionsWebComponent implements OnChanges {
   }
 
   loadModels(page?: number, pageSize?: number) {
-    const pg = page ? page -1 : 0;
+    const pg = page ? page - 1 : 0;
     this.modelsState.loadModels(pg, pageSize || 10);
   }
 

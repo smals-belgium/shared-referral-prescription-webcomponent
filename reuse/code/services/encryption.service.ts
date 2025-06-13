@@ -24,7 +24,6 @@ export class EncryptionService {
   async exportKey(key: CryptoKey) {
     return crypto.subtle
         .exportKey('raw', key)
-
   }
 
   importKey(key: Uint8Array) {

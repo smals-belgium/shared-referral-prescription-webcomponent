@@ -1,43 +1,41 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, first, from, mergeMap, Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, first, Observable, switchMap } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Buffer } from 'buffer';
 import { AuthService } from './auth.service';
-import {Discipline, IdToken} from "../interfaces";
+import { Discipline, IdToken } from '../interfaces';
 
 @Injectable({providedIn: 'root'})
 export class WcAuthService extends AuthService {
 
   private readonly ready$ = new BehaviorSubject<boolean>(false);
-  private _getToken!: () => string;
+  private _getAccessToken!: (audience?: string) => Promise<string | null>;
   private _getIdToken!: () => IdToken;
-  private _getAuthExchangeToken!: (targetClientId?: string) => Observable<string>;
 
   constructor(
   ) {
     super();
   }
 
-  override init(getToken: () => string, getAuthExchangeToken: (targetClientId?: string) => Observable<string>, getIdToken?: () => IdToken): void {
-    this._getToken = getToken;
+  override init(getAccessToken: (audience?: string) => Promise<string | null>, getIdToken?: () => IdToken): void {
+    this._getAccessToken = getAccessToken;
     if(getIdToken) {
       this._getIdToken = getIdToken;
     }
-    this._getAuthExchangeToken = getAuthExchangeToken;
     this.ready$.next(true);
   }
 
-  private getIdToken(): Observable<IdToken | string> {
+  private getIdToken(): Observable<IdToken | string | null> {
     return this.ready$.pipe(
       first((ready) => ready),
-      switchMap(async () => typeof this._getIdToken === "function" ? this._getIdToken() : this._getToken())
+      switchMap(async () => typeof this._getIdToken === "function" ? this._getIdToken() : this._getAccessToken())
     );
   }
 
-  override getAccessToken(targetClientId?: string): Observable<string> {
+  override getAccessToken(audience?: string): Observable<string | null> {
     return this.ready$.pipe(
       first((ready) => ready),
-      switchMap( () => this._getAuthExchangeToken(targetClientId))
+      switchMap( () => this._getAccessToken(audience))
     );
   }
 
@@ -48,6 +46,7 @@ export class WcAuthService extends AuthService {
 
   getResourceAccess(): Observable<Record<string, any>> {
     return this.getAccessToken().pipe(
+      filter(token => token !== null),
       map((token) => JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString())))
   }
 
