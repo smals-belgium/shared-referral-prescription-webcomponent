@@ -21,7 +21,6 @@ import { EvfDynamicFormComponent } from '@smals/vas-evaluation-form-ui-material/
 import { NgIf, NgTemplateOutlet } from '@angular/common';
 import { DateAdapter } from '@angular/material/core';
 import { DateTime } from 'luxon';
-import { Token } from "@reuse/code/interfaces";
 import { PssService } from "@reuse/code/services/pss.service";
 import { AuthService } from '@reuse/code/services/auth.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -52,7 +51,9 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
   @Input() template!: FormTemplate | string;
   @Input() readonly = false;
   @Input() submitted = false;
-  @Input() getToken!: (targetClientId?: string) => Token;
+  @Input() services!: {
+    getAccessToken: (audience?: string) => Promise<string | null>
+  }
   @Input() status: boolean | undefined;
 
   @Output() changeElementGroup = new EventEmitter<ElementGroup>();
@@ -92,23 +93,13 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
 
     }
 
-    if (changes['getToken']) {
+    if (changes['services']) {
       this.handleTokenChange();
     }
   }
 
-  getAccessToken = () => {
-    const e = this.getToken();
-    return e.accessToken;
-  }
-
-  getAuthExchangeToken = (targetClientId?: string) => {
-    const e = this.getToken(targetClientId);
-    return e.getAuthExchangeToken;
-  }
-
   private handleTokenChange(): void {
-    this.authService.init(this.getAccessToken, this.getAuthExchangeToken);
+    this.authService.init(this.services.getAccessToken);
   }
 
   private disableFields(elementControls: BaseElementControl[]): void {

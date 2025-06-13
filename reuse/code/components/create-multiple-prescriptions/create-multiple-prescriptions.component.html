@@ -83,7 +83,7 @@
               (changeElementGroup)="setElementGroup(prescriptionForm, formTemplateState.data!, $any($event)?.detail)"
               [status]="status"
               [patient]="patient"
-              [getToken]="getToken"
+              [services]="services"
             ></nihdi-referral-prescription-form>
 
             @if(intent.toLowerCase() === 'order'){
