@@ -48,41 +48,41 @@ interface AssignPrescriptionDialogData {
 }
 
 @Component({
-  standalone: true,
-  templateUrl: './assign-prescription.dialog.html',
-  styleUrls: ['./assign-prescription.dialog.scss'],
-  imports: [
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    NgxMaskDirective,
-    MatDialogModule,
-    MatButtonModule,
-    MatChipsModule,
-    TranslateModule,
-    MatAutocompleteModule,
-    MatIconModule,
-    OverlaySpinnerComponent,
-    TranslationPipe,
-    TranslationPipe,
-    FormatNihdiPipe,
-    AsyncPipe,
-    ActivePageComponent,
-    MatSelect,
-    SsinOrOrganizationIdPipe,
-    ShowDetailsPipe,
-    FormatSsinPipe,
-    NgClass,
-    PaginatorComponent,
-    KeyValuePipe,
-    MatButtonToggleModule,
-    FormatMultilingualObjectPipe,
-    ErrorCardComponent
-  ],
-  providers: [
-    provideNgxMask(),
-    FormatMultilingualObjectPipe
-  ]
+    standalone: true,
+    templateUrl: './assign-prescription.dialog.html',
+    styleUrls: ['./assign-prescription.dialog.scss'],
+    imports: [
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        NgxMaskDirective,
+        MatDialogModule,
+        MatButtonModule,
+        MatChipsModule,
+        TranslateModule,
+        MatAutocompleteModule,
+        MatIconModule,
+        OverlaySpinnerComponent,
+        TranslationPipe,
+        TranslationPipe,
+        FormatNihdiPipe,
+        AsyncPipe,
+        ActivePageComponent,
+        MatSelect,
+        SsinOrOrganizationIdPipe,
+        ShowDetailsPipe,
+        FormatSsinPipe,
+        NgClass,
+        PaginatorComponent,
+        KeyValuePipe,
+        MatButtonToggleModule,
+        FormatMultilingualObjectPipe,
+        ErrorCardComponent
+    ],
+    providers: [
+        provideNgxMask(),
+        FormatMultilingualObjectPipe
+    ]
 })
 export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
 

@@ -82,6 +82,24 @@
       "someSuccessSomeFailed": "{successCount} {successCount, plural, one{prescription créée} other{prescriptions  créées}} avec succès. {failedCount} {failedCount, plural, one{prescription n'a pas été créée} other{prescriptions n'ont pas été créées}} en raison d'une erreur. Veuillez vérifier votre saisie et réessayer.",
       "addPrescription": "Prescription additionnelle",
       "publish": "Publier",
+      "control": {
+        "title": "Contrôler",
+        "warning": "Les autres indications pertinentes ne sont pas prises en compte dans ces résultats.",
+        "error": {
+          "required": "Indications sont obligatoire."
+        },
+        "table": {
+          "title": "Résultat PSS",
+          "select": "",
+          "relevance": "Pertinence",
+          "typesOfImagery": "Types d'imagerie",
+          "cost": "Coût",
+          "radiationRate": "Taux de radiation",
+          "radiationLevel": "Taux de radiation {level}/5",
+          "deselectRow": "Désélectionner la ligne {row}",
+          "selectRow": "Sélectionner la ligne {row}"
+        }
+      },
       "deletePrescription": {
         "title": "Annulation de la prescription",
         "message": "Êtes-vous sûr(e) de vouloir annuler la prescription \"{templateName}\" ?"

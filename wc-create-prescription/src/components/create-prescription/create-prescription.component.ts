@@ -16,7 +16,7 @@ import {
 import { FormTemplate } from '@smals/vas-evaluation-form-ui-core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '@reuse/code/services/auth.service';
-import { catchError, concatMap, filter, forkJoin, from, Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, concatMap, filter, forkJoin, from, Observable, of, switchMap } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { DateAdapter } from '@angular/material/core';
@@ -31,7 +31,9 @@ import {
   CreatePrescriptionRequest,
   DataState,
   LoadingStatus,
-  ReadPrescription
+  Person,
+  ReadPrescription,
+  Token
 } from '@reuse/code/interfaces';
 import {
   CreateMultiplePrescriptionsComponent
@@ -53,6 +55,7 @@ import { PatientState } from '@reuse/code/states/patient.state';
 import { TemplateVersionsState } from '@reuse/code/states/template-versions.state';
 import { WcConfigurationService } from '@reuse/code/services/wc-configuration.service';
 import { ProposalService } from '@reuse/code/services/proposal.service';
+import { PssService } from "@reuse/code/services/pss.service";
 import { EncryptionService } from '@reuse/code/services/encryption.service';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -92,7 +95,8 @@ export class CreatePrescriptionWebComponent implements OnChanges {
 
   private trackId = 0;
 
-  readonly patientState$ = this.patientStateService.state;
+  readonly patientState$: Signal<DataState<Person>> = this.patientStateService.state;
+  public status$ = new BehaviorSubject<boolean>(false);
   prescriptionForms = signal<CreatePrescriptionForm[]>([]);
   loading = signal(false);
   cryptoKey: CryptoKey | undefined;
@@ -135,6 +139,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     private proposalService: ProposalService,
     private renderer: Renderer2,
     private encryptionService: EncryptionService,
+    private pssService: PssService,
     private configService: WcConfigurationService,
     @Inject(DOCUMENT) private _document: Document
   ) {
@@ -203,7 +208,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     }
 
     if (changes['initialValues'] && this.initialValues) {
-      this.handlePrescriptionChanges(this.initialValues);
+      this.loadPssStatus(this.initialValues)
     }
   }
 
@@ -216,6 +221,25 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   private handleLanguageChange(): void {
     this.dateAdapter.setLocale(this.lang);
     this.translate.use(this.lang!);
+  }
+
+  private loadPssStatus(initialValues: CreatePrescriptionInitialValues) {
+    this.loading.set(true);
+    if (initialValues.initialPrescription?.templateCode === 'ANNEX_82' || initialValues.initialPrescriptionType === 'ANNEX_82') {
+      this.pssService.getPssStatus()
+        .subscribe({
+          next: (status) => {
+            this.status$.next(status);
+            this.handlePrescriptionChanges(initialValues);
+          },
+          error: () => {
+            this.pssService.setStatus(false);
+            this.handlePrescriptionChanges(initialValues);
+          }
+        })
+    } else {
+      this.handlePrescriptionChanges(initialValues);
+    }
   }
 
   private handlePrescriptionChanges(initialValues: CreatePrescriptionInitialValues): void {
@@ -232,12 +256,15 @@ export class CreatePrescriptionWebComponent implements OnChanges {
         next: (prescriptionModel) => {
           if (prescriptionModel !== null) {
             this.addPrescriptionFormByModel(templateCode, prescriptionModel);
+            this.loading.set(false);
           } else {
             this.toastService.showSomethingWentWrong();
+            this.loading.set(false);
           }
         },
         error: () => {
           this.toastService.showSomethingWentWrong();
+          this.loading.set(false);
         }
       });
   }
@@ -271,6 +298,8 @@ export class CreatePrescriptionWebComponent implements OnChanges {
         initialPrescription: this.updateResponses(initialPrescription)
       }
     ]);
+
+    this.loading.set(false);
   }
 
   private addPrescriptionFormByModel(templateCode: string, model: PrescriptionModel) {

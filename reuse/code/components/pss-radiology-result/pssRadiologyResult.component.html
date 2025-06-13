@@ -1,0 +1,61 @@
+@if (supportOptions) {
+  <table mat-table [dataSource]="supportOptions" class="mat-elevation-z1">
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ 'prescription.create.control.table.select' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox (click)="$event.stopPropagation()"
+                      (change)="$event ? confirm(row) : null"
+                      [checked]="clickedRow === row"
+                      [aria-label]="clickedRow === row ? ('prescription.create.control.table.deselectRow' | translate: {row: row.index}) : ('prescription.create.control.table.selectRow' |  translate: {row: row.index})">
+        </mat-checkbox>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="relevance">
+      <th mat-header-cell *matHeaderCellDef>{{ 'prescription.create.control.table.relevance' | translate }}</th>
+      <td mat-cell *matCellDef="let supportOption" class="pss-score">
+        <div
+          [className]="supportOption.score < 4 ? ('pss-error pss-score-' + supportOption.score) : supportOption.score > 6 ? ('pss-success pss-score-' + supportOption.score) : ('pss-warning pss-score-' + supportOption.score)">{{ supportOption.score }}
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="typesOfImagery">
+      <th mat-header-cell *matHeaderCellDef>{{ 'prescription.create.control.table.typesOfImagery' | translate }}</th>
+      <td mat-cell *matCellDef="let supportOption"> {{ getTranslation(supportOption.instruction) }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="cost">
+      <th mat-header-cell *matHeaderCellDef>{{ 'prescription.create.control.table.cost' | translate }}</th>
+      <td mat-cell
+          *matCellDef="let supportOption"> {{ getEuroSymbols(supportOption.supportOptionMetadata.relativeCost) }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="radiationRate">
+      <th mat-header-cell *matHeaderCellDef>{{ 'prescription.create.control.table.radiationRate' | translate }}</th>
+      <td mat-cell *matCellDef="let supportOption">
+        <slot name="radiation">
+          <div
+            attr.aria-label="{{ 'prescription.create.control.table.radiationLevel' | translate: {level: supportOption.supportOptionMetadata.radiationLevel} }}"
+            role="img"
+          >
+            @for (level of radiationLevel; let i = $index; track level) {
+              <mat-icon
+                svgIcon="radiation"
+                [class]="i < supportOption.supportOptionMetadata.radiationLevel ? 'radiation-active' : 'radiation-inactive'"
+                aria-hidden="true">
+              </mat-icon>
+            }
+          </div>
+        </slot>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="confirm(row)"
+        [class.row-is-clicked]="clickedRow === row"></tr>
+  </table>
+}

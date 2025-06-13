@@ -82,6 +82,24 @@
       "someSuccessSomeFailed": "{successCount} {successCount, plural, one{voorschrift} other{voorschriften}} successvol aangemaakt. {failedCount} {failedCount, plural, one{voorschrift werd} other{voorschriften werden}} niet aangemaakt door een fout. Controleer uw invoer en probeer het opnieuw.",
       "addPrescription": "Extra voorschrift",
       "publish": "Publiceren",
+      "control": {
+        "title": "Controleren",
+        "warning": "Aanvullende relevante indicaties zijn niet meegenomen in deze resultaten.",
+        "error": {
+          "required": "Indicaties zijn verplicht."
+        },
+        "table": {
+          "title": "Resultaten PSS",
+          "select": "",
+          "relevance": "Relevantie",
+          "typesOfImagery": "Soorten afbeeldingen",
+          "cost": "Kosten",
+          "radiationRate": "Stralingsgraad",
+          "radiationLevel": "Stralingsgraad {level}/5",
+          "deselectRow": "Rij {row} deselecteren",
+          "selectRow": "Rij {row} selecteren"
+        }
+      },
       "deletePrescription": {
         "title": "Voorschrift verwijderen",
         "message": "Bent u zeker dat u het voorschrift \"{templateName}\" wilt verwijderen?"

@@ -3,8 +3,8 @@
  * https://jestjs.io/docs/configuration
  */
 
-import type {Config} from 'jest';
-import {config as jestBaseConfig} from '../jest.base.config' ;
+import type { Config } from 'jest';
+import { config as jestBaseConfig } from '../jest.base.config';
 
 const config: Config = {
   ...jestBaseConfig,
@@ -16,6 +16,7 @@ const config: Config = {
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   moduleNameMapper: {
     "^jose": require.resolve("jose"),
+    '^@reuse/(.*)$': '<rootDir>/reuse/$1'
   }
 };
 

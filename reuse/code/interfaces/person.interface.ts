@@ -3,6 +3,7 @@ export interface Person {
   firstName?: string;
   ssin: string;
   birthDate?: string;
+  age?: number;
   gender?: 'M' | 'F';
   profession?: string;
 }
