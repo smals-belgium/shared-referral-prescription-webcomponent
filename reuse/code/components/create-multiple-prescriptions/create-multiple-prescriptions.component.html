@@ -20,7 +20,7 @@
   }
 
   <mat-accordion [hideToggle]="createPrescriptionForms.length === 1" togglePosition="before">
-    @for(prescriptionForm of createPrescriptionForms; track trackByFn; let last = $last) {
+    @for (prescriptionForm of createPrescriptionForms; track trackByFn($index, prescriptionForm); let last = $last) {
       <mat-expansion-panel
         [expanded]="last"
       >

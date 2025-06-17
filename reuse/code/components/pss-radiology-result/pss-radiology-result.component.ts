@@ -25,8 +25,8 @@ const radiationIcon = `
 @Component({
   standalone: true,
   selector: 'app-pss-radiology-result-dialog',
-  templateUrl: './pssRadiologyResult.component.html',
-  styleUrls: ['./pssRadiologyResult.component.scss'],
+  templateUrl: './pss-radiology-result.component.html',
+  styleUrls: ['./pss-radiology-result.component.scss'],
   imports: [
     CommonModule,
     MatDialogModule,
@@ -88,6 +88,7 @@ export class PssRadiologyResultComponent {
   }
 
   getEuroSymbols(cost: number): string {
+    if (cost < 0) return '';
     return '€'.repeat(cost);
   }
 }
