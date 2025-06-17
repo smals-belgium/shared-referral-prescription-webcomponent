@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Testing the News Web Component</title>
+    <base href="/">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/list-prescriptions/wc-list-prescriptions.css">
+    <script src="../lib/keycloak.js"></script>
+    <style>
+        body {
+            font-family: Roboto, "Helvetica Neue", sans-serif;
+        }
+    </style>
+</head>
+<body>
+<script>
+    // Setting the profile for the target environment
+    window.referralPrescriptionEnv = 'accHcp';
+    const params = new URLSearchParams(window.location.search);
+    // Setting the environment dynamically
+    const keycloak = getKeycloakConfigurationForEnv();
+    // Initialization of the authentication library
+    keycloak.init({onLoad: 'login-required', checkLoginIframe: false})
+        .then(function (authenticated) {
+            // Creation of the custom element
+            const list = document.createElement('nihdi-referral-prescription-list');
+
+            //list.initialValues = {'intent': 'order', 'initialPrescriptionType': 'ASSISTING_WITH_PERSONAL_HYGIENE'};
+            list.intent = 'order';
+            // Input for the language
+            list.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'fr-BE';
+            // Callback method to get a token from the authentication library
+            const exchangedToken = async (audience) => await exchangeToken(keycloak.token, keycloak.clientId, audience)
+            list.services = {
+                'getAccessToken': (audience) => {
+                    if (audience) {
+                        return Promise.resolve(exchangedToken(audience))
+                    } else {
+                        return Promise.resolve(keycloak.token);
+                    }
+                }
+            };
+            // Input for the patient SSIN
+            list.patientSsin = params.get('ssin');
+            // Listener function to get feedback from the Web Component after the prescription has been successfully created
+            list.addEventListener('clickOpenPrescriptionDetails', (prescriptionSummary) => {
+                console.log('Opening prescription details', prescriptionSummary.detail.id);
+                //document.body.removeChild(list);
+                window.location.href = "https://wwwacc.referral-prescription.ehealth.fgov.be/details?ssin=" + params.get('ssin') + "&prescriptionId=" + prescriptionSummary.detail.id;
+            });
+            // Adding the custom element to the HTML body
+            document.body.append(list);
+        }).catch(function () {
+        alert('failed to initialize');
+    });
+
+    /**
+     * Returns a new Keycloak configuration object for the current environment.
+     *
+     * This function creates and returns an instance of the Keycloak client
+     * configured with the predefined parameters such as the Keycloak server URL,
+     * realm, and client ID. This setup is typically used to initialize the Keycloak
+     * JavaScript adapter in frontend applications.
+     *
+     * @function
+     * @returns {Keycloak} A Keycloak instance configured with:
+     *  - `url`: "https://authentication/server/auth/endpoint"
+     *  - `realm`: "myRealm"
+     *  - `clientId`: "myClientId"
+     *
+     */
+    function getKeycloakConfigurationForEnv() {
+        return new Keycloak({
+            url: `https://api-acpt.ehealth.fgov.be/auth`,
+            realm: `healthcare`,
+            clientId: `nihdi-uhmep-hcp`
+        });
+    }
+
+    /**
+     * Exchanges an existing access token for a new one using OAuth 2.0 Token Exchange (RFC 8693).
+     *
+     * @param {string} subjectToken - The token you want to exchange (typically an access token).
+     * @param {string} clientId - The OAuth 2.0 client ID of the requesting application.
+     * @param {string} audience - The target audience of the new token (e.g., a specific API).
+     *
+     * @returns {Promise<string>} A Promise that resolves to the new access token string.
+     *
+     * @throws Will throw an error if the token exchange fails or if the server responds with a non-200 status.
+     */
+    async function exchangeToken(
+        subjectToken,
+        clientId,
+        audience
+    ) {
+        const params = new URLSearchParams();
+        params.append('grant_type', 'urn:ietf:params:oauth:grant-type:token-exchange');
+        params.append('subject_token_type', 'urn:ietf:params:oauth:token-type:access_token');
+        params.append('subject_token', subjectToken);
+        params.append('client_id', clientId);
+
+        if (audience) {
+            params.append('audience', audience);
+        }
+
+        try {
+            const response = await fetch('https://api-acpt.ehealth.fgov.be/auth/realms/healthcare/protocol/openid-connect/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: params.toString()
+            });
+            if (!response.ok) {
+                throw new Error(`Failed to fetch token: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            console.log('Response JSON', data);
+            return data['access_token'];
+        } catch (err) {
+            console.error('Token exchange error:', err);
+            throw err;
+        }
+    }
+</script>
+
+<!-- Web component script at the end -->
+<script src="https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/list-prescriptions/wc-list-prescriptions.js"
+        type="module"></script>
+</body>
+</html>
