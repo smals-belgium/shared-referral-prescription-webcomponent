@@ -8,7 +8,9 @@ import {
 } from '@smals/vas-evaluation-form-ui-material/elements/shared';
 import { AutocompleteOption, EvfCommonErrorsPipe, EvfLabelPipe, } from '@smals/vas-evaluation-form-ui-core';
 import { ControlAnnex82Request, SupportOption } from '@reuse/code/interfaces/pss.interface';
-import { PssRadiologyResultComponent } from '@reuse/code/components/pss-radiology-result/pssRadiologyResult.component';
+import {
+  PssRadiologyResultComponent
+} from '@reuse/code/components/pss-radiology-result/pss-radiology-result.component';
 import { PssService } from '@reuse/code/services/pss.service';
 import { ToastService } from '@reuse/code/services/toast.service';
 import { MatFormField, MatFormFieldModule, MatLabel } from '@angular/material/form-field';
@@ -107,7 +109,7 @@ export class RecommendationsComponent extends EvfBaseFormElementComponent {
 
   private toControlAnnex82Request(indications: AutocompleteOption[], intendedProcedure?: AutocompleteOption): ControlAnnex82Request {
     const exchangeId = this.pssService.getPssSessionId() ?? '';
-    this.elementControl.elementGroup?.get('exchangeId').setValue(exchangeId)
+    this.elementControl.elementGroup?.get('exchangeId')?.setValue(exchangeId)
 
     return {
       examId: intendedProcedure?.value,

@@ -56,7 +56,7 @@ import { ErrorCard } from '../../interfaces/error-card.interface';
 })
 export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestroy {
 
-  readonly trackByFn = (index: number, item: CreatePrescriptionForm) => item?.trackId;
+  readonly trackByFn = (index: number, item: CreatePrescriptionForm) => item?.trackId || index
   modelState = this.prescriptionModelState.modalState;
 
   @Input() lang!: string;
@@ -94,6 +94,7 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
   }
 
   mapResponsesToRepeatObject(responses: Record<string, any>) {
+    if (!responses) return responses;
     const occurrenceTiming: OccurrenceTiming = responses['occurrenceTiming']
     if(!occurrenceTiming) return responses;
 
