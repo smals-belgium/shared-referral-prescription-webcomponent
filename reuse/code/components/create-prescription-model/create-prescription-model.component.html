@@ -55,6 +55,7 @@
                 [submitted]="!!prescriptionForm.submitted"
                 [template]="getTemplateData(formTemplateState)"
                 (changeElementGroup)="setElementGroup(prescriptionForm, $any($event)?.detail)"
+                [status]="false"
               ></nihdi-referral-prescription-form>
 
         @if(this.prescriptionForm.modelId) {
