@@ -51,7 +51,7 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
   @Input() template!: FormTemplate | string;
   @Input() readonly = false;
   @Input() submitted = false;
-  @Input() services!: {
+  @Input() services?: {
     getAccessToken: (audience?: string) => Promise<string | null>
   }
   @Input() status: boolean | undefined;
@@ -99,7 +99,9 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
   }
 
   private handleTokenChange(): void {
-    this.authService.init(this.services.getAccessToken);
+    if (this.services?.getAccessToken) {
+      this.authService.init(this.services.getAccessToken);
+    }
   }
 
   private disableFields(elementControls: BaseElementControl[]): void {
