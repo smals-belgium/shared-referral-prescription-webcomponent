@@ -9,7 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { IfStatusLoadingDirective } from '../../directives/if-status-loading.directive';
 import { IfStatusSuccessDirective } from '../../directives/if-status-success.directive';
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
-import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormatNihdiPipe } from '../../pipes/format-nihdi.pipe';
 import { TranslationPipe } from '../../pipes/translation.pipe';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -25,7 +25,7 @@ import { PrescriptionState } from '../../states/prescription.state';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { ProfessionalService } from '../../services/professional.service';
 import { toDataState } from '../../utils/rxjs.utils';
-import {FormatMultilingualObjectPipe} from "../../pipes/format-multilingual-object.pipe";
+import { FormatMultilingualObjectPipe } from "../../pipes/format-multilingual-object.pipe";
 import { v4 as uuidv4 } from 'uuid';
 import { BaseDialog } from '../base.dialog';
 import { ErrorCardComponent } from '../../components/error-card/error-card.component';
@@ -38,10 +38,10 @@ interface TransferAssignation {
 }
 
 @Component({
-    standalone: true,
-    templateUrl: './transfer-assignation.dialog.html',
-    styleUrls: ['./transfer-assignation.dialog.scss'],
-    imports: [
+  standalone: true,
+  templateUrl: './transfer-assignation.dialog.html',
+  styleUrls: ['./transfer-assignation.dialog.scss'],
+  imports: [
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
@@ -75,12 +75,12 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
 
   readonly professionalsState$: Observable<DataState<Professional[]>> = toObservable(this.searchCriteria$).pipe(
     switchMap((criteria) => {
-      if(criteria.query.length === 0 && criteria.zipCodes.length === 0) {
+      if (criteria.query.length === 0 && criteria.zipCodes.length === 0) {
         return of([])
       }
       return this.professionalService.findAll(criteria.query, criteria.zipCodes, ['NURSE'])
     }),
-    map((professionals) => professionals?.filter((p) => !this.data.assignedCareGivers?.includes(p.id.ssin!))),
+    map((professionals) => professionals?.filter((p) => !this.data.assignedCareGivers?.includes(p.id.ssin))),
     toDataState()
   );
   readonly formGroup = new FormGroup({
@@ -101,13 +101,13 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
   generatedUUID = '';
 
   constructor(
-    private prescriptionStateService: PrescriptionState,
-    private professionalService: ProfessionalService,
-    private toastService: ToastService,
-    private geographyService: GeographyService,
+    private readonly prescriptionStateService: PrescriptionState,
+    private readonly professionalService: ProfessionalService,
+    private readonly toastService: ToastService,
+    private readonly geographyService: GeographyService,
     dialogRef: MatDialogRef<TransferAssignationDialog>,
-    @Inject(MAT_DIALOG_DATA) private data: TransferAssignation,
-    private translate: TranslateService
+    @Inject(MAT_DIALOG_DATA) private readonly data: TransferAssignation,
+    private readonly translate: TranslateService
   ) {
     super(dialogRef)
     this.currentLang = this.translate.currentLang
@@ -182,7 +182,7 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
       .subscribe({
         next: () => {
           this.closeErrorCard();
-          this.toastService.show('prescription.assignPerformer.success', {interpolation: professional});
+          this.toastService.show('prescription.transferAssignation.success', {interpolation: professional.healthcarePerson});
           this.closeDialog(professional);
         },
         error: (err) => {
