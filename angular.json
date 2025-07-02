@@ -352,6 +352,23 @@
             }
           },
           "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular-builders/jest:run",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "configPath": "jest.config.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": [
+              "scss"
+            ],
+            "assets": [],
+            "styles": [],
+            "scripts": []
+          }
         }
       }
     },

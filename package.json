@@ -18,6 +18,7 @@
     "build:wc:evfform": "ng build wc-evf-form --configuration production --output-hashing none && vite build --mode production -c ./wc-evf-form/vite.config.mjs",
     "watch": "ng build --watch --configuration development",
     "test:wc:reuse": "ng test reuse",
+    "test:wc:pdf": "ng test wc-pdfmake",
     "test:wc:details": "ng test wc-prescription-details",
     "test:wc:create": "ng test wc-create-prescription",
     "test:wc:list": "ng test wc-list-prescriptions",
