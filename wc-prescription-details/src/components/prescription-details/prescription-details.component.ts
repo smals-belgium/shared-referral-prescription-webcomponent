@@ -295,24 +295,24 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   });
 
   constructor(
-    private translate: TranslateService,
-    private dateAdapter: DateAdapter<DateTime>,
-    private dialog: MatDialog,
-    private authService: AuthService,
-    private configService: WcConfigurationService,
-    private renderer: Renderer2,
-    private accessMatrixStateService: AccessMatrixState,
-    private prescriptionStateService: PrescriptionState,
-    private proposalSateService: ProposalState,
-    private patientStateService: PatientState,
-    private templatesStateService: TemplatesState,
-    private templateVersionsStateService: TemplateVersionsState,
-    private toastService: ToastService,
-    private identifyState: IdentifyState,
-    private encryptionService: EncryptionService,
-    private pseudoService: PseudoService,
-    private encryptionStateService: EncryptionState,
-    @Inject(DOCUMENT) private _document: Document
+    private readonly translate: TranslateService,
+    private readonly dateAdapter: DateAdapter<DateTime>,
+    private readonly dialog: MatDialog,
+    private readonly authService: AuthService,
+    private readonly configService: WcConfigurationService,
+    private readonly renderer: Renderer2,
+    private readonly accessMatrixStateService: AccessMatrixState,
+    private readonly prescriptionStateService: PrescriptionState,
+    private readonly proposalSateService: ProposalState,
+    private readonly patientStateService: PatientState,
+    private readonly templatesStateService: TemplatesState,
+    private readonly templateVersionsStateService: TemplateVersionsState,
+    private readonly toastService: ToastService,
+    private readonly identifyState: IdentifyState,
+    private readonly encryptionService: EncryptionService,
+    private readonly pseudoService: PseudoService,
+    private readonly encryptionStateService: EncryptionState,
+    @Inject(DOCUMENT) private readonly _document: Document
   ) {
     this.currentLang = this.translate.currentLang;
     this.dateAdapter.setLocale('fr-BE');
@@ -661,7 +661,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   async getPrescriptionKey(pseudonymizedKey: string): Promise<void> {
     try {
       const pseudoInTransit = this.pseudoService.toPseudonymInTransit(pseudonymizedKey);
-      if(pseudoInTransit) {
+      if (pseudoInTransit) {
         const uint8Array = await this.pseudoService.identifyPseudonymInTransit(pseudoInTransit)
         this.encryptionStateService.loadCryptoKey(uint8Array);
       }
@@ -746,6 +746,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   }
 
   ngOnDestroy() {
+    this.printer = false;
     this.encryptionStateService.resetCryptoKey();
     if (this.intent?.toLowerCase() === 'proposal') {
       this.proposalSateService.resetProposal();
@@ -753,4 +754,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       this.prescriptionStateService.resetPrescription();
     }
   }
+
+  protected readonly signal = signal;
 }
