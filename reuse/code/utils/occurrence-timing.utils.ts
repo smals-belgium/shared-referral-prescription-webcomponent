@@ -1,4 +1,4 @@
-import { OccurrenceTiming, UnitsOfTime } from '../interfaces';
+import { OccurrenceTiming, UnitsOfTime, Weekday } from '../interfaces';
 
 const translations = {
   every: {
@@ -22,6 +22,10 @@ const translations = {
   and: {
     nl: 'en',
     fr: 'et'
+  },
+  sessionDuration: {
+    nl: 'een sessie van',
+    fr: 'une séance de'
   },
   during: {
     nl: 'gedurende',
@@ -122,11 +126,24 @@ const translations = {
 };
 
 export function translateOccurrenceTiming(occurrenceTiming: OccurrenceTiming, language: 'nl' | 'fr'): string {
-  return [
-    translateFrequencyAndPeriod(occurrenceTiming, language),
-    translateDayOfWeek(occurrenceTiming, language),
-    translateDuration(occurrenceTiming, language),
-  ].join(' ');
+  const words = [];
+  const frequencyAndPeriod = translateFrequencyAndPeriod(occurrenceTiming, language);
+  const dayOfWeek = translateDayOfWeek(occurrenceTiming, language);
+  const duration = translateDuration(occurrenceTiming, language);
+  const boundsDuration = translateBoundsDuration(occurrenceTiming, language);
+  if(frequencyAndPeriod.toString().trim().length!=0){
+    words.push(frequencyAndPeriod)
+  }
+  if(dayOfWeek.toString().trim().length!=0){
+    words.push(dayOfWeek)
+  }
+  if(duration.toString().trim().length!=0){
+    words.push(duration)
+  }
+  if(boundsDuration.toString().trim().length!=0){
+    words.push(boundsDuration)
+  }
+  return words.join(', ');
 }
 
 export function translateFrequencyAndPeriod(occurrenceTiming: OccurrenceTiming, language: 'nl' | 'fr'): string {
@@ -177,10 +194,24 @@ export function translateDayOfWeek(occurrenceTiming: OccurrenceTiming, language:
   return words.join(' ');
 }
 
+export function translateBoundsDuration(occurrenceTiming: OccurrenceTiming, language: 'nl' | 'fr'): string {
+  const words = [];
+  if (occurrenceTiming.repeat.boundsDuration) {
+    words.push(translations.during[language]);
+    words.push(occurrenceTiming.repeat.boundsDuration.value);
+    if (occurrenceTiming.repeat.boundsDuration.code) {
+      words.push(translateTimeUnit(occurrenceTiming.repeat.boundsDuration.value, occurrenceTiming.repeat.boundsDuration.code, language));
+    }
+  }
+  return words.join(' ');
+}
+
 export function translateDuration(occurrenceTiming: OccurrenceTiming, language: 'nl' | 'fr'): string {
   const words = [];
-  if (occurrenceTiming.repeat.duration) {
-    words.push(translations.during[language]);
+  if (!occurrenceTiming.repeat.duration)
+    return ''
+  else{
+    words.push(translations.sessionDuration[language]);
     words.push(occurrenceTiming.repeat.duration);
     if (occurrenceTiming.repeat.durationUnit) {
       words.push(translateTimeUnit(occurrenceTiming.repeat.duration, occurrenceTiming.repeat.durationUnit, language));
@@ -194,4 +225,40 @@ export function translateTimeUnit(unit = 1, unitOfTime?: UnitsOfTime, language: 
   return unitOfTime
     ? translations.unitsOfTime[oneOrMultiple][unitOfTime]?.[language] || unitOfTime
     : '';
+}
+
+export function validateOccurrenceTiming(input: any): input is OccurrenceTiming {
+  if (!input || typeof input !== 'object') return false;
+
+  const repeat = input.repeat;
+  if (!repeat || typeof repeat !== 'object') return false;
+
+  const { frequency, period, periodUnit, duration, durationUnit, dayOfWeek, boundsDuration } = repeat;
+
+  if (frequency !== undefined && typeof frequency !== 'number') return false;
+  if (period !== undefined && typeof period !== 'number') return false;
+  if (periodUnit !== undefined && !isValidUnitOfTime(periodUnit)) return false;
+
+  if (duration !== undefined && typeof duration !== 'number') return false;
+  if (durationUnit !== undefined && !isValidUnitOfTime(durationUnit)) return false;
+
+  if (dayOfWeek !== undefined && !Array.isArray(dayOfWeek)) return false;
+  if (dayOfWeek && !dayOfWeek.every((d: unknown) => isValidWeekday(d))) return false;
+
+  if (boundsDuration !== undefined) {
+    if (typeof boundsDuration !== 'object') return false;
+    if (typeof boundsDuration.value !== 'number') return false;
+    if (!isValidUnitOfTime(boundsDuration.code)) return false;
+    if (typeof boundsDuration.system !== 'string') return false;
+  }
+
+  return true;
+}
+
+function isValidUnitOfTime(value: any): value is UnitsOfTime {
+  return ['s', 'min', 'h', 'd', 'wk', 'mo', 'a'].includes(value);
+}
+
+function isValidWeekday(value: any): value is Weekday {
+  return ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].includes(value);
 }

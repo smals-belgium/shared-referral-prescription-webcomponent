@@ -30,7 +30,7 @@ import {
   CreatePrescriptionInitialValues,
   CreatePrescriptionRequest,
   DataState,
-  LoadingStatus,
+  LoadingStatus, OccurrenceTiming,
   Person,
   ReadPrescription,
   Token
@@ -320,6 +320,22 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   }
 
   updateResponses(initialPrescription?: ReadPrescription) {
+    if(initialPrescription?.responses != undefined) {
+      if (initialPrescription?.responses['occurrenceTiming'] != undefined) {
+        const occurrenceTiming: OccurrenceTiming = initialPrescription?.responses['occurrenceTiming'];
+        if (occurrenceTiming.repeat.boundsDuration != undefined) {
+          initialPrescription!.responses['boundsDuration'] = occurrenceTiming.repeat.boundsDuration.value;
+          initialPrescription!.responses['boundsDurationUnit'] = occurrenceTiming.repeat.boundsDuration.code;
+        }
+        if (occurrenceTiming.repeat.duration != undefined) {
+          initialPrescription!.responses['sessionDuration'] = occurrenceTiming.repeat.duration;
+          initialPrescription!.responses['sessionDurationUnit'] = occurrenceTiming.repeat.durationUnit;
+        }
+        if (occurrenceTiming.repeat.dayOfWeek != undefined) {
+          initialPrescription!.responses['dayOfWeek'] = occurrenceTiming.repeat.dayOfWeek;
+        }
+      }
+    }
     if (!this.initialValues?.extend || !initialPrescription?.responses) {
       return initialPrescription;
     }
