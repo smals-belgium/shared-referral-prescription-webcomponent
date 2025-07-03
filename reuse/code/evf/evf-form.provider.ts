@@ -17,7 +17,7 @@ import { withInfoElement } from '@smals/vas-evaluation-form-ui-material/elements
 import { withRadioElement } from '@smals/vas-evaluation-form-ui-material/elements/radio';
 import { withTextareaElement } from '@smals/vas-evaluation-form-ui-material/elements/textarea';
 import { withRepeatableElement } from '@smals/vas-evaluation-form-ui-material/elements/repeatable';
-import { withSelectElement } from '@smals/vas-evaluation-form-ui-material/elements/select';
+import { withMultiSelectElement, withSelectElement } from '@smals/vas-evaluation-form-ui-material/elements/select';
 import { withRowElement } from '@smals/vas-evaluation-form-ui-material/elements/row';
 import { withCheckboxListElement } from '@smals/vas-evaluation-form-ui-material/elements/checkbox-list';
 import { EVF_MATERIAL_OPTIONS } from '@smals/vas-evaluation-form-ui-material';
@@ -43,6 +43,7 @@ export function provideEvfForm() {
       withSectionElement(),
       withRowElement(),
       withSelectElement(),
+      withMultiSelectElement(),
       withInfoElement(),
       withRepeatableElement(),
       evfElementConfigFeature({
