@@ -78,12 +78,13 @@
     @if (hasAdditionalRelevantInformation()) {
 
       <app-error-card
-        [message]="'prescription.create.control.warning' | translate"
+        [message]=getWarningMessage()
         [showRetry]="false"
       ></app-error-card>
     }
 
     <app-pss-radiology-result-dialog [supportOptions]="controlIndications()"
+                                     [isClickable]="true"
                                      (selectSupportOption)="selectSupportOption($event)"></app-pss-radiology-result-dialog>
   </section>
 }

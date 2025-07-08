@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
+import { EvfTranslateService, Language } from '@smals/vas-evaluation-form-ui-core';
+import { SupportOption } from '@reuse/code/interfaces/pss.interface';
 import {
   PssRadiologyResultComponent
 } from '@reuse/code/components/pss-radiology-result/pss-radiology-result.component';
-import { EvfTranslateService, Language } from '@smals/vas-evaluation-form-ui-core';
-import { SupportOption } from '@reuse/code/interfaces/pss.interface';
 
 
 describe('PssRadiologyResultComponent', () => {
@@ -82,7 +82,7 @@ describe('PssRadiologyResultComponent', () => {
     expect(component['language']).toBe('nl');
     expect(component['radiationLevel']).toEqual(Array(5));
     expect(component['clickedRow']).toBeUndefined();
-    expect(component['displayedColumns']).toEqual(['select', 'relevance', 'typesOfImagery', 'cost', 'radiationRate']);
+    expect(component['displayedColumns']).toEqual(['select', 'relevance', 'typesOfImagery', 'radiationRate']);
   });
 
   it('should accept supportOptions input', () => {
@@ -112,17 +112,6 @@ describe('PssRadiologyResultComponent', () => {
 
     component.confirm(secondOption);
     expect(component['clickedRow']).toBe(secondOption);
-  });
-
-  it('should return correct number of euro symbols', () => {
-    expect(component.getEuroSymbols(1)).toBe('€');
-    expect(component.getEuroSymbols(3)).toBe('€€€');
-    expect(component.getEuroSymbols(5)).toBe('€€€€€');
-  });
-
-  it('should return empty string for zero cost and negative numbers', () => {
-    expect(component.getEuroSymbols(0)).toBe('');
-    expect(component.getEuroSymbols(-1)).toBe('');
   });
 
   it('should emit selectSupportOption event', () => {
@@ -157,13 +146,12 @@ describe('PssRadiologyResultComponent', () => {
     fixture.detectChanges();
 
     const headerCells = fixture.nativeElement.querySelectorAll('th[mat-header-cell]');
-    expect(headerCells.length).toBe(5);
+    expect(headerCells.length).toBe(4);
 
     expect(headerCells[0].textContent).toContain('prescription.create.control.table.select');
     expect(headerCells[1].textContent).toContain('prescription.create.control.table.relevance');
     expect(headerCells[2].textContent).toContain('prescription.create.control.table.typesOfImagery');
-    expect(headerCells[3].textContent).toContain('prescription.create.control.table.cost');
-    expect(headerCells[4].textContent).toContain('prescription.create.control.table.radiationRate');
+    expect(headerCells[3].textContent).toContain('prescription.create.control.table.radiationRate');
   });
 
   it('should render correct number of data rows', () => {
@@ -223,16 +211,6 @@ describe('PssRadiologyResultComponent', () => {
     expect(scoreElement.className).toContain('pss-score-7');
   });
 
-  it('should call getEuroSymbols and display euro symbols', () => {
-    const getEuroSymbolsSpy = jest.spyOn(component, 'getEuroSymbols').mockReturnValue('€€');
-    component.supportOptions = [mockSupportOptions[0]];
-    fixture.detectChanges();
-
-    expect(getEuroSymbolsSpy).toHaveBeenCalledWith(mockSupportOptions[0].supportOptionMetadata.relativeCost);
-
-    const costCell = fixture.nativeElement.querySelector('td[mat-cell]:nth-child(4)');
-    expect(costCell.textContent.trim()).toBe('€€');
-  });
 
   it('should render correct number of radiation icons', () => {
     component.supportOptions = [mockSupportOptions[0]];
@@ -278,10 +256,40 @@ describe('PssRadiologyResultComponent', () => {
   it('should not apply clicked class to unselected rows', () => {
     component.supportOptions = mockSupportOptions;
     component['clickedRow'] = mockSupportOptions[0];
+    component['isClickable'] = true;
     fixture.detectChanges();
 
     const secondRow = fixture.nativeElement.querySelectorAll('tr[mat-row]')[1];
     expect(secondRow.className).not.toContain('row-is-clicked');
+  });
+
+  it('should display checkbox if isClickable is true', () => {
+    component.supportOptions = mockSupportOptions;
+    component['isClickable'] = true;
+    fixture.detectChanges();
+
+    const firstRow = fixture.nativeElement.querySelector('tr[mat-row]');
+    expect(firstRow.className).toContain('row-is-clickable');
+  });
+
+  it('should not display checkbox if isClickable is false', () => {
+    component.supportOptions = mockSupportOptions;
+    component['isClickable'] = false;
+    fixture.detectChanges();
+
+    const firstRow = fixture.nativeElement.querySelector('tr[mat-row]');
+    expect(firstRow.className).not.toContain('row-is-clickable');
+  });
+
+  it('should not apply selected class to selected rows', () => {
+    component['isClickable'] = false;
+    component.supportOptions = mockSupportOptions;
+    component['selectedRow'] = mockSupportOptions[0];
+    fixture.detectChanges();
+
+
+    const firstRow = fixture.nativeElement.querySelector('tr[mat-row]');
+    expect(firstRow.className).toContain('row-is-selected');
   });
 
 });

@@ -1,0 +1,41 @@
+<evf-form-detail-layout [options]="options">
+  <evf-detail-label
+      *ngIf="element.labelTranslationId && options.showLabel"
+      [labelId]="element.labelTranslationId!"
+      [interpolationData]="interpolationData"
+    ></evf-detail-label>
+
+
+  @if (!controlRecommendations()) {
+      @if (isLoading()) {
+        <mat-icon>
+          <mat-spinner diameter="20">
+          </mat-spinner>
+        </mat-icon>
+      }
+  }
+</evf-form-detail-layout>
+@if (controlRecommendations()) {
+  <section class="pss-results">
+    <p>{{ 'prescription.create.control.table.title' | translate }}</p>
+    @if (hasAdditionalRelevantInformation()) {
+
+      <app-error-card
+        [message]=getWarningMessage()
+        [showRetry]="false"
+      ></app-error-card>
+    }
+
+    <app-pss-radiology-result-dialog [supportOptions]="controlRecommendations()"
+                                     [isClickable]="false"
+                                     [prescribedExam]="getPrescribedExam()">
+    </app-pss-radiology-result-dialog>
+  </section>
+}
+@if (isProfessional() && !isPssActive()){
+  <app-error-card
+    [title]="'pss.unavailable.title' | translate"
+    [message]="'pss.unavailable.message' | translate"
+    [showRetry]="false"
+  ></app-error-card>
+}

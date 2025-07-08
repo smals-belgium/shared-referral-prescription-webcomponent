@@ -451,5 +451,11 @@
     "errors": {
       "failedToLoadModels": "Het laden van de sjablonen is mislukt."
     }
+  },
+  "pss": {
+    "unavailable":{
+      "title": "Service tijdelijk niet beschikbaar",
+      "message": "Onze excuses, de PSS (Prescription Search Support) service is momenteel niet beschikbaar.\nU kunt de aanbevelingen voor medische beeldvormende onderzoeken op dit moment niet raadplegen.\nProbeer het over een paar minuten opnieuw."
+    }
   }
 }

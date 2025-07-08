@@ -34,10 +34,9 @@ export class PssService {
   }
 
   getIndications(url: string, params: HttpParams): Observable<{
-    sessionId: string,
     indications: AutocompleteOption[]
   }> {
-    return this.http.get<{ sessionId: string, indications: AutocompleteOption[] }>(url, {params});
+    return this.http.get<{ indications: AutocompleteOption[] }>(url, {params});
   }
 
   getIntentions(url: string, params: HttpParams): Observable<{ intentions: AutocompleteOption[] }> {
@@ -49,7 +48,11 @@ export class PssService {
     return this.http.get<boolean>('/pss/status');
   }
 
-  controlIndications(controlAnnex82Request: ControlAnnex82Request): Observable<ControlAnnex82Response> {
+  getPssRecommendations(controlAnnex82Request: ControlAnnex82Request): Observable<ControlAnnex82Response> {
     return this.http.post<ControlAnnex82Response>('/pss/radiology/control', controlAnnex82Request);
+  }
+
+  getPssRecommendationsByExchangeId(exchangeId: string): Observable<ControlAnnex82Response> {
+    return this.http.get<ControlAnnex82Response>('/pss/radiology/control/'+exchangeId);
   }
 }

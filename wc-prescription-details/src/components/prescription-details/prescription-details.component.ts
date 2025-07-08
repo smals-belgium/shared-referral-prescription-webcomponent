@@ -96,13 +96,14 @@ import { ProposalState } from '@reuse/code/states/proposal.state';
 import { isPrescriptionId, isPrescriptionShortCode, isSsin, validateSsinChecksum } from '@reuse/code/utils/utils';
 import { EncryptionService } from '@reuse/code/services/encryption.service';
 import { PseudoService } from '@reuse/code/services/pseudo.service';
-import { catchError, concatMap, from, map, Observable, of, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, concatMap, from, map, Observable, of, throwError } from 'rxjs';
 import { EncryptionState } from '@reuse/code/states/encryption.state';
 import { v4 as uuidv4 } from 'uuid';
 import { ApproveProposalDialog } from '@reuse/code/dialogs/approve-proposal/approve-proposal.dialog';
 import { CanDuplicatePrescriptionPipe } from '@reuse/code/pipes/can-duplicate-prescription.pipe';
 import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-responses-state.interface';
 import { FormatMultilingualObjectPipe } from '@reuse/code/pipes/format-multilingual-object.pipe';
+import { PssService } from '@reuse/code/services/pss.service';
 
 interface ViewState {
   prescription: ReadPrescription;
@@ -162,6 +163,9 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   responses: Record<string, any> | undefined;
   currentLang?: string;
 
+
+  public status$ = new BehaviorSubject<boolean>(false);
+
   @HostBinding('attr.lang')
   @Input() lang = 'fr-BE';
   @Input() initialPrescriptionType?: string;
@@ -183,7 +187,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     return this.prescriptionStateService.state().data?.templateCode;
   });
   private readonly tokenClaims$ = toSignal(this.authService.getClaims());
-  private readonly isProfessional$ = toSignal(this.authService.isProfessional());
+  protected readonly isProfessional$ = toSignal(this.authService.isProfessional());
   private readonly decryptedResponses$: WritableSignal<DecryptedResponsesState> = signal({
     data: null,
     error: null
@@ -195,6 +199,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       const templateCode = this.templateCode$();
       const cryptoKey = this.encryptionStateService.state().data;
       const template = this.templateVersionsStateService.getState('READ_' + templateCode)()?.data;
+      this.loadPssStatus(templateCode!);
 
       if (!cryptoKey || !template) {
         return {data: prescriptionState.data, status: LoadingStatus.LOADING};
@@ -311,6 +316,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     private readonly identifyState: IdentifyState,
     private readonly encryptionService: EncryptionService,
     private readonly pseudoService: PseudoService,
+    private readonly pssService: PssService,
     private readonly encryptionStateService: EncryptionState,
     @Inject(DOCUMENT) private readonly _document: Document
   ) {
@@ -392,6 +398,20 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     }
     if (changes['prescriptionId'] || changes['patientSsin']) {
       this.loadPrescriptionOrProposal();
+    }
+  }
+
+  private loadPssStatus(templateCode: string) {
+    if (templateCode === 'ANNEX_82') {
+      this.pssService.getPssStatus()
+        .subscribe({
+          next: (status) => {
+            this.status$.next(status);
+          },
+          error: () => {
+            this.pssService.setStatus(false);
+          }
+        })
     }
   }
 

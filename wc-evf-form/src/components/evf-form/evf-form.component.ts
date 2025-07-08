@@ -90,7 +90,6 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
           pssActive: this.status
         }
       }
-
     }
 
     if (changes['services']) {

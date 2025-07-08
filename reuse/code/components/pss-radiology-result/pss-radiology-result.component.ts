@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
@@ -38,16 +47,19 @@ const radiationIcon = `
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PssRadiologyResultComponent {
+export class PssRadiologyResultComponent implements OnChanges{
   private language: 'nl' | 'fr' = 'nl';
   protected radiationLevel = Array(5);
   protected clickedRow: SupportOption | undefined;
+  protected selectedRow: SupportOption | undefined;
 
-  @Input() supportOptions: SupportOption[] | undefined
+  @Input() supportOptions: SupportOption[] | undefined;
+  @Input() prescribedExam: string | undefined;
+  @Input() isClickable: boolean = true;
 
   @Output() selectSupportOption = new EventEmitter<SupportOption>();
 
-  protected displayedColumns: string[] = ['select', 'relevance', 'typesOfImagery', 'cost', 'radiationRate'];
+  protected displayedColumns: string[] = ['select', 'relevance', 'typesOfImagery', 'radiationRate'];
 
   constructor(
     private translate: TranslateService,
@@ -61,6 +73,20 @@ export class PssRadiologyResultComponent {
       });
 
     this.registerIcon();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['isClickable']) {
+      this.displayedColumns = ['relevance', 'typesOfImagery', 'radiationRate'];
+    }
+    if (changes['supportOptions'] || changes['prescribedExam']){
+      if(this.prescribedExam && this.supportOptions){
+        this.selectedRow = this.findSupportOptionById(this.supportOptions, this.prescribedExam)
+        if(this.selectedRow){
+          this.selectSupportOption.next(this.selectedRow);
+        }
+      }
+    }
   }
 
   confirm(supportOption: SupportOption) {
@@ -87,8 +113,7 @@ export class PssRadiologyResultComponent {
     iconRegistry.addSvgIconLiteral('radiation', sanitizer.bypassSecurityTrustHtml(radiationIcon));
   }
 
-  getEuroSymbols(cost: number): string {
-    if (cost < 0) return '';
-    return '€'.repeat(cost);
+  private findSupportOptionById(options: SupportOption[], idToFind: string): SupportOption | undefined {
+    return options.find(option => option.id === idToFind);
   }
 }
