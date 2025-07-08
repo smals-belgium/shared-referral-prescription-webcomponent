@@ -5,7 +5,8 @@ import {
   Input,
   OnChanges,
   OnInit,
-  SimpleChanges
+  SimpleChanges,
+  ViewEncapsulation
 } from '@angular/core';
 import {
   ElementGroup,
@@ -18,9 +19,14 @@ import {
 import { NgIf, NgTemplateOutlet } from '@angular/common';
 import { DateAdapter } from '@angular/material/core';
 import { DateTime } from 'luxon';
+import { AuthService } from '@reuse/code/services/auth.service';
+import { TranslateService } from '@ngx-translate/core';
+import { PssService } from '@reuse/code/services/pss.service';
 
 @Component({
     templateUrl: './evf-form-details.component.html',
+    styleUrls: ['./evf-form-details.component.scss'],
+    encapsulation: ViewEncapsulation.ShadowDom,
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [EvfTranslateService],
     imports: [
@@ -33,15 +39,28 @@ export class EvfFormDetailsWebComponent implements OnChanges, OnInit {
 
   elementGroup!: ElementGroup;
 
+  metaData = {
+    pssActive: false,
+    isProfessional: false
+  }
+
   @HostBinding('attr.lang')
   @Input() lang = 'fr-BE';
   @Input() template!: FormTemplate;
   @Input() responses!: Record<string, any>;
+  @Input() services?: {
+    getAccessToken: (audience?: string) => Promise<string | null>
+  }
+  @Input() status: boolean | undefined;
+  @Input() isProfessional: boolean | undefined;
 
   constructor(
     private evfTranslate: EvfTranslateService,
     private dateAdapter: DateAdapter<DateTime>,
-    private elementGroupBuilder: ElementGroupBuilder
+    private pssService: PssService,
+    private elementGroupBuilder: ElementGroupBuilder,
+    private authService: AuthService,
+    private translate: TranslateService
   ) {
   }
 
@@ -50,6 +69,7 @@ export class EvfFormDetailsWebComponent implements OnChanges, OnInit {
       const formattedLang = this.formatToEvfLangCode(this.lang);
       this.dateAdapter.setLocale(SupportedLocales[formattedLang]);
       this.evfTranslate.setCurrentLang(formattedLang);
+      this.translate.use(this.lang);
     }
     if (changes['template']) {
       this.evfTranslate.load(this.template);
@@ -57,6 +77,26 @@ export class EvfFormDetailsWebComponent implements OnChanges, OnInit {
     }
     if (changes['responses']) {
       this.elementGroup.setValue(this.responses!);
+    }
+    if (changes['services']) {
+      this.handleTokenChange();
+    }
+    if (changes['status']) {
+      if (this.status !== undefined) {
+        this.pssService.setStatus(this.status);
+        this.metaData.pssActive = this.status
+      }
+    }
+    if (changes['isProfessional']) {
+      if (this.isProfessional !== undefined) {
+        this.metaData.isProfessional = this.isProfessional
+      }
+    }
+  }
+
+  private handleTokenChange(): void {
+    if (this.services?.getAccessToken) {
+      this.authService.init(this.services.getAccessToken);
     }
   }
 

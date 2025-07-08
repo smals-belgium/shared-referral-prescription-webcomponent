@@ -117,6 +117,9 @@
                   [lang]="lang"
                   [template]="viewState.data!.templateVersion"
                   [responses]="viewState.data!.decryptedResponses"
+                  [services]="services"
+                  [status]="status$.getValue()"
+                  [isProfessional]="isProfessional$()"
                 ></nihdi-referral-prescription-form-details>
               }
 

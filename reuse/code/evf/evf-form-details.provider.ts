@@ -7,6 +7,7 @@ import {
 import { CheckboxDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/checkbox';
 import { DateDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/date';
 import { OccurrenceTimingDetailComponent } from './occurrence-timing/detail/occurrence-timing-detail.component';
+import { RecommendationsDetailComponent } from './pss-recommendations/detail/recommendations-detail.component';
 import {
   EvfNumberDetailComponent,
   EvfResponseDetailComponent,
@@ -66,8 +67,12 @@ export function provideEvfFormDetails() {
         },
         {
           name: 'autocomplete',
-          detail: AutocompleteDetailComponent,
+          detail: AutocompleteDetailComponent
         },
+        {
+          name: 'recommendations',
+          detail: RecommendationsDetailComponent
+        }
       ),
       withParseDateExpressionPipe(),
       withTransformDateExpressionPipe()

@@ -30,10 +30,10 @@ import {
   CreatePrescriptionInitialValues,
   CreatePrescriptionRequest,
   DataState,
-  LoadingStatus, OccurrenceTiming,
+  LoadingStatus,
+  OccurrenceTiming,
   Person,
-  ReadPrescription,
-  Token
+  ReadPrescription
 } from '@reuse/code/interfaces';
 import {
   CreateMultiplePrescriptionsComponent
@@ -208,7 +208,13 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     }
 
     if (changes['initialValues'] && this.initialValues) {
-      this.loadPssStatus(this.initialValues)
+      this.loading.set(true);
+      if(this.initialValues.initialPrescription?.templateCode === 'ANNEX_82' || this.initialValues.initialPrescriptionType === 'ANNEX_82'){
+        this.loadPssStatus(this.initialValues)
+      }
+      else{
+        this.handlePrescriptionChanges(this.initialValues);
+      }
     }
   }
 
@@ -224,22 +230,17 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   }
 
   private loadPssStatus(initialValues: CreatePrescriptionInitialValues) {
-    this.loading.set(true);
-    if (initialValues.initialPrescription?.templateCode === 'ANNEX_82' || initialValues.initialPrescriptionType === 'ANNEX_82') {
-      this.pssService.getPssStatus()
-        .subscribe({
-          next: (status) => {
-            this.status$.next(status);
-            this.handlePrescriptionChanges(initialValues);
-          },
-          error: () => {
-            this.pssService.setStatus(false);
-            this.handlePrescriptionChanges(initialValues);
-          }
-        })
-    } else {
-      this.handlePrescriptionChanges(initialValues);
-    }
+    this.pssService.getPssStatus()
+      .subscribe({
+        next: (status) => {
+          this.status$.next(status);
+          this.handlePrescriptionChanges(initialValues);
+        },
+        error: () => {
+          this.pssService.setStatus(false);
+          this.handlePrescriptionChanges(initialValues);
+        }
+      })
   }
 
   private handlePrescriptionChanges(initialValues: CreatePrescriptionInitialValues): void {
@@ -541,6 +542,12 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     responses: Record<string, any>,
     subject: string
   ): Observable<CreatePrescriptionRequest> {
+    if(templateCode === 'ANNEX_82'){
+      const pssSessionId = this.pssService.getPssSessionId()
+      if (pssSessionId != null) {
+        responses["exchangeId"] = pssSessionId;
+      }
+    }
     return this.encryptFreeTextInResponses(templateCode, responses).pipe(
       map(encryptedResponses => {
         if (!this.pseudonymizedKey) {

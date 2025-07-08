@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { evfElementConfigFeature, FormTemplate, provideEvfCore } from '@smals/vas-evaluation-form-ui-core';
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { EvfDynamicFormComponent } from "@smals/vas-evaluation-form-ui-material/dynamic-form";
@@ -51,7 +51,9 @@ describe('AutocompleteMultiselectComponent', () => {
     pssServiceMock = {
       // controlIndications: jest.fn().mockReturnValue(of(mockAutocompleteOptions)),
       controlIndications: jest.fn(),
-      getPssSessionId: jest.fn().mockReturnValue(1)
+      getPssRecommendations: jest.fn(),
+      getPssSessionId: jest.fn().mockReturnValue(1),
+      setPssSessionId: jest.fn()
     } as unknown as jest.Mocked<PssService>;
 
     toastServiceMock = {
@@ -95,31 +97,37 @@ describe('AutocompleteMultiselectComponent', () => {
     expect(recommendationFormDebugElement.componentInstance.isLoading()).toBe(false);
   });
 
-  it('should call API when valid clinical indications provided', () => {
+  it('should call API when valid clinical indications provided', fakeAsync(() => {
     const mockIndications = [{value: 'indication1'}];
     const mockResult: ControlAnnex82Response = {
-      request: "",
+      exchangeId: '',
+      request: '',
       supportOptions: [{
         id: '1',
         score: 4,
-        instruction: {code: "1", translations: [], system: "2"},
-        system: {code: "1", translations: [], version: "2"},
-        supportOptionMetadata: {isRequested: true, radiationLevel: 1, relativeCost: 3}
-      }]
+        instruction: { code: "1", translations: [], system: "2" },
+        system: { code: "1", translations: [], version: "2" },
+        supportOptionMetadata: { isRequested: true, radiationLevel: 1, relativeCost: 3 }
+      }],
+      conclusions: []
     };
 
     const recommendationFormDebugElement = fixture.debugElement.query(By.directive(RecommendationsComponent));
     recommendationFormDebugElement.componentInstance.elementControl.elementGroup.getOutputValue = jest.fn().mockReturnValue({
       clinicalIndications: mockIndications
     });
-    pssServiceMock.controlIndications.mockReturnValue(of(mockResult));
+
+    pssServiceMock.getPssRecommendations.mockReturnValue(of(mockResult));
 
     recommendationFormDebugElement.componentInstance.pssControl();
+    tick();
 
-    expect(pssServiceMock.controlIndications).toHaveBeenCalled();
+    fixture.detectChanges();
+
+    expect(pssServiceMock.getPssRecommendations).toHaveBeenCalled();
     expect(recommendationFormDebugElement.componentInstance.controlIndications()).toEqual(mockResult.supportOptions);
     expect(recommendationFormDebugElement.componentInstance.isLoading()).toBe(false);
-  });
+  }));
 
   it('should handle API error', () => {
     const mockIndications = [{value: 'indication1'}];
@@ -128,7 +136,7 @@ describe('AutocompleteMultiselectComponent', () => {
     recommendationFormDebugElement.componentInstance.elementControl.elementGroup.getOutputValue = jest.fn().mockReturnValue({
       clinicalIndications: mockIndications
     });
-    pssServiceMock.controlIndications.mockReturnValue(throwError('API Error'));
+    pssServiceMock.getPssRecommendations.mockReturnValue(throwError('API Error'));
 
     recommendationFormDebugElement.componentInstance.pssControl();
 

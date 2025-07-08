@@ -6,8 +6,9 @@ export interface Indication {
 }
 
 export interface ControlAnnex82Request {
-  examId: string
-  exchangeId: string;
+  age: number,
+  gender: string,
+  intention: AutocompleteOption;
   indications: AutocompleteOption[];
 }
 
@@ -43,7 +44,15 @@ export interface SupportOption {
   "supportOptionMetadata": SupportOptionMetadata
 }
 
+export interface SupportOptionConclusion {
+  "supportOptionId": string
+  "reasonOfDeviation": string
+  "reasonOfDeviationText": string
+}
+
 export interface ControlAnnex82Response {
-  request: any
-  supportOptions: SupportOption[]
+  "exchangeId": string
+  "request": any
+  "supportOptions": SupportOption[]
+  "conclusions": SupportOptionConclusion[]
 }

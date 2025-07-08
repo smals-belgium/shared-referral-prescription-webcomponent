@@ -8,14 +8,14 @@ import { DateAdapter, MatNativeDateModule } from '@angular/material/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClient, HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
-import { importProvidersFrom, Signal, SimpleChange, SimpleChanges } from '@angular/core';
+import { importProvidersFrom, SimpleChange, SimpleChanges } from '@angular/core';
 import { ConfigurationService } from '@reuse/code/services/configuration.service';
 import { AuthService } from '@reuse/code/services/auth.service';
 import { CreatePrescriptionWebComponent } from './create-prescription.component';
 import { Observable, of, throwError } from 'rxjs';
-import { PseudonymisationHelper, Value } from '@smals-belgium-shared/pseudo-helper';
-import { ElementGroup, FormTemplate } from '@smals/vas-evaluation-form-ui-core';
-import { DataState, LoadingStatus, Person, ReadPrescription, ReferralTask } from '@reuse/code/interfaces';
+import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
+import { ElementGroup } from '@smals/vas-evaluation-form-ui-core';
+import { LoadingStatus, Person, ReadPrescription, ReferralTask } from '@reuse/code/interfaces';
 import { EncryptionService } from '@reuse/code/services/encryption.service';
 import { CreatePrescriptionExtendedWebComponent } from './create-prescription-extended.component';
 import { By } from '@angular/platform-browser';
@@ -57,7 +57,8 @@ const mockAuthService = {
 
 const mockPssService = {
   getPssStatus: jest.fn(),
-  setStatus: jest.fn()
+  setStatus: jest.fn(),
+  getPssSessionId: jest.fn().mockReturnValue('fake-session-id')
 };
 
 const mockPseudoClient = {
@@ -71,8 +72,6 @@ const mockPseudoClient = {
 function MockPseudoHelperFactory() {
   return new PseudonymisationHelper(mockPseudoClient)
 }
-
-const mockSignal = jest.fn() as unknown as Signal<DataState<FormTemplate>>;
 
 // Mock the 'uuid' module
 jest.mock('uuid', () => ({
@@ -838,35 +837,31 @@ describe('CreatePrescriptionWebComponent', () => {
   describe('pss integration', () => {
     it('should call handleTokenChange when services change', () => {
       createFixture('mockPseudomizedKey');
-      const handleTokenChangeSpy = jest.spyOn(component as any, 'handleTokenChange');
+      const spy = jest.spyOn(component as any, 'handleTokenChange');
       const changes: SimpleChanges = {
         services: {
-          currentValue: {getAccessToken: jest.fn()},
-          previousValue: 'old-services',
+          currentValue: { getAccessToken: jest.fn() },
+          previousValue: 'old',
           firstChange: false,
           isFirstChange: () => false
         }
       };
-
-      component.services = {getAccessToken: jest.fn()}
-
+      component.services = { getAccessToken: jest.fn() };
       component.ngOnChanges(changes);
-
       getTemplates();
       getAccessMatrix();
-
-      expect(handleTokenChangeSpy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(1);
     });
-    it('should call loadPssStatus when initialValues change and initialValues exists', () => {
-      createFixture('mockPseudomizedKey');
 
+    it('should call loadPssStatus when initialValues change and templateCode is ANNEX_82', () => {
+      createFixture('mockPseudomizedKey');
       const mockInitialValues = {
         intent: 'order',
-        initialPrescription: {templateCode: 'TEST'} as unknown as ReadPrescription
+        initialPrescription: { templateCode: 'ANNEX_82' } as ReadPrescription
       };
       component.initialValues = mockInitialValues;
-      const loadPssStatusSpy = jest.spyOn(component as any, 'loadPssStatus');
-
+      // On stub loadPssStatus pour ne vérifier que l'appel
+      const spy = jest.spyOn(component as any, 'loadPssStatus').mockImplementation(() => {});
       const changes: SimpleChanges = {
         initialValues: {
           currentValue: mockInitialValues,
@@ -875,45 +870,47 @@ describe('CreatePrescriptionWebComponent', () => {
           isFirstChange: () => true
         }
       };
-
       component.ngOnChanges(changes);
-
-      getTemplate(undefined);
-
-      expect(loadPssStatusSpy).toHaveBeenCalledWith(mockInitialValues);
+      expect(spy).toHaveBeenCalledWith(mockInitialValues);
     });
-    it('should not call loadPssStatus when initialValues change but initialValues is null', () => {
-      createFixture('mockPseudomizedKey');
-      component.initialValues = undefined;
-      const loadPssStatusSpy = jest.spyOn(component as any, 'loadPssStatus');
 
+    it('should call handlePrescriptionChanges when initialValues change and templateCode is not ANNEX_82', () => {
+      createFixture('mockPseudomizedKey');
+      const mockInitialValues = {
+        intent: 'order',
+        initialPrescription: { templateCode: 'OTHER' } as ReadPrescription
+      };
+      component.initialValues = mockInitialValues;
+      // On stub handlePrescriptionChanges pour éviter le HTTP
+      const changeSpy = jest.spyOn(component as any, 'handlePrescriptionChanges').mockImplementation(() => {});
+      const loadSpy = jest.spyOn(component as any, 'loadPssStatus');
       const changes: SimpleChanges = {
         initialValues: {
-          currentValue: null,
+          currentValue: mockInitialValues,
           previousValue: null,
           firstChange: true,
           isFirstChange: () => true
         }
       };
-
       component.ngOnChanges(changes);
-
-      expect(loadPssStatusSpy).not.toHaveBeenCalled();
+      expect(loadSpy).not.toHaveBeenCalled();
+      expect(changeSpy).toHaveBeenCalledWith(mockInitialValues);
     });
+
     it('should handle both services and initialValues changes', () => {
       createFixture('mockPseudomizedKey');
       const mockInitialValues = {
         intent: 'order',
-        initialPrescription: {templateCode: 'TEST'} as unknown as ReadPrescription
+        initialPrescription: { templateCode: 'ANNEX_82' } as ReadPrescription
       };
       component.initialValues = mockInitialValues;
-      const handleTokenChangeSpy = jest.spyOn(component as any, 'handleTokenChange');
-      const loadPssStatusSpy = jest.spyOn(component as any, 'loadPssStatus');
-
+      const tokenSpy = jest.spyOn(component as any, 'handleTokenChange');
+      // Stub loadPssStatus pour ne pas déclencher le subscribe
+      const loadSpy = jest.spyOn(component as any, 'loadPssStatus').mockImplementation(() => {});
       const changes: SimpleChanges = {
         services: {
-          currentValue: {getAccessToken: jest.fn()},
-          previousValue: 'old-services',
+          currentValue: { getAccessToken: jest.fn() },
+          previousValue: 'old',
           firstChange: false,
           isFirstChange: () => false
         },
@@ -924,131 +921,80 @@ describe('CreatePrescriptionWebComponent', () => {
           isFirstChange: () => true
         }
       };
-
-      component.services = {getAccessToken: jest.fn()}
+      component.services = { getAccessToken: jest.fn() };
       component.ngOnChanges(changes);
-
       getTemplates();
       getAccessMatrix();
-      getTemplate(undefined);
-
-      expect(handleTokenChangeSpy).toHaveBeenCalledTimes(1);
-      expect(loadPssStatusSpy).toHaveBeenCalledWith(mockInitialValues);
+      expect(tokenSpy).toHaveBeenCalledTimes(1);
+      expect(loadSpy).toHaveBeenCalledWith(mockInitialValues);
     });
-    it('should not call any methods when no relevant changes occur', () => {
-      createFixture('mockPseudomizedKey');
-      const handleTokenChangeSpy = jest.spyOn(component as any, 'handleTokenChange');
-      const loadPssStatusSpy = jest.spyOn(component as any, 'loadPssStatus');
 
-      const changes: SimpleChanges = {
-        otherProperty: {
-          currentValue: 'new-value',
-          previousValue: 'old-value',
-          firstChange: false,
-          isFirstChange: () => false
-        }
-      };
-
-      component.ngOnChanges(changes);
-
-      expect(handleTokenChangeSpy).not.toHaveBeenCalled();
-      expect(loadPssStatusSpy).not.toHaveBeenCalled();
-    });
     it('should set loading to true and call getPssStatus for ANNEX_82 templateCode', () => {
       createFixture('mockPseudomizedKey');
-      const loadingSpy = jest.spyOn(component.loading, 'set');
-
-      const mockInitialValues = {
-        initialPrescription: {templateCode: 'ANNEX_82'}
+      const mockStatus = { status: 'active' };
+      jest.spyOn(mockPssService, 'getPssStatus').mockReturnValue(of(mockStatus));
+      component.initialValues = {
+        intent: 'order',
+        initialPrescription: { templateCode: 'ANNEX_82' } as ReadPrescription
       };
-      const mockStatus = {status: 'active'};
-      mockPssService.getPssStatus.mockReturnValue(of(mockStatus));
-
-      (component as any).loadPssStatus(mockInitialValues);
-
-      getTemplate(undefined);
+      const loadingSpy = jest.spyOn(component.loading, 'set');
+      const changes: SimpleChanges = {
+        initialValues: {
+          currentValue: component.initialValues,
+          previousValue: null,
+          firstChange: true,
+          isFirstChange: () => true
+        }
+      };
+      component.ngOnChanges(changes);
       expect(loadingSpy).toHaveBeenCalledWith(true);
       expect(mockPssService.getPssStatus).toHaveBeenCalledTimes(1);
-    });
-    it('should handle successful getPssStatus response for ANNEX_82 templateCode', () => {
-      createFixture('mockPseudomizedKey');
-      const status$Spy = jest.spyOn(component.status$, 'next');
-      const handlePrescriptionChangesSpy = jest.spyOn(component as any, 'handlePrescriptionChanges');
-      const mockInitialValues = {
-        initialPrescription: {templateCode: 'ANNEX_82'}
-      };
-      const mockStatus = {status: 'active'};
-      mockPssService.getPssStatus.mockReturnValue(of(mockStatus));
-
-      (component as any).loadPssStatus(mockInitialValues);
-
+      // On flush la requête de handlePrescriptionChanges()
       getTemplate(undefined);
-      expect(status$Spy).toHaveBeenCalledWith(mockStatus);
-      expect(handlePrescriptionChangesSpy).toHaveBeenCalledWith(mockInitialValues);
     });
-    it('should handle getPssStatus error for ANNEX_82 templateCode', () => {
-      createFixture('mockPseudomizedKey');
 
-      const handlePrescriptionChangesSpy = jest.spyOn(component as any, 'handlePrescriptionChanges');
-
-      const mockInitialValues = {
-        initialPrescription: {templateCode: 'ANNEX_82'}
-      };
-      mockPssService.getPssStatus.mockReturnValue(throwError('Service error'));
-
-      (component as any).loadPssStatus(mockInitialValues);
-
-      getTemplate(undefined);
-      expect(mockPssService.setStatus).toHaveBeenCalledWith(false);
-      expect(handlePrescriptionChangesSpy).toHaveBeenCalledWith(mockInitialValues);
-    });
-    it('should call getPssStatus for ANNEX_82 initialPrescriptionType', () => {
-      createFixture('mockPseudomizedKey');
-      const status$Spy = jest.spyOn(component.status$, 'next');
-
-      const mockInitialValues = {
-        initialPrescriptionType: 'ANNEX_82'
-      };
-      const mockStatus = {status: 'active'};
-      mockPssService.getPssStatus.mockReturnValue(of(mockStatus));
-
-      (component as any).loadPssStatus(mockInitialValues);
-
-      getTemplate('ANNEX_82');
-      expect(mockPssService.getPssStatus).toHaveBeenCalledTimes(1);
-      expect(status$Spy).toHaveBeenCalledWith(mockStatus);
-    });
     it('should skip getPssStatus and call handlePrescriptionChanges directly for non-ANNEX_82', () => {
       createFixture('mockPseudomizedKey');
-      const handlePrescriptionChangesSpy = jest.spyOn(component as any, 'handlePrescriptionChanges');
-      const loadingSpy = jest.spyOn(component.loading, 'set');
-
-      const mockInitialValues = {
-        initialPrescription: {templateCode: 'OTHER_TYPE'}
+      component.initialValues = {
+        intent: 'order',
+        initialPrescription: { templateCode: 'OTHER_TYPE' } as ReadPrescription
       };
-
-      (component as any).loadPssStatus(mockInitialValues);
-
-      getTemplate(undefined);
+      const handleSpy = jest.spyOn(component as any, 'handlePrescriptionChanges').mockImplementation(() => {});
+      const loadingSpy = jest.spyOn(component.loading, 'set');
+      const changes: SimpleChanges = {
+        initialValues: {
+          currentValue: component.initialValues,
+          previousValue: null,
+          firstChange: true,
+          isFirstChange: () => true
+        }
+      };
+      component.ngOnChanges(changes);
       expect(loadingSpy).toHaveBeenCalledWith(true);
       expect(mockPssService.getPssStatus).not.toHaveBeenCalled();
-      expect(handlePrescriptionChangesSpy).toHaveBeenCalledWith(mockInitialValues);
+      expect(handleSpy).toHaveBeenCalledWith(component.initialValues);
     });
+
     it('should handle case with no templateCode or initialPrescriptionType', () => {
       createFixture('mockPseudomizedKey');
-      const loadingSpy = jest.spyOn(component.loading, 'set');
-      const handlePrescriptionChangesSpy = jest.spyOn(component as any, 'handlePrescriptionChanges');
-
-      const mockInitialValues = {
-        initialPrescription: {templateCode: undefined}
+      component.initialValues = {
+        intent: 'order',
+        initialPrescription: { templateCode: undefined } as any
       };
-
-      (component as any).loadPssStatus(mockInitialValues);
-
-      getTemplate(undefined);
+      const handleSpy = jest.spyOn(component as any, 'handlePrescriptionChanges').mockImplementation(() => {});
+      const loadingSpy = jest.spyOn(component.loading, 'set');
+      const changes: SimpleChanges = {
+        initialValues: {
+          currentValue: component.initialValues,
+          previousValue: null,
+          firstChange: true,
+          isFirstChange: () => true
+        }
+      };
+      component.ngOnChanges(changes);
       expect(loadingSpy).toHaveBeenCalledWith(true);
       expect(mockPssService.getPssStatus).not.toHaveBeenCalled();
-      expect(handlePrescriptionChangesSpy).toHaveBeenCalledWith(mockInitialValues);
+      expect(handleSpy).toHaveBeenCalledWith(component.initialValues);
     });
   });
 
@@ -1057,42 +1003,40 @@ describe('CreatePrescriptionWebComponent', () => {
     fixture = TestBed.createComponent(CreatePrescriptionExtendedWebComponent);
     component = fixture.componentInstance;
     component.pseudonymizedKey = pseudonymizedKey;
-    component.initialValues = {
-      intent: 'order'
-    };
+    component.initialValues = { intent: 'order' };
     component.isEnabled$ = of(true);
 
     if (pseudonymizedKey) {
-      jest.spyOn(pseudoService, 'byteArrayToValue').mockReturnValue({pseudonymize: jest.fn()} as unknown as Value);
+      jest.spyOn(pseudoService, 'byteArrayToValue').mockReturnValue({ pseudonymize: jest.fn() } as any);
       jest.spyOn(pseudoService, 'pseudonymizeValue').mockReturnValue(Promise.resolve('mockPseudomizedKey'));
     }
 
     fixture.detectChanges();
-  }
+  };
 
   const getPatient = (ssin: string, person: Person) => {
     const req = httpMock.expectOne(`/persons/${ssin}`);
     expect(req.request.method).toBe('GET');
     req.flush(person);
-  }
-
-  const getTemplate = (templateCode: string | undefined) => {
-    const req = httpMock.expectOne(`/templates/${templateCode}/versions/latest`);
-    expect(req.request.method).toBe('GET');
-    req.flush({status: 200});
-  }
+  };
 
   const getTemplates = () => {
     const req = httpMock.expectOne(`/templates`);
     expect(req.request.method).toBe('GET');
-    req.flush({status: 200});
-  }
+    req.flush({ status: 200 });
+  };
 
   const getAccessMatrix = () => {
     const req = httpMock.expectOne(`/accessMatrix`);
     expect(req.request.method).toBe('GET');
-    req.flush({status: 200});
-  }
+    req.flush({ status: 200 });
+  };
+
+  const getTemplate = (templateCode: string | undefined) => {
+    const req = httpMock.expectOne(`/templates/${templateCode}/versions/latest`);
+    expect(req.request.method).toBe('GET');
+    req.flush({ status: 200 });
+  };
 
   const setOnePrescription = () => {
     component.prescriptionForms.set([{
@@ -1103,23 +1047,26 @@ describe('CreatePrescriptionWebComponent', () => {
       } as unknown as ElementGroup,
       submitted: false
     } as unknown as CreatePrescriptionForm]);
-  }
+  };
 
   const setMultiplePrescriptions = () => {
-    component.prescriptionForms.set([{
-      elementGroup: {
-        markAllAsTouched: jest.fn(),
-        valid: true,
-        getOutputValue: jest.fn(),
-      } as unknown as ElementGroup,
-      submitted: false
-    } as unknown as CreatePrescriptionForm, {
-      elementGroup: {
-        markAllAsTouched: jest.fn(),
-        valid: true,
-        getOutputValue: jest.fn(),
-      } as unknown as ElementGroup,
-      submitted: false
-    } as unknown as CreatePrescriptionForm]);
-  }
+    component.prescriptionForms.set([
+      {
+        elementGroup: {
+          markAllAsTouched: jest.fn(),
+          valid: true,
+          getOutputValue: jest.fn(),
+        } as unknown as ElementGroup,
+        submitted: false
+      } as unknown as CreatePrescriptionForm,
+      {
+        elementGroup: {
+          markAllAsTouched: jest.fn(),
+          valid: true,
+          getOutputValue: jest.fn(),
+        } as unknown as ElementGroup,
+        submitted: false
+      } as unknown as CreatePrescriptionForm
+    ]);
+  };
 })

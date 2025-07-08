@@ -27,12 +27,6 @@
       <td mat-cell *matCellDef="let supportOption"> {{ getTranslation(supportOption.instruction) }}</td>
     </ng-container>
 
-    <ng-container matColumnDef="cost">
-      <th mat-header-cell *matHeaderCellDef>{{ 'prescription.create.control.table.cost' | translate }}</th>
-      <td mat-cell
-          *matCellDef="let supportOption"> {{ getEuroSymbols(supportOption.supportOptionMetadata.relativeCost) }}
-      </td>
-    </ng-container>
 
     <ng-container matColumnDef="radiationRate">
       <th mat-header-cell *matHeaderCellDef>{{ 'prescription.create.control.table.radiationRate' | translate }}</th>
@@ -55,7 +49,7 @@
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="confirm(row)"
-        [class.row-is-clicked]="clickedRow === row"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="isClickable ? confirm(row) : false"
+        [class.row-is-clicked]="clickedRow === row" [class.row-is-selected]="selectedRow?.id === row.id" [class.row-is-clickable]="isClickable"></tr>
   </table>
 }

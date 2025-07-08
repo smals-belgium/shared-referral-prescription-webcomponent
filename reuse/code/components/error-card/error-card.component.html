@@ -1,5 +1,12 @@
 <mat-card appearance="outlined" class="error-card">
+  @if(title) {
+    <mat-card-title>
+      {{ title | translate }}
+    </mat-card-title>
+  }
+
   <mat-card-content [className]="'message'">
+
     @if(genericErrorMsgKey) {
       {{ genericErrorMsgKey | translate }}
     }

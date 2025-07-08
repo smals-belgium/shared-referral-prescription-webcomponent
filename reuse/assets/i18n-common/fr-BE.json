@@ -84,7 +84,7 @@
       "publish": "Publier",
       "control": {
         "title": "Contrôler",
-        "warning": "Les autres indications pertinentes ne sont pas prises en compte dans ces résultats.",
+        "warning": "Les informations pertinentes ci-dessous ne sont pas prises en compte dans ces résultats:",
         "error": {
           "required": "Indications sont obligatoire."
         },
@@ -450,6 +450,12 @@
   "models": {
     "errors": {
       "failedToLoadModels": "Impossible de charger les modèles."
+    }
+  },
+  "pss": {
+    "unavailable":{
+      "title": "Service temporairement indisponible",
+      "message": "Nous sommes désolés, le service PSS (Prescription Search Support) est momentanément indisponible.\nVous ne pouvez plus consulter les recommandations d'examens en imagerie médicale pour l'instant.\nMerci de réessayer dans quelques minutes."
     }
   }
 }
