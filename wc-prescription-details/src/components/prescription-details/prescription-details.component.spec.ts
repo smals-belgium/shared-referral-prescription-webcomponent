@@ -13,7 +13,7 @@ import { importProvidersFrom, SimpleChanges } from "@angular/core";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { AssignPrescriptionDialog } from "@reuse/code/dialogs/assign-prescription/assign-prescription.dialog";
-import { CancelPrescriptionDialog } from "@reuse/code/dialogs/cancel-prescription/cancel-prescription.dialog";
+import { CancelMedicalDocumentDialog } from "@reuse/code/dialogs/cancel-medical-document/cancel-medical-document-dialog.component";
 import {
   StartExecutionPrescriptionDialog
 } from "@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog";
@@ -950,7 +950,7 @@ describe('PrescriptionDetailsWebComponent', () => {
       }
 
       expect(openDialogSpy).toHaveBeenCalledTimes(3);
-      expect(openDialogSpy).toHaveBeenCalledWith(CancelPrescriptionDialog, paramsCancel);
+      expect(openDialogSpy).toHaveBeenCalledWith(CancelMedicalDocumentDialog, paramsCancel);
 
       //openStartExecutionDialog
       component.openStartExecutionDialog(mockResponse)

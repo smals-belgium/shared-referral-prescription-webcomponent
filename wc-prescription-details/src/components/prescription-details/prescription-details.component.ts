@@ -41,7 +41,7 @@ import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
 import { AuthService } from '@reuse/code/services/auth.service';
 import { WcConfigurationService } from '@reuse/code/services/wc-configuration.service';
 import { AssignPrescriptionDialog } from '@reuse/code/dialogs/assign-prescription/assign-prescription.dialog';
-import { CancelPrescriptionDialog } from '@reuse/code/dialogs/cancel-prescription/cancel-prescription.dialog';
+import { CancelMedicalDocumentDialog } from '@reuse/code/dialogs/cancel-medical-document/cancel-medical-document-dialog.component';
 import {
   StartExecutionPrescriptionDialog
 } from '@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog';
@@ -480,7 +480,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   }
 
   openCancelPrescriptionDialog(prescription: ReadPrescription, patient: Person): void {
-    this.dialog.open(CancelPrescriptionDialog, {
+    this.dialog.open(CancelMedicalDocumentDialog, {
       data: {
         prescription,
         patient
