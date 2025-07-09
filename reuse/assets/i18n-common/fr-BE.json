@@ -386,7 +386,7 @@
       "action": "Annuler",
       "title": "Annuler la proposition",
       "message": "Êtes-vous sûr de vouloir annuler la proposition \"{templateName}\" de {firstName} {lastName} ?",
-      "success": "Proposal annulée avec succès.",
+      "success": "Proposition annulée avec succès.",
       "reason": "Raison"
     },
     "frequencyTypes": {

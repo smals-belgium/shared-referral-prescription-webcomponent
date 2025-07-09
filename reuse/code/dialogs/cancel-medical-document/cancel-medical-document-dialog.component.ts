@@ -3,7 +3,6 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgIf } from '@angular/common';
-import { TemplateNamePipe } from '../../pipes/template-name.pipe';
 import { Person, PrescriptionCancellation, ReadPrescription } from '../../interfaces';
 import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overlay-spinner.component';
 import { ToastService } from '../../services/toast.service';
@@ -11,26 +10,29 @@ import { PrescriptionState } from '../../states/prescription.state';
 import { v4 as uuidv4 } from 'uuid';
 import { ErrorCardComponent } from '../../components/error-card/error-card.component';
 import { BaseDialog } from '../base.dialog';
+import { tap } from 'rxjs/operators';
+import { ProposalState } from '@reuse/code/states/proposal.state';
+import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 
-interface CancelPrescriptionDialogData {
+interface CancelMedicalDocumentDialogData {
   prescription: ReadPrescription;
   patient: Person;
 }
 
 @Component({
-    templateUrl: './cancel-prescription.dialog.html',
-    styleUrls: ['./cancel-prescription.dialog.scss'],
-    imports: [
-        TranslateModule,
-        MatDialogModule,
-        MatButtonModule,
-        OverlaySpinnerComponent,
-        TemplateNamePipe,
-        NgIf,
-        ErrorCardComponent
-    ]
+  templateUrl: './cancel-medical-document-dialog.component.html',
+  styleUrls: ['./cancel-medical-document-dialog.component.scss'],
+  imports: [
+    TranslateModule,
+    MatDialogModule,
+    MatButtonModule,
+    OverlaySpinnerComponent,
+    NgIf,
+    ErrorCardComponent,
+    TemplateNamePipe
+  ]
 })
-export class CancelPrescriptionDialog extends BaseDialog implements OnInit {
+export class CancelMedicalDocumentDialog extends BaseDialog implements OnInit {
 
   readonly prescription: ReadPrescription;
   readonly patient: Person;
@@ -38,10 +40,11 @@ export class CancelPrescriptionDialog extends BaseDialog implements OnInit {
   generatedUUID = '';
 
   constructor(
-    private prescriptionStateService: PrescriptionState,
-    private toastService: ToastService,
-    dialogRef: MatDialogRef<CancelPrescriptionDialog>,
-    @Inject(MAT_DIALOG_DATA) private data: CancelPrescriptionDialogData,
+    private readonly prescriptionStateService: PrescriptionState,
+    private readonly proposalStateService: ProposalState,
+    private readonly toastService: ToastService,
+    dialogRef: MatDialogRef<CancelMedicalDocumentDialog>,
+    @Inject(MAT_DIALOG_DATA) private readonly data: CancelMedicalDocumentDialogData,
   ) {
     super(dialogRef)
     this.prescription = data.prescription;
@@ -59,11 +62,12 @@ export class CancelPrescriptionDialog extends BaseDialog implements OnInit {
 
     this.loading = true;
     this.prescriptionStateService
-      .cancelPrescription(this.prescription.id, cancellation, this.generatedUUID)
+      .cancelMedicalDocument(this.prescription.id, cancellation, this.generatedUUID)
+      .pipe(this.getMedicalDocument())
       .subscribe({
         next: () => {
           this.closeErrorCard();
-          this.toastService.show('prescription.cancel.success');
+          this.toastService.show(this.isProposal() ? 'proposal.cancel.success' : 'prescription.cancel.success');
           this.closeDialog(true);
         },
         error: (err) => {
@@ -71,5 +75,16 @@ export class CancelPrescriptionDialog extends BaseDialog implements OnInit {
           this.showErrorCard('common.somethingWentWrong', err)
         },
       });
+  }
+
+  private getMedicalDocument() {
+    if (this.isProposal()) {
+      return tap(() => this.proposalStateService.loadProposal(this.prescription.id));
+    }
+    return tap(() => this.prescriptionStateService.loadPrescription(this.prescription.id));
+  }
+
+  protected isProposal(): boolean {
+    return this.prescription.intent?.toLowerCase() === 'proposal'
   }
 }
