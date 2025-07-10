@@ -128,7 +128,7 @@ export class RecommendationsDetailComponent extends EvfBaseFormDetailComponent {
     const formValues = prescriptionForm.elementGroup?.getOutputValue() ?? {};
     const relevantInfo = formValues['additional-relevant-information'];
 
-    return !!relevantInfo && (relevantInfo.length > 0 || relevantInfo['tmp-addInfo-none'] == undefined)
+    return !!relevantInfo && (relevantInfo.length > 0 && !relevantInfo.includes('tmp-addInfo-none'))
   }
 
   getWarningMessage(){
