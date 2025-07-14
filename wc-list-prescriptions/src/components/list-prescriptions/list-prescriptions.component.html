@@ -23,7 +23,7 @@
             ></app-active-page>
 
             <div class="page-size">
-              {{'prescription.pagination.pageSize' | translate}}:
+              <span>{{'prescription.pagination.pageSize' | translate}}:</span>
               <mat-select
                 data-cy="select-prescription-pagination"
                 [value]="prescriptionState.params!['prescriptions']?.['pageSize'] || 10"
@@ -82,7 +82,7 @@
             ></app-active-page>
 
             <div class="page-size">
-              {{'proposal.pagination.pageSize' | translate}}:
+              <span>{{'proposal.pagination.pageSize' | translate}}:</span>
               <mat-select
                 data-cy="select-proposals-pagination"
                 [value]="proposalState.params!['proposals']?.['pageSize'] || 10"
@@ -137,7 +137,7 @@
           ></app-active-page>
 
           <div class="page-size">
-            {{'prescription.model.pagination.pageSize' | translate}}:
+            <span>{{'prescription.model.pagination.pageSize' | translate}}:</span>
             <mat-select
               data-cy="select-models-pagination"
               [value]="modelState.params!['models']?.['pageSize'] || 10"
