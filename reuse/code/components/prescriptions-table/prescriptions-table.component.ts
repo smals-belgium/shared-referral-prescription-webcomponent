@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { DatePipe } from '../../pipes/date.pipe';
 import { FormatNihdiPipe } from '../../pipes/format-nihdi.pipe';
 import { TemplateNamePipe } from '../../pipes/template-name.pipe';
-import { NgFor, NgIf, NgStyle } from '@angular/common';
+import { NgStyle } from '@angular/common';
 import { HideIfProfessionalDirective } from '../../directives/hide-if-professional.directive';
 import { ShowIfProfessionalDirective } from '../../directives/show-if-professional.directive';
 import { PrescriptionSummary, PrescriptionSummaryList } from '../../interfaces/prescription-summary.interface';
@@ -21,6 +21,7 @@ import {
   MatTable
 } from '@angular/material/table';
 import { MatChip } from '@angular/material/chips';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-prescriptions-table',
@@ -52,7 +53,8 @@ import { MatChip } from '@angular/material/chips';
         MatFooterCellDef,
         MatHeaderCellDef,
         MatCellDef,
-        MatFooterRowDef
+        MatFooterRowDef,
+        MatTooltipModule
     ]
 })
 export class PrescriptionsTableComponent {

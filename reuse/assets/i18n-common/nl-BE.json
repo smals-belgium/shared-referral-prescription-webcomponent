@@ -21,6 +21,14 @@
       "NURSE": "Verpleegkundige",
       "PHYSICIAN": "Arts"
     },
+    "professional": {
+      "notFound": "Niet gevonden",
+      "tooltip": "Geciteerde professional niet gevonden."
+    },
+    "organization": {
+      "notFound": "Niet gevonden",
+      "tooltip": "Geciteerde organizatie niet gevonden."
+    },
     "organizations": {
       "THIRD_PARTY_PAYING_GROUP": "Groepering met een RIZIV-nr derdebetaler (verpleegkundigen, vroedvrouwen, e.a.)",
       "GROUPOFDOCTORS": "Groepering van huisartsen op dezelfde installatieplaats",
