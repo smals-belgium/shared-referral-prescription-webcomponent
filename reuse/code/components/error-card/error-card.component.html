@@ -1,13 +1,31 @@
-<div *ngIf="genericErrorMsgKey" class="message">{{ genericErrorMsgKey | translate }}</div>
-<div *ngIf="!genericErrorMsgKey && message" class="message">{{ message }}</div>
-<div *ngIf="!genericErrorMsgKey && !message" class="message">{{ 'somethingWentWrong' | translate }}</div>
-<br/>
-<button
-  *ngIf="showRetry && error?.status !== 403"
-  mat-raised-button
-  color="accent"
-  (click)="clickRetry.emit()"
->
-  <mat-icon>refresh</mat-icon>
-  {{ "common.tryAgain" | translate }}
-</button>
+<mat-card appearance="outlined" class="error-card">
+  @if(title) {
+    <mat-card-title>
+      {{ title | translate }}
+    </mat-card-title>
+  }
+
+  <mat-card-content [className]="'message'">
+
+    @if(genericErrorMsgKey) {
+      {{ genericErrorMsgKey | translate }}
+    }
+    @else if(message) {
+      {{ message }}
+    } @else {
+      {{ 'somethingWentWrong' | translate }}
+    }
+  </mat-card-content>
+  @if(showRetry && error?.status !== 403) {
+    <mat-card-actions>
+      <button
+        mat-raised-button
+        color="accent"
+        (click)="clickRetry.emit()"
+      >
+        <mat-icon>refresh</mat-icon>
+        {{ "common.tryAgain" | translate }}
+      </button>
+    </mat-card-actions>
+  }
+</mat-card>

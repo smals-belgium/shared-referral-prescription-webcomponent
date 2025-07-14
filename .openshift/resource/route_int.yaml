@@ -25,32 +25,3 @@ spec:
     kind: Service
     name: *deploymentconfig
     weight: 100
----
-# patient URL configuration
-apiVersion: v1
-kind: Route
-metadata:
-  labels:
-    deploymentconfig: &deploymentconfig referral-prescription-web-components
-  name: referral-prescription-web-components-ext
-spec:
-  host: referral-prescription-patient.int.ext.vascloud.be
-  path: /web-components
-  to:
-    kind: Service
-    name: *deploymentconfig
-    weight: 100
----
-apiVersion: v1
-kind: Route
-metadata:
-  labels:
-    deploymentconfig: &deploymentconfig referral-prescription-web-components
-  name: referral-prescription-web-components-pub
-spec:
-  host: referral-prescription-patient.int.pub.vascloud.be
-  path: /web-components
-  to:
-    kind: Service
-    name: *deploymentconfig
-    weight: 100

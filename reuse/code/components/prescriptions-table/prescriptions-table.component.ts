@@ -6,38 +6,64 @@ import { MatButtonModule } from '@angular/material/button';
 import { DatePipe } from '../../pipes/date.pipe';
 import { FormatNihdiPipe } from '../../pipes/format-nihdi.pipe';
 import { TemplateNamePipe } from '../../pipes/template-name.pipe';
-import { NgFor, NgIf, NgStyle } from '@angular/common';
+import { NgStyle } from '@angular/common';
 import { HideIfProfessionalDirective } from '../../directives/hide-if-professional.directive';
 import { ShowIfProfessionalDirective } from '../../directives/show-if-professional.directive';
 import { PrescriptionSummary, PrescriptionSummaryList } from '../../interfaces/prescription-summary.interface';
 import { Status } from '../../interfaces';
+import {
+  MatCell, MatCellDef,
+  MatColumnDef,
+  MatFooterCell, MatFooterCellDef, MatFooterRow, MatFooterRowDef,
+  MatHeaderCell, MatHeaderCellDef,
+  MatHeaderRow, MatHeaderRowDef,
+  MatRow, MatRowDef,
+  MatTable
+} from '@angular/material/table';
+import { MatChip } from '@angular/material/chips';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
-  standalone: true,
-  selector: 'app-prescriptions-table',
-  templateUrl: './prescriptions-table.component.html',
-  styleUrls: ['./prescriptions-table.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    TranslateModule,
-    MatIconModule,
-    MatMenuModule,
-    MatButtonModule,
-    DatePipe,
-    FormatNihdiPipe,
-    TemplateNamePipe,
-    HideIfProfessionalDirective,
-    ShowIfProfessionalDirective,
-    NgIf,
-    NgFor,
-    NgStyle
-  ]
+    selector: 'app-prescriptions-table',
+    templateUrl: './prescriptions-table.component.html',
+    styleUrls: ['./prescriptions-table.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        TranslateModule,
+        MatIconModule,
+        MatMenuModule,
+        MatButtonModule,
+        DatePipe,
+        FormatNihdiPipe,
+        TemplateNamePipe,
+        HideIfProfessionalDirective,
+        ShowIfProfessionalDirective,
+        NgStyle,
+        MatTable,
+        MatColumnDef,
+        MatHeaderCell,
+        MatCell,
+        MatChip,
+        MatFooterCell,
+        MatHeaderRow,
+        MatRow,
+        MatFooterRow,
+        MatHeaderRowDef,
+        MatRowDef,
+        MatFooterCellDef,
+        MatHeaderCellDef,
+        MatCellDef,
+        MatFooterRowDef,
+        MatTooltipModule
+    ]
 })
 export class PrescriptionsTableComponent {
 
   @Input() prescriptions!: PrescriptionSummaryList;
 
   @Output() clickPrescription = new EventEmitter<PrescriptionSummary>();
+
+  displayedColumns: string[] = ['author', 'assigned', 'typeOfCare', 'start', 'end', 'status']
 
   getStatusBorderColor(status: Status): string {
     if (status === 'BLACKLISTED' || status === 'CANCELLED'|| status === 'EXPIRED') {
@@ -52,5 +78,4 @@ export class PrescriptionsTableComponent {
       return 'lightgrey';
     }
   }
-
 }

@@ -15,7 +15,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": "dist/wc-prescription-details",
             "index": "wc-prescription-details/src/index.html",
@@ -35,11 +35,6 @@
                 "glob": "**/*",
                 "input": "./dist/pdfmake/build/",
                 "output": "./assets/pdfmake/"
-              },
-              {
-                "glob": "keycloak.js",
-                "input": "./node_modules/keycloak-js/dist/",
-                "output": "./"
               }
             ],
             "styles": [
@@ -51,6 +46,13 @@
             "externalDependencies": [
               "/assets/evf-form-details/evf-form-details.js",
               "/assets/pdfmake/pdfmake.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "localforage",
+              "buffer",
+              "@messageformat/core",
+              "elliptic",
+              "bn.js"
             ]
           },
           "configurations": {
@@ -77,7 +79,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "wc-prescription-details:build:production"
@@ -87,6 +89,32 @@
             }
           },
           "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular-builders/jest:run",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "configPath": "jest.config.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": [
+              "scss"
+            ],
+            "assets": [],
+            "styles": [],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "wc-prescription-details/src/**/*.ts",
+              "wc-prescription-details/src/**/*.html"
+            ]
+          }
         }
       }
     },
@@ -102,7 +130,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": "dist/wc-list-prescriptions",
             "index": "wc-list-prescriptions/src/index.html",
@@ -112,15 +140,15 @@
             ],
             "tsConfig": "wc-list-prescriptions/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": [
-              {
-                "glob": "keycloak.js",
-                "input": "./node_modules/keycloak-js/dist/",
-                "output": "./"
-              }
-            ],
+            "assets": [],
             "styles": [
               "wc-list-prescriptions/src/styles.scss"
+            ],
+            "allowedCommonJsDependencies": [
+              "buffer",
+              "@messageformat/core",
+              "elliptic",
+              "bn.js"
             ]
           },
           "configurations": {
@@ -147,7 +175,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "wc-list-prescriptions:build:production"
@@ -157,6 +185,32 @@
             }
           },
           "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular-builders/jest:run",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "configPath": "jest.config.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": [
+              "scss"
+            ],
+            "assets": [],
+            "styles": [],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "wc-list-prescriptions/src/**/*.ts",
+              "wc-list-prescriptions/src/**/*.html"
+            ]
+          }
         }
       }
     },
@@ -167,7 +221,7 @@
       "prefix": "healix",
       "architect": {
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "wc-create-prescription:build:production"
@@ -179,7 +233,7 @@
           "defaultConfiguration": "development"
         },
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": "dist/wc-create-prescription",
             "index": "wc-create-prescription/src/index.html",
@@ -187,7 +241,7 @@
             "polyfills": [
               "zone.js"
             ],
-            "tsConfig": "wc-create-prescription/tsconfig.lib.json",
+            "tsConfig": "wc-create-prescription/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "outputHashing": "all",
             "optimization": {
@@ -198,11 +252,6 @@
                 "glob": "**/*",
                 "input": "./dist/evf-form/build/",
                 "output": "./assets/evf-form/"
-              },
-              {
-                "glob": "keycloak.js",
-                "input": "./node_modules/keycloak-js/dist/",
-                "output": "./"
               }
             ],
             "styles": [
@@ -213,6 +262,13 @@
             ],
             "externalDependencies": [
               "/assets/evf-form/evf-form.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "localforage",
+              "buffer",
+              "@messageformat/core",
+              "elliptic",
+              "bn.js"
             ]
           },
           "configurations": {
@@ -221,7 +277,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "1mb",
-                  "maximumError": "2mb"
+                  "maximumError": "3mb"
                 }
               ],
               "outputHashing": "all",
@@ -237,6 +293,32 @@
             }
           },
           "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-builders/jest:run",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "configPath": "jest.config.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": [
+              "scss"
+            ],
+            "assets": [],
+            "styles": [],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "wc-create-prescription/src/**/*.ts",
+              "wc-create-prescription/src/**/*.html"
+            ]
+          }
         }
       }
     },
@@ -252,7 +334,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": "dist/wc-pdfmake",
             "index": "wc-pdfmake/src/index.html",
@@ -266,7 +348,12 @@
               "wc-pdfmake/src/favicon.ico",
               "wc-pdfmake/src/assets"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "localforage",
+              "pdfmake/build/pdfmake.js",
+              "@messageformat/core"
+            ]
           },
           "configurations": {
             "production": {
@@ -292,6 +379,23 @@
             }
           },
           "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular-builders/jest:run",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "configPath": "jest.config.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": [
+              "scss"
+            ],
+            "assets": [],
+            "styles": [],
+            "scripts": []
+          }
         }
       }
     },
@@ -307,7 +411,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": "dist/wc-evf-form-details",
             "index": "wc-evf-form-details/src/index.html",
@@ -340,7 +444,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "wc-evf-form-details:build:production"
@@ -365,7 +469,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": "dist/wc-evf-form",
             "index": "wc-evf-form/src/index.html",
@@ -401,7 +505,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "wc-evf-form:build:production"
@@ -413,6 +517,41 @@
           "defaultConfiguration": "development"
         }
       }
+    },
+    "reuse": {
+      "architect": {
+        "test": {
+          "builder": "@angular-builders/jest:run",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "configPath": "jest.config.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": [
+              "scss"
+            ],
+            "assets": [],
+            "styles": [],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "reuse/code/**/*.ts",
+              "reuse/code/**/*.html"
+            ]
+          }
+        }
+      },
+      "root": "reuse",
+      "projectType": "library"
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

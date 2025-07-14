@@ -9,3 +9,5 @@ export * from './user-info.interface';
 export * from './task.interface';
 export * from './fhir.interface';
 export * from './service-request.interface';
+export * from "./prescription-modal.inteface";
+export * from "./create-prescription-form.interface";

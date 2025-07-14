@@ -1,47 +1,79 @@
-<table>
-  <tr>
-    <th data-cy="overview-author-title">{{'prescription.author' | translate}}</th>
-    <th data-cy="overview-patient-title">{{'prescription.assigned' | translate}}</th>
-    <th data-cy="overview-typeOfCare-title">{{'prescription.typeOfCare' | translate}}</th>
-    <th data-cy="overview-startDate-title">{{'prescription.start' | translate}}</th>
-    <th data-cy="overview-startDate-title">{{'prescription.end' | translate}}</th>
-    <th data-cy="overview-startDate-title">{{'prescription.status' | translate}}</th>
-  </tr>
-  <tr *ngIf="prescriptions.total === 0" class="no-prescriptions">
-    <td colspan="6" *hideIfProfessional>{{'prescription.noPrescriptionsForUser' | translate}}</td>
-    <td colspan="6" *showIfProfessional>{{'prescription.noPrescriptionsForPatient' | translate}}</td>
-  </tr>
-  <tr
-    *ngFor="let prescription of prescriptions.items"
-    [class.inactive]="prescription.status === 'DONE' || prescription.status === 'CANCELLED' || prescription.status === 'EXPIRED'"
-    [attr.data-cy]="'prescription-row-' + prescription.id"
-    (click)="clickPrescription.emit(prescription)"
-  >
-    <td [attr.data-cy]="'author-cell-' + prescription.id" [attr.translate]="'no'">
-      <ng-container *ngIf="prescription.requester">
-        {{prescription.requester.firstName}} {{prescription.requester.lastName}}<br>
-        ({{prescription.requester.nihdi | formatNihdi}})
-      </ng-container>
+<table mat-table [dataSource]="prescriptions.items" class="mat-elevation-z8">
+  <ng-container matColumnDef="author">
+    <th data-cy="overview-author-title" mat-header-cell *matHeaderCellDef>{{'prescription.author' | translate}}</th>
+    <td [attr.data-cy]="'author-cell-' + prescription.id" [attr.translate]="'no'" mat-cell *matCellDef="let prescription">
+      @if(prescription.requester){
+        @if(prescription.requester.healthcarePerson.lastName == null){
+          {{'common.professional.notFound' | translate}}
+          <mat-icon matTooltip="{{'common.professional.tooltip' | translate}}"
+                    matTooltipPosition="after"
+                    style="color: grey; cursor: pointer;">
+            error
+          </mat-icon>
+        }
+        @else{
+          {{prescription.requester.healthcarePerson?.firstName}} {{prescription.requester.healthcarePerson?.lastName}}<br>
+          ({{(prescription.requester.nihii8 || prescription.requester.nihii11) | formatNihdi: prescription.requester.id.qualificationCode}})
+        }
+      }
     </td>
-    <td [attr.data-cy]="'caregiver-cell-' + prescription.id" [attr.translate]="'no'">
-      <div class="assignedIcon">
-        <ng-container *ngIf="prescription.assigned">
-          <mat-icon>check</mat-icon>
-        </ng-container>
-        <ng-container *ngIf="!prescription.assigned">
-          <mat-icon>horizontal_rule</mat-icon>
-        </ng-container>
-      </div>
-    </td>
-    <td [attr.data-cy]="'typeOfCare-cell-' + prescription.id"><b>{{prescription.templateCode | templateName}}</b></td>
-    <td [attr.data-cy]="'startDate-cell-' + prescription.id">{{prescription.period.start | date:'D'}}</td>
-    <td [attr.data-cy]="'endDate-cell-' + prescription.id">{{prescription.period.end | date:'D'}}</td>
+  </ng-container>
 
-    <td
-      [attr.data-cy]="'status-cell-' + prescription.id">
-      <div class="status" data-cy="prescription-status" [ngStyle]="{'border-color': getStatusBorderColor(prescription.status!), 'background-color': getStatusBorderColor(prescription.status!)}">
-        {{'prescription.statuses.' + prescription.status | translate}}
+  <ng-container matColumnDef="assigned">
+    <th data-cy="overview-patient-title" mat-header-cell *matHeaderCellDef>{{'prescription.assigned' | translate}}</th>
+    <td [attr.data-cy]="'caregiver-cell-' + prescription.id" [attr.translate]="'no'" mat-cell *matCellDef="let prescription">
+      <div class="assignedIcon">
+        @if(prescription.assigned) {
+          <mat-icon>check</mat-icon>
+        } @else {
+          <mat-icon>horizontal_rule</mat-icon>
+        }
       </div>
     </td>
-  </tr>
+  </ng-container>
+
+  <ng-container matColumnDef="typeOfCare">
+    <th data-cy="overview-typeOfCare-title" mat-header-cell *matHeaderCellDef>{{'prescription.typeOfCare' | translate}}</th>
+    <td [attr.data-cy]="'typeOfCare-cell-' + prescription.id" mat-cell *matCellDef="let prescription">
+      <b>{{prescription.templateCode | templateName}}</b>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="start">
+    <th data-cy="overview-startDate-title" mat-header-cell *matHeaderCellDef>{{'prescription.start' | translate}}</th>
+    <td [attr.data-cy]="'startDate-cell-' + prescription.id" mat-cell *matCellDef="let prescription">
+      {{prescription.period.start | date:'D'}}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="end">
+    <th data-cy="overview-endDate-title" mat-header-cell *matHeaderCellDef>{{'prescription.end' | translate}}</th>
+    <td mat-cell [attr.data-cy]="'endDate-cell-' + prescription.id" *matCellDef="let prescription">
+      {{prescription.period.end | date:'D'}}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="status">
+    <th data-cy="overview-status-title" mat-header-cell *matHeaderCellDef>{{'prescription.status' | translate}}</th>
+    <td [attr.data-cy]="'status-cell-' + prescription.id" mat-cell *matCellDef="let prescription">
+      <mat-chip data-cy="prescription-status" [ngStyle]="{'background-color': getStatusBorderColor(prescription.status)}">{{'prescription.statuses.' + prescription.status | translate}}</mat-chip>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="noRecord">
+    <td mat-footer-cell *matFooterCellDef colspan="6">
+      <span *hideIfProfessional>{{'prescription.noPrescriptionsForUser' | translate}}</span>
+      <span *showIfProfessional>{{'prescription.noPrescriptionsForPatient' | translate}}</span>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr [class.inactive]="row.status === 'DONE' || row.status === 'CANCELLED' || row.status === 'EXPIRED'"
+      [attr.data-cy]="'prescription-row-' + row.id"
+      (click)="clickPrescription.emit(row)"
+      mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+  @if(prescriptions.total === 0) {
+      <tr class="no-prescriptions" mat-footer-row *matFooterRowDef="['noRecord']"></tr>
+  }
 </table>

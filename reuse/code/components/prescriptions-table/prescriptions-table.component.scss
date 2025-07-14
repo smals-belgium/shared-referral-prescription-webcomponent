@@ -1,10 +1,37 @@
-table {
-  width: 100%;
-  border-spacing: 0 1rem;
-  box-sizing: border-box;
+@use '@angular/material' as mat;
+
+.mat-mdc-row .mat-mdc-cell {
+  cursor: pointer;
 }
 
-tr {
+.mat-mdc-row:hover .mat-mdc-cell {
+  border-color: currentColor;
+}
+
+.assignedIcon{
+  text-align: center;
+}
+
+table {
+  border-spacing: 0 var(--uhmep-sys-gap);
+}
+
+td {
+  background-color: var(--uhmep-table-td-color, white);
+  padding: var(--uhmep-sys-gap);
+  cursor: pointer;
+  transition: .2s background-color, .2s opacity;
+
+  &:first-of-type {
+    border-radius: var(--uhmep-table-border-radius-first-child, 10px 0 0 10px);
+  }
+
+  &:last-of-type {
+    border-radius: var(--uhmep-table-border-radius-last-child, 0 10px 10px 0);
+  }
+}
+
+tr.mat-mdc-row {
   &.inactive {
     opacity: 0.9;
 
@@ -12,40 +39,22 @@ tr {
       opacity: 1;
     }
 
-    td {
-      background-color: #efefef;
+    td.mat-mdc-cell {
+      background-color: var(--uhmep-table-inactive-td-color, #efefef);
     }
   }
-}
 
-tr:not(:first-of-type) {
-  box-shadow: 0 1px 14px #0000001f;
-  border-radius: 1rem;
-
-  &:hover td {
-    background-color: #fafafa;
+  &:hover td.mat-mdc-cell {
+    background-color: var(--uhmep-table-row-hover-background-color, #fafafa);
+    border-color: var(--uhmep-table-row-hover-border-color, #fff);
   }
 }
 
-th {
-  text-align: left;
-  padding: 0 1rem;
+tr.mat-mdc-row:not(:first-of-type) {
+  box-shadow: var( --uhmep-table-row-box-shadow, 0 1px 14px #0000001f);
+  border-radius: var(--uhmep-table-row-border-radius, 1rem);
 }
 
-td {
-  background-color: white;
-  padding: 1rem;
-  cursor: pointer;
-  transition: .2s background-color, .2s opacity;
-
-  &:first-of-type {
-    border-radius: 10px 0 0 10px;
-  }
-
-  &:last-of-type {
-    border-radius: 0 10px 10px 0;
-  }
-}
 
 tr.no-prescriptions {
   > td {
@@ -55,14 +64,7 @@ tr.no-prescriptions {
   }
 }
 
-.status{
-  padding: 0.25rem 1rem;
-  border-style: solid;
-  border-radius: 1rem;
-  border-width: 2px;
-  text-align: center;
+:host ::ng-deep .mat-mdc-standard-chip .mdc-evolution-chip__action--primary {
+  padding: var(--uhmep-chip-padding, 0.25rem 1rem);
 }
 
-.assignedIcon{
-  text-align: center;
-}

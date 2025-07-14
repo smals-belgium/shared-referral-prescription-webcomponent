@@ -1,0 +1,70 @@
+@use '@angular/material' as mat;
+
+.mat-mdc-row .mat-mdc-cell {
+  cursor: pointer;
+}
+
+.mat-mdc-row:hover .mat-mdc-cell {
+  border-color: currentColor;
+}
+
+.assignedIcon{
+  text-align: center;
+}
+
+table {
+  border-spacing: 0 var(--uhmep-sys-gap);
+}
+
+td {
+  background-color: var(--uhmep-table-td-color, white);
+  padding: var(--uhmep-sys-gap);
+  cursor: pointer;
+  transition: .2s background-color, .2s opacity;
+
+  &:first-of-type {
+    border-radius: var(--uhmep-table-border-radius-first-child, 10px 0 0 10px);
+  }
+
+  &:last-of-type {
+    border-radius: var(--uhmep-table-border-radius-last-child, 0 10px 10px 0);
+  }
+}
+
+tr.mat-mdc-row {
+  &.inactive {
+    opacity: 0.9;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    td.mat-mdc-cell {
+      background-color: var(--uhmep-table-inactive-td-color, #efefef);
+    }
+  }
+
+  &:hover td.mat-mdc-cell {
+    background-color: var(--uhmep-table-row-hover-background-color, #fafafa);
+    border-color: var(--uhmep-table-row-hover-border-color, #fff);
+  }
+}
+
+tr.mat-mdc-row:not(:first-of-type) {
+  box-shadow: var( --uhmep-table-row-box-shadow, 0 1px 14px #0000001f);
+  border-radius: var(--uhmep-table-row-border-radius, 1rem);
+}
+
+
+tr.no-models {
+  > td {
+    text-align: center;
+    cursor: none;
+    border-radius: 10px;
+  }
+}
+
+:host ::ng-deep .mat-mdc-standard-chip .mdc-evolution-chip__action--primary {
+  padding: var(--uhmep-chip-padding, 0.25rem 1rem);
+}
+

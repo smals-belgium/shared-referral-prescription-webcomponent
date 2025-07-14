@@ -28,6 +28,16 @@
       padding: 1rem;
       cursor: pointer;
     }
+    &.result-item-detail, &.resul-item-description{
+      &:hover {
+        background-color: transparent;
+      }
+      > td {
+        border-top: 0;
+        padding: 1rem;
+        cursor: default;
+      }
+    }
   }
 
   .results-bar {
@@ -51,5 +61,63 @@
 
   ::ng-deep .mat-mdc-dialog-actions {
     padding: 0 24px 20px 24px;
+  }
+}
+
+.table-td-address{
+  span {
+    &.street-address:after{
+      content: ', '
+    }
+  }
+}
+.table-td-ssin{
+  min-width: 150px;
+  width: fit-content;
+  white-space: nowrap;
+}
+.text-align-right{
+  text-align: right;
+}
+.vertical-align-top{
+  vertical-align: top;
+}
+.vertical-align-bottom{
+  vertical-align: bottom;
+}
+
+.table-td-icon{
+  width: 56px;
+}
+
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.page-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  padding: 0 24px;
+
+  > * {
+    padding: .25rem 0;
+  }
+}
+
+.page-size {
+  display: flex;
+  column-gap: 0.5rem;
+  align-items: center;
+  white-space: nowrap;
+
+  mat-select {
+    background-color: white;
+    padding: 0.5rem;
+    border-radius: 5px;
+    min-width: 55px;
   }
 }

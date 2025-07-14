@@ -15,7 +15,10 @@ export interface ReadPrescription {
   performerTasks: PerformerTask[];
   organizationTasks: OrganizationTask[];
   responses: Record<string, any>;
-  intent?: string
+  intent?: string;
+  pseudonymizedKey?: string;
+  shortCode?: string;
+  note?:string;
 }
 
 export interface ReferralTask {
@@ -57,6 +60,7 @@ export interface CreatePrescriptionRequest {
   subject: string;
   templateCode: string;
   responses: Record<string, any>;
+  pseudonymizedKey: string | undefined;
 }
 
 export interface TemplateId {
@@ -66,14 +70,15 @@ export interface TemplateId {
 
 
 export const enum Status {
-  'DRAFT' = 'DRAFT',
-  'BLACKLISTED' = 'BLACKLISTED',
-  'PENDING' = 'PENDING',
-  'OPEN' = 'OPEN',
-  'CANCELLED' = 'CANCELLED',
-  'EXPIRED' = 'EXPIRED',
-  'IN_PROGRESS' = 'IN_PROGRESS',
-  'DONE' = 'DONE',
+  DRAFT = 'DRAFT',
+  BLACKLISTED = 'BLACKLISTED',
+  PENDING = 'PENDING',
+  OPEN = 'OPEN',
+  CANCELLED = 'CANCELLED',
+  EXPIRED = 'EXPIRED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  DONE = 'DONE',
+  ON_HOLD = 'ON_HOLD'
 }
 
 export interface PrescriptionCancellation {
@@ -92,4 +97,16 @@ export interface SearchPrescriptionCriteria {
   patient?: string;
   requester?: string;
   performer?: string;
+}
+
+export interface ProposalApproveResponse {
+  prescriptionId?: string;
+}
+
+export interface CreatePrescriptionInitialValues {
+  intent: string;
+  initialPrescriptionType?: string;
+  initialPrescription?: ReadPrescription;
+  initialModelId?: string;
+  extend?: boolean;
 }

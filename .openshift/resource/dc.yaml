@@ -2,6 +2,8 @@ apiVersion: apps.openshift.io/v1
 kind: DeploymentConfig
 metadata:
   name: &deploymentconfig referral-prescription-web-components
+  annotations:
+    app.openshift.io/vcs-uri: 'https://git.vascloud.be/nihdi/uhmep/healix/web-components'
   labels:
     deploymentconfig: *deploymentconfig
     group: uhmep
@@ -10,7 +12,8 @@ metadata:
     app.kubernetes.io/instance: *deploymentconfig
     app.kubernetes.io/component: *deploymentconfig
 spec:
-  replicas: 2
+  replicas: 1
+  revisionHistoryLimit: 1
   selector:
     deploymentconfig: *deploymentconfig
   strategy:
@@ -50,7 +53,7 @@ spec:
             periodSeconds: 5
           resources:
             requests:
-              cpu: 250m
+              cpu: 200m
               memory: 256Mi
             limits:
               memory: 256Mi

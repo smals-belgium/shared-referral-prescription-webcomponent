@@ -1,60 +1,71 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, first, from, mergeMap, Observable, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, first, Observable, switchMap } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Buffer } from 'buffer';
-import { AuthExchangeService } from './auth-exchange.service';
-import { ConfigurationService } from './configuration.service';
 import { AuthService } from './auth.service';
+import { Discipline, IdToken } from '../interfaces';
 
 @Injectable({providedIn: 'root'})
 export class WcAuthService extends AuthService {
 
   private readonly ready$ = new BehaviorSubject<boolean>(false);
-  private _getToken!: () => Promise<string>;
+  private _getAccessToken!: (audience?: string) => Promise<string | null>;
+  private _getIdToken!: () => IdToken;
 
   constructor(
-    private configService: ConfigurationService,
-    private authExchangeService: AuthExchangeService
   ) {
     super();
   }
 
-  override init(getToken: () => Promise<string>): void {
-    this._getToken = getToken;
+  override init(getAccessToken: (audience?: string) => Promise<string | null>, getIdToken?: () => IdToken): void {
+    this._getAccessToken = getAccessToken;
+    if(getIdToken) {
+      this._getIdToken = getIdToken;
+    }
     this.ready$.next(true);
   }
 
-  private getToken(): Observable<string> {
+  private getIdToken(): Observable<IdToken | string | null> {
     return this.ready$.pipe(
       first((ready) => ready),
-      switchMap(() => this._getToken())
+      switchMap(async () => typeof this._getIdToken === "function" ? this._getIdToken() : this._getAccessToken())
     );
   }
 
-  override getAccessToken(targetClientId?: string): Observable<string> {
-    const keycloakConfig = this.configService.getEnvironmentVariable('keycloak');
-    if (targetClientId) {
-      const config = {
-        authority: keycloakConfig.url + '/realms/' + keycloakConfig.realm,
-        clientId: keycloakConfig.clientId
-      }
-      return from(this.getToken()).pipe(
-        mergeMap((token) => this.authExchangeService.exchangeAccessToken(config, token, targetClientId))
-      );
-    } else {
-      return from(this.getToken());
-    }
+  override getAccessToken(audience?: string): Observable<string | null> {
+    return this.ready$.pipe(
+      first((ready) => ready),
+      switchMap( () => this._getAccessToken(audience))
+    );
   }
 
   override getClaims(): Observable<Record<string, any>> {
-    return this.getToken().pipe(
-      map((token) => JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString()))
-    )
+   return this.getIdToken().pipe(
+        map((token) => (typeof token === 'string') ? JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString()) : token))
+  }
+
+  getResourceAccess(): Observable<Record<string, any>> {
+    return this.getAccessToken().pipe(
+      filter(token => token !== null),
+      map((token) => JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString())))
   }
 
   override isProfessional(): Observable<boolean> {
-    return this.getClaims().pipe(
-      map((claims) => claims['professional'] != null)
+    return combineLatest([this.getClaims(), this.getResourceAccess()]).pipe(
+      map(([claims, accessToken]) => {
+        return this.userProfileHasProfessionalKey(claims?.['userProfile'], accessToken?.['resource_access']);
+      })
     );
+  }
+
+  private userProfileHasProfessionalKey(userProfile?: Record<string, any>, resourceAccess?: Record<string, any>): boolean {
+    if (!userProfile || !resourceAccess) return false;
+
+    const hasProfessionalKey = Object.values(Discipline).some((discipline) =>
+      Object.hasOwn(userProfile, discipline.toLowerCase())
+    );
+
+    return hasProfessionalKey || resourceAccess['nihdi-uhmep-api']?.roles?.includes('admin') || false;
+
   }
 }

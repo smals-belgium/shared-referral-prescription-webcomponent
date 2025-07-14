@@ -1,9 +1,32 @@
 import { HealthcareProvider } from './healthcareProvider.interface';
 
 export interface Professional extends HealthcareProvider {
-  lastName: string;
-  firstName: string;
-  profession: string;
-  ssin: string;
+  id: {
+    profession: string;
+    qualificationCode: string;
+    ssin: string;
+  }
+  healthcarePerson: {
+    lastName: string;
+    firstName: string;
+  }
+  healthcareQualification: Description
+  healthcareStatus: {
+    code: string;
+  } & Description;
   type: 'Professional';
+  licenseToPractice: boolean;
+  subscriptionEndDate: string;
+  visaActive: boolean;
+  visaEndDate: string;
+  phoneNumbers?:  {
+    mobileNumber?: string;
+    telephoneNumbers?: { [s: string]: string; };
+  };
+}
+
+export interface Description {
+  descriptionFr: string;
+  descriptionNl: string;
+  descriptionDe: string;
 }

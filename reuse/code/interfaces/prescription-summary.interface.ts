@@ -13,6 +13,6 @@ export interface PrescriptionSummary {
 }
 
 export interface PrescriptionSummaryList {
-  total: number;
+  total?: number;
   items: PrescriptionSummary[];
 }

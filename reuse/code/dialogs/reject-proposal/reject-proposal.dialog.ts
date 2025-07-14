@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overlay-spinner.component';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
@@ -10,41 +10,50 @@ import { ReadPrescription } from '../../interfaces';
 import { NgIf } from '@angular/common';
 import { PrescriptionState } from '../../states/prescription.state';
 import {ToastService} from "../../services/toast.service";
+import { v4 as uuidv4 } from 'uuid';
+import { ProposalState } from '../../states/proposal.state';
+import { ErrorCardComponent } from '../../components/error-card/error-card.component';
+import { BaseDialog } from '../base.dialog';
 
 @Component({
-  standalone: true,
-  imports: [
-    OverlaySpinnerComponent,
-    MatDialogModule,
-    TranslateModule,
-    MatButton,
-    ReactiveFormsModule,
-    MatFormField,
-    MatInput,
-    MatError,
-    MatLabel,
-    FormsModule,
-    NgIf
-  ],
-  templateUrl: './reject-proposal.dialog.html',
-  styleUrl: './reject-proposal.dialog.scss'
+    imports: [
+        OverlaySpinnerComponent,
+        MatDialogModule,
+        TranslateModule,
+        MatButton,
+        ReactiveFormsModule,
+        MatFormField,
+        MatInput,
+        MatError,
+        MatLabel,
+        FormsModule,
+        NgIf,
+        ErrorCardComponent
+    ],
+    templateUrl: './reject-proposal.dialog.html',
+    styleUrl: './reject-proposal.dialog.scss'
 })
-export class RejectProposalDialog {
+export class RejectProposalDialog extends BaseDialog implements OnInit {
 
   readonly formGroup = new FormGroup({
-    reason: new FormControl<string>('', Validators.required)
+    reason: new FormControl<string>('')
   });
 
   loading = false;
+  generatedUUID = '';
 
   constructor(
     private toastService: ToastService,
-    private prescriptionStateService: PrescriptionState,
-    private dialogRef: MatDialogRef<RejectProposalDialog>,
+    private proposalStateService: ProposalState,
+    dialogRef: MatDialogRef<RejectProposalDialog>,
     @Inject(MAT_DIALOG_DATA) private data: {
       proposal: ReadPrescription
     }) {
+    super(dialogRef)
+  }
 
+  ngOnInit() {
+    this.generatedUUID = uuidv4();
   }
 
 
@@ -55,34 +64,36 @@ export class RejectProposalDialog {
 
       this.loading = true;
       if(!this.data.proposal.performerTasks?.length) {
-        this.prescriptionStateService
-          .rejectProposal(this.data.proposal.id, reason!)
+        this.proposalStateService
+          .rejectProposal(this.data.proposal.id, reason!, this.generatedUUID)
           .subscribe({
             next: () => {
               this.loading = false;
+              this.closeErrorCard();
               this.toastService.show('proposal.reject.success');
-              this.dialogRef.close();
+              this.closeDialog(true);
             },
-            error: () => {
+            error: (err) => {
               this.loading = false;
-              this.toastService.showSomethingWentWrong();
+              this.showErrorCard('common.somethingWentWrong', err)
             }
           });
       } else {
         this.loading = false;
         const performerTasks =  this.data.proposal.performerTasks
         const lastPerformerTask = performerTasks[performerTasks.length-1]
-        this.prescriptionStateService
-          .rejectProposalTask(this.data.proposal.id, lastPerformerTask.id, reason!)
+        this.proposalStateService
+          .rejectProposalTask(this.data.proposal.id, lastPerformerTask.id, reason!, this.generatedUUID)
           .subscribe({
             next: () => {
               this.loading = false;
+              this.closeErrorCard();
               this.toastService.show('proposal.reject.success');
-              this.dialogRef.close();
+              this.closeDialog(true);
             },
-            error: () => {
+            error: (err) => {
               this.loading = false;
-              this.toastService.showSomethingWentWrong();
+              this.showErrorCard('common.somethingWentWrong', err)
             }
           });
       }

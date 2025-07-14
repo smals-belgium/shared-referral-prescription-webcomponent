@@ -9,6 +9,7 @@
     "patient": "Patiënt",
     "category": "Categorie",
     "typeOfPrescription": "Type voorschrift",
+    "shortCode": "RefID",
     "chooseFromList": "Kies uit deze lijst",
     "tryAgain": "Opnieuw proberen",
     "goBack": "Terug",
@@ -20,6 +21,21 @@
       "NURSE": "Verpleegkundige",
       "PHYSICIAN": "Arts"
     },
+    "professional": {
+      "notFound": "Niet gevonden",
+      "tooltip": "Geciteerde professional niet gevonden."
+    },
+    "organization": {
+      "notFound": "Niet gevonden",
+      "tooltip": "Geciteerde organizatie niet gevonden."
+    },
+    "organizations": {
+      "THIRD_PARTY_PAYING_GROUP": "Groepering met een RIZIV-nr derdebetaler (verpleegkundigen, vroedvrouwen, e.a.)",
+      "GROUPOFDOCTORS": "Groepering van huisartsen op dezelfde installatieplaats",
+      "GUARD_POST": "Wachtpost",
+      "MEDICAL_HOUSE": "Medische huis",
+      "HOME_SERVICES": "Geïntegreerde diensten thuisverzorging"
+    },
     "lastName": "Naam",
     "firstName": "Voornaam",
     "dateOfBirth": "Geboren op",
@@ -27,7 +43,8 @@
     "gender": "Geslacht",
     "genders": {
       "M": "M",
-      "F": "V"
+      "F": "V",
+      "null": "Onbekend"
     },
     "somethingWentWrong": "Er is iets misgegaan. Gelieve opnieuw te proberen.",
     "forbiddenAction": "U bent niet bevoegd om deze actie uit te voeren.",
@@ -36,7 +53,11 @@
     "mandatory": "Verplicht veld",
     "ariaLabel": {
       "loading": "Laden"
-    }
+    },
+    "errors": {
+      "pseudoDisabled": "Het aanmaken van een voorschrift is niet mogelijk."
+    },
+    "prescriptionModel": "Sjabloon"
   },
   "pagination": {
     "ariaLabel": {
@@ -56,6 +77,11 @@
       "pickOptionFromList": "Kies een optie uit de lijst",
       "noOptions": "Geen voorschriften"
     },
+    "selectModel": {
+      "prescriptionModel": "Sjabloon",
+      "pickOptionFromList": "Kies een optie uit de lijst",
+      "noOptions": "Geen sjabloon"
+    },
     "create": {
       "action": "Nieuw voorschrift",
       "success": "Voorschrift succesvol aangemaakt.",
@@ -64,15 +90,61 @@
       "someSuccessSomeFailed": "{successCount} {successCount, plural, one{voorschrift} other{voorschriften}} successvol aangemaakt. {failedCount} {failedCount, plural, one{voorschrift werd} other{voorschriften werden}} niet aangemaakt door een fout. Controleer uw invoer en probeer het opnieuw.",
       "addPrescription": "Extra voorschrift",
       "publish": "Publiceren",
+      "control": {
+        "title": "Controleren",
+        "warning": "Aanvullende relevante indicaties zijn niet meegenomen in deze resultaten.",
+        "error": {
+          "required": "Indicaties zijn verplicht."
+        },
+        "table": {
+          "title": "Resultaten PSS",
+          "select": "",
+          "relevance": "Relevantie",
+          "typesOfImagery": "Soorten afbeeldingen",
+          "cost": "Kosten",
+          "radiationRate": "Stralingsgraad",
+          "radiationLevel": "Stralingsgraad {level}/5",
+          "deselectRow": "Rij {row} deselecteren",
+          "selectRow": "Rij {row} selecteren"
+        }
+      },
       "deletePrescription": {
         "title": "Voorschrift verwijderen",
-        "message": "Bent u zeker dat u het voorschrift \"{templateName}\" wil verwijderen?"
+        "message": "Bent u zeker dat u het voorschrift \"{templateName}\" wilt verwijderen?"
       },
       "cancelPrescriptionsCreation": {
         "title": "Annuleer één of meerdere voorschriften",
         "cancelAll": "Alles annuleren"
       },
-      "cancelCreation": "Bent u zeker dat u het aanmaken van dit voorschrift wil annuleren?"
+      "cancelCreation": "Bent u zeker dat u het aanmaken van dit voorschrift wilt annuleren?"
+    },
+    "model": {
+      "title": "Sjabloon",
+      "create": {
+        "title": "Opslaan als sjabloon",
+        "success": "Model met naam \"{name}\" succesvol aangemaakt.",
+        "dialog": {
+          "title": "Wilt u het voorschrift opslaan als een sjabloon?",
+          "label": "Sjabloonnaam",
+          "labelNotUnique": "De sjabloonnaam is niet uniek."
+        }
+      },
+      "update": {
+        "title": "Update sjabloon"
+      },
+      "delete": {
+        "title": "Verwijder sjabloon",
+        "message": "Bent u zeker dat u het sjabloon \"{templateName}\" wilt verwijderen?"
+      },
+      "creationDate": "Aangemaakt op",
+      "label": "Sjabloon naam",
+      "template": "Gebaseerd op",
+      "actions": "Acties",
+      "noModels": "Geen sjablonen beschikbaar.",
+      "pagination": {
+        "models": "{count, plural, one{sjabloon} other{sjablonen}}",
+        "pageSize": "Aantal per pagina"
+      }
     },
     "print": {
       "content-electronic-prescription": "Inhoud van het elektronisch voorschrift",
@@ -86,6 +158,8 @@
     },
     "author": "Auteur",
     "patient": "Patiënt",
+    "note": "Notitie",
+    "shortcode": "RefID",
     "typeOfCare": "Type zorg",
     "services": "Beurten",
     "frequency": "Frequentie",
@@ -98,6 +172,7 @@
     "assignMe": "Neem de leiding",
     "reject": "Afwijzen",
     "duplicate": "Dupliceren",
+    "extend": "Verlengen",
     "careGivers": "Zorgverlener(s)",
     "assigned": "Toegewezen",
     "noPrescriptionsForPatient": "Deze patiënt heeft nog geen voorschriften.",
@@ -107,8 +182,9 @@
       "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
       "successOrganization": "{name} is toegewezen als organisatie.",
       "meSuccess": "U bent toegewezen als zorgverlener.",
-      "performer": "Zorgverlener",
+      "performer": "Zorgverlener of organisatie",
       "searchPerformerPlaceHolder": "RIZIV nummer, naam",
+      "select": "Selecteren",
       "locations": "Locaties",
       "zipCodeOrCityName": "Postcode of gemeente",
       "noResults": "Geen gemeente gevonden",
@@ -126,7 +202,7 @@
     "cancel": {
       "action": "Annuleren",
       "title": "Voorschrift annuleren",
-      "message": "Bent u zeker dat u het voorschrift \"{templateName}\" van {firstName} {lastName} wil annuleren?",
+      "message": "Bent u zeker dat u het voorschrift \"{templateName}\" van {firstName} {lastName} wilt annuleren?",
       "success": "Het voorschrift werd geannuleerd.",
       "reason": "Reden"
     },
@@ -139,7 +215,7 @@
     "cancelExecution": {
       "action": "Annuleren",
       "title": "Uitvoering annuleren",
-      "message": "Bent u zeker dat u de uitvoering van het voorschrift \"{templateName}\" van {firstName} {lastName} wil annuleren?",
+      "message": "Bent u zeker dat u de uitvoering van het voorschrift \"{templateName}\" van {firstName} {lastName} wilt annuleren?",
       "success": "De uitvoering werd geannuleerd.",
       "reason": "Reden"
     },
@@ -186,7 +262,9 @@
       "EXPIRED": "Niet meer geldig",
       "IN_PROGRESS": "In uitvoering",
       "DONE": "Afgesloten",
-      "null": "Niet gekend"
+      "null": "Niet gekend",
+      "APPROVED": "Goedgekeurd",
+      "REJECTED": "Geweigerd"
     },
     "errors": {
       "failedToLoadPrescription": "Er is iets misgegaan tijdens het laden van het voorschrift.",
@@ -198,7 +276,11 @@
       "invalidCaregiverNameCharacters": "Ongeldige tekens",
       "dateMustBeEarlierOrEqualTo": "Datum mag niet na {date} liggen",
       "dateMustBeLaterOrEqualTo": "Datum mag niet voor {date} liggen",
-      "invalidDateFormat": "Ongeldig formaat: dd/mm/jjjj"
+      "invalidDateFormat": "Ongeldig formaat: dd/mm/jjjj",
+      "invalidSsinChecksum": "Rijksregisternummer is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
+      "invalidShortCode": "Voorschrift ID is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
+      "decryptionFailed": "Het decoderen van de vrije tekstvelden is mislukt. Probeer het opnieuw.",
+      "failedToCreateModel": "Het model kon niet worden aangemaakt. Probeer het later opnieuw."
     },
     "categories": {
       "bandagisterie": "Bandagisterie",
@@ -220,7 +302,7 @@
   },
   "proposal": {
     "selectTemplate": {
-      "prescriptionModel": "Voorschrift model",
+      "proposalModel": "Voorstel model",
       "pickOptionFromList": "Kies een optie uit de lijst",
       "noOptions": "Geen voorstellen"
     },
@@ -230,13 +312,13 @@
       "allSuccess": "{count} {count, plural, one{voorstel} other{voorstellen}} successvol aangemaakt.",
       "allFailed": "Fout tijdens het aanmaken van de voorstellen. Controleer uw invoer en probeer het opnieuw.",
       "someSuccessSomeFailed": "{successCount} {successCount, plural, one{voorstel} other{voorstellen}} successvol aangemaakt. {failedCount} {failedCount, plural, one{voorstel werd} other{voorstellen werden}} niet aangemaakt door een fout. Controleer uw invoer en probeer het opnieuw.",
-      "addPrescription": "Extra voorstel",
+      "addProposal": "Extra voorstel",
       "publish": "Publiceren",
-      "deletePrescription": {
-        "title": "Voorschrift verwijderen",
-        "message": "Bent u zeker dat u het voorstel \"{templateName}\" wil verwijderen?"
+      "deleteProposal": {
+        "title": "Voorstel verwijderen",
+        "message": "Bent u zeker dat u het voorstel \"{templateName}\" wilt verwijderen?"
       },
-      "cancelPrescriptionsCreation": {
+      "cancelProposalsCreation": {
         "title": "Annuleer één of meerdere voorstellen",
         "cancelAll": "Alles annuleren"
       },
@@ -265,10 +347,11 @@
     "transfer": "Overmaken",
     "assignMe": "Neem de leiding",
     "duplicate": "Dupliceren",
+    "extend": "Verlengen",
     "careGivers": "Zorgverlener(s)",
     "assigned": "Toegewezen",
-    "noPrescriptionsForPatient": "Deze patiënt heeft nog geen voorstellen.",
-    "noPrescriptionsForUser": "U heeft nog geen voorstellen.",
+    "noProposalsForPatient": "Deze patiënt heeft nog geen voorstellen.",
+    "noProposalsForUser": "U heeft nog geen voorstellen.",
     "assignPerformer": {
       "title": "Toewijzen aan een zorgverlener of organisatie",
       "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
@@ -292,7 +375,11 @@
     },
     "approve": {
       "action": "Goedkeuren",
-      "success": "Het voorstel werd goedgekeurd."
+      "success": "Het voorstel werd goedgekeurd.",
+      "dialog": {
+        "title": "Reden van goedkeuring",
+        "reason": "Reden"
+      }
     },
     "reject": {
       "title": "Afwijzen",
@@ -306,53 +393,16 @@
     "cancel": {
       "action": "Annuleren",
       "title": "Voorschrift annuleren",
-      "message": "Bent u zeker dat u het voorstel \"{templateName}\" van {firstName} {lastName} wil annuleren?",
+      "message": "Bent u zeker dat u het voorstel \"{templateName}\" van {firstName} {lastName} wilt annuleren?",
       "success": "Het voorstel werd geannuleerd.",
       "reason": "Reden"
-    },
-    "rejectAssignation": {
-      "action": "Weigeren",
-      "title": "Daagvaarding afwijzen",
-      "message": "Weet u zeker dat u de receptopdracht \"{templateName}\" van {firstName} {lastName} wilt afwijzen?",
-      "success": "Inzending succesvol afgewezen."
-    },
-    "cancelExecution": {
-      "action": "Annuleren",
-      "title": "Uitvoering annuleren",
-      "message": "Bent u zeker dat u de uitvoering van het voorstel \"{templateName}\" van {firstName} {lastName} wil annuleren?",
-      "success": "De uitvoering werd geannuleerd.",
-      "reason": "Reden"
-    },
-    "interruptExecution": {
-      "action": "Onderbreken",
-      "title": "Uitvoering onderbreken",
-      "message": "Bent u zeker dat u de uitvoering van het voorstel \"{templateName}\" van {firstName} {lastName} wilt onderbreken?",
-      "success": "Uitvoering succesvol beëindigd."
-    },
-    "startExecution": {
-      "action": "Uitvoeren",
-      "title": "Voorschrift uitvoeren",
-      "startDate": "Startdatum",
-      "success": "De uitvoering is gestart."
-    },
-    "restartExecution": {
-      "action": "Hervatten",
-      "title": "Uitvoering hervatten",
-      "message": "Bent u zeker dat u de uitvoering van het voorstel \"{templateName}\" van {firstName} {lastName} wilt hervatten?",
-      "success": "De uitvoering is hervat."
-    },
-    "finishExecution": {
-      "action": "Afsluiten",
-      "title": "Voorschrift afsluiten",
-      "endDate": "Einddatum",
-      "success": "Het voorstel werd afgesloten."
     },
     "frequencyTypes": {
       "iterative": "Iteratief",
       "weekly": "Wekelijks"
     },
     "status": "Status",
-    "prescriptionDate": "Voorgeschreven op",
+    "proposalDate": "Voorgeschreven op",
     "proposalInfoTitle": "Aangevraagd op {date} door {firstName} {lastName}.",
     "pagination": {
       "proposals": "{count, plural, one{voorstel} other{voorstellen}}",
@@ -367,11 +417,13 @@
       "EXPIRED": "Niet meer geldig",
       "IN_PROGRESS": "In uitvoering",
       "DONE": "Afgesloten",
-      "null": "Niet gekend"
+      "null": "Niet gekend",
+      "APPROVED": "Goedgekeurd",
+      "REJECTED": "Geweigerd"
     },
     "errors": {
-      "failedToLoadPrescription": "Er is iets misgegaan tijdens het laden van het voorstel.",
-      "failedToLoadPrescriptions": "Er is iets misgegaan tijdens het laden van de voorstellen.",
+      "failedToLoadProposal": "Er is iets misgegaan tijdens het laden van het voorstel.",
+      "failedToLoadProposals": "Er is iets misgegaan tijdens het laden van de voorstellen.",
       "invalidFhirString": "Ongeldige tekens",
       "invalidMaxLength": "Maximaal {requiredLength} tekens",
       "invalidMinLength": "Minimaal {requiredLength} tekens",
@@ -379,7 +431,8 @@
       "invalidCaregiverNameCharacters": "Ongeldige tekens",
       "dateMustBeEarlierOrEqualTo": "Datum mag niet na {date} liggen",
       "dateMustBeLaterOrEqualTo": "Datum mag niet voor {date} liggen",
-      "invalidDateFormat": "Ongeldig formaat: dd/mm/jjjj"
+      "invalidDateFormat": "Ongeldig formaat: dd/mm/jjjj",
+      "invalidUUID": "Proposal ID is ongeldig. Gelieve dit na te kijken en opnieuw te proberen."
     },
     "categories": {
       "bandagisterie": "Bandagisterie",
@@ -400,6 +453,17 @@
       "INPROGRESS": "In uitvoering",
       "COMPLETED": "Voltooid",
       "null": "Niet gekend"
+    }
+  },
+  "models": {
+    "errors": {
+      "failedToLoadModels": "Het laden van de sjablonen is mislukt."
+    }
+  },
+  "pss": {
+    "unavailable":{
+      "title": "Service tijdelijk niet beschikbaar",
+      "message": "Onze excuses, de PSS (Prescription Search Support) service is momenteel niet beschikbaar.\nU kunt de aanbevelingen voor medische beeldvormende onderzoeken op dit moment niet raadplegen.\nProbeer het over een paar minuten opnieuw."
     }
   }
 }

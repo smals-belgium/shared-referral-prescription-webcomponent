@@ -4,10 +4,8 @@ import { NgFor } from '@angular/common';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
-import {
-  CreatePrescriptionForm
-} from '../../components/create-multiple-prescriptions/create-multiple-prescriptions.component';
 import { TemplateNamePipe } from '../../pipes/template-name.pipe';
+import {CreatePrescriptionForm} from "../../interfaces/create-prescription-form.interface";
 
 export interface CancelCreationDialogData {
   prescriptionForms: CreatePrescriptionForm[];
@@ -18,17 +16,16 @@ export interface CancelCreationDialogResult {
 }
 
 @Component({
-  templateUrl: './cancel-creation.dialog.html',
-  styleUrls: ['./cancel-creation.dialog.scss'],
-  standalone: true,
-  imports: [
-    TranslateModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatCheckboxModule,
-    TemplateNamePipe,
-    NgFor
-  ]
+    templateUrl: './cancel-creation.dialog.html',
+    styleUrls: ['./cancel-creation.dialog.scss'],
+    imports: [
+        TranslateModule,
+        MatDialogModule,
+        MatButtonModule,
+        MatCheckboxModule,
+        TemplateNamePipe,
+        NgFor
+    ]
 })
 export class CancelCreationDialog {
 

@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { AbstractControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { AsyncPipe, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslationPipe } from '../../pipes/translation.pipe';
 import { combineLatestWith, Observable, startWith } from 'rxjs';
@@ -13,25 +13,23 @@ import { MatButtonModule } from '@angular/material/button';
 import { toSearchString } from '../../utils/utils';
 import { HighlightFilterPipe } from '../../pipes/highlight-filter.pipe';
 import { EvfTemplate } from '../../interfaces';
+import { PrescriptionModel } from '../../interfaces/prescription-modal.inteface';
 
 @Component({
-  standalone: true,
-  selector: 'app-select-prescription-type',
-  templateUrl: './select-prescription-type.component.html',
-  styleUrls: ['./select-prescription-type.component.scss'],
-  imports: [
-    MatAutocompleteModule,
-    MatInputModule,
-    MatIconModule,
-    MatButtonModule,
-    TranslateModule,
-    TranslationPipe,
-    ReactiveFormsModule,
-    HighlightFilterPipe,
-    NgFor,
-    NgIf,
-    AsyncPipe
-  ]
+    selector: 'app-select-prescription-type',
+    templateUrl: './select-prescription-type.component.html',
+    styleUrls: ['./select-prescription-type.component.scss'],
+    imports: [
+      MatAutocompleteModule,
+      MatInputModule,
+      MatIconModule,
+      MatButtonModule,
+      TranslateModule,
+      TranslationPipe,
+      ReactiveFormsModule,
+      HighlightFilterPipe,
+      AsyncPipe,
+    ]
 })
 export class SelectPrescriptionTypeComponent implements OnChanges {
 
@@ -59,11 +57,17 @@ export class SelectPrescriptionTypeComponent implements OnChanges {
   readonly displayTypeWith = (type: string | EvfTemplate) => !!type && typeof type === 'object'
     ? type.labelTranslations[this.evfCurrentLang] || ''
     : '';
+  readonly displayModelWith = (model: string | PrescriptionModel) => !!model && typeof model === 'object'
+    ? model.label
+    : '';
+
   categoryOptions$!: Observable<{ code: string, label: string }[]>;
   templatesOptions$!: Observable<EvfTemplate[]>;
+  modelOptions$?: Observable<PrescriptionModel[]>;
 
   @Input() formGroup!: FormGroup;
   @Input() templates!: EvfTemplate[];
+  @Input() models?: PrescriptionModel[];
   @Input() showTitle = true;
 
   constructor(
@@ -86,25 +90,82 @@ export class SelectPrescriptionTypeComponent implements OnChanges {
   }
 
   private setupAutocompleteOptions(): void {
-    this.categoryOptions$ = this.categories$.pipe(
-      combineLatestWith(this.formGroup.get('category')!.valueChanges.pipe(
-        map((search) => toSearchString(search)),
-        startWith('')
-      )),
-      map(([categories, filter]) => categories.filter((cat) => toSearchString(cat.label).includes(filter)))
+    const {formGroup, models, evfCurrentLang: currentLang} = this;
+
+    this.categoryOptions$ = this.setupFilteredOptions(
+      formGroup.get('category')!,
+      this.categories$,
+      (cat) => cat.label
     );
-    const currentLang = this.evfCurrentLang;
-    const templatesForCategory$ = this.formGroup.get('category')!.valueChanges.pipe(
-      startWith(null),
-      map((category) => category?.code === 'nursingCare' || !category ? this.templates : [])
+
+    const templatesForCategory$ = this.getTemplatesByCategory(formGroup.get('category')!);
+
+    const templates$ = models
+      ? this.getTemplatesByCategoryAndModel(templatesForCategory$, formGroup.get('model')!)
+      : templatesForCategory$;
+
+    this.templatesOptions$ = this.setupFilteredOptions(
+      formGroup.get('template')!,
+      templates$,
+      (template) => template.labelTranslations[currentLang]!
     );
-    this.templatesOptions$ = templatesForCategory$.pipe(
-      combineLatestWith(this.formGroup.get('template')!.valueChanges.pipe(
-        map((search) => toSearchString(search)),
-        startWith('')
-      )),
-      map(([templates, filter]) => templates.filter((template) => toSearchString(template.labelTranslations[currentLang]!)?.includes(filter)))
+
+    if (models) {
+      const modelsForTemplate$ = this.getModelsByTemplateAndCategory(formGroup.get('template')!, templatesForCategory$);
+      this.modelOptions$ = this.setupFilteredOptions(formGroup.get('model')!, modelsForTemplate$, (model) => model.label);
+    }
+  }
+
+  private setupFilteredOptions<T>(
+    control: AbstractControl,
+    source$: Observable<T[]>,
+    getLabel: (item: T) => string
+  ): Observable<T[]> {
+    return source$.pipe(
+      combineLatestWith(control.valueChanges.pipe(map(toSearchString), startWith(''))),
+      map(([items, filter]) => items.filter((item) => toSearchString(getLabel(item)).includes(filter)))
     );
+  }
+
+  private getTemplatesByCategory(categoryControl: AbstractControl): Observable<EvfTemplate[]> {
+    return categoryControl.valueChanges.pipe(startWith(null), map((category) => getFilteredTemplates(this.templates, category)));
+  }
+
+  private getTemplatesByCategoryAndModel(
+    templatesForCategory$: Observable<EvfTemplate[]>,
+    modelControl: AbstractControl
+  ): Observable<EvfTemplate[]> {
+    const templatesForModel$ = modelControl.valueChanges.pipe(startWith(null), map((model) => getFilteredTemplatesByModel(this.templates, model)));
+
+    return templatesForCategory$.pipe(
+      combineLatestWith(templatesForModel$),
+      map(([categoryTemplates, modelTemplates]) =>
+        categoryTemplates.filter((catTemplate) =>
+          modelTemplates.some((modelTemplate) => modelTemplate.id === catTemplate.id)
+        )
+      )
+    );
+  }
+
+  private getModelsByTemplateAndCategory(templateControl: AbstractControl, templatesForCategory$: Observable<EvfTemplate[]>) {
+    const modelsForTemplates$ = templateControl.valueChanges.pipe(startWith(null), map((template) => getFilteredModels(this.models!, template)));
+
+    return templatesForCategory$.pipe(
+      combineLatestWith(modelsForTemplates$),
+      map(([categoryTemplates, models]) =>
+        models.filter(model => categoryTemplates.some((categoryTemplate) => model.templateId === categoryTemplate.id))
+      )
+    );
+  }
+
+  isRequiredField(field: string) {
+    const form_field = this.formGroup.get(field);
+    if (!form_field?.validator) {
+      return false;
+    }
+
+    const validator = form_field.validator({} as AbstractControl);
+    return (validator && validator['required']);
   }
 }
 
@@ -113,3 +174,36 @@ const mustBeObjectValidator = (control: AbstractControl) => {
     ? null
     : {pickOptionFromList: true}
 }
+
+
+const getFilteredTemplates = (templates: EvfTemplate[], category: any): EvfTemplate[] => {
+  if (!category) {
+    return templates;
+  }
+
+  switch (category.code) {
+    case 'nursingCare':
+      return templates.filter(e => e.code !== 'ANNEX_82');
+    case 'radiology':
+      return templates.filter(e => e.code === 'ANNEX_82');
+    default:
+      return [];
+  }
+}
+
+const getFilteredTemplatesByModel  = (templates: EvfTemplate[], model: PrescriptionModel): EvfTemplate[] => {
+  if (!model) {
+    return templates;
+  }
+
+  return templates.filter(e => e.id === model.templateId)
+}
+
+const getFilteredModels = (models: PrescriptionModel[], template: EvfTemplate): PrescriptionModel[] => {
+  if (!template) {
+    return models;
+  }
+
+  return models.filter(e => e.templateId === template.id)
+}
+

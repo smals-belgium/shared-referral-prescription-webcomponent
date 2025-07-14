@@ -1,7 +1,7 @@
 version: 1
 type: npm
 resolver:
-    repo: smals-npm-central
+    repo: vas-npm-central
     serverId: ARTIFACTORY_VAS_RELEASE
 deployer:
     repo: vas-npm-release

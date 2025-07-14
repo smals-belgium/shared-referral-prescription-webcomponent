@@ -1,61 +1,91 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { BlindResult, PseudoHelper } from '@smals/vas-integrations-pseudojs';
-import { map } from 'rxjs/operators';
-import { Buffer } from 'buffer';
+import {
+  Curve,
+  Domain,
+  EHealthProblem,
+  PseudonymInTransit,
+  PseudonymisationHelper,
+  Value
+} from '@smals-belgium-shared/pseudo-helper';
 import { ConfigurationService } from './configuration.service';
-
-interface PseudoResponse {
-  x: string;
-  y: string;
-  crv: string;
-  exp: string;
-  iat: string;
-  domain: string;
-  transitInfo: string;
-}
 
 @Injectable({providedIn: 'root'})
 export class PseudoService {
-
-  private readonly pseudoHelper = new PseudoHelper();
+  private pseudonymizationDomain: Domain | undefined;
   private readonly pseudoApiUrl = this.configService.getEnvironmentVariable('pseudoApiUrl');
 
   constructor(
-    private http: HttpClient,
-    private configService: ConfigurationService
+    private configService: ConfigurationService,
+    private pseudonymizationHelper: PseudonymisationHelper,
   ) {
+    if (this.configService.getEnvironmentVariable('enablePseudo')) {
+      this.pseudonymizationDomain = this.pseudonymizationHelper.createDomain('uhmep_v1', <Curve>'p521', this.pseudoApiUrl, 8);
+    }
   }
 
-  pseudonymize(value: string): Observable<string> {
-    if (!this.configService.getEnvironmentVariable('enablePseudo')) {
-      return of(value);
+  async pseudonymize(value: string): Promise<string> {
+    if (!this.pseudonymizationDomain) {
+      return value;
     }
-    const bufferSize = 8;
-    const blindResult = this.pseudoHelper.blindToBase64Point(value, bufferSize);
-    const body = {
-      x: blindResult.blindedPoint.x,
-      y: blindResult.blindedPoint.y,
-      crv: 'P-521',
-      id: crypto.randomUUID?.() || '1' // to test without HTTPS
-    }
-    return this.http.post<PseudoResponse>(this.pseudoApiUrl + '/domains/uhmep_v1/pseudonymize', body)
-      .pipe(
-        map((result) => ({
-          ...result,
-          ...this.getUnblindedPoint(result, blindResult)
-        })),
-        map((result) => Buffer.from(JSON.stringify(result)).toString('base64'))
-      );
+
+    return await this.pseudonymizationDomain.valueFactory.fromString(value).pseudonymize().then((res: PseudonymInTransit | EHealthProblem) => {
+      if (res instanceof EHealthProblem) {
+        throw new Error(res.detail);
+      }
+      return res.asString();
+    })
   }
 
-  private getUnblindedPoint(result: PseudoResponse, blindResult: BlindResult) {
-    const unbldindedResult = this.pseudoHelper.unblindToBase64Point(result, blindResult.randomBigInt);
+  async identify(value: string): Promise<string> {
+    if (!this.pseudonymizationDomain) {
+      return value;
+    }
 
-    return {
-      x: unbldindedResult.x,
-      y: unbldindedResult.y,
-    };
+    return await this.pseudonymizationDomain.pseudonymInTransitFactory.fromSec1AndTransitInfo(value).identify().then((res: Value | EHealthProblem) => {
+      if (res instanceof EHealthProblem) {
+        throw new Error(res.detail);
+      }
+      return res.asString();
+    })
+  }
+
+  async pseudonymizeValue(val: Value) {
+    return val.pseudonymize().then((res) =>
+    {
+      if (res instanceof EHealthProblem) {
+        throw new Error(res.title, { cause: res.detail });
+      }
+      return res.asShortString();
+    });
+  }
+
+  byteArrayToValue(str: Uint8Array) {
+    if (!this.pseudonymizationDomain) {
+      this.handlePseudomizationNotEnabled();
+      return null;
+    }
+    return this.pseudonymizationDomain.valueFactory.fromArray(str);
+  }
+
+  async identifyPseudonymInTransit(pseudonymInTransit: PseudonymInTransit) {
+    const res = await pseudonymInTransit.identify();
+    if (res instanceof EHealthProblem) {
+      throw new Error(res.title, {cause: res.detail});
+    }
+    return res.asBytes();
+  }
+
+  toPseudonymInTransit(asn1Compressed: string){
+    if (!this.pseudonymizationDomain) {
+      this.handlePseudomizationNotEnabled();
+      return null;
+    }
+    return this.pseudonymizationDomain.pseudonymInTransitFactory.fromSec1AndTransitInfo(
+      asn1Compressed
+    )
+  }
+
+  private handlePseudomizationNotEnabled() {
+    throw new Error('Pseudomization not enabled.');
   }
 }

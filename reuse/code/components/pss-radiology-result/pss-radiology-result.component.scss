@@ -1,0 +1,82 @@
+.pss-score{
+  > div {
+    width: 107px;
+    height: 20px;
+    color: #FFFFFF;
+    text-align: center;
+
+    &.pss-error {
+      background-color: rgba(255, 102, 102, 1);
+    }
+
+    &.pss-warning {
+      width: 148px;
+      color: #555555;
+      background-color: rgba(255, 255, 0, 1);
+    }
+
+    &.pss-success {
+      width: 219px;
+      height: 20px;
+      background-color: rgba(39, 142, 33, 1);
+    }
+
+    &.pss-score-1 {
+      width: calc(20px * 1);
+    }
+
+    &.pss-score-2 {
+      width: calc(20px * 2);
+    }
+
+    &.pss-score-3 {
+      width: calc(20px * 3);
+    }
+
+    &.pss-score-4 {
+      width: calc(20px * 4);
+    }
+
+    &.pss-score-5 {
+      width: calc(20px * 5);
+    }
+
+    &.pss-score-6 {
+      width: calc(20px * 6);
+    }
+
+    &.pss-score-7 {
+      width: calc(20px * 7);
+    }
+
+    &.pss-score-8 {
+      width: calc(20px * 8);
+    }
+  }
+}
+
+.mat-mdc-row.row-is-clickable .mat-mdc-cell {
+  cursor: pointer;
+}
+
+.row-is-clicked {
+  font-weight: bold;
+  background-color: #03a9f4;
+}
+
+.row-is-selected {
+  font-weight: bold;
+  background-color: #e5e5e5;
+}
+
+.radiation-active {
+  color: black;
+}
+
+.radiation-inactive {
+  color: lightgrey;
+}
+
+::ng-deep .mat-column-radiationRate {
+  white-space: nowrap;
+}

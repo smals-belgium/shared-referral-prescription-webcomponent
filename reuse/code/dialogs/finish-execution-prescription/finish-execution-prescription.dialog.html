@@ -1,6 +1,13 @@
 <form (ngSubmit)="finishExecution()" [formGroup]="formGroup">
   <h1 mat-dialog-title>{{'prescription.finishExecution.title' | translate}}</h1>
   <div mat-dialog-content>
+    @if(errorCard.show){
+      <app-error-card
+        [message]="errorCard.message | translate : errorCard.translationOptions"
+        [error]="errorCard.errorResponse"
+        [showRetry]="false"
+      ></app-error-card>
+    }
     <mat-form-field *ngIf="formGroup.get('endDate') as control" appearance="fill">
       <mat-label>{{ 'prescription.finishExecution.endDate' | translate }}</mat-label>
       <input [formControlName]="'endDate'" [matDatepicker]="picker" [max]="maxDate" [min]="minDate" matInput
@@ -17,7 +24,7 @@
   </div>
   <div mat-dialog-actions>
     <button color="accent" data-cy="dialog-confirm-button"
-            mat-raised-button>{{'common.confirm' | translate}}</button>
+            mat-raised-button [disabled]="formGroup.get('endDate')?.invalid">{{'common.confirm' | translate}}</button>
     <button [mat-dialog-close]="undefined" data-cy="dialog-cancel-button" mat-flat-button
             type="button">{{'common.cancel' | translate}}</button>
   </div>

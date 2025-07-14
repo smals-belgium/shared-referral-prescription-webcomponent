@@ -13,6 +13,7 @@ export class PdfMakeWebComponent implements OnChanges {
   @HostBinding('attr.lang')
   @Input() lang?: string;
   @Input() prescription!: ReadPrescription;
+  @Input() responses!: Record<string, any>;
   @Input() patient!: Person;
   @Input() template!: EvfTemplate;
   @Input() templateVersion!: FormTemplate;
@@ -20,8 +21,8 @@ export class PdfMakeWebComponent implements OnChanges {
   @Output() pdfReady = new EventEmitter<void>();
 
   constructor(
-    private prescriptionPdfService: PrescriptionsPdfService,
-    private translate: TranslateService
+    private readonly prescriptionPdfService: PrescriptionsPdfService,
+    private readonly translate: TranslateService
   ) {
   }
 
@@ -29,9 +30,11 @@ export class PdfMakeWebComponent implements OnChanges {
     if (changes['lang']) {
       this.translate.use(this.lang!);
     }
-    if (changes['prescription'] && this.prescription && this.template && this.templateVersion) {
+    if (this.hasRelevantChange(changes)
+      && this.prescription && this.template && this.templateVersion && this.responses) {
       this.prescriptionPdfService.printPDF(
         this.prescription,
+        this.responses,
         this.patient,
         this.template,
         this.templateVersion,
@@ -39,5 +42,9 @@ export class PdfMakeWebComponent implements OnChanges {
       );
       this.pdfReady.emit();
     }
+  }
+
+  private hasRelevantChange(changes: SimpleChanges): boolean {
+    return ['prescription', 'template', 'templateVersion', 'responses'].some(key => key in changes);
   }
 }

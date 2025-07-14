@@ -1,5 +1,6 @@
 <div class="wrapper">
   <div class="patient">
+    @if (patient) {
     <div data-cy="patient-label">
       {{'common.patient' | translate}}
     </div>
@@ -7,63 +8,117 @@
       <div data-cy="patient-name" [attr.translate]="'no'">{{patient.firstName}} {{patient.lastName}}</div>
       <div data-cy="patient-ssin" [attr.translate]="'no'">{{patient.ssin | formatSsin}}</div>
     </div>
+    }
   </div>
 
-  <mat-accordion [hideToggle]="createPrescriptionForms.length === 1" togglePosition="before">
-    <mat-expansion-panel
-      *ngFor="let prescriptionForm of createPrescriptionForms; trackBy: trackByFn; let last = last"
-      [expanded]="last"
-    >
-      <mat-expansion-panel-header
-        [class.no-toggle]="createPrescriptionForms.length === 1"
-        [tabIndex]="createPrescriptionForms.length === 1 ? -1 : 0"
-      >
-        <mat-panel-title
-          [class.invalid]="prescriptionForm.submitted && (!prescriptionForm.elementGroup?.valid || prescriptionForm.status === 'ERROR')">
-          <h3 data-cy="template-label">{{prescriptionForm.templateCode | templateName}}</h3>
-        </mat-panel-title>
-        <mat-panel-description>
-          <mat-icon *ngIf="prescriptionForm.status === 'SUCCESS'" color="accent">check_circle</mat-icon>
-          <mat-icon *ngIf="prescriptionForm.status === 'ERROR'" color="warn">error</mat-icon>
-          <ng-container *ngIf="prescriptionForm.templateCode | templateName as template">
-            <button
-              mat-icon-button
-              *ngIf="prescriptionForm.status !== 'SUCCESS' && createPrescriptionForms.length > 1"
-              (click)="$event.stopPropagation(); clickDeletePrescription.emit({form: prescriptionForm, templateName: template})"
-              [attr.aria-label]="'prescription.ariaLabel.delete' | translate"
-            >
-              <mat-icon>delete</mat-icon>
-            </button>
-          </ng-container>
-        </mat-panel-description>
-      </mat-expansion-panel-header>
+  @if(errorCard.show){
+    <app-error-card
+      [message]="errorCard.message | translate : errorCard.translationOptions"
+      [error]="errorCard.errorResponse"
+      [showRetry]="false"
+    ></app-error-card>
+  }
 
-      <ng-container *ngIf="prescriptionForm.formTemplateState$() as formTemplateState">
-        <app-overlay-spinner *ifStatusLoading="formTemplateState" mode="inline"></app-overlay-spinner>
-        <div *ifStatusError="formTemplateState">Failed to load prescription form template.</div>
-        <nihdi-referral-prescription-form
-          *ifStatusSuccess="formTemplateState"
-          [lang]="lang"
-          [readonly]="prescriptionForm.status === 'SUCCESS'"
-          [submitted]="!!prescriptionForm.submitted"
-          [template]="formTemplateState.data!"
-          (changeElementGroup)="setElementGroup(prescriptionForm, formTemplateState.data!, $any($event)?.detail)"
-        ></nihdi-referral-prescription-form>
-      </ng-container>
-    </mat-expansion-panel>
+  <mat-accordion [hideToggle]="createPrescriptionForms.length === 1" togglePosition="before">
+    @for (prescriptionForm of createPrescriptionForms; track trackByFn($index, prescriptionForm); let last = $last) {
+      <mat-expansion-panel
+        [expanded]="last"
+      >
+        <mat-expansion-panel-header
+          [class.no-toggle]="createPrescriptionForms.length === 1"
+          [tabIndex]="createPrescriptionForms.length === 1 ? -1 : 0"
+        >
+          <mat-panel-title
+            [class.invalid]="prescriptionForm.submitted && (!prescriptionForm.elementGroup?.valid || prescriptionForm.status === 'ERROR')">
+            <h3 data-cy="template-label">{{prescriptionForm.templateCode | templateName}}</h3>
+          </mat-panel-title>
+          <mat-panel-description>
+
+            @if(prescriptionForm.status === LoadingStatus.SUCCESS) {
+              <mat-icon color="accent">check_circle</mat-icon>
+            } @else if (prescriptionForm.status === LoadingStatus.ERROR) {
+              <mat-icon color="warn">error</mat-icon>
+            }
+
+            @if(prescriptionForm.templateCode | templateName; as template) {
+              <ng-container>
+                @if(prescriptionForm.status !== LoadingStatus.SUCCESS && createPrescriptionForms.length > 1) {
+                  <button
+                    mat-icon-button
+                    (click)="$event.stopPropagation(); clickDeletePrescription.emit({form: prescriptionForm, templateName: template})"
+                    [attr.aria-label]="'prescription.ariaLabel.delete' | translate"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                }
+              </ng-container>
+            }
+
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        @if(modelState().state === LoadingStatus.ERROR) {
+          <app-error-card
+            [message]="'prescription.errors.failedToCreateModel' | translate"
+            [error]="modelState().error"
+          ></app-error-card>
+        } @else if(modelState().state === LoadingStatus.SUCCESS) {
+          <app-success-card
+            [message]="'prescription.model.create.success' | translate:{name: modelState().success}"
+          ></app-success-card>
+        }  @else if(modelState().state === LoadingStatus.LOADING) {
+          <app-overlay-spinner mode="inline"></app-overlay-spinner>
+        }
+
+        @if(prescriptionForm.formTemplateState$(); as formTemplateState) {
+          <ng-container>
+            <app-overlay-spinner *ifStatusLoading="formTemplateState" mode="inline"></app-overlay-spinner>
+            <div *ifStatusError="formTemplateState">Failed to load prescription form template.</div>
+            <nihdi-referral-prescription-form
+              *ifStatusSuccess="formTemplateState"
+              [lang]="lang"
+              [readonly]="prescriptionForm.status === LoadingStatus.SUCCESS"
+              [submitted]="!!prescriptionForm.submitted"
+              [template]="formTemplateState.data!"
+              (changeElementGroup)="setElementGroup(prescriptionForm, formTemplateState.data!, $any($event)?.detail)"
+              [status]="status"
+              [patient]="patient"
+              [services]="services"
+            ></nihdi-referral-prescription-form>
+
+            @if(intent.toLowerCase() === 'order'){
+              <button
+                mat-raised-button
+                color="accent"
+                (click)="handleClick(prescriptionForm, formTemplateState.data)"
+              >
+                <mat-icon>save</mat-icon>
+                {{'prescription.model.create.title' | translate}}
+              </button>
+            }
+
+          </ng-container>
+        }
+
+      </mat-expansion-panel>
+    }
   </mat-accordion>
 
+  @if (intent.toLowerCase() === 'order') {
   <div class="actions">
     <div>
       <div class="spacer">&nbsp;</div>
       <div>
+        @if (createPrescriptionForms?.[0]?.templateCode !== 'ANNEX_82') {
         <button (click)="clickAddPrescription.emit()" mat-raised-button data-cy="prescription-create-add">
           <mat-icon color="accent">add_box</mat-icon>
           {{'prescription.create.addPrescription' | translate}}
         </button>
+        }
       </div>
     </div>
   </div>
+  }
   <div class="general-actions">
     <div>
       <div class="spacer">&nbsp;</div>
@@ -75,7 +130,9 @@
           mat-raised-button
           data-cy="prescription-create-publish"
         >{{'prescription.create.publish' | translate}}
-          <ng-container *ngIf="createPrescriptionForms.length > 1">({{numberOfPrescriptionsToCreate}})</ng-container>
+          @if(createPrescriptionForms.length > 1) {
+            <ng-container>({{numberOfPrescriptionsToCreate}})</ng-container>
+          }
         </button>
         <button
           (click)="clickCancel.emit()"

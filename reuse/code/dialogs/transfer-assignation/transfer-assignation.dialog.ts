@@ -1,4 +1,4 @@
-import { Component, Inject, signal } from '@angular/core';
+import { Component, Inject, OnInit, signal } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { debounceTime, Observable, of, switchMap } from 'rxjs';
@@ -6,11 +6,10 @@ import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/ma
 import { catchError, map } from 'rxjs/operators';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { IfStatusErrorDirective } from '../../directives/if-status-error.directive';
 import { IfStatusLoadingDirective } from '../../directives/if-status-loading.directive';
 import { IfStatusSuccessDirective } from '../../directives/if-status-success.directive';
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormatNihdiPipe } from '../../pipes/format-nihdi.pipe';
 import { TranslationPipe } from '../../pipes/translation.pipe';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -26,6 +25,10 @@ import { PrescriptionState } from '../../states/prescription.state';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { ProfessionalService } from '../../services/professional.service';
 import { toDataState } from '../../utils/rxjs.utils';
+import { FormatMultilingualObjectPipe } from "../../pipes/format-multilingual-object.pipe";
+import { v4 as uuidv4 } from 'uuid';
+import { BaseDialog } from '../base.dialog';
+import { ErrorCardComponent } from '../../components/error-card/error-card.component';
 
 interface TransferAssignation {
   prescriptionId?: string,
@@ -51,26 +54,33 @@ interface TransferAssignation {
     MatIconModule,
     OverlaySpinnerComponent,
     IfStatusLoadingDirective,
-    IfStatusErrorDirective,
     IfStatusSuccessDirective,
     TranslationPipe,
     FormatNihdiPipe,
     NgIf,
     NgFor,
-    AsyncPipe
+    AsyncPipe,
+    FormatMultilingualObjectPipe,
+    AsyncPipe,
+    ErrorCardComponent
   ],
   providers: [
     provideNgxMask()
   ]
 })
-export class TransferAssignationDialog {
+export class TransferAssignationDialog extends BaseDialog implements OnInit {
 
   private readonly nameValidators = [Validators.minLength(2), CaregiverNamePatternValidator];
   private readonly searchCriteria$ = signal<{ query: string, zipCodes: string[] }>({query: '', zipCodes: []});
 
   readonly professionalsState$: Observable<DataState<Professional[]>> = toObservable(this.searchCriteria$).pipe(
-    switchMap((criteria) => this.professionalService.findAll(criteria.query, criteria.zipCodes, ['NURSE'])),
-    map((professionals) => professionals?.filter((p) => !this.data.assignedCareGivers?.includes(p.ssin!))),
+    switchMap((criteria) => {
+      if (criteria.query.length === 0 && criteria.zipCodes.length === 0) {
+        return of([])
+      }
+      return this.professionalService.findAll(criteria.query, criteria.zipCodes, ['NURSE'])
+    }),
+    map((professionals) => professionals?.filter((p) => !this.data.assignedCareGivers?.includes(p.id.ssin))),
     toDataState()
   );
   readonly formGroup = new FormGroup({
@@ -87,16 +97,25 @@ export class TransferAssignationDialog {
   readonly caregiverNameMaxLength = 50;
   queryIsNumeric = false;
   loading = false;
+  currentLang?: string;
+  generatedUUID = '';
 
   constructor(
-    private prescriptionStateService: PrescriptionState,
-    private professionalService: ProfessionalService,
-    private toastService: ToastService,
-    private geographyService: GeographyService,
-    private dialogRef: MatDialogRef<TransferAssignationDialog>,
-    @Inject(MAT_DIALOG_DATA) private data: TransferAssignation
+    private readonly prescriptionStateService: PrescriptionState,
+    private readonly professionalService: ProfessionalService,
+    private readonly toastService: ToastService,
+    private readonly geographyService: GeographyService,
+    dialogRef: MatDialogRef<TransferAssignationDialog>,
+    @Inject(MAT_DIALOG_DATA) private readonly data: TransferAssignation,
+    private readonly translate: TranslateService
   ) {
+    super(dialogRef)
+    this.currentLang = this.translate.currentLang
     this.setValidators();
+  }
+
+  ngOnInit() {
+    this.generatedUUID = uuidv4();
   }
 
   private setValidators(): void {
@@ -148,7 +167,7 @@ export class TransferAssignationDialog {
 
   assign(professional: Professional): void {
     if (!this.data?.prescriptionId) {
-      this.dialogRef.close(professional);
+      this.closeDialog(professional);
     } else {
       this.updatePrescription(professional);
     }
@@ -156,15 +175,19 @@ export class TransferAssignationDialog {
 
   private updatePrescription(professional: Professional): void {
     this.loading = true;
-    this.prescriptionStateService.transferAssignation(this.data.prescriptionId!, this.data.referralTaskId!, this.data.performerTaskId!, professional)
+    const ssinObject = {
+      ssin: professional.id.ssin
+    }
+    this.prescriptionStateService.transferAssignation(this.data.prescriptionId!, this.data.referralTaskId!, this.data.performerTaskId!, ssinObject, this.generatedUUID)
       .subscribe({
         next: () => {
-          this.toastService.show('prescription.assignPerformer.success', {interpolation: professional});
-          this.dialogRef.close(professional);
+          this.closeErrorCard();
+          this.toastService.show('prescription.transferAssignation.success', {interpolation: professional.healthcarePerson});
+          this.closeDialog(professional);
         },
-        error: () => {
+        error: (err) => {
           this.loading = false;
-          this.toastService.showSomethingWentWrong();
+          this.showErrorCard('common.somethingWentWrong', err)
         }
       });
   }

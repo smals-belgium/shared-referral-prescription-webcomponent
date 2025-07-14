@@ -1,5 +1,6 @@
 import {
   evfElementConfigFeature,
+  EvfExternalSourceService,
   provideEvfCore,
   withDefaultDateExpressionPipe,
   withFormatDateExpressionPipe,
@@ -16,11 +17,17 @@ import { withInfoElement } from '@smals/vas-evaluation-form-ui-material/elements
 import { withRadioElement } from '@smals/vas-evaluation-form-ui-material/elements/radio';
 import { withTextareaElement } from '@smals/vas-evaluation-form-ui-material/elements/textarea';
 import { withRepeatableElement } from '@smals/vas-evaluation-form-ui-material/elements/repeatable';
-import { withSelectElement } from '@smals/vas-evaluation-form-ui-material/elements/select';
+import { withMultiSelectElement, withSelectElement } from '@smals/vas-evaluation-form-ui-material/elements/select';
 import { withRowElement } from '@smals/vas-evaluation-form-ui-material/elements/row';
 import { withCheckboxListElement } from '@smals/vas-evaluation-form-ui-material/elements/checkbox-list';
 import { EVF_MATERIAL_OPTIONS } from '@smals/vas-evaluation-form-ui-material';
 import { MedicationComponent } from './medication/element/medication.component';
+import { withAutocompleteElement } from "@smals/vas-evaluation-form-ui-material/elements/autocomplete";
+import { ExternalSourceService } from "../services/externalSourceService.service";
+import {
+  AutocompleteMultiselectComponent
+} from '@reuse/code/evf/autocomplete-multiselect/element/autocomplete-multiselect.component';
+import { RecommendationsComponent } from '@reuse/code/evf/pss-recommendations/element/recommendations.component';
 
 export function provideEvfForm() {
   return [
@@ -36,12 +43,22 @@ export function provideEvfForm() {
       withSectionElement(),
       withRowElement(),
       withSelectElement(),
+      withMultiSelectElement(),
       withInfoElement(),
       withRepeatableElement(),
       evfElementConfigFeature({
         name: 'medication',
         element: MedicationComponent
-      }),
+        },
+        {
+          name: 'autocompleteMultiselect',
+          element: AutocompleteMultiselectComponent
+        },
+        {
+          name: 'recommendations',
+          element: RecommendationsComponent
+        }),
+      withAutocompleteElement(),
       // expression pipes
       withParseDateExpressionPipe(),
       withTransformDateExpressionPipe(),
@@ -55,6 +72,7 @@ export function provideEvfForm() {
       useValue: {
         appearance: 'fill'
       }
-    }
+    },
+    {provide: EvfExternalSourceService, useClass: ExternalSourceService}
   ];
 }

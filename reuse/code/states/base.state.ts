@@ -15,7 +15,6 @@ export abstract class BaseState<T> {
       .pipe(toDataState(params))
       .subscribe({
         next: (result) => {
-          console.log(result)
           this._state.set(result);
           if (result.status === LoadingStatus.SUCCESS) {
             subject.next(result.data!);
@@ -25,10 +24,17 @@ export abstract class BaseState<T> {
           }
         },
         error: err => {
-          console.log(err)
           return subject.error(err)
         }
       });
     return subject.asObservable();
+  }
+
+  protected reset() {
+    this._state.set({
+      status: LoadingStatus.INITIAL,
+      data: undefined,
+      error: null
+    });
   }
 }

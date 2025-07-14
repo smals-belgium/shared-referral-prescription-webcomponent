@@ -1,51 +1,116 @@
 <div [formGroup]="formGroup">
-  <div class="title" *ngIf="showTitle"><b>{{'prescription.selectTemplate.prescriptionModel' | translate}}</b></div>
+  @if (showTitle) {
+    <div class="title"><b>{{ 'prescription.selectTemplate.prescriptionModel' | translate }}</b></div>
+  }
   <div data-cy="prescriptionCategory-label"><b>{{'common.category' | translate}}</b></div>
   <div>
-    <mat-form-field appearance="fill" *ngIf="formGroup.get('category') as control">
-      <input
-        type="text"
-        matInput
-        formControlName="category"
-        data-cy="prescription-create-category"
-        [placeholder]="'-- ' + ('common.chooseFromList' | translate)+ ' --'"
-        [matAutocomplete]="catAuto"
-      >
-      <button *ngIf="control?.value" matSuffix mat-icon-button (click)="control?.setValue('')">
-        <mat-icon>close</mat-icon>
-      </button>
-      <mat-autocomplete autoActiveFirstOption #catAuto="matAutocomplete" [displayWith]="displayCategoryWith">
-        <mat-option *ngFor="let option of categoryOptions$ | async" [value]="option">
-          <div class="option-with-highlight" [innerHTML]="option.label | highlightFilter:control.value"></div>
-        </mat-option>
-      </mat-autocomplete>
-      <mat-error *ngIf="control?.hasError('pickOptionFromList')">{{'prescription.selectTemplate.pickOptionFromList' | translate}}</mat-error>
-    </mat-form-field>
+    @if (formGroup.get('category'); as control) {
+      <mat-form-field appearance="fill">
+        <input
+          type="text"
+          matInput
+          formControlName="category"
+          data-cy="prescription-create-category"
+          [placeholder]="'-- ' + ('common.chooseFromList' | translate)+ ' --'"
+          [matAutocomplete]="catAuto"
+        >
+        @if (control?.value) {
+          <button matSuffix mat-icon-button (click)="control?.setValue('')">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+        <mat-autocomplete autoActiveFirstOption #catAuto="matAutocomplete" [displayWith]="displayCategoryWith">
+          @for (option of categoryOptions$ | async; track option) {
+            <mat-option [value]="option">
+              <div class="option-with-highlight" [innerHTML]="option.label | highlightFilter:control.value"></div>
+            </mat-option>
+          }
+        </mat-autocomplete>
+        @if (control?.hasError('pickOptionFromList')) {
+          <mat-error>{{ 'prescription.selectTemplate.pickOptionFromList' | translate }}</mat-error>
+        }
+      </mat-form-field>
+    }
   </div>
+
   <div
     data-cy="prescriptionType-label"
     [class.invalid]="formGroup.get('template')?.touched && formGroup.get('template')?.invalid"
   ><b>{{'common.typeOfPrescription' | translate}} *</b></div>
-  <div *ngIf="templatesOptions$ | async as templateOptions">
-    <mat-form-field appearance="fill" *ngIf="formGroup.get('template') as control">
-      <input
-        type="text"
-        matInput
-        formControlName="template"
-        data-cy="prescription-create-prescriptionType"
-        [placeholder]="'-- ' + ('common.chooseFromList' | translate)+ ' --'"
-        [matAutocomplete]="typeAuto"
-      >
-      <button *ngIf="control?.value" matSuffix mat-icon-button (click)="control?.setValue('')">
-        <mat-icon>close</mat-icon>
-      </button>
-      <mat-autocomplete autoActiveFirstOption #typeAuto="matAutocomplete" [displayWith]="displayTypeWith">
-        <mat-option *ngFor="let option of templateOptions" [value]="option">
-          <div class="option-with-highlight" [innerHTML]="option.labelTranslations | translation | highlightFilter:control.value"></div>
-        </mat-option>
-        <mat-option *ngIf="templateOptions.length === 0 && !control.value?.code"><i>-- {{'prescription.selectTemplate.noOptions' | translate}} --</i></mat-option>
-      </mat-autocomplete>
-      <mat-error *ngIf="control?.hasError('pickOptionFromList')">{{'prescription.selectTemplate.pickOptionFromList' | translate}}</mat-error>
-    </mat-form-field>
-  </div>
+  @if (templatesOptions$ | async; as templateOptions) {
+    <div>
+      @if (formGroup.get('template'); as control) {
+        <mat-form-field appearance="fill">
+          <input
+            type="text"
+            matInput
+            formControlName="template"
+            data-cy="prescription-create-prescriptionType"
+            [placeholder]="'-- ' + ('common.chooseFromList' | translate)+ ' --'"
+            [matAutocomplete]="typeAuto"
+          >
+          @if (control?.value) {
+            <button matSuffix mat-icon-button (click)="control?.setValue('')">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+          <mat-autocomplete autoActiveFirstOption #typeAuto="matAutocomplete" [displayWith]="displayTypeWith">
+            @for (option of templateOptions; track option) {
+              <mat-option [value]="option">
+                <div class="option-with-highlight"
+                     [innerHTML]="option.labelTranslations | translation | highlightFilter:control.value"></div>
+              </mat-option>
+            }
+            @if (templateOptions.length === 0 && !control.value?.code) {
+              <mat-option><i>-- {{ 'prescription.selectTemplate.noOptions' | translate }} --</i></mat-option>
+            }
+          </mat-autocomplete>
+          @if (control?.hasError('pickOptionFromList')) {
+            <mat-error>{{ 'prescription.selectTemplate.pickOptionFromList' | translate }}</mat-error>
+          }
+        </mat-form-field>
+      }
+    </div>
+  }
+
+  @if (modelOptions$ | async; as modelOption) {
+    <div
+      data-cy="model-label"
+      [class.invalid]="formGroup.get('model')?.touched && formGroup.get('model')?.invalid"
+    ><b>{{ 'common.prescriptionModel' | translate }} @if (isRequiredField('model')) {
+      <span>*</span>
+    }</b></div>
+    <div>
+      @if (formGroup.get('model'); as control) {
+        <mat-form-field appearance="fill">
+          <input
+            type="text"
+            matInput
+            formControlName="model"
+            data-cy="prescription-create-model"
+            [placeholder]="'-- ' + ('common.chooseFromList' | translate)+ ' --'"
+            [matAutocomplete]="typeAuto"
+          >
+          @if (control?.value) {
+            <button matSuffix mat-icon-button (click)="control?.setValue('')">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+          <mat-autocomplete autoActiveFirstOption #typeAuto="matAutocomplete" [displayWith]="displayModelWith">
+            @for (option of modelOption; track option) {
+              <mat-option [value]="option">
+                <div class="option-with-highlight" [innerHTML]="option.label | highlightFilter:control.value"></div>
+              </mat-option>
+            }
+            @if (modelOption.length === 0 && !control.value?.code) {
+              <mat-option><i>-- {{ 'prescription.selectModel.noOptions' | translate }} --</i></mat-option>
+            }
+          </mat-autocomplete>
+          @if (control?.hasError('pickOptionFromList')) {
+            <mat-error>{{ 'prescription.selectModel.pickOptionFromList' | translate }}</mat-error>
+          }
+        </mat-form-field>
+      }
+    </div>
+  }
 </div>

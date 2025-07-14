@@ -1,18 +1,8 @@
-import { defineConfig,splitVendorChunkPlugin } from "vite";
-import { viteStaticCopy } from 'vite-plugin-static-copy'
+import {defineConfig} from "vite";
 import path from 'path'
 
 
 export default defineConfig({
-  plugins: [splitVendorChunkPlugin(),
-    viteStaticCopy({
-      targets: [
-        {
-          src: './../dist/wc-list-prescriptions/browser/keycloak.js',
-          dest: './',
-        },
-      ],
-    }),],
   root: "wc-list-prescriptions",
   build: {
     rollupOptions: {

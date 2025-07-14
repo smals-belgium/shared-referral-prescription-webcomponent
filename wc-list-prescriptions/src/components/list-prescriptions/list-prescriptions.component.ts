@@ -4,6 +4,7 @@ import {
   HostBinding,
   Input,
   OnChanges,
+  OnInit,
   Output,
   Signal,
   SimpleChanges,
@@ -24,18 +25,23 @@ import { ActivePageComponent } from '@reuse/code/components/active-page/active-p
 import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
 import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
 import { IfStatusErrorDirective } from '@reuse/code/directives/if-status-error.directive';
-import { AsyncPipe, NgIf } from '@angular/common';
 import { PrescriptionsState } from '@reuse/code/states/prescriptions.state';
 import { TemplatesState } from '@reuse/code/states/templates.state';
 import { AccessMatrixState } from '@reuse/code/states/access-matrix.state';
 import { PrescriptionSummary, PrescriptionSummaryList } from '@reuse/code/interfaces/prescription-summary.interface';
 import { PseudoService } from '@reuse/code/services/pseudo.service';
-import { Observable } from 'rxjs';
 import { ProposalsState } from '@reuse/code/states/proposals.state';
+import { FormsModule } from '@angular/forms';
+import {
+  PrescriptionModelsTableComponent
+} from '@reuse/code/components/prescription-models-table/prescription-models-table.component';
+import { PrescriptionModel, PrescriptionModelRequest } from '@reuse/code/interfaces/prescription-modal.inteface';
+import { ModelsState } from '@reuse/code/states/models.state';
 
 interface ViewState {
   prescriptions: PrescriptionSummaryList;
   proposals: PrescriptionSummaryList;
+  models: PrescriptionModelRequest;
   templates: EvfTemplate[];
 }
 
@@ -43,9 +49,7 @@ interface ViewState {
   templateUrl: './list-prescriptions.component.html',
   styleUrls: ['./list-prescriptions.component.scss'],
   encapsulation: ViewEncapsulation.ShadowDom,
-  standalone: true,
   imports: [
-    NgIf,
     IfStatusErrorDirective,
     ErrorCardComponent,
     IfStatusSuccessDirective,
@@ -56,28 +60,38 @@ interface ViewState {
     PaginatorComponent,
     IfStatusLoadingDirective,
     OverlaySpinnerComponent,
-    AsyncPipe,
-    TranslateModule
+    TranslateModule,
+    FormsModule,
+    PrescriptionModelsTableComponent
   ]
 })
 export class ListPrescriptionsWebComponent implements OnChanges {
 
-  readonly viewState$: Signal<DataState<ViewState>> = combineSignalDataState({
-    prescriptions: this.prescriptionsState.state,
+  readonly viewStateProposals$: Signal<DataState<ViewState>> = combineSignalDataState({
     proposals: this.proposalsState.state,
     templates: this.templatesState.state
   });
-  loading = false;
+
+  readonly viewStatePrescriptions$: Signal<DataState<ViewState>> = combineSignalDataState({
+    prescriptions: this.prescriptionsState.state,
+    templates: this.templatesState.state
+  });
+
+  readonly viewStateModels$: Signal<DataState<ViewState>> = combineSignalDataState({
+    models: this.modelsState.state,
+    templates: this.templatesState.state
+  });
 
   @HostBinding('attr.lang')
   @Input() lang?: string;
   @Input() patientSsin?: string;
   @Input() requesterSsin?: string;
   @Input() performerSsin?: string;
-  @Input() getToken!: () => Promise<string>;
+  @Input() services! : { getAccessToken: (audience?: string) => Promise<string | null> };
   @Input() intent!: string;
 
   @Output() clickOpenPrescriptionDetails = new EventEmitter<PrescriptionSummary>();
+  @Output() clickOpenModelDetails = new EventEmitter<PrescriptionModel>();
 
   constructor(
     private translate: TranslateService,
@@ -87,16 +101,17 @@ export class ListPrescriptionsWebComponent implements OnChanges {
     private accessMatrixState: AccessMatrixState,
     private prescriptionsState: PrescriptionsState,
     private proposalsState: ProposalsState,
-    private templatesState: TemplatesState
+    private templatesState: TemplatesState,
+    private modelsState: ModelsState
   ) {
     this.dateAdapter.setLocale('fr-BE');
     this.translate.setDefaultLang('fr-BE');
-    this.translate.use('fr-BE')
+    this.translate.use('fr-BE');
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['getToken']) {
-      this.authService.init(this.getToken);
+    if (changes['services']) {
+      this.authService.init(this.services.getAccessToken);
       this.accessMatrixState.loadAccessMatrix();
       this.templatesState.loadTemplates();
     }
@@ -109,18 +124,19 @@ export class ListPrescriptionsWebComponent implements OnChanges {
     }
   }
 
-  loadData(page?: number, pageSize?: number){
-    if(this.intent == 'order'){
-      this.loadPrescriptions(page, pageSize)
-    }
-    else{
-      this.loadProposals(page, pageSize)
+  loadData(page?: number, pageSize?: number) {
+    if (this.intent.toLowerCase() === 'order') {
+      this.loadPrescriptions(page, pageSize);
+    } else if (this.intent.toLowerCase() === 'proposal') {
+      this.loadProposals(page, pageSize);
+    } else if (this.intent.toLowerCase() === 'model') {
+      this.loadModels(page, pageSize);
     }
   }
 
   loadPrescriptions(page?: number, pageSize?: number) {
     if (this.patientSsin) {
-      this.getPatientIdentifier(this.patientSsin!).subscribe(identifier => {
+      this.getPatientIdentifier(this.patientSsin!).then((identifier) => {
         this.prescriptionsState.loadPrescriptions({
           patient: identifier,
           requester: this.requesterSsin,
@@ -138,7 +154,7 @@ export class ListPrescriptionsWebComponent implements OnChanges {
 
   loadProposals(page?: number, pageSize?: number) {
     if (this.patientSsin) {
-      this.getPatientIdentifier(this.patientSsin!).subscribe(identifier => {
+      this.getPatientIdentifier(this.patientSsin!).then((identifier) => {
         this.proposalsState.loadProposals({
           patient: identifier,
           requester: this.requesterSsin,
@@ -154,8 +170,13 @@ export class ListPrescriptionsWebComponent implements OnChanges {
     }
   }
 
-  retryFailedCalls(error: { prescriptions?: any, templates?: any }) {
-    if (error.prescriptions) {
+  loadModels(page?: number, pageSize?: number) {
+    const pg = page ? page - 1 : 0;
+    this.modelsState.loadModels(pg, pageSize || 10);
+  }
+
+  retryFailedCalls(error: { prescriptions?: any, templates?: any, proposals?: any, models?: any }) {
+    if (error.prescriptions || error.proposals || error.models) {
       this.loadData();
     }
     if (error.templates) {
@@ -163,7 +184,7 @@ export class ListPrescriptionsWebComponent implements OnChanges {
     }
   }
 
-  private getPatientIdentifier(identifier: string): Observable<string> {
+  private getPatientIdentifier(identifier: string): Promise<string> {
     return this.pseudoService.pseudonymize(identifier);
   }
 }

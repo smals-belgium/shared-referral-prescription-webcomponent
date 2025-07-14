@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { PrescriptionService } from '../services/prescription.service';
 import { TaskService } from '../services/fhir/task.service';
 import {
-  CreatePrescriptionRequest,
   PrescriptionCancellation,
   PrescriptionExecutionFinish,
   PrescriptionExecutionStart,
@@ -13,15 +12,13 @@ import { BaseState } from './base.state';
 import { tap } from 'rxjs/operators';
 import { Organization } from '../interfaces/organization.interface';
 import { HealthcareProvider } from '../interfaces/healthcareProvider.interface';
-import {ProposalService} from "../services/proposal.service";
 
 @Injectable({providedIn: 'root'})
 export class PrescriptionState extends BaseState<ReadPrescription> {
 
   constructor(
-    private prescriptionService: PrescriptionService,
-    private performerTaskService: TaskService,
-    private proposalService: ProposalService
+    private readonly prescriptionService: PrescriptionService,
+    private readonly performerTaskService: TaskService
   ) {
     super();
   }
@@ -30,107 +27,99 @@ export class PrescriptionState extends BaseState<ReadPrescription> {
     this.load(this.prescriptionService.findOne(id));
   }
 
-  assignPrescriptionPerformer(prescriptionId: string, referralTaskId: string, healthcareProvider: HealthcareProvider) {
-    if(healthcareProvider.type === 'Professional') {
+  resetPrescription() {
+    this.reset()
+  }
+
+  loadPrescriptionByShortCode(shortCode: string, ssin: string): void {
+    this.load(this.prescriptionService.findOneByShortCode(shortCode, ssin));
+  }
+
+  assignPrescriptionPerformer(prescriptionId: string, referralTaskId: string, healthcareProvider: HealthcareProvider, generatedUUID: string) {
+    if (healthcareProvider.type === 'Professional') {
       return this.prescriptionService
         .assignCaregiver(prescriptionId, referralTaskId, {
-          ssin: (healthcareProvider as Professional).ssin!,
-          role: (healthcareProvider as Professional).profession
-        })
+          ssin: (healthcareProvider as Professional).id.ssin,
+          role: (healthcareProvider as Professional).id.profession
+        }, generatedUUID)
         .pipe(tap(() => this.loadPrescription(prescriptionId)));
-    }
-    else{
+    } else {
+      const ho = healthcareProvider as Organization
+      const nihdi = (ho.nihii8 ?? ho.nihii8) + ho.qualificationCode;
       return this.prescriptionService
         .assignOrganization(prescriptionId, referralTaskId, {
-          nihdi: (healthcareProvider as Organization).nihdi!,
-          institutionTypeCode: (healthcareProvider as Organization).institutionTypeCode!
-        })
+          nihdi: nihdi,
+          institutionTypeCode: ho.typeCode
+        }, generatedUUID)
         .pipe(tap(() => this.loadPrescription(prescriptionId)));
     }
   }
 
-
-
   assignPrescriptionToMe(prescriptionId: string, referralTaskId: string, professional: {
     ssin: string
-  }) {
+  }, generatedUUID: string) {
     return this.prescriptionService
       .assignCaregiver(prescriptionId, referralTaskId, {
-        ssin: professional.ssin!,
+        ssin: professional.ssin,
         role: 'NURSE'
-      })
+      }, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
   assignAndStartPrescriptionExecution(prescriptionId: string, referralTaskId: string, professional: {
     ssin: string
-  }, executionStart: PrescriptionExecutionStart) {
+  }, generatedUUID: string, executionStart: PrescriptionExecutionStart) {
     return this.prescriptionService
       .assignCaregiver(prescriptionId, referralTaskId, {
-        ssin: professional.ssin!,
+        ssin: professional.ssin,
         role: 'NURSE'
-      }, executionStart.startDate)
+      }, generatedUUID, executionStart.startDate)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
   transferAssignation(prescriptionId: string, referralTaskId: string, performerTaskId: string, professional: {
     ssin: string
-  }) {
+  }, generatedUUID: string) {
     return this.prescriptionService
       .transferAssignation(prescriptionId, referralTaskId, performerTaskId, {
-        ssin: professional.ssin!,
+        ssin: professional.ssin,
         role: 'NURSE'
-      })
+      }, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
-  cancelPrescription(prescriptionId: string, _cancellation: PrescriptionCancellation) {
-    return this.prescriptionService.cancel(prescriptionId)
+  cancelMedicalDocument(prescriptionId: string, _cancellation: PrescriptionCancellation, generatedUUID: string) {
+    return this.prescriptionService.cancel(prescriptionId, generatedUUID);
+  }
+
+  rejectAssignation(prescriptionId: string, performerTaskId: string, generatedUUID: string) {
+    return this.prescriptionService.rejectAssignation(prescriptionId, performerTaskId, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
-  rejectAssignation(prescriptionId: string, performerTaskId: string) {
-    return this.prescriptionService.rejectAssignation(prescriptionId, performerTaskId)
+  startPrescriptionExecution(prescriptionId: string, performerTaskId: string, executionStart: PrescriptionExecutionStart, generatedUUID: string) {
+    return this.performerTaskService.startExecution(performerTaskId, executionStart, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
-  startPrescriptionExecution(prescriptionId: string, performerTaskId: string, executionStart: PrescriptionExecutionStart) {
-    return this.performerTaskService.startExecution(performerTaskId, executionStart)
+  restartExecution(prescriptionId: string, performerTaskId: string, generatedUUID: string) {
+    return this.performerTaskService.restartExecution(performerTaskId, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
-  restartExecution(prescriptionId: string, performerTaskId: string) {
-    return this.performerTaskService.restartExecution(performerTaskId)
+  finishPrescriptionExecution(prescriptionId: string, performerTaskId: string, executionFinish: PrescriptionExecutionFinish, generatedUUID: string) {
+    return this.performerTaskService.finishExecution(performerTaskId, executionFinish, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
-  finishPrescriptionExecution(prescriptionId: string, performerTaskId: string, executionFinish: PrescriptionExecutionFinish) {
-    return this.performerTaskService.finishExecution(performerTaskId, executionFinish)
+  cancelPrescriptionExecution(prescriptionId: string, performerTaskId: string, generatedUUID: string) {
+    return this.performerTaskService.cancelExecution(performerTaskId, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
-  cancelPrescriptionExecution(prescriptionId: string, performerTaskId: string) {
-    return this.performerTaskService.cancelExecution(performerTaskId)
+  interruptPrescriptionExecution(prescriptionId: string, performerTaskId: string, generatedUUID: string) {
+    return this.performerTaskService.interruptExecution(performerTaskId, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
-  }
-
-  interruptPrescriptionExecution(prescriptionId: string, performerTaskId: string) {
-    return this.performerTaskService.interruptExecution(performerTaskId)
-      .pipe(tap(() => this.loadPrescription(prescriptionId)));
-  }
-
-  createPrescriptionFromProposal(proposalId: string, proposal: CreatePrescriptionRequest) {
-    return this.prescriptionService.createPrescriptionFromProposal(proposalId, proposal)
-      .pipe(tap(() => this.loadPrescription(proposalId)));
-  }
-
-  rejectProposal(proposalId: string, reason: string) {
-    return this.proposalService.rejectProposal(proposalId, reason)
-      .pipe(tap(() => this.loadPrescription(proposalId)));
-  }
-
-  rejectProposalTask(proposalId: string, performerTaskId: string, reason: string) {
-    return this.proposalService.rejectProposalTask(performerTaskId, reason)
-      .pipe(tap(() => this.loadPrescription(proposalId)));
   }
 }
+

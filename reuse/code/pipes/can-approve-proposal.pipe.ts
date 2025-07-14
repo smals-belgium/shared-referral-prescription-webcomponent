@@ -1,5 +1,5 @@
 import { Pipe } from '@angular/core';
-import { ReadPrescription } from '../interfaces';
+import { ReadPrescription, Status } from '../interfaces';
 import { AccessMatrixState } from '../states/access-matrix.state';
 
 @Pipe({name: 'canApproveProposal', standalone: true})
@@ -11,6 +11,6 @@ export class CanApproveProposalPipe {
   }
 
   transform(prescription: ReadPrescription): boolean {
-    return this.accessMatrixState.hasAtLeastOnePermission(['approveProposal'], prescription.templateCode);
+    return prescription.status != null && [Status.DRAFT, Status.PENDING, Status.OPEN, Status.IN_PROGRESS].includes(prescription.status) && this.accessMatrixState.hasAtLeastOnePermission(['evaluateProposal'], prescription.templateCode);
   }
 }

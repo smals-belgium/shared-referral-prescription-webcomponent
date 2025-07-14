@@ -1,11 +1,13 @@
 import {
   evfElementConfigFeature,
   provideEvfCore,
-  withParseDateExpressionPipe, withTransformDateExpressionPipe
+  withParseDateExpressionPipe,
+  withTransformDateExpressionPipe
 } from '@smals/vas-evaluation-form-ui-core';
 import { CheckboxDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/checkbox';
 import { DateDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/date';
 import { OccurrenceTimingDetailComponent } from './occurrence-timing/detail/occurrence-timing-detail.component';
+import { RecommendationsDetailComponent } from './pss-recommendations/detail/recommendations-detail.component';
 import {
   EvfNumberDetailComponent,
   EvfResponseDetailComponent,
@@ -13,6 +15,7 @@ import {
   EvfValueDetailComponent
 } from '@smals/vas-evaluation-form-ui-material/elements/shared';
 import { RowDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/row';
+import { AutocompleteDetailComponent } from "@smals/vas-evaluation-form-ui-material/elements/autocomplete";
 
 export function provideEvfFormDetails() {
   return [
@@ -61,10 +64,18 @@ export function provideEvfFormDetails() {
         {
           name: 'row',
           detail: RowDetailComponent
+        },
+        {
+          name: 'autocomplete',
+          detail: AutocompleteDetailComponent
+        },
+        {
+          name: 'recommendations',
+          detail: RecommendationsDetailComponent
         }
       ),
       withParseDateExpressionPipe(),
-      withTransformDateExpressionPipe(),
+      withTransformDateExpressionPipe()
     )
   ];
 }
