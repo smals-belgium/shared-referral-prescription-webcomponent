@@ -733,7 +733,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       'assets/pdfmake/pdfmake.js'
     ];
     scripts.forEach((src) => {
-      const script = this.renderer.createElement('script');
+      const script = this.renderer.createElement('script') as HTMLScriptElement;
       script.type = `text/javascript`;
       script.src = url + src;
       script.type = 'module';
@@ -755,7 +755,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       'assets/evf-form-details/evf-form-details.js'
     ];
     scripts.forEach((src) => {
-      const script = this.renderer.createElement('script');
+      const script = this.renderer.createElement('script') as HTMLScriptElement;
       script.type = `text/javascript`;
       script.src = url + src;
       script.type = 'module';
