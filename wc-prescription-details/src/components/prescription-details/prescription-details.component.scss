@@ -55,6 +55,7 @@ h3 {
 .info-item {
   display: flex;
   column-gap: 1.5rem;
+  align-items: baseline;
 
   > div {
     flex-basis: 0;

@@ -104,6 +104,7 @@ import { CanDuplicatePrescriptionPipe } from '@reuse/code/pipes/can-duplicate-pr
 import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-responses-state.interface';
 import { FormatMultilingualObjectPipe } from '@reuse/code/pipes/format-multilingual-object.pipe';
 import { PssService } from '@reuse/code/services/pss.service';
+import {MatTooltip} from "@angular/material/tooltip";
 
 interface ViewState {
   prescription: ReadPrescription;
@@ -152,7 +153,8 @@ interface ViewState {
     CanRejectProposalPipe,
     CanExtendPrescriptionPipe,
     CanDuplicatePrescriptionPipe,
-    FormatMultilingualObjectPipe
+    FormatMultilingualObjectPipe,
+    MatTooltip
   ]
 })
 

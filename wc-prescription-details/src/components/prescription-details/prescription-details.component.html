@@ -64,14 +64,29 @@
                 <div class="info-item">
                   <div data-cy="prescription-author-label">{{'prescription.author' | translate}}</div>
                   <div data-cy="prescription-author">
-                    {{prescription.requester?.healthcarePerson?.firstName}} {{prescription.requester?.healthcarePerson?.lastName}}
-                    @if (prescription.requester?.id?.profession) {
-                      ({{ 'common.professions.' + prescription.requester?.id?.profession | translate }})<br>
+                    @if(prescription.requester?.healthcarePerson?.lastName == null){
+                      @if (prescription.requester?.id?.ssin == viewState.data?.currentUser?.ssin){
+                        {{viewState.data?.currentUser?.firstName}} {{viewState.data?.currentUser?.lastName}}
+                      }
+                      @else{
+                        <b>{{'common.professional.notFound' | translate}}</b>
+                        <mat-icon matTooltip="{{'common.professional.tooltip' | translate}}"
+                                  matTooltipPosition="right"
+                                  style="color: grey; cursor: pointer;">
+                          error
+                        </mat-icon>
+                      }
                     }
-                    @if (prescription.requester?.nihii8) {
-                      {{prescription.requester!.nihii8 | formatNihdi: prescription.requester?.id?.qualificationCode }}
-                    } @else if (prescription.requester?.nihii11) {
-                      {{prescription.requester!.nihii11 | formatNihdi: prescription.requester?.id?.qualificationCode}}
+                    @else{
+                      {{prescription.requester?.healthcarePerson?.firstName}} {{prescription.requester?.healthcarePerson?.lastName}}
+                      @if (prescription.requester?.id?.profession) {
+                        ({{ 'common.professions.' + prescription.requester?.id?.profession | translate }})<br>
+                      }
+                      @if (prescription.requester?.nihii8) {
+                        {{prescription.requester!.nihii8 | formatNihdi: prescription.requester?.id?.qualificationCode }}
+                      } @else if (prescription.requester?.nihii11) {
+                        {{prescription.requester!.nihii11 | formatNihdi: prescription.requester?.id?.qualificationCode}}
+                      }
                     }
                   </div>
                 </div>
@@ -180,7 +195,18 @@
               <div class="caregiver-list" *ngIf="(prescription.performerTasks && prescription.performerTasks.length > 0) || (prescription.organizationTasks && prescription.organizationTasks.length > 0)" data-cy="prescription-assign-to-list">
                 <ng-container *ngFor="let task of prescription.organizationTasks">
                   <div class="organization-row " data-cy="prescription-assign-to">
-                    <div class="caregiver-name"><b>{{task.organization.organizationName | formatMultilingualObject: 'name': currentLang}}</b>
+                    <div class="caregiver-name">
+                      @if(task.organization.organizationName == null){
+                        <b>{{'common.organization.notFound' | translate}}</b>
+                        <mat-icon matTooltip="{{'common.organization.tooltip' | translate}}"
+                                  matTooltipPosition="after"
+                                  style="color: grey; cursor: pointer;">
+                          error
+                        </mat-icon>
+                      }
+                      @else{
+                        <b>{{task.organization.organizationName | formatMultilingualObject: 'name': currentLang}}</b>
+                      }
                       <ng-container *ngIf="task.organization.nihii8 || task.organization.nihii11">
                         ({{ task.organization.nihii8 ?? task.organization.nihii11 | formatNihdi: task.organization.qualificationCode }})
                       </ng-container><br>
@@ -195,7 +221,23 @@
                       <ng-container *ngFor="let performertask of task.performerTasks">
                         <div class="organization-caregiver-row">
                           <div class="organization-caregiver-name-row" data-cy="prescription-assign-to">
-                            <div class="caregiver-name">{{performertask.careGiver.healthcarePerson.firstName}} {{performertask.careGiver.healthcarePerson.lastName}}
+                            <div class="caregiver-name">
+                              @if(performertask.careGiver?.healthcarePerson?.lastName == null){
+                                @if (performertask.careGiver?.id?.ssin == viewState.data?.currentUser?.ssin){
+                                  {{viewState.data?.currentUser?.firstName}} {{viewState.data?.currentUser?.lastName}}
+                                }
+                                @else{
+                                  <b>{{'common.professional.notFound' | translate}}</b>
+                                  <mat-icon matTooltip="{{'common.professional.tooltip' | translate}}"
+                                            matTooltipPosition="right"
+                                            style="color: grey; cursor: pointer;">
+                                    error
+                                  </mat-icon>
+                                }
+                              }
+                              @else{
+                                <b>{{performertask.careGiver.healthcarePerson.firstName}} {{performertask.careGiver.healthcarePerson.lastName}}</b>
+                              }
                               @if (performertask.careGiver.nihii8) {
                                 ({{performertask.careGiver.nihii8 | formatNihdi: performertask.careGiver.id.qualificationCode}})
                                 <br>
@@ -284,7 +326,23 @@
                 <ng-container *ngFor="let task of prescription.performerTasks">
                   <div class="caregiver-row">
                     <div class="caregiver-name-row" data-cy="prescription-assign-to">
-                      <div class="caregiver-name"><b>{{task.careGiver.healthcarePerson.firstName}} {{task.careGiver.healthcarePerson.lastName}}</b>
+                      <div class="caregiver-name">
+                        @if(task.careGiver?.healthcarePerson?.lastName == null){
+                          @if (task.careGiver?.id?.ssin == viewState.data?.currentUser?.ssin){
+                            {{viewState.data?.currentUser?.firstName}} {{viewState.data?.currentUser?.lastName}}
+                          }
+                          @else{
+                            <b>{{'common.professional.notFound' | translate}}</b>
+                            <mat-icon matTooltip="{{'common.professional.tooltip' | translate}}"
+                                      matTooltipPosition="right"
+                                      style="color: grey; cursor: pointer;">
+                              error
+                            </mat-icon>
+                          }
+                        }
+                        @else{
+                          <b>{{task.careGiver.healthcarePerson.firstName}} {{task.careGiver.healthcarePerson.lastName}}</b>
+                        }
                         @if (task.careGiver.nihii8) {
                           ({{task.careGiver.nihii8 | formatNihdi: task.careGiver.id.qualificationCode}})
                           <br>
@@ -380,13 +438,42 @@
             <div>
               <div class="prescriber-title">
                 <p>
-        <span data-cy="proposal-date-label">{{
-            'proposal.proposalInfoTitle' | translate: {
-              firstName: prescription.requester?.healthcarePerson?.firstName || '',
-              lastName: prescription.requester?.healthcarePerson?.lastName || '',
-              date: $any(prescription.authoredOn) | date: 'D'
+        <span data-cy="proposal-date-label">
+          @if(prescription.requester?.healthcarePerson?.lastName == null){
+            @if (prescription.requester?.id?.ssin == viewState.data?.currentUser?.ssin){
+              {{
+                'proposal.proposalInfoTitle' | translate: {
+                  firstName: viewState.data?.currentUser?.firstName || '',
+                  lastName: viewState.data?.currentUser?.lastName || '',
+                  date: $any(prescription.authoredOn) | date: 'D'
+                }
+              }}
             }
-          }}</span>
+            @else{
+              {{
+                'proposal.proposalInfoTitle' | translate: {
+                  firstName: 'common.professional.notFound' | translate,
+                  lastName: '',
+                  date: $any(prescription.authoredOn) | date: 'D'
+                }
+              }}
+              <mat-icon matTooltip="{{'common.professional.tooltip' | translate}}"
+                        matTooltipPosition="right"
+                        style="color: grey; cursor: pointer;">
+                          error
+                        </mat-icon>
+            }
+          }
+          @else{
+            {{
+              'proposal.proposalInfoTitle' | translate: {
+                firstName: prescription.requester?.healthcarePerson?.firstName || '',
+                lastName: prescription.requester?.healthcarePerson?.lastName || '',
+                date: $any(prescription.authoredOn) | date: 'D'
+              }
+            }}
+          }
+          </span>
                 </p>
               </div>
               <div class="prescriber-actions">
