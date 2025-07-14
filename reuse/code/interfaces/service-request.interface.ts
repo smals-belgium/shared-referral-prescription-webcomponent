@@ -66,6 +66,7 @@ export type UnitsOfTime = 's' | 'min' | 'h' | 'd' | 'wk' | 'mo' | 'a';
 export type Weekday = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun';
 
 export interface Repeat {
+  boundsDuration ?: BoundsDuration;
   count?: number;
   frequency?: number;
   period?: number;
@@ -74,6 +75,12 @@ export interface Repeat {
   durationUnit?: UnitsOfTime;
   dayOfWeek?: Weekday[];
   when?: string[];
+}
+
+export interface BoundsDuration {
+  code: UnitsOfTime;
+  system: string;
+  value: number;
 }
 
 export interface Requester {

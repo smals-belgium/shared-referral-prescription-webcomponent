@@ -36,28 +36,27 @@ import { MatIconModule } from '@angular/material/icon';
 import { EVF_MATERIAL_OPTIONS, EvfMaterialOptions } from '@smals/vas-evaluation-form-ui-material';
 
 @Component({
-  selector: 'evf-medication',
-  templateUrl: './medication.component.html',
-  styleUrls: ['./medication.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
-  imports: [
-    EvfFormElementLayoutComponent,
-    EvfElementLabelComponent,
-    EvfElementBodyComponent,
-    EvfElementHelpComponent,
-    MatFormFieldModule,
-    MatInputModule,
-    ReactiveFormsModule,
-    TranslateModule,
-    MatAutocompleteModule,
-    EvfLabelPipe,
-    EvfCommonErrorsPipe,
-    AsyncPipe,
-    MatIconModule,
-    NgIf,
-    NgForOf
-  ]
+    selector: 'evf-medication',
+    templateUrl: './medication.component.html',
+    styleUrls: ['./medication.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        EvfFormElementLayoutComponent,
+        EvfElementLabelComponent,
+        EvfElementBodyComponent,
+        EvfElementHelpComponent,
+        MatFormFieldModule,
+        MatInputModule,
+        ReactiveFormsModule,
+        TranslateModule,
+        MatAutocompleteModule,
+        EvfLabelPipe,
+        EvfCommonErrorsPipe,
+        AsyncPipe,
+        MatIconModule,
+        NgIf,
+        NgForOf
+    ]
 })
 export class MedicationComponent extends EvfBaseFormElementComponent implements OnInit {
 

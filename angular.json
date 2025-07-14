@@ -15,7 +15,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": "dist/wc-prescription-details",
             "index": "wc-prescription-details/src/index.html",
@@ -35,11 +35,6 @@
                 "glob": "**/*",
                 "input": "./dist/pdfmake/build/",
                 "output": "./assets/pdfmake/"
-              },
-              {
-                "glob": "keycloak.js",
-                "input": "./node_modules/keycloak-js/dist/",
-                "output": "./"
               }
             ],
             "styles": [
@@ -51,6 +46,13 @@
             "externalDependencies": [
               "/assets/evf-form-details/evf-form-details.js",
               "/assets/pdfmake/pdfmake.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "localforage",
+              "buffer",
+              "@messageformat/core",
+              "elliptic",
+              "bn.js"
             ]
           },
           "configurations": {
@@ -77,7 +79,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "wc-prescription-details:build:production"
@@ -119,7 +121,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": "dist/wc-list-prescriptions",
             "index": "wc-list-prescriptions/src/index.html",
@@ -129,15 +131,15 @@
             ],
             "tsConfig": "wc-list-prescriptions/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": [
-              {
-                "glob": "keycloak.js",
-                "input": "./node_modules/keycloak-js/dist/",
-                "output": "./"
-              }
-            ],
+            "assets": [],
             "styles": [
               "wc-list-prescriptions/src/styles.scss"
+            ],
+            "allowedCommonJsDependencies": [
+              "buffer",
+              "@messageformat/core",
+              "elliptic",
+              "bn.js"
             ]
           },
           "configurations": {
@@ -164,7 +166,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "wc-list-prescriptions:build:production"
@@ -201,7 +203,7 @@
       "prefix": "healix",
       "architect": {
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "wc-create-prescription:build:production"
@@ -213,7 +215,7 @@
           "defaultConfiguration": "development"
         },
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": "dist/wc-create-prescription",
             "index": "wc-create-prescription/src/index.html",
@@ -232,11 +234,6 @@
                 "glob": "**/*",
                 "input": "./dist/evf-form/build/",
                 "output": "./assets/evf-form/"
-              },
-              {
-                "glob": "keycloak.js",
-                "input": "./node_modules/keycloak-js/dist/",
-                "output": "./"
               }
             ],
             "styles": [
@@ -247,6 +244,13 @@
             ],
             "externalDependencies": [
               "/assets/evf-form/evf-form.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "localforage",
+              "buffer",
+              "@messageformat/core",
+              "elliptic",
+              "bn.js"
             ]
           },
           "configurations": {
@@ -255,7 +259,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "1mb",
-                  "maximumError": "2mb"
+                  "maximumError": "3mb"
                 }
               ],
               "outputHashing": "all",
@@ -303,7 +307,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": "dist/wc-pdfmake",
             "index": "wc-pdfmake/src/index.html",
@@ -348,6 +352,23 @@
             }
           },
           "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular-builders/jest:run",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "configPath": "jest.config.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": [
+              "scss"
+            ],
+            "assets": [],
+            "styles": [],
+            "scripts": []
+          }
         }
       }
     },
@@ -363,7 +384,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": "dist/wc-evf-form-details",
             "index": "wc-evf-form-details/src/index.html",
@@ -396,7 +417,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "wc-evf-form-details:build:production"
@@ -421,7 +442,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": "dist/wc-evf-form",
             "index": "wc-evf-form/src/index.html",
@@ -457,7 +478,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "wc-evf-form:build:production"

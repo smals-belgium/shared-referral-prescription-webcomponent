@@ -16,17 +16,16 @@ export interface CancelCreationDialogResult {
 }
 
 @Component({
-  templateUrl: './cancel-creation.dialog.html',
-  styleUrls: ['./cancel-creation.dialog.scss'],
-  standalone: true,
-  imports: [
-    TranslateModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatCheckboxModule,
-    TemplateNamePipe,
-    NgFor
-  ]
+    templateUrl: './cancel-creation.dialog.html',
+    styleUrls: ['./cancel-creation.dialog.scss'],
+    imports: [
+        TranslateModule,
+        MatDialogModule,
+        MatButtonModule,
+        MatCheckboxModule,
+        TemplateNamePipe,
+        NgFor
+    ]
 })
 export class CancelCreationDialog {
 

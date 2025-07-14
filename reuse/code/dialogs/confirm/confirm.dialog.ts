@@ -13,17 +13,16 @@ export interface ConfirmDialogData {
 }
 
 @Component({
-  standalone: true,
-  selector: 'app-confirm-dialog',
-  templateUrl: './confirm.dialog.html',
-  styleUrls: ['./confirm.dialog.scss'],
-  imports: [
-    CommonModule,
-    MatDialogModule,
-    MatButtonModule,
-    TranslateModule
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-confirm-dialog',
+    templateUrl: './confirm.dialog.html',
+    styleUrls: ['./confirm.dialog.scss'],
+    imports: [
+        CommonModule,
+        MatDialogModule,
+        MatButtonModule,
+        TranslateModule
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConfirmDialog {
 

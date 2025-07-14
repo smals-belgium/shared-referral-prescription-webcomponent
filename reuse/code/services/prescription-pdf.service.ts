@@ -161,7 +161,7 @@ export class PrescriptionsPdfService {
           [{
             fontSize: 11,
             stack: [
-              this.boldNotBoldTextElement(this.translate.instant('prescription.print.prescriber') + ' ', prescription.requester?.firstName + ' ' + prescription.requester?.lastName + ' ' + this.translate.instant('prescription.print.nihdi') + ' ' + prescription.requester?.nihdi, 'center'),
+              this.boldNotBoldTextElement(this.translate.instant('prescription.print.prescriber') + ' ', prescription.requester?.healthcarePerson.firstName + ' ' + prescription.requester?.healthcarePerson.lastName + ' ' + this.translate.instant('prescription.print.nihdi') + ' ' + (prescription.requester?.nihii8 ?? prescription.requester?.nihii11) + prescription.requester?.id.qualificationCode, 'center'),
               this.boldNotBoldTextElement(this.translate.instant('prescription.print.patient') + ' ', patient?.firstName + ' ' + patient?.lastName + ' ' + this.translate.instant('prescription.print.niss') + ' ' + patient?.ssin, 'center')
             ]
           }],

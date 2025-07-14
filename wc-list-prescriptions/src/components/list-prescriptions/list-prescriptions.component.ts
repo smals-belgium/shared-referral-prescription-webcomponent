@@ -32,7 +32,7 @@ import { AccessMatrixState } from '@reuse/code/states/access-matrix.state';
 import { PrescriptionSummary, PrescriptionSummaryList } from '@reuse/code/interfaces/prescription-summary.interface';
 import { PseudoService } from '@reuse/code/services/pseudo.service';
 import { ProposalsState } from '@reuse/code/states/proposals.state';
-import { FormsModule } from "@angular/forms";
+import { FormsModule } from '@angular/forms';
 import {
   PrescriptionModelsTableComponent
 } from '@reuse/code/components/prescription-models-table/prescription-models-table.component';
@@ -53,7 +53,6 @@ interface ViewState {
   templateUrl: './list-prescriptions.component.html',
   styleUrls: ['./list-prescriptions.component.scss'],
   encapsulation: ViewEncapsulation.ShadowDom,
-  standalone: true,
   imports: [
     IfStatusErrorDirective,
     ErrorCardComponent,
@@ -95,7 +94,7 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
   @Input() patientSsin?: string;
   @Input() requesterSsin?: string;
   @Input() performerSsin?: string;
-  @Input() getToken!: () => Promise<string>;
+  @Input() services! : { getAccessToken: (audience?: string) => Promise<string | null> };
   @Input() intent!: string;
 
   @Output() clickOpenPrescriptionDetails = new EventEmitter<PrescriptionSummary>();
@@ -115,12 +114,12 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
   ) {
     this.dateAdapter.setLocale('fr-BE');
     this.translate.setDefaultLang('fr-BE');
-    this.translate.use('fr-BE')
+    this.translate.use('fr-BE');
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['getToken']) {
-      this.authService.init(this.getToken);
+    if (changes['services']) {
+      this.authService.init(this.services.getAccessToken);
       this.accessMatrixState.loadAccessMatrix();
       this.templatesState.loadTemplates();
     }
@@ -133,15 +132,13 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
     }
   }
 
-  loadData(page?: number, pageSize?: number){
-    if(this.intent.toLowerCase() === 'order'){
-      this.loadPrescriptions(page, pageSize)
-    }
-    else if(this.intent.toLowerCase() === 'proposal'){
-      this.loadProposals(page, pageSize)
-    }
-    else if(this.intent.toLowerCase() === 'model'){
-      this.loadModels(page, pageSize)
+  loadData(page?: number, pageSize?: number) {
+    if (this.intent.toLowerCase() === 'order') {
+      this.loadPrescriptions(page, pageSize);
+    } else if (this.intent.toLowerCase() === 'proposal') {
+      this.loadProposals(page, pageSize);
+    } else if (this.intent.toLowerCase() === 'model') {
+      this.loadModels(page, pageSize);
     }
   }
 
@@ -174,7 +171,7 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
           performer: this.performerSsin,
           historical: this.searchCriteria$().historical
         }, page, pageSize);
-      })
+      });
     } else {
       this.proposalsState.loadProposals({
         patient: this.patientSsin,
@@ -186,7 +183,7 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
   }
 
   loadModels(page?: number, pageSize?: number) {
-    const pg = page ? page -1 : 0;
+    const pg = page ? page - 1 : 0;
     this.modelsState.loadModels(pg, pageSize || 10);
   }
 

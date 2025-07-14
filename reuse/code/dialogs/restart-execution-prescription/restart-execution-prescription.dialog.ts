@@ -19,18 +19,17 @@ interface RejectAssignationDialogData {
 }
 
 @Component({
-  standalone: true,
-  templateUrl: './restart-execution-prescription.dialog.html',
-  styleUrls: ['./restart-execution-prescription.dialog.scss'],
-  imports: [
-    TranslateModule,
-    MatDialogModule,
-    MatButtonModule,
-    OverlaySpinnerComponent,
-    TemplateNamePipe,
-    NgIf,
-    ErrorCardComponent
-  ]
+    templateUrl: './restart-execution-prescription.dialog.html',
+    styleUrls: ['./restart-execution-prescription.dialog.scss'],
+    imports: [
+        TranslateModule,
+        MatDialogModule,
+        MatButtonModule,
+        OverlaySpinnerComponent,
+        TemplateNamePipe,
+        NgIf,
+        ErrorCardComponent
+    ]
 })
 export class RestartExecutionPrescriptionDialog extends BaseDialog implements OnInit {
 

@@ -21,6 +21,13 @@
       "NURSE": "Infirmière",
       "PHYSICIAN": "Médecin"
     },
+    "organizations": {
+      "THIRD_PARTY_PAYING_GROUP": "Groupement avec un n° INAMI tiers payant (infirmiers, sages-femmes e.a.)",
+      "GROUPOFDOCTORS": "Groupement de médecins généralistes au même lieu d'installation",
+      "GUARD_POST": "Poste de garde",
+      "MEDICAL_HOUSE": "Maison médicale",
+      "HOME_SERVICES": "Service de soins intégrés à domicile"
+    },
     "lastName": "Nom",
     "firstName": "Prénom",
     "dateOfBirth": "Né(e) le",
@@ -28,7 +35,8 @@
     "gender": "Sexe",
     "genders": {
       "M": "M",
-      "F": "F"
+      "F": "F",
+      "null": "Inconnu"
     },
     "somethingWentWrong": "Une erreur s'est produite. Veuillez ré-essayer.",
     "forbiddenAction": "Vous n'êtes pas autorisé(e) à effectuer cette action.",
@@ -37,6 +45,9 @@
     "mandatory": "Champ obligatoire",
     "ariaLabel": {
       "loading": "Chargement"
+    },
+    "errors": {
+      "pseudoDisabled": "Il n'est pas possible de créer une prescription."
     },
     "prescriptionModel": "Modèle"
   },
@@ -71,6 +82,24 @@
       "someSuccessSomeFailed": "{successCount} {successCount, plural, one{prescription créée} other{prescriptions  créées}} avec succès. {failedCount} {failedCount, plural, one{prescription n'a pas été créée} other{prescriptions n'ont pas été créées}} en raison d'une erreur. Veuillez vérifier votre saisie et réessayer.",
       "addPrescription": "Prescription additionnelle",
       "publish": "Publier",
+      "control": {
+        "title": "Contrôler",
+        "warning": "Les informations pertinentes ci-dessous ne sont pas prises en compte dans ces résultats:",
+        "error": {
+          "required": "Indications sont obligatoire."
+        },
+        "table": {
+          "title": "Résultat PSS",
+          "select": "",
+          "relevance": "Pertinence",
+          "typesOfImagery": "Types d'imagerie",
+          "cost": "Coût",
+          "radiationRate": "Taux de radiation",
+          "radiationLevel": "Taux de radiation {level}/5",
+          "deselectRow": "Désélectionner la ligne {row}",
+          "selectRow": "Sélectionner la ligne {row}"
+        }
+      },
       "deletePrescription": {
         "title": "Annulation de la prescription",
         "message": "Êtes-vous sûr(e) de vouloir annuler la prescription \"{templateName}\" ?"
@@ -150,6 +179,7 @@
       "meSuccess": "Vous avez été assigné comme prestataire.",
       "performer": "Prestataire ou organisation",
       "searchPerformerPlaceHolder": "N° INAMI, nom",
+      "select": "Sélectionner",
       "locations": "Localisation(s)",
       "zipCodeOrCityName": "Code postal ou commune",
       "noResults": "Aucune commune trouvée",
@@ -272,7 +302,7 @@
       "noOptions": "Aucune type de proposition"
     },
     "create": {
-      "action": "Nouvelle proposisiton",
+      "action": "Nouvelle proposition",
       "success": "Proposition créée avec succès.",
       "allSuccess": "{count} {count, plural, one{proposition créée} other{propositions créées}} avec succès.",
       "allFailed": "Une erreur s'est produite pendant la creation des propositions. Veuillez vérifier votre saisie et réessayer.",
@@ -290,13 +320,13 @@
       "cancelCreation": "Êtes-vous sûr de vouloir annuler la création de cette proposition ?"
     },
     "print": {
-      "content-electronic-proposal": "Contenu de la proposisiton électronique",
-      "guideline": "Veuillez présenter ce document à votre médecin soignant. Il vous est possible de scanner le code QR pour avoir accès au détail présent dans la proposisiton digital.",
+      "content-electronic-proposal": "Contenu de la proposition électronique",
+      "guideline": "Veuillez présenter ce document à votre médecin soignant. Il vous est possible de scanner le code QR pour avoir accès au détail présent dans la proposition digital.",
       "nihdi": "N° INAMI",
       "niss": "NISS",
       "patient": "Bénéficiaire",
       "prescriber": "Prescripteur",
-      "proof-of-electronic-proposal": "Preuve de proposisiton électronique",
+      "proof-of-electronic-proposal": "Preuve de proposition électronique",
       "remark": "Attention: Aucun ajout manuscrit à ce document ne sera pris en compte. "
     },
     "author": "Auteur",
@@ -315,8 +345,8 @@
     "extend": "Étendre",
     "careGivers": "Prestataire(s) de soins",
     "assigned": "Assignée",
-    "noProposalsForPatient": "Ce patient ne possède pas encore de proposisiton.",
-    "noProposalsForUser": "Vous ne possèdez pas encore de proposisiton.",
+    "noProposalsForPatient": "Ce patient ne possède pas encore de proposition.",
+    "noProposalsForUser": "Vous ne possèdez pas encore de proposition.",
     "assignPerformer": {
       "title": "Assigner à un prestataire ou une organisation",
       "success": "{firstName} {lastName} a été assigné comme prestataire.",
@@ -357,9 +387,9 @@
     },
     "cancel": {
       "action": "Annuler",
-      "title": "Annuler la proposisiton",
-      "message": "Êtes-vous sûr de vouloir annuler la proposisiton \"{templateName}\" de {firstName} {lastName} ?",
-      "success": "Proposal annulée avec succès.",
+      "title": "Annuler la proposition",
+      "message": "Êtes-vous sûr de vouloir annuler la proposition \"{templateName}\" de {firstName} {lastName} ?",
+      "success": "Proposition annulée avec succès.",
       "reason": "Raison"
     },
     "frequencyTypes": {
@@ -387,8 +417,8 @@
       "REJECTED": "Refusé"
     },
     "errors": {
-      "failedToLoadProposal": "Une erreur s'est produite pendant le chargement de la proposisiton.",
-      "failedToLoadProposals": "Une erreur s'est produite pendant le chargement des proposisitons.",
+      "failedToLoadProposal": "Une erreur s'est produite pendant le chargement de la proposition.",
+      "failedToLoadProposals": "Une erreur s'est produite pendant le chargement des propositions.",
       "invalidFhirString": "Caractère(s) interdit(s)",
       "invalidMaxLength": "{requiredLength} caractères maximum",
       "invalidMinLength": "{requiredLength} caractères minimum",
@@ -423,6 +453,12 @@
   "models": {
     "errors": {
       "failedToLoadModels": "Impossible de charger les modèles."
+    }
+  },
+  "pss": {
+    "unavailable":{
+      "title": "Service temporairement indisponible",
+      "message": "Nous sommes désolés, le service PSS (Prescription Search Support) est momentanément indisponible.\nVous ne pouvez plus consulter les recommandations d'examens en imagerie médicale pour l'instant.\nMerci de réessayer dans quelques minutes."
     }
   }
 }

@@ -1,7 +1,7 @@
 import { PrescriptionDetailsWebComponent } from "./prescription-details.component";
-import { ComponentFixture, fakeAsync, TestBed, tick } from "@angular/core/testing";
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { provideHttpClient } from "@angular/common/http";
-import { HttpClientTestingModule, HttpTestingController, provideHttpClientTesting } from "@angular/common/http/testing";
+import { HttpTestingController, provideHttpClientTesting } from "@angular/common/http/testing";
 import { provideRouter } from "@angular/router";
 import { TranslateLoader, TranslateModule } from "@ngx-translate/core";
 import { Observable, of } from "rxjs";
@@ -13,11 +13,18 @@ import { importProvidersFrom, SimpleChanges } from "@angular/core";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { AssignPrescriptionDialog } from "@reuse/code/dialogs/assign-prescription/assign-prescription.dialog";
-import { CancelPrescriptionDialog } from "@reuse/code/dialogs/cancel-prescription/cancel-prescription.dialog";
+import { CancelMedicalDocumentDialog } from "@reuse/code/dialogs/cancel-medical-document/cancel-medical-document-dialog.component";
 import {
   StartExecutionPrescriptionDialog
 } from "@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog";
-import { LoadingStatus, PerformerTask, ReadPrescription, Status, TaskStatus } from "@reuse/code/interfaces";
+import {
+  IdToken,
+  LoadingStatus,
+  PerformerTask,
+  ReadPrescription,
+  Status,
+  TaskStatus
+} from '@reuse/code/interfaces';
 import { TransferAssignationDialog } from '@reuse/code/dialogs/transfer-assignation/transfer-assignation.dialog';
 import {
   RestartExecutionPrescriptionDialog
@@ -34,7 +41,7 @@ import {
 import { RejectAssignationDialog } from '@reuse/code/dialogs/reject-assignation/reject-assignation.dialog';
 import { ToastService } from '@reuse/code/services/toast.service';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper/dist';
+import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
 import { PseudoService } from '@reuse/code/services/pseudo.service';
 import { EncryptionState } from '@reuse/code/states/encryption.state';
 
@@ -484,21 +491,54 @@ const mockTemplate = {
 }
 
 const mockPerformerTask: PerformerTask = {
-  "status": TaskStatus.READY,
-  "id": "345",
-  "executionPeriod": {
-    "start": undefined,
-    "end": undefined
+  status: TaskStatus.READY,
+  id: "345",
+  executionPeriod: {
+    start: undefined,
+    end: undefined
   },
-  "careGiverSsin": "85011300242",
-  "careGiver": {
-    "nihdi": "45369373428",
-    "address": {},
-    "ssin": "85011300242",
-    "firstName": "Ann",
-    "lastName": "Verhofstadt",
-    "profession": "NURSE",
-    "type": "Professional"
+  careGiverSsin: "85011300242",
+  careGiver: {
+    address: {
+      municipality: {
+        municipalityDe: "",
+        municipalityFr: "",
+        municipalityNl: "",
+      },
+      zipCode: "",
+      street: {
+        streetDe: "",
+        streetFr: "",
+        streetNl: "",
+      },
+      houseNumber: "",
+      box: "",
+    },
+    id: {
+      ssin: "85011300242",
+      profession: "NURSE",
+      qualificationCode: "940"
+    },
+    healthcarePerson: {
+      lastName: "Ann",
+      firstName: "Verhofstadt",
+    },
+    healthcareQualification: {
+      descriptionFr: "",
+      descriptionNl: "",
+      descriptionDe: ""
+    },
+    healthcareStatus: {
+      code: "",
+      descriptionFr: "",
+      descriptionNl: "",
+      descriptionDe: ""
+    },
+    type: 'Professional',
+    licenseToPractice: true,
+    subscriptionEndDate: "12-03-2029",
+    visaActive: true,
+    visaEndDate: ""
   }
 }
 
@@ -528,7 +568,7 @@ const id = "08e267bf-46e3-459d-8216-d8720acc9f64";
 function prescriptionResponse(organisationTasks: any = null, referralTask: any = null, performerTask: PerformerTask[] | null = null) {
   return {
     "id": id,
-    "pseudomizedKey": "AwEK7P6okCUkHGUJkOoxAaG18nm32Q7D8QamJrLx0hT3Y9D_kzGp1dfP0N4GVKRNo8lC4elrCmVp--U_YWQwB-1Nng:eyJhdWQiOiJ1aG1lcF92MSIsImVuYyI6IkEyNTZHQ00iLCJhbGciOiJkaXIiLCJraWQiOiJhYzA1YjMyOS0zOGE5LTQ1MTQtOGUwYy0yMjQ1NzI5MjhlYjkifQ..wkVQQRM16H7YZO4J.v2gjyhopsk98zx51T14orcF7-95wkfl-vt1NEtPMO0czPDOL5aGdELipaehk3nqQCv_yh3fagz-kPOYnfNpEJhfszbGpStUC_0zTeM3yzUR9RxSYaMbQ-Vi_5QleVPNvjEpjmsV_-NAIK1ruYMCVQ_3j-kKT_aedROHMuJ7ZsbEdHJDoAhQC.Onsq-h5dRbG9DULPbr_zqw",
+    "pseudonymizedKey": "AwEK7P6okCUkHGUJkOoxAaG18nm32Q7D8QamJrLx0hT3Y9D_kzGp1dfP0N4GVKRNo8lC4elrCmVp--U_YWQwB-1Nng:eyJhdWQiOiJ1aG1lcF92MSIsImVuYyI6IkEyNTZHQ00iLCJhbGciOiJkaXIiLCJraWQiOiJhYzA1YjMyOS0zOGE5LTQ1MTQtOGUwYy0yMjQ1NzI5MjhlYjkifQ..wkVQQRM16H7YZO4J.v2gjyhopsk98zx51T14orcF7-95wkfl-vt1NEtPMO0czPDOL5aGdELipaehk3nqQCv_yh3fagz-kPOYnfNpEJhfszbGpStUC_0zTeM3yzUR9RxSYaMbQ-Vi_5QleVPNvjEpjmsV_-NAIK1ruYMCVQ_3j-kKT_aedROHMuJ7ZsbEdHJDoAhQC.Onsq-h5dRbG9DULPbr_zqw",
     "patientIdentifier": "90122712173",
     "referralTask": referralTask,
     "performerTasks": performerTask,
@@ -616,7 +656,8 @@ const encryptionStateService = {
   state: jest.fn().mockReturnValue({
     data: of('mockCryptoKey'), // Emits mock data
   }),
-  resetCryptoKey: jest.fn()
+  resetCryptoKey: jest.fn(),
+  setCryptoKeyError: jest.fn()
 };
 
 // Mock the 'uuid' module
@@ -628,9 +669,10 @@ describe('PrescriptionDetailsWebComponent', () => {
   let component: PrescriptionDetailsWebComponent;
   let fixture: ComponentFixture<PrescriptionDetailsWebComponent>;
   let httpMock: HttpTestingController;
-  let dialog: MatDialog
-  let toaster: ToastService
-  let pseudoService: PseudoService
+  let dialog: MatDialog;
+  let toaster: ToastService;
+  let pseudoService: PseudoService;
+  let consoleSpy: jest.SpyInstance;
 
   beforeAll(() => {
     Object.defineProperty(window, 'crypto', {
@@ -642,13 +684,18 @@ describe('PrescriptionDetailsWebComponent', () => {
         },
       },
     });
+    consoleSpy = jest.spyOn(global.console, 'error').mockImplementation((message) => {
+      if (!message?.message?.includes('Could not parse CSS stylesheet')) {
+        global.console.warn(message);
+      }
+    })
   })
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [PrescriptionDetailsWebComponent, TranslateModule.forRoot({
         loader: {provide: TranslateLoader, useClass: FakeLoader},
-      }), HttpClientTestingModule, MatDatepickerModule,
+      }), MatDatepickerModule,
         MatNativeDateModule, MatDialogModule, NoopAnimationsModule],
       providers: [
         provideHttpClient(),
@@ -674,6 +721,8 @@ describe('PrescriptionDetailsWebComponent', () => {
   afterEach(() => {
     httpMock.verify();
   });
+
+  afterAll(() => consoleSpy.mockRestore());
 
 
   it('should create the app', () => {
@@ -813,14 +862,16 @@ describe('PrescriptionDetailsWebComponent', () => {
     it('should load templates and the access matrix when the token changes', async () => {
       createFixture()
       mockConfigService.getEnvironmentVariable.mockImplementationOnce(() => false)
-      const tokenFn = jest.fn()
-      component.getToken = tokenFn
+      component.services = {
+        getAccessToken : () => Promise.resolve('ey...ab'),
+        getIdToken : () => ({} as IdToken)
+      }
       const changes = {
-        getToken: tokenFn
+        services: component.services
       }
 
-      component.ngOnChanges(changes as unknown as SimpleChanges)
-      fixture.detectChanges()
+      component.ngOnChanges(changes as unknown as SimpleChanges);
+      fixture.detectChanges();
 
       const accessReq = httpMock.expectOne('/accessMatrix');
       expect(accessReq.request.method).toBe('GET');
@@ -829,7 +880,7 @@ describe('PrescriptionDetailsWebComponent', () => {
       expect(templateReq.request.method).toBe('GET');
     });
 
-    it('should open the dialogs when functions are called', fakeAsync(() => {
+  it('should open the dialogs when functions are called', () => {
       createFixture()
       const openDialogSpy = jest.spyOn(dialog, 'open');
 
@@ -869,8 +920,6 @@ describe('PrescriptionDetailsWebComponent', () => {
       expect(openDialogSpy).toHaveBeenCalledTimes(1);
       expect(openDialogSpy).toHaveBeenCalledWith(AssignPrescriptionDialog, paramsAssign);
 
-      tick()
-      httpMock.expectOne('/healthCareProviders?discipline=NURSE&institutionType=THIRD_PARTY_PAYING_GROUP,GUARD_POST,MEDICAL_HOUSE,HOME_SERVICES')
 
       // openTransferAssignationDialog
       component.openTransferAssignationDialog(mockResponse, mockPerformerTask)
@@ -901,7 +950,7 @@ describe('PrescriptionDetailsWebComponent', () => {
       }
 
       expect(openDialogSpy).toHaveBeenCalledTimes(3);
-      expect(openDialogSpy).toHaveBeenCalledWith(CancelPrescriptionDialog, paramsCancel);
+      expect(openDialogSpy).toHaveBeenCalledWith(CancelMedicalDocumentDialog, paramsCancel);
 
       //openStartExecutionDialog
       component.openStartExecutionDialog(mockResponse)
@@ -986,9 +1035,9 @@ describe('PrescriptionDetailsWebComponent', () => {
 
       expect(openDialogSpy).toHaveBeenCalledTimes(10);
       expect(openDialogSpy).toHaveBeenCalledWith(RejectAssignationDialog, paramsRejectExecution);
-    }));
+  });
 
-    it('should show a toaster when you selfAssign is called successfully', async () => {
+  it('should show a toaster when you selfAssign is called successfully', () => {
       createFixture()
       const toasterSpy = jest.spyOn(toaster, 'show');
 
@@ -1014,10 +1063,7 @@ describe('PrescriptionDetailsWebComponent', () => {
       expect(component.loading).toBe(false)
       expect(toasterSpy).toHaveBeenCalledTimes(1)
       expect(toasterSpy).toHaveBeenCalledWith('prescription.assignPerformer.meSuccess')
-
-      await Promise.resolve();
-      httpMock.expectOne('/templates/READ_undefined/versions/latest')
-    })
+  });
 
     it('should call loadPrintWebComponent when printer is false', () => {
       createFixture()

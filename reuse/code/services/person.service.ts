@@ -15,9 +15,13 @@ export class PersonService {
   }
 
   findAll(criteria: Partial<Person>): Observable<Person[]> {
-    const params = Object.keys(criteria)
-      .filter((key) => !!criteria[key as keyof Person])
-      .reduce((acc, cur) => acc.append(cur, criteria[cur as keyof Person]!.trim()), new HttpParams());
+    const params = Object.entries(criteria)
+      .filter(([_, value]) => value !== undefined && value !== null && value !== '')
+      .reduce((acc, [key, value]) => {
+        const val = typeof value === 'string' ? value.trim() : value.toString();
+        return acc.append(key, val);
+      }, new HttpParams());
+
     return this.http.get<Person[]>(`/persons`, {params});
   }
 

@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Pipe, PipeTransform } from '@angular/core';
-import { translateOccurrenceTiming } from '../utils/occurrence-timing.utils';
+import { translateOccurrenceTiming, validateOccurrenceTiming } from '../utils/occurrence-timing.utils';
 import { OccurrenceTiming } from '../interfaces';
 import { EvfTranslateService } from '@smals/vas-evaluation-form-ui-core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -38,8 +38,12 @@ export class OccurrenceTimingPipe implements PipeTransform {
   }
 
   private translate() {
-    this.translated = this.occurrenceTiming
-      ? translateOccurrenceTiming(this.occurrenceTiming, this.language || 'fr')
-      : '';
+    if(validateOccurrenceTiming(this.occurrenceTiming)) {
+      this.translated = this.occurrenceTiming
+        ? translateOccurrenceTiming(this.occurrenceTiming, this.language || 'fr')
+        : '';
+    } else {
+      this.translated = '';
+    }
   }
 }

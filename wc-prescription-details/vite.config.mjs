@@ -1,16 +1,12 @@
-import { defineConfig,splitVendorChunkPlugin } from "vite";
-import { viteStaticCopy } from 'vite-plugin-static-copy'
+import {defineConfig} from "vite";
+import {viteStaticCopy} from 'vite-plugin-static-copy'
 import path from 'path'
 
 
 export default defineConfig({
-  plugins: [splitVendorChunkPlugin(),
+  plugins: [
     viteStaticCopy({
       targets: [
-        {
-          src: './../dist/wc-prescription-details/browser/keycloak.js',
-          dest: './',
-        },
         {
           src: './../dist/evf-form-details/build/evf-form-details.js',
           dest: './assets/evf-form-details',

@@ -1,3 +1,5 @@
+import { Observable } from 'rxjs';
+
 export interface UserInfo {
   lastName: string;
   firstName: string;
@@ -52,4 +54,5 @@ export interface IdToken {
 export interface Token {
   accessToken: string,
   idToken: IdToken
+  getAuthExchangeToken: Promise<string>
 }

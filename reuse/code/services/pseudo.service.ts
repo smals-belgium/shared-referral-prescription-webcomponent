@@ -1,26 +1,34 @@
-import {Injectable} from '@angular/core';
-import {PseudonymisationHelper, EHealthProblem, Value, PseudonymInTransit, Domain} from '@smals-belgium-shared/pseudo-helper/dist';
-import {ConfigurationService} from './configuration.service';
-import {Curve} from "@smals-belgium-shared/pseudo-helper/dist/app/Curve";
+import { Injectable } from '@angular/core';
+import {
+  Curve,
+  Domain,
+  EHealthProblem,
+  PseudonymInTransit,
+  PseudonymisationHelper,
+  Value
+} from '@smals-belgium-shared/pseudo-helper';
+import { ConfigurationService } from './configuration.service';
 
 @Injectable({providedIn: 'root'})
 export class PseudoService {
-  private pseudonymisationDomain: Domain;
+  private pseudonymizationDomain: Domain | undefined;
   private readonly pseudoApiUrl = this.configService.getEnvironmentVariable('pseudoApiUrl');
 
   constructor(
     private configService: ConfigurationService,
-    private pseudomationHelper: PseudonymisationHelper,
+    private pseudonymizationHelper: PseudonymisationHelper,
   ) {
-    this.pseudonymisationDomain = this.pseudomationHelper.createDomain('uhmep_v1', <Curve>'p521', this.pseudoApiUrl, 8);
+    if (this.configService.getEnvironmentVariable('enablePseudo')) {
+      this.pseudonymizationDomain = this.pseudonymizationHelper.createDomain('uhmep_v1', <Curve>'p521', this.pseudoApiUrl, 8);
+    }
   }
 
   async pseudonymize(value: string): Promise<string> {
-    if (!this.configService.getEnvironmentVariable('enablePseudo')) {
+    if (!this.pseudonymizationDomain) {
       return value;
     }
 
-    return await this.pseudonymisationDomain.valueFactory.fromString(value).pseudonymize().then((res: PseudonymInTransit | EHealthProblem) => {
+    return await this.pseudonymizationDomain.valueFactory.fromString(value).pseudonymize().then((res: PseudonymInTransit | EHealthProblem) => {
       if (res instanceof EHealthProblem) {
         throw new Error(res.detail);
       }
@@ -29,11 +37,11 @@ export class PseudoService {
   }
 
   async identify(value: string): Promise<string> {
-    if (!this.configService.getEnvironmentVariable('enablePseudo')) {
+    if (!this.pseudonymizationDomain) {
       return value;
     }
 
-    return await this.pseudonymisationDomain.pseudonymInTransitFactory.fromSec1AndTransitInfo(value).identify().then((res: Value | EHealthProblem) => {
+    return await this.pseudonymizationDomain.pseudonymInTransitFactory.fromSec1AndTransitInfo(value).identify().then((res: Value | EHealthProblem) => {
       if (res instanceof EHealthProblem) {
         throw new Error(res.detail);
       }
@@ -52,7 +60,11 @@ export class PseudoService {
   }
 
   byteArrayToValue(str: Uint8Array) {
-    return this.pseudonymisationDomain.valueFactory.fromArray(str);
+    if (!this.pseudonymizationDomain) {
+      this.handlePseudomizationNotEnabled();
+      return null;
+    }
+    return this.pseudonymizationDomain.valueFactory.fromArray(str);
   }
 
   async identifyPseudonymInTransit(pseudonymInTransit: PseudonymInTransit) {
@@ -64,9 +76,16 @@ export class PseudoService {
   }
 
   toPseudonymInTransit(asn1Compressed: string){
-    return this.pseudonymisationDomain.pseudonymInTransitFactory.fromSec1AndTransitInfo(
+    if (!this.pseudonymizationDomain) {
+      this.handlePseudomizationNotEnabled();
+      return null;
+    }
+    return this.pseudonymizationDomain.pseudonymInTransitFactory.fromSec1AndTransitInfo(
       asn1Compressed
     )
   }
 
+  private handlePseudomizationNotEnabled() {
+    throw new Error('Pseudomization not enabled.');
+  }
 }

@@ -5,11 +5,11 @@ import {IdToken, Token} from "../interfaces";
 @Injectable({providedIn: 'root'})
 export class AuthService {
 
-  init(getToken: () => Promise<string>, getIdToken?: () => Promise<IdToken>): void {
+  init(getAccessToken: (audience?: string) => Promise<string | null>, getIdToken?: () => IdToken): void {
     throw new Error('Not implemented');
   }
 
-  getAccessToken(targetClientId?: string): Observable<string> {
+  getAccessToken(targetClientId?: string): Observable<string | null> {
     throw new Error('Not implemented');
   }
 
