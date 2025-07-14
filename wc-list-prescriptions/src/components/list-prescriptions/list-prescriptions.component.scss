@@ -63,6 +63,10 @@ $app-theme: mat.m2-define-light-theme((
   align-items: center;
   min-width: 195px;
 
+  span{
+    white-space: nowrap;
+  }
+
   mat-select {
     background-color: white;
     padding: 0.5rem;
