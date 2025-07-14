@@ -21,6 +21,14 @@
       "NURSE": "Infirmière",
       "PHYSICIAN": "Médecin"
     },
+    "professional": {
+      "notFound": "Non trouvé",
+      "tooltip": "Professionnel référencé non trouvé."
+    },
+    "organization": {
+      "notFound": "Non trouvé",
+      "tooltip": "Organisation référencée non trouvée."
+    },
     "organizations": {
       "THIRD_PARTY_PAYING_GROUP": "Groupement avec un n° INAMI tiers payant (infirmiers, sages-femmes e.a.)",
       "GROUPOFDOCTORS": "Groupement de médecins généralistes au même lieu d'installation",
