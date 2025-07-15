@@ -145,6 +145,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   ) {
     this.isEnabled$ = of(this.configService.getEnvironmentVariable('enablePseudo')).pipe(
       map((value: boolean) => {
+        console.log(value)
         if (value) {
           this.initializeWebComponent();
         }
@@ -155,9 +156,14 @@ export class CreatePrescriptionWebComponent implements OnChanges {
 
 
   private initializeWebComponent() {
-    this.dateAdapter.setLocale('fr-BE');
     this.translate.setDefaultLang('fr-BE');
-    this.translate.use('fr-BE');
+
+    const currentLang = this.translate.currentLang;
+    if (!currentLang) {
+      this.translate.use('fr-BE');
+      this.dateAdapter.setLocale('fr-BE');
+    }
+
     this.loadWebComponents();
   }
 
@@ -225,8 +231,9 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   }
 
   private handleLanguageChange(): void {
+    console.log(this.lang);
     this.dateAdapter.setLocale(this.lang);
-    this.translate.use(this.lang!);
+    this.translate.use(this.lang);
   }
 
   private loadPssStatus(initialValues: CreatePrescriptionInitialValues) {
@@ -282,7 +289,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
         if (result?.model && result?.templateCode) {
           this.findModelById(result.templateCode, result.model.id.toString());
         } else if (result?.templateCode) {
-          this.addPrescriptionForm(result!.templateCode);
+          this.addPrescriptionForm(result.templateCode);
         }
       });
   }
@@ -325,15 +332,15 @@ export class CreatePrescriptionWebComponent implements OnChanges {
       if (initialPrescription?.responses['occurrenceTiming'] != undefined) {
         const occurrenceTiming: OccurrenceTiming = initialPrescription?.responses['occurrenceTiming'];
         if (occurrenceTiming.repeat.boundsDuration != undefined) {
-          initialPrescription!.responses['boundsDuration'] = occurrenceTiming.repeat.boundsDuration.value;
-          initialPrescription!.responses['boundsDurationUnit'] = occurrenceTiming.repeat.boundsDuration.code;
+          initialPrescription.responses['boundsDuration'] = occurrenceTiming.repeat.boundsDuration.value;
+          initialPrescription.responses['boundsDurationUnit'] = occurrenceTiming.repeat.boundsDuration.code;
         }
         if (occurrenceTiming.repeat.duration != undefined) {
-          initialPrescription!.responses['sessionDuration'] = occurrenceTiming.repeat.duration;
-          initialPrescription!.responses['sessionDurationUnit'] = occurrenceTiming.repeat.durationUnit;
+          initialPrescription.responses['sessionDuration'] = occurrenceTiming.repeat.duration;
+          initialPrescription.responses['sessionDurationUnit'] = occurrenceTiming.repeat.durationUnit;
         }
         if (occurrenceTiming.repeat.dayOfWeek != undefined) {
-          initialPrescription!.responses['dayOfWeek'] = occurrenceTiming.repeat.dayOfWeek;
+          initialPrescription.responses['dayOfWeek'] = occurrenceTiming.repeat.dayOfWeek;
         }
       }
     }

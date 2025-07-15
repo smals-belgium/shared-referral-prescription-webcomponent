@@ -41,7 +41,9 @@ import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
 import { AuthService } from '@reuse/code/services/auth.service';
 import { WcConfigurationService } from '@reuse/code/services/wc-configuration.service';
 import { AssignPrescriptionDialog } from '@reuse/code/dialogs/assign-prescription/assign-prescription.dialog';
-import { CancelMedicalDocumentDialog } from '@reuse/code/dialogs/cancel-medical-document/cancel-medical-document-dialog.component';
+import {
+  CancelMedicalDocumentDialog
+} from '@reuse/code/dialogs/cancel-medical-document/cancel-medical-document-dialog.component';
 import {
   StartExecutionPrescriptionDialog
 } from '@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog';
@@ -104,7 +106,7 @@ import { CanDuplicatePrescriptionPipe } from '@reuse/code/pipes/can-duplicate-pr
 import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-responses-state.interface';
 import { FormatMultilingualObjectPipe } from '@reuse/code/pipes/format-multilingual-object.pipe';
 import { PssService } from '@reuse/code/services/pss.service';
-import {MatTooltip} from "@angular/material/tooltip";
+import { MatTooltip } from "@angular/material/tooltip";
 
 interface ViewState {
   prescription: ReadPrescription;
@@ -323,9 +325,12 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     @Inject(DOCUMENT) private readonly _document: Document
   ) {
     this.currentLang = this.translate.currentLang;
-    this.dateAdapter.setLocale('fr-BE');
     this.translate.setDefaultLang('fr-BE');
-    this.translate.use('fr-BE');
+
+    if (!this.currentLang) {
+      this.translate.use('fr-BE');
+      this.dateAdapter.setLocale('fr-BE');
+    }
 
     this.loadWebComponents();
 
@@ -587,13 +592,13 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   }
 
   getStatusBorderColor(status: Status): string {
-    if (status === 'BLACKLISTED' || status === 'CANCELLED' || status === 'EXPIRED') {
+    if (status === Status.BLACKLISTED || status === Status.CANCELLED || status === Status.EXPIRED) {
       return 'red';
-    } else if (status === 'PENDING') {
+    } else if (status === Status.PENDING) {
       return 'orange';
-    } else if (status === 'IN_PROGRESS') {
+    } else if (status === Status.IN_PROGRESS) {
       return '#40c4ff';
-    } else if (status === 'DONE') {
+    } else if (status === Status.DONE) {
       return 'limegreen';
     } else {
       return 'lightgrey';

@@ -2,7 +2,7 @@ import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { PseudoService } from '@reuse/code/services/pseudo.service';
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateAdapter, MatNativeDateModule } from '@angular/material/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -77,6 +77,10 @@ jest.mock('uuid', () => ({
   v4: jest.fn(),
 }));
 
+class MockDateAdapter {
+  setLocale = jest.fn();
+}
+
 describe('CreatePrescriptionWebComponent', () => {
   let component: CreatePrescriptionExtendedWebComponent;
   let fixture: ComponentFixture<CreatePrescriptionExtendedWebComponent>;
@@ -85,6 +89,8 @@ describe('CreatePrescriptionWebComponent', () => {
   let pseudoService: PseudoService;
   let dialog: MatDialog;
   let toaster: ToastService;
+  let translate: TranslateService;
+  let dateAdapter: MockDateAdapter;
 
   beforeAll(() => {
     Object.defineProperty(window, 'crypto', {
@@ -125,6 +131,8 @@ describe('CreatePrescriptionWebComponent', () => {
     pseudoService = TestBed.inject(PseudoService);
     dialog = TestBed.inject(MatDialog);
     toaster = TestBed.inject(ToastService);
+    translate = TestBed.inject(TranslateService);
+    dateAdapter = TestBed.inject(DateAdapter) as unknown as MockDateAdapter;
   })
 
   afterEach(() => {
@@ -996,6 +1004,36 @@ describe('CreatePrescriptionWebComponent', () => {
       expect(handleSpy).toHaveBeenCalledWith(component.initialValues);
     });
   });
+
+  describe("language switch", () => {
+    it('should initialize language and locale if currentLang is not set', () => {
+      createFixture('mockPseudomizedKey');
+      const loadWebComponentsSpy = jest.spyOn(component as any, 'loadWebComponents');
+      const setLocalesSpy = jest.spyOn(dateAdapter, 'setLocale');
+
+      translate.currentLang = '';
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
+      (component as any).initializeWebComponent();
+
+      expect(translate.getDefaultLang()).toBe('fr-BE');
+      expect(setLocalesSpy).toHaveBeenCalledWith('fr-BE');
+      expect(loadWebComponentsSpy).toHaveBeenCalled();
+    });
+
+    it('should not call use() or setLocale() if language is already set', () => {
+      createFixture('mockPseudomizedKey');
+      const loadWebComponentsSpy = jest.spyOn(component as any, 'loadWebComponents');
+      const setLocalesSpy = jest.spyOn(dateAdapter, 'setLocale');
+      translate.use('nl-BE');
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
+      (component as any).initializeWebComponent();
+
+      expect(setLocalesSpy).not.toHaveBeenCalled();
+      expect(loadWebComponentsSpy).toHaveBeenCalled();
+    });
+  })
 
 
   const createFixture = (pseudonymizedKey?: string) => {

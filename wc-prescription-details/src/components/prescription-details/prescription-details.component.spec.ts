@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { provideHttpClient } from "@angular/common/http";
 import { HttpTestingController, provideHttpClientTesting } from "@angular/common/http/testing";
 import { provideRouter } from "@angular/router";
-import { TranslateLoader, TranslateModule } from "@ngx-translate/core";
+import { TranslateLoader, TranslateModule, TranslateService } from "@ngx-translate/core";
 import { Observable, of } from "rxjs";
 import { DateAdapter, MatNativeDateModule } from "@angular/material/core";
 import { ConfigurationService } from "@reuse/code/services/configuration.service";
@@ -13,18 +13,13 @@ import { importProvidersFrom, SimpleChanges } from "@angular/core";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { AssignPrescriptionDialog } from "@reuse/code/dialogs/assign-prescription/assign-prescription.dialog";
-import { CancelMedicalDocumentDialog } from "@reuse/code/dialogs/cancel-medical-document/cancel-medical-document-dialog.component";
+import {
+  CancelMedicalDocumentDialog
+} from "@reuse/code/dialogs/cancel-medical-document/cancel-medical-document-dialog.component";
 import {
   StartExecutionPrescriptionDialog
 } from "@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog";
-import {
-  IdToken,
-  LoadingStatus,
-  PerformerTask,
-  ReadPrescription,
-  Status,
-  TaskStatus
-} from '@reuse/code/interfaces';
+import { IdToken, LoadingStatus, PerformerTask, ReadPrescription, Status, TaskStatus } from '@reuse/code/interfaces';
 import { TransferAssignationDialog } from '@reuse/code/dialogs/transfer-assignation/transfer-assignation.dialog';
 import {
   RestartExecutionPrescriptionDialog
@@ -665,6 +660,10 @@ jest.mock('uuid', () => ({
   v4: jest.fn(),
 }));
 
+class MockDateAdapter {
+  setLocale = jest.fn();
+}
+
 describe('PrescriptionDetailsWebComponent', () => {
   let component: PrescriptionDetailsWebComponent;
   let fixture: ComponentFixture<PrescriptionDetailsWebComponent>;
@@ -673,6 +672,8 @@ describe('PrescriptionDetailsWebComponent', () => {
   let toaster: ToastService;
   let pseudoService: PseudoService;
   let consoleSpy: jest.SpyInstance;
+  let translate: TranslateService;
+  let dateAdapter: MockDateAdapter;
 
   beforeAll(() => {
     Object.defineProperty(window, 'crypto', {
@@ -715,7 +716,9 @@ describe('PrescriptionDetailsWebComponent', () => {
     httpMock = TestBed.inject(HttpTestingController);
     dialog = TestBed.inject(MatDialog);
     toaster = TestBed.inject(ToastService);
-    pseudoService = TestBed.inject(PseudoService)
+    pseudoService = TestBed.inject(PseudoService);
+    translate = TestBed.inject(TranslateService);
+    dateAdapter = TestBed.inject(DateAdapter) as unknown as MockDateAdapter;
   })
 
   afterEach(() => {
@@ -1105,6 +1108,27 @@ describe('PrescriptionDetailsWebComponent', () => {
       color = component.getStatusBorderColor(Status.DRAFT)
       expect(color).toBe('lightgrey')
     })
+
+  describe("language switch", () => {
+    it('should initialize language and locale if currentLang is not set', () => {
+      translate.currentLang = '';
+      const setLocalesSpy = jest.spyOn(dateAdapter, 'setLocale');
+
+      createFixture();
+
+      expect(translate.getDefaultLang()).toBe('fr-BE');
+      expect(setLocalesSpy).toHaveBeenCalledWith('fr-BE');
+    });
+
+    it('should not call use() or setLocale() if language is already set', () => {
+      translate.use('nl-BE');
+      const setLocalesSpy = jest.spyOn(dateAdapter, 'setLocale');
+
+      createFixture();
+
+      expect(setLocalesSpy).not.toHaveBeenCalled();
+    });
+  })
 
   const loadPrescriptionByShortCode = async (mockResponse: any, shortCode: string, ssin: string, loadRequests: boolean = true) => {
     mockConfigService.getEnvironmentVariable.mockImplementationOnce(() => false)

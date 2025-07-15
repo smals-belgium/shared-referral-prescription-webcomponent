@@ -3,7 +3,7 @@ import {
 } from '../../../../wc-prescription-details/src/components/prescription-details/prescription-details.component';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateAdapter, MatNativeDateModule } from '@angular/material/core';
 import { provideHttpClient } from '@angular/common/http';
@@ -54,10 +54,16 @@ class FakeLoader implements TranslateLoader {
   }
 }
 
+class MockDateAdapter {
+  setLocale = jest.fn();
+}
+
 describe('ListPrescriptionsWebComponent', () => {
   let component: ListPrescriptionsWebComponent;
   let fixture: ComponentFixture<ListPrescriptionsWebComponent>;
   let httpMock: HttpTestingController;
+  let translate: TranslateService;
+  let dateAdapter: MockDateAdapter;
 
 
   beforeEach(async () => {
@@ -80,10 +86,8 @@ describe('ListPrescriptionsWebComponent', () => {
       .compileComponents();
 
     httpMock = TestBed.inject(HttpTestingController);
-    fixture = TestBed.createComponent(ListPrescriptionsWebComponent);
-    component = fixture.componentInstance;
-    component.intent = 'order';
-    fixture.detectChanges();
+    translate = TestBed.inject(TranslateService);
+    dateAdapter = TestBed.inject(DateAdapter) as unknown as MockDateAdapter;
   })
 
   afterEach(() => {
@@ -92,10 +96,12 @@ describe('ListPrescriptionsWebComponent', () => {
 
 
   it('should create the app', () => {
+    createFixture();
     expect(component).toBeTruthy();
   });
 
-  it('should call loadPrescriptions if intent is order', async () => {
+  it('should call loadPrescriptions if intent is order', () => {
+    createFixture();
     const loadDataSpy = jest.spyOn(component, 'loadData');
     const loadPrescriptionsSpy = jest.spyOn(component, 'loadPrescriptions');
     const ssin = 'ssin';
@@ -111,7 +117,8 @@ describe('ListPrescriptionsWebComponent', () => {
     jest.spyOn(component['prescriptionsState'], 'loadPrescriptions').mockReturnValue()
   });
 
-  it('should display a table when viewStatePrescriptions$ has data and state success', async () => {
+  it('should display a table when viewStatePrescriptions$ has data and state success', () => {
+    createFixture();
     const {debugElement} = fixture;
     let prescriptionTable = debugElement.query(By.css('app-prescriptions-table'));
     expect(prescriptionTable).toBeNull();
@@ -151,6 +158,7 @@ describe('ListPrescriptionsWebComponent', () => {
   });
 
   it('should call loadProposals if intent is proposal', () => {
+    createFixture();
     const loadDataSpy = jest.spyOn(component, 'loadData');
     const loadProposalsSpy = jest.spyOn(component, 'loadProposals');
     const ssin = 'ssin';
@@ -165,4 +173,32 @@ describe('ListPrescriptionsWebComponent', () => {
 
     jest.spyOn(component['proposalsState'], 'loadProposals').mockReturnValue()
   });
+
+  describe("language switch", () => {
+    it('should initialize language and locale if currentLang is not set', () => {
+      translate.currentLang = '';
+      const setLocalesSpy = jest.spyOn(dateAdapter, 'setLocale');
+
+      createFixture();
+
+      expect(translate.getDefaultLang()).toBe('fr-BE');
+      expect(setLocalesSpy).toHaveBeenCalledWith('fr-BE');
+    });
+
+    it('should not call use() or setLocale() if language is already set', () => {
+      translate.use('nl-BE');
+      const setLocalesSpy = jest.spyOn(dateAdapter, 'setLocale');
+
+      createFixture();
+
+      expect(setLocalesSpy).not.toHaveBeenCalled();
+    });
+  })
+
+  const createFixture = () => {
+    fixture = TestBed.createComponent(ListPrescriptionsWebComponent);
+    component = fixture.componentInstance;
+    component.intent = 'order';
+    fixture.detectChanges();
+  }
 });

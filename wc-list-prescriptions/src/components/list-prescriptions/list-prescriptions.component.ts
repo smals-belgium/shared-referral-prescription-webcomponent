@@ -100,7 +100,6 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
   @Output() clickOpenPrescriptionDetails = new EventEmitter<PrescriptionSummary>();
   @Output() clickOpenModelDetails = new EventEmitter<PrescriptionModel>();
 
-
   constructor(
     private translate: TranslateService,
     private pseudoService: PseudoService,
@@ -112,9 +111,11 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
     private templatesState: TemplatesState,
     private modelsState: ModelsState
   ) {
-    this.dateAdapter.setLocale('fr-BE');
-    this.translate.setDefaultLang('fr-BE');
-    this.translate.use('fr-BE');
+    const currentLang = this.translate.currentLang;
+    if (!currentLang) {
+      this.translate.use('fr-BE');
+      this.dateAdapter.setLocale('fr-BE');
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -144,7 +145,7 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
 
   loadPrescriptions(page?: number, pageSize?: number) {
     if (this.patientSsin) {
-      this.getPatientIdentifier(this.patientSsin!).then((identifier) => {
+      this.getPatientIdentifier(this.patientSsin).then((identifier) => {
         this.prescriptionsState.loadPrescriptions({
           patient: identifier,
           requester: this.requesterSsin,
@@ -164,7 +165,7 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
 
   loadProposals(page?: number, pageSize?: number) {
     if (this.patientSsin) {
-      this.getPatientIdentifier(this.patientSsin!).then((identifier) => {
+      this.getPatientIdentifier(this.patientSsin).then((identifier) => {
         this.proposalsState.loadProposals({
           patient: identifier,
           requester: this.requesterSsin,
