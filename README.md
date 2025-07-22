@@ -334,7 +334,7 @@ Hereafter, you can get an overview of the web components, once they have been in
 
 | Listing                                             | Creation                                            | Detail                                              |
 |-----------------------------------------------------|-----------------------------------------------------|-----------------------------------------------------|
-| ![Alt text](https://s12.gifyu.com/images/SrCn1.gif) | ![Alt text](https://s12.gifyu.com/images/SrCnA.gif) | ![Alt text](https://s12.gifyu.com/images/SrCno.gif) |
+| ![Alt text](https://raw.githubusercontent.com/smals-belgium/shared-referral-prescription-webcomponent/refs/heads/master/showcase/list/list.gif) | ![Alt text](https://raw.githubusercontent.com/smals-belgium/shared-referral-prescription-webcomponent/refs/heads/master/showcase/create/create.gif) | ![Alt text](https://raw.githubusercontent.com/smals-belgium/shared-referral-prescription-webcomponent/refs/heads/master/showcase/details/detail.gif) |
 
 # 🤜🤛 Contributing
 
