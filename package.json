@@ -29,8 +29,7 @@
     "lint": "ng lint",
     "preversion": "rm -rf ./dist",
     "version": "npm run build",
-    "postversion": "npm pack .",
-    "lint": "ng lint"
+    "postversion": "npm pack ."
   },
   "private": true,
   "dependencies": {
