@@ -147,7 +147,7 @@
       }
     },
     "filter": {
-      "historicToggle": "Archief"
+      "historicToggle": "Historique"
     },
     "print": {
       "content-electronic-prescription": "Contenu de la prescription électronique",
