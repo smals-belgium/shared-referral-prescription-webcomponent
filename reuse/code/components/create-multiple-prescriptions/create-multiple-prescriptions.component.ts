@@ -10,7 +10,7 @@ import {
   SimpleChanges,
   ViewChild
 } from '@angular/core';
-import { ElementGroup, FormTemplate, removeNulls } from '@smals/vas-evaluation-form-ui-core';
+import { ElementGroup, FormTemplate, isObject, removeNulls } from '@smals/vas-evaluation-form-ui-core';
 import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
 import { FormatSsinPipe } from '../../pipes/format-ssin.pipe';
 import { TemplateNamePipe } from '../../pipes/template-name.pipe';
@@ -21,7 +21,7 @@ import { IfStatusLoadingDirective } from '../../directives/if-status-loading.dir
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
-import { LoadingStatus, OccurrenceTiming, Person } from '../../interfaces';
+import { LoadingStatus, Person } from '../../interfaces';
 import { ErrorCardComponent } from '../error-card/error-card.component';
 import { SuccessCardComponent } from '../success-card/success-card.component';
 import { PrescriptionModelState } from '../../states/prescriptionModel.state';
@@ -32,6 +32,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CreatePrescriptionForm } from '../../interfaces/create-prescription-form.interface';
 import { ErrorCard } from '../../interfaces/error-card.interface';
+import { isOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
 
 @Component({
     selector: 'app-create-multiple-prescriptions',
@@ -93,37 +94,49 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
     }
   }
 
-  mapResponsesToRepeatObject(responses: Record<string, any>) {
+  mapResponsesToRepeatObject(responses: Record<string, unknown>) {
     if (!responses) return responses;
-    const occurrenceTiming: OccurrenceTiming = responses['occurrenceTiming']
+
+    const responseOccurrenceTiming: unknown = responses['occurrenceTiming'];
+    const occurrenceTiming = isOccurrenceTiming(responseOccurrenceTiming) ? responseOccurrenceTiming : undefined;
+
     if(!occurrenceTiming) return responses;
 
-    const repeat = occurrenceTiming.repeat
-    if(!repeat) return responses
+    const repeat = occurrenceTiming.repeat;
 
-    if(!repeat.count) return {...responses, ...repeat}
+    if (!repeat) return responses;
 
-    let dayPeriod = {}
+    if (!repeat.count) return {...responses, ...repeat};
+
+    let dayPeriod = {};
     if(repeat.when) {
       if(Array.isArray(repeat.when)) {
-        dayPeriod = { dayPeriod: repeat.when[0] }
+        dayPeriod = {dayPeriod: repeat.when[0]};
       } else {
-        dayPeriod = { dayPeriod: repeat.when }
+        dayPeriod = {dayPeriod: repeat.when};
       }
     }
 
-    const maxSessions = {nbSessions: repeat.count}
-    return {...responses, ...maxSessions, ...dayPeriod, ...repeat}
+    const maxSessions = {nbSessions: repeat.count};
+
+    if (isObject(repeat.boundsDuration)) {
+      delete repeat.boundsDuration;
+    }
+
+    return {...responses, ...maxSessions, ...dayPeriod, ...repeat};
   }
 
   setElementGroup(prescriptionForm: CreatePrescriptionForm, formTemplate: FormTemplate, elementGroup: ElementGroup) {
     prescriptionForm.elementGroup = elementGroup;
     if (prescriptionForm.initialPrescription || prescriptionForm.modelResponses) {
       const initialResponses = prescriptionForm.initialPrescription?.responses || prescriptionForm.modelResponses
-      let responses = removeNulls(initialResponses || {});
+      let responses: Record<string, unknown> = removeNulls(initialResponses || {}) as Record<string, unknown>;
       responses = this.mapResponsesToRepeatObject(responses)
+
+      const currentValues = elementGroup.getOutputValue() as Record<string, unknown>;
+
       elementGroup.setValue({
-        ...elementGroup.getOutputValue(),
+        ...currentValues,
         ...responses
       });
     }
@@ -131,12 +144,14 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
 
   getResponses(prescriptionForm: CreatePrescriptionForm) {
     if (prescriptionForm.initialPrescription) {
-      let responses = removeNulls(prescriptionForm.initialPrescription?.responses || {});
+      let responses: Record<string, unknown> = removeNulls(prescriptionForm.initialPrescription?.responses || {}) as Record<string, unknown>;
       responses = this.mapResponsesToRepeatObject(responses)
 
-      return {...prescriptionForm.elementGroup?.getOutputValue(), ...responses}
+      const currentValues = prescriptionForm.elementGroup?.getOutputValue() as Record<string, unknown>;
+
+      return {...currentValues, ...responses}
     } else {
-      return prescriptionForm.elementGroup?.getOutputValue();
+      return prescriptionForm.elementGroup?.getOutputValue() as Record<string, unknown>;
     }
   }
 
@@ -148,7 +163,7 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
     }
     const responses = this.getResponses(prescriptionForm);
 
-    this.dialog.open<CreatePrescriptionModelDialog, any>(CreatePrescriptionModelDialog, {
+    this.dialog.open<CreatePrescriptionModelDialog, unknown>(CreatePrescriptionModelDialog, {
       data: {
         template: template,
         templateCode: prescriptionForm.templateCode,

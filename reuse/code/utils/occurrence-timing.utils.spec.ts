@@ -1,4 +1,4 @@
-import { translateOccurrenceTiming, validateOccurrenceTiming } from './occurrence-timing.utils';
+import { isOccurrenceTiming, translateOccurrenceTiming, validateOccurrenceTiming } from './occurrence-timing.utils';
 import { BoundsDuration, OccurrenceTiming, UnitsOfTime, Weekday } from '@reuse/code/interfaces';
 
 const frequencyOnly: OccurrenceTiming = {
@@ -65,50 +65,50 @@ const full : OccurrenceTiming = {
 describe('OccurrenceTimingUtils', () => {
   it('should return the correct readable treatment frequency when OccurrenceTiming contains boundsDuration, frequency, period, duration and dayOfWeek', () => {
 
-    let readableTextFr = translateOccurrenceTiming(full, 'fr');
+    const readableTextFr = translateOccurrenceTiming(full, 'fr');
     expect(readableTextFr).toBe("3 fois par semaine, le lundi et mardi, une séance de 30 minutes, durant 3 mois")
 
-    let readableTextNl = translateOccurrenceTiming(full, 'nl');
+    const readableTextNl = translateOccurrenceTiming(full, 'nl');
     expect(readableTextNl).toBe("3 keer per week, op maandag en dinsdag, een sessie van 30 minuten, gedurende 3 maanden")
 
   })
 
   it('should return the correct readable treatment frequency when OccurrenceTiming contains boundsDuration, frequency and period', () => {
 
-    let readableTextFr = translateOccurrenceTiming(frequencyAndBoundsDuration, 'fr');
+    const readableTextFr = translateOccurrenceTiming(frequencyAndBoundsDuration, 'fr');
     expect(readableTextFr).toBe("3 fois par semaine, durant 3 mois")
 
-    let readableTextNl = translateOccurrenceTiming(frequencyAndBoundsDuration, 'nl');
+    const readableTextNl = translateOccurrenceTiming(frequencyAndBoundsDuration, 'nl');
     expect(readableTextNl).toBe("3 keer per week, gedurende 3 maanden")
 
   })
 
   it('should return the correct readable treatment frequency when OccurrenceTiming contains frequency, period and duration', () => {
 
-    let readableTextFr = translateOccurrenceTiming(frequencyAndSessionDuration, 'fr');
+    const readableTextFr = translateOccurrenceTiming(frequencyAndSessionDuration, 'fr');
     expect(readableTextFr).toBe("3 fois par semaine, une séance de 30 minutes")
 
-    let readableTextNl = translateOccurrenceTiming(frequencyAndSessionDuration, 'nl');
+    const readableTextNl = translateOccurrenceTiming(frequencyAndSessionDuration, 'nl');
     expect(readableTextNl).toBe("3 keer per week, een sessie van 30 minuten")
 
   })
 
   it('should return the correct readable treatment frequency when OccurrenceTiming contains frequency, period and dayOfWeek', () => {
 
-    let readableTextFr = translateOccurrenceTiming(frequencyAndDayOfWeek, 'fr');
+    const readableTextFr = translateOccurrenceTiming(frequencyAndDayOfWeek, 'fr');
     expect(readableTextFr).toBe("3 fois par semaine, le lundi et mardi")
 
-    let readableTextNl = translateOccurrenceTiming(frequencyAndDayOfWeek, 'nl');
+    const readableTextNl = translateOccurrenceTiming(frequencyAndDayOfWeek, 'nl');
     expect(readableTextNl).toBe("3 keer per week, op maandag en dinsdag")
 
   })
 
   it('should return the correct readable treatment frequency when OccurrenceTiming contains frequency and period', () => {
 
-    let readableTextFr = translateOccurrenceTiming(frequencyOnly, 'fr');
+    const readableTextFr = translateOccurrenceTiming(frequencyOnly, 'fr');
     expect(readableTextFr).toBe("3 fois par semaine")
 
-    let readableTextNl = translateOccurrenceTiming(frequencyOnly, 'nl');
+    const readableTextNl = translateOccurrenceTiming(frequencyOnly, 'nl');
     expect(readableTextNl).toBe("3 keer per week")
 
   })
@@ -313,5 +313,37 @@ describe('validateOccurrenceTiming', () => {
       }
     };
     expect(validateOccurrenceTiming(invalid)).toBe(false);
+  });
+});
+
+describe('isOccurrenceTiming', () => {
+  it('returns true for a valid OccurrenceTiming object', () => {
+    const validValue = {repeat: {frequency: 1}}; // Mock minimal structure
+    expect(isOccurrenceTiming(validValue)).toBe(true);
+  });
+
+  it('returns false for an object without repeat', () => {
+    const invalidValue = {somethingElse: true};
+    expect(isOccurrenceTiming(invalidValue)).toBe(false);
+  });
+
+  it('returns false for null', () => {
+    expect(isOccurrenceTiming(null)).toBe(false);
+  });
+
+  it('returns false for a non-object value (string)', () => {
+    expect(isOccurrenceTiming('string')).toBe(false);
+  });
+
+  it('returns false for a number', () => {
+    expect(isOccurrenceTiming(123)).toBe(false);
+  });
+
+  it('returns false for an array', () => {
+    expect(isOccurrenceTiming(['repeat'])).toBe(false);
+  });
+
+  it('returns false for undefined', () => {
+    expect(isOccurrenceTiming(undefined)).toBe(false);
   });
 });

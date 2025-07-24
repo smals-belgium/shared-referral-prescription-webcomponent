@@ -632,6 +632,55 @@ describe('CreatePrescriptionWebComponent', () => {
 
       expect(result?.responses?.['prescriptionOriginId']).toBe('123');
     });
+    it('should return initialPrescription response based on the occurrenceTiming', () => {
+      createFixture('mockPseudomizedKey');
+      component.initialValues = {
+        intent: 'order',
+        extend: true
+      };
+      const prescription: ReadPrescription = {
+        authoredOn: '',
+        organizationTasks: [],
+        patientIdentifier: '',
+        performerTasks: [],
+        period: {end: '', start: ''},
+        referralTask: {} as ReferralTask,
+        templateCode: '',
+        id: '123',
+        responses: {
+          "feedback": false,
+          "diagnosis": "test",
+          "nbSessions": 42,
+          "occurrenceTiming": {
+            "repeat": {
+              "boundsDuration": {
+                "value": 3,
+                "system": "http://unitsofmeasure.org",
+                "code": "wk"
+              },
+              "count": 42,
+              "frequency": 2,
+              "period": 1,
+              "periodUnit": "d",
+              "duration": 3,
+              "durationUnit": "wk",
+              "dayOfWeek": ['mon']
+            }
+          },
+          "boundsDuration": 3,
+          "boundsDurationUnit": "wk",
+          "prescriptionOriginId": "prescription-origin-id"
+        }
+      };
+
+      const result = component.updateResponses(prescription);
+
+      expect(result?.responses['boundsDuration']).toBe(3);
+      expect(result?.responses['boundsDurationUnit']).toBe("wk");
+      expect(result?.responses['sessionDuration']).toBe(3);
+      expect(result?.responses['sessionDurationUnit']).toBe("wk");
+      expect(result?.responses['dayOfWeek']).toEqual(['mon']);
+    });
   })
 
   describe('data encryption', () => {

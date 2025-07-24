@@ -28,7 +28,9 @@
 
   </div>
 
-  <app-overlay-spinner *ngIf="loading()"></app-overlay-spinner>
+  @if (loading()) {
+    <app-overlay-spinner></app-overlay-spinner>
+  }
 } @else {
   <app-error-card
     [message]="'common.errors.pseudoDisabled' | translate"

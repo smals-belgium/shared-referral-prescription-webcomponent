@@ -262,3 +262,7 @@ function isValidUnitOfTime(value: any): value is UnitsOfTime {
 function isValidWeekday(value: any): value is Weekday {
   return ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].includes(value);
 }
+
+export function isOccurrenceTiming(value: unknown): value is OccurrenceTiming {
+  return typeof value === 'object' && value !== null && 'repeat' in value;
+}

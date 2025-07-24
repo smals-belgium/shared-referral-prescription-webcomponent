@@ -31,7 +31,6 @@ import {
   CreatePrescriptionRequest,
   DataState,
   LoadingStatus,
-  OccurrenceTiming,
   Person,
   ReadPrescription
 } from '@reuse/code/interfaces';
@@ -47,7 +46,7 @@ import {
 import { ConfirmDialog, ConfirmDialogData } from '@reuse/code/dialogs/confirm/confirm.dialog';
 import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
 import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
-import { AsyncPipe, DOCUMENT, NgIf } from '@angular/common';
+import { AsyncPipe, DOCUMENT } from '@angular/common';
 import { PseudoService } from '@reuse/code/services/pseudo.service';
 import { AccessMatrixState } from '@reuse/code/states/access-matrix.state';
 import { TemplatesState } from '@reuse/code/states/templates.state';
@@ -67,6 +66,7 @@ import { CreatePrescriptionForm } from '@reuse/code/interfaces/create-prescripti
 import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
 import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
 import { HttpErrorResponse } from '@angular/common/http';
+import { isOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
 
 
 @Component({
@@ -76,7 +76,6 @@ import { HttpErrorResponse } from '@angular/common/http';
   standalone: true,
   encapsulation: ViewEncapsulation.ShadowDom,
   imports: [
-    NgIf,
     IfStatusSuccessDirective,
     CreateMultiplePrescriptionsComponent,
     OverlaySpinnerComponent,
@@ -145,7 +144,6 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   ) {
     this.isEnabled$ = of(this.configService.getEnvironmentVariable('enablePseudo')).pipe(
       map((value: boolean) => {
-        console.log(value)
         if (value) {
           this.initializeWebComponent();
         }
@@ -231,7 +229,6 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   }
 
   private handleLanguageChange(): void {
-    console.log(this.lang);
     this.dateAdapter.setLocale(this.lang);
     this.translate.use(this.lang);
   }
@@ -328,22 +325,25 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   }
 
   updateResponses(initialPrescription?: ReadPrescription) {
-    if(initialPrescription?.responses != undefined) {
-      if (initialPrescription?.responses['occurrenceTiming'] != undefined) {
-        const occurrenceTiming: OccurrenceTiming = initialPrescription?.responses['occurrenceTiming'];
-        if (occurrenceTiming.repeat.boundsDuration != undefined) {
-          initialPrescription.responses['boundsDuration'] = occurrenceTiming.repeat.boundsDuration.value;
-          initialPrescription.responses['boundsDurationUnit'] = occurrenceTiming.repeat.boundsDuration.code;
-        }
-        if (occurrenceTiming.repeat.duration != undefined) {
-          initialPrescription.responses['sessionDuration'] = occurrenceTiming.repeat.duration;
-          initialPrescription.responses['sessionDurationUnit'] = occurrenceTiming.repeat.durationUnit;
-        }
-        if (occurrenceTiming.repeat.dayOfWeek != undefined) {
-          initialPrescription.responses['dayOfWeek'] = occurrenceTiming.repeat.dayOfWeek;
-        }
+    if (initialPrescription?.responses?.['occurrenceTiming'] && isOccurrenceTiming(initialPrescription.responses['occurrenceTiming'])) {
+      const occurrenceTiming = initialPrescription.responses['occurrenceTiming'];
+      const {boundsDuration, duration, durationUnit, dayOfWeek} = occurrenceTiming.repeat ?? {};
+
+      if (boundsDuration) {
+        initialPrescription.responses['boundsDuration'] = boundsDuration.value;
+        initialPrescription.responses['boundsDurationUnit'] = boundsDuration.code;
+      }
+
+      if (duration) {
+        initialPrescription.responses['sessionDuration'] = duration;
+        initialPrescription.responses['sessionDurationUnit'] = durationUnit;
+      }
+
+      if (dayOfWeek) {
+        initialPrescription.responses['dayOfWeek'] = dayOfWeek;
       }
     }
+
     if (!this.initialValues?.extend || !initialPrescription?.responses) {
       return initialPrescription;
     }
