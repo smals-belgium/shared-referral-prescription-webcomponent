@@ -128,7 +128,7 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
       this.dateAdapter.setLocale(this.lang!);
       this.translate.use(this.lang!);
     }
-    if (changes['patientSsin'] || changes['requesterSsin'] || changes['performerSsin']) {
+    if ((changes['patientSsin'] || changes['requesterSsin'] || changes['performerSsin'] || changes['intent']) && this.intent) {
       this.loadData(1);
     }
   }
