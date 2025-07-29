@@ -13,7 +13,7 @@ import {
   SimpleChanges,
   ViewEncapsulation
 } from '@angular/core';
-import { FormTemplate } from '@smals/vas-evaluation-form-ui-core';
+import { FormElement, FormTemplate } from '@smals/vas-evaluation-form-ui-core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '@reuse/code/services/auth.service';
 import { BehaviorSubject, catchError, concatMap, filter, forkJoin, from, Observable, of, switchMap } from 'rxjs';
@@ -515,33 +515,74 @@ export class CreatePrescriptionWebComponent implements OnChanges {
       });
   }
 
-  protected encryptFreeTextInResponses(templateCode: string, responses: Record<string, any>): Observable<Record<string, any>> {
+  protected encryptFreeTextInResponses(templateCode: string, responses: Record<string, unknown>): Observable<Record<string, unknown>> {
     const template = this.getPrescriptionTemplateStream(templateCode)()?.data;
     if (!template || !this.cryptoKey) {
       return of(responses);
     }
 
-    const encryptionTasks = Object.entries(responses).map(([key, value]) => {
-      const formElement = template.elements.find(e => e.id === key);
-
-      if (formElement?.tags?.includes('freeText')) {
-        return this.encryptionService.encryptText(this.cryptoKey!, value).pipe(
-          map(encryptedValue => ({[key]: encryptedValue})),
-          catchError(error => {
-            console.error(`Error encrypting key "${key}":`, error);
-            return of({[key]: value});
-          })
-        );
-      } else {
-        return of({[key]: value});
-      }
-    });
+    const encryptionTasks = Object.entries(responses).map(([key, value]) =>
+      this.processResponseEntry(key, value, template, templateCode)
+    );
 
     return forkJoin(encryptionTasks).pipe(
       map(results => {
         return results.reduce((acc, curr) => Object.assign(acc, curr), {});
       })
     );
+  }
+
+  private processResponseEntry(key: string, value: unknown, template: FormTemplate, templateCode: string): Observable<Record<string, unknown>> {
+    const formElement = this.findElementById(template.elements, key);
+
+    if (!formElement) {
+      return of({[key]: value});
+    }
+
+    if (formElement?.tags?.includes('freeText') && typeof value === 'string') {
+      return this.encryptStringValue(key, value);
+    }
+
+    if (this.isObject(value) && Object.hasOwn(formElement, 'elements')) {
+      return this.processNestedObject(key, value as Record<string, unknown>, templateCode);
+    }
+
+    return of({[key]: value});
+  }
+
+  private encryptStringValue(key: string, value: string): Observable<Record<string, unknown>> {
+    return this.encryptionService.encryptText(this.cryptoKey!, value).pipe(
+      map(encryptedValue => ({[key]: encryptedValue})),
+      catchError(error => {
+        console.error(`Error encrypting key "${key}":`, error);
+        return of({[key]: value});
+      })
+    );
+  }
+
+  private processNestedObject(key: string, value: Record<string, unknown>, templateCode: string): Observable<Record<string, unknown>> {
+    return this.encryptFreeTextInResponses(templateCode, value).pipe(
+      map(encryptedNestedValue => ({[key]: encryptedNestedValue}))
+    );
+  }
+
+  isObject(value: unknown): value is Record<string, any> {
+    return value !== null && typeof value === 'object' && !Array.isArray(value);
+  }
+
+  protected findElementById(elements: FormElement[], key: string): FormElement | null {
+    for (const element of elements) {
+      if (element.id === key) {
+        return element;
+      }
+      if (element.elements && Array.isArray(element.elements)) {
+        const found = this.findElementById(element.elements, key);
+        if (found) {
+          return found;
+        }
+      }
+    }
+    return null;
   }
 
   protected toCreatePrescriptionRequest(

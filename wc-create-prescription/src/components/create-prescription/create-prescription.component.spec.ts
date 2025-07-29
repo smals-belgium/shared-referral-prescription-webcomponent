@@ -806,6 +806,48 @@ describe('CreatePrescriptionWebComponent', () => {
         done();
       });
     });
+    it('should encrypt freeText fields within nested objects', (done) => {
+      createFixture('mockPseudomizedKey');
+      component.cryptoKey = 'test-cryptoKey' as unknown as CryptoKey;
+
+      jest.spyOn(component as any, 'getPrescriptionTemplateStream').mockReturnValue(() => ({
+        data: {
+          elements: [
+            {
+              id: 'section1',
+              elements: [
+                {id: 'nestedField1', tags: ['freeText']},
+                {id: 'nestedField2', tags: []}
+              ]
+            },
+            {id: 'topLevelField', tags: []}
+          ]
+        }
+      }));
+
+
+      mockEncryptionService.encryptText.mockReturnValue(of('encrypted-nested-value'));
+
+      const responses = {
+        section1: {
+          nestedField1: 'sensitive nested text',
+          nestedField2: 'normal nested text'
+        },
+        topLevelField: 'top level text'
+      };
+
+      component.encryptFreeTextInResponsesExtended('templateCode', responses).subscribe(result => {
+        expect(result).toEqual({
+          section1: {
+            nestedField1: 'encrypted-nested-value',
+            nestedField2: 'normal nested text'
+          },
+          topLevelField: 'top level text'
+        });
+        expect(mockEncryptionService.encryptText).toHaveBeenCalledWith('test-cryptoKey', 'sensitive nested text');
+        done();
+      });
+    });
   });
 
   describe('operation results and notifications', () => {
