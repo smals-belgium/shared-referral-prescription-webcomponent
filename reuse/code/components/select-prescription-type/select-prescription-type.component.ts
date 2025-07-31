@@ -12,7 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { toSearchString } from '../../utils/utils';
 import { HighlightFilterPipe } from '../../pipes/highlight-filter.pipe';
-import { EvfTemplate } from '../../interfaces';
+import { EvfTemplate, RADIOLOGY_CODES, PHYSIOTHERAPY_CODES, NURSING_CODES } from '../../interfaces';
 import { PrescriptionModel } from '../../interfaces/prescription-modal.inteface';
 
 @Component({
@@ -34,14 +34,9 @@ import { PrescriptionModel } from '../../interfaces/prescription-modal.inteface'
 export class SelectPrescriptionTypeComponent implements OnChanges {
 
   private readonly categories = [
-
-    { code: 'bandagisterie'},
-    { code: 'dentistry'},
-    { code: 'physiotherapy'},
-    { code: 'orthopedics'},
-    { code: 'otolaryngology'},
-    { code: 'radiology'},
     { code: 'nursingCare'},
+    { code: 'radiology'},
+    { code: 'physiotherapy'},
   ];
   private readonly categories$ = this.translate.onLangChange.pipe(
     map(() => this.translate.currentLang),
@@ -177,15 +172,18 @@ const mustBeObjectValidator = (control: AbstractControl) => {
 
 
 const getFilteredTemplates = (templates: EvfTemplate[], category: any): EvfTemplate[] => {
+  console.log("Category", category);
   if (!category) {
     return templates;
   }
 
   switch (category.code) {
     case 'nursingCare':
-      return templates.filter(e => e.code !== 'ANNEX_82');
+      return templates.filter(e => NURSING_CODES.includes(e.code));
     case 'radiology':
-      return templates.filter(e => e.code === 'ANNEX_82');
+      return templates.filter(e => RADIOLOGY_CODES.includes(e.code));
+    case 'physiotherapy':
+      return templates.filter(e => PHYSIOTHERAPY_CODES.includes(e.code));
     default:
       return [];
   }

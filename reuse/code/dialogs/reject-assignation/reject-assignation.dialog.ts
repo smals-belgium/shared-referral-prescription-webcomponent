@@ -11,6 +11,10 @@ import { PrescriptionState } from '../../states/prescription.state';
 import { v4 as uuidv4 } from 'uuid';
 import { ErrorCardComponent } from '../../components/error-card/error-card.component';
 import { BaseDialog } from '../base.dialog';
+import { ProposalState } from '@reuse/code/states/proposal.state';
+import { isProposal } from '@reuse/code/utils/utils';
+import { Observable } from 'rxjs';
+import { TranslateByIntentPipe } from '@reuse/code/pipes/translate-by-intent.pipe';
 
 interface RejectAssignationDialogData {
   prescription: ReadPrescription;
@@ -28,7 +32,8 @@ interface RejectAssignationDialogData {
         OverlaySpinnerComponent,
         TemplateNamePipe,
         NgIf,
-        ErrorCardComponent
+        ErrorCardComponent,
+        TranslateByIntentPipe
     ]
 })
 export class RejectAssignationDialog extends BaseDialog implements OnInit {
@@ -41,6 +46,7 @@ export class RejectAssignationDialog extends BaseDialog implements OnInit {
 
   constructor(
     private prescriptionStateService: PrescriptionState,
+    private proposalStateService: ProposalState,
     private toastService: ToastService,
     dialogRef: MatDialogRef<RejectAssignationDialog>,
     @Inject(MAT_DIALOG_DATA) private data: RejectAssignationDialogData
@@ -55,12 +61,23 @@ export class RejectAssignationDialog extends BaseDialog implements OnInit {
     this.generatedUUID = uuidv4();
   }
 
-  rejectAssignation(): void {
+  onReject(): void {
     this.loading = true;
-    this.prescriptionStateService.rejectAssignation(this.prescription.id, this.performerTask.id, this.generatedUUID).subscribe({
+    if(isProposal(this.prescription.intent)){
+      this.rejectAssignment(() =>this.proposalStateService.rejectAssignation(this.prescription.id, this.performerTask.id, this.generatedUUID), 'proposal');
+    }
+    else{
+      this.rejectAssignment(() =>this.prescriptionStateService.rejectAssignation(this.prescription.id, this.performerTask.id, this.generatedUUID), 'prescription');
+    }
+  }
+
+  private rejectAssignment(serviceCall: () => Observable<void>, successPrefix : string){
+    this.loading = true;
+
+    serviceCall().subscribe({
       next: () => {
         this.closeErrorCard();
-        this.toastService.show('prescription.rejectAssignation.success');
+        this.toastService.show(successPrefix + '.rejectAssignation.success');
         this.closeDialog(true);
       },
       error: (err) => {

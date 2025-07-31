@@ -1,3 +1,5 @@
+import { Intent } from '@reuse/code/interfaces';
+
 const UuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i as RegExp;
 const SsinRegex = /^[0-9]{11}$/i as RegExp;
 const ShortCodeRegex = /^[a-zA-Z0-9]{4}[a-fA-F0-9]{2}$/ as RegExp;
@@ -49,4 +51,16 @@ export function toSearchString(str: string): string {
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
     : '';
+}
+
+export function isPrescription(intent: String|undefined): boolean {
+  return intent?.toLowerCase() === Intent.ORDER;
+}
+
+export function isProposal(intent: String|undefined): boolean {
+  return intent?.toLowerCase() === Intent.PROPOSAL;
+}
+
+export function isModel(intent: String|undefined): boolean {
+  return intent?.toLowerCase() === Intent.MODEL;
 }

@@ -14,7 +14,7 @@ import { AuthService } from '@reuse/code/services/auth.service';
 import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
 import { ListPrescriptionsWebComponent } from './list-prescriptions.component';
 import { Observable, of } from 'rxjs';
-import { LoadingStatus, PrescriptionModelRequest } from '@reuse/code/interfaces';
+import { Intent, LoadingStatus, PrescriptionModelRequest } from '@reuse/code/interfaces';
 import { PrescriptionSummaryList } from '@reuse/code/interfaces/prescription-summary.interface';
 import { By } from '@angular/platform-browser';
 
@@ -106,6 +106,7 @@ describe('ListPrescriptionsWebComponent', () => {
     const loadPrescriptionsSpy = jest.spyOn(component, 'loadPrescriptions');
     const ssin = 'ssin';
     component.intent = 'order';
+    component.isPrescriptionValue = true;
 
     const simpleChanges: SimpleChanges = {patientSsin: new SimpleChange('', ssin, true)}
     component.patientSsin = ssin;
@@ -124,6 +125,7 @@ describe('ListPrescriptionsWebComponent', () => {
     expect(prescriptionTable).toBeNull();
     component.intent = 'order';
     component.patientSsin = 'ssin';
+    component.isPrescriptionValue = true;
 
     const expectedState = {
       data: {
@@ -146,7 +148,6 @@ describe('ListPrescriptionsWebComponent', () => {
       },
       status: LoadingStatus.SUCCESS
     };
-
     jest.spyOn(component, 'viewStatePrescriptions$').mockReturnValue(expectedState);
 
     fixture.detectChanges();
@@ -162,7 +163,8 @@ describe('ListPrescriptionsWebComponent', () => {
     const loadDataSpy = jest.spyOn(component, 'loadData');
     const loadProposalsSpy = jest.spyOn(component, 'loadProposals');
     const ssin = 'ssin';
-    component.intent = 'proposal';
+    component.intent = Intent.PROPOSAL;
+    component.isProposalValue = true;
 
     const simpleChanges: SimpleChanges = {patientSsin: new SimpleChange('', ssin, true)}
     component.patientSsin = ssin;

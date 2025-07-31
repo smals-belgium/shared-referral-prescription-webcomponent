@@ -8,15 +8,21 @@
         [showRetry]="false"
       ></app-error-card>
     }
-    <div>{{'prescription.rejectAssignation.message' | translate: {
-        firstName: patient.firstName,
-        lastName: patient.lastName,
-        templateName: prescription.templateCode | templateName}
+    <div>
+      {{ prescription.intent | translateByIntent:{
+          order: 'prescription.rejectAssignation.message',
+          proposal: 'proposal.rejectAssignation.message'
+        }:{
+          firstName: patient.firstName,
+          lastName:  patient.lastName,
+          templateName: (prescription.templateCode | templateName)
+        }
       }}
     </div>
+
   </div>
   <div mat-dialog-actions>
-    <button data-cy="dialog-confirm-button" mat-raised-button color="accent" (click)="rejectAssignation()">{{'common.confirm' | translate}}</button>
+    <button data-cy="dialog-confirm-button" mat-raised-button color="accent" (click)="onReject()">{{'common.confirm' | translate}}</button>
     <button data-cy="dialog-cancel-button" mat-flat-button [mat-dialog-close]="undefined">{{'common.cancel' | translate}}</button>
   </div>
 

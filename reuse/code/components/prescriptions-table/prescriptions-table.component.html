@@ -2,19 +2,11 @@
   <ng-container matColumnDef="author">
     <th data-cy="overview-author-title" mat-header-cell *matHeaderCellDef>{{'prescription.author' | translate}}</th>
     <td [attr.data-cy]="'author-cell-' + prescription.id" [attr.translate]="'no'" mat-cell *matCellDef="let prescription">
+      <app-professional-display
+        [professional]="prescription.requester"
+      ></app-professional-display>
       @if(prescription.requester){
-        @if(prescription.requester.healthcarePerson.lastName == null){
-          {{'common.professional.notFound' | translate}}
-          <mat-icon matTooltip="{{'common.professional.tooltip' | translate}}"
-                    matTooltipPosition="after"
-                    style="color: grey; cursor: pointer;">
-            error
-          </mat-icon>
-        }
-        @else{
-          {{prescription.requester.healthcarePerson?.firstName}} {{prescription.requester.healthcarePerson?.lastName}}<br>
-          ({{(prescription.requester.nihii8 || prescription.requester.nihii11) | formatNihdi: prescription.requester.id.qualificationCode}})
-        }
+        ({{(prescription.requester.nihii8 || prescription.requester.nihii11) | formatNihdi: prescription.requester.id.qualificationCode}})
       }
     </td>
   </ng-container>

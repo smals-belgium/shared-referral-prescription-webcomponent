@@ -16,7 +16,7 @@ import { DateAdapter, MatOptionModule } from '@angular/material/core';
 import { DateTime } from 'luxon';
 import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
 import { AuthService } from '@reuse/code/services/auth.service';
-import { DataState, EvfTemplate } from '@reuse/code/interfaces';
+import { DataState, EvfTemplate, Intent } from '@reuse/code/interfaces';
 import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
 import { IfStatusLoadingDirective } from '@reuse/code/directives/if-status-loading.directive';
 import { PaginatorComponent } from '@reuse/code/components/paginator/paginator.component';
@@ -41,6 +41,7 @@ import { ModelsState } from '@reuse/code/states/models.state';
 import {
   ToggleHistoricPrescriptionsComponent
 } from '@reuse/code/components/toggle-historic-prescriptions/toggle-historic-prescriptions.component';
+import { isModel, isPrescription, isProposal } from '@reuse/code/utils/utils';
 
 interface ViewState {
   prescriptions: PrescriptionSummaryList;
@@ -89,6 +90,10 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
     templates: this.templatesState.state
   });
 
+  isPrescriptionValue = false;
+  isProposalValue = false;
+  isModelValue = false;
+
   @HostBinding('attr.lang')
   @Input() lang?: string;
   @Input() patientSsin?: string;
@@ -134,11 +139,14 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
   }
 
   loadData(page?: number, pageSize?: number) {
-    if (this.intent.toLowerCase() === 'order') {
+    if (isPrescription(this.intent)) {
+      this.isPrescriptionValue = true;
       this.loadPrescriptions(page, pageSize);
-    } else if (this.intent.toLowerCase() === 'proposal') {
+    } else if (isProposal(this.intent)) {
+      this.isProposalValue = true;
       this.loadProposals(page, pageSize);
-    } else if (this.intent.toLowerCase() === 'model') {
+    } else if (isModel(this.intent)) {
+      this.isModelValue = true;
       this.loadModels(page, pageSize);
     }
   }

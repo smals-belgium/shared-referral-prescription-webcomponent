@@ -20,4 +20,8 @@ export class AuthService {
   isProfessional(): Observable<boolean> {
     throw new Error('Not implemented');
   }
+
+  discipline(): Observable<string> {
+    throw new Error('Not implemented');
+  }
 }

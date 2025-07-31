@@ -22,5 +22,6 @@ export type Permissions = keyof Omit<AccessMatrix, 'quality'|'templateName'>;
 export enum Quality {
   nurse = 'NURSE',
   patient = 'PATIENT',
-  physician = 'PHYSICIAN'
+  physician = 'PHYSICIAN',
+  physiotherapist = 'PHYSIOTHERAPIST'
 }

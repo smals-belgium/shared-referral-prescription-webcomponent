@@ -108,11 +108,15 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
   }
 
   private assignAndStartExecution(executionStart: PrescriptionExecutionStart): void {
+    let discipline : string;
+    this.authService.discipline().subscribe(
+      disc => {discipline = disc}
+    );
     this.getCurrentUserSsin()
       .pipe(switchMap(ssin => this.prescriptionStateService.assignAndStartPrescriptionExecution(
         this.prescription.id!,
         this.prescription.referralTask.id!,
-        {ssin},
+        {ssin, discipline},
         this.generatedUUID,
         executionStart
       )))
@@ -133,4 +137,5 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
     return this.authService.getClaims()
       .pipe(map(claims => claims['userProfile']['ssin']));
   }
+
 }

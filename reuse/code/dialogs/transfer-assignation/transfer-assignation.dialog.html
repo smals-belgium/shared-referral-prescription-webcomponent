@@ -129,8 +129,8 @@
         <tr class="result-item"
              *ngFor="let professional of professionalState.data!"
              [attr.data-cy]="'result-professional-' + (professional.nihii8 || professional.nihii11) + professional.id.qualificationCode"
-             (click)="assign(professional)"
-             (keydown.enter)="assign(professional)"
+             (click)="onTransfer(professional)"
+             (keydown.enter)="onTransfer(professional)"
              tabindex="0"
         >
           <td data-cy="professional-name"><b>{{professional.healthcarePerson.firstName}} {{professional.healthcarePerson.lastName}}</b></td>

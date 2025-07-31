@@ -1,6 +1,7 @@
 import { Pipe } from '@angular/core';
-import { ReadPrescription, Role, Status, UserInfo } from '../interfaces';
+import { Intent, ReadPrescription, Role, Status, UserInfo } from '../interfaces';
 import { AccessMatrixState } from '../states/access-matrix.state';
+import { isProposal } from '@reuse/code/utils/utils';
 
 /**
  * This pipe determines whether a proposal or a prescription can be canceled.
@@ -35,8 +36,7 @@ export class CanCancelPrescriptionOrProposalPipe {
   }
 
   private hasCancelPermissions(prescription: ReadPrescription) {
-    const intent = prescription.intent?.toLowerCase()
-    if(intent === 'proposal') {
+    if(isProposal(prescription.intent)) {
       return this.accessMatrixState.hasAtLeastOnePermission(['cancelProposal'], prescription.templateCode);
     }
     return this.accessMatrixState.hasAtLeastOnePermission(['cancelPrescription'], prescription.templateCode)

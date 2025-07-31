@@ -28,6 +28,8 @@ import {
   AutocompleteMultiselectComponent
 } from '@reuse/code/evf/autocomplete-multiselect/element/autocomplete-multiselect.component';
 import { RecommendationsComponent } from '@reuse/code/evf/pss-recommendations/element/recommendations.component';
+import { withRepeatableInlineElement } from '@smals/vas-evaluation-form-ui-material/elements/repeatable-inline';
+import { withSlideToggleElement } from '@smals/vas-evaluation-form-ui-material/elements/slide-toggle';
 
 export function provideEvfForm() {
   return [
@@ -43,9 +45,11 @@ export function provideEvfForm() {
       withSectionElement(),
       withRowElement(),
       withSelectElement(),
-      withMultiSelectElement(),
       withInfoElement(),
       withRepeatableElement(),
+      withRepeatableInlineElement(),
+      withMultiSelectElement(),
+      withSlideToggleElement(),
       evfElementConfigFeature({
         name: 'medication',
         element: MedicationComponent

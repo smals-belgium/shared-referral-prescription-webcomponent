@@ -56,34 +56,37 @@ export class PrescriptionState extends BaseState<ReadPrescription> {
   }
 
   assignPrescriptionToMe(prescriptionId: string, referralTaskId: string, professional: {
-    ssin: string
+    ssin: string,
+    discipline : string
   }, generatedUUID: string) {
     return this.prescriptionService
       .assignCaregiver(prescriptionId, referralTaskId, {
         ssin: professional.ssin,
-        role: 'NURSE'
+        role: professional.discipline.toUpperCase()
       }, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
   assignAndStartPrescriptionExecution(prescriptionId: string, referralTaskId: string, professional: {
-    ssin: string
+    ssin: string,
+    discipline : string
   }, generatedUUID: string, executionStart: PrescriptionExecutionStart) {
     return this.prescriptionService
       .assignCaregiver(prescriptionId, referralTaskId, {
         ssin: professional.ssin,
-        role: 'NURSE'
+        role: professional.discipline.toUpperCase()
       }, generatedUUID, executionStart.startDate)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
   transferAssignation(prescriptionId: string, referralTaskId: string, performerTaskId: string, professional: {
-    ssin: string
+    ssin: string,
+    discipline : string
   }, generatedUUID: string) {
     return this.prescriptionService
       .transferAssignation(prescriptionId, referralTaskId, performerTaskId, {
         ssin: professional.ssin,
-        role: 'NURSE'
+        role: professional.discipline.toUpperCase()
       }, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }

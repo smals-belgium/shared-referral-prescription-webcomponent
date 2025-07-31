@@ -66,6 +66,7 @@ import { CreatePrescriptionForm } from '@reuse/code/interfaces/create-prescripti
 import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
 import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
 import { HttpErrorResponse } from '@angular/common/http';
+import { isPrescription, isModel } from '@reuse/code/utils/utils';
 import { isOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
 
 
@@ -93,6 +94,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   });
 
   private trackId = 0;
+  isModelValue: boolean = false;
 
   readonly patientState$: Signal<DataState<Person>> = this.patientStateService.state;
   public status$ = new BehaviorSubject<boolean>(false);
@@ -213,6 +215,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
 
     if (changes['initialValues'] && this.initialValues) {
       this.loading.set(true);
+      this.isModelValue = isModel(this.initialValues.intent);
       if(this.initialValues.initialPrescription?.templateCode === 'ANNEX_82' || this.initialValues.initialPrescriptionType === 'ANNEX_82'){
         this.loadPssStatus(this.initialValues)
       }
@@ -325,7 +328,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   }
 
   updateResponses(initialPrescription?: ReadPrescription) {
-    if (initialPrescription?.responses?.['occurrenceTiming'] && isOccurrenceTiming(initialPrescription.responses['occurrenceTiming'])) {
+    if (initialPrescription?.responses?.['occurrenceTiming'] && isOccurrenceTiming(initialPrescription?.responses['occurrenceTiming'])) {
       const occurrenceTiming = initialPrescription.responses['occurrenceTiming'];
       const {boundsDuration, duration, durationUnit, dayOfWeek} = occurrenceTiming.repeat ?? {};
 
@@ -416,7 +419,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
             )
           ),
           switchMap(createPrescriptionRequest => {
-            if (this.initialValues?.intent.toLowerCase() === 'order') {
+            if (isPrescription(this.initialValues?.intent)) {
               return this.prescriptionService.create(createPrescriptionRequest, prescriptionForm.generatedUUID);
             } else {
               return this.proposalService.create(createPrescriptionRequest, prescriptionForm.generatedUUID);
@@ -427,7 +430,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     ).subscribe({
       next: () => {
         this.closeErrorCard();
-        this.toastService.show(this.initialValues?.intent.toLowerCase() === 'order' ? 'prescription.create.success' : 'proposal.create.success');
+        this.toastService.show(isPrescription(this.initialValues?.intent) ? 'prescription.create.success' : 'proposal.create.success');
         this.prescriptionsCreated.emit();
       },
       error: err => {
@@ -477,7 +480,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
 
         return createPrescriptionRequest$.pipe(
           switchMap(createPrescriptionRequest => {
-            if (this.initialValues?.intent.toLowerCase() === 'order') {
+            if (isPrescription(this.initialValues?.intent)) {
               return this.prescriptionService.create(createPrescriptionRequest, f.generatedUUID).pipe(
                 map(() => ({
                   trackId: f.trackId,
@@ -619,10 +622,10 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     const successCount = results.filter((r) => r.status === LoadingStatus.SUCCESS).length;
     const failedCount = results.filter((r) => r.status === LoadingStatus.ERROR).length;
     if (failedCount === 0) {
-      this.toastService.show(this.initialValues?.intent.toLowerCase() === 'order' ? 'prescription.create.allSuccess' : 'proposal.create.allSuccess', {interpolation: {count: successCount}});
+      this.toastService.show(isPrescription(this.initialValues?.intent) ? 'prescription.create.allSuccess' : 'proposal.create.allSuccess', {interpolation: {count: successCount}});
       this.prescriptionsCreated.emit();
     } else if (successCount === 0) {
-      if (this.initialValues?.intent.toLowerCase() == 'order') {
+      if (isPrescription(this.initialValues?.intent)) {
         this.errorCard = {
           show: true,
           message: 'prescription.create.allFailed',
@@ -644,7 +647,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
       results.forEach((t, i) => console.error(i, t.error));
       this.loading.set(false);
     } else {
-      if (this.initialValues?.intent.toLowerCase() == 'order') {
+      if (isPrescription(this.initialValues?.intent)) {
         this.errorCard = {
           show: true,
           message: 'prescription.create.someSuccessSomeFailed',

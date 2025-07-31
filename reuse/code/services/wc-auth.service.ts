@@ -58,6 +58,18 @@ export class WcAuthService extends AuthService {
     );
   }
 
+  override discipline(): Observable<string> {
+    return this.getClaims().pipe(
+      map(claims => {
+        const keys = Object.keys(claims?.['userProfile']).map(k => k.toLowerCase());
+        const match = Object.values(Discipline).find(discipline =>
+          keys.includes(discipline.toLowerCase())
+        );
+        return match ?? "";
+      })
+    );
+  }
+
   private userProfileHasProfessionalKey(userProfile?: Record<string, any>, resourceAccess?: Record<string, any>): boolean {
     if (!userProfile || !resourceAccess) return false;
 
@@ -66,6 +78,5 @@ export class WcAuthService extends AuthService {
     );
 
     return hasProfessionalKey || resourceAccess['nihdi-uhmep-api']?.roles?.includes('admin') || false;
-
   }
 }

@@ -163,8 +163,8 @@
           @for (healthcareProvider of healthcareProviderState.data?.items; track healthcareProvider) {
             <tr class="result-item"
                 [attr.data-cy]="'result-professional-' + healthcareProviderState"
-                (click)="assign(healthcareProvider)"
-                (keydown.enter)="assign(healthcareProvider)"
+                (click)="onAssign(healthcareProvider)"
+                (keydown.enter)="onAssign(healthcareProvider)"
                 tabindex="0"
             >
               <td data-cy="healthcareProvider-type" class="table-td-icon">
@@ -257,7 +257,7 @@
                     [attr.colspan]="getColSpan(healthcareProvider)">
                   <button data-cy="prescription-assign-select-button" mat-raised-button
                           color="accent"
-                          (click)="assign(healthcareProvider)">{{ 'prescription.assignPerformer.select' | translate }}
+                          (click)="onAssign(healthcareProvider)">{{ 'prescription.assignPerformer.select' | translate }}
                   </button>
                 </td>
               </tr>

@@ -9,17 +9,19 @@
       ></app-error-card>
     }
     <div>
-      {{
-        (isProposal() ? 'proposal.cancel.message' : 'prescription.cancel.message') | translate: {
+      {{ prescription.intent | translateByIntent:{
+          order: 'prescription.cancel.message',
+          proposal: 'proposal.cancel.message'
+        }:{
           firstName: patient.firstName,
-          lastName: patient.lastName,
+          lastName:  patient.lastName,
           templateName: (prescription.templateCode | templateName)
         }
       }}
     </div>
   </div>
   <div mat-dialog-actions>
-    <button data-cy="dialog-confirm-button" mat-raised-button color="accent" (click)="cancelPrescription()">
+    <button data-cy="dialog-confirm-button" mat-raised-button color="accent" (click)="onCancel()">
       {{ 'common.confirm' | translate }}
     </button>
     <button data-cy="dialog-cancel-button" mat-flat-button [mat-dialog-close]="undefined">{{

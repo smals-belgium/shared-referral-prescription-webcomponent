@@ -19,7 +19,16 @@
     "start": "Commencer",
     "professions": {
       "NURSE": "Infirmière",
-      "PHYSICIAN": "Médecin"
+      "PHYSICIAN": "Médecin",
+      "PHYSIOTHERAPIST": "Kinésithérapeute"
+    },
+    "professional": {
+      "notFound": "Non trouvé",
+      "tooltip": "Professionnel référencé non trouvé."
+    },
+    "organization": {
+      "notFound": "Non trouvé",
+      "tooltip": "Organisation référencée non trouvée."
     },
     "professional": {
       "notFound": "Non trouvé",
@@ -399,6 +408,12 @@
       "message": "Êtes-vous sûr de vouloir annuler la proposition \"{templateName}\" de {firstName} {lastName} ?",
       "success": "Proposition annulée avec succès.",
       "reason": "Raison"
+    },
+    "rejectAssignation": {
+      "action": "Rejeter",
+      "title": "Rejeter l'assignation",
+      "message": "Êtes-vous sûr de vouloir rejeter l'assignation à la proposition \"{templateName}\" de {firstName} {lastName} ?",
+      "success": "Assignation rejetée avec succès."
     },
     "frequencyTypes": {
       "iterative": "Itérative",

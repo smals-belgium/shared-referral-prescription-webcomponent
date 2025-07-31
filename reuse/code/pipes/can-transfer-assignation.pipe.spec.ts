@@ -1,6 +1,6 @@
 import { CanTransferAssignationPipe } from './can-transfer-assignation.pipe';
 import { AccessMatrixState } from '../states/access-matrix.state';
-import { Discipline, PerformerTask, ReadPrescription, Role, Status, TaskStatus, UserInfo } from '../interfaces';
+import { Discipline, Intent, PerformerTask, ReadPrescription, Role, Status, TaskStatus, UserInfo } from '../interfaces';
 
 const currentUser: UserInfo = {
   discipline: Discipline.NURSE,
@@ -66,7 +66,7 @@ describe('CanTransferAssignationPipe', () => {
   it('should call hasAssignPermissions with correct arguments for "proposal" intent', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
     const prescription = {
-      intent: 'proposal',
+      intent: 'Proposal',
       templateCode: 'template1',
       status: Status.OPEN,
     } as ReadPrescription;
@@ -82,7 +82,7 @@ describe('CanTransferAssignationPipe', () => {
 
   it('should call hasAssignPermissions with correct arguments for "prescription" intent', () => {
     const prescription = {
-      intent: 'prescription',
+      intent: 'ORDER',
       templateCode: 'template2',
       status: Status.IN_PROGRESS,
     } as ReadPrescription;
@@ -98,7 +98,7 @@ describe('CanTransferAssignationPipe', () => {
 
   it('should return true if all conditions are met', () => {
     const prescription = {
-      intent: 'prescription',
+      intent: 'order',
       templateCode: 'template3',
       status: Status.OPEN,
     } as ReadPrescription;
@@ -113,7 +113,7 @@ describe('CanTransferAssignationPipe', () => {
 
   it('should return false if permissions are not granted', () => {
     const prescription = {
-      intent: 'proposal',
+      intent: Intent.PROPOSAL,
       templateCode: 'template4',
       status: Status.OPEN,
     } as ReadPrescription;
@@ -128,7 +128,7 @@ describe('CanTransferAssignationPipe', () => {
 
   it('should return false if currentUser is not a professional', () => {
     const prescription = {
-      intent: 'prescription',
+      intent: Intent.ORDER,
       templateCode: 'template3',
       status: Status.OPEN,
     } as ReadPrescription;

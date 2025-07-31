@@ -33,6 +33,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { CreatePrescriptionForm } from '../../interfaces/create-prescription-form.interface';
 import { ErrorCard } from '../../interfaces/error-card.interface';
 import { isOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
+import { isModel, isPrescription, isProposal } from '@reuse/code/utils/utils';
 
 @Component({
     selector: 'app-create-multiple-prescriptions',
@@ -59,6 +60,8 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
 
   readonly trackByFn = (index: number, item: CreatePrescriptionForm) => item?.trackId || index
   modelState = this.prescriptionModelState.modalState;
+
+  isPrescriptionValue = false;
 
   @Input() lang!: string;
   @Input() intent!: string;
@@ -92,6 +95,7 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
     if (changes['createPrescriptionForms'] && this.createPrescriptionForms?.length === 1) {
       setTimeout(() => this.accordion.openAll(), 1);
     }
+    this.isPrescriptionValue = isPrescription(this.intent);
   }
 
   mapResponsesToRepeatObject(responses: Record<string, unknown>) {
@@ -179,6 +183,14 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
 
   ngOnDestroy() {
     this.prescriptionModelState.setInitialState();
+  }
+
+  isPrescription(intent : string): boolean {
+    return isPrescription(intent);
+  }
+
+  isProposal(intent : string): boolean {
+    return isProposal(intent);
   }
 
   protected readonly LoadingStatus = LoadingStatus;

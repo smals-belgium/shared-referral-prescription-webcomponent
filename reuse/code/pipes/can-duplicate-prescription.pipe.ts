@@ -1,6 +1,7 @@
 import { Pipe } from '@angular/core';
 import { AccessMatrixState } from '../states/access-matrix.state';
-import { ReadPrescription, Role, Status, UserInfo } from "../interfaces";
+import { ReadPrescription, Role, UserInfo } from "../interfaces";
+import { isProposal } from '@reuse/code/utils/utils';
 
 
 /**
@@ -27,7 +28,7 @@ export class CanDuplicatePrescriptionPipe {
   }
 
   transform(prescription: ReadPrescription, currentUser?: UserInfo): boolean {
-    if (currentUser == undefined || prescription.intent?.toLowerCase() === 'proposal')
+    if (currentUser == undefined || isProposal(prescription.intent))
       return false;
 
     return currentUser.role === Role.professional && this.accessMatrixState.hasAtLeastOnePermission(['createPrescription'], prescription.templateCode);

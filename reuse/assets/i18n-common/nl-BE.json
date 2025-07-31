@@ -19,15 +19,17 @@
     "start": "Starten",
     "professions": {
       "NURSE": "Verpleegkundige",
-      "PHYSICIAN": "Arts"
+      "PHYSICIAN": "Arts",
+      "DENTIST": "Tandarts",
+      "PHYSIOTHERAPIST": "Kinesitherapeut"
     },
     "professional": {
       "notFound": "Niet gevonden",
-      "tooltip": "Geciteerde professional niet gevonden."
+      "tooltip": "Professional niet gevonden."
     },
     "organization": {
       "notFound": "Niet gevonden",
-      "tooltip": "Geciteerde organizatie niet gevonden."
+      "tooltip": "Organizatie niet gevonden."
     },
     "organizations": {
       "THIRD_PARTY_PAYING_GROUP": "Groepering met een RIZIV-nr derdebetaler (verpleegkundigen, vroedvrouwen, e.a.)",
@@ -393,9 +395,15 @@
         "reason": "Reden"
       }
     },
+    "rejectAssignation": {
+      "action": "Weigeren",
+      "title": "Toekenning afwijzen",
+      "message": "Weet u zeker dat u het voorstel \"{templateName}\" van {firstName} {lastName} wilt afwijzen?",
+      "success": "Inzending succesvol afgewezen."
+    },
     "cancel": {
       "action": "Annuleren",
-      "title": "Voorschrift annuleren",
+      "title": "Voorstel annuleren",
       "message": "Bent u zeker dat u het voorstel \"{templateName}\" van {firstName} {lastName} wilt annuleren?",
       "success": "Het voorstel werd geannuleerd.",
       "reason": "Reden"
