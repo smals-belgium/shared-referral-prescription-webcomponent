@@ -1,0 +1,15 @@
+@if (hasName) {
+  <b>{{professional?.healthcarePerson?.firstName}} {{professional?.healthcarePerson?.lastName}}</b>
+}
+@else if (isCurrentUser) {
+  {{currentUser?.firstName}} {{currentUser?.lastName}}
+}
+@else {
+  <b>{{'common.professional.notFound' | translate}}</b>
+  <mat-icon matTooltip="{{'common.professional.tooltip' | translate}}"
+            matTooltipPosition="right">
+    error
+  </mat-icon>
+}
+
+

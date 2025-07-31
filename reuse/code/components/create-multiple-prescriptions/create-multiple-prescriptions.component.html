@@ -86,7 +86,7 @@
               [services]="services"
             ></nihdi-referral-prescription-form>
 
-            @if(intent.toLowerCase() === 'order'){
+            @if(isPrescriptionValue){
               <button
                 mat-raised-button
                 color="accent"
@@ -104,7 +104,7 @@
     }
   </mat-accordion>
 
-  @if (intent.toLowerCase() === 'order') {
+  @if (isPrescriptionValue) {
   <div class="actions">
     <div>
       <div class="spacer">&nbsp;</div>

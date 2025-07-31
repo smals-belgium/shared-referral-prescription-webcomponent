@@ -18,7 +18,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatInputModule } from '@angular/material/input';
 import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overlay-spinner.component';
 import { CaregiverNamePatternValidator } from '../../utils/validators';
-import { City, DataState, Professional } from '../../interfaces';
+import { City, DataState, Intent, Professional } from '../../interfaces';
 import { GeographyService } from '../../services/geography.service';
 import { ToastService } from '../../services/toast.service';
 import { PrescriptionState } from '../../states/prescription.state';
@@ -29,12 +29,19 @@ import { FormatMultilingualObjectPipe } from "../../pipes/format-multilingual-ob
 import { v4 as uuidv4 } from 'uuid';
 import { BaseDialog } from '../base.dialog';
 import { ErrorCardComponent } from '../../components/error-card/error-card.component';
+import { ProposalState } from '@reuse/code/states/proposal.state';
+import {
+  getAssignableProfessionalDisciplines
+} from '@reuse/code/utils/assignment-disciplines.utils';
+import { isProposal } from '@reuse/code/utils/utils';
 
 interface TransferAssignation {
   prescriptionId?: string,
   referralTaskId?: string,
   performerTaskId?: string,
-  assignedCareGivers?: string[]
+  assignedCareGivers?: string[],
+  category: string,
+  intent: Intent
 }
 
 @Component({
@@ -75,10 +82,11 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
 
   readonly professionalsState$: Observable<DataState<Professional[]>> = toObservable(this.searchCriteria$).pipe(
     switchMap((criteria) => {
-      if (criteria.query.length === 0 && criteria.zipCodes.length === 0) {
+      let disciplines: string[] = getAssignableProfessionalDisciplines(this.data.category, this.data.intent);
+      if(criteria.query.length === 0 && criteria.zipCodes.length === 0) {
         return of([])
       }
-      return this.professionalService.findAll(criteria.query, criteria.zipCodes, ['NURSE'])
+      return this.professionalService.findAll(criteria.query, criteria.zipCodes, disciplines)
     }),
     map((professionals) => professionals?.filter((p) => !this.data.assignedCareGivers?.includes(p.id.ssin))),
     toDataState()
@@ -102,6 +110,7 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
 
   constructor(
     private readonly prescriptionStateService: PrescriptionState,
+    private readonly proposalStateService: ProposalState,
     private readonly professionalService: ProfessionalService,
     private readonly toastService: ToastService,
     private readonly geographyService: GeographyService,
@@ -165,31 +174,36 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
     }
   }
 
-  assign(professional: Professional): void {
+  onTransfer(professional: Professional): void {
     if (!this.data?.prescriptionId) {
       this.closeDialog(professional);
     } else {
-      this.updatePrescription(professional);
+      const ssinObject = {
+        ssin: professional.id.ssin,
+        discipline: professional.id.profession
+      }
+      if(isProposal(this.data?.intent)){
+        this.executeTransferAssignment(professional, () => this.proposalStateService.transferAssignation(this.data.prescriptionId!, this.data.referralTaskId!, this.data.performerTaskId!, ssinObject, this.generatedUUID), 'proposal');
+      }
+      else{
+        this.executeTransferAssignment(professional, () => this.prescriptionStateService.transferAssignation(this.data.prescriptionId!, this.data.referralTaskId!, this.data.performerTaskId!, ssinObject, this.generatedUUID), 'prescription');
+      }
     }
   }
 
-  private updatePrescription(professional: Professional): void {
+  private executeTransferAssignment(professional: Professional, serviceCall: () => Observable<void>, successPrefix : string){
     this.loading = true;
-    const ssinObject = {
-      ssin: professional.id.ssin
-    }
-    this.prescriptionStateService.transferAssignation(this.data.prescriptionId!, this.data.referralTaskId!, this.data.performerTaskId!, ssinObject, this.generatedUUID)
-      .subscribe({
-        next: () => {
-          this.closeErrorCard();
-          this.toastService.show('prescription.transferAssignation.success', {interpolation: professional.healthcarePerson});
-          this.closeDialog(professional);
-        },
-        error: (err) => {
-          this.loading = false;
-          this.showErrorCard('common.somethingWentWrong', err)
-        }
-      });
+    serviceCall().subscribe({
+      next: () => {
+        this.closeErrorCard();
+        this.toastService.show(successPrefix + '.transferAssignation.success', {interpolation: professional.healthcarePerson});
+        this.closeDialog(professional);
+      },
+      error: (err) => {
+        this.loading = false;
+        this.showErrorCard('common.somethingWentWrong', err)
+      }
+    });
   }
 
   removeCity(city: any) {

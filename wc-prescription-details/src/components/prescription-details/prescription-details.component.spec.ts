@@ -15,11 +15,22 @@ import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { AssignPrescriptionDialog } from "@reuse/code/dialogs/assign-prescription/assign-prescription.dialog";
 import {
   CancelMedicalDocumentDialog
-} from "@reuse/code/dialogs/cancel-medical-document/cancel-medical-document-dialog.component";
+} from "@reuse/code/dialogs/cancel-prescription/cancel-prescription-dialog.component";
 import {
   StartExecutionPrescriptionDialog
 } from "@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog";
-import { IdToken, LoadingStatus, PerformerTask, ReadPrescription, Status, TaskStatus } from '@reuse/code/interfaces';
+import {
+  Discipline,
+  IdToken,
+  Intent,
+  LoadingStatus,
+  PerformerTask,
+  ReadPrescription,
+  Role,
+  Status,
+  TaskStatus,
+  UserInfo
+} from '@reuse/code/interfaces';
 import { TransferAssignationDialog } from '@reuse/code/dialogs/transfer-assignation/transfer-assignation.dialog';
 import {
   RestartExecutionPrescriptionDialog
@@ -606,7 +617,8 @@ function prescriptionResponse(organisationTasks: any = null, referralTask: any =
       },
       "careType": "17636008"
     },
-    "intent": null
+    "intent": "order",
+    "category": "nursing"
   }
 }
 
@@ -623,7 +635,17 @@ const mockConfigService = {
 
 const mockPerson = {
   ssin: '90122712173',
-  name: "name of patient"
+  name: 'name of patient'
+}
+
+const mockPro : UserInfo = {
+  ssin: '90122712173',
+  discipline : Discipline.NURSE,
+  nihii11 : '12345678910',
+  lastName: 'pro',
+  firstName: 'name',
+  professional : true,
+  role : Role.professional
 }
 
 const mockAuthService = {
@@ -631,8 +653,10 @@ const mockAuthService = {
   getClaims: jest.fn(() => of({
     userProfile: mockPerson
   })),
-  isProfessional: jest.fn(() => of(false))
+  isProfessional: jest.fn(() => of(false)),
+  discipline: jest.fn(() => of(Discipline.NURSE))
 }
+
 
 const mockPseudoClient = {
   getDomain: jest.fn(),
@@ -819,7 +843,7 @@ describe('PrescriptionDetailsWebComponent', () => {
     expect(loadPrescriptionSpy).toBeCalled()
     httpMock.expectOne('/prescriptions/08e267bf-46e3-459d-8216-d8720acc9f64');
 
-    component.intent = 'Proposal'
+    component.intent = Intent.PROPOSAL
     fixture.detectChanges();
 
     component.loadPrescriptionOrProposal();
@@ -913,7 +937,9 @@ describe('PrescriptionDetailsWebComponent', () => {
       const paramsAssign = {
         data: {
           ...prescriptionTaskCaregiver,
-          assignedOrganizations: [organisationTask.organizationNihdi]
+          assignedOrganizations: [organisationTask.organizationNihdi],
+          category : mockResponse.category,
+          intent: mockResponse.intent
         },
         width: '100vw',
         maxWidth: '750px',
@@ -931,6 +957,8 @@ describe('PrescriptionDetailsWebComponent', () => {
         data: {
           ...prescriptionTaskCaregiver,
           performerTaskId: mockPerformerTask.id,
+          category : mockResponse.category,
+          intent: mockResponse.intent
         },
         width: '100vw',
         maxWidth: '750px',
@@ -1046,14 +1074,15 @@ describe('PrescriptionDetailsWebComponent', () => {
 
       const mockResponse = prescriptionResponse([organisationTask], referralTask) as unknown as ReadPrescription
 
+
       expect(component.loading).toBe(false)
 
-      component.selfAssign(mockResponse)
+      component.onSelfAssign(mockResponse, mockPro)
       expect(component.loading).toBe(true)
 
       const body = {
-        ssin: mockPerson.ssin,
-        role: 'NURSE',
+        ssin: mockPro.ssin,
+        role: mockPro.discipline.toUpperCase(),
         executionStartDate: undefined
       };
       const req = httpMock.expectOne(`/prescriptions/${mockResponse.id}/assign/${referralTask.id}`);

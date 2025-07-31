@@ -1,6 +1,7 @@
 import { Pipe } from '@angular/core';
-import { PerformerTask, ReadPrescription, Role, Status, TaskStatus, UserInfo } from '../interfaces';
+import { Intent, PerformerTask, ReadPrescription, Role, Status, TaskStatus, UserInfo } from '../interfaces';
 import { AccessMatrixState } from '../states/access-matrix.state';
+import { isProposal } from '@reuse/code/utils/utils';
 
 /**
  * This pipe determines whether an assignation can be transferred.
@@ -39,8 +40,7 @@ export class CanTransferAssignationPipe {
   }
 
   private hasAssignPermissions(prescription: ReadPrescription) {
-    const intent = prescription.intent?.toLowerCase()
-    if(intent === 'proposal') {
+    if(isProposal(prescription.intent)) {
       return this.accessMatrixState.hasAtLeastOnePermission(['assignProposal'], prescription.templateCode);
     }
     return this.accessMatrixState.hasAtLeastOnePermission(['assignPrescription'], prescription.templateCode)

@@ -1,6 +1,7 @@
 import { Pipe } from '@angular/core';
 import { AccessMatrixState } from '../states/access-matrix.state';
-import { ReadPrescription, Role, Status, UserInfo } from "../interfaces";
+import { Intent, ReadPrescription, Role, Status, UserInfo } from "../interfaces";
+import { isProposal } from '@reuse/code/utils/utils';
 
 /**
  * This pipe determines whether a prescription can be extended.
@@ -28,7 +29,7 @@ export class CanExtendPrescriptionPipe {
   }
 
   transform(prescription: ReadPrescription, currentUser?: UserInfo): boolean {
-    if (currentUser == undefined || prescription.intent?.toLowerCase() === 'proposal')
+    if (currentUser == undefined || isProposal(prescription.intent))
       return false;
 
     const now = new Date();

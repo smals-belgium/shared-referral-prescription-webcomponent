@@ -1,6 +1,6 @@
 import { CanDuplicatePrescriptionPipe } from './can-duplicate-prescription.pipe';
 import { AccessMatrixState } from '../states/access-matrix.state';
-import { Role } from '../interfaces';
+import { Intent, Role } from '../interfaces';
 
 describe('CanDuplicatePrescriptionPipe', () => {
   let pipe: CanDuplicatePrescriptionPipe;
@@ -39,7 +39,7 @@ describe('CanDuplicatePrescriptionPipe', () => {
   });
 
   it('should return false if prescription intent is "proposal"', () => {
-    const prescription = { templateCode: 'template1', intent: 'proposal' } as any;
+    const prescription = { templateCode: 'template1', intent: Intent.PROPOSAL } as any;
     const currentUser = { role: Role.professional } as any;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 

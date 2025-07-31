@@ -43,7 +43,7 @@ import { WcConfigurationService } from '@reuse/code/services/wc-configuration.se
 import { AssignPrescriptionDialog } from '@reuse/code/dialogs/assign-prescription/assign-prescription.dialog';
 import {
   CancelMedicalDocumentDialog
-} from '@reuse/code/dialogs/cancel-medical-document/cancel-medical-document-dialog.component';
+} from '@reuse/code/dialogs/cancel-prescription/cancel-prescription-dialog.component';
 import {
   StartExecutionPrescriptionDialog
 } from '@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog';
@@ -95,7 +95,13 @@ import { RejectProposalDialog } from '@reuse/code/dialogs/reject-proposal/reject
 import { CanExtendPrescriptionPipe } from '@reuse/code/pipes/can-extend-prescription.pipe';
 import { IdentifyState } from '@reuse/code/states/identify.state';
 import { ProposalState } from '@reuse/code/states/proposal.state';
-import { isPrescriptionId, isPrescriptionShortCode, isSsin, validateSsinChecksum } from '@reuse/code/utils/utils';
+import {
+  isPrescription,
+  isPrescriptionId,
+  isPrescriptionShortCode, isProposal,
+  isSsin,
+  validateSsinChecksum
+} from '@reuse/code/utils/utils';
 import { EncryptionService } from '@reuse/code/services/encryption.service';
 import { PseudoService } from '@reuse/code/services/pseudo.service';
 import { BehaviorSubject, catchError, concatMap, from, map, Observable, of, throwError } from 'rxjs';
@@ -107,6 +113,9 @@ import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-respon
 import { FormatMultilingualObjectPipe } from '@reuse/code/pipes/format-multilingual-object.pipe';
 import { PssService } from '@reuse/code/services/pss.service';
 import { MatTooltip } from "@angular/material/tooltip";
+import {
+  ProfessionalDisplayComponent
+} from '@reuse/code/components/professional-display/professional-display.component';
 
 interface ViewState {
   prescription: ReadPrescription;
@@ -156,7 +165,8 @@ interface ViewState {
     CanExtendPrescriptionPipe,
     CanDuplicatePrescriptionPipe,
     FormatMultilingualObjectPipe,
-    MatTooltip
+    MatTooltip,
+    ProfessionalDisplayComponent
   ]
 })
 
@@ -166,6 +176,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   generatedUUID = '';
   responses: Record<string, any> | undefined;
   currentLang?: string;
+  isProposalValue = false;
 
 
   public status$ = new BehaviorSubject<boolean>(false);
@@ -185,13 +196,14 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   @Output() proposalApproved = new EventEmitter<{ prescriptionId: string }>();
   @Output() proposalRejected = new EventEmitter<boolean>();
   private readonly templateCode$ = computed(() => {
-    if (this.intent?.toLowerCase() === 'proposal') {
+    if (isProposal(this.intent)) {
       return this.proposalSateService.state().data?.templateCode;
     }
     return this.prescriptionStateService.state().data?.templateCode;
   });
   private readonly tokenClaims$ = toSignal(this.authService.getClaims());
   protected readonly isProfessional$ = toSignal(this.authService.isProfessional());
+  protected readonly discipline$ = toSignal(this.authService.discipline());
   private readonly decryptedResponses$: WritableSignal<DecryptedResponsesState> = signal({
     data: null,
     error: null
@@ -199,7 +211,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   readonly viewState$: Signal<DataState<ViewState>> = combineSignalDataState({
     cryptoKey: computed(() => this.encryptionStateService.state()),
     prescription: computed(() => {
-      const prescriptionState = this.intent?.toLowerCase() === 'proposal' ? this.proposalSateService.state() : this.prescriptionStateService.state();
+      const prescriptionState = isProposal(this.intent) ? this.proposalSateService.state() : this.prescriptionStateService.state();
       const templateCode = this.templateCode$();
       const cryptoKey = this.encryptionStateService.state().data;
       const template = this.templateVersionsStateService.getState('READ_' + templateCode)()?.data;
@@ -226,7 +238,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     }),
     decryptedResponses: computed(() => {
       const responses = this.decryptedResponses$();
-      const prescriptionState = this.intent?.toLowerCase() === 'proposal' ? this.proposalSateService.state() : this.prescriptionStateService.state();
+      const prescriptionState = isProposal(this.intent) ? this.proposalSateService.state() : this.prescriptionStateService.state();
 
       if (prescriptionState.status === LoadingStatus.SUCCESS && !prescriptionState.data?.pseudonymizedKey) {
         return {...responses, error: 'Pseudomized key missing', status: LoadingStatus.ERROR};
@@ -262,7 +274,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       return {...identifyState, data: person};
     }),
     performerTask: computed(() => {
-      const state = this.intent?.toLowerCase() === 'proposal' ? this.proposalSateService.state() : this.prescriptionStateService.state();
+      const state = isProposal(this.intent) ? this.proposalSateService.state() : this.prescriptionStateService.state();
       const ssin = this.tokenClaims$()?.['userProfile']['ssin'];
       if (!ssin || state.status !== LoadingStatus.SUCCESS) {
         return state;
@@ -296,9 +308,10 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     currentUser: computed(() => {
       const token = this.tokenClaims$()?.['userProfile'];
       const professional = this.isProfessional$();
+      const discipline = this.discipline$();
 
       return token
-        ? {status: LoadingStatus.SUCCESS, data: {...token, role: professional ? Role.professional : Role.patient}}
+        ? {status: LoadingStatus.SUCCESS, data: {...token, role: professional ? Role.professional : Role.patient, discipline: discipline}}
         : {status: LoadingStatus.LOADING};
     })
   });
@@ -336,7 +349,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
     // Register a new effect based on prescription state changes
     effect(() => {
-      const prescription = this.intent?.toLowerCase() === 'proposal' ? this.proposalSateService.state()?.data : this.prescriptionStateService.state()?.data;
+      const prescription = isProposal(this.intent) ? this.proposalSateService.state()?.data : this.prescriptionStateService.state()?.data;
 
       untracked(() => {
         if (prescription) {
@@ -369,7 +382,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
     // Register a new effect based on prescription, template and key state changes
     effect(() => {
-      const prescription = this.intent?.toLowerCase() === 'proposal' ? this.proposalSateService.state()?.data : this.prescriptionStateService.state()?.data;
+      const prescription = isProposal(this.intent) ? this.proposalSateService.state()?.data : this.prescriptionStateService.state()?.data;
       const templateCode = this.templateCode$();
       const cryptoKey = this.encryptionStateService.state().data;
       const template = this.templateVersionsStateService.getState('READ_' + templateCode)()?.data;
@@ -451,7 +464,8 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   }
 
   loadPrescriptionOrProposal(): void {
-    if (this.intent?.toLowerCase() === 'proposal') {
+    this.isProposalValue = isProposal(this.intent);
+    if (this.isProposalValue) {
       this.loadProposal();
     } else {
       this.loadPrescription();
@@ -464,7 +478,9 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
         prescriptionId: prescription.id,
         referralTaskId: prescription.referralTask.id,
         assignedCareGivers: prescription.performerTasks?.map(c => c.careGiverSsin),
-        assignedOrganizations: prescription.organizationTasks?.map(o => o.organizationNihdi)
+        assignedOrganizations: prescription.organizationTasks?.map(o => o.organizationNihdi),
+        category: prescription.category,
+        intent: prescription.intent
       },
       width: '100vw',
       maxWidth: '750px',
@@ -473,12 +489,16 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   }
 
   openTransferAssignationDialog(prescription: ReadPrescription, task: PerformerTask): void {
+
+    console.log('category : ', prescription.category);
     this.dialog.open(TransferAssignationDialog, {
       data: {
         prescriptionId: prescription.id,
         referralTaskId: prescription.referralTask.id,
         performerTaskId: task.id,
-        assignedCareGivers: prescription.performerTasks?.map(c => c.careGiverSsin)
+        assignedCareGivers: prescription.performerTasks?.map(c => c.careGiverSsin),
+        category: prescription.category,
+        intent: prescription.intent
       },
       width: '100vw',
       maxWidth: '750px',
@@ -567,20 +587,29 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
   }
 
-  selfAssign(prescription: ReadPrescription): void {
+  onSelfAssign(prescription: ReadPrescription, currentUser : UserInfo): void {
     this.loading = true;
-    const ssin = this.tokenClaims$()?.['userProfile']['ssin'];
-    this.prescriptionStateService.assignPrescriptionToMe(prescription.id, prescription.referralTask.id, {ssin}, this.generatedUUID)
-      .subscribe({
-        next: () => {
-          this.loading = false;
-          this.toastService.show('prescription.assignPerformer.meSuccess');
-        },
-        error: () => {
-          this.loading = false;
-          this.toastService.showSomethingWentWrong();
-        }
-      });
+    const ssin = currentUser.ssin;
+    const discipline = currentUser.discipline;
+    if(isPrescription(prescription.intent.toString())){
+      this.selfAssign(() => this.prescriptionStateService.assignPrescriptionToMe(prescription.id, prescription.referralTask.id, {ssin, discipline}, this.generatedUUID), 'prescription');
+    }
+    else{
+      this.selfAssign(() => this.proposalSateService.assignProposalToMe(prescription.id, prescription.referralTask.id, {ssin, discipline}, this.generatedUUID), 'proposal');
+    }
+  }
+
+  private selfAssign(serviceCall: () => Observable<void>, successPrefix : string){
+    serviceCall().subscribe({
+      next: () => {
+        this.loading = false;
+        this.toastService.show(successPrefix + '.assignPerformer.meSuccess');
+      },
+      error: () => {
+        this.loading = false;
+        this.toastService.showSomethingWentWrong();
+      }
+    })
   }
 
   print(): void {
@@ -775,12 +804,12 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   ngOnDestroy() {
     this.printer = false;
     this.encryptionStateService.resetCryptoKey();
-    if (this.intent?.toLowerCase() === 'proposal') {
+    if (isProposal(this.intent)) {
       this.proposalSateService.resetProposal();
     } else {
       this.prescriptionStateService.resetPrescription();
     }
   }
 
-  protected readonly signal = signal;
+
 }

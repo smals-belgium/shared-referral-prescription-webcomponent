@@ -13,6 +13,9 @@ import { BaseDialog } from '../base.dialog';
 import { tap } from 'rxjs/operators';
 import { ProposalState } from '@reuse/code/states/proposal.state';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
+import { Observable } from 'rxjs';
+import { isProposal } from '@reuse/code/utils/utils';
+import { TranslateByIntentPipe } from '@reuse/code/pipes/translate-by-intent.pipe';
 
 interface CancelMedicalDocumentDialogData {
   prescription: ReadPrescription;
@@ -20,8 +23,8 @@ interface CancelMedicalDocumentDialogData {
 }
 
 @Component({
-  templateUrl: './cancel-medical-document-dialog.component.html',
-  styleUrls: ['./cancel-medical-document-dialog.component.scss'],
+  templateUrl: './cancel-prescription-dialog.component.html',
+  styleUrls: ['./cancel-prescription-dialog.component.scss'],
   imports: [
     TranslateModule,
     MatDialogModule,
@@ -29,7 +32,8 @@ interface CancelMedicalDocumentDialogData {
     OverlaySpinnerComponent,
     NgIf,
     ErrorCardComponent,
-    TemplateNamePipe
+    TemplateNamePipe,
+    TranslateByIntentPipe
   ]
 })
 export class CancelMedicalDocumentDialog extends BaseDialog implements OnInit {
@@ -55,19 +59,27 @@ export class CancelMedicalDocumentDialog extends BaseDialog implements OnInit {
     this.generatedUUID = uuidv4();
   }
 
-  cancelPrescription(): void {
+  onCancel(): void {
     const cancellation = {
       reason: undefined,
     } as PrescriptionCancellation;
 
     this.loading = true;
-    this.prescriptionStateService
-      .cancelMedicalDocument(this.prescription.id, cancellation, this.generatedUUID)
+    if(isProposal(this.prescription.intent)){
+      this.executeCancel(() => this.proposalStateService.cancelProposal(this.prescription.id, cancellation, this.generatedUUID), 'proposal');
+    }
+    else{
+      this.executeCancel(() => this.prescriptionStateService.cancelMedicalDocument(this.prescription.id, cancellation, this.generatedUUID), 'prescription');
+    }
+  }
+
+  private executeCancel(serviceCall: () => Observable<void>, successPrefix : string){
+    serviceCall()
       .pipe(this.getMedicalDocument())
       .subscribe({
         next: () => {
           this.closeErrorCard();
-          this.toastService.show(this.isProposal() ? 'proposal.cancel.success' : 'prescription.cancel.success');
+          this.toastService.show(successPrefix + '.cancel.success');
           this.closeDialog(true);
         },
         error: (err) => {
@@ -78,13 +90,11 @@ export class CancelMedicalDocumentDialog extends BaseDialog implements OnInit {
   }
 
   private getMedicalDocument() {
-    if (this.isProposal()) {
+    if (isProposal(this.prescription.intent)) {
       return tap(() => this.proposalStateService.loadProposal(this.prescription.id));
     }
     return tap(() => this.prescriptionStateService.loadPrescription(this.prescription.id));
   }
 
-  protected isProposal(): boolean {
-    return this.prescription.intent?.toLowerCase() === 'proposal'
-  }
+
 }

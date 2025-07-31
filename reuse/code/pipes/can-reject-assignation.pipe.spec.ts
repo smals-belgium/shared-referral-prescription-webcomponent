@@ -1,6 +1,6 @@
 import { CanRejectAssignationPipe } from './can-reject-assignation.pipe';
 import { AccessMatrixState } from '../states/access-matrix.state';
-import { Discipline, PerformerTask, ReadPrescription, Role, Status, TaskStatus, UserInfo } from '../interfaces';
+import { Discipline, Intent, PerformerTask, ReadPrescription, Role, Status, TaskStatus, UserInfo } from '../interfaces';
 
 const patient: UserInfo = {
   discipline: Discipline.PATIENT,
@@ -76,7 +76,7 @@ describe('CanRejectAssignationPipe', () => {
 
   it('should call hasAssignPermissions with the correct arguments for "proposal" intent', () => {
     const prescription = {
-      intent: 'proposal',
+      intent: Intent.PROPOSAL,
       templateCode: 'template1',
       status: Status.OPEN,
     } as ReadPrescription;
@@ -93,7 +93,7 @@ describe('CanRejectAssignationPipe', () => {
 
   it('should call hasAssignPermissions with the correct arguments for "prescription" intent', () => {
     const prescription = {
-      intent: 'prescription',
+      intent: Intent.ORDER,
       templateCode: 'template2',
       status: Status.IN_PROGRESS,
     } as ReadPrescription;
@@ -110,7 +110,7 @@ describe('CanRejectAssignationPipe', () => {
 
   it('should return true if all conditions are met', () => {
     const prescription = {
-      intent: 'prescription',
+      intent: Intent.ORDER,
       templateCode: 'template2',
       status: Status.OPEN,
     } as ReadPrescription;
@@ -127,7 +127,7 @@ describe('CanRejectAssignationPipe', () => {
 
   it('should return false if currentUser is logged in as a nurse but has the same ssin as the patient', () => {
     const prescription = {
-      intent: 'prescription',
+      intent: Intent.ORDER,
       templateCode: 'template2',
       status: Status.OPEN,
     } as ReadPrescription;
@@ -145,7 +145,7 @@ describe('CanRejectAssignationPipe', () => {
 
   it('should return false if permissions are not granted', () => {
     const prescription = {
-      intent: 'proposal',
+      intent: Intent.PROPOSAL,
       templateCode: 'template3',
       status: Status.OPEN,
     } as ReadPrescription;

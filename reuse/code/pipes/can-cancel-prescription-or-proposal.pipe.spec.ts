@@ -1,5 +1,5 @@
 import { CanCancelPrescriptionOrProposalPipe } from './can-cancel-prescription-or-proposal.pipe';
-import { Discipline, ReadPrescription, Role, Status, UserInfo } from '../interfaces';
+import { Discipline, Intent, ReadPrescription, Role, Status, UserInfo } from '../interfaces';
 import { AccessMatrixState } from '../states/access-matrix.state';
 
 const requester: UserInfo = {
@@ -61,7 +61,7 @@ describe('CanCancelPrescriptionOrProposal', () => {
 
   it('should call hasCancelPermissions with correct arguments for proposal', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
-    const prescription = { intent: 'proposal', status: Status.OPEN , templateCode: 'template1' } as ReadPrescription;
+    const prescription = { intent: Intent.PROPOSAL, status: Status.OPEN , templateCode: 'template1' } as ReadPrescription;
 
     pipe.transform(prescription, patient.ssin, currentUser);
 
@@ -70,7 +70,7 @@ describe('CanCancelPrescriptionOrProposal', () => {
 
   it('should call hasCancelPermissions with correct arguments for prescription', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
-    const prescription = { intent: 'prescription',status: Status.OPEN, templateCode: 'template2' } as ReadPrescription;
+    const prescription = { intent: Intent.ORDER,status: Status.OPEN, templateCode: 'template2' } as ReadPrescription;
 
     pipe.transform(prescription, patient.ssin, currentUser);
 
@@ -111,7 +111,7 @@ describe('CanCancelPrescriptionOrProposal', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
     const prescription = {
-      intent: 'prescription',
+      intent: Intent.ORDER,
       status: Status.OPEN,
       templateCode: 'template1',
       requester: {

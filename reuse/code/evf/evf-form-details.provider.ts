@@ -15,7 +15,11 @@ import {
   EvfValueDetailComponent
 } from '@smals/vas-evaluation-form-ui-material/elements/shared';
 import { RowDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/row';
+import { RepeatableInlineDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/repeatable-inline';
+import { RepeatableDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/repeatable';
+import { SlideToggleDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/slide-toggle';
 import { AutocompleteDetailComponent } from "@smals/vas-evaluation-form-ui-material/elements/autocomplete";
+import { SectionDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/section';
 
 export function provideEvfFormDetails() {
   return [
@@ -72,6 +76,22 @@ export function provideEvfFormDetails() {
         {
           name: 'recommendations',
           detail: RecommendationsDetailComponent
+        },
+        {
+          name: 'repeatableInline',
+          detail: RepeatableInlineDetailComponent
+        },
+        {
+          name: 'repeatable',
+          detail: RepeatableDetailComponent
+        },
+        {
+          name: 'slideToggle',
+          detail: SlideToggleDetailComponent
+        },
+        {
+          name: 'section',
+          detail: SectionDetailComponent
         }
       ),
       withParseDateExpressionPipe(),

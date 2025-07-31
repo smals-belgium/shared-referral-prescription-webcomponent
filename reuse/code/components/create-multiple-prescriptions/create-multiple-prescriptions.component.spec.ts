@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { CreateMultiplePrescriptionsComponent } from './create-multiple-prescriptions.component';
 import { PrescriptionModelState } from '@reuse/code/states/prescriptionModel.state';
-import { CreatePrescriptionForm, LoadingStatus } from '@reuse/code/interfaces';
+import { CreatePrescriptionForm, Intent, LoadingStatus } from '@reuse/code/interfaces';
 import { ElementGroup, FormTemplate } from '@smals/vas-evaluation-form-ui-core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -284,6 +284,7 @@ describe('CreateMultiplePrescriptionsComponent', () => {
 
   it('should show the add prescription button when intent is "order" and templateCode is not "ANNEX_82" AND click it', () => {
     jest.spyOn(component.clickAddPrescription, 'emit');
+    component.isPrescriptionValue = true;
 
     setOneTemplate();
     fixture.detectChanges();
@@ -313,7 +314,7 @@ describe('CreateMultiplePrescriptionsComponent', () => {
   });
 
   it('should NOT show the actions div when intent is not "order"', () => {
-    component.intent = 'proposal';
+    component.intent = Intent.PROPOSAL;
     setOneTemplate();
     fixture.detectChanges();
 

@@ -22,6 +22,9 @@ import {
 } from '@angular/material/table';
 import { MatChip } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import {
+  ProfessionalDisplayComponent
+} from '@reuse/code/components/professional-display/professional-display.component';
 
 @Component({
     selector: 'app-prescriptions-table',
@@ -54,7 +57,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
         MatHeaderCellDef,
         MatCellDef,
         MatFooterRowDef,
-        MatTooltipModule
+        MatTooltipModule,
+        ProfessionalDisplayComponent
     ]
 })
 export class PrescriptionsTableComponent {

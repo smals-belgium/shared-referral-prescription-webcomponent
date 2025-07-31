@@ -14,7 +14,7 @@ import { AuthService } from '@reuse/code/services/auth.service';
 import { CreatePrescriptionWebComponent } from './create-prescription.component';
 import { Observable, of, throwError } from 'rxjs';
 import { ElementGroup } from '@smals/vas-evaluation-form-ui-core';
-import { CreatePrescriptionForm, LoadingStatus, Person, ReadPrescription, ReferralTask } from '@reuse/code/interfaces';
+import { Intent, CreatePrescriptionForm, LoadingStatus, Person, ReadPrescription, ReferralTask } from '@reuse/code/interfaces';
 import { EncryptionService } from '@reuse/code/services/encryption.service';
 import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
 import { CreatePrescriptionExtendedWebComponent } from './create-prescription-extended.component';
@@ -479,7 +479,7 @@ describe('CreatePrescriptionWebComponent', () => {
       const componentLoadingSetSpy = jest.spyOn(component.loading, 'set');
 
       component.initialValues = {
-        intent: 'proposal'
+        intent: Intent.PROPOSAL
       };
       component.handleCreateBulkResultExtended(results);
 
@@ -537,7 +537,9 @@ describe('CreatePrescriptionWebComponent', () => {
         referralTask: {} as ReferralTask,
         templateCode: '',
         id: '123',
-        responses: {}
+        responses: {},
+        intent: Intent.ORDER,
+        category: 'nursing'
       };
 
       const result = component.updateResponses(prescription);
@@ -559,13 +561,131 @@ describe('CreatePrescriptionWebComponent', () => {
         referralTask: {} as ReferralTask,
         templateCode: '',
         id: '123',
-        responses: undefined as unknown as Record<string, any>
+        responses: undefined as unknown as Record<string, any>,
+        intent: Intent.ORDER,
+        category: 'nursing'
+      };
+      const result = component.updateResponses(prescription);
+      expect(result).toBe(prescription);
+    });
+
+    it('should return initialPrescription unchanged if responses is undefined', () => {
+      createFixture('mockPseudomizedKey');
+      component.initialValues = {
+        intent: 'order',
+        extend: true
+      };
+      const prescription: ReadPrescription = {
+        authoredOn: '',
+        organizationTasks: [],
+        patientIdentifier: '',
+        performerTasks: [],
+        period: {end: '', start: ''},
+        referralTask: {} as ReferralTask,
+        templateCode: '',
+        id: '123',
+        responses: undefined as unknown as Record<string, any>,
+        intent: Intent.ORDER,
+        category: 'nursing'
+      };
+      const result = component.updateResponses(prescription);
+      expect(result).toBe(prescription);
+    });
+    it('should return initialPrescription unchanged if responses is undefined', () => {
+      createFixture('mockPseudomizedKey');
+      component.initialValues = {
+        intent: 'order',
+        extend: true
+      };
+      const prescription: ReadPrescription = {
+        authoredOn: '',
+        organizationTasks: [],
+        patientIdentifier: '',
+        performerTasks: [],
+        period: {end: '', start: ''},
+        referralTask: {} as ReferralTask,
+        templateCode: '',
+        id: '123',
+        responses: undefined as unknown as Record<string, any>,
+        intent: Intent.ORDER,
+        category: 'nursing'
+      };
+  });
+
+  it('should return initialPrescription unchanged if responses is undefined', () => {
+    createFixture('mockPseudomizedKey');
+    component.initialValues = {
+      intent: 'order',
+      extend: true
+    };
+    const prescription: ReadPrescription = {
+      authoredOn: '',
+      organizationTasks: [],
+      patientIdentifier: '',
+      performerTasks: [],
+      period: {end: '', start: ''},
+      referralTask: {} as ReferralTask,
+      templateCode: '',
+      id: '123',
+      responses: undefined as unknown as Record<string, any>,
+      intent: 'order',
+      category: 'nursing'
+    };
+
+      const result = component.updateResponses(prescription);
+
+    expect(result).toBe(prescription);
+  });
+
+  it('should return initialPrescription unchanged if prescriptionOriginId already exists', () => {
+    createFixture('mockPseudomizedKey');
+    component.initialValues = {
+      intent: 'order',
+      extend: true
+    };
+    const prescription: ReadPrescription = {
+      authoredOn: '',
+      organizationTasks: [],
+      patientIdentifier: '',
+      performerTasks: [],
+      period: {end: '', start: ''},
+      referralTask: {} as ReferralTask,
+      templateCode: '',
+      id: '123',
+      responses: {prescriptionOriginId: '456'},
+      intent: 'order',
+      category: 'nursing'
+    };
+
+      const result = component.updateResponses(prescription);
+      expect(result).toBe(prescription);
+  });
+
+    it('should return initialPrescription unchanged if responses is undefined', () => {
+      createFixture('mockPseudomizedKey');
+      component.initialValues = {
+        intent: 'order',
+        extend: true
+      };
+      const prescription: ReadPrescription = {
+        authoredOn: '',
+        organizationTasks: [],
+        patientIdentifier: '',
+        performerTasks: [],
+        period: {end: '', start: ''},
+        referralTask: {} as ReferralTask,
+        templateCode: '',
+        id: '123',
+        responses: undefined as unknown as Record<string, any>,
+        intent: Intent.ORDER,
+        category: 'nursing'
       };
 
       const result = component.updateResponses(prescription);
 
-      expect(result).toBe(prescription);
-    });
+    expect(result).toBe(prescription);
+  });
+
     it('should return initialPrescription unchanged if prescriptionOriginId already exists', () => {
       createFixture('mockPseudomizedKey');
       component.initialValues = {
@@ -581,13 +701,16 @@ describe('CreatePrescriptionWebComponent', () => {
         referralTask: {} as ReferralTask,
         templateCode: '',
         id: '123',
-        responses: {prescriptionOriginId: '456'}
+        responses: {prescriptionOriginId: '456'},
+        intent: Intent.ORDER,
+        category: 'nursing'
       };
 
       const result = component.updateResponses(prescription);
 
-      expect(result).toBe(prescription);
-    });
+    expect(result).toBe(prescription);
+  });
+
     it('should return initialPrescription unchanged if initialPrescription.id is undefined', () => {
       createFixture('mockPseudomizedKey');
       component.initialValues = {
@@ -603,17 +726,20 @@ describe('CreatePrescriptionWebComponent', () => {
         referralTask: {} as ReferralTask,
         templateCode: '',
         id: undefined as unknown as string,
-        responses: {}
+        responses: {},
+        intent: Intent.ORDER,
+        category: 'nursing'
       };
 
       const result = component.updateResponses(prescription);
 
       expect(result).toBe(prescription);
     });
+
     it('should set prescriptionOriginId to initialPrescription.id when conditions are met', () => {
       createFixture('mockPseudomizedKey');
       component.initialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
         extend: true
       };
       const prescription: ReadPrescription = {
@@ -625,7 +751,9 @@ describe('CreatePrescriptionWebComponent', () => {
         referralTask: {} as ReferralTask,
         templateCode: '',
         id: '123',
-        responses: {}
+        responses: {},
+        intent: Intent.ORDER,
+        category: 'nursing'
       };
 
       const result = component.updateResponses(prescription);
@@ -646,6 +774,8 @@ describe('CreatePrescriptionWebComponent', () => {
         period: {end: '', start: ''},
         referralTask: {} as ReferralTask,
         templateCode: '',
+        category: 'nursing',
+        intent: 'order',
         id: '123',
         responses: {
           "feedback": false,
@@ -914,7 +1044,7 @@ describe('CreatePrescriptionWebComponent', () => {
       });
 
       component.initialValues = {
-        intent: 'proposal'
+        intent: Intent.PROPOSAL
       };
       component.handleCreateBulkResultExtended(results);
 

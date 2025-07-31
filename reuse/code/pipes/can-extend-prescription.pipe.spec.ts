@@ -1,4 +1,4 @@
-import { ReadPrescription, Role, Status } from '../interfaces';
+import { Intent, ReadPrescription, Role, Status } from '../interfaces';
 import { AccessMatrixState } from '../states/access-matrix.state';
 import { CanExtendPrescriptionPipe } from './can-extend-prescription.pipe';
 
@@ -56,7 +56,7 @@ describe('canExtendPrescription', () => {
   });
 
   it('should return false if prescription intent is "proposal"', () => {
-    const prescription = { templateCode: 'template1', intent: 'proposal' } as any;
+    const prescription = { templateCode: 'template1', intent: Intent.PROPOSAL } as any;
     const currentUser = { role: Role.professional } as any;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 

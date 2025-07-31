@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit, signal } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { debounceTime, of, switchMap } from 'rxjs';
+import { debounceTime, Observable, of, switchMap } from 'rxjs';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { catchError, map } from 'rxjs/operators';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,7 +16,7 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatInputModule } from '@angular/material/input';
 import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overlay-spinner.component';
 import { CaregiverNamePatternValidator } from '../../utils/validators';
-import { Professional } from '../../interfaces';
+import { Intent, Professional } from '../../interfaces';
 import { GeographyService } from '../../services/geography.service';
 import { ToastService } from '../../services/toast.service';
 import { PrescriptionState } from '../../states/prescription.state';
@@ -37,6 +37,12 @@ import { OrganizationService } from "../../services/organization.service";
 import { v4 as uuidv4 } from 'uuid';
 import { ErrorCardComponent } from '../../components/error-card/error-card.component';
 import { BaseDialog } from '../base.dialog';
+import { ProposalState } from '@reuse/code/states/proposal.state';
+import {
+  getAssignableOrganizationInstitutionTypes,
+  getAssignableProfessionalDisciplines
+} from '@reuse/code/utils/assignment-disciplines.utils';
+import { isProposal } from '@reuse/code/utils/utils';
 
 type ProfessionalType = "CAREGIVER" | "ORGANIZATION" | "ALL";
 
@@ -44,7 +50,9 @@ interface AssignPrescriptionDialogData {
   prescriptionId?: string,
   referralTaskId?: string,
   assignedCareGivers?: string[],
-  assignedOrganizations?: string[]
+  assignedOrganizations?: string[],
+  category: string,
+  intent: Intent
 }
 
 @Component({
@@ -102,20 +110,22 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
   readonly healthcareProvidersState$ = toSignal(
     toObservable(this.searchCriteria$).pipe(
       switchMap((criteria) => {
-        this.isLoading.set(true)
+        this.isLoading.set(true);
+        let institutionTypes: string[] = getAssignableOrganizationInstitutionTypes(this.data.category, this.data.intent);
+        let disciplines: string[] = getAssignableProfessionalDisciplines(this.data.category, this.data.intent);
         return criteria ? this.healthcareProviderService.findAll(
-          criteria.query,
-          criteria.zipCodes,
-          criteria.professionalType !== "ORGANIZATION" ? ['NURSE'] : [],
-          criteria.professionalType !== "CAREGIVER" ? ['THIRD_PARTY_PAYING_GROUP', 'GUARD_POST', 'MEDICAL_HOUSE', 'HOME_SERVICES'] : [],
-          criteria.page,
-          criteria.pageSize
-        ).pipe(
-          catchError((error) => {
-            console.error('Error fetching healthcare providers:', error);
-            return of([]);
-          })
-        ) : of([]);
+            criteria.query,
+            criteria.zipCodes,
+            criteria.professionalType !== "ORGANIZATION" ? disciplines : [],
+            criteria.professionalType !== "CAREGIVER" ? institutionTypes : [],
+            criteria.page,
+            criteria.pageSize
+          ).pipe(
+            catchError((error) => {
+              console.error('Error fetching healthcare providers:', error);
+              return of([]);
+            })
+          ) : of([]);
       }),
       map((healthcareProvider) => {
         if (healthcareProvider && 'healthcareProfessionals' in healthcareProvider && 'healthcareOrganizations' in healthcareProvider) {
@@ -191,6 +201,7 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
 
   constructor(
     private prescriptionStateService: PrescriptionState,
+    private proposalStateService: ProposalState,
     private healthcareProviderService: HealthcareProviderService,
     private toastService: ToastService,
     private geographyService: GeographyService,
@@ -286,19 +297,23 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
     }
   }
 
-  assign(healthcareProvider: Professional | Organization): void {
+  onAssign(healthcareProvider: Professional | Organization): void {
     if (!this.data?.prescriptionId) {
       this.closeDialog(healthcareProvider);
     } else {
-      this.updatePrescription(healthcareProvider);
+      if(isProposal(this.data?.intent)){
+        this.executeAssignment(healthcareProvider, () => this.proposalStateService.assignProposal(this.data.prescriptionId!, this.data.referralTaskId!, healthcareProvider, this.generatedUUID), 'proposal');
+      }
+      else{
+        this.executeAssignment(healthcareProvider, () => this.prescriptionStateService.assignPrescriptionPerformer(this.data.prescriptionId!, this.data.referralTaskId!, healthcareProvider, this.generatedUUID), 'prescription');
+      }
     }
   }
 
-  private updatePrescription(healthcareProvider: Professional | Organization): void {
+  private executeAssignment(healthcareProvider: Professional | Organization, serviceCall: () => Observable<void>, successPrefix : string){
     this.loading = true;
 
-    this.prescriptionStateService.assignPrescriptionPerformer(this.data.prescriptionId!, this.data.referralTaskId!, healthcareProvider, this.generatedUUID)
-      .subscribe({
+    serviceCall().subscribe({
         next: () => {
           const name = 'healthcarePerson' in healthcareProvider
             ? healthcareProvider.healthcarePerson
@@ -306,9 +321,9 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
 
           this.closeErrorCard();
           if (healthcareProvider.type === 'Professional') {
-            this.toastService.show('prescription.assignPerformer.success', {interpolation: name});
+            this.toastService.show(successPrefix + '.assignPerformer.success', {interpolation: name});
           } else {
-            this.toastService.show('prescription.assignPerformer.successOrganization', {interpolation: name});
+            this.toastService.show(successPrefix + '.assignPerformer.successOrganization', {interpolation: name});
           }
           this.closeDialog(healthcareProvider);
         },
@@ -317,7 +332,6 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
           this.showErrorCard('common.somethingWentWrong', err)
         }
       });
-
   }
 
   private getOrganizationNameTranslation(healthcareProvider: Organization): { name: string } {

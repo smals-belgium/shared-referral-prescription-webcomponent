@@ -64,29 +64,17 @@
                 <div class="info-item">
                   <div data-cy="prescription-author-label">{{'prescription.author' | translate}}</div>
                   <div data-cy="prescription-author">
-                    @if(prescription.requester?.healthcarePerson?.lastName == null){
-                      @if (prescription.requester?.id?.ssin == viewState.data?.currentUser?.ssin){
-                        {{viewState.data?.currentUser?.firstName}} {{viewState.data?.currentUser?.lastName}}
-                      }
-                      @else{
-                        <b>{{'common.professional.notFound' | translate}}</b>
-                        <mat-icon matTooltip="{{'common.professional.tooltip' | translate}}"
-                                  matTooltipPosition="right"
-                                  style="color: grey; cursor: pointer;">
-                          error
-                        </mat-icon>
-                      }
+                    <app-professional-display
+                      [professional]="prescription.requester"
+                      [currentUser]="viewState.data?.currentUser"
+                    ></app-professional-display>
+                    @if (prescription.requester?.id?.profession) {
+                      ({{ 'common.professions.' + prescription.requester?.id?.profession | translate }})<br>
                     }
-                    @else{
-                      {{prescription.requester?.healthcarePerson?.firstName}} {{prescription.requester?.healthcarePerson?.lastName}}
-                      @if (prescription.requester?.id?.profession) {
-                        ({{ 'common.professions.' + prescription.requester?.id?.profession | translate }})<br>
-                      }
-                      @if (prescription.requester?.nihii8) {
-                        {{prescription.requester!.nihii8 | formatNihdi: prescription.requester?.id?.qualificationCode }}
-                      } @else if (prescription.requester?.nihii11) {
-                        {{prescription.requester!.nihii11 | formatNihdi: prescription.requester?.id?.qualificationCode}}
-                      }
+                    @if (prescription.requester?.nihii8) {
+                      {{prescription.requester!.nihii8 | formatNihdi: prescription.requester?.id?.qualificationCode }}
+                    } @else if (prescription.requester?.nihii11) {
+                      {{prescription.requester!.nihii11 | formatNihdi: prescription.requester?.id?.qualificationCode}}
                     }
                   </div>
                 </div>
@@ -152,10 +140,10 @@
             <div>
               <div class="caregiver-actions">
                 <ng-container *ngIf="!viewState.data!.performerTask?.careGiverSsin">
-                  @if(prescription.intent?.toLowerCase() !== 'proposal') {
+                  @if(prescription.intent.toLowerCase() !== 'proposal') {
                     <button
                       *ngIf="prescription | canSelfAssign"
-                      (click)="selfAssign(prescription)"
+                      (click)="onSelfAssign(prescription,viewState.data!.currentUser)"
                       mat-raised-button
                       type="button"
                       data-cy="prescription-self-assign-button"
@@ -196,11 +184,10 @@
                 <ng-container *ngFor="let task of prescription.organizationTasks">
                   <div class="organization-row " data-cy="prescription-assign-to">
                     <div class="caregiver-name">
-                      @if(task.organization.organizationName == null){
+                      @if(!task.organization.organizationName){
                         <b>{{'common.organization.notFound' | translate}}</b>
                         <mat-icon matTooltip="{{'common.organization.tooltip' | translate}}"
-                                  matTooltipPosition="after"
-                                  style="color: grey; cursor: pointer;">
+                                  matTooltipPosition="after">
                           error
                         </mat-icon>
                       }
@@ -222,22 +209,10 @@
                         <div class="organization-caregiver-row">
                           <div class="organization-caregiver-name-row" data-cy="prescription-assign-to">
                             <div class="caregiver-name">
-                              @if(performertask.careGiver?.healthcarePerson?.lastName == null){
-                                @if (performertask.careGiver?.id?.ssin == viewState.data?.currentUser?.ssin){
-                                  {{viewState.data?.currentUser?.firstName}} {{viewState.data?.currentUser?.lastName}}
-                                }
-                                @else{
-                                  <b>{{'common.professional.notFound' | translate}}</b>
-                                  <mat-icon matTooltip="{{'common.professional.tooltip' | translate}}"
-                                            matTooltipPosition="right"
-                                            style="color: grey; cursor: pointer;">
-                                    error
-                                  </mat-icon>
-                                }
-                              }
-                              @else{
-                                <b>{{performertask.careGiver.healthcarePerson.firstName}} {{performertask.careGiver.healthcarePerson.lastName}}</b>
-                              }
+                              <app-professional-display
+                                [professional]="performertask.careGiver"
+                                [currentUser]="viewState.data?.currentUser"
+                              ></app-professional-display>
                               @if (performertask.careGiver.nihii8) {
                                 ({{performertask.careGiver.nihii8 | formatNihdi: performertask.careGiver.id.qualificationCode}})
                                 <br>
@@ -331,22 +306,10 @@
                   <div class="caregiver-row">
                     <div class="caregiver-name-row" data-cy="prescription-assign-to">
                       <div class="caregiver-name">
-                        @if(task.careGiver?.healthcarePerson?.lastName == null){
-                          @if (task.careGiver?.id?.ssin == viewState.data?.currentUser?.ssin){
-                            {{viewState.data?.currentUser?.firstName}} {{viewState.data?.currentUser?.lastName}}
-                          }
-                          @else{
-                            <b>{{'common.professional.notFound' | translate}}</b>
-                            <mat-icon matTooltip="{{'common.professional.tooltip' | translate}}"
-                                      matTooltipPosition="right"
-                                      style="color: grey; cursor: pointer;">
-                              error
-                            </mat-icon>
-                          }
-                        }
-                        @else{
-                          <b>{{task.careGiver.healthcarePerson.firstName}} {{task.careGiver.healthcarePerson.lastName}}</b>
-                        }
+                        <app-professional-display
+                          [professional]="task.careGiver"
+                          [currentUser]="viewState.data?.currentUser"
+                        ></app-professional-display>
                         @if (task.careGiver.nihii8) {
                           ({{task.careGiver.nihii8 | formatNihdi: task.careGiver.id.qualificationCode}})
                           <br>
@@ -441,14 +404,14 @@
         </div>
 
         <div class="card no-padding"
-             *ngIf="prescription.intent?.toLowerCase() === 'proposal'">
+             *ngIf="isProposalValue">
           <div class="card-column">
             <div>
               <div class="prescriber-title">
                 <p>
         <span data-cy="proposal-date-label">
-          @if(prescription.requester?.healthcarePerson?.lastName == null){
-            @if (prescription.requester?.id?.ssin == viewState.data?.currentUser?.ssin){
+          @if(!prescription.requester?.healthcarePerson?.lastName){
+            @if (prescription.requester?.id?.ssin === viewState.data?.currentUser?.ssin){
               {{
                 'proposal.proposalInfoTitle' | translate: {
                   firstName: viewState.data?.currentUser?.firstName || '',
@@ -466,8 +429,7 @@
                 }
               }}
               <mat-icon matTooltip="{{'common.professional.tooltip' | translate}}"
-                        matTooltipPosition="right"
-                        style="color: grey; cursor: pointer;">
+                        matTooltipPosition="right">
                           error
                         </mat-icon>
             }

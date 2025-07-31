@@ -7,6 +7,7 @@ export interface ReadPrescription {
   id: string;
   patientIdentifier: string;
   templateCode: string;
+  category: string;
   authoredOn: string;
   requester?: Professional;
   status?: Status;
@@ -15,7 +16,7 @@ export interface ReadPrescription {
   performerTasks: PerformerTask[];
   organizationTasks: OrganizationTask[];
   responses: Record<string, any>;
-  intent?: string;
+  intent: string;
   pseudonymizedKey?: string;
   shortCode?: string;
   note?:string;
@@ -54,6 +55,12 @@ export enum TaskStatus {
   INPROGRESS = 'INPROGRESS',
   ONHOLD = 'ONHOLD',
   COMPLETED = "COMPLETED"
+}
+
+export enum Intent {
+  PROPOSAL = 'proposal',
+  ORDER = 'order',
+  MODEL = 'model'
 }
 
 export interface CreatePrescriptionRequest {
