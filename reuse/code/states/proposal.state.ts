@@ -10,7 +10,7 @@ import { Organization } from '@reuse/code/interfaces/organization.interface';
 export class ProposalState extends BaseState<ReadPrescription> {
 
   constructor(
-    private proposalService: ProposalService
+    private readonly proposalService: ProposalService
   ) {
     super();
   }
@@ -74,21 +74,22 @@ export class ProposalState extends BaseState<ReadPrescription> {
       .pipe(tap(() => this.loadProposal(proposalId)));
   }
 
-  approveProposal(proposalId: string, reason: string, generatedUUID: string) {
-    return this.proposalService.approveProposal(proposalId, reason, generatedUUID);
-  }
-
-  rejectProposal(proposalId: string, reason: string, generatedUUID: string) {
-    return this.proposalService.rejectProposal(proposalId, reason, generatedUUID)
+  approveProposal(proposalId: string, generatedUUID: string, reason?: string, kid?: string, pseudonymizedKey?: string) {
+    return this.proposalService.approveProposal(proposalId, generatedUUID, reason, kid, pseudonymizedKey)
       .pipe(tap(() => this.loadProposal(proposalId)));
   }
 
-  rejectProposalTask(proposalId: string, performerTaskId: string, reason: string, generatedUUID: string) {
-    return this.proposalService.rejectProposalTask(performerTaskId, reason, generatedUUID)
+  rejectProposal(proposalId: string, generatedUUID: string, reason?: string, kid?: string, pseudonymizedKey?: string) {
+    return this.proposalService.rejectProposal(proposalId, generatedUUID, reason, kid, pseudonymizedKey)
+      .pipe(tap(() => this.loadProposal(proposalId)));
+  }
+
+  rejectProposalTask(proposalId: string, performerTaskId: string, generatedUUID: string, reason?: string | null) {
+    return this.proposalService.rejectProposalTask(performerTaskId, generatedUUID, reason)
       .pipe(tap(() => this.loadProposal(proposalId)));
   }
 
   resetProposal() {
-    this.reset()
+    this.reset();
   }
 }

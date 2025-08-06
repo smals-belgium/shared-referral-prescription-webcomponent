@@ -7,7 +7,7 @@ import { LoadingStatus } from '../interfaces';
 export class EncryptionState extends BaseState<CryptoKey> {
 
   constructor(
-    private encryptionService: EncryptionService
+    private readonly encryptionService: EncryptionService
   ) {
     super();
   }

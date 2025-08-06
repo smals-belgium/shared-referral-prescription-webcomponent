@@ -1,7 +1,6 @@
 import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { PseudoService } from '@reuse/code/services/pseudo.service';
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateAdapter, MatNativeDateModule } from '@angular/material/core';
@@ -23,6 +22,8 @@ import { ConfirmDialog } from '@reuse/code/dialogs/confirm/confirm.dialog';
 import { ToastService } from '@reuse/code/services/toast.service';
 import { CancelCreationDialog } from '@reuse/code/dialogs/cancel-creation/cancel-creation.dialog';
 import { PssService } from '@reuse/code/services/pss.service';
+import { EncryptionKeyInitializerService } from '@reuse/code/services/encryption-key-initializer.service';
+import { PseudoService } from '@reuse/code/services/pseudo.service';
 
 class FakeLoader implements TranslateLoader {
   getTranslation(lang: string): Observable<any> {
@@ -39,6 +40,12 @@ const mockEncryptionService = {
   generateKey: () => 'cryptoKey',
   exportKey: () => new ArrayBuffer(16),
   encryptText: jest.fn()
+}
+
+const mockEncryptionKeyInitializerService= {
+  getCryptoKey: jest.fn(),
+  getPseudonymizedKey: jest.fn(),
+  initialize: jest.fn()
 }
 
 const mockPerson = {
@@ -121,6 +128,7 @@ describe('CreatePrescriptionWebComponent', () => {
         MatDialog,
         {provide: PseudonymisationHelper, useValue: MockPseudoHelperFactory()},
         {provide: EncryptionService, useValue: mockEncryptionService},
+        {provide: EncryptionKeyInitializerService, useValue : mockEncryptionKeyInitializerService},
         {provide: PssService, useValue: mockPssService}
       ],
     })
@@ -158,6 +166,7 @@ describe('CreatePrescriptionWebComponent', () => {
 
       const mockPublish = jest.spyOn(component, 'publishPrescriptions');
       const mockPublishOnePrescription = jest.spyOn(component as any, 'publishOnePrescription');
+      jest.spyOn(component['encryptionKeyInitializer'], 'initialize').mockReturnValue(of(undefined));
 
 
       component.publishPrescriptions();
@@ -501,14 +510,14 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should handle encryption errors gracefully', (done) => {
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
       createFixture('mockPseudomizedKey');
-      component.cryptoKey = 'test-cryptoKey' as unknown as CryptoKey;
+      mockEncryptionKeyInitializerService.getCryptoKey.mockReturnValue('test-cryptoKey' as unknown as CryptoKey);
       jest.spyOn(component as any, 'getPrescriptionTemplateStream').mockReturnValue(() => ({
         data: {
           elements: [{id: 'field1', tags: ['freeText']}]
         }
       }));
 
-      const mockError = new Error('Encryption failed');
+      const mockError ='Encryption failed';
       mockEncryptionService.encryptText.mockReturnValue(throwError(() => mockError));
 
       const responses = {field1: 'value1'};
@@ -823,12 +832,13 @@ describe('CreatePrescriptionWebComponent', () => {
       const mockEncryptedResponses = {question1: 'encryptedAnswer1'};
 
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+      mockEncryptionKeyInitializerService.getPseudonymizedKey.mockReturnValue(undefined);
 
       jest.spyOn(component as any, 'encryptFreeTextInResponses').mockReturnValue(of(mockEncryptedResponses));
 
       component.toCreatePrescriptionRequestExtended(templateCode, responses, subject).subscribe({
         next: (result: any) => {
-          expect(consoleWarnSpy).toHaveBeenCalledWith('Pseudomized key is not set. The request will proceed without it.');
+          expect(consoleWarnSpy).toHaveBeenCalledWith('PseudonymizedKey key is not set. The request will proceed without it.');
 
           expect(result).toEqual({
             templateCode,
@@ -850,7 +860,7 @@ describe('CreatePrescriptionWebComponent', () => {
       const responses = {question1: 'answer1'};
       const subject = 'testSubject';
 
-      const mockError = new Error('Encryption failed');
+      const mockError = 'Encryption failed';
       jest.spyOn(component as any, 'encryptFreeTextInResponses').mockReturnValue(throwError(() => mockError));
 
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
@@ -881,7 +891,7 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should return original responses if cryptoKey is missing', (done) => {
       createFixture('mockPseudomizedKey');
       jest.spyOn(component as any, 'getPrescriptionTemplateStream').mockReturnValue(() => ({data: {elements: []}}));
-      component.cryptoKey = undefined;
+      mockEncryptionKeyInitializerService.getCryptoKey.mockReturnValue(undefined);
 
       const responses = {field1: 'value1'};
       component.encryptFreeTextInResponsesExtended('templateCode', responses).subscribe(result => {
@@ -891,7 +901,7 @@ describe('CreatePrescriptionWebComponent', () => {
     });
     it('should encrypt only fields marked as freeText', (done) => {
       createFixture('mockPseudomizedKey');
-      component.cryptoKey = 'test-cryptoKey' as unknown as CryptoKey;
+      mockEncryptionKeyInitializerService.getCryptoKey.mockReturnValue('test-cryptoKey' as unknown as CryptoKey);
       jest.spyOn(component as any, 'getPrescriptionTemplateStream').mockReturnValue(() => ({
         data: {
           elements: [
@@ -912,7 +922,7 @@ describe('CreatePrescriptionWebComponent', () => {
     });
     it('should encrypt multiple freeText fields', (done) => {
       createFixture('mockPseudomizedKey');
-      component.cryptoKey = 'test-cryptoKey' as unknown as CryptoKey;
+      mockEncryptionKeyInitializerService.getCryptoKey.mockReturnValue('test-cryptoKey' as unknown as CryptoKey);
       jest.spyOn(component as any, 'getPrescriptionTemplateStream').mockReturnValue(() => ({
         data: {
           elements: [
@@ -938,7 +948,7 @@ describe('CreatePrescriptionWebComponent', () => {
     });
     it('should encrypt freeText fields within nested objects', (done) => {
       createFixture('mockPseudomizedKey');
-      component.cryptoKey = 'test-cryptoKey' as unknown as CryptoKey;
+      mockEncryptionKeyInitializerService.getCryptoKey.mockReturnValue('test-cryptoKey' as unknown as CryptoKey);
 
       jest.spyOn(component as any, 'getPrescriptionTemplateStream').mockReturnValue(() => ({
         data: {
@@ -1260,7 +1270,7 @@ describe('CreatePrescriptionWebComponent', () => {
   const createFixture = (pseudonymizedKey?: string) => {
     fixture = TestBed.createComponent(CreatePrescriptionExtendedWebComponent);
     component = fixture.componentInstance;
-    component.pseudonymizedKey = pseudonymizedKey;
+    mockEncryptionKeyInitializerService.getPseudonymizedKey.mockReturnValue(() => ({data:  pseudonymizedKey}));
     component.initialValues = { intent: 'order' };
     component.isEnabled$ = of(true);
 

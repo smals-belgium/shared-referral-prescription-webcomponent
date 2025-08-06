@@ -57,7 +57,7 @@ describe('EncryptionService', () => {
       key,
       'AES-GCM',
       false,
-      ['decrypt']
+      ['encrypt','decrypt']
     );
     expect(importedKey).toBeDefined();
   });
