@@ -68,6 +68,7 @@ import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card
 import { HttpErrorResponse } from '@angular/common/http';
 import { isPrescription, isModel } from '@reuse/code/utils/utils';
 import { isOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
+import { EncryptionKeyInitializerService } from '@reuse/code/services/encryption-key-initializer.service';
 
 
 @Component({
@@ -100,8 +101,6 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   public status$ = new BehaviorSubject<boolean>(false);
   prescriptionForms = signal<CreatePrescriptionForm[]>([]);
   loading = signal(false);
-  cryptoKey: CryptoKey | undefined;
-  pseudonymizedKey: string | undefined;
   generatedUUID = '';
 
   errorCard: ErrorCard = {
@@ -123,26 +122,26 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   @Output() prescriptionsCreated = new EventEmitter<void>();
   @Output() clickCancel = new EventEmitter<void>();
   @Output() modelCreated = new EventEmitter<void>();
-
   constructor(
-    private authService: AuthService,
-    private dialog: MatDialog,
-    private translate: TranslateService,
-    private dateAdapter: DateAdapter<DateTime>,
-    private toastService: ToastService,
-    private accessMatrixStateService: AccessMatrixState,
-    private templatesStateService: TemplatesState,
-    private templateVersionsStateService: TemplateVersionsState,
-    private prescriptionModelService: PrescriptionModelService,
-    private patientStateService: PatientState,
-    private pseudoService: PseudoService,
-    private prescriptionService: PrescriptionService,
-    private proposalService: ProposalService,
-    private renderer: Renderer2,
-    private encryptionService: EncryptionService,
-    private pssService: PssService,
-    private configService: WcConfigurationService,
-    @Inject(DOCUMENT) private _document: Document
+    private readonly authService: AuthService,
+    private readonly dialog: MatDialog,
+    private readonly translate: TranslateService,
+    private readonly dateAdapter: DateAdapter<DateTime>,
+    private readonly toastService: ToastService,
+    private readonly accessMatrixStateService: AccessMatrixState,
+    private readonly templatesStateService: TemplatesState,
+    private readonly templateVersionsStateService: TemplateVersionsState,
+    private readonly prescriptionModelService: PrescriptionModelService,
+    private readonly patientStateService: PatientState,
+    private readonly pseudoService: PseudoService,
+    private readonly prescriptionService: PrescriptionService,
+    private readonly proposalService: ProposalService,
+    private readonly renderer: Renderer2,
+    private readonly encryptionService: EncryptionService,
+    private readonly pssService: PssService,
+    private readonly configService: WcConfigurationService,
+    private readonly encryptionKeyInitializer: EncryptionKeyInitializerService,
+    @Inject(DOCUMENT) private readonly _document: Document
   ) {
     this.isEnabled$ = of(this.configService.getEnvironmentVariable('enablePseudo')).pipe(
       map((value: boolean) => {
@@ -167,38 +166,6 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     this.loadWebComponents();
   }
 
-  private initializeEncryptionKey(): Observable<void> {
-    return from(
-      (async () => {
-        try {
-          this.cryptoKey = await this.encryptionService.generateKey();
-          this.pseudonymizedKey = await this.pseudonymizeEncryptionKey();
-        } catch (error) {
-          console.error('Failed to initialize encryption key:', error);
-          this.cryptoKey = undefined;
-          this.pseudonymizedKey = undefined;
-        }
-      })()
-    );
-  }
-
-  private async pseudonymizeEncryptionKey(): Promise<string | undefined> {
-    if (!this.cryptoKey) return undefined;
-
-    try {
-      const exportedKey = await this.encryptionService.exportKey(this.cryptoKey);
-      const byteArray = new Uint8Array(exportedKey);
-      const byteArrToVal = this.pseudoService.byteArrayToValue(byteArray);
-      if(byteArray && byteArrToVal !== null){
-        return this.pseudoService.pseudonymizeValue(byteArrToVal);
-      } else {
-        return undefined
-      }
-    } catch (error) {
-      console.error('Failed to pseudonymize encryption key:', error);
-      return undefined;
-    }
-  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['services']) {
@@ -408,7 +375,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
 
   private publishOnePrescription(): void {
     const prescriptionForm = this.prescriptionForms()[0];
-    this.initializeEncryptionKey().pipe(
+    this.encryptionKeyInitializer.initialize().pipe(
       concatMap(() =>
         this.getPatientIdentifier().pipe(
           switchMap(identifier =>
@@ -446,7 +413,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
 
   private publishMultiplePrescriptions(): void {
     this.loading.set(true);
-    this.initializeEncryptionKey().pipe(
+    this.encryptionKeyInitializer.initialize().pipe(
       concatMap(() =>
         this.getPatientIdentifier().pipe(
           switchMap(identifier => {
@@ -520,7 +487,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
 
   protected encryptFreeTextInResponses(templateCode: string, responses: Record<string, unknown>): Observable<Record<string, unknown>> {
     const template = this.getPrescriptionTemplateStream(templateCode)()?.data;
-    if (!template || !this.cryptoKey) {
+    if (!template || !this.encryptionKeyInitializer.getCryptoKey()!) {
       return of(responses);
     }
 
@@ -554,7 +521,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   }
 
   private encryptStringValue(key: string, value: string): Observable<Record<string, unknown>> {
-    return this.encryptionService.encryptText(this.cryptoKey!, value).pipe(
+    return this.encryptionService.encryptText(this.encryptionKeyInitializer.getCryptoKey()!, value).pipe(
       map(encryptedValue => ({[key]: encryptedValue})),
       catchError(error => {
         console.error(`Error encrypting key "${key}":`, error);
@@ -601,13 +568,13 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     }
     return this.encryptFreeTextInResponses(templateCode, responses).pipe(
       map(encryptedResponses => {
-        if (!this.pseudonymizedKey) {
-          console.warn('Pseudomized key is not set. The request will proceed without it.');
+        if (!this.encryptionKeyInitializer.getPseudonymizedKey()) {
+          console.warn('PseudonymizedKey key is not set. The request will proceed without it.');
         }
         return {
           templateCode,
           responses: encryptedResponses,
-          pseudonymizedKey: this.pseudonymizedKey || undefined,
+          pseudonymizedKey: this.encryptionKeyInitializer.getPseudonymizedKey(),
           subject,
         };
       }),

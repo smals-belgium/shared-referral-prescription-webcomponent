@@ -1,12 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import {
-  CreatePrescriptionRequest,
-  ProposalApproveResponse,
-  ReadPrescription,
-  SearchPrescriptionCriteria,
-  ServiceRequest
-} from '../interfaces';
+import { CreatePrescriptionRequest, ReadPrescription, SearchPrescriptionCriteria } from '../interfaces';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { PrescriptionSummaryList } from '../interfaces/prescription-summary.interface';
 
@@ -99,8 +93,4 @@ export class PrescriptionService {
     const headers = new HttpHeaders().set('If-None-Match', generatedUUID);
     return this.http.post<void>(`/prescriptions/${prescriptionId}/rejections/${performerTaskId}`, {}, {headers: headers});
   }
-}
-
-export function getPatientSsin(serviceRequest: ServiceRequest): string {
-  return serviceRequest?.subject?.identifier?.value;
 }

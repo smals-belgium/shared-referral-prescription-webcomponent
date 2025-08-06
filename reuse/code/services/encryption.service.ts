@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { from, Observable } from 'rxjs';
+import { from, Observable, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 
@@ -7,8 +7,8 @@ import { map } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class EncryptionService {
-  private IvLength = 12;
-  private iv = new Uint8Array(this.IvLength).fill(0);
+  private readonly IvLength = 12;
+  private readonly iv = new Uint8Array(this.IvLength).fill(0);
 
   generateKey() {
     return window.crypto.subtle.generateKey(
@@ -36,7 +36,7 @@ export class EncryptionService {
       key,
       "AES-GCM",
       false,
-      ["decrypt"]
+      ['encrypt', 'decrypt']
     )
   );
   }
@@ -89,7 +89,12 @@ export class EncryptionService {
   }
 
   decryptText(encryptedText: string, cryptoKey: CryptoKey): Observable<string> {
-    const ciphertextArray = this.base64ToCipherText(encryptedText);
+    let ciphertextArray;
+    try {
+      ciphertextArray = this.base64ToCipherText(encryptedText);
+    } catch (e) {
+      return throwError(() => new Error('Invalid base64 encoding ' + e));
+    }
     const iv = ciphertextArray.slice(0, this.IvLength); // First 12 bytes are IV
     const ciphertext = ciphertextArray.slice(this.IvLength); // Remaining bytes are ciphertext
 
@@ -99,7 +104,7 @@ export class EncryptionService {
         const decoder = new TextDecoder();
         return decoder.decode(decrypted);
       })
-    )
+    );
   }
 
   arrayBufferToBase64(buffer: ArrayBuffer): string {

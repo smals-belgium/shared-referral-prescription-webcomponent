@@ -39,7 +39,6 @@ import {
 } from '@reuse/code/interfaces';
 import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
 import { AuthService } from '@reuse/code/services/auth.service';
-import { WcConfigurationService } from '@reuse/code/services/wc-configuration.service';
 import { AssignPrescriptionDialog } from '@reuse/code/dialogs/assign-prescription/assign-prescription.dialog';
 import {
   CancelMedicalDocumentDialog
@@ -112,7 +111,7 @@ import { CanDuplicatePrescriptionPipe } from '@reuse/code/pipes/can-duplicate-pr
 import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-responses-state.interface';
 import { FormatMultilingualObjectPipe } from '@reuse/code/pipes/format-multilingual-object.pipe';
 import { PssService } from '@reuse/code/services/pss.service';
-import { MatTooltip } from "@angular/material/tooltip";
+import { MatTooltip } from '@angular/material/tooltip';
 import {
   ProfessionalDisplayComponent
 } from '@reuse/code/components/professional-display/professional-display.component';
@@ -178,7 +177,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   currentLang?: string;
   isProposalValue = false;
 
-
   public status$ = new BehaviorSubject<boolean>(false);
 
   @HostBinding('attr.lang')
@@ -215,9 +213,10 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       const templateCode = this.templateCode$();
       const cryptoKey = this.encryptionStateService.state().data;
       const template = this.templateVersionsStateService.getState('READ_' + templateCode)()?.data;
+      const cryptoKeyIsNeeded = !cryptoKey && prescriptionState.data?.pseudonymizedKey;
       this.loadPssStatus(templateCode!);
 
-      if (!cryptoKey || !template) {
+      if (cryptoKeyIsNeeded || !template) {
         return {data: prescriptionState.data, status: LoadingStatus.LOADING};
       }
 
@@ -236,12 +235,17 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
       return prescriptionState;
     }),
+
     decryptedResponses: computed(() => {
       const responses = this.decryptedResponses$();
       const prescriptionState = isProposal(this.intent) ? this.proposalSateService.state() : this.prescriptionStateService.state();
+      //Futur improvment :  make more generic for proposal with free text (physio) - https://jira.smals.be/browse/UHMEP-2166
+      const needsPseudonymizedKey = prescriptionState.data?.responses && prescriptionState.data.templateCode != 'ANNEX_81' || prescriptionState.data?.responses['note'] ;
 
-      if (prescriptionState.status === LoadingStatus.SUCCESS && !prescriptionState.data?.pseudonymizedKey) {
-        return {...responses, error: 'Pseudomized key missing', status: LoadingStatus.ERROR};
+      if (prescriptionState.status === LoadingStatus.SUCCESS
+        && !prescriptionState.data?.pseudonymizedKey
+        && needsPseudonymizedKey) {
+        return {...responses, error: 'Pseudonymized key missing', status: LoadingStatus.ERROR};
       }
 
       if (responses?.error) {
@@ -321,7 +325,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     private readonly dateAdapter: DateAdapter<DateTime>,
     private readonly dialog: MatDialog,
     private readonly authService: AuthService,
-    private readonly configService: WcConfigurationService,
     private readonly renderer: Renderer2,
     private readonly accessMatrixStateService: AccessMatrixState,
     private readonly prescriptionStateService: PrescriptionState,
@@ -388,8 +391,11 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       const template = this.templateVersionsStateService.getState('READ_' + templateCode)()?.data;
 
       untracked(() => {
-        if (template && cryptoKey && prescription?.responses) {
-          this.decryptResponses(cryptoKey, prescription.responses, template).subscribe({
+        if (!template || !cryptoKey && templateCode !== "ANNEX_81" || prescription?.responses['note'] && !cryptoKey && templateCode === "ANNEX_81") {
+          return;
+        }
+        if (prescription?.responses) {
+          this.decryptResponses(prescription.responses, template, cryptoKey).subscribe({
             next: (decryptedResponses) => {
               this.decryptedResponses$.set({data: decryptedResponses, error: null});
             },
@@ -431,7 +437,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
           error: () => {
             this.pssService.setStatus(false);
           }
-        })
+        });
     }
   }
 
@@ -672,9 +678,9 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   }
 
   private decryptResponses(
-    cryptoKey: CryptoKey,
     responses: Record<string, any>,
-    template: FormTemplate
+    template: FormTemplate,
+    cryptoKey?: CryptoKey
   ): Observable<Record<string, any>> {
     const decryptedResponses: Record<string, any> = {};
 
@@ -686,6 +692,9 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
           const formElement = template.elements.find(e => e.id === key);
 
           if (formElement?.tags?.includes('freeText')) {
+            if (!cryptoKey) {
+              return throwError(() => new Error(`Pseudo key is missing for key "${key}"`));
+            }
             return this.encryptionService.decryptText(value, cryptoKey).pipe(
               map(decrypted => {
                 decryptedResponses[key] = decrypted;
@@ -718,7 +727,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     try {
       const pseudoInTransit = this.pseudoService.toPseudonymInTransit(pseudonymizedKey);
       if (pseudoInTransit) {
-        const uint8Array = await this.pseudoService.identifyPseudonymInTransit(pseudoInTransit)
+        const uint8Array = await this.pseudoService.identifyPseudonymInTransit(pseudoInTransit);
         this.encryptionStateService.loadCryptoKey(uint8Array);
       }
     } catch (error) {

@@ -18,6 +18,7 @@ export interface ReadPrescription {
   responses: Record<string, any>;
   intent: string;
   pseudonymizedKey?: string;
+  kid?: string;
   shortCode?: string;
   note?:string;
 }

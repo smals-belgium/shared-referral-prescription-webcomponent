@@ -4,8 +4,7 @@ import {
   CreatePrescriptionRequest,
   ProposalApproveResponse,
   ReadPrescription,
-  SearchPrescriptionCriteria,
-  ServiceRequest
+  SearchPrescriptionCriteria
 } from '../interfaces';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { PrescriptionSummaryList } from '../interfaces/prescription-summary.interface';
@@ -15,7 +14,7 @@ export class ProposalService {
 
 
   constructor(
-    private http: HttpClient
+    private readonly http: HttpClient
   ) {
   }
 
@@ -92,22 +91,18 @@ export class ProposalService {
     return this.http.post<void>(`/proposals/${prescriptionId}/rejections/${performerTaskId}`, {}, {headers: headers});
   }
 
-  approveProposal(proposalId: string, reason: string, generatedUUID: string): Observable<ProposalApproveResponse> {
+  approveProposal(proposalId: string, generatedUUID: string, reason?: string, kid?: string, pseudonymizedKey?: string): Observable<ProposalApproveResponse> {
     const headers = new HttpHeaders().set('If-None-Match', generatedUUID);
-    return this.http.post<ProposalApproveResponse>(`/proposals/${proposalId}/approve`, {reason: reason}, {headers: headers});
+    return this.http.post<ProposalApproveResponse>(`/proposals/${proposalId}/approve`, {reason: reason, kid:kid, pseudonymizedKey: pseudonymizedKey}, {headers: headers});
   }
 
-  rejectProposal(proposalId: string, reason: string, generatedUUID: string): Observable<void> {
+  rejectProposal(proposalId: string, generatedUUID: string, reason?: string, kid?: string, pseudonymizedKey?: string): Observable<void> {
     const headers = new HttpHeaders().set('If-None-Match', generatedUUID);
-    return this.http.post<void>(`/proposals/${proposalId}/reject`, {reason: reason}, {headers: headers});
+    return this.http.post<void>(`/proposals/${proposalId}/reject`, {reason: reason, kid:kid, pseudonymizedKey: pseudonymizedKey}, {headers: headers});
   }
 
-  rejectProposalTask(performerTaskId: string, reason: string, generatedUUID: string): Observable<void> {
+  rejectProposalTask(performerTaskId: string, generatedUUID: string, reason?: string | null): Observable<void> {
     const headers = new HttpHeaders().set('If-None-Match', generatedUUID);
     return this.http.patch<void>(`/proposals/${performerTaskId}/rejections`, {reason: reason}, {headers: headers});
   }
-}
-
-export function getPatientSsin(serviceRequest: ServiceRequest): string {
-  return serviceRequest?.subject?.identifier?.value;
 }
