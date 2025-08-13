@@ -45,11 +45,11 @@ export class RejectAssignationDialog extends BaseDialog implements OnInit {
   generatedUUID = '';
 
   constructor(
-    private prescriptionStateService: PrescriptionState,
-    private proposalStateService: ProposalState,
-    private toastService: ToastService,
+    private readonly prescriptionStateService: PrescriptionState,
+    private readonly proposalStateService: ProposalState,
+    private readonly toastService: ToastService,
     dialogRef: MatDialogRef<RejectAssignationDialog>,
-    @Inject(MAT_DIALOG_DATA) private data: RejectAssignationDialogData
+    @Inject(MAT_DIALOG_DATA) private readonly data: RejectAssignationDialogData
   ) {
     super(dialogRef)
     this.prescription = data.prescription;

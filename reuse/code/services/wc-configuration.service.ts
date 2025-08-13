@@ -18,8 +18,8 @@ export class WcConfigurationService extends ConfigurationService {
 
   constructor() {
     super();
-    this.referralPrescriptionEnvironment = (window as any).referralPrescriptionEnv || 'prodHcp';
-    this.configVariables = APP_CONFIG.variables[this.referralPrescriptionEnvironment] || {};
+    this.referralPrescriptionEnvironment = (window as any).referralPrescriptionEnv ?? 'prodHcp';
+    this.configVariables = APP_CONFIG.variables[this.referralPrescriptionEnvironment] ?? {};
   }
 
   override getEnvironment() {

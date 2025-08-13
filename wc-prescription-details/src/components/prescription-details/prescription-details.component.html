@@ -84,7 +84,7 @@
                   <div class="info-item">
                     <div data-cy="prescription-patient-label">{{ 'prescription.patient' | translate }}</div>
                     <div data-cy="prescription-patient">
-                      {{patient.firstName || ''}} {{patient.lastName || ''}}<br/>
+                      {{ patient.firstName ?? '' }} {{ patient.lastName ?? '' }}<br/>
                       {{patient.ssin | formatSsin}}
                       @if(prescription.templateCode === 'ANNEX_82') {
                         <br/>{{patient.birthDate | date: 'dd/MM/yyyy'}}
@@ -169,7 +169,9 @@
                     {{'prescription.assign' | translate}}</button>
                 </div>
               </div>
-              <div class="caregiver-list" *ngIf="(prescription.performerTasks && prescription.performerTasks.length > 0) || (prescription.organizationTasks && prescription.organizationTasks.length > 0)" data-cy="prescription-assign-to-list">
+              <div class="caregiver-list"
+                   *ngIf="(prescription.performerTasks && prescription.performerTasks.length > 0) ?? (prescription.organizationTasks && prescription.organizationTasks.length > 0)"
+                   data-cy="prescription-assign-to-list">
                 <ng-container *ngFor="let task of prescription.organizationTasks">
                   <div class="organization-row " data-cy="prescription-assign-to">
                     <div class="caregiver-name">

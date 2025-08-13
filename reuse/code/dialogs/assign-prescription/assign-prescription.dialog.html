@@ -22,7 +22,7 @@
             formControlName="query"
             [dropSpecialCharacters]="queryIsNumeric"
             data-cy="prescription-assign-performer"
-            [mask]="queryIsNumeric ? '0-00000-00-000||0-00000-00' : ''"
+            [mask]="queryIsNumeric ? '0-00000-00-000??0-00000-00' : ''"
             [placeholder]="'prescription.assignPerformer.searchPerformerPlaceHolder' | translate"
             [validation]="queryIsNumeric"
             maxlength="50"
@@ -75,7 +75,7 @@
               </mat-chip-row>
             }
 
-            @if ((formGroup.get('cities')!.value?.length || 0) < 5) {
+            @if ((formGroup.get('cities')!.value?.length ?? 0) < 5) {
               <input
                 #searchInput
                 formControlName="searchCity"
@@ -129,10 +129,10 @@
       <div class="page-info">
           <app-active-page
             data-cy="results-number"
-            [page]="healthcareProviderState.data?.page || 1"
-            [pageSize]="healthcareProviderState.data?.pageSize || 10"
-            [total]="isLoading() ? 0 : (healthcareProviderState.data?.total || 0)"
-            [label]="'common.results' | translate:{count:healthcareProviderState.data?.total || 0}"
+            [page]="healthcareProviderState.data?.page ?? 1"
+            [pageSize]="healthcareProviderState.data?.pageSize ?? 10"
+            [total]="isLoading() ? 0 : (healthcareProviderState.data?.total ?? 0)"
+            [label]="'common.results' | translate:{count:healthcareProviderState.data?.total ?? 0}"
           ></app-active-page>
 
         <mat-button-toggle-group #group="matButtonToggleGroup" [attr.aria-label]="'prescription.filter.toggleGroup' | translate" [value]="selectedFilter" (change)="filterValues(group.value)">
@@ -145,7 +145,7 @@
           {{ 'prescription.pagination.pageSize' | translate }}:
           <mat-select
             data-cy="select-prescription-pagination"
-            [value]="healthcareProviderState.data?.pageSize || 10"
+            [value]="healthcareProviderState.data?.pageSize ?? 10"
             (selectionChange)="loadData(1, $event.value)"
             hideSingleSelectionIndicator
           >
@@ -269,9 +269,9 @@
       </div>
       <div class="pagination">
         <app-paginator
-          [total]="healthcareProviderState.data?.total || 0"
-          [page]="healthcareProviderState.data?.page || 1"
-          [pageSize]="healthcareProviderState.data?.pageSize || 10"
+          [total]="healthcareProviderState.data?.total ?? 0"
+          [page]="healthcareProviderState.data?.page ?? 1"
+          [pageSize]="healthcareProviderState.data?.pageSize ?? 10"
           (changePage)="loadData($event, healthcareProviderState.data?.pageSize)"
         ></app-paginator>
       </div>

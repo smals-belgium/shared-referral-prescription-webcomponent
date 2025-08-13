@@ -181,7 +181,7 @@ export function translateDayOfWeek(occurrenceTiming: OccurrenceTiming, language:
   const words = [];
   if (occurrenceTiming.repeat.dayOfWeek?.length) {
     const translatedDays = occurrenceTiming.repeat.dayOfWeek
-      .map((d) => translations.weekdays[d]?.[language] || d);
+      .map((d) => translations.weekdays[d]?.[language] ?? d);
     const last = translatedDays.pop();
 
     words.push(translations.on[language]);
@@ -223,7 +223,7 @@ export function translateDuration(occurrenceTiming: OccurrenceTiming, language: 
 export function translateTimeUnit(unit = 1, unitOfTime?: UnitsOfTime, language: 'nl' | 'fr' = 'nl'): string {
   const oneOrMultiple = unit !== 1 ? 'multiple' : 'one';
   return unitOfTime
-    ? translations.unitsOfTime[oneOrMultiple][unitOfTime]?.[language] || unitOfTime
+    ? translations.unitsOfTime[oneOrMultiple][unitOfTime]?.[language] ?? unitOfTime
     : '';
 }
 

@@ -7,7 +7,7 @@ import { BaseState } from './base.state';
 export class PatientState extends BaseState<Person> {
 
   constructor(
-    private personService: PersonService
+    private readonly personService: PersonService
   ) {
     super();
   }

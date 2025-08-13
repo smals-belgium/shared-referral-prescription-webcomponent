@@ -8,7 +8,7 @@ import { PrescriptionExecutionFinish, PrescriptionExecutionStart } from '../../i
 export class TaskService {
 
   constructor(
-    private http: HttpClient
+    private readonly http: HttpClient
   ) {
   }
 

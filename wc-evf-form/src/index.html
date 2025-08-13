@@ -16,7 +16,7 @@
 <body>
   <script>
       const evfForm = document.createElement('nihdi-referral-prescription-form');
-      evfForm.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'nl-BE';
+      evfForm.lang = navigator.language.includes('nl') ?? navigator.language.includes('fr') ? navigator.language : 'nl-BE';
       evfForm.template = {
         "id" : 33,
         "version" : "1",

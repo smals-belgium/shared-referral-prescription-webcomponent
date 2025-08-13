@@ -23,7 +23,7 @@ import { isProposal } from '@reuse/code/utils/utils';
 export class CanDuplicatePrescriptionPipe {
 
   constructor(
-    private accessMatrixState: AccessMatrixState,
+    private readonly accessMatrixState: AccessMatrixState,
   ) {
   }
 

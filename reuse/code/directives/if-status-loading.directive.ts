@@ -12,9 +12,9 @@ export class IfStatusLoadingDirective implements OnChanges {
     @Input() ifStatusLoading!: DataState<any>;
 
     constructor(
-        private templateRef: TemplateRef<any>,
-        private viewContainer: ViewContainerRef,
-        private cdRef: ChangeDetectorRef
+      private readonly templateRef: TemplateRef<any>,
+      private readonly viewContainer: ViewContainerRef,
+      private readonly cdRef: ChangeDetectorRef
     ) {
     }
 

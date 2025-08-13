@@ -6,7 +6,7 @@ import { AccessMatrixState } from '../states/access-matrix.state';
 export class CanApproveProposalPipe {
 
   constructor(
-    private accessMatrixState: AccessMatrixState,
+    private readonly accessMatrixState: AccessMatrixState,
   ) {
   }
 

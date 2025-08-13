@@ -33,8 +33,8 @@ export class ConfirmDialog {
   params: any;
 
   constructor(
-    private dialogRef: MatDialogRef<ConfirmDialog, boolean>,
-    @Inject(MAT_DIALOG_DATA) private data: ConfirmDialogData
+    private readonly dialogRef: MatDialogRef<ConfirmDialog, boolean>,
+    @Inject(MAT_DIALOG_DATA) private readonly data: ConfirmDialogData
   ) {
     this.titleLabel = this.data.titleLabel;
     this.messageLabel = this.data.messageLabel;

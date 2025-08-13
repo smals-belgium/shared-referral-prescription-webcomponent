@@ -21,7 +21,7 @@ import { AccessMatrixState } from '../states/access-matrix.state';
 @Pipe({name: 'canInterruptTreatment', standalone: true})
 export class CanInterruptTreatmentPipe {
 
-  constructor(private accessMatrixState: AccessMatrixState) {
+  constructor(private readonly accessMatrixState: AccessMatrixState) {
   }
 
   transform(prescription: ReadPrescription, task: PerformerTask, currentUser?: UserInfo): boolean {

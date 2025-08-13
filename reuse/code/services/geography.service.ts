@@ -8,7 +8,7 @@ import { map } from 'rxjs/operators';
 export class GeographyService {
 
   constructor(
-    private http: HttpClient
+    private readonly http: HttpClient
   ) {
   }
 

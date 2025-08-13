@@ -1,8 +1,8 @@
 import { Intent } from '@reuse/code/interfaces';
 
-const UuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i as RegExp;
-const SsinRegex = /^[0-9]{11}$/i as RegExp;
-const ShortCodeRegex = /^[a-zA-Z0-9]{4}[a-fA-F0-9]{2}$/ as RegExp;
+const UuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const SsinRegex = /^\d{11}$/i;
+const ShortCodeRegex = /^[a-zA-Z0-9]{4}[a-fA-F0-9]{2}$/;
 
 export function isSsin(value: string): boolean {
   return SsinRegex.test(value.replace(/[\s-.]/g, ''));
@@ -21,15 +21,15 @@ export function containsAtLeastOneDigit(value: string): boolean {
 }
 
 export function keepOnlyDigits(value: string): string {
-  return value.replace(/[^\d]+/g, '');
+  return value.replace(/\D+/g, '');
 }
 
 export function validateSsinChecksum(value: string): boolean {
-  return validateCheckDigit(value, 97) || validateCheckDigit('2' + value, 97);
+  return validateCheckDigit(value, 97) ?? validateCheckDigit('2' + value, 97);
 }
 
 function validateCheckDigit(value: any, modValue: number): boolean {
-  const numbersOnly = ('' + value).replace(/[^0-9]/g, '');
+  const numbersOnly = ('' + value).replace(/ \D/g, '');
   const moduloLength = modValue.toString().length;
   const digits = numbersOnly.substring(0, numbersOnly.length - moduloLength);
   const checkDigit = Number(numbersOnly.substring(numbersOnly.length - moduloLength));

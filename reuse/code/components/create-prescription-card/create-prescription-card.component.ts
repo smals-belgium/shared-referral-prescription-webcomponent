@@ -21,13 +21,13 @@ import { NgTemplateOutlet } from '@angular/common';
 import { EvfDynamicFormComponent } from '@smals/vas-evaluation-form-ui-material/dynamic-form';
 
 @Component({
-    selector: 'app-create-prescription-card',
-    templateUrl: './create-prescription-card.component.html',
-    styleUrls: ['./create-prescription-card.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [EvfTranslateService],
-    standalone: true,
-    imports: [EvfDynamicFormComponent, NgTemplateOutlet]
+  selector: 'app-create-prescription-card',
+  templateUrl: './create-prescription-card.component.html',
+  styleUrls: ['./create-prescription-card.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [EvfTranslateService],
+  standalone: true,
+  imports: [EvfDynamicFormComponent, NgTemplateOutlet]
 })
 export class CreatePrescriptionCardComponent implements OnChanges, OnInit, OnDestroy {
 
@@ -41,8 +41,8 @@ export class CreatePrescriptionCardComponent implements OnChanges, OnInit, OnDes
   @Output() changeElementGroup = new EventEmitter<ElementGroup>();
 
   constructor(
-    private translate: TranslateService,
-    private evfTranslate: EvfTranslateService
+    private readonly translate: TranslateService,
+    private readonly evfTranslate: EvfTranslateService
   ) {
   }
 
@@ -84,7 +84,7 @@ export class CreatePrescriptionCardComponent implements OnChanges, OnInit, OnDes
   }
 
   private formatToEvfLangCode(localeCode: string): 'nl' | 'fr' {
-    return localeCode?.substring(0, 2) as 'nl' | 'fr' || 'fr';
+    return localeCode?.substring(0, 2) as 'nl' | 'fr' ?? 'fr';
   }
 
   setElementGroup(elementGroup: ElementGroup): void {

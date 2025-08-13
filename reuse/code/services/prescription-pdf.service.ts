@@ -11,7 +11,7 @@ import * as pdfMake from 'pdfmake/build/pdfmake.js';
 export class PrescriptionsPdfService {
 
   constructor(
-    private translate: TranslateService
+    private readonly translate: TranslateService
   ) {
   }
 
@@ -21,8 +21,8 @@ export class PrescriptionsPdfService {
         pageSize: 'A4',
         pageMargins: [24, 24, 24, 30],
         info: {
-          title: prescription.id!,
-          subject: prescription.id!,
+          title: prescription.id,
+          subject: prescription.id,
           author: 'RIZIV - INAMI'
         },
         defaultStyle: {
@@ -30,7 +30,7 @@ export class PrescriptionsPdfService {
         },
         header: [
           {
-            text: prescription.id!,
+            text: prescription.id,
             margin: [26, 6]
           }
         ],
@@ -194,14 +194,14 @@ export class PrescriptionsPdfService {
       },
       {
         label: this.translate.instant('prescription.validityPeriod'),
-        values: [this.formatDate(prescription.period.start, 'dd/MM/yyyy')+' - '+this.formatDate(prescription.period.end, 'dd/MM/yyyy')],
+        values: [this.formatDate(prescription.period.start, 'dd/MM/yyyy') + ' - ' + this.formatDate(prescription.period.end, 'dd/MM/yyyy')],
       }
     ];
     const dynamicValueLabels = templateVersion.elements
-      .filter((q) => responses![q.id!] != null)
+      .filter((q) => responses[q.id!] != null)
       .map((q) => ({
         label: this.evfTranslate(templateVersion, q.labelTranslationId!, language),
-        values: this.getResponseLabels(responses![q.id!], q, templateVersion, responses, language)
+        values: this.getResponseLabels(responses[q.id!], q, templateVersion, responses, language)
       }));
     return [...valueLabels, ...dynamicValueLabels].reduce((acc, cur: any) => {
       if (acc.table.body.length === 0 || !Array.isArray(acc.table.body[acc.table.body.length - 1][1])) {
@@ -240,16 +240,16 @@ export class PrescriptionsPdfService {
         return value.map((v) => {
           const label = element.responses!.find(r => r.value === v)?.labelTranslationId;
           return label
-            ? [this.evfTranslate(templateVersion, label!, language)]
+            ? [this.evfTranslate(templateVersion, label, language)]
             : ['((LABEL NOT FOUND: ' + label + '))'];
         });
       } else {
-        const label = element.responses!.find(r => r.value === value)?.labelTranslationId;
+        const label = element.responses.find(r => r.value === value)?.labelTranslationId;
         return label
-          ? [this.evfTranslate(templateVersion, label!, language)]
+          ? [this.evfTranslate(templateVersion, label, language)]
           : ['((LABEL NOT FOUND: ' + label + '))'];
       }
-    } else if (RegExp(/^\d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$/).test(value)) {
+    } else if (RegExp(/^\d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12]\d|3[01])$/).test(value)) {
       return [this.formatDate(value, 'dd/MM/yyyy')];
     } else {
       return [value];
@@ -276,8 +276,8 @@ export class PrescriptionsPdfService {
   }
 
   private evfTranslate(template: FormTemplate, labelId: string, language: 'nl' | 'fr' | 'de' | 'en'): string {
-    return template.translations?.[labelId]?.[language]
-      ?? template.commonTranslations?.[labelId]?.[language]
+    return (template.translations?.[labelId]?.[language]
+        ?? template.commonTranslations?.[labelId]?.[language])
       ?? 'Translation not found for "' + labelId + '"'
   }
 

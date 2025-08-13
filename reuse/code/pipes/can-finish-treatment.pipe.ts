@@ -6,7 +6,7 @@ import { AccessMatrixState } from '../states/access-matrix.state';
 export class CanFinishTreatmentPipe {
 
   constructor(
-    private accessMatrixState: AccessMatrixState,
+    private readonly accessMatrixState: AccessMatrixState,
   ) {
   }
 

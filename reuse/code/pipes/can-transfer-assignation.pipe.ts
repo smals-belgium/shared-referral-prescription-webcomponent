@@ -23,7 +23,7 @@ import { isProposal } from '@reuse/code/utils/utils';
 @Pipe({name: 'canTransferAssignation', standalone: true})
 export class CanTransferAssignationPipe {
 
-  constructor(private accessMatrixState: AccessMatrixState) {
+  constructor(private readonly accessMatrixState: AccessMatrixState) {
   }
 
   transform(prescription: ReadPrescription, task?: PerformerTask, currentUser?: UserInfo): boolean {

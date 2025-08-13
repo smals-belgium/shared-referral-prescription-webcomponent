@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {HealthcareProviderList} from "../interfaces/healthcareProvider.interface";
+import { HealthcareProviderList } from "../interfaces/healthcareProvider.interface";
 
 @Injectable({providedIn: 'root'})
 export class HealthcareProviderService {
 
   constructor(
-    private http: HttpClient,
+    private readonly http: HttpClient,
   ) {
   }
 

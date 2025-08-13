@@ -20,7 +20,7 @@
   keycloak.init({onLoad: 'login-required', checkLoginIframe: false}).then(function (authenticated) {
     console.log(authenticated ? 'authenticated' : 'not authenticated');
     const create = document.createElement('nihdi-referral-prescription-details');
-    create.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'nl-BE';
+    create.lang = navigator.language.includes('nl') ?? navigator.language.includes('fr') ? navigator.language : 'nl-BE';
     create.prescriptionId = '13f22a72-8d73-4a76-bf21-4eb07ab1ab7d';
     create.getToken = () => Promise.resolve(keycloak.token);
     document.body.append(create);

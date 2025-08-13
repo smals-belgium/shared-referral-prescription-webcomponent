@@ -9,7 +9,7 @@ export class TemplateVersionsState {
   private readonly states: Record<string, WritableSignal<DataState<FormTemplate>>> = {};
 
   constructor(
-    private prescriptionTemplateService: PrescriptionTemplateService
+    private readonly prescriptionTemplateService: PrescriptionTemplateService
   ) {
   }
 

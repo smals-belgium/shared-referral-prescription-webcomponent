@@ -67,10 +67,10 @@ export class RecommendationsComponent extends EvfBaseFormElementComponent {
   readonly id = 'evf-recommendations-' + RecommendationsComponent.counter++;
 
   constructor(
-    private cdRef: ChangeDetectorRef,
-    private pssService: PssService,
-    private toastService: ToastService,
-    private evfTranslate: EvfTranslateService
+    private readonly cdRef: ChangeDetectorRef,
+    private readonly pssService: PssService,
+    private readonly toastService: ToastService,
+    private readonly evfTranslate: EvfTranslateService
   ) {
     super(cdRef);
     this.language = this.evfTranslate.currentLang as 'nl' | 'fr';

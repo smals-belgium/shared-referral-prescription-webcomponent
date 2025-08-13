@@ -22,7 +22,7 @@ import { AccessMatrixState } from '../states/access-matrix.state';
 export class CanCancelTreatmentPipe {
 
   constructor(
-    private accessMatrixState: AccessMatrixState,
+    private readonly accessMatrixState: AccessMatrixState,
   ) {
   }
 

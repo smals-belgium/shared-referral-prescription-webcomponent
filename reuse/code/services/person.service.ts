@@ -10,7 +10,7 @@ export class PersonService {
   private cache: Record<string, Person> = {};
 
   constructor(
-    private http: HttpClient
+    private readonly http: HttpClient
   ) {
   }
 

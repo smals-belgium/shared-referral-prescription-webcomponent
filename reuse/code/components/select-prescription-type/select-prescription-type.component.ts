@@ -13,7 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { toSearchString } from '../../utils/utils';
 import { HighlightFilterPipe } from '../../pipes/highlight-filter.pipe';
 import { EvfTemplate, RADIOLOGY_CODES, PHYSIOTHERAPY_CODES, NURSING_CODES } from '../../interfaces';
-import { PrescriptionModel } from '../../interfaces/prescription-modal.inteface';
+import { PrescriptionModel } from '@reuse/code/interfaces';
 
 @Component({
     selector: 'app-select-prescription-type',
@@ -50,7 +50,7 @@ export class SelectPrescriptionTypeComponent implements OnChanges {
     ? category.label
     : '';
   readonly displayTypeWith = (type: string | EvfTemplate) => !!type && typeof type === 'object'
-    ? type.labelTranslations[this.evfCurrentLang] || ''
+    ? type.labelTranslations[this.evfCurrentLang] ?? ''
     : '';
   readonly displayModelWith = (model: string | PrescriptionModel) => !!model && typeof model === 'object'
     ? model.label
@@ -66,7 +66,7 @@ export class SelectPrescriptionTypeComponent implements OnChanges {
   @Input() showTitle = true;
 
   constructor(
-    private translate: TranslateService
+    private readonly translate: TranslateService
   ) {
   }
 
@@ -79,7 +79,7 @@ export class SelectPrescriptionTypeComponent implements OnChanges {
       this.formGroup.get('category')?.addValidators(mustBeObjectValidator);
       this.formGroup.get('template')?.addValidators(mustBeObjectValidator);
     }
-    if ((changes['formGroup'] || changes['templates']) && this.formGroup && this.templates) {
+    if ((changes['formGroup'] ?? changes['templates']) && this.formGroup && this.templates) {
       this.setupAutocompleteOptions();
     }
   }
@@ -160,7 +160,7 @@ export class SelectPrescriptionTypeComponent implements OnChanges {
     }
 
     const validator = form_field.validator({} as AbstractControl);
-    return (validator && validator['required']);
+    return (validator?.['required']);
   }
 }
 

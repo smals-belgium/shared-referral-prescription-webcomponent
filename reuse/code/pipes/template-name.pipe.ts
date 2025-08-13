@@ -16,10 +16,10 @@ export class TemplateNamePipe implements PipeTransform {
   private translated?: string;
 
   constructor(
-    private translateService: TranslateService,
-    private templatesStateService: TemplatesState,
-    private destroyRef: DestroyRef,
-    private cd: ChangeDetectorRef
+    private readonly translateService: TranslateService,
+    private readonly templatesStateService: TemplatesState,
+    private readonly destroyRef: DestroyRef,
+    private readonly cd: ChangeDetectorRef
   ) {
     this.listenForLangChanges();
   }
@@ -29,7 +29,7 @@ export class TemplateNamePipe implements PipeTransform {
       this.templateCodeOrId = templateCodeOrId;
       this.translate();
     }
-    return this.translated || '';
+    return this.translated ?? '';
   }
 
   private listenForLangChanges() {
@@ -37,7 +37,7 @@ export class TemplateNamePipe implements PipeTransform {
     combineLatest([this.templates$, lang$])
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(([templatesState]) => {
-        this.templates = templatesState.data || [];
+        this.templates = templatesState.data ?? [];
         this.translate();
         this.cd.markForCheck();
       });
@@ -48,12 +48,12 @@ export class TemplateNamePipe implements PipeTransform {
       this.translated = '';
     } else if (typeof this.templateCodeOrId === 'string') {
       const template = this.templates.find((t) => t.code === this.templateCodeOrId);
-      const lang = (this.translateService.currentLang || this.translateService.defaultLang).substring(0, 2) as 'nl' | 'fr' | 'de' | 'en';
-      this.translated = template?.labelTranslations[lang] || this.templateCodeOrId || '';
+      const lang = (this.translateService.currentLang ?? this.translateService.defaultLang).substring(0, 2) as 'nl' | 'fr' | 'de' | 'en';
+      this.translated = template?.labelTranslations[lang] ?? this.templateCodeOrId ?? '';
     } else {
       const template = this.templates.find((t) => templateIdsAreEqual(this.templateCodeOrId as TemplateId, t.metadata));
-      const lang = (this.translateService.currentLang || this.translateService.defaultLang).substring(0, 2) as 'nl' | 'fr' | 'de' | 'en';
-      this.translated = template?.labelTranslations[lang] || templateIdToString(this.templateCodeOrId as TemplateId) || '';
+      const lang = (this.translateService.currentLang ?? this.translateService.defaultLang).substring(0, 2) as 'nl' | 'fr' | 'de' | 'en';
+      this.translated = template?.labelTranslations[lang] ?? templateIdToString(this.templateCodeOrId) ?? '';
     }
   }
 }

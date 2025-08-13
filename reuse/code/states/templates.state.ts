@@ -7,7 +7,7 @@ import { BaseState } from './base.state';
 export class TemplatesState extends BaseState<EvfTemplate[]> {
 
   constructor(
-    private prescriptionTemplateService: PrescriptionTemplateService
+    private readonly prescriptionTemplateService: PrescriptionTemplateService
   ) {
     super()
   }

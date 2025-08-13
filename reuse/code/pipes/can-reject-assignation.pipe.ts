@@ -22,7 +22,7 @@ import { isProposal } from '@reuse/code/utils/utils';
 @Pipe({name: 'canRejectAssignation', standalone: true})
 export class CanRejectAssignationPipe {
 
-  constructor(private accessMatrixState: AccessMatrixState) {
+  constructor(private readonly accessMatrixState: AccessMatrixState) {
   }
 
   transform(prescription: ReadPrescription, task: PerformerTask, patientSsin: string, currentUser?: UserInfo): boolean {
@@ -41,7 +41,7 @@ export class CanRejectAssignationPipe {
       const isPatient = currentUser.role === Role.patient && currentUser.ssin === patientSsin;
       const isCaregiver = currentUser.role !== Role.patient && currentUser.ssin === caregiverSsin;
 
-      return isPatient || isCaregiver;
+    return isPatient ?? isCaregiver;
   }
 
   private hasAssignPermissions(prescription: ReadPrescription) {

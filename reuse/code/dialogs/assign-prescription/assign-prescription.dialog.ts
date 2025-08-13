@@ -162,7 +162,7 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
           this.isLoading.set(false)
           return {
             items: items,
-            total: healthcareProvider.total || items.length,
+            total: healthcareProvider.total ?? items.length,
             page: this.searchCriteria$()?.page ?? 1,
             pageSize: this.searchCriteria$()?.pageSize ?? 10
           }
@@ -200,15 +200,15 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
   currentLang?: string;
 
   constructor(
-    private prescriptionStateService: PrescriptionState,
-    private proposalStateService: ProposalState,
-    private healthcareProviderService: HealthcareProviderService,
-    private toastService: ToastService,
-    private geographyService: GeographyService,
+    private readonly prescriptionStateService: PrescriptionState,
+    private readonly proposalStateService: ProposalState,
+    private readonly healthcareProviderService: HealthcareProviderService,
+    private readonly toastService: ToastService,
+    private readonly geographyService: GeographyService,
     dialogRef: MatDialogRef<AssignPrescriptionDialog>,
-    @Inject(MAT_DIALOG_DATA) private data: AssignPrescriptionDialogData,
-    private translate: TranslateService,
-    private organizationService: OrganizationService,
+    @Inject(MAT_DIALOG_DATA) private readonly data: AssignPrescriptionDialogData,
+    private readonly translate: TranslateService,
+    private readonly organizationService: OrganizationService,
     private readonly formatMultilingualObject: FormatMultilingualObjectPipe
   ) {
     super(dialogRef);
@@ -231,7 +231,7 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
 
     this.formGroup.get('cities')!.setValidators(
       (control: AbstractControl) => Validators.required(this.formGroup.get('query')!) != null
-        ? Validators.required(control) || Validators.minLength(1)(control)
+        ? Validators.required(control) ?? Validators.minLength(1)(control)
         : null
     );
   }
@@ -240,12 +240,12 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
     this.formGroup.markAllAsTouched();
     if (this.formGroup.valid) {
       const values = this.formGroup.value;
-      const zipCodes = values.cities?.map(c => c.zipCode) || [];
+      const zipCodes = values.cities?.map(c => c.zipCode) ?? [];
       this.searchCriteria$.set({
         query: values.query!,
         zipCodes,
         page: 1,
-        pageSize: this.healthcareProvidersState$()?.data?.pageSize || 10,
+        pageSize: this.healthcareProvidersState$()?.data?.pageSize ?? 10,
         professionalType: this.selectedFilter
       });
     }
@@ -253,7 +253,7 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
 
   loadData(page?: number, pageSize?: number) {
     const values = this.formGroup.value;
-    const zipCodes = values.cities?.map(c => c.zipCode) || [];
+    const zipCodes = values.cities?.map(c => c.zipCode) ?? [];
     this.searchCriteria$.set({
       query: values.query!,
       zipCodes,
@@ -266,9 +266,9 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
   filterValues(professionalType: ProfessionalType) {
     this.selectedFilter = professionalType;
     const values = this.formGroup.value;
-    const zipCodes = values.cities?.map(c => c.zipCode) || [];
-    const page = this.healthcareProvidersState$()?.data?.page || 1;
-    const pageSize = this.healthcareProvidersState$()?.data?.pageSize || 10;
+    const zipCodes = values.cities?.map(c => c.zipCode) ?? [];
+    const page = this.healthcareProvidersState$()?.data?.page ?? 1;
+    const pageSize = this.healthcareProvidersState$()?.data?.pageSize ?? 10;
     this.searchCriteria$.set({
       query: values.query!,
       zipCodes,
@@ -340,7 +340,7 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
 
   removeCity(city: any) {
     const control = this.formGroup.get('cities')!;
-    const updated = control.value?.filter(c => c !== city) || [];
+    const updated = control.value?.filter(c => c !== city) ?? [];
     control.setValue(updated);
     this.formGroup.get('query')!.updateValueAndValidity();
   }
@@ -350,7 +350,7 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
       return;
     }
     const control = this.formGroup.get('cities')!;
-    const value = [...(control.value || [])].filter(v => v.zipCode !== event.option.value.zipCode);
+    const value = [...(control.value ?? [])].filter(v => v.zipCode !== event.option.value.zipCode);
     value.push(event.option.value);
     control.setValue(value);
     searchInput.value = '';
@@ -385,7 +385,7 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
 
   hasName(healthcareProvider: Organization | Professional): boolean {
     if (this.isProfessional(healthcareProvider)) {
-      return !!(healthcareProvider.healthcareQualification.descriptionFr || healthcareProvider.healthcareQualification.descriptionNl || healthcareProvider.healthcareQualification.descriptionDe);
+      return !!(healthcareProvider.healthcareQualification.descriptionFr ?? healthcareProvider.healthcareQualification.descriptionNl ?? healthcareProvider.healthcareQualification.descriptionDe);
     }
     return false;
   }

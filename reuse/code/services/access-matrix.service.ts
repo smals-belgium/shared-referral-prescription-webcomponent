@@ -7,7 +7,7 @@ import { AccessMatrix } from '../interfaces';
 export class AccessMatrixService {
 
   constructor(
-    private http: HttpClient
+    private readonly http: HttpClient
   ) {
   }
 

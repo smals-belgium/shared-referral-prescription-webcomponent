@@ -9,7 +9,7 @@ export class PrescriptionService {
 
 
   constructor(
-    private http: HttpClient
+    private readonly http: HttpClient
   ) {
   }
 

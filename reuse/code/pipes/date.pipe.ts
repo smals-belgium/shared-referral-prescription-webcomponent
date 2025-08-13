@@ -6,14 +6,14 @@ import { takeUntil } from 'rxjs/operators';
 
 @Pipe({name: 'date', pure: false, standalone: true})
 export class DatePipe implements PipeTransform, OnDestroy {
-  private destroyed$ = new Subject<void>();
+  private readonly destroyed$ = new Subject<void>();
   private value?: string | Date | null;
   private dateFormat?: string;
   private formatted = '';
 
   constructor(
-    private dateAdapter: DateAdapter<DateTime>,
-    private cd: ChangeDetectorRef
+    private readonly dateAdapter: DateAdapter<DateTime>,
+    private readonly cd: ChangeDetectorRef
   ) {
     this.listenForLangChanges();
   }

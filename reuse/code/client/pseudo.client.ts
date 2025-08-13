@@ -10,8 +10,8 @@ export class PseudoClient implements PseudonymisationClient {
   private readonly pseudoApiUrl = this.configService.getEnvironmentVariable('pseudoApiUrl');
 
   constructor(
-    private http: HttpClient,
-    private configService: ConfigurationService
+    private readonly http: HttpClient,
+    private readonly configService: ConfigurationService
   ) {
   }
 

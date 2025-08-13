@@ -43,10 +43,10 @@ export class FinishExecutionPrescriptionDialog extends BaseDialog implements OnI
   generatedUUID = '';
 
   constructor(
-    private prescriptionStateService: PrescriptionState,
-    private toastService: ToastService,
+    private readonly prescriptionStateService: PrescriptionState,
+    private readonly toastService: ToastService,
     dialogRef: MatDialogRef<FinishExecutionPrescriptionDialog>,
-    @Inject(MAT_DIALOG_DATA) private data: {
+    @Inject(MAT_DIALOG_DATA) private readonly data: {
       prescription: ReadPrescription,
       performerTask: PerformerTask,
       startExecutionDate: string
@@ -68,7 +68,10 @@ export class FinishExecutionPrescriptionDialog extends BaseDialog implements OnI
       };
       this.loading = true;
       this.prescriptionStateService
-        .finishPrescriptionExecution(this.data.prescription.id!, this.data.performerTask.id, executionFinish, this.generatedUUID)
+        .finishPrescriptionExecution(this.data.prescription.id,
+          this.data.performerTask.id,
+          executionFinish,
+          this.generatedUUID)
         .subscribe({
           next: () => {
             this.closeErrorCard();

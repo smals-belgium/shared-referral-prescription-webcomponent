@@ -19,7 +19,7 @@
             formControlName="query"
             [dropSpecialCharacters]="queryIsNumeric"
             data-cy="prescription-assign-performer"
-            [mask]="queryIsNumeric ? '0-00000-00-000||0-00000-00' : ''"
+            [mask]="queryIsNumeric ? '0-00000-00-000??0-00000-00' : ''"
             [placeholder]="'prescription.transferAssignation.searchPerformerPlaceHolder' | translate"
             [validation]="queryIsNumeric"
             maxlength="50"
@@ -72,7 +72,7 @@
                 </button>
               </mat-chip-row>
             }
-            @if ((formGroup.get('cities')!.value?.length || 0) < 5) {
+            @if ((formGroup.get('cities')!.value?.length ?? 0) < 5) {
               <input
                 #searchInput
                 formControlName="searchCity"
@@ -102,7 +102,7 @@
             }
           </mat-chip-grid>
           <mat-error
-            *ngIf="control.hasError('required') || control.hasError('minlength')">{{ 'common.mandatory' | translate }}
+            *ngIf="control.hasError('required') ?? control.hasError('minlength')">{{ 'common.mandatory' | translate }}
           </mat-error>
         </mat-form-field>
       }
@@ -128,7 +128,7 @@
       <table>
         <tr class="result-item"
              *ngFor="let professional of professionalState.data!"
-             [attr.data-cy]="'result-professional-' + (professional.nihii8 || professional.nihii11) + professional.id.qualificationCode"
+            [attr.data-cy]="'result-professional-' + (professional.nihii8 ?? professional.nihii11) + professional.id.qualificationCode"
              (click)="onTransfer(professional)"
              (keydown.enter)="onTransfer(professional)"
              tabindex="0"
@@ -138,8 +138,10 @@
           <td data-cy="professional-nihdi" *ngIf="professional.nihii11">{{ professional.nihii11 | formatNihdi: professional.id.qualificationCode}}</td>
 
           @if(professional.address) {
-            <td data-cy="professional-address-street">{{ professional.address.street | formatMultilingualObject: 'street': currentLang }} {{professional.address.houseNumber || ''}} {{professional.address.box || ''}}</td>
-            <td data-cy="professional-address-postalCode">{{professional.address.zipCode || ''}}</td>
+            <td
+              data-cy="professional-address-street">{{ professional.address.street | formatMultilingualObject: 'street': currentLang }} {{ professional.address.houseNumber || '' }} {{ professional.address.box || '' }}
+            </td>
+            <td data-cy="professional-address-postalCode">{{ professional.address.zipCode || '' }}</td>
             <td data-cy="professional-address-city">{{ professional.address.municipality | formatMultilingualObject: 'municipality': currentLang}}</td>
           }
       </tr>

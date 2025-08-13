@@ -2,19 +2,15 @@ import { Injectable } from '@angular/core';
 import { CreatePrescriptionModel } from '../interfaces';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {
-  PrescriptionModel,
-  PrescriptionModelRequest,
-  UpdatePrescriptionModel
-} from '../interfaces/prescription-modal.inteface';
+import { PrescriptionModel, PrescriptionModelRequest, UpdatePrescriptionModel } from '@reuse/code/interfaces';
 import { HttpCacheService } from './http-cache.service';
 
 @Injectable({ providedIn: 'root' })
 export class PrescriptionModelService {
 
   constructor(
-    private http: HttpClient,
-    private cacheHttpService: HttpCacheService
+    private readonly http: HttpClient,
+    private readonly cacheHttpService: HttpCacheService
   ) {
   }
 

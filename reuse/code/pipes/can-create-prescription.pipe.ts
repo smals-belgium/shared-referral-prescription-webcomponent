@@ -5,7 +5,7 @@ import { AccessMatrixState } from '../states/access-matrix.state';
 export class CanCreatePrescriptionPipe {
 
   constructor(
-    private accessMatrixState: AccessMatrixState,
+    private readonly accessMatrixState: AccessMatrixState,
   ) {
   }
 

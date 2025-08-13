@@ -14,7 +14,7 @@ import { IfStatusSuccessDirective } from '../../directives/if-status-success.dir
 import { combineSignalDataState } from '../../utils/rxjs.utils';
 import { AccessMatrixState } from '../../states/access-matrix.state';
 import { TemplatesState } from '../../states/templates.state';
-import { PrescriptionModel, PrescriptionModelRequest } from '../../interfaces/prescription-modal.inteface';
+import { PrescriptionModel, PrescriptionModelRequest } from '@reuse/code/interfaces';
 import { distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { ModelsState } from '../../states/models.state';
 
@@ -61,7 +61,7 @@ export class ChooseTemplateDialog implements OnInit, OnDestroy {
     return {
       ...sourceState,
       data: {
-        accessMatrices: sourceState.data!.accessMatrices!,
+        accessMatrices: sourceState.data!.accessMatrices,
         templates: this.filterTemplatesOnAccessMatrices(sourceState.data!.templates, sourceState.data!.accessMatrices),
         models: sourceState.data!.models
       }
@@ -75,10 +75,10 @@ export class ChooseTemplateDialog implements OnInit, OnDestroy {
   });
 
   constructor(
-    private accessMatrixStateService: AccessMatrixState,
-    private templatesStateService: TemplatesState,
-    private modelStateService: ModelsState,
-    private dialogRef: MatDialogRef<ChooseTemplateDialog, NewPrescriptionDialogResult>
+    private readonly accessMatrixStateService: AccessMatrixState,
+    private readonly templatesStateService: TemplatesState,
+    private readonly modelStateService: ModelsState,
+    private readonly dialogRef: MatDialogRef<ChooseTemplateDialog, NewPrescriptionDialogResult>
   ) {
   }
 

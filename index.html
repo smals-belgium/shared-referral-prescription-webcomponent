@@ -27,7 +27,7 @@
     <!-- Initialization of the authentication library -->
     <!-- Creation of the custom element -->
     const create = document.createElement('nihdi-referral-prescription-details');
-    create.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'nl-BE';
+    create.lang = navigator.language.includes('nl') ?? navigator.language.includes('fr') ? navigator.language : 'nl-BE';
     create.prescriptionId = '720467cf-f6ee-4a99-a795-6d08ef961167';
     // create.getToken = () => Promise.resolve(keycloak.token);
     // document.body.append(create);
@@ -69,7 +69,7 @@
       return 'intExt';
     } else if (host.includes("referral-prescription.int.pub.vascloud.be")) {
       return 'intPub';
-    } else if (host.includes("wwwacc.referral-prescription.ehealth.fgov.be") ||
+    } else if (host.includes("wwwacc.referral-prescription.ehealth.fgov.be") ??
       host.includes("extranet-acpt.referral-prescription.ehealth.fgov.be")) {
       return 'acc';
     }else if (host.includes("localhost")) {

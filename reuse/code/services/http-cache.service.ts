@@ -7,10 +7,10 @@ import { DateTime } from 'luxon';
 @Injectable({providedIn: 'root'})
 export class HttpCacheService {
 
-  private cacheName = 'healix-v1';
+  private readonly cacheName = 'healix-v1';
 
   constructor(
-    private http: HttpClient
+    private readonly http: HttpClient
   ) {
   }
 

@@ -138,7 +138,7 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
 
     this.formGroup.get('cities')!.setValidators(
       (control: AbstractControl) => Validators.required(this.formGroup.get('query')!) != null
-        ? Validators.required(control) || Validators.minLength(1)(control)
+        ? Validators.required(control) ?? Validators.minLength(1)(control)
         : null
     );
   }
@@ -147,7 +147,7 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
     this.formGroup.markAllAsTouched();
     if (this.formGroup.valid) {
       const values = this.formGroup.value;
-      const zipCodes = values.cities?.map(c => c.zipCode) || [];
+      const zipCodes = values.cities?.map(c => c.zipCode) ?? [];
       this.searchCriteria$.set({
         query: values.query!,
         zipCodes
@@ -208,7 +208,7 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
 
   removeCity(city: any) {
     const control = this.formGroup.get('cities')!;
-    const updated = control.value?.filter(c => c !== city) || [];
+    const updated = control.value?.filter(c => c !== city) ?? [];
     control.setValue(updated);
     this.formGroup.get('query')!.updateValueAndValidity();
   }
@@ -218,7 +218,7 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
       return;
     }
     const control = this.formGroup.get('cities')!;
-    const value = [...(control.value || [])].filter(v => v.zipCode !== event.option.value.zipCode);
+    const value = [...(control.value ?? [])].filter(v => v.zipCode !== event.option.value.zipCode);
     value.push(event.option.value);
     control.setValue(value);
     searchInput.value = '';

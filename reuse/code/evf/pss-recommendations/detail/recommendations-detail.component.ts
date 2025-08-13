@@ -87,9 +87,9 @@ export class RecommendationsDetailComponent extends EvfBaseFormDetailComponent {
     super.ngOnChanges(changes);
     if (changes['metadata']) {
       if (this.metadata != undefined) {
-        this.pssStatus = this.metadata['pssActive'] != undefined ? this.metadata['pssActive'] : false;
+        this.pssStatus = this.metadata['pssActive'] ?? false;
         this.isPssActive.set(this.pssStatus);
-        this.userIsProfessional = this.metadata['isProfessional'] != undefined ? this.metadata['isProfessional'] : false;
+        this.userIsProfessional = this.metadata['isProfessional'] ?? false;
         this.isProfessional.set(this.userIsProfessional);
 
         if (this.userIsProfessional && this.pssStatus) {

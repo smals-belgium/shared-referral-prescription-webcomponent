@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { LoadingStatus } from '../interfaces';
 import { BaseState } from './base.state';
-import {PseudoService} from "../services/pseudo.service";
-import {from} from "rxjs";
+import { PseudoService } from "../services/pseudo.service";
+import { from } from "rxjs";
 
 @Injectable({providedIn: 'root'})
-export class IdentifyState extends BaseState<String> {
+export class IdentifyState extends BaseState<string> {
 
   constructor(
-    private pseudoService: PseudoService
+    private readonly pseudoService: PseudoService
   ) {
     super();
   }
@@ -17,7 +17,7 @@ export class IdentifyState extends BaseState<String> {
     this.load(from(this.pseudoService.identify(value)));
   }
 
-  setSSIN(SSIN: String): void {
+  setSSIN(SSIN: string): void {
     this._state.set({status: LoadingStatus.SUCCESS, data: SSIN});
   }
 }

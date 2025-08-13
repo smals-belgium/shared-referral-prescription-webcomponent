@@ -11,12 +11,12 @@ import { ConfigurationService } from './configuration.service';
 
 @Injectable({providedIn: 'root'})
 export class PseudoService {
-  private pseudonymizationDomain: Domain | undefined;
+  private readonly pseudonymizationDomain: Domain | undefined;
   private readonly pseudoApiUrl = this.configService.getEnvironmentVariable('pseudoApiUrl');
 
   constructor(
-    private configService: ConfigurationService,
-    private pseudonymizationHelper: PseudonymisationHelper,
+    private readonly configService: ConfigurationService,
+    private readonly pseudonymizationHelper: PseudonymisationHelper,
   ) {
     if (this.configService.getEnvironmentVariable('enablePseudo')) {
       this.pseudonymizationDomain = this.pseudonymizationHelper.createDomain('uhmep_v1', <Curve>'p521', this.pseudoApiUrl, 8);

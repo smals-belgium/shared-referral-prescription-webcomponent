@@ -41,7 +41,6 @@ import { debounceTime, filter, merge, Observable, of, Subject, switchMap } from 
 import { EVF_MATERIAL_OPTIONS, EvfMaterialOptions } from '@smals/vas-evaluation-form-ui-material';
 import { catchError, tap } from 'rxjs/operators';
 import { MatChipsModule } from '@angular/material/chips';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 
 @Component({
@@ -69,14 +68,12 @@ import { LiveAnnouncer } from '@angular/cdk/a11y';
 export class AutocompleteMultiselectComponent extends EvfBaseFormElementComponent implements OnInit {
 
   private static counter = 0;
-  private queryTrigger$ = new Subject<string>();
+  private readonly queryTrigger$ = new Subject<string>();
   private lastValue: string | undefined;
   private autoSelectInAutocomplete = false;
 
   readonly id = 'evf-autocomplete-' + AutocompleteMultiselectComponent.counter++;
   options$: Observable<AutocompleteOption[] | AutocompleteError> | undefined;
-  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
-
   readonly selectedItems = signal<AutocompleteOption[]>([]);
 
   readonly announcer = inject(LiveAnnouncer);
@@ -88,12 +85,12 @@ export class AutocompleteMultiselectComponent extends EvfBaseFormElementComponen
 
   displayWith = (option: {
     label: { [x: string]: any; };
-  }) => option && option.label ? option.label[this.evfTranslate.currentLang] : option;
+  }) => option?.label ? option.label[this.evfTranslate.currentLang] : option;
 
   constructor(
-    private cdRef: ChangeDetectorRef,
-    private evfTranslate: EvfTranslateService,
-    private externalSourceService: EvfExternalSourceService,
+    private readonly cdRef: ChangeDetectorRef,
+    private readonly evfTranslate: EvfTranslateService,
+    private readonly externalSourceService: EvfExternalSourceService,
     @Optional() @Inject(EVF_MATERIAL_OPTIONS) matOptions?: EvfMaterialOptions
   ) {
     super(cdRef, matOptions);

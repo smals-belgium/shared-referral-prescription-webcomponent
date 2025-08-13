@@ -40,10 +40,10 @@ export class InterruptExecutionPrescriptionDialog extends BaseDialog implements 
   generatedUUID = '';
 
   constructor(
-    private prescriptionStateService: PrescriptionState,
-    private toastService: ToastService,
+    private readonly prescriptionStateService: PrescriptionState,
+    private readonly toastService: ToastService,
     dialogRef: MatDialogRef<InterruptExecutionPrescriptionDialog>,
-    @Inject(MAT_DIALOG_DATA) private data: InterruptExecutionPrescriptionDialogData
+    @Inject(MAT_DIALOG_DATA) private readonly data: InterruptExecutionPrescriptionDialogData
   ) {
     super(dialogRef)
     this.prescription = data.prescription;
@@ -58,7 +58,7 @@ export class InterruptExecutionPrescriptionDialog extends BaseDialog implements 
   interruptPrescriptionExecution(): void {
     this.loading = true;
     this.prescriptionStateService
-      .interruptPrescriptionExecution(this.prescription.id!, this.performerTask.id, this.generatedUUID)
+      .interruptPrescriptionExecution(this.prescription.id, this.performerTask.id, this.generatedUUID)
       .subscribe({
         next: () => {
           this.closeErrorCard();

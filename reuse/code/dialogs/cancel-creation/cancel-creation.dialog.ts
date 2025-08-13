@@ -5,7 +5,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { TemplateNamePipe } from '../../pipes/template-name.pipe';
-import {CreatePrescriptionForm} from "../../interfaces/create-prescription-form.interface";
+import { CreatePrescriptionForm } from "@reuse/code/interfaces";
 
 export interface CancelCreationDialogData {
   prescriptionForms: CreatePrescriptionForm[];
@@ -33,8 +33,8 @@ export class CancelCreationDialog {
   formsToDelete: number[] = [];
 
   constructor(
-    private dialogRef: MatDialogRef<CancelCreationDialog, CancelCreationDialogResult>,
-    @Inject(MAT_DIALOG_DATA) private data: CancelCreationDialogData
+    private readonly dialogRef: MatDialogRef<CancelCreationDialog, CancelCreationDialogResult>,
+    @Inject(MAT_DIALOG_DATA) private readonly data: CancelCreationDialogData
   ) {
   }
 

@@ -24,7 +24,7 @@ import { isProposal } from '@reuse/code/utils/utils';
 export class CanExtendPrescriptionPipe {
 
   constructor(
-    private accessMatrixState: AccessMatrixState,
+    private readonly accessMatrixState: AccessMatrixState,
   ) {
   }
 
