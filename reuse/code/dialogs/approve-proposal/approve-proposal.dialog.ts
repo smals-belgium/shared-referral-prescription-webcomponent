@@ -119,5 +119,4 @@ export class ApproveProposalDialog extends BaseDialog implements OnInit {
     this.loading = false;
     this.showErrorCard('common.somethingWentWrong', error);
   }
-
 }

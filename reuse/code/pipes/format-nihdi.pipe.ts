@@ -13,7 +13,7 @@ export class FormatNihdiPipe implements PipeTransform {
     if(qualificationCode) {
       nihidi = value + qualificationCode;
     }
-    nihidi = nihidi!.replace(/[^0-9]+/g, '');
+    nihidi = nihidi!.replace(/\D+/g, '');
     let formattedParts = [];
     for (const part of FormatNihdiPipe.maskParts) {
       const endIndex = nihidi.length >= part.length ? part.length : nihidi.length;

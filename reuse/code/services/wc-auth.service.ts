@@ -12,14 +12,13 @@ export class WcAuthService extends AuthService {
   private _getAccessToken!: (audience?: string) => Promise<string | null>;
   private _getIdToken!: () => IdToken;
 
-  constructor(
-  ) {
+  constructor() {
     super();
   }
 
   override init(getAccessToken: (audience?: string) => Promise<string | null>, getIdToken?: () => IdToken): void {
     this._getAccessToken = getAccessToken;
-    if(getIdToken) {
+    if (getIdToken) {
       this._getIdToken = getIdToken;
     }
     this.ready$.next(true);
@@ -35,13 +34,13 @@ export class WcAuthService extends AuthService {
   override getAccessToken(audience?: string): Observable<string | null> {
     return this.ready$.pipe(
       first((ready) => ready),
-      switchMap( () => this._getAccessToken(audience))
+      switchMap(() => this._getAccessToken(audience))
     );
   }
 
   override getClaims(): Observable<Record<string, any>> {
-   return this.getIdToken().pipe(
-        map((token) => (typeof token === 'string') ? JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString()) : token))
+    return this.getIdToken().pipe(
+      map((token) => (typeof token === 'string') ? JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString()) : token))
   }
 
   getResourceAccess(): Observable<Record<string, any>> {
@@ -77,6 +76,6 @@ export class WcAuthService extends AuthService {
       Object.hasOwn(userProfile, discipline.toLowerCase())
     );
 
-    return hasProfessionalKey || resourceAccess['nihdi-uhmep-api']?.roles?.includes('admin') || false;
+    return hasProfessionalKey ?? resourceAccess['nihdi-uhmep-api']?.roles?.includes('admin') ?? false;
   }
 }

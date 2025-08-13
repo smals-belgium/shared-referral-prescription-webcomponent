@@ -56,11 +56,11 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
   generatedUUID = '';
 
   constructor(
-    private prescriptionStateService: PrescriptionState,
-    private authService: AuthService,
-    private toastService: ToastService,
+    private readonly prescriptionStateService: PrescriptionState,
+    private readonly authService: AuthService,
+    private readonly toastService: ToastService,
     dialogRef: MatDialogRef<StartExecutionPrescriptionDialog>,
-    @Inject(MAT_DIALOG_DATA) private data: StartExecutionPrescriptionDialogData) {
+    @Inject(MAT_DIALOG_DATA) private readonly data: StartExecutionPrescriptionDialogData) {
     super(dialogRef)
       this.prescription = data.prescription;
       this.performerTask = data.performerTask;
@@ -68,7 +68,7 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
       const day = minDate.getDate() - 5;
       minDate.setDate(day);
 
-      this.minDate = data.startTreatmentDate || minDate.toISOString();
+    this.minDate = data.startTreatmentDate ?? minDate.toISOString();
   }
 
   ngOnInit() {
@@ -114,8 +114,8 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
     );
     this.getCurrentUserSsin()
       .pipe(switchMap(ssin => this.prescriptionStateService.assignAndStartPrescriptionExecution(
-        this.prescription.id!,
-        this.prescription.referralTask.id!,
+        this.prescription.id,
+        this.prescription.referralTask.id,
         {ssin, discipline},
         this.generatedUUID,
         executionStart

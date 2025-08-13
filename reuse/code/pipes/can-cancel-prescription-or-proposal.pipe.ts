@@ -22,7 +22,7 @@ import { isProposal } from '@reuse/code/utils/utils';
 export class CanCancelPrescriptionOrProposalPipe {
 
   constructor(
-    private accessMatrixState: AccessMatrixState,
+    private readonly accessMatrixState: AccessMatrixState,
   ) {
   }
 
@@ -48,6 +48,6 @@ export class CanCancelPrescriptionOrProposalPipe {
     const isPatient = currentUser.role === Role.patient && currentUser.ssin === patientSsin;
     const isCaregiver = currentUser.role !== Role.patient && currentUser.ssin === caregiverSsin;
 
-    return isPatient || isCaregiver;
+    return isPatient ?? isCaregiver;
   }
 }

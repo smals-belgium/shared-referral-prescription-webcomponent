@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import {Group} from "../interfaces/organization.interface";
+import { Group } from "../interfaces/organization.interface";
 
 @Injectable({providedIn: 'root'})
 export class OrganizationService {
 
-  private groups: Group[] = [
+  private readonly groups: Group[] = [
     { name: "THIRD_PARTY_PAYING_GROUP", code: "940" },
     { name: "GROUP_OF_DOCTORS", code: "212" },
     { name: "GUARD_POST", code: "115" },

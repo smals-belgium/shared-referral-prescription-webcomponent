@@ -10,8 +10,8 @@ export interface ToastOptions {
 export class ToastService {
 
   constructor(
-    private snackBar: MatSnackBar,
-    private translate: TranslateService
+    private readonly snackBar: MatSnackBar,
+    private readonly translate: TranslateService
   ) {
   }
 

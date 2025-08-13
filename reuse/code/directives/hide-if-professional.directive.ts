@@ -9,10 +9,10 @@ import { first } from 'rxjs';
 export class HideIfProfessionalDirective implements OnInit {
 
   constructor(
-    private templateRef: TemplateRef<any>,
-    private viewContainer: ViewContainerRef,
-    private authService: AuthService,
-    private cdRef: ChangeDetectorRef
+    private readonly templateRef: TemplateRef<any>,
+    private readonly viewContainer: ViewContainerRef,
+    private readonly authService: AuthService,
+    private readonly cdRef: ChangeDetectorRef
   ) {
   }
 

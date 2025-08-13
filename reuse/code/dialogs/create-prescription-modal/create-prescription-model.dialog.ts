@@ -46,13 +46,13 @@ export class CreatePrescriptionModelDialog implements OnInit {
   modalState = this.prescriptionModelState.modalState().state;
 
   constructor(
-    private fb: FormBuilder,
-    private nameValidator: UniqueModelNameValidator,
-    private prescriptionModelState: PrescriptionModelState,
-    private prescriptionModalService: PrescriptionModelService,
-    private dialogRef: MatDialogRef<CreatePrescriptionModelDialog>,
-    private templateNamePipe: TemplateNamePipe,
-    @Inject(MAT_DIALOG_DATA) private data: {
+    private readonly fb: FormBuilder,
+    private readonly nameValidator: UniqueModelNameValidator,
+    private readonly prescriptionModelState: PrescriptionModelState,
+    private readonly prescriptionModalService: PrescriptionModelService,
+    private readonly dialogRef: MatDialogRef<CreatePrescriptionModelDialog>,
+    private readonly templateNamePipe: TemplateNamePipe,
+    @Inject(MAT_DIALOG_DATA) private readonly data: {
       template: FormTemplate,
       templateCode: string,
       responses: Record<string, any>
@@ -84,13 +84,13 @@ export class CreatePrescriptionModelDialog implements OnInit {
 
       this.prescriptionModelState.setModalState(LoadingStatus.LOADING)
       this.prescriptionModalService.createModel({
-        name: name || '',
+        name: name ?? '',
         templateCode: this.data.templateCode,
         responses: modelValues
       })
         .subscribe({
           next: (value) => {
-            this.prescriptionModelState.setModalState(LoadingStatus.SUCCESS, name || undefined)
+            this.prescriptionModelState.setModalState(LoadingStatus.SUCCESS, name ?? undefined)
             this.dialogRef.close(true);
           },
           error: (e: any) => {
@@ -102,10 +102,10 @@ export class CreatePrescriptionModelDialog implements OnInit {
 
   private formValuesToModel(responses: Record<string, any>, template: FormTemplate) {
     return Object.entries(responses).reduce<Record<string, any>>((filteredValues, [key, value]) => {
-      let formElement = template.elements.find(e => e.id === key) ||
+      let formElement = template.elements.find(e => e.id === key) ??
         template.elements.find(e => e.elements?.some(n => n.id === key))?.elements?.find(e => e.id === key);
 
-      if (!(formElement?.tags?.includes('freeText') || formElement?.dataType?.type === "date")) {
+      if (!(formElement?.tags?.includes('freeText') ?? formElement?.dataType?.type === "date")) {
         filteredValues[key] = value;
       }
 

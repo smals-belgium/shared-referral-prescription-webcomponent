@@ -1,9 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  CUSTOM_ELEMENTS_SCHEMA, EventEmitter,
-  Input, OnChanges,
-  OnDestroy, Output,
+  CUSTOM_ELEMENTS_SCHEMA,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Output,
   SimpleChanges,
 } from '@angular/core';
 import { ElementGroup, FormElement, FormTemplate, removeNulls } from '@smals/vas-evaluation-form-ui-core';
@@ -24,36 +27,36 @@ import {
 } from '../../dialogs/create-prescription-modal/create-prescription-model.dialog';
 import { MatDialog } from '@angular/material/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
-import { CreatePrescriptionForm } from '../../interfaces/create-prescription-form.interface';
+import { CreatePrescriptionForm } from '@reuse/code/interfaces';
 import { PrescriptionModelService } from '../../services/prescription-model.service';
-import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { UniqueModelNameValidator } from '../../directives/unique-model-name.directive';
 
 
 @Component({
-    selector: 'app-create-prescription-model',
-    templateUrl: './create-prescription-model.component.html',
-    styleUrls: ['./create-prescription-model.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    imports: [
-        ReactiveFormsModule,
-        MatIcon,
-        ErrorCardComponent,
-        SuccessCardComponent,
-        OverlaySpinnerComponent,
-        MatFormField,
-        MatInput,
-        MatButton,
-        MatLabel,
-        TranslateModule,
-        TemplateNamePipe,
-        IfStatusSuccessDirective,
-        IfStatusErrorDirective,
-        IfStatusLoadingDirective
-    ]
+  selector: 'app-create-prescription-model',
+  templateUrl: './create-prescription-model.component.html',
+  styleUrls: ['./create-prescription-model.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [
+    ReactiveFormsModule,
+    MatIcon,
+    ErrorCardComponent,
+    SuccessCardComponent,
+    OverlaySpinnerComponent,
+    MatFormField,
+    MatInput,
+    MatButton,
+    MatLabel,
+    TranslateModule,
+    TemplateNamePipe,
+    IfStatusSuccessDirective,
+    IfStatusErrorDirective,
+    IfStatusLoadingDirective
+  ]
 })
 export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
 
@@ -68,31 +71,34 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
     asyncValidators: [this.nameValidator.validate.bind(this.nameValidator)],
     updateOn: 'change'
   });
-  constructor(private prescriptionModelState: PrescriptionModelState, private dialog: MatDialog, private prescriptionModalService: PrescriptionModelService,
-              private nameValidator: UniqueModelNameValidator) {
+
+  constructor(private readonly prescriptionModelState: PrescriptionModelState,
+              private readonly dialog: MatDialog,
+              private readonly prescriptionModalService: PrescriptionModelService,
+              private readonly nameValidator: UniqueModelNameValidator) {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['prescriptionForm'] && this.prescriptionForm?.modelId) {
-      this.titleControl.setValue(this.prescriptionForm.modelName || '');
+      this.titleControl.setValue(this.prescriptionForm.modelName ?? '');
     }
   }
 
   mapResponsesToRepeatObject(responses: Record<string, any>) {
     const occurrenceTiming: OccurrenceTiming = responses['occurrenceTiming']
-    if(!occurrenceTiming) return responses;
+    if (!occurrenceTiming) return responses;
 
     const repeat = occurrenceTiming.repeat
-    if(!repeat) return responses
+    if (!repeat) return responses
 
-    if(!repeat.count) return {...responses, ...repeat}
+    if (!repeat.count) return {...responses, ...repeat}
 
     let dayPeriod = {}
-    if(repeat.when) {
-      if(Array.isArray(repeat.when)) {
-        dayPeriod = { dayPeriod: repeat.when[0] }
+    if (repeat.when) {
+      if (Array.isArray(repeat.when)) {
+        dayPeriod = {dayPeriod: repeat.when[0]}
       } else {
-        dayPeriod = { dayPeriod: repeat.when }
+        dayPeriod = {dayPeriod: repeat.when}
       }
     }
 
@@ -104,7 +110,7 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
     prescriptionForm.elementGroup = elementGroup;
     if (prescriptionForm.modelResponses) {
       const initialResponses = prescriptionForm.modelResponses
-      let responses = removeNulls(initialResponses || {});
+      let responses = removeNulls(initialResponses ?? {});
       responses = this.mapResponsesToRepeatObject(responses)
       elementGroup.setValue({
         ...elementGroup.getOutputValue(),
@@ -115,7 +121,7 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
 
   getResponses(prescriptionForm: CreatePrescriptionForm) {
     if (prescriptionForm.modelResponses) {
-      let responses = removeNulls(prescriptionForm.modelResponses || {});
+      let responses = removeNulls(prescriptionForm.modelResponses ?? {});
       responses = this.mapResponsesToRepeatObject(responses)
       return {...responses, ...prescriptionForm.elementGroup?.getOutputValue()}
     } else {
@@ -124,7 +130,7 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
   }
 
   handleClick(prescriptionForm: CreatePrescriptionForm, template?: FormTemplate) {
-    if(!template) {
+    if (!template) {
       this.prescriptionModelState.setModalState(LoadingStatus.ERROR, undefined, new HttpErrorResponse({
         error: "No templateCode found."
       }))
@@ -138,7 +144,7 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
         responses: responses
       }
     }).afterClosed().subscribe((createdSuccessfully: boolean) => {
-      if(createdSuccessfully){
+      if (createdSuccessfully) {
         this.modelSaved.emit()
       }
 
@@ -146,13 +152,13 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
   }
 
   handleUpdate(prescriptionForm: CreatePrescriptionForm, template?: FormTemplate) {
-    if(!template) {
+    if (!template) {
       this.prescriptionModelState.setModalState(LoadingStatus.ERROR, undefined, new HttpErrorResponse({
         error: "No templateCode found."
       }))
     }
 
-    if(!this.prescriptionForm.modelId) {
+    if (!this.prescriptionForm.modelId) {
       this.prescriptionModelState.setModalState(LoadingStatus.ERROR, undefined, new HttpErrorResponse({
         error: "No model id found."
       }))
@@ -160,14 +166,14 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
 
     this.prescriptionModelState.setModalState(LoadingStatus.LOADING)
     const responses = this.getResponses(prescriptionForm);
-    const name = this.titleControl.getRawValue() || '';
+    const name = this.titleControl.getRawValue() ?? '';
 
     this.prescriptionModalService.updateModel(
       this.prescriptionForm.modelId!,
       {
-      name: name || '',
-      responses: responses
-    })
+        name: name ?? '',
+        responses: responses
+      })
       .subscribe({
         next: () => {
           this.modelSaved.emit()
@@ -190,7 +196,7 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
 
       const shouldInclude =
         !(element.tags?.includes("freeText")) &&
-        !(element.dataType?.type === "date") &&
+        element.dataType?.type !== "date" &&
         !(element.elements && element.elements.length === 0);
 
       if (shouldInclude) {
@@ -202,7 +208,7 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
   }
 
   getTemplateData(formTemplateState: DataState<FormTemplate>) {
-    if(formTemplateState.data?.elements ){
+    if (formTemplateState.data?.elements) {
       formTemplateState.data.elements = this.filterElements(formTemplateState.data?.elements);
     }
 

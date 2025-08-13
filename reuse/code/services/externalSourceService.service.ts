@@ -15,7 +15,7 @@ import { PssService } from "./pss.service";
 })
 export class ExternalSourceService implements EvfExternalSourceServiceInterface {
 
-  constructor(private pssService: PssService) {
+  constructor(private readonly pssService: PssService) {
   }
 
   handleAutocomplete(externalSource: ExternalSource, value: string): Observable<AutocompleteOption[]> {
@@ -24,7 +24,7 @@ export class ExternalSourceService implements EvfExternalSourceServiceInterface 
       return throwError(() => 'FAILED')
     }
 
-    if(!externalSource.dataUrl){
+    if (!externalSource.dataUrl) {
       return throwError(() => 'No external source provided!')
     }
 

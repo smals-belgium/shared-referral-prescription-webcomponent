@@ -1,14 +1,14 @@
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
-import {FormTemplate} from '@smals/vas-evaluation-form-ui-core';
-import {EvfTemplate} from '../interfaces';
-import {HttpCacheService} from './http-cache.service';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { FormTemplate } from '@smals/vas-evaluation-form-ui-core';
+import { EvfTemplate } from '../interfaces';
+import { HttpCacheService } from './http-cache.service';
 
 @Injectable({providedIn: 'root'})
 export class PrescriptionTemplateService {
 
   constructor(
-    private cacheHttpService: HttpCacheService
+    private readonly cacheHttpService: HttpCacheService
   ) {
   }
 

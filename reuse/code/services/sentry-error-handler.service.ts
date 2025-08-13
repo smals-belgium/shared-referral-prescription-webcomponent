@@ -3,7 +3,7 @@ import * as Sentry from '@sentry/angular';
 import { ConfigurationService } from './configuration.service';
 
 export function getErrorHandlerFromConfiguration(configurationService: ConfigurationService): ErrorHandler {
-  if (!!configurationService.getEnvironmentVariable('enableSentry')) {
+  if (configurationService.getEnvironmentVariable('enableSentry')) {
     Sentry.init({
       dsn: 'https://678a42e391e74c3cbacb323f10b1f4db@o452936.ingest.sentry.io/4504009911238656',
       tracesSampleRate: 0.1,

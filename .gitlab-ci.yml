@@ -2,6 +2,13 @@
   image: gcloud-docker-internet.repo.gcloud.belgium.be/node:20-alpine
   tags:
     - docker
+.sonar:
+  image:
+    name: gcloud-docker-internet.repo.gcloud.belgium.be/sonarsource/sonar-scanner-cli:5.0.1@sha256:494ecc3b5b1ee1625bd377b3905c4284e4f0cc155cff397805a244dee1c7d575
+    entrypoint: [""]
+  tags:
+    - shared
+    - docker
 
 cache:
   key:
@@ -13,6 +20,7 @@ cache:
 
 stages:
   - 'test'
+  - 'report'
 
 test:
   extends: .npm
@@ -24,3 +32,17 @@ test:
     - npm run test
   except:
     - master
+
+sonar-report:
+  extends: .sonar
+  only:
+    - merge_requests
+    - develop
+  stage: report
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+  script:
+    - echo "Starting Sonar Reporting"
+    - sonar-scanner -Dsonar.branch.name=$CI_COMMIT_REF_NAME -Dsonar.host.url=$SONAR_URL -Dsonar.projectKey=nihdi-healix-backend -Dsonar.login=$VAS_SONARQUBE_TOKEN -Dsonar.qualitygate.wait=true
+
+

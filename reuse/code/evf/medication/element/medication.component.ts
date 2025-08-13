@@ -61,20 +61,20 @@ import { EVF_MATERIAL_OPTIONS, EvfMaterialOptions } from '@smals/vas-evaluation-
 export class MedicationComponent extends EvfBaseFormElementComponent implements OnInit {
 
   private static counter = 0;
-  private queryTrigger$ = new Subject<string>();
+  private readonly queryTrigger$ = new Subject<string>();
   private lastValue?: string;
-  private autoSelectInAutocomplete = false;
+  private readonly autoSelectInAutocomplete = false;
 
   readonly id = 'evf-medication-' + MedicationComponent.counter++;
   options$!: Observable<AutocompleteOption[] | AutocompleteError>;
 
   @ViewChild(MatAutocompleteTrigger, {static: true}) autocompleteTrigger!: MatAutocompleteTrigger;
 
-  displayWith = (option: AutocompleteOption | string) => typeof option === 'string' ? option : option?.label[this.evfTranslate.currentLang] || '';
+  displayWith = (option: AutocompleteOption | string) => typeof option === 'string' ? option : option?.label[this.evfTranslate.currentLang] ?? '';
 
   constructor(
-    private medicationService: MedicationService,
-    private evfTranslate: EvfTranslateService,
+    private readonly medicationService: MedicationService,
+    private readonly evfTranslate: EvfTranslateService,
     cdRef: ChangeDetectorRef,
     @Optional() @Inject(EVF_MATERIAL_OPTIONS) matOptions?: EvfMaterialOptions
   ) {
@@ -116,7 +116,7 @@ export class MedicationComponent extends EvfBaseFormElementComponent implements 
           .pipe(
             map((result) => this.toAutocompleteOptions(result)),
             tap((options: AutocompleteOption[]) => this.autoSelectOption(options)),
-            catchError((err) => of(err && err.translate
+            catchError((err) => of(err?.translate
               ? err
               : {translate: 'FAILED_TO_GET_AUTOCOMPLETE_OPTIONS'}
             ))

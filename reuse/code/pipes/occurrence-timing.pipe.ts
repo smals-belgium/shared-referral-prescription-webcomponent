@@ -16,8 +16,8 @@ export class OccurrenceTimingPipe implements PipeTransform {
   private translated = '';
 
   constructor(
-    private evfTranslate: EvfTranslateService,
-    private cdRef: ChangeDetectorRef
+    private readonly evfTranslate: EvfTranslateService,
+    private readonly cdRef: ChangeDetectorRef
   ) {
     this.language = this.evfTranslate.currentLang as 'nl' | 'fr';
     this.evfTranslate.currentLang$
@@ -40,7 +40,7 @@ export class OccurrenceTimingPipe implements PipeTransform {
   private translate() {
     if(validateOccurrenceTiming(this.occurrenceTiming)) {
       this.translated = this.occurrenceTiming
-        ? translateOccurrenceTiming(this.occurrenceTiming, this.language || 'fr')
+        ? translateOccurrenceTiming(this.occurrenceTiming, this.language ?? 'fr')
         : '';
     } else {
       this.translated = '';

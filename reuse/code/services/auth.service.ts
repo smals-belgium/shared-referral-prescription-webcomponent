@@ -1,6 +1,6 @@
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
-import {IdToken, Token} from "../interfaces";
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { IdToken } from "../interfaces";
 
 @Injectable({providedIn: 'root'})
 export class AuthService {

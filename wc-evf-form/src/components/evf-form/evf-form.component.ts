@@ -59,11 +59,11 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
   @Output() changeElementGroup = new EventEmitter<ElementGroup>();
 
   constructor(
-    private evfTranslate: EvfTranslateService,
-    private dateAdapter: DateAdapter<DateTime>,
-    private pssService: PssService,
-    private authService: AuthService,
-    private translate: TranslateService
+    private readonly evfTranslate: EvfTranslateService,
+    private readonly dateAdapter: DateAdapter<DateTime>,
+    private readonly pssService: PssService,
+    private readonly authService: AuthService,
+    private readonly translate: TranslateService
   ) {
   }
 
@@ -144,7 +144,7 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
   }
 
   private formatToEvfLangCode(localeCode: string): 'nl' | 'fr' {
-    return localeCode?.substring(0, 2) as 'nl' | 'fr' || 'fr';
+    return localeCode?.substring(0, 2) as 'nl' | 'fr' ?? 'fr';
   }
 
   setElementGroup(elementGroup: ElementGroup): void {

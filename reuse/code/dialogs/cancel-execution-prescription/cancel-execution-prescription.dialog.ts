@@ -45,10 +45,10 @@ export class CancelExecutionPrescriptionDialog implements OnInit {
   };
 
   constructor(
-    private prescriptionStateService: PrescriptionState,
-    private toastService: ToastService,
-    private dialogRef: MatDialogRef<CancelExecutionPrescriptionDialog>,
-    @Inject(MAT_DIALOG_DATA) private data: CancelExecutionPrescriptionDialogData
+    private readonly prescriptionStateService: PrescriptionState,
+    private readonly toastService: ToastService,
+    private readonly dialogRef: MatDialogRef<CancelExecutionPrescriptionDialog>,
+    @Inject(MAT_DIALOG_DATA) private readonly data: CancelExecutionPrescriptionDialogData
   ) {
     this.prescription = data.prescription;
     this.patient = data.patient;
@@ -62,7 +62,7 @@ export class CancelExecutionPrescriptionDialog implements OnInit {
   cancelPrescriptionExecution(): void {
     this.loading = true;
     this.prescriptionStateService
-      .cancelPrescriptionExecution(this.prescription.id!, this.performerTask.id, this.generatedUUID)
+      .cancelPrescriptionExecution(this.prescription.id, this.performerTask.id, this.generatedUUID)
       .subscribe({
         next: () => {
           this.closeErrorCard();

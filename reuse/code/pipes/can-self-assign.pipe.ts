@@ -5,7 +5,7 @@ import { AccessMatrixState } from '../states/access-matrix.state';
 @Pipe({name: 'canSelfAssign', standalone: true})
 export class CanSelfAssignPipe {
 
-  constructor(private accessMatrixState: AccessMatrixState) {
+  constructor(private readonly accessMatrixState: AccessMatrixState) {
   }
 
   transform(prescription: ReadPrescription, task?: PerformerTask): boolean {

@@ -1,5 +1,4 @@
-import type {Config} from "jest";
-import * as jsdom from 'jsdom';
+import type { Config } from "jest";
 
 export const config: Config = {
   // Automatically clear mock calls, instances, contexts and results before every test

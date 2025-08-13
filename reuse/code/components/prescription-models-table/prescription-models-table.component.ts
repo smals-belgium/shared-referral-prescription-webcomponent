@@ -18,7 +18,7 @@ import {
   MatRowDef,
   MatTable
 } from '@angular/material/table';
-import { PrescriptionModel } from '../../interfaces/prescription-modal.inteface';
+import { PrescriptionModel } from '@reuse/code/interfaces';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { PrescriptionModelService } from '../../services/prescription-model.service';
@@ -63,7 +63,9 @@ export class PrescriptionModelsTableComponent {
 
   displayedColumns: string[] = ['creationDate', 'label', 'template', 'actions'];
 
-  constructor(private prescriptionModalService: PrescriptionModelService, private modelState: ModelsState, private dialog: MatDialog) {
+  constructor(private readonly prescriptionModalService: PrescriptionModelService,
+              private readonly modelState: ModelsState,
+              private readonly dialog: MatDialog) {
   }
 
   onActionButtonClick = (event: Event, model: PrescriptionModel) => {

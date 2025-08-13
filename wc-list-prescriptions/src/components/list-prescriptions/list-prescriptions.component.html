@@ -4,7 +4,7 @@
       <app-error-card
         *ifStatusError="prescriptionState"
         [message]="'prescription.errors.failedToLoadPrescriptions' | translate"
-        [error]="prescriptionState.error.prescriptions || prescriptionState.error.templates"
+        [error]="prescriptionState.error.prescriptions ?? prescriptionState.error.templates"
         (clickRetry)="retryFailedCalls(prescriptionState.error)"
         data-cy="failed-prescription-error-message"
       ></app-error-card>
@@ -18,17 +18,17 @@
           <div class="page-info">
             <app-active-page
               data-cy="numberOfPrescriptions"
-              [page]="prescriptionState.params!['prescriptions']?.['page'] || 1"
-              [pageSize]="prescriptionState.params!['prescriptions']?.['pageSize'] || 10"
-              [total]="prescriptionState.data!.prescriptions?.total || 0"
-              [label]="'prescription.pagination.prescriptions' | translate:{count:prescriptionState.data!.prescriptions?.total || 0}"
+              [page]="prescriptionState.params!['prescriptions']?.['page'] ?? 1"
+              [pageSize]="prescriptionState.params!['prescriptions']?.['pageSize'] ?? 10"
+              [total]="prescriptionState.data!.prescriptions?.total ?? 0"
+              [label]="'prescription.pagination.prescriptions' | translate:{count:prescriptionState.data!.prescriptions?.total ?? 0}"
             ></app-active-page>
 
             <div class="page-size">
               <span>{{'prescription.pagination.pageSize' | translate}}:</span>
               <mat-select
                 data-cy="select-prescription-pagination"
-                [value]="prescriptionState.params!['prescriptions']?.['pageSize'] || 10"
+                [value]="prescriptionState.params!['prescriptions']?.['pageSize'] ?? 10"
                 (selectionChange)="loadData(1, $event.value)"
               >
                 <mat-option [value]="10">10</mat-option>
@@ -48,9 +48,9 @@
 
           <div class="pagination">
             <app-paginator
-              [total]="prescriptionState.data!.prescriptions?.total || 0"
-              [page]="prescriptionState.params!['prescriptions']?.['page'] || 1"
-              [pageSize]="prescriptionState.params!['prescriptions']?.['pageSize'] || 10"
+              [total]="prescriptionState.data!.prescriptions?.total ?? 0"
+              [page]="prescriptionState.params!['prescriptions']?.['page'] ?? 1"
+              [pageSize]="prescriptionState.params!['prescriptions']?.['pageSize'] ?? 10"
               (changePage)="loadData($event, prescriptionState.params!['prescriptions']?.['pageSize'])"
             ></app-paginator>
           </div>
@@ -66,7 +66,7 @@
       <app-error-card
         *ifStatusError="proposalState"
         [message]="'proposal.errors.failedToLoadProposals' | translate"
-        [error]="proposalState.error.proposals || proposalState.error.templates"
+        [error]="proposalState.error.proposals ?? proposalState.error.templates"
         (clickRetry)="retryFailedCalls(proposalState.error)"
         data-cy="failed-prescription-error-message"
       ></app-error-card>
@@ -79,17 +79,17 @@
           <div class="page-info">
             <app-active-page
               data-cy="numberOfProposals"
-              [page]="proposalState.params!['proposals']?.['page'] || 1"
-              [pageSize]="proposalState.params!['proposals']?.['pageSize'] || 10"
-              [total]="proposalState.data!.proposals?.total || 0"
-              [label]="'proposal.pagination.proposals' | translate:{count:proposalState.data!.proposals?.total || 0}"
+              [page]="proposalState.params!['proposals']?.['page'] ?? 1"
+              [pageSize]="proposalState.params!['proposals']?.['pageSize'] ?? 10"
+              [total]="proposalState.data!.proposals?.total ?? 0"
+              [label]="'proposal.pagination.proposals' | translate:{count:proposalState.data!.proposals?.total ?? 0}"
             ></app-active-page>
 
             <div class="page-size">
               <span>{{'proposal.pagination.pageSize' | translate}}:</span>
               <mat-select
                 data-cy="select-proposals-pagination"
-                [value]="proposalState.params!['proposals']?.['pageSize'] || 10"
+                [value]="proposalState.params!['proposals']?.['pageSize'] ?? 10"
                 (selectionChange)="loadData(1, $event.value)"
               >
                 <mat-option [value]="10">10</mat-option>
@@ -108,9 +108,9 @@
           }
           <div class="pagination">
             <app-paginator
-              [total]="proposalState.data!.proposals?.total || 0"
-              [page]="proposalState.params!['proposals']?.['page'] || 1"
-              [pageSize]="proposalState.params!['proposals']?.['pageSize'] || 10"
+              [total]="proposalState.data!.proposals?.total ?? 0"
+              [page]="proposalState.params!['proposals']?.['page'] ?? 1"
+              [pageSize]="proposalState.params!['proposals']?.['pageSize'] ?? 10"
               (changePage)="loadData($event, proposalState.params!['proposals']?.['pageSize'])"
             ></app-paginator>
           </div>
@@ -123,7 +123,7 @@
       <app-error-card
         *ifStatusError="modelState"
         [message]="'models.errors.failedToLoadModels' | translate"
-        [error]="modelState.error.models || modelState.error.templates"
+        [error]="modelState.error.models ?? modelState.error.templates"
         (clickRetry)="retryFailedCalls(modelState.error)"
         data-cy="failed-models-error-message"
       ></app-error-card>
@@ -134,17 +134,17 @@
         <div class="page-info">
           <app-active-page
             data-cy="numberOfModels"
-            [page]="modelState.params!['models']?.['page'] || 1"
-            [pageSize]="modelState.params!['models']?.['pageSize'] || 10"
-            [total]="modelState.data!.models?.totalElements || 0"
-            [label]="'prescription.model.pagination.models' | translate:{count:modelState.data!.models?.totalElements || 0}"
+            [page]="modelState.params!['models']?.['page'] ?? 1"
+            [pageSize]="modelState.params!['models']?.['pageSize'] ?? 10"
+            [total]="modelState.data!.models?.totalElements ?? 0"
+            [label]="'prescription.model.pagination.models' | translate:{count:modelState.data!.models?.totalElements ?? 0}"
           ></app-active-page>
 
           <div class="page-size">
             <span>{{'prescription.model.pagination.pageSize' | translate}}:</span>
             <mat-select
               data-cy="select-models-pagination"
-              [value]="modelState.params!['models']?.['pageSize'] || 10"
+              [value]="modelState.params!['models']?.['pageSize'] ?? 10"
               (selectionChange)="loadData(1, $event.value)"
             >
               <mat-option [value]="10">10</mat-option>
@@ -159,15 +159,15 @@
           <app-prescription-models-table
             [prescriptionModels]="modelState.data!.models.content"
             (clickPrescriptionModel)="clickOpenModelDetails.emit($event)"
-            [page]="modelState.params!['models']?.['page'] || 1"
-            [pageSize]="modelState.params!['models']?.['pageSize'] || 10"
+            [page]="modelState.params!['models']?.['page'] ?? 1"
+            [pageSize]="modelState.params!['models']?.['pageSize'] ?? 10"
           ></app-prescription-models-table>
         }
         <div class="pagination">
           <app-paginator
-            [total]="modelState.data!.models?.totalElements || 0"
-            [page]="modelState.params!['models']?.['page'] || 1"
-            [pageSize]="modelState.params!['models']?.['pageSize'] || 10"
+            [total]="modelState.data!.models?.totalElements ?? 0"
+            [page]="modelState.params!['models']?.['page'] ?? 1"
+            [pageSize]="modelState.params!['models']?.['pageSize'] ?? 10"
             (changePage)="loadData($event, modelState.params!['models']?.['pageSize'])"
           ></app-paginator>
         </div>

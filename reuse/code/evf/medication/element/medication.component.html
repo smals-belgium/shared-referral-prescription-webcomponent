@@ -12,7 +12,7 @@
     [elementControl]="elementControl"
   ></evf-element-help>
 
-  <mat-form-field [appearance]="appearance || 'fill'">
+    <mat-form-field [appearance]="appearance ?? 'fill'">
     <mat-label *ngIf="useMatLabel">{{element.labelTranslationId | evfLabel:elementControl.elementGroup}}</mat-label>
     <input
       matInput

@@ -9,7 +9,7 @@ export class PssService {
   public status$ = new BehaviorSubject<boolean>(false);
 
   constructor(
-    private http: HttpClient
+    private readonly http: HttpClient
   ) {
   }
 

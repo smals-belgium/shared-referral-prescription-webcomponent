@@ -62,8 +62,8 @@ export class PssRadiologyResultComponent implements OnChanges{
   protected displayedColumns: string[] = ['select', 'relevance', 'typesOfImagery', 'radiationRate'];
 
   constructor(
-    private translate: TranslateService,
-    private evfTranslate: EvfTranslateService
+    private readonly translate: TranslateService,
+    private readonly evfTranslate: EvfTranslateService
   ) {
     this.language = this.evfTranslate.currentLang as 'nl' | 'fr';
     this.evfTranslate.currentLang$

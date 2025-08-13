@@ -7,7 +7,7 @@ import { Professional } from '../interfaces';
 export class ProfessionalService {
 
   constructor(
-    private http: HttpClient,
+    private readonly http: HttpClient,
   ) {
   }
 

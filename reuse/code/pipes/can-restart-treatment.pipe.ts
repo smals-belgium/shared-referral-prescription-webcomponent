@@ -5,7 +5,7 @@ import { AccessMatrixState } from '../states/access-matrix.state';
 @Pipe({name: 'canRestartTreatment', standalone: true})
 export class CanRestartTreatmentPipe {
 
-  constructor(private _accessMatrixState: AccessMatrixState) {
+  constructor(private readonly _accessMatrixState: AccessMatrixState) {
   }
 
   transform(_prescription: ReadPrescription, _task: PerformerTask, _currentUserSsin?: string): boolean {

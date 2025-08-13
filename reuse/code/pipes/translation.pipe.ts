@@ -10,13 +10,13 @@ import { TranslateService } from '@ngx-translate/core';
   pure: false
 })
 export class TranslationPipe implements PipeTransform, OnDestroy {
-  private destroyed$ = new Subject<void>();
+  private readonly destroyed$ = new Subject<void>();
   private value?: FormTranslation;
   private translated?: string;
 
   constructor(
-    private translateService: TranslateService,
-    private cd: ChangeDetectorRef
+    private readonly translateService: TranslateService,
+    private readonly cd: ChangeDetectorRef
   ) {
     this.listenForLangChanges();
   }
@@ -26,7 +26,7 @@ export class TranslationPipe implements PipeTransform, OnDestroy {
       this.value = value;
       this.translate();
     }
-    return this.translated || '';
+    return this.translated ?? '';
   }
 
   private listenForLangChanges() {
@@ -39,7 +39,7 @@ export class TranslationPipe implements PipeTransform, OnDestroy {
   }
 
   private translate(): void {
-    const lang = (this.translateService.currentLang || this.translateService.defaultLang).substring(0, 2) as 'nl' | 'fr' | 'de' | 'en';
+    const lang = (this.translateService.currentLang ?? this.translateService.defaultLang).substring(0, 2) as 'nl' | 'fr' | 'de' | 'en';
     this.translated = this.value?.[lang];
   }
 

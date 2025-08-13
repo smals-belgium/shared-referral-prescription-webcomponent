@@ -7,15 +7,15 @@ import { MedicationResults } from '../interfaces/medication.interface';
 export class MedicationService {
 
   constructor(
-    private http: HttpClient,
+    private readonly http: HttpClient,
   ) {
   }
 
   findAll(input: string): Observable<MedicationResults> {
     let params = new HttpParams();
-    const regex = /^[0-9]{7}$/;
+    const regex = /^\d{7}$/;
     if(regex.test(input.replace(/[^a-zA-Z0-9]/g, ''))){
-      params = params.append('cnkCode', input.replace(/[^0-9]/g, ''));
+      params = params.append('cnkCode', input.replace(/ \D/g, ''));
     }
     else{
       params = params.append('name', input);

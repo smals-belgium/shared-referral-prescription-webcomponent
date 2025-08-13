@@ -6,7 +6,8 @@ import { catchError, map } from 'rxjs/operators';
 
 @Injectable({providedIn: 'root'})
 export class UniqueModelNameValidator implements AsyncValidator {
-  constructor(private prescriptionModelService: PrescriptionModelService) {}
+  constructor(private readonly prescriptionModelService: PrescriptionModelService) {
+  }
   validate(control: AbstractControl): Observable<ValidationErrors | null> {
     return this.prescriptionModelService.getModelByName(control.value).pipe(
       map((prescriptionModelRequest) => {

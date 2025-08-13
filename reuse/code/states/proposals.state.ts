@@ -8,7 +8,7 @@ import { ProposalService } from '../services/proposal.service';
 export class ProposalsState extends BaseState<PrescriptionSummaryList> {
 
   constructor(
-    private proposalService: ProposalService
+    private readonly proposalService: ProposalService
   ) {
     super();
   }
@@ -19,10 +19,10 @@ export class ProposalsState extends BaseState<PrescriptionSummaryList> {
     pageSize?: number
   ): void {
     const currentParams = this.state().params;
-    pageSize = pageSize || currentParams?.['pageSize'] || 10;
+    pageSize = pageSize ?? currentParams?.['pageSize'] ?? 10;
     page = criteria?.patient === currentParams?.['criteria']?.['patient']
-      ? page || currentParams?.['page'] || 1
-      : page || 1;
+      ? page ?? currentParams?.['page'] ?? 1
+      : page ?? 1;
     const params = {page, pageSize, criteria};
     this.load(
       this.proposalService.findAll(params.criteria, params.page, params.pageSize, false),

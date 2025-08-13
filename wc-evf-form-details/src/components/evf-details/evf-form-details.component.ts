@@ -55,12 +55,12 @@ export class EvfFormDetailsWebComponent implements OnChanges, OnInit {
   @Input() isProfessional: boolean | undefined;
 
   constructor(
-    private evfTranslate: EvfTranslateService,
-    private dateAdapter: DateAdapter<DateTime>,
-    private pssService: PssService,
-    private elementGroupBuilder: ElementGroupBuilder,
-    private authService: AuthService,
-    private translate: TranslateService
+    private readonly evfTranslate: EvfTranslateService,
+    private readonly dateAdapter: DateAdapter<DateTime>,
+    private readonly pssService: PssService,
+    private readonly elementGroupBuilder: ElementGroupBuilder,
+    private readonly authService: AuthService,
+    private readonly translate: TranslateService
   ) {
   }
 
@@ -76,7 +76,7 @@ export class EvfFormDetailsWebComponent implements OnChanges, OnInit {
       this.elementGroup = this.elementGroupBuilder.build(this.template, {});
     }
     if (changes['responses']) {
-      this.elementGroup.setValue(this.responses!);
+      this.elementGroup.setValue(this.responses);
     }
     if (changes['services']) {
       this.handleTokenChange();
