@@ -19,8 +19,8 @@ cache:
     - node_modules/
 
 stages:
-  - 'test'
-  - 'report'
+  - test
+  - report
 
 test:
   extends: .npm
@@ -29,20 +29,25 @@ test:
     - echo "Running the install step"
     - npm install
     - echo "Running test step"
-    - npm run test
-  except:
-    - master
-
-sonar-report:
-  extends: .sonar
+    - npm run test:coverage
+  artifacts:
+    paths:
+      - coverage/
+      - .nyc_output/
+    expire_in: 1h
   only:
     - merge_requests
     - develop
+
+sonar-report:
+  extends: .sonar
+  needs: ["test"]
   stage: report
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
   script:
     - echo "Starting Sonar Reporting"
-    - sonar-scanner -Dsonar.branch.name=$CI_COMMIT_REF_NAME -Dsonar.host.url=$SONAR_URL -Dsonar.projectKey=nihdi-healix-backend -Dsonar.login=$VAS_SONARQUBE_TOKEN -Dsonar.qualitygate.wait=true
-
-
+    - sonar-scanner -Dsonar.branch.name=$CI_COMMIT_REF_NAME -Dsonar.host.url=$SONAR_URL -Dsonar.projectKey=nihdi-healix-backend -Dsonar.login=$VAS_SONARQUBE_TOKEN -Dsonar.qualitygate.wait=true -Dsonar.sources=. -Dsonar.inclusions=**/*.ts,**/*.scss,**/*.html -Dsonar.exclusions=**/node_modules/**,**/*.spec.ts -Dsonar.tests=. -Dsonar.test.inclusions=**/*.spec.ts -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+  only:
+    - merge_requests
+    - develop
