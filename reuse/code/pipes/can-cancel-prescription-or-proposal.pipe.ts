@@ -1,4 +1,4 @@
-import { Pipe } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 import { Intent, ReadPrescription, Role, Status, UserInfo } from '../interfaces';
 import { AccessMatrixState } from '../states/access-matrix.state';
 import { isProposal } from '@reuse/code/utils/utils';
@@ -19,7 +19,7 @@ import { isProposal } from '@reuse/code/utils/utils';
  * @name canCancelPrescriptionOrProposal
  */
 @Pipe({name: 'canCancelPrescriptionOrProposal', standalone: true})
-export class CanCancelPrescriptionOrProposalPipe {
+export class CanCancelPrescriptionOrProposalPipe implements PipeTransform {
 
   constructor(
     private readonly accessMatrixState: AccessMatrixState,
@@ -48,6 +48,6 @@ export class CanCancelPrescriptionOrProposalPipe {
     const isPatient = currentUser.role === Role.patient && currentUser.ssin === patientSsin;
     const isCaregiver = currentUser.role !== Role.patient && currentUser.ssin === caregiverSsin;
 
-    return isPatient ?? isCaregiver;
+    return isPatient || isCaregiver;
   }
 }

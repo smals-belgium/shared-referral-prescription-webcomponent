@@ -1,4 +1,4 @@
-import { Pipe } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 import { Intent, PerformerTask, ReadPrescription, Role, Status, TaskStatus, UserInfo } from '../interfaces';
 import { AccessMatrixState } from '../states/access-matrix.state';
 import { isProposal } from '@reuse/code/utils/utils';
@@ -20,7 +20,7 @@ import { isProposal } from '@reuse/code/utils/utils';
  * @name CanRejectAssignationPipe
  */
 @Pipe({name: 'canRejectAssignation', standalone: true})
-export class CanRejectAssignationPipe {
+export class CanRejectAssignationPipe implements PipeTransform {
 
   constructor(private readonly accessMatrixState: AccessMatrixState) {
   }
@@ -41,7 +41,7 @@ export class CanRejectAssignationPipe {
       const isPatient = currentUser.role === Role.patient && currentUser.ssin === patientSsin;
       const isCaregiver = currentUser.role !== Role.patient && currentUser.ssin === caregiverSsin;
 
-    return isPatient ?? isCaregiver;
+    return isPatient || isCaregiver;
   }
 
   private hasAssignPermissions(prescription: ReadPrescription) {
