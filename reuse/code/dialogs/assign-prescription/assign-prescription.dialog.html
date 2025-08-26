@@ -22,7 +22,7 @@
             formControlName="query"
             [dropSpecialCharacters]="queryIsNumeric"
             data-cy="prescription-assign-performer"
-            [mask]="queryIsNumeric ? '0-00000-00-000??0-00000-00' : ''"
+            [mask]="queryIsNumeric ? '0-00000-00-000||0-00000-00' : ''"
             [placeholder]="'prescription.assignPerformer.searchPerformerPlaceHolder' | translate"
             [validation]="queryIsNumeric"
             maxlength="50"
