@@ -57,103 +57,121 @@ Three Web Components are available :
 
 Web Components are designed to take input values and provide output events as feedback to the parent container.
 
-Here are the detailed input data structures expected by the Web Components :
+1. Here are the detailed input data structures expected by the Web Components :
+   
+   | Create prescription                                 | List prescriptions               | Prescription details                 |
+   |-----------------------------------------------------|----------------------------------|--------------------------------------|
+   | **lang**: 'fr-BE'/nl-BE                             | **lang**: 'fr-BE'/nl-BE          | **lang** : 'fr-BE'/nl-BE             |
+   | **patientSsin?**: string                            | **patientSsin?**: string         | **patientSsin?**: string             |
+   | **initialValues?**: CreatePrescriptionInitialValues | **requesterSsin?**: string       | **prescriptionId!**: string          |
+   | **services!**: ComponentServices                    | **services!**: ComponentServices | **services!**: ComponentServices     |
+   |                                                     | **performerSsin?**: string       | **intent!**: string                  |
+   |                                                     | **intent!**: string              | **initialPrescriptionType?**: string |
 
-| Create prescription                                 | List prescriptions               | Prescription details                 |
-|-----------------------------------------------------|----------------------------------|--------------------------------------|
-| **lang**: 'fr-BE'/nl-BE                             | **lang**: 'fr-BE'/nl-BE          | **lang** : 'fr-BE'/nl-BE             |
-| **patientSsin?**: string                            | **patientSsin?**: string         | **patientSsin?**: string             |
-| **initialValues?**: CreatePrescriptionInitialValues | **requesterSsin?**: string       | **prescriptionId!**: string          |
-| **services!**: ComponentServices                    | **services!**: ComponentServices | **services!**: ComponentServices     |
-|                                                     | **performerSsin?**: string       | **intent!**: string                  |
-|                                                     | **intent!**: string              | **initialPrescriptionType?**: string |
+   #### Data structures
+   ```typescript
+   interface CreatePrescriptionInitialValues {
+       intent: string;
+       initialPrescriptionType?: string;
+       initialPrescription?: ReadPrescription;
+       initialModelId?: string;
+       extend?: boolean;
+   }
+   
+   interface ComponentServices {
+       getAccessToken: (audience: string) => Promise<string | null>,
+       getIdToken?: () => IdToken
+   }
+   
+   interface IdToken {
+       UserProfile: UserProfile
+   }
+   
+   type Professional = {
+       [key in keyof LowercaseDiscipline]?: {
+           recognised: boolean
+           nihii11: string
+       }
+   }
+   
+   interface Personal {
+       lastName: string
+       firstName: string
+       ssin: string
+   }
+   
+   type UserProfile = Personal & Professional;
+   ```
+   
+   To create a prescription, it is necessary to provide the _initialPrescriptionType_ parameters in the _CreatePrescriptionInitialValues_.
+   One of the following values can be provided with the intent value _**order**_ :
+   * ASSISTING_WITH_PERSONAL_HYGIENE
+   * BLEEDING
+   * CHRONIC_PERITONEAL_DIALYSIS
+   * DIABETIC_EDUCATION_FOR_PATIENTS_WITH_CARE_PATH
+   * DIABETIC_EDUCATION_FOR_PATIENTS_WITH_MODEL_OF_CARE
+   * DIABETIC_EDUCATION_FOR_PATIENTS_WITHOUT_CARE_PATH
+   * DIABETIC_EDUCATION_VIA_CONVENTION_CENTER
+   * GLYCEMIC_TEST
+   * MEDICATION_PREPARATION_PSYCHIATRIC_PATIENT
+   * PARAMETERS
+   * SAMPLING
+   * GENERIC
 
-#### Data structures
-```typescript
-interface CreatePrescriptionInitialValues {
-    intent: string;
-    initialPrescriptionType?: string;
-    initialPrescription?: ReadPrescription;
-    initialModelId?: string;
-    extend?: boolean;
-}
+   The following value can be provided along with the _**proposal**_ intent :
+   * ANNEX_81
 
-interface ComponentServices {
-    getAccessToken: (audience: string) => Promise<string | null>,
-    getIdToken?: () => IdToken
-}
-
-interface IdToken {
-    UserProfile: UserProfile
-}
-
-type Professional = {
-    [key in keyof LowercaseDiscipline]?: {
-        recognised: boolean
-        nihii11: string
-    }
-}
-
-interface Personal {
-    lastName: string
-    firstName: string
-    ssin: string
-}
-
-type UserProfile = Personal & Professional;
-```
-
-Here are the output data structures emitted by the Web Components :
-
-| Create prescription            | List prescriptions                                     | Prescription details                           |
-|--------------------------------|--------------------------------------------------------|------------------------------------------------|
-| **prescriptionsCreated**: void | **clickOpenPrescriptionDetails** : PrescriptionSummary | **clickDuplicate**: ReadPrescription           |
-| **clickCancel**: void          | **clickOpenModelDetails** : PrescriptionModel          | **clickExtend**: ReadPrescription              |
-| **modelCreated**: void         |                                                        | **proposalApproved**: {prescriptionId: string} |
-|                                |                                                        | **proposalRejected**: boolean                  |
-
-#### Data structures
-```typescript
-interface PrescriptionSummary {
-    id: string;
-    templateCode: string;
-    authoredOn: string;
-    requester?: Professional;
-    careGivers?: Professional[];
-    status?: Status;
-    assigned: boolean;
-    period: { start: string; end: string; };
-}
-
-interface PrescriptionModel {
-    id: number;
-    creationDate: string;
-    nihii_11: string;
-    label: string;
-    modelData: Record<string, any>;
-    templateVersionId: number;
-    templateId: number;
-    templateCode: string;
-}
-
-interface ReadPrescription {
-    id: string;
-    patientIdentifier: string;
-    templateCode: string;
-    authoredOn: string;
-    requester?: Professional;
-    status?: Status;
-    period: { start: string; end: string; };
-    referralTask: ReferralTask;
-    performerTasks: PerformerTask[];
-    organizationTasks: OrganizationTask[];
-    responses: Record<string, any>;
-    intent?: string;
-    pseudonymizedKey?: string;
-    shortCode?: string;
-    note?: string;
-}
-```
+2. Here are the output data structures emitted by the Web Components :
+   
+   | Create prescription            | List prescriptions                                     | Prescription details                           |
+   |--------------------------------|--------------------------------------------------------|------------------------------------------------|
+   | **prescriptionsCreated**: void | **clickOpenPrescriptionDetails** : PrescriptionSummary | **clickDuplicate**: ReadPrescription           |
+   | **clickCancel**: void          | **clickOpenModelDetails** : PrescriptionModel          | **clickExtend**: ReadPrescription              |
+   | **modelCreated**: void         |                                                        | **proposalApproved**: {prescriptionId: string} |
+   |                                |                                                        | **proposalRejected**: boolean                  |
+   
+   #### Data structures
+   ```typescript
+   interface PrescriptionSummary {
+       id: string;
+       templateCode: string;
+       authoredOn: string;
+       requester?: Professional;
+       careGivers?: Professional[];
+       status?: Status;
+       assigned: boolean;
+       period: { start: string; end: string; };
+   }
+   
+   interface PrescriptionModel {
+       id: number;
+       creationDate: string;
+       nihii_11: string;
+       label: string;
+       modelData: Record<string, any>;
+       templateVersionId: number;
+       templateId: number;
+       templateCode: string;
+   }
+   
+   interface ReadPrescription {
+       id: string;
+       patientIdentifier: string;
+       templateCode: string;
+       authoredOn: string;
+       requester?: Professional;
+       status?: Status;
+       period: { start: string; end: string; };
+       referralTask: ReferralTask;
+       performerTasks: PerformerTask[];
+       organizationTasks: OrganizationTask[];
+       responses: Record<string, any>;
+       intent?: string;
+       pseudonymizedKey?: string;
+       shortCode?: string;
+       note?: string;
+   }
+   ```
 
 ## Showcase
 
