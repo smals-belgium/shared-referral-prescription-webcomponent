@@ -158,7 +158,8 @@
       "patient": "Bénéficiaire",
       "prescriber": "Prescripteur",
       "proof-of-electronic-prescription": "Preuve de prescription électronique",
-      "remark": "Attention: Aucun ajout manuscrit à ce document ne sera pris en compte. "
+      "remark": "Attention: Aucun ajout manuscrit à ce document ne sera pris en compte. ",
+      "date": "Imprimé le {date}"
     },
     "author": "Auteur",
     "patient": "Patient",
@@ -336,7 +337,8 @@
       "patient": "Bénéficiaire",
       "prescriber": "Prescripteur",
       "proof-of-electronic-proposal": "Preuve de proposition électronique",
-      "remark": "Attention: Aucun ajout manuscrit à ce document ne sera pris en compte. "
+      "remark": "Attention: Aucun ajout manuscrit à ce document ne sera pris en compte.",
+      "date": "Imprimé le {date}"
     },
     "author": "Auteur",
     "patient": "Patient",
@@ -471,7 +473,7 @@
     }
   },
   "pss": {
-    "unavailable":{
+    "unavailable": {
       "title": "Service temporairement indisponible",
       "message": "Nous sommes désolés, le service PSS (Prescription Search Support) est momentanément indisponible.\nVous ne pouvez plus consulter les recommandations d'examens en imagerie médicale pour l'instant.\nMerci de réessayer dans quelques minutes."
     }

@@ -7,12 +7,12 @@ import { EvfTemplate, Person, ReadPrescription } from '../interfaces';
 import { translateOccurrenceTiming } from '../utils/occurrence-timing.utils';
 import * as pdfMake from 'pdfmake/build/pdfmake.js';
 
+
 @Injectable({providedIn: 'root'})
 export class PrescriptionsPdfService {
 
   constructor(
-    private readonly translate: TranslateService
-  ) {
+    private readonly translate: TranslateService) {
   }
 
   printPDF(prescription: ReadPrescription, responses: Record<string, any>, patient: Person, template: EvfTemplate, templateVersion: FormTemplate, language: string) {
@@ -30,7 +30,7 @@ export class PrescriptionsPdfService {
         },
         header: [
           {
-            text: prescription.id,
+            text: this.translate.instant('prescription.print.date', {date: this.getCurrentDate()}),
             margin: [26, 6]
           }
         ],
@@ -120,6 +120,10 @@ export class PrescriptionsPdfService {
       },
       this.getFontVfs()
     ).print();
+  }
+
+  private getCurrentDate() {
+    return DateTime.now().toFormat('dd-MM-yyyy');
   }
 
   private prescriptionPageHeaderInfo(): Content {
