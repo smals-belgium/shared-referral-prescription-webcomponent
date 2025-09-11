@@ -159,7 +159,8 @@
       "patient": "Rechthebbende",
       "prescriber": "Voorschrijver",
       "proof-of-electronic-prescription": "Bewijs van elektronisch voorschrift",
-      "remark": "Opgelet: met manuele toevoegingen op dit document zal geen rekening gehouden worden."
+      "remark": "Opgelet: met manuele toevoegingen op dit document zal geen rekening gehouden worden.",
+      "date": "Afgedrukt op {date}"
     },
     "author": "Auteur",
     "patient": "Patiënt",
@@ -337,7 +338,8 @@
       "patient": "Rechthebbende",
       "prescriber": "Voorschrijver",
       "proof-of-electronic-prescription": "Bewijs van elektronisch voorstel",
-      "remark": "Opgelet: met manuele toevoegingen op dit document zal geen rekening gehouden worden."
+      "remark": "Opgelet: met manuele toevoegingen op dit document zal geen rekening gehouden worden.",
+      "date": "Afgedrukt op {date}"
     },
     "author": "Auteur",
     "patient": "Patiënt",
