@@ -7,7 +7,7 @@ import { DateAdapter, MatNativeDateModule } from '@angular/material/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClient, HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
-import { importProvidersFrom, SimpleChange, SimpleChanges } from '@angular/core';
+import { importProvidersFrom, SimpleChange, SimpleChanges, signal } from '@angular/core';
 import { ConfigurationService } from '@reuse/code/services/configuration.service';
 import { AuthService } from '@reuse/code/services/auth.service';
 import { CreatePrescriptionWebComponent } from './create-prescription.component';
@@ -24,6 +24,7 @@ import { CancelCreationDialog } from '@reuse/code/dialogs/cancel-creation/cancel
 import { PssService } from '@reuse/code/services/pss.service';
 import { EncryptionKeyInitializerService } from '@reuse/code/services/encryption-key-initializer.service';
 import { PseudoService } from '@reuse/code/services/pseudo.service';
+import { v4 as uuidv4 } from 'uuid';
 
 class FakeLoader implements TranslateLoader {
   getTranslation(lang: string): Observable<any> {
@@ -165,7 +166,7 @@ describe('CreatePrescriptionWebComponent', () => {
       jest.spyOn(component['prescriptionService'], 'create').mockReturnValue(of());
 
       const mockPublish = jest.spyOn(component, 'publishPrescriptions');
-      const mockPublishOnePrescription = jest.spyOn(component as any, 'publishOnePrescription');
+      const mockPublishOnePrescription = jest.spyOn(component as any, 'publishOnePrescriptionOrProposal');
       jest.spyOn(component['encryptionKeyInitializer'], 'initialize').mockReturnValue(of(undefined));
 
 
@@ -187,7 +188,7 @@ describe('CreatePrescriptionWebComponent', () => {
       jest.spyOn(component['prescriptionService'], 'create').mockReturnValue(of());
 
       const mockPublish = jest.spyOn(component, 'publishPrescriptions');
-      const mockPublishMultiplePrescriptions = jest.spyOn(component as any, 'publishMultiplePrescriptions');
+      const mockPublishMultiplePrescriptions = jest.spyOn(component as any, 'publishMultiplePrescriptionsOrProposals');
 
 
       component.publishPrescriptions();
@@ -528,6 +529,37 @@ describe('CreatePrescriptionWebComponent', () => {
 
       expect(consoleErrorSpy).toHaveBeenCalledWith('Error encrypting key "field1":', mockError);
     });
+
+    it('should generate a new Uuid when generateNewUuid is called',()=>{
+      createFixture('mockGenerateNewUuid')
+
+      const initialForms: CreatePrescriptionForm[] = [{
+        generatedUUID: '123',
+        trackId: 1,
+        templateCode: 'template1',
+        formTemplateState$: signal({ status:LoadingStatus.SUCCESS })
+      },
+        {
+          generatedUUID: '1234',
+          trackId: 2,
+          templateCode: 'template2',
+          formTemplateState$: signal({ status:LoadingStatus.SUCCESS })
+        }
+      ];
+
+      (uuidv4 as jest.Mock).mockReturnValue('xxx');
+
+      component.prescriptionForms.set(initialForms)
+
+      const uuidsBefore = component.prescriptionForms().map(form => form.generatedUUID);
+
+      component["generateNewUuid"]()
+
+      const uuidsAfter = component.prescriptionForms().map(form => form.generatedUUID);
+
+      expect(uuidsAfter).not.toEqual(uuidsBefore);
+      expect(uuidsAfter).toEqual(['xxx','xxx']);
+    })
   });
 
   describe('prescription extension', () => {
