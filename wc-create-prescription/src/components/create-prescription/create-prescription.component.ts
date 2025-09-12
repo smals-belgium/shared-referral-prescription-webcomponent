@@ -359,9 +359,9 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     if (this.prescriptionForms().every((f) => f.elementGroup!.valid)) {
       this.loading.set(true);
       if (this.prescriptionForms().length === 1) {
-        this.publishOnePrescription();
+        this.publishOnePrescriptionOrProposal();
       } else {
-        this.publishMultiplePrescriptions();
+        this.publishMultiplePrescriptionsOrProposals();
       }
     }
   }
@@ -373,7 +373,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     return from(this.pseudoService.pseudonymize(this.patientSsin));
   }
 
-  private publishOnePrescription(): void {
+  private publishOnePrescriptionOrProposal(): void {
     const prescriptionForm = this.prescriptionForms()[0];
     this.encryptionKeyInitializer.initialize().pipe(
       concatMap(() =>
@@ -406,12 +406,13 @@ export class CreatePrescriptionWebComponent implements OnChanges {
             message: err?.error?.detail || 'common.somethingWentWrong',
             errorResponse: err
           };
+        this.generateNewUuid();
         this.loading.set(false);
       }
     });
   }
 
-  private publishMultiplePrescriptions(): void {
+  private publishMultiplePrescriptionsOrProposals(): void {
     this.loading.set(true);
     this.encryptionKeyInitializer.initialize().pipe(
       concatMap(() =>
@@ -456,6 +457,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
                 })),
                 catchError(error => {
                   console.error('Error creating prescription (order):', error);
+                  this.generateNewUuid()
                   return of({
                     trackId: f.trackId,
                     status: LoadingStatus.ERROR,
@@ -472,6 +474,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
                 })),
                 catchError(error => {
                   console.error('Error creating prescription (proposal):', error);
+                  this.generateNewUuid()
                   return of({
                     trackId: f.trackId,
                     status: LoadingStatus.ERROR,
@@ -698,5 +701,17 @@ export class CreatePrescriptionWebComponent implements OnChanges {
       script.type = 'module';
       this.renderer.appendChild(this._document.body, script);
     });
+  }
+
+  private generateNewUuid(){
+    this.prescriptionForms.update((formList)=> {
+      return formList.map((form)=> {
+        return {
+          ...form,
+          generatedUUID : uuidv4()
+        }
+      })
+    })
+
   }
 }
