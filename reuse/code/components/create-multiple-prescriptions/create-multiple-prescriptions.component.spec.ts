@@ -135,7 +135,7 @@ describe('CreateMultiplePrescriptionsComponent', () => {
       initialPrescription: {responses: {a: 1, b: null}}
     } as unknown as CreatePrescriptionForm;
 
-    component.setElementGroup(mockForm, {} as FormTemplate, mockElementGroup);
+    component.setElementGroup(mockForm, mockElementGroup);
     expect(setValue).toHaveBeenCalledWith(expect.objectContaining({a: 1}));
   });
 

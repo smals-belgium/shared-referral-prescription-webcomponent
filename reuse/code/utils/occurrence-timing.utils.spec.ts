@@ -1,5 +1,10 @@
-import { isOccurrenceTiming, translateOccurrenceTiming, validateOccurrenceTiming } from './occurrence-timing.utils';
-import { BoundsDuration, OccurrenceTiming, UnitsOfTime, Weekday } from '@reuse/code/interfaces';
+import {
+  isOccurrenceTiming,
+  setOccurrenceTimingResponses,
+  translateOccurrenceTiming,
+  validateOccurrenceTiming
+} from './occurrence-timing.utils';
+import { BoundsDuration, OccurrenceTiming, ReadPrescription, UnitsOfTime, Weekday } from '@reuse/code/interfaces';
 
 const frequencyOnly: OccurrenceTiming = {
   "repeat": {
@@ -313,6 +318,121 @@ describe('validateOccurrenceTiming', () => {
       }
     };
     expect(validateOccurrenceTiming(invalid)).toBe(false);
+  });
+});
+
+describe('isOccurrenceTiming', () => {
+  it('returns true for a valid OccurrenceTiming object', () => {
+    const validValue = {repeat: {frequency: 1}}; // Mock minimal structure
+    expect(isOccurrenceTiming(validValue)).toBe(true);
+  });
+
+  it('returns false for an object without repeat', () => {
+    const invalidValue = {somethingElse: true};
+    expect(isOccurrenceTiming(invalidValue)).toBe(false);
+  });
+
+  it('returns false for null', () => {
+    expect(isOccurrenceTiming(null)).toBe(false);
+  });
+
+  it('returns false for a non-object value (string)', () => {
+    expect(isOccurrenceTiming('string')).toBe(false);
+  });
+
+  it('returns false for a number', () => {
+    expect(isOccurrenceTiming(123)).toBe(false);
+  });
+
+  it('returns false for an array', () => {
+    expect(isOccurrenceTiming(['repeat'])).toBe(false);
+  });
+
+  it('returns false for undefined', () => {
+    expect(isOccurrenceTiming(undefined)).toBe(false);
+  });
+});
+
+describe('setOccurrenceTimingResponses', () => {
+  it('does nothing if responses is undefined', () => {
+    const prescription = {} as ReadPrescription;
+    expect(() => setOccurrenceTimingResponses(prescription)).not.toThrow();
+    expect(prescription.responses).toBeUndefined();
+  });
+
+  it('does nothing if occurrenceTiming is undefined', () => {
+    const prescription = {
+      responses: {}
+    } as ReadPrescription;
+    setOccurrenceTimingResponses(prescription);
+    expect(prescription.responses).not.toHaveProperty('boundsDuration');
+  });
+
+  it('does nothing if occurrenceTiming is invalid', () => {
+    const prescription = {
+      responses: {
+        occurrenceTiming: "invalid"
+      }
+    } as unknown as ReadPrescription;
+
+    setOccurrenceTimingResponses(prescription);
+    expect(prescription.responses).not.toHaveProperty('boundsDuration');
+  });
+
+  it('sets boundsDuration and boundsDurationUnit if present', () => {
+    const prescription = {
+      responses: {
+        occurrenceTiming: {
+          repeat: {
+            boundsDuration: {
+              value: 5,
+              code: 'd'
+            }
+          }
+        }
+      }
+    } as unknown as ReadPrescription;
+
+    setOccurrenceTimingResponses(prescription);
+
+    expect(prescription.responses['boundsDuration']).toBe(5);
+    expect(prescription.responses['boundsDurationUnit']).toBe('d');
+  });
+
+  it('sets sessionDuration and sessionDurationUnit if present', () => {
+    const prescription = {
+      responses: {
+        occurrenceTiming: {
+          repeat: {
+            duration: 10,
+            durationUnit: 'min'
+          }
+        }
+      }
+    } as unknown as ReadPrescription;
+
+
+    setOccurrenceTimingResponses(prescription);
+
+    expect(prescription.responses['sessionDuration']).toBe(10);
+    expect(prescription.responses['sessionDurationUnit']).toBe('min');
+  });
+
+  it('sets dayOfWeek if present', () => {
+    const prescription = {
+      responses: {
+        occurrenceTiming: {
+          repeat: {
+            dayOfWeek: ['mon', 'wed']
+          }
+        }
+      }
+    } as unknown as ReadPrescription;
+
+
+    setOccurrenceTimingResponses(prescription);
+
+    expect(prescription.responses['dayOfWeek']).toEqual(['mon', 'wed']);
   });
 });
 
