@@ -66,8 +66,8 @@ import { CreatePrescriptionForm } from '@reuse/code/interfaces/create-prescripti
 import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
 import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
 import { HttpErrorResponse } from '@angular/common/http';
+import { setOccurrenceTimingResponses } from '@reuse/code/utils/occurrence-timing.utils';
 import { isPrescription, isModel } from '@reuse/code/utils/utils';
-import { isOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
 import { EncryptionKeyInitializerService } from '@reuse/code/services/encryption-key-initializer.service';
 
 
@@ -295,23 +295,8 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   }
 
   updateResponses(initialPrescription?: ReadPrescription) {
-    if (initialPrescription?.responses?.['occurrenceTiming'] && isOccurrenceTiming(initialPrescription?.responses['occurrenceTiming'])) {
-      const occurrenceTiming = initialPrescription.responses['occurrenceTiming'];
-      const {boundsDuration, duration, durationUnit, dayOfWeek} = occurrenceTiming.repeat ?? {};
-
-      if (boundsDuration) {
-        initialPrescription.responses['boundsDuration'] = boundsDuration.value;
-        initialPrescription.responses['boundsDurationUnit'] = boundsDuration.code;
-      }
-
-      if (duration) {
-        initialPrescription.responses['sessionDuration'] = duration;
-        initialPrescription.responses['sessionDurationUnit'] = durationUnit;
-      }
-
-      if (dayOfWeek) {
-        initialPrescription.responses['dayOfWeek'] = dayOfWeek;
-      }
+    if (initialPrescription?.responses) {
+      setOccurrenceTimingResponses(initialPrescription);
     }
 
     if (!this.initialValues?.extend || !initialPrescription?.responses) {
@@ -695,7 +680,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     ];
 
     scripts.forEach((src) => {
-      const script = this.renderer.createElement('script');
+      const script = this.renderer.createElement('script') as HTMLScriptElement;
       script.type = `text/javascript`;
       script.src = url + src;
       script.type = 'module';

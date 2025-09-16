@@ -1,4 +1,4 @@
-import { OccurrenceTiming, UnitsOfTime, Weekday } from '../interfaces';
+import { OccurrenceTiming, ReadPrescription, UnitsOfTime, Weekday } from '../interfaces';
 
 const translations = {
   every: {
@@ -181,7 +181,7 @@ export function translateDayOfWeek(occurrenceTiming: OccurrenceTiming, language:
   const words = [];
   if (occurrenceTiming.repeat.dayOfWeek?.length) {
     const translatedDays = occurrenceTiming.repeat.dayOfWeek
-      .map((d) => translations.weekdays[d]?.[language] ?? d);
+      .map((d) => translations.weekdays[d]?.[language] || d);
     const last = translatedDays.pop();
 
     words.push(translations.on[language]);
@@ -223,7 +223,7 @@ export function translateDuration(occurrenceTiming: OccurrenceTiming, language: 
 export function translateTimeUnit(unit = 1, unitOfTime?: UnitsOfTime, language: 'nl' | 'fr' = 'nl'): string {
   const oneOrMultiple = unit !== 1 ? 'multiple' : 'one';
   return unitOfTime
-    ? translations.unitsOfTime[oneOrMultiple][unitOfTime]?.[language] ?? unitOfTime
+    ? translations.unitsOfTime[oneOrMultiple][unitOfTime]?.[language] || unitOfTime
     : '';
 }
 
@@ -265,4 +265,35 @@ function isValidWeekday(value: any): value is Weekday {
 
 export function isOccurrenceTiming(value: unknown): value is OccurrenceTiming {
   return typeof value === 'object' && value !== null && 'repeat' in value;
+}
+
+export function setOccurrenceTimingResponses(initialPrescription: ReadPrescription): void {
+  const responses = initialPrescription.responses;
+  if (!responses) return;
+
+  const rawTiming = responses?.['occurrenceTiming'];
+  if (!rawTiming) return;
+
+  const occurrenceTiming = isOccurrenceTiming(rawTiming) ? rawTiming : undefined;
+  if (!occurrenceTiming) return;
+
+  if (
+    occurrenceTiming.repeat.boundsDuration?.value != undefined &&
+    occurrenceTiming.repeat.boundsDuration.code != undefined
+  ) {
+    responses['boundsDuration'] = occurrenceTiming.repeat.boundsDuration.value;
+    responses['boundsDurationUnit'] = occurrenceTiming.repeat.boundsDuration.code;
+  }
+
+  if (
+    occurrenceTiming.repeat.duration != undefined &&
+    occurrenceTiming.repeat.durationUnit != undefined
+  ) {
+    responses['sessionDuration'] = occurrenceTiming.repeat.duration;
+    responses['sessionDurationUnit'] = occurrenceTiming.repeat.durationUnit;
+  }
+
+  if (occurrenceTiming.repeat.dayOfWeek != undefined) {
+    responses['dayOfWeek'] = occurrenceTiming.repeat.dayOfWeek;
+  }
 }

@@ -15,8 +15,8 @@ export interface ReadPrescription {
   referralTask: ReferralTask;
   performerTasks: PerformerTask[];
   organizationTasks: OrganizationTask[];
-  responses: Record<string, any>;
-  intent: string;
+  responses: Record<string, unknown>;
+  intent?: string;
   pseudonymizedKey?: string;
   kid?: string;
   shortCode?: string;

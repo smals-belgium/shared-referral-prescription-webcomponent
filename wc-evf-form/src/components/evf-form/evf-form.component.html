@@ -1,6 +1,5 @@
-@if (status !== undefined) {
+@if (status !== undefined && parsedTemplate) {
   <evf-dynamic-form
-    *ngIf="parsedTemplate"
     [template]="parsedTemplate"
     [elementLayout]="elementLayout"
     [submitted]="submitted"

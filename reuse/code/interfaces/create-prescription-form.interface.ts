@@ -12,7 +12,7 @@ export interface CreatePrescriptionForm {
   submitted?: boolean;
   status?: LoadingStatus;
   initialPrescription?: ReadPrescription;
-  modelResponses?: Record<string, any>;
+  modelResponses?: Record<string, unknown>;
   modelName?: string;
   modelId?: number;
 }

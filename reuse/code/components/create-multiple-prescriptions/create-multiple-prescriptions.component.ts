@@ -130,8 +130,14 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
     return {...responses, ...maxSessions, ...dayPeriod, ...repeat};
   }
 
-  setElementGroup(prescriptionForm: CreatePrescriptionForm, formTemplate: FormTemplate, elementGroup: ElementGroup) {
-    prescriptionForm.elementGroup = elementGroup;
+  setElementGroup(prescriptionForm: CreatePrescriptionForm, elementGroup: ElementGroup) {
+    if (!prescriptionForm.elementGroup) {
+      prescriptionForm.elementGroup = elementGroup;
+    } else {
+      const currentValues = prescriptionForm.elementGroup.getOutputValue() as Record<string, unknown>;
+      elementGroup.setValue(currentValues);
+    }
+
     if (prescriptionForm.initialPrescription || prescriptionForm.modelResponses) {
       const initialResponses = prescriptionForm.initialPrescription?.responses || prescriptionForm.modelResponses
       let responses: Record<string, unknown> = removeNulls(initialResponses || {}) as Record<string, unknown>;

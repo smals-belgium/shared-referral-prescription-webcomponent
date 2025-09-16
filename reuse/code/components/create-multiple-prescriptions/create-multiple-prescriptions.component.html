@@ -80,7 +80,7 @@
               [readonly]="prescriptionForm.status === LoadingStatus.SUCCESS"
               [submitted]="!!prescriptionForm.submitted"
               [template]="formTemplateState.data!"
-              (changeElementGroup)="setElementGroup(prescriptionForm, formTemplateState.data!, $any($event)?.detail)"
+              (changeElementGroup)="setElementGroup(prescriptionForm, $any($event)?.detail)"
               [status]="status"
               [patient]="patient"
               [services]="services"
@@ -110,7 +110,8 @@
       <div class="spacer">&nbsp;</div>
       <div>
         @if (createPrescriptionForms?.[0]?.templateCode !== 'ANNEX_82') {
-        <button (click)="clickAddPrescription.emit()" mat-raised-button data-cy="prescription-create-add">
+          <button type="button" (click)="clickAddPrescription.emit()" mat-raised-button
+                  data-cy="prescription-create-add">
           <mat-icon color="accent">add_box</mat-icon>
           {{'prescription.create.addPrescription' | translate}}
         </button>
