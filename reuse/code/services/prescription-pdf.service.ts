@@ -207,13 +207,18 @@ export class PrescriptionsPdfService {
         label: this.evfTranslate(templateVersion, q.labelTranslationId!, language),
         values: this.getResponseLabels(responses[q.id!], q, templateVersion, responses, language)
       }));
+
+
+
     return [...valueLabels, ...dynamicValueLabels].reduce((acc, cur: any) => {
       if (acc.table.body.length === 0 || !Array.isArray(acc.table.body[acc.table.body.length - 1][1])) {
         acc.table.body.push([
           {
             stack: [
               {text: cur.label, bold: true},
-              ...cur.values.map((text: string) => ({text}))
+              ...cur.values.map((text: string) => ({
+                text: this.wrapLongWords(text)
+              }))
             ]
           },
           []
@@ -222,7 +227,9 @@ export class PrescriptionsPdfService {
         acc.table.body[acc.table.body.length - 1][1] = {
           stack: [
             {text: cur.label, bold: true},
-            ...cur.values.map((text: string) => ({text}))
+            ...cur.values.map((text: string) => ({
+              text: this.wrapLongWords(text)
+            }))
           ]
         };
       }
@@ -234,6 +241,22 @@ export class PrescriptionsPdfService {
         body: []
       }
     } as ContentTable);
+  }
+
+  private wrapLongWords(text: string, maxChars = 30): string {
+    if (!text) return '';
+    const str = text.toString();
+    const regex = new RegExp(`.{1,${maxChars}}`, 'g');
+    const parts = str.match(regex) || [str];
+
+    return parts
+      .map((part, i) => {
+        if (i < parts.length - 1 && part.length >= 5 && parts[i + 1].length >= 5) {
+          return part + '-\n';
+        }
+        return part;
+      })
+      .join('');
   }
 
   private getResponseLabels(value: any, element: FormElement, templateVersion: FormTemplate, responses: Record<string, any>, language: keyof FormTranslation) {
