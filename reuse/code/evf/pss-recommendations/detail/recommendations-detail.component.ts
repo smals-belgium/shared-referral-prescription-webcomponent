@@ -98,7 +98,6 @@ export class RecommendationsDetailComponent extends EvfBaseFormDetailComponent {
         }
       }
     }
-
   }
 
   getPssRecommendationsByPssId(): void {
