@@ -9,7 +9,7 @@
       ></app-error-card>
     }
     <div>
-      {{ prescription.intent | translateByIntent:{
+      {{ (prescription.intent ?? '') | translateByIntent:{
           order: 'prescription.cancel.message',
           proposal: 'proposal.cancel.message'
         }:{

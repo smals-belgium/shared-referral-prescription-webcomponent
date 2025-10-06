@@ -167,6 +167,8 @@ interface ViewState {
 export class PrescriptionDetailsWebComponent
   implements OnChanges, OnInit, OnDestroy
 {
+  protected readonly isProposal = isProposal;
+
   loading = false;
   printer = false;
   generatedUUID = "";
