@@ -129,7 +129,7 @@
             <div>
               <div class="caregiver-actions">
                 <ng-container *ngIf="!viewState.data!.performerTask?.careGiverSsin">
-                  @if(prescription.intent.toLowerCase() !== 'proposal') {
+                  @if(!isProposal(prescription.intent)) {
                     <button
                       *ngIf="prescription | canSelfAssign"
                       (click)="onSelfAssign(prescription,viewState.data!.currentUser)"
