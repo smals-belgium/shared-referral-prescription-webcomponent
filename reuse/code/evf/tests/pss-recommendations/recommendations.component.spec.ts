@@ -1,44 +1,43 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { evfElementConfigFeature, FormTemplate, provideEvfCore } from '@smals/vas-evaluation-form-ui-core';
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { EvfDynamicFormComponent } from "@smals/vas-evaluation-form-ui-material/dynamic-form";
-import { BrowserModule, By } from "@angular/platform-browser";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { EvfDynamicFormComponent } from '@smals/vas-evaluation-form-ui-material/dynamic-form';
+import { BrowserModule, By } from '@angular/platform-browser';
 import { MarkdownModule } from 'ngx-markdown';
 import { RecommendationsComponent as Wrapper } from './recommendations.component';
 import { RecommendationsComponent } from '../../pss-recommendations/element/recommendations.component';
-import { PssService } from '@reuse/code/services/pss.service';
-import { ToastService } from '@reuse/code/services/toast.service';
+import { PssService } from '@reuse/code/services/api/pss.service';
+import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
-import { ControlAnnex82Response } from '@reuse/code/interfaces/pss.interface';
+import { SupportResponseRadiology } from '@reuse/code/openapi';
 
 const formTemplate: FormTemplate = {
-  "elements": [
+  elements: [
     {
-      "id": "recommendations",
-      "viewType": "recommendations",
-      "dataType": {
-        "type": "object"
+      id: 'recommendations',
+      viewType: 'recommendations',
+      dataType: {
+        type: 'object',
       },
-      "labelTranslationId": "recommendations",
-      "validations": [
+      labelTranslationId: 'recommendations',
+      validations: [
         {
-          "name": "required"
-        }
-      ]
-    }
+          name: 'required',
+        },
+      ],
+    },
   ],
-  "translations": {
-    "recommendations": {
-      "fr": "Pss Recommendations",
-      "nl": "Pss Recommendations"
-    }
-  }
-}
+  translations: {
+    recommendations: {
+      fr: 'Pss Recommendations',
+      nl: 'Pss Recommendations',
+    },
+  },
+};
 
 const disableAnimations =
-  !('animate' in document.documentElement)
-  || (navigator && /iPhone OS (8|9|10|11|12|13)_/.test(navigator.userAgent));
+  !('animate' in document.documentElement) || (navigator && /iPhone OS (8|9|10|11|12|13)_/.test(navigator.userAgent));
 
 describe('AutocompleteMultiselectComponent', () => {
   let component: Wrapper;
@@ -47,44 +46,45 @@ describe('AutocompleteMultiselectComponent', () => {
   let toastServiceMock: jest.Mocked<ToastService>;
 
   beforeEach(async () => {
-
     pssServiceMock = {
       // controlIndications: jest.fn().mockReturnValue(of(mockAutocompleteOptions)),
       controlIndications: jest.fn(),
       getPssRecommendations: jest.fn(),
       getPssSessionId: jest.fn().mockReturnValue(1),
-      setPssSessionId: jest.fn()
+      setPssSessionId: jest.fn(),
     } as unknown as jest.Mocked<PssService>;
 
     toastServiceMock = {
-      show: jest.fn().mockImplementation((message) => message),
-      showSomethingWentWrong: jest.fn().mockImplementation((message) => message),
+      show: jest.fn().mockImplementation(message => message),
+      showSomethingWentWrong: jest.fn().mockImplementation(message => message),
     } as unknown as jest.Mocked<ToastService>;
 
-
     await TestBed.configureTestingModule({
-      imports: [Wrapper, EvfDynamicFormComponent, BrowserModule,
-        BrowserAnimationsModule.withConfig({disableAnimations}), MarkdownModule.forRoot(), TranslateModule.forRoot()],
+      imports: [
+        Wrapper,
+        EvfDynamicFormComponent,
+        BrowserModule,
+        BrowserAnimationsModule.withConfig({ disableAnimations }),
+        MarkdownModule.forRoot(),
+        TranslateModule.forRoot(),
+      ],
       providers: [
         provideEvfCore(
-          evfElementConfigFeature(
-            {
-              name: 'recommendations',
-              element: RecommendationsComponent
-            })
+          evfElementConfigFeature({
+            name: 'recommendations',
+            element: RecommendationsComponent,
+          })
         ),
-        {provide: PssService, useValue: pssServiceMock},
-        {provide: ToastService, useValue: toastServiceMock},
-      ]
-    })
-      .compileComponents();
+        { provide: PssService, useValue: pssServiceMock },
+        { provide: ToastService, useValue: toastServiceMock },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(Wrapper);
     component = fixture.componentInstance;
     component.demoTemplate = formTemplate;
     fixture.detectChanges();
   });
-
 
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -98,24 +98,27 @@ describe('AutocompleteMultiselectComponent', () => {
   });
 
   it('should call API when valid clinical indications provided', fakeAsync(() => {
-    const mockIndications = [{value: 'indication1'}];
-    const mockResult: ControlAnnex82Response = {
+    const mockIndications = [{ value: 'indication1' }];
+    const mockResult: SupportResponseRadiology = {
       exchangeId: '',
-      request: '',
-      supportOptions: [{
-        id: '1',
-        score: 4,
-        instruction: { code: "1", translations: [], system: "2" },
-        system: { code: "1", translations: [], version: "2" },
-        supportOptionMetadata: { isRequested: true, radiationLevel: 1, relativeCost: 3 }
-      }],
-      conclusions: []
+      supportOptions: [
+        {
+          id: '1',
+          score: 4,
+          instruction: { code: '1', translations: [], system: '2' },
+          evidenceSummary: { code: '1', translations: [], version: '2' },
+          supportOptionMetadata: { isRequested: true, radiationLevel: 1, relativeCost: 3 },
+        },
+      ],
+      conclusions: [],
     };
 
     const recommendationFormDebugElement = fixture.debugElement.query(By.directive(RecommendationsComponent));
-    recommendationFormDebugElement.componentInstance.elementControl.elementGroup.getOutputValue = jest.fn().mockReturnValue({
-      clinicalIndications: mockIndications
-    });
+    recommendationFormDebugElement.componentInstance.elementControl.elementGroup.getOutputValue = jest
+      .fn()
+      .mockReturnValue({
+        clinicalIndications: mockIndications,
+      });
 
     pssServiceMock.getPssRecommendations.mockReturnValue(of(mockResult));
 
@@ -130,12 +133,14 @@ describe('AutocompleteMultiselectComponent', () => {
   }));
 
   it('should handle API error', () => {
-    const mockIndications = [{value: 'indication1'}];
+    const mockIndications = [{ value: 'indication1' }];
 
     const recommendationFormDebugElement = fixture.debugElement.query(By.directive(RecommendationsComponent));
-    recommendationFormDebugElement.componentInstance.elementControl.elementGroup.getOutputValue = jest.fn().mockReturnValue({
-      clinicalIndications: mockIndications
-    });
+    recommendationFormDebugElement.componentInstance.elementControl.elementGroup.getOutputValue = jest
+      .fn()
+      .mockReturnValue({
+        clinicalIndications: mockIndications,
+      });
     pssServiceMock.getPssRecommendations.mockReturnValue(throwError('API Error'));
 
     recommendationFormDebugElement.componentInstance.pssControl();
@@ -145,7 +150,7 @@ describe('AutocompleteMultiselectComponent', () => {
   });
 
   it('should set control value', () => {
-    const mockSupportOption = {id: '1', value: 'option1', label: 'Option 1'};
+    const mockSupportOption = { id: '1', value: 'option1', label: 'Option 1' };
 
     const recommendationFormDebugElement = fixture.debugElement.query(By.directive(RecommendationsComponent));
 
@@ -157,28 +162,31 @@ describe('AutocompleteMultiselectComponent', () => {
 
   it('should return true when additional relevant information exists', () => {
     const recommendationFormDebugElement = fixture.debugElement.query(By.directive(RecommendationsComponent));
-    recommendationFormDebugElement.componentInstance.elementControl.elementGroup.getOutputValue = jest.fn().mockReturnValue({
-      'additional-relevant-information': 'Some relevant info'
-    });
+    recommendationFormDebugElement.componentInstance.elementControl.elementGroup.getOutputValue = jest
+      .fn()
+      .mockReturnValue({
+        'additional-relevant-information': 'Some relevant info',
+      });
 
     expect(recommendationFormDebugElement.componentInstance.hasAdditionalRelevantInformation()).toBe(true);
   });
 
   it('should return false when additional relevant information is empty', () => {
     const recommendationFormDebugElement = fixture.debugElement.query(By.directive(RecommendationsComponent));
-    recommendationFormDebugElement.componentInstance.elementControl.elementGroup.getOutputValue = jest.fn().mockReturnValue({
-      'additional-relevant-information': ''
-    });
+    recommendationFormDebugElement.componentInstance.elementControl.elementGroup.getOutputValue = jest
+      .fn()
+      .mockReturnValue({
+        'additional-relevant-information': '',
+      });
 
     expect(recommendationFormDebugElement.componentInstance.hasAdditionalRelevantInformation()).toBe(false);
   });
-
 
   it('should render control button when no control indications', () => {
     const recommendationFormDebugElement = fixture.debugElement.query(By.directive(RecommendationsComponent));
 
     jest.spyOn(recommendationFormDebugElement.componentInstance, 'controlIndications').mockReturnValue(null);
-    const isLoadingSignal = (recommendationFormDebugElement.componentInstance as any)['isLoading'];
+    const isLoadingSignal = recommendationFormDebugElement.componentInstance['isLoading'];
     if (isLoadingSignal && typeof isLoadingSignal.set === 'function') {
       isLoadingSignal.set(false);
     }
@@ -194,14 +202,13 @@ describe('AutocompleteMultiselectComponent', () => {
     const recommendationFormDebugElement = fixture.debugElement.query(By.directive(RecommendationsComponent));
 
     jest.spyOn(recommendationFormDebugElement.componentInstance, 'controlIndications').mockReturnValue(null);
-    const isLoadingSignal = (recommendationFormDebugElement.componentInstance as any)['isLoading'];
+    const isLoadingSignal = recommendationFormDebugElement.componentInstance['isLoading'];
     if (isLoadingSignal && typeof isLoadingSignal.set === 'function') {
       isLoadingSignal.set(true);
     }
 
     fixture.detectChanges();
     await fixture.whenStable();
-
 
     fixture.detectChanges();
 
@@ -213,13 +220,15 @@ describe('AutocompleteMultiselectComponent', () => {
   });
 
   it('should render form field and PSS results section when control indications exist', () => {
-    const supportOptions = [{
-      id: '1',
-      score: 4,
-      instruction: {code: "TEST123", translations: [], system: "2"},
-      system: {code: "1", translations: [], version: "2"},
-      supportOptionMetadata: {isRequested: true, radiationLevel: 1, relativeCost: 3}
-    }];
+    const supportOptions = [
+      {
+        id: '1',
+        score: 4,
+        instruction: { code: 'TEST123', translations: [], system: '2' },
+        system: { code: '1', translations: [], version: '2' },
+        supportOptionMetadata: { isRequested: true, radiationLevel: 1, relativeCost: 3 },
+      },
+    ];
 
     const recommendationFormDebugElement = fixture.debugElement.query(By.directive(RecommendationsComponent));
     jest.spyOn(recommendationFormDebugElement.componentInstance, 'controlIndications').mockReturnValue(supportOptions);
@@ -245,7 +254,7 @@ describe('AutocompleteMultiselectComponent', () => {
   it('should call pssControl when button is clicked', () => {
     const recommendationFormDebugElement = fixture.debugElement.query(By.directive(RecommendationsComponent));
     jest.spyOn(recommendationFormDebugElement.componentInstance, 'controlIndications').mockReturnValue(null);
-    const isLoadingSignal = (recommendationFormDebugElement.componentInstance as any)['isLoading'];
+    const isLoadingSignal = recommendationFormDebugElement.componentInstance['isLoading'];
     if (isLoadingSignal && typeof isLoadingSignal.set === 'function') {
       isLoadingSignal.set(false);
     }

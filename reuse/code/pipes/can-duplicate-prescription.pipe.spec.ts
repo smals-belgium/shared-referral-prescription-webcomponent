@@ -1,6 +1,7 @@
 import { CanDuplicatePrescriptionPipe } from './can-duplicate-prescription.pipe';
-import { AccessMatrixState } from '../states/access-matrix.state';
-import { Intent, Role } from '../interfaces';
+import { AccessMatrixState } from '../states/api/access-matrix.state';
+import { Intent } from '../interfaces';
+import { Role } from '@reuse/code/openapi';
 
 describe('CanDuplicatePrescriptionPipe', () => {
   let pipe: CanDuplicatePrescriptionPipe;
@@ -22,7 +23,7 @@ describe('CanDuplicatePrescriptionPipe', () => {
 
   it('should return false if currentUser is not a professional', () => {
     const prescription = { templateCode: 'template1', intent: 'order' } as any;
-    const currentUser = { role: Role.patient } as any;
+    const currentUser = { role: Role.Patient } as any;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
     const result = pipe.transform(prescription, currentUser);
@@ -31,7 +32,7 @@ describe('CanDuplicatePrescriptionPipe', () => {
 
   it('should return false if accessMatrixState hasAtLeastOnePermission returns false', () => {
     const prescription = { templateCode: 'template1', intent: 'order' } as any;
-    const currentUser = { role: Role.professional } as any;
+    const currentUser = { role: Role.Prescriber } as any;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(false);
 
     const result = pipe.transform(prescription, currentUser);
@@ -40,7 +41,7 @@ describe('CanDuplicatePrescriptionPipe', () => {
 
   it('should return false if prescription intent is "proposal"', () => {
     const prescription = { templateCode: 'template1', intent: Intent.PROPOSAL } as any;
-    const currentUser = { role: Role.professional } as any;
+    const currentUser = { role: Role.Prescriber } as any;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
     const result = pipe.transform(prescription, currentUser);
@@ -49,7 +50,7 @@ describe('CanDuplicatePrescriptionPipe', () => {
 
   it('should return true if all conditions are satisfied', () => {
     const prescription = { templateCode: 'template1', intent: 'order' } as any;
-    const currentUser = { role: Role.professional } as any;
+    const currentUser = { role: Role.Prescriber } as any;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
     const result = pipe.transform(prescription, currentUser);

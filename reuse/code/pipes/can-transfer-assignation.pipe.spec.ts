@@ -1,14 +1,22 @@
 import { CanTransferAssignationPipe } from './can-transfer-assignation.pipe';
-import { AccessMatrixState } from '../states/access-matrix.state';
-import { Discipline, Intent, PerformerTask, ReadPrescription, Role, Status, TaskStatus, UserInfo } from '../interfaces';
+import { AccessMatrixState } from '../states/api/access-matrix.state';
+import { Intent, UserInfo } from '../interfaces';
+import {
+  Discipline,
+  FhirR4TaskStatus,
+  PerformerTaskResource,
+  ReadRequestResource,
+  RequestStatus,
+  Role,
+} from '../openapi';
 
 const currentUser: UserInfo = {
-  discipline: Discipline.NURSE,
+  discipline: Discipline.Nurse,
   firstName: '',
   lastName: '',
   professional: true,
   ssin: '123',
-  role: Role.professional
+  role: Role.Prescriber,
 };
 const careGiverSsin = '456';
 describe('CanTransferAssignationPipe', () => {
@@ -24,15 +32,15 @@ describe('CanTransferAssignationPipe', () => {
   });
 
   it('should return false if currentUser is undefined', () => {
-    const prescription = {} as ReadPrescription;
+    const prescription = {} as ReadRequestResource;
     const result = pipe.transform(prescription);
     expect(result).toBe(false);
   });
 
   it('should return false if prescription status is not OPEN, nor PENDING, nor IN_PROGRESS', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
-    const prescription = { status: Status.BLACKLISTED } as ReadPrescription;
-    const task = { status: TaskStatus.READY, careGiverSsin: currentUser.ssin } as PerformerTask;
+    const prescription = { status: RequestStatus.Blacklisted } as ReadRequestResource;
+    const task = { status: FhirR4TaskStatus.Ready, careGiverSsin: currentUser.ssin } as PerformerTaskResource;
 
     const result = pipe.transform(prescription, task, currentUser);
     expect(result).toBe(false);
@@ -40,15 +48,15 @@ describe('CanTransferAssignationPipe', () => {
 
   it('should return false if task is null or undefined', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
-    const prescription = { status: Status.OPEN } as ReadPrescription;
+    const prescription = { status: RequestStatus.Open } as ReadRequestResource;
     const result = pipe.transform(prescription, undefined, currentUser);
     expect(result).toBe(false);
   });
 
   it('should return false if task status is not READY nor INPROGRESS', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
-    const prescription = { status: Status.OPEN } as ReadPrescription;
-    const task = { status: TaskStatus.COMPLETED, careGiverSsin: currentUser.ssin } as PerformerTask;
+    const prescription = { status: RequestStatus.Open } as ReadRequestResource;
+    const task = { status: FhirR4TaskStatus.Completed, careGiverSsin: currentUser.ssin } as PerformerTaskResource;
 
     const result = pipe.transform(prescription, task, currentUser);
     expect(result).toBe(false);
@@ -56,8 +64,8 @@ describe('CanTransferAssignationPipe', () => {
 
   it('should return false if task.careGiverSsin does not match currentUser', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
-    const prescription = { status: Status.IN_PROGRESS } as ReadPrescription;
-    const task = { status: TaskStatus.READY, careGiverSsin: careGiverSsin } as PerformerTask;
+    const prescription = { status: RequestStatus.InProgress } as ReadRequestResource;
+    const task = { status: FhirR4TaskStatus.Ready, careGiverSsin: careGiverSsin } as PerformerTaskResource;
 
     const result = pipe.transform(prescription, task, currentUser);
     expect(result).toBe(false);
@@ -68,10 +76,10 @@ describe('CanTransferAssignationPipe', () => {
     const prescription = {
       intent: 'Proposal',
       templateCode: 'template1',
-      status: Status.OPEN,
-    } as ReadPrescription;
+      status: RequestStatus.Open,
+    } as ReadRequestResource;
 
-    const task = { status: TaskStatus.READY, careGiverSsin: currentUser.ssin } as PerformerTask;
+    const task = { status: FhirR4TaskStatus.Ready, careGiverSsin: currentUser.ssin } as PerformerTaskResource;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
     const result = pipe.transform(prescription, task, currentUser);
@@ -84,10 +92,10 @@ describe('CanTransferAssignationPipe', () => {
     const prescription = {
       intent: 'ORDER',
       templateCode: 'template2',
-      status: Status.IN_PROGRESS,
-    } as ReadPrescription;
+      status: RequestStatus.InProgress,
+    } as ReadRequestResource;
 
-    const task = { status: TaskStatus.INPROGRESS, careGiverSsin: currentUser.ssin } as PerformerTask;
+    const task = { status: FhirR4TaskStatus.Inprogress, careGiverSsin: currentUser.ssin } as PerformerTaskResource;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
     const result = pipe.transform(prescription, task, currentUser);
@@ -100,10 +108,10 @@ describe('CanTransferAssignationPipe', () => {
     const prescription = {
       intent: 'order',
       templateCode: 'template3',
-      status: Status.OPEN,
-    } as ReadPrescription;
+      status: RequestStatus.Open,
+    } as ReadRequestResource;
 
-    const task = { status: TaskStatus.READY, careGiverSsin: currentUser.ssin } as PerformerTask;
+    const task = { status: FhirR4TaskStatus.Ready, careGiverSsin: currentUser.ssin } as PerformerTaskResource;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
@@ -115,10 +123,10 @@ describe('CanTransferAssignationPipe', () => {
     const prescription = {
       intent: Intent.PROPOSAL,
       templateCode: 'template4',
-      status: Status.OPEN,
-    } as ReadPrescription;
+      status: RequestStatus.Open,
+    } as ReadRequestResource;
 
-    const task = { status: TaskStatus.INPROGRESS, careGiverSsin: currentUser.ssin } as PerformerTask;
+    const task = { status: FhirR4TaskStatus.Inprogress, careGiverSsin: currentUser.ssin } as PerformerTaskResource;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(false);
 
@@ -130,14 +138,12 @@ describe('CanTransferAssignationPipe', () => {
     const prescription = {
       intent: Intent.ORDER,
       templateCode: 'template3',
-      status: Status.OPEN,
-    } as ReadPrescription;
+      status: RequestStatus.Open,
+    } as ReadRequestResource;
 
-    const task = { status: TaskStatus.READY, careGiverSsin: currentUser.ssin } as PerformerTask;
+    const task = { status: FhirR4TaskStatus.Ready, careGiverSsin: currentUser.ssin } as PerformerTaskResource;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
-
-    const patient = {...currentUser, role: Role.patient}
 
     const result = pipe.transform(prescription, task, currentUser);
     expect(result).toBe(true);

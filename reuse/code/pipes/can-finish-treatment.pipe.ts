@@ -1,17 +1,18 @@
-import { Pipe } from '@angular/core';
-import { PerformerTask, ReadPrescription, TaskStatus } from '../interfaces';
-import { AccessMatrixState } from '../states/access-matrix.state';
+import { Pipe, PipeTransform } from '@angular/core';
+import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
+import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
 
-@Pipe({name: 'canFinishTreatment', standalone: true})
-export class CanFinishTreatmentPipe {
+@Pipe({ name: 'canFinishTreatment', standalone: true })
+export class CanFinishTreatmentPipe implements PipeTransform {
+  constructor(private accessMatrixState: AccessMatrixState) {}
 
-  constructor(
-    private readonly accessMatrixState: AccessMatrixState,
-  ) {
-  }
+  transform(prescription: ReadRequestResource, task: PerformerTaskResource): boolean {
+    const allowedStatuses: FhirR4TaskStatus[] = [FhirR4TaskStatus.Inprogress];
 
-  transform(prescription: ReadPrescription, task: PerformerTask): boolean {
-    return this.accessMatrixState.hasAtLeastOnePermission(['executeTreatment'], prescription.templateCode)
-      && [TaskStatus.INPROGRESS].includes(task.status);
+    return (
+      this.accessMatrixState.hasAtLeastOnePermission(['executeTreatment'], prescription.templateCode) &&
+      !!task.status &&
+      allowedStatuses.includes(task.status)
+    );
   }
 }

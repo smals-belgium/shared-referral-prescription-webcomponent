@@ -2,46 +2,44 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
-import { NgIf } from '@angular/common';
-import { TemplateNamePipe } from '../../pipes/template-name.pipe';
-import { PerformerTask, Person, ReadPrescription } from '../../interfaces';
-import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overlay-spinner.component';
-import { ToastService } from '../../services/toast.service';
+import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
+import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
+import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { v4 as uuidv4 } from 'uuid';
-import { ErrorCard } from '../../interfaces/error-card.interface';
-import { ErrorCardComponent } from '../../components/error-card/error-card.component';
-import { PrescriptionState } from '../../states/prescription.state';
+import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
+import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
+import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
+import { PerformerTaskResource, PersonResource, ReadRequestResource } from '@reuse/code/openapi';
+import { HttpErrorResponse } from '@angular/common/http';
 
 interface CancelExecutionPrescriptionDialogData {
-  prescription: ReadPrescription;
-  performerTask: PerformerTask;
-  patient: Person;
+  prescription: ReadRequestResource;
+  performerTask: PerformerTaskResource;
+  patient: PersonResource;
 }
 
 @Component({
-    templateUrl: './cancel-execution-prescription.dialog.html',
-    styleUrls: ['./cancel-execution-prescription.dialog.scss'],
-    imports: [
-        TranslateModule,
-        MatDialogModule,
-        MatButtonModule,
-        OverlaySpinnerComponent,
-        TemplateNamePipe,
-        NgIf,
-        ErrorCardComponent
-    ]
+  templateUrl: './cancel-execution-prescription.dialog.html',
+  styleUrls: ['./cancel-execution-prescription.dialog.scss'],
+  imports: [
+    TranslateModule,
+    MatDialogModule,
+    MatButtonModule,
+    OverlaySpinnerComponent,
+    TemplateNamePipe,
+    ErrorCardComponent,
+  ],
 })
 export class CancelExecutionPrescriptionDialog implements OnInit {
-
-  prescription: ReadPrescription;
-  patient: Person;
-  performerTask: PerformerTask;
+  prescription: ReadRequestResource;
+  patient?: PersonResource;
+  performerTask: PerformerTaskResource;
   loading = false;
   generatedUUID = '';
   errorCard: ErrorCard = {
     show: false,
     message: '',
-    errorResponse: undefined
+    errorResponse: undefined,
   };
 
   constructor(
@@ -60,6 +58,14 @@ export class CancelExecutionPrescriptionDialog implements OnInit {
   }
 
   cancelPrescriptionExecution(): void {
+    if (!this.prescription.id || !this.performerTask.id) {
+      this.errorCard = {
+        show: true,
+        message: 'common.somethingWentWrong',
+      };
+      return;
+    }
+
     this.loading = true;
     this.prescriptionStateService
       .cancelPrescriptionExecution(this.prescription.id, this.performerTask.id, this.generatedUUID)
@@ -69,14 +75,14 @@ export class CancelExecutionPrescriptionDialog implements OnInit {
           this.toastService.show('prescription.cancelExecution.success');
           this.dialogRef.close(true);
         },
-        error: (err) => {
+        error: (err: HttpErrorResponse) => {
           this.loading = false;
           this.errorCard = {
             show: true,
             message: 'common.somethingWentWrong',
-            errorResponse: err
+            errorResponse: err,
           };
-        }
+        },
       });
   }
 
@@ -84,7 +90,7 @@ export class CancelExecutionPrescriptionDialog implements OnInit {
     this.errorCard = {
       show: false,
       message: '',
-      errorResponse: undefined
+      errorResponse: undefined,
     };
   }
 }

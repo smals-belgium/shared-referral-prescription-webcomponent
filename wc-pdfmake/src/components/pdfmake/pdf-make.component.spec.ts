@@ -1,125 +1,121 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {TranslateModule, TranslateService} from '@ngx-translate/core';
-import {PrescriptionsPdfService} from '@reuse/code/services/prescription-pdf.service';
-import {PdfMakeWebComponent} from './pdf-make.component';
-import {SimpleChange} from "@angular/core";
-import {EvfTemplate, Person, ReadPrescription} from "@reuse/code/interfaces";
-import {FormTemplate} from "@smals/vas-evaluation-form-ui-core";
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { PrescriptionsPdfService } from '@reuse/code/services/helpers/prescription-pdf.service';
+import { PdfMakeWebComponent } from './pdf-make.component';
+import { SimpleChange } from '@angular/core';
+import { FormTemplate } from '@smals/vas-evaluation-form-ui-core';
+import { PersonResource, ReadRequestResource, Template } from '@reuse/code/openapi';
 
 describe('PdfMakeWebComponent', () => {
-    let component: PdfMakeWebComponent;
-    let fixture: ComponentFixture<PdfMakeWebComponent>;
-    let mockPdfService: Partial<PrescriptionsPdfService>;
-    let translate: TranslateService;
+  let component: PdfMakeWebComponent;
+  let fixture: ComponentFixture<PdfMakeWebComponent>;
+  let mockPdfService: Partial<PrescriptionsPdfService>;
+  let translate: TranslateService;
 
-    beforeEach(async () => {
-        mockPdfService = {
-            printPDF: jest.fn()
-        };
+  beforeEach(async () => {
+    mockPdfService = {
+      printPDF: jest.fn(),
+    };
 
-        await TestBed.configureTestingModule({
-            imports: [PdfMakeWebComponent, TranslateModule.forRoot()],
-            providers: [
-                {provide: PrescriptionsPdfService, useValue: mockPdfService},
-                // {provide: TranslateService, useValue: translate}
-            ]
-        }).compileComponents();
+    await TestBed.configureTestingModule({
+      imports: [PdfMakeWebComponent, TranslateModule.forRoot()],
+      providers: [{ provide: PrescriptionsPdfService, useValue: mockPdfService }],
+    }).compileComponents();
 
-        translate = TestBed.inject(TranslateService);
-        translate.setDefaultLang('nl-BE');
-        translate.use('nl-BE');
+    translate = TestBed.inject(TranslateService);
+    translate.setDefaultLang('nl-BE');
+    translate.use('nl-BE');
 
-        fixture = TestBed.createComponent(PdfMakeWebComponent);
-        component = fixture.componentInstance;
+    fixture = TestBed.createComponent(PdfMakeWebComponent);
+    component = fixture.componentInstance;
 
-        // Setup defaults
-        component.prescription = {} as ReadPrescription;
-        component.responses = {test: 'value'};
-        component.patient = {firstName: 'John'} as Person;
-        component.template = {} as EvfTemplate;
-        component.templateVersion = {} as FormTemplate;
+    // Setup defaults
+    component.prescription = {} as ReadRequestResource;
+    component.responses = { test: 'value' };
+    component.patient = { firstName: 'John' } as PersonResource;
+    component.template = {} as Template;
+    component.templateVersion = {} as FormTemplate;
 
-        fixture.detectChanges();
+    fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should change language when lang input changes', () => {
+    component.lang = 'fr';
+    const translateSpy = jest.spyOn(translate, 'use');
+
+    component.ngOnChanges({
+      lang: {
+        currentValue: 'fr',
+        previousValue: 'en',
+        firstChange: false,
+        isFirstChange: () => false,
+      },
     });
 
-    afterEach(() => {
-        jest.clearAllMocks();
+    expect(translateSpy).toHaveBeenCalledWith('fr');
+  });
+  it('should call printPDF and emit pdfReady when required inputs change', () => {
+    const pdfSpy = jest.spyOn(mockPdfService, 'printPDF');
+    const emitSpy = jest.spyOn(component.pdfReady, 'emit');
+
+    component.ngOnChanges({
+      prescription: new SimpleChange(null, component.prescription, true),
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
+    expect(pdfSpy).toHaveBeenCalled();
+
+    expect(mockPdfService.printPDF).toHaveBeenCalledWith(
+      component.prescription,
+      component.responses,
+      component.patient,
+      component.template,
+      component.templateVersion,
+      translate.currentLang
+    );
+
+    expect(emitSpy).toHaveBeenCalled();
+  });
+
+  it('should not call printPDF if required inputs are missing', () => {
+    component.prescription = undefined as never;
+    const pdfSpy = jest.spyOn(mockPdfService, 'printPDF');
+    const emitSpy = jest.spyOn(component.pdfReady, 'emit');
+
+    component.ngOnChanges({
+      prescription: {
+        currentValue: undefined,
+        previousValue: null,
+        firstChange: true,
+        isFirstChange: () => true,
+      },
     });
 
-    it('should change language when lang input changes', () => {
-        component.lang = 'fr';
-        const translateSpy = jest.spyOn(translate, 'use');
+    expect(pdfSpy).not.toHaveBeenCalled();
+    expect(mockPdfService.printPDF).not.toHaveBeenCalled();
+    expect(emitSpy).not.toHaveBeenCalled();
+  });
 
-        component.ngOnChanges({
-            lang: {
-                currentValue: 'fr',
-                previousValue: 'en',
-                firstChange: false,
-                isFirstChange: () => false
-            }
-        });
+  it('should not call printPDF or emit if irrelevant input changes', () => {
+    const emitSpy = jest.spyOn(component.pdfReady, 'emit');
 
-        expect(translateSpy).toHaveBeenCalledWith('fr');
-    });
-    it('should call printPDF and emit pdfReady when required inputs change', () => {
-        const pdfSpy = jest.spyOn(mockPdfService, 'printPDF');
-        const emitSpy = jest.spyOn(component.pdfReady, 'emit');
-
-        component.ngOnChanges({
-            prescription: new SimpleChange(null, component.prescription, true),
-        });
-
-        expect(pdfSpy).toHaveBeenCalled();
-
-        expect(mockPdfService.printPDF).toHaveBeenCalledWith(
-            component.prescription,
-            component.responses,
-            component.patient,
-            component.template,
-            component.templateVersion,
-            translate.currentLang
-        );
-
-        expect(emitSpy).toHaveBeenCalled();
+    component.ngOnChanges({
+      lang: {
+        currentValue: 'fr',
+        previousValue: 'nl-BE',
+        firstChange: false,
+        isFirstChange: () => false,
+      },
     });
 
-    it('should not call printPDF if required inputs are missing', () => {
-        component.prescription = undefined as any;
-        const pdfSpy = jest.spyOn(mockPdfService, 'printPDF');
-        const emitSpy = jest.spyOn(component.pdfReady, 'emit');
-
-        component.ngOnChanges({
-            prescription: {
-                currentValue: undefined,
-                previousValue: null,
-                firstChange: true,
-                isFirstChange: () => true
-            }
-        });
-
-        expect(pdfSpy).not.toHaveBeenCalled();
-        expect(mockPdfService.printPDF).not.toHaveBeenCalled();
-        expect(emitSpy).not.toHaveBeenCalled()
-    });
-
-    it('should not call printPDF or emit if irrelevant input changes', () => {
-        const emitSpy = jest.spyOn(component.pdfReady, 'emit');
-
-        component.ngOnChanges({
-            lang: {
-                currentValue: 'fr',
-                previousValue: 'nl-BE',
-                firstChange: false,
-                isFirstChange: () => false
-            }
-        });
-
-        expect(mockPdfService.printPDF).not.toHaveBeenCalled();
-        expect(emitSpy).not.toHaveBeenCalled();
-    });
+    expect(mockPdfService.printPDF).not.toHaveBeenCalled();
+    expect(emitSpy).not.toHaveBeenCalled();
+  });
 });
-

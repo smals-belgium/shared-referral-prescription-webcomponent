@@ -1,7 +1,8 @@
-import { Pipe } from '@angular/core';
-import { Intent, PerformerTask, ReadPrescription, Role, Status, TaskStatus, UserInfo } from '../interfaces';
-import { AccessMatrixState } from '../states/access-matrix.state';
-import { isProposal } from '@reuse/code/utils/utils';
+import { Pipe, PipeTransform } from '@angular/core';
+import { UserInfo } from '@reuse/code/interfaces';
+import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
+import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
+import { isProfesionalBasedOnRole, isProposal } from '@reuse/code/utils/utils';
 
 /**
  * This pipe determines whether an assignation can be transferred.
@@ -20,29 +21,32 @@ import { isProposal } from '@reuse/code/utils/utils';
  * @pipe
  * @name canTransferAssignation
  */
-@Pipe({name: 'canTransferAssignation', standalone: true})
-export class CanTransferAssignationPipe {
+@Pipe({ name: 'canTransferAssignation', standalone: true })
+export class CanTransferAssignationPipe implements PipeTransform {
+  constructor(private accessMatrixState: AccessMatrixState) {}
 
-  constructor(private readonly accessMatrixState: AccessMatrixState) {
+  transform(prescription: ReadRequestResource, task?: PerformerTaskResource, currentUser?: Partial<UserInfo>): boolean {
+    if (currentUser == undefined) return false;
+
+    const allowedStatuses: RequestStatus[] = [RequestStatus.Pending, RequestStatus.Open, RequestStatus.InProgress];
+    const allowedTaskStatuses: FhirR4TaskStatus[] = [FhirR4TaskStatus.Ready, FhirR4TaskStatus.Inprogress];
+
+    return (
+      this.hasAssignPermissions(prescription) &&
+      !!prescription.status &&
+      allowedStatuses.includes(prescription.status) &&
+      !!task &&
+      !!task.status &&
+      allowedTaskStatuses.includes(task.status) &&
+      isProfesionalBasedOnRole(currentUser.role) &&
+      task.careGiverSsin == currentUser.ssin
+    );
   }
 
-  transform(prescription: ReadPrescription, task?: PerformerTask, currentUser?: UserInfo): boolean {
-    if (currentUser == undefined)
-      return false;
-
-    return this.hasAssignPermissions(prescription)
-      && prescription.status != null
-      && [Status.OPEN, Status.PENDING, Status.IN_PROGRESS].includes(prescription.status)
-      && task != null
-      && [TaskStatus.READY, TaskStatus.INPROGRESS].includes(task.status)
-      && currentUser.role === Role.professional
-      && task.careGiverSsin == currentUser.ssin;
-  }
-
-  private hasAssignPermissions(prescription: ReadPrescription) {
-    if(isProposal(prescription.intent)) {
+  private hasAssignPermissions(prescription: ReadRequestResource) {
+    if (isProposal(prescription.intent)) {
       return this.accessMatrixState.hasAtLeastOnePermission(['assignProposal'], prescription.templateCode);
     }
-    return this.accessMatrixState.hasAtLeastOnePermission(['assignPrescription'], prescription.templateCode)
+    return this.accessMatrixState.hasAtLeastOnePermission(['assignPrescription'], prescription.templateCode);
   }
 }

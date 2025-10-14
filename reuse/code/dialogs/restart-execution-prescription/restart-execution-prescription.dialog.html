@@ -20,5 +20,7 @@
     <button data-cy="dialog-cancel-button" mat-flat-button [mat-dialog-close]="undefined">{{'common.cancel' | translate}}</button>
   </div>
 
-  <app-overlay-spinner mode="dialog" *ngIf="loading"></app-overlay-spinner>
+  @if(loading){
+    <app-overlay-spinner mode="dialog"></app-overlay-spinner>
+  }
 </div>

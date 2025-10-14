@@ -1,6 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Intent, PerformerTask, ReadPrescription, Role, Status, TaskStatus, UserInfo } from '../interfaces';
-import { AccessMatrixState } from '../states/access-matrix.state';
+import { UserInfo } from '@reuse/code/interfaces';
+import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
+import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource, RequestStatus, Role } from '@reuse/code/openapi';
 import { isProposal } from '@reuse/code/utils/utils';
 
 /**
@@ -19,33 +20,48 @@ import { isProposal } from '@reuse/code/utils/utils';
  * @pipe
  * @name CanRejectAssignationPipe
  */
-@Pipe({name: 'canRejectAssignation', standalone: true})
+@Pipe({ name: 'canRejectAssignation', standalone: true })
 export class CanRejectAssignationPipe implements PipeTransform {
+  constructor(private accessMatrixState: AccessMatrixState) {}
 
-  constructor(private readonly accessMatrixState: AccessMatrixState) {
+  transform(
+    prescription: ReadRequestResource,
+    task: PerformerTaskResource,
+    patientSsin?: string,
+    currentUser?: Partial<UserInfo>
+  ): boolean {
+    if (!currentUser || !patientSsin) return false;
+
+    const allowedStatuses: RequestStatus[] = [RequestStatus.Pending, RequestStatus.Open, RequestStatus.InProgress];
+
+    return (
+      this.hasAssignPermissions(prescription) &&
+      prescription.status != null &&
+      allowedStatuses.includes(prescription.status) &&
+      task?.status === FhirR4TaskStatus.Ready &&
+      this.checkIfCurrentUserIsPatientOrAssignedCaregiver(
+        currentUser,
+        patientSsin,
+        task.careGiver?.healthcarePerson?.ssin
+      )
+    );
   }
 
-  transform(prescription: ReadPrescription, task: PerformerTask, patientSsin: string, currentUser?: UserInfo): boolean {
-    if (!currentUser)
-      return false;
+  private checkIfCurrentUserIsPatientOrAssignedCaregiver(
+    currentUser: Partial<UserInfo>,
+    patientSsin: string,
+    caregiverSsin?: string
+  ): boolean {
+    if (!caregiverSsin) return false;
 
-    return this.hasAssignPermissions(prescription)
-      && prescription.status != null && [Status.OPEN, Status.PENDING, Status.IN_PROGRESS].includes(prescription.status)
-      && task?.status === TaskStatus.READY
-      && this.checkIfCurrentUserIsPatientOrAssignedCaregiver(currentUser, patientSsin, task.careGiver.id.ssin);
-  }
-
-  private checkIfCurrentUserIsPatientOrAssignedCaregiver(currentUser: UserInfo, patientSsin: string, caregiverSsin?: string): boolean {
-      if (!caregiverSsin) return false;
-
-      const isPatient = currentUser.role === Role.patient && currentUser.ssin === patientSsin;
-      const isCaregiver = currentUser.role !== Role.patient && currentUser.ssin === caregiverSsin;
+    const isPatient = currentUser.role === Role.Patient && currentUser.ssin === patientSsin;
+    const isCaregiver = currentUser.role !== Role.Patient && currentUser.ssin === caregiverSsin;
 
     return isPatient || isCaregiver;
   }
 
-  private hasAssignPermissions(prescription: ReadPrescription) {
-    if(isProposal(prescription.intent)) {
+  private hasAssignPermissions(prescription: ReadRequestResource) {
+    if (isProposal(prescription.intent)) {
       return this.accessMatrixState.hasAtLeastOnePermission(['removeAssignationProposal'], prescription.templateCode);
     }
     return this.accessMatrixState.hasAtLeastOnePermission(['removeAssignationPrescription'], prescription.templateCode);

@@ -1,4 +1,5 @@
-<table mat-table [dataSource]="prescriptions.items" class="mat-elevation-z8">
+@if(prescriptions?.items; as items) {
+<table mat-table [dataSource]="items" class="mat-elevation-z8">
   <ng-container matColumnDef="author">
     <th data-cy="overview-author-title" mat-header-cell *matHeaderCellDef>{{'prescription.author' | translate}}</th>
     <td [attr.data-cy]="'author-cell-' + prescription.id" [attr.translate]="'no'" mat-cell *matCellDef="let prescription">
@@ -65,7 +66,8 @@
       (click)="clickPrescription.emit(row)"
       mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
-  @if(prescriptions.total === 0) {
+  @if(prescriptions?.total === 0) {
       <tr class="no-prescriptions" mat-footer-row *matFooterRowDef="['noRecord']"></tr>
   }
 </table>
+}

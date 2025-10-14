@@ -2,50 +2,47 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
-import { NgIf } from '@angular/common';
-import { TemplateNamePipe } from '../../pipes/template-name.pipe';
-import { PerformerTask, Person, ReadPrescription } from '../../interfaces';
-import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overlay-spinner.component';
-import { ToastService } from '../../services/toast.service';
-import { PrescriptionState } from '../../states/prescription.state';
+import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
+import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
+import { ToastService } from '@reuse/code/services/helpers/toast.service';
+import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { v4 as uuidv4 } from 'uuid';
-import { ErrorCardComponent } from '../../components/error-card/error-card.component';
-import { BaseDialog } from '../base.dialog';
+import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
+import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
+import { PerformerTaskResource, PersonResource, ReadRequestResource } from '@reuse/code/openapi';
 
 interface RejectAssignationDialogData {
-  prescription: ReadPrescription;
-  performerTask: PerformerTask;
-  patient: Person;
+  prescription: ReadRequestResource;
+  performerTask: PerformerTaskResource;
+  patient: PersonResource;
 }
 
 @Component({
-    templateUrl: './restart-execution-prescription.dialog.html',
-    styleUrls: ['./restart-execution-prescription.dialog.scss'],
-    imports: [
-        TranslateModule,
-        MatDialogModule,
-        MatButtonModule,
-        OverlaySpinnerComponent,
-        TemplateNamePipe,
-        NgIf,
-        ErrorCardComponent
-    ]
+  templateUrl: './restart-execution-prescription.dialog.html',
+  styleUrls: ['./restart-execution-prescription.dialog.scss'],
+  imports: [
+    TranslateModule,
+    MatDialogModule,
+    MatButtonModule,
+    OverlaySpinnerComponent,
+    TemplateNamePipe,
+    ErrorCardComponent,
+  ],
 })
 export class RestartExecutionPrescriptionDialog extends BaseDialog implements OnInit {
-
-  readonly prescription: ReadPrescription;
-  readonly patient: Person;
-  readonly performerTask: PerformerTask;
+  readonly prescription: ReadRequestResource;
+  readonly patient: PersonResource;
+  readonly performerTask: PerformerTaskResource;
   loading = false;
   generatedUUID = '';
 
   constructor(
-    private readonly prescriptionStateService: PrescriptionState,
-    private readonly toastService: ToastService,
+    private prescriptionStateService: PrescriptionState,
+    private toastService: ToastService,
     dialogRef: MatDialogRef<RestartExecutionPrescriptionDialog>,
-    @Inject(MAT_DIALOG_DATA) private readonly data: RejectAssignationDialogData,
+    @Inject(MAT_DIALOG_DATA) private data: RejectAssignationDialogData
   ) {
-    super(dialogRef)
+    super(dialogRef);
     this.prescription = data.prescription;
     this.patient = data.patient;
     this.performerTask = data.performerTask;
@@ -56,17 +53,24 @@ export class RestartExecutionPrescriptionDialog extends BaseDialog implements On
   }
 
   restartExecution(): void {
+    if (!this.prescription.id || !this.performerTask.id) {
+      this.showErrorCard('common.somethingWentWrong');
+      return;
+    }
+
     this.loading = true;
-    this.prescriptionStateService.restartExecution(this.prescription.id, this.performerTask.id, this.generatedUUID).subscribe({
-      next: () => {
-        this.closeErrorCard();
-        this.toastService.show('prescription.restartExecution.success');
-        this.closeDialog(true);
-      },
-      error: (err) => {
-        this.loading = false;
-        this.showErrorCard('common.somethingWentWrong', err)
-      }
-    });
+    this.prescriptionStateService
+      .restartExecution(this.prescription.id, this.performerTask.id, this.generatedUUID)
+      .subscribe({
+        next: () => {
+          this.closeErrorCard();
+          this.toastService.show('prescription.restartExecution.success');
+          this.closeDialog(true);
+        },
+        error: err => {
+          this.loading = false;
+          this.showErrorCard('common.somethingWentWrong', err);
+        },
+      });
   }
 }

@@ -7,19 +7,23 @@
 
 <div class="pages">
   <ng-container *ngFor="let p of displayedPages">
+    @if(p === page) {
     <button data-cy="pagination"
-      *ngIf="p === page"
       class="active"
       color="accent"
       tabindex="-1"
       mat-flat-button
     >{{p}}</button>
+    }
+    @if(p !== '...' && p !== page) {
     <button data-cy="pagination"
-      *ngIf="p !== '...' && p !== page"
       mat-flat-button
       (click)="changePage.emit($any(p))"
     >{{p}}</button>
-    <div data-cy="pagination_points" class="spacer" *ngIf="p === '...'">...</div>
+    }
+    @if(p === '...'){
+      <div data-cy="pagination_points" class="spacer">...</div>
+    }
   </ng-container>
 </div>
 

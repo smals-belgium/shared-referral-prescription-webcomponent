@@ -2,100 +2,101 @@ import {
   evfElementConfigFeature,
   provideEvfCore,
   withParseDateExpressionPipe,
-  withTransformDateExpressionPipe
+  withTransformDateExpressionPipe,
 } from '@smals/vas-evaluation-form-ui-core';
 import { CheckboxDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/checkbox';
 import { DateDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/date';
-import { OccurrenceTimingDetailComponent } from './occurrence-timing/detail/occurrence-timing-detail.component';
-import { RecommendationsDetailComponent } from './pss-recommendations/detail/recommendations-detail.component';
+import { OccurrenceTimingDetailComponent } from '@reuse/code/evf/occurrence-timing/detail/occurrence-timing-detail.component';
+import { RecommendationsDetailComponent } from '@reuse/code/evf/pss-recommendations/detail/recommendations-detail.component';
 import {
   EvfNumberDetailComponent,
   EvfResponseDetailComponent,
   EvfResponseListDetailComponent,
-  EvfValueDetailComponent
+  EvfValueDetailComponent,
 } from '@smals/vas-evaluation-form-ui-material/elements/shared';
 import { RowDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/row';
 import { RepeatableInlineDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/repeatable-inline';
 import { RepeatableDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/repeatable';
 import { SlideToggleDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/slide-toggle';
-import { AutocompleteDetailComponent } from "@smals/vas-evaluation-form-ui-material/elements/autocomplete";
+import { AutocompleteDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/autocomplete';
 import { SectionDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/section';
 
 export function provideEvfFormDetails() {
   return [
     provideEvfCore(
-      evfElementConfigFeature( // Only include detail views for smaller bundle size
+      evfElementConfigFeature(
+        // Only include detail views for smaller bundle size
         {
           name: 'checkbox',
-          detail: CheckboxDetailComponent
+          detail: CheckboxDetailComponent,
         },
         {
           name: 'checkboxList',
-          detail: EvfResponseListDetailComponent
+          detail: EvfResponseListDetailComponent,
         },
         {
           name: 'textarea',
-          detail: EvfValueDetailComponent
+          detail: EvfValueDetailComponent,
         },
         {
           name: 'date',
-          detail: DateDetailComponent
+          detail: DateDetailComponent,
         },
         {
           name: 'dateTime',
-          detail: DateDetailComponent
+          detail: DateDetailComponent,
         },
         {
           name: 'inputText',
-          detail: EvfValueDetailComponent
+          detail: EvfValueDetailComponent,
         },
         {
           name: 'number',
-          detail: EvfNumberDetailComponent
+          detail: EvfNumberDetailComponent,
         },
         {
           name: 'radio',
-          detail: EvfResponseDetailComponent
+          detail: EvfResponseDetailComponent,
         },
         {
           name: 'select',
-          detail: EvfResponseDetailComponent
+          detail: EvfResponseDetailComponent,
         },
         {
           name: 'occurrenceTiming',
-          detail: OccurrenceTimingDetailComponent
+          detail: OccurrenceTimingDetailComponent,
         },
         {
           name: 'row',
-          detail: RowDetailComponent
+          detail: RowDetailComponent,
         },
         {
           name: 'autocomplete',
-          detail: AutocompleteDetailComponent
+          detail: AutocompleteDetailComponent,
         },
         {
           name: 'recommendations',
-          detail: RecommendationsDetailComponent
+          detail: RecommendationsDetailComponent,
         },
         {
           name: 'repeatableInline',
-          detail: RepeatableInlineDetailComponent
+          detail: RepeatableInlineDetailComponent,
         },
         {
           name: 'repeatable',
-          detail: RepeatableDetailComponent
+          detail: RepeatableDetailComponent,
         },
         {
           name: 'slideToggle',
-          detail: SlideToggleDetailComponent
+          detail: SlideToggleDetailComponent,
         },
         {
           name: 'section',
-          detail: SectionDetailComponent
+          detail: SectionDetailComponent,
         }
       ),
       withParseDateExpressionPipe(),
       withTransformDateExpressionPipe()
-    )
+    ),
   ];
 }

@@ -1,98 +1,8 @@
-import { Professional } from './professional.interface';
-import { Period } from './fhir.interface';
-import { Organization } from './organization.interface';
-
-
-export interface ReadPrescription {
-  id: string;
-  patientIdentifier: string;
-  templateCode: string;
-  category: string;
-  authoredOn: string;
-  requester?: Professional;
-  status?: Status;
-  period: { start: string; end: string; };
-  referralTask: ReferralTask;
-  performerTasks: PerformerTask[];
-  organizationTasks: OrganizationTask[];
-  responses: Record<string, unknown>;
-  intent?: string;
-  pseudonymizedKey?: string;
-  kid?: string;
-  shortCode?: string;
-  note?:string;
-}
-
-export interface ReferralTask {
-  id: string;
-  status: TaskStatus;
-}
-
-export interface PerformerTask {
-  id: string;
-  status: TaskStatus;
-  careGiverSsin: string;
-  careGiver: Professional;
-  executionPeriod?: Period;
-}
-
-export interface OrganizationTask {
-  id: string;
-  status: TaskStatus;
-  organizationNihdi: string;
-  organization: Organization;
-  performerTasks: PerformerTask[];
-  executionPeriod?: Period;
-}
-
-export enum TaskStatus {
-  DRAFT = 'DRAFT',
-  REQUESTED = 'REQUESTED',
-  REJECTED = 'REJECTED',
-  CANCELLED = 'CANCELLED',
-  FAILED = 'FAILED',
-  ENTEREDINERROR = 'ENTEREDINERROR',
-  READY = 'READY',
-  INPROGRESS = 'INPROGRESS',
-  ONHOLD = 'ONHOLD',
-  COMPLETED = "COMPLETED"
-}
-
-export enum Intent {
-  PROPOSAL = 'proposal',
-  ORDER = 'order',
-  MODEL = 'model'
-}
-
-export interface CreatePrescriptionRequest {
-  subject: string;
-  templateCode: string;
-  responses: Record<string, any>;
-  pseudonymizedKey: string | undefined;
-}
+import { ReadRequestResource } from '@reuse/code/openapi';
 
 export interface TemplateId {
   snomed: string;
   orderDetail?: string;
-}
-
-
-export const enum Status {
-  DRAFT = 'DRAFT',
-  BLACKLISTED = 'BLACKLISTED',
-  PENDING = 'PENDING',
-  OPEN = 'OPEN',
-  CANCELLED = 'CANCELLED',
-  EXPIRED = 'EXPIRED',
-  IN_PROGRESS = 'IN_PROGRESS',
-  DONE = 'DONE',
-  ON_HOLD = 'ON_HOLD',
-  ENTERED_IN_ERROR = 'ENTERED_IN_ERROR',
-  INACTIVE = 'INACTIVE'
-}
-
-export interface PrescriptionCancellation {
-  reason?: string;
 }
 
 export interface PrescriptionExecutionStart {
@@ -110,14 +20,21 @@ export interface SearchPrescriptionCriteria {
   historical?: boolean;
 }
 
-export interface ProposalApproveResponse {
-  prescriptionId?: string;
-}
-
 export interface CreatePrescriptionInitialValues {
   intent: string;
   initialPrescriptionType?: string;
-  initialPrescription?: ReadPrescription;
-  initialModelId?: string;
+  initialPrescription?: ReadRequestResource;
+  initialModelId?: number;
   extend?: boolean;
+}
+
+export enum Intent {
+  PROPOSAL = 'proposal',
+  ORDER = 'order',
+  MODEL = 'model',
+}
+
+export interface SearchHealthcareProviderCriteria {
+  query: string;
+  zipCodes: number[];
 }

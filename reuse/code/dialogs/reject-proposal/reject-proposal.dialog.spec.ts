@@ -6,11 +6,11 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import * as uuid from 'uuid';
 
 import { RejectProposalDialog } from './reject-proposal.dialog';
-import { ToastService } from '../../services/toast.service';
-import { ProposalState } from '../../states/proposal.state';
-import { EncryptionHelperService } from '@reuse/code/services/encryption-helper.service';
-import { ReadPrescription } from '../../interfaces';
+import { ToastService } from '../../services/helpers/toast.service';
+import { ProposalState } from '../../states/api/proposal.state';
+import { EncryptionHelperService } from '@reuse/code/states/privacy/encryption-helper.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ReadRequestResource } from '@reuse/code/openapi';
 
 const mockToastService = {
   show: jest.fn(),
@@ -29,19 +29,19 @@ const mockDialogRef = {
   close: jest.fn(),
 };
 
-const proposalWithoutTasks: { proposal: ReadPrescription } = {
+const proposalWithoutTasks: { proposal: ReadRequestResource } = {
   proposal: {
     id: 'proposal-123',
     kid: 'kid-abc',
     pseudonymizedKey: 'existing-pseudo-key-xyz',
-  } as ReadPrescription,
+  } as ReadRequestResource,
 };
 
-const proposalWithTasks: { proposal: ReadPrescription } = {
+const proposalWithTasks: { proposal: ReadRequestResource } = {
   proposal: {
     id: 'proposal-456',
-    performerTasks: [{id: 'task-789'}],
-  } as ReadPrescription,
+    performerTasks: [{ id: 'task-789' }],
+  } as ReadRequestResource,
 };
 
 describe('RejectProposalDialog', () => {
@@ -50,19 +50,15 @@ describe('RejectProposalDialog', () => {
   let uuidSpy: jest.SpyInstance;
   let translate: TranslateService;
 
-  async function configureTestBedWithData(data: { proposal: ReadPrescription }) {
+  async function configureTestBedWithData(data: { proposal: ReadRequestResource }) {
     await TestBed.configureTestingModule({
-      imports: [RejectProposalDialog,
-        ReactiveFormsModule,
-        NoopAnimationsModule,
-        TranslateModule.forRoot(),
-      ],
+      imports: [RejectProposalDialog, ReactiveFormsModule, NoopAnimationsModule, TranslateModule.forRoot()],
       providers: [
-        {provide: ToastService, useValue: mockToastService},
-        {provide: ProposalState, useValue: mockProposalState},
-        {provide: EncryptionHelperService, useValue: mockEncryptionHelper},
-        {provide: MatDialogRef, useValue: mockDialogRef},
-        {provide: MAT_DIALOG_DATA, useValue: data},
+        { provide: ToastService, useValue: mockToastService },
+        { provide: ProposalState, useValue: mockProposalState },
+        { provide: EncryptionHelperService, useValue: mockEncryptionHelper },
+        { provide: MatDialogRef, useValue: mockDialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: data },
       ],
     }).compileComponents();
     translate = TestBed.inject(TranslateService);
@@ -74,7 +70,7 @@ describe('RejectProposalDialog', () => {
   }
 
   beforeEach(() => {
-    uuidSpy = jest.spyOn(uuid, 'v4').mockReturnValue('mock-uuid-12345' as unknown as Uint8Array<ArrayBuffer>);
+    uuidSpy = jest.spyOn(uuid, 'v4').mockReturnValue('mock-uuid-12345' as unknown as Uint8Array);
     jest.clearAllMocks();
   });
 
@@ -95,21 +91,22 @@ describe('RejectProposalDialog', () => {
 
     it('should encrypt reason and call rejectProposal on success', fakeAsync(() => {
       const reasonText = 'Rejection reason';
-      const encryptedData = {encryptedText: 'encrypted-text', pseudonymizedKey: 'existing-pseudo-key-xyz'};
+      const encryptedData = { encryptedText: 'encrypted-text', pseudonymizedKey: 'existing-pseudo-key-xyz' };
       component.formGroup.get('reason')?.setValue(reasonText);
       mockEncryptionHelper.getEncryptedReasonAndPseudoKey.mockReturnValue(of(encryptedData));
-      mockProposalState.rejectProposal.mockReturnValue(of({success: true}));
+      mockProposalState.rejectProposal.mockReturnValue(of({ success: true }));
 
       component.rejectProposal();
       tick();
 
-      expect(mockEncryptionHelper.getEncryptedReasonAndPseudoKey).toHaveBeenCalledWith(reasonText, proposalWithoutTasks.proposal.pseudonymizedKey);
+      expect(mockEncryptionHelper.getEncryptedReasonAndPseudoKey).toHaveBeenCalledWith(
+        reasonText,
+        proposalWithoutTasks.proposal.pseudonymizedKey
+      );
       expect(mockProposalState.rejectProposal).toHaveBeenCalledWith(
         'proposal-123',
-        'mock-uuid-12345',
-        encryptedData.encryptedText,
-        'kid-abc',
-        encryptedData.pseudonymizedKey
+        { kid: 'kid-abc', pseudonymizedKey: encryptedData.pseudonymizedKey, reason: encryptedData.encryptedText },
+        'mock-uuid-12345'
       );
       expect(mockProposalState.rejectProposalTask).not.toHaveBeenCalled();
       expect(mockToastService.show).toHaveBeenCalledWith('proposal.reject.success');
@@ -120,7 +117,9 @@ describe('RejectProposalDialog', () => {
     it('should handle error from proposalState.rejectProposal', fakeAsync(() => {
       const error = new Error('API rejection failed');
       component.formGroup.get('reason')?.setValue('a reason');
-      mockEncryptionHelper.getEncryptedReasonAndPseudoKey.mockReturnValue(of({encryptedText: '...', pseudonymizedKey: '...'}));
+      mockEncryptionHelper.getEncryptedReasonAndPseudoKey.mockReturnValue(
+        of({ encryptedText: '...', pseudonymizedKey: '...' })
+      );
       mockProposalState.rejectProposal.mockReturnValue(throwError(() => error));
       const handleErrorSpy = jest.spyOn(component as any, 'handleError');
 
@@ -151,8 +150,8 @@ describe('RejectProposalDialog', () => {
       expect(mockProposalState.rejectProposalTask).toHaveBeenCalledWith(
         'proposal-456',
         'task-789',
-        'mock-uuid-12345',
-        reasonText
+        { reason: reasonText },
+        'mock-uuid-12345'
       );
       expect(mockToastService.show).toHaveBeenCalledWith('proposal.reject.success');
       expect(mockDialogRef.close).toHaveBeenCalledWith(true);

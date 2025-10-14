@@ -3,80 +3,87 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
-import { DatePipe } from '../../pipes/date.pipe';
-import { FormatNihdiPipe } from '../../pipes/format-nihdi.pipe';
-import { TemplateNamePipe } from '../../pipes/template-name.pipe';
+import { DatePipe } from '@reuse/code/pipes/date.pipe';
+import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
+import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 import { NgStyle } from '@angular/common';
-import { HideIfProfessionalDirective } from '../../directives/hide-if-professional.directive';
-import { ShowIfProfessionalDirective } from '../../directives/show-if-professional.directive';
-import { PrescriptionSummary, PrescriptionSummaryList } from '../../interfaces/prescription-summary.interface';
-import { Status } from '../../interfaces';
+import { HideIfProfessionalDirective } from '@reuse/code/directives/hide-if-professional.directive';
+import { ShowIfProfessionalDirective } from '@reuse/code/directives/show-if-professional.directive';
 import {
-  MatCell, MatCellDef,
+  MatCell,
+  MatCellDef,
   MatColumnDef,
-  MatFooterCell, MatFooterCellDef, MatFooterRow, MatFooterRowDef,
-  MatHeaderCell, MatHeaderCellDef,
-  MatHeaderRow, MatHeaderRowDef,
-  MatRow, MatRowDef,
-  MatTable
+  MatFooterCell,
+  MatFooterCellDef,
+  MatFooterRow,
+  MatFooterRowDef,
+  MatHeaderCell,
+  MatHeaderCellDef,
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow,
+  MatRowDef,
+  MatTable,
 } from '@angular/material/table';
 import { MatChip } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import {
-  ProfessionalDisplayComponent
-} from '@reuse/code/components/professional-display/professional-display.component';
+import { ProfessionalDisplayComponent } from '@reuse/code/components/professional-display/professional-display.component';
+import { ReadRequestListResource, ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
 
 @Component({
-    selector: 'app-prescriptions-table',
-    templateUrl: './prescriptions-table.component.html',
-    styleUrls: ['./prescriptions-table.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        TranslateModule,
-        MatIconModule,
-        MatMenuModule,
-        MatButtonModule,
-        DatePipe,
-        FormatNihdiPipe,
-        TemplateNamePipe,
-        HideIfProfessionalDirective,
-        ShowIfProfessionalDirective,
-        NgStyle,
-        MatTable,
-        MatColumnDef,
-        MatHeaderCell,
-        MatCell,
-        MatChip,
-        MatFooterCell,
-        MatHeaderRow,
-        MatRow,
-        MatFooterRow,
-        MatHeaderRowDef,
-        MatRowDef,
-        MatFooterCellDef,
-        MatHeaderCellDef,
-        MatCellDef,
-        MatFooterRowDef,
-        MatTooltipModule,
-        ProfessionalDisplayComponent
-    ]
+  selector: 'app-prescriptions-table',
+  templateUrl: './prescriptions-table.component.html',
+  styleUrls: ['./prescriptions-table.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    TranslateModule,
+    MatIconModule,
+    MatMenuModule,
+    MatButtonModule,
+    DatePipe,
+    FormatNihdiPipe,
+    TemplateNamePipe,
+    HideIfProfessionalDirective,
+    ShowIfProfessionalDirective,
+    NgStyle,
+    MatTable,
+    MatColumnDef,
+    MatHeaderCell,
+    MatCell,
+    MatChip,
+    MatFooterCell,
+    MatHeaderRow,
+    MatRow,
+    MatFooterRow,
+    MatHeaderRowDef,
+    MatRowDef,
+    MatFooterCellDef,
+    MatHeaderCellDef,
+    MatCellDef,
+    MatFooterRowDef,
+    MatTooltipModule,
+    ProfessionalDisplayComponent,
+  ],
 })
 export class PrescriptionsTableComponent {
+  @Input() prescriptions?: ReadRequestListResource;
 
-  @Input() prescriptions!: PrescriptionSummaryList;
+  @Output() clickPrescription = new EventEmitter<ReadRequestResource>();
 
-  @Output() clickPrescription = new EventEmitter<PrescriptionSummary>();
+  displayedColumns: string[] = ['author', 'assigned', 'typeOfCare', 'start', 'end', 'status'];
 
-  displayedColumns: string[] = ['author', 'assigned', 'typeOfCare', 'start', 'end', 'status']
-
-  getStatusBorderColor(status: Status): string {
-    if (status === 'BLACKLISTED' || status === 'CANCELLED'|| status === 'EXPIRED') {
+  getStatusBorderColor(status: RequestStatus): string {
+    if (
+      status === RequestStatus.Blacklisted ||
+      status === RequestStatus.Cancelled ||
+      status === RequestStatus.Expired
+    ) {
       return 'red';
-    } else if (status === 'PENDING') {
+    } else if (status === RequestStatus.Pending) {
       return 'orange';
-    } else if (status === 'IN_PROGRESS') {
+    } else if (status === RequestStatus.InProgress) {
       return '#40c4ff';
-    } else if (status === 'DONE') {
+    } else if (status === RequestStatus.Done) {
       return 'limegreen';
     } else {
       return 'lightgrey';

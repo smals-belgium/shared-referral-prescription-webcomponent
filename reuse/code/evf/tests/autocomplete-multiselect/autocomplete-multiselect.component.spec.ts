@@ -5,55 +5,52 @@ import {
   evfElementConfigFeature,
   EvfExternalSourceService,
   FormTemplate,
-  provideEvfCore
+  provideEvfCore,
 } from '@smals/vas-evaluation-form-ui-core';
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { EvfDynamicFormComponent } from "@smals/vas-evaluation-form-ui-material/dynamic-form";
-import { BrowserModule, By } from "@angular/platform-browser";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { EvfDynamicFormComponent } from '@smals/vas-evaluation-form-ui-material/dynamic-form';
+import { BrowserModule, By } from '@angular/platform-browser';
 import { MarkdownModule } from 'ngx-markdown';
 import { of } from 'rxjs';
-import {
-  AutocompleteMultiselectComponent
-} from '../../autocomplete-multiselect/element/autocomplete-multiselect.component';
-import { ExternalSourceService } from '@reuse/code/services/externalSourceService.service';
+import { AutocompleteMultiselectComponent } from '../../autocomplete-multiselect/element/autocomplete-multiselect.component';
+import { ExternalSourceService } from '@reuse/code/services/api/externalSourceService.service';
 
 const mockAutocompleteOptions: AutocompleteOption[] = [
-  {label: {en: 'Option 1', fr: 'Option 1', nl: 'Option 1', de: 'Option 1'}, value: 'opt1'},
-  {label: {en: 'Option 2', fr: 'Option 2', nl: 'Option 2', de: 'Option 2'}, value: 'opt2'},
-  {label: {en: 'Option 3', fr: 'Option 3', nl: 'Option 3', de: 'Option 3'}, value: 'opt3'}
+  { label: { en: 'Option 1', fr: 'Option 1', nl: 'Option 1', de: 'Option 1' }, value: 'opt1' },
+  { label: { en: 'Option 2', fr: 'Option 2', nl: 'Option 2', de: 'Option 2' }, value: 'opt2' },
+  { label: { en: 'Option 3', fr: 'Option 3', nl: 'Option 3', de: 'Option 3' }, value: 'opt3' },
 ];
 
 const formTemplate: FormTemplate = {
-  "elements": [
+  elements: [
     {
-      "id": "autocomplete-multiselect",
-      "viewType": "autocompleteMultiselect",
-      "dataType": {
-        "type": "array"
+      id: 'autocomplete-multiselect',
+      viewType: 'autocompleteMultiselect',
+      dataType: {
+        type: 'array',
       },
-      "labelTranslationId": "autocomplete-multiselect",
-      "externalSource": {
-        "dataUrl": "/externalSource",
-        "strict": false
+      labelTranslationId: 'autocomplete-multiselect',
+      externalSource: {
+        dataUrl: '/externalSource',
+        strict: false,
       },
-      "validations": [
+      validations: [
         {
-          "name": "required"
-        }
+          name: 'required',
+        },
       ],
-    }
+    },
   ],
-  "translations": {
-    "autocomplete-multiselect": {
-      "fr": "Autocomplete",
-      "nl": "Autocomplete"
-    }
-  }
-}
+  translations: {
+    'autocomplete-multiselect': {
+      fr: 'Autocomplete',
+      nl: 'Autocomplete',
+    },
+  },
+};
 
 const disableAnimations =
-  !('animate' in document.documentElement)
-  || (navigator && /iPhone OS (8|9|10|11|12|13)_/.test(navigator.userAgent));
+  !('animate' in document.documentElement) || (navigator && /iPhone OS (8|9|10|11|12|13)_/.test(navigator.userAgent));
 
 describe('AutocompleteMultiselectComponent', () => {
   let component: Wrapper;
@@ -62,34 +59,36 @@ describe('AutocompleteMultiselectComponent', () => {
   let consoleSpy: jest.SpyInstance;
 
   beforeEach(async () => {
-    consoleSpy = jest.spyOn(global.console, 'error').mockImplementation((message) => {
+    consoleSpy = jest.spyOn(global.console, 'error').mockImplementation(message => {
       //remove material overlay error
       if (!message?.message?.includes('Could not parse CSS stylesheet')) {
         global.console.warn(message);
       }
-    })
+    });
 
     evfExternalSourceServiceMock = {
       handleAutocomplete: jest.fn().mockReturnValue(of(mockAutocompleteOptions)),
-      handleValidation: jest.fn()
+      handleValidation: jest.fn(),
     };
 
-
     await TestBed.configureTestingModule({
-      imports: [Wrapper, EvfDynamicFormComponent, BrowserModule,
-        BrowserAnimationsModule.withConfig({disableAnimations}), MarkdownModule.forRoot()],
+      imports: [
+        Wrapper,
+        EvfDynamicFormComponent,
+        BrowserModule,
+        BrowserAnimationsModule.withConfig({ disableAnimations }),
+        MarkdownModule.forRoot(),
+      ],
       providers: [
         provideEvfCore(
-          evfElementConfigFeature(
-            {
-              name: 'autocompleteMultiselect',
-              element: AutocompleteMultiselectComponent
-            })
+          evfElementConfigFeature({
+            name: 'autocompleteMultiselect',
+            element: AutocompleteMultiselectComponent,
+          })
         ),
-        {provide: ExternalSourceService, useValue: evfExternalSourceServiceMock},
-      ]
-    })
-      .compileComponents();
+        { provide: ExternalSourceService, useValue: evfExternalSourceServiceMock },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(Wrapper);
     component = fixture.componentInstance;
@@ -110,7 +109,6 @@ describe('AutocompleteMultiselectComponent', () => {
     const formField = fixture.debugElement.query(By.css('mat-form-field'));
     expect(formField).toBeTruthy();
     expect(formField.nativeElement.getAttribute('ng-reflect-appearance')).toBe('outline');
-
 
     const label = fixture.debugElement.query(By.css('mat-label'));
     expect(label).toBeFalsy();
@@ -163,7 +161,7 @@ describe('AutocompleteMultiselectComponent', () => {
       // Trigger keyup event
       const keyEvent = new KeyboardEvent('keyup', {
         key: testText[i],
-        code: `Key${testText[i].toUpperCase()}`
+        code: `Key${testText[i].toUpperCase()}`,
       });
       inputElement.dispatchEvent(keyEvent);
 
@@ -184,7 +182,7 @@ describe('AutocompleteMultiselectComponent', () => {
     const inputElement = input.nativeElement as HTMLInputElement;
 
     // Setup autocomplete options
-    const newOption = {label: {en: 'New Item', fr: 'Nouvel Article'}, value: 'new_item'};
+    const newOption = { label: { en: 'New Item', fr: 'Nouvel Article' }, value: 'new_item' };
     autocompleteFormDebugElement.componentInstance.options$ = of([newOption]);
 
     // Type to trigger autocomplete
@@ -217,12 +215,11 @@ describe('AutocompleteMultiselectComponent', () => {
     const updateQuerySpy = jest.spyOn(autocompleteFormDebugElement.componentInstance, 'updateQuery');
 
     const input = fixture.debugElement.query(By.css('input[matInput]'));
-    const event = new KeyboardEvent('keyup', {key: 'a'});
+    const event = new KeyboardEvent('keyup', { key: 'a' });
     input.nativeElement.dispatchEvent(event);
 
     expect(updateQuerySpy).toHaveBeenCalledWith(event);
   });
-
 
   it('should display autocomplete options', async () => {
     component.demoTemplate = formTemplate;
@@ -263,4 +260,3 @@ describe('AutocompleteMultiselectComponent', () => {
     expect(selectedSpy).toHaveBeenCalled();
   });
 });
-

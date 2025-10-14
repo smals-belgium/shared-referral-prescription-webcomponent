@@ -32,4 +32,6 @@
             type="button">{{'common.cancel' | translate}}</button>
   </div>
 </form>
-<app-overlay-spinner *ngIf="loading" mode="dialog"></app-overlay-spinner>
+@if(loading){
+  <app-overlay-spinner mode="dialog"></app-overlay-spinner>
+}

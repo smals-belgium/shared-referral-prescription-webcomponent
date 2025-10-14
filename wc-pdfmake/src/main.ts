@@ -1,14 +1,14 @@
-import {ErrorHandler, importProvidersFrom} from '@angular/core';
-import {createApplication} from '@angular/platform-browser';
-import {provideCore} from '@reuse/code/providers/core.provider';
-import {getErrorHandlerFromConfiguration} from '@reuse/code/services/sentry-error-handler.service';
-import {WcConfigurationService} from '@reuse/code/services/wc-configuration.service';
-import {TranslateCompiler, TranslateLoader, TranslateModule} from '@ngx-translate/core';
-import {WcTranslateLoader} from '@reuse/code/services/translate.loader';
-import {TranslateMessageFormatCompiler} from 'ngx-translate-messageformat-compiler';
-import {createCustomElement} from '@angular/elements';
-import {PdfMakeWebComponent} from './components/pdfmake/pdf-make.component';
-import {ConfigurationService} from '@reuse/code/services/configuration.service';
+import { ErrorHandler, importProvidersFrom } from '@angular/core';
+import { createApplication } from '@angular/platform-browser';
+import { provideCore } from '@reuse/code/providers/core.provider';
+import { getErrorHandlerFromConfiguration } from '@reuse/code/services/helpers/sentry-error-handler.service';
+import { WcConfigurationService } from '@reuse/code/services/config/wc-configuration.service';
+import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { WcTranslateLoader } from '@reuse/code/services/helpers/translate.loader';
+import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-compiler';
+import { createCustomElement } from '@angular/elements';
+import { PdfMakeWebComponent } from './components/pdfmake/pdf-make.component';
+import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
 
 (async () => {
   const app = createApplication({

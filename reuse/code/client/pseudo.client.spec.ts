@@ -1,6 +1,6 @@
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ConfigurationService } from '../services/configuration.service';
+import { ConfigurationService } from '../services/config/configuration.service';
 import { PseudoClient } from './pseudo.client';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 

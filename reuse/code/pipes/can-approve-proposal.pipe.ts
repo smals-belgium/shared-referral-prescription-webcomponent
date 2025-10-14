@@ -1,16 +1,23 @@
-import { Pipe } from '@angular/core';
-import { ReadPrescription, Status } from '../interfaces';
-import { AccessMatrixState } from '../states/access-matrix.state';
+import { Pipe, PipeTransform } from '@angular/core';
+import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
+import { ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
 
-@Pipe({name: 'canApproveProposal', standalone: true})
-export class CanApproveProposalPipe {
+@Pipe({ name: 'canApproveProposal', standalone: true })
+export class CanApproveProposalPipe implements PipeTransform {
+  constructor(private accessMatrixState: AccessMatrixState) {}
 
-  constructor(
-    private readonly accessMatrixState: AccessMatrixState,
-  ) {
-  }
+  transform(prescription: ReadRequestResource): boolean {
+    const allowedStatuses: RequestStatus[] = [
+      RequestStatus.Draft,
+      RequestStatus.Pending,
+      RequestStatus.Open,
+      RequestStatus.InProgress,
+    ];
 
-  transform(prescription: ReadPrescription): boolean {
-    return prescription.status != null && [Status.DRAFT, Status.PENDING, Status.OPEN, Status.IN_PROGRESS].includes(prescription.status) && this.accessMatrixState.hasAtLeastOnePermission(['evaluateProposal'], prescription.templateCode);
+    return (
+      prescription.status != null &&
+      allowedStatuses.includes(prescription.status) &&
+      this.accessMatrixState.hasAtLeastOnePermission(['evaluateProposal'], prescription.templateCode)
+    );
   }
 }

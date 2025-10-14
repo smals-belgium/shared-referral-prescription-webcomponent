@@ -1,10 +1,10 @@
-import { ChangeDetectorRef, Component, signal, } from '@angular/core';
+import { ChangeDetectorRef, Component, signal } from '@angular/core';
 import {
   EvfBaseFormElementComponent,
   EvfElementBodyComponent,
   EvfElementHelpComponent,
   EvfElementLabelComponent,
-  EvfFormElementLayoutComponent
+  EvfFormElementLayoutComponent,
 } from '@smals/vas-evaluation-form-ui-material/elements/shared';
 import {
   AutocompleteOption,
@@ -12,12 +12,9 @@ import {
   EvfLabelPipe,
   EvfTranslateService,
 } from '@smals/vas-evaluation-form-ui-core';
-import { ControlAnnex82Request, SupportOption } from '@reuse/code/interfaces/pss.interface';
-import {
-  PssRadiologyResultComponent
-} from '@reuse/code/components/pss-radiology-result/pss-radiology-result.component';
-import { PssService } from '@reuse/code/services/pss.service';
-import { ToastService } from '@reuse/code/services/toast.service';
+import { PssRadiologyResultComponent } from '@reuse/code/components/pss-radiology-result/pss-radiology-result.component';
+import { PssService } from '@reuse/code/services/api/pss.service';
+import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { MatFormField, MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatInput, MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -26,10 +23,10 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
-import {
-  generateWarningMessage
-} from '@reuse/code/utils/pss-relevant-info-message.utils';
+import { generateWarningMessage } from '@reuse/code/utils/pss-relevant-info-message.utils';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ControlRequest, SupportOption } from '@reuse/code/openapi';
+import { EMPTY_OBJECT } from '@reuse/code/constants/common.constants';
 
 @Component({
   selector: 'recommendations',
@@ -52,10 +49,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     EvfCommonErrorsPipe,
     MatIconModule,
     MatProgressSpinnerModule,
-    ErrorCardComponent
+    ErrorCardComponent,
   ],
   templateUrl: './recommendations.component.html',
-  styleUrl: './recommendations.component.scss'
+  styleUrl: './recommendations.component.scss',
 })
 export class RecommendationsComponent extends EvfBaseFormElementComponent {
   readonly isLoading = signal(false);
@@ -74,29 +71,26 @@ export class RecommendationsComponent extends EvfBaseFormElementComponent {
   ) {
     super(cdRef);
     this.language = this.evfTranslate.currentLang as 'nl' | 'fr';
-    this.evfTranslate.currentLang$
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        this.language = this.evfTranslate.currentLang as 'nl' | 'fr';
-        this.cdRef.markForCheck();
-      });
+    this.evfTranslate.currentLang$.pipe(takeUntilDestroyed()).subscribe(() => {
+      this.language = this.evfTranslate.currentLang as 'nl' | 'fr';
+      this.cdRef.markForCheck();
+    });
   }
 
   pssControl(): void {
-    this.isLoading.set(true)
+    this.isLoading.set(true);
     const prescriptionForm = this.elementControl;
-    const formValues = prescriptionForm.elementGroup?.getOutputValue() ?? {};
+    const formValues = prescriptionForm.elementGroup?.getOutputValue() || EMPTY_OBJECT;
 
     const clinicalIndications = formValues['clinicalIndications'];
     const intendedProcedure = formValues['intendedProcedure'];
     const age = formValues['age'];
     const gender = formValues['gender'];
 
-
     if (!clinicalIndications) {
       this.toastService.show('prescription.create.control.error.required');
       prescriptionForm.elementGroup?.get('clinicalIndications')?.markAsTouched();
-      this.isLoading.set(false)
+      this.isLoading.set(false);
       return;
     }
 
@@ -105,36 +99,47 @@ export class RecommendationsComponent extends EvfBaseFormElementComponent {
     if (hasClinicalData) {
       this.controlAnnex82(age, gender, clinicalIndications, intendedProcedure);
     } else {
-      this.isLoading.set(false)
+      this.isLoading.set(false);
       this.toastService.show('prescription.create.control.error.required');
       prescriptionForm.elementGroup?.get('clinicalIndications')?.markAsTouched();
     }
   }
 
-
-  private controlAnnex82(age:number, gender:string, indications: AutocompleteOption[], intendedProcedure?: AutocompleteOption) {
-    const controlAnnex82Request = this.toControlAnnex82Request(age,gender,indications, intendedProcedure)
+  private controlAnnex82(
+    age: number,
+    gender: string,
+    indications: AutocompleteOption[],
+    intendedProcedure?: AutocompleteOption
+  ) {
+    const controlAnnex82Request = this.toControlAnnex82Request(age, gender, indications, intendedProcedure);
 
     this.pssService.getPssRecommendations(controlAnnex82Request).subscribe({
       next: result => {
-        this.pssService.setPssSessionId(result.exchangeId);
+        if (result.exchangeId) {
+          this.pssService.setPssSessionId(result.exchangeId);
+        }
         this.controlIndications.set(result.supportOptions);
-        this.isLoading.set(false)
+        this.isLoading.set(false);
       },
       error: () => {
         this.toastService.showSomethingWentWrong();
-        this.isLoading.set(false)
-      }
-    })
+        this.isLoading.set(false);
+      },
+    });
   }
 
-  private toControlAnnex82Request(age:number, gender:string, indications: AutocompleteOption[], intendedProcedure?: AutocompleteOption): ControlAnnex82Request {
-    return <ControlAnnex82Request>{
+  private toControlAnnex82Request(
+    age: number,
+    gender: string,
+    indications: AutocompleteOption[],
+    intendedProcedure?: AutocompleteOption
+  ): ControlRequest {
+    return <ControlRequest>{
       age: age,
       gender: gender,
       intention: intendedProcedure,
-      indications: indications
-    }
+      indications: indications,
+    };
   }
 
   selectSupportOption(value: SupportOption) {
@@ -144,18 +149,18 @@ export class RecommendationsComponent extends EvfBaseFormElementComponent {
 
   hasAdditionalRelevantInformation() {
     const prescriptionForm = this.elementControl;
-    const formValues = prescriptionForm.elementGroup?.getOutputValue() ?? {};
+    const formValues = prescriptionForm.elementGroup?.getOutputValue() || EMPTY_OBJECT;
     const relevantInfo = formValues['additional-relevant-information'];
-    return !!relevantInfo && (relevantInfo.length > 0 && !relevantInfo.includes('tmp-addInfo-none'))
+    return !!relevantInfo && relevantInfo.length > 0 && !relevantInfo.includes('tmp-addInfo-none');
   }
 
-  getWarningMessage(){
+  getWarningMessage() {
     const prescriptionForm = this.elementControl;
-    const formValues = prescriptionForm.elementGroup?.getOutputValue() ?? {};
+    const formValues = prescriptionForm.elementGroup?.getOutputValue() || EMPTY_OBJECT;
     const relevantInfo: string[] = formValues['additional-relevant-information'];
     const relevantInfoImplant = formValues['tmp-addInfo-impl'];
     let implants: string[] = [];
-    if(relevantInfoImplant != undefined){
+    if (relevantInfoImplant != undefined) {
       implants = relevantInfoImplant['implants'];
     }
     return generateWarningMessage(relevantInfo, implants, this.language!);

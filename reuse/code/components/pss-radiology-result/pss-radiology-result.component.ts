@@ -6,19 +6,19 @@ import {
   Input,
   OnChanges,
   Output,
-  SimpleChanges
+  SimpleChanges,
 } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTableModule } from "@angular/material/table";
-import { Instruction, SupportOption } from '@reuse/code/interfaces/pss.interface';
+import { MatTableModule } from '@angular/material/table';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EvfTranslateService } from '@smals/vas-evaluation-form-ui-core';
 import { MatIcon, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { CodedValueItem, SupportOption } from '@reuse/code/openapi';
 
 const radiationIcon = `
 <?xml version="1.0" encoding="utf-8"?>
@@ -30,24 +30,15 @@ const radiationIcon = `
 </svg>
 `;
 
-
 @Component({
   standalone: true,
   selector: 'app-pss-radiology-result-dialog',
   templateUrl: './pss-radiology-result.component.html',
   styleUrls: ['./pss-radiology-result.component.scss'],
-  imports: [
-    CommonModule,
-    MatDialogModule,
-    MatButtonModule,
-    TranslateModule,
-    MatTableModule,
-    MatIcon,
-    MatCheckbox
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  imports: [CommonModule, MatDialogModule, MatButtonModule, TranslateModule, MatTableModule, MatIcon, MatCheckbox],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PssRadiologyResultComponent implements OnChanges{
+export class PssRadiologyResultComponent implements OnChanges {
   private language: 'nl' | 'fr' = 'nl';
   protected radiationLevel = Array(5);
   protected clickedRow: SupportOption | undefined;
@@ -66,11 +57,9 @@ export class PssRadiologyResultComponent implements OnChanges{
     private readonly evfTranslate: EvfTranslateService
   ) {
     this.language = this.evfTranslate.currentLang as 'nl' | 'fr';
-    this.evfTranslate.currentLang$
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        this.language = this.evfTranslate.currentLang as 'nl' | 'fr';
-      });
+    this.evfTranslate.currentLang$.pipe(takeUntilDestroyed()).subscribe(() => {
+      this.language = this.evfTranslate.currentLang as 'nl' | 'fr';
+    });
 
     this.registerIcon();
   }
@@ -79,10 +68,10 @@ export class PssRadiologyResultComponent implements OnChanges{
     if (changes['isClickable']) {
       this.displayedColumns = ['relevance', 'typesOfImagery', 'radiationRate'];
     }
-    if (changes['supportOptions'] || changes['prescribedExam']){
-      if(this.prescribedExam && this.supportOptions){
-        this.selectedRow = this.findSupportOptionById(this.supportOptions, this.prescribedExam)
-        if(this.selectedRow){
+    if (changes['supportOptions'] || changes['prescribedExam']) {
+      if (this.prescribedExam && this.supportOptions) {
+        this.selectedRow = this.findSupportOptionById(this.supportOptions, this.prescribedExam);
+        if (this.selectedRow) {
           this.selectSupportOption.next(this.selectedRow);
         }
       }
@@ -94,7 +83,7 @@ export class PssRadiologyResultComponent implements OnChanges{
     this.selectSupportOption.next(supportOption);
   }
 
-  getTranslation(instruction: Instruction) {
+  getTranslation(instruction: CodedValueItem) {
     if (instruction.translations && instruction.translations.length > 0) {
       const translations = instruction.translations;
       const lang = this.language.toUpperCase();

@@ -9,14 +9,14 @@ import {
   signal,
   Signal,
   SimpleChanges,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DateAdapter, MatOptionModule } from '@angular/material/core';
 import { DateTime } from 'luxon';
 import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
-import { AuthService } from '@reuse/code/services/auth.service';
-import { DataState, EvfTemplate, Intent } from '@reuse/code/interfaces';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
+import { DataState } from '@reuse/code/interfaces';
 import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
 import { IfStatusLoadingDirective } from '@reuse/code/directives/if-status-loading.directive';
 import { PaginatorComponent } from '@reuse/code/components/paginator/paginator.component';
@@ -26,28 +26,31 @@ import { ActivePageComponent } from '@reuse/code/components/active-page/active-p
 import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
 import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
 import { IfStatusErrorDirective } from '@reuse/code/directives/if-status-error.directive';
-import { PrescriptionsState } from '@reuse/code/states/prescriptions.state';
-import { TemplatesState } from '@reuse/code/states/templates.state';
-import { AccessMatrixState } from '@reuse/code/states/access-matrix.state';
-import { PrescriptionSummary, PrescriptionSummaryList } from '@reuse/code/interfaces/prescription-summary.interface';
-import { PseudoService } from '@reuse/code/services/pseudo.service';
-import { ProposalsState } from '@reuse/code/states/proposals.state';
+import { PrescriptionsState } from '@reuse/code/states/api/prescriptions.state';
+import { TemplatesState } from '@reuse/code/states/api/templates.state';
+import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
+import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
+import { ProposalsState } from '@reuse/code/states/api/proposals.state';
 import { FormsModule } from '@angular/forms';
+import { PrescriptionModelsTableComponent } from '@reuse/code/components/prescription-models-table/prescription-models-table.component';
+import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
 import {
-  PrescriptionModelsTableComponent
-} from '@reuse/code/components/prescription-models-table/prescription-models-table.component';
-import { PrescriptionModel, PrescriptionModelRequest } from '@reuse/code/interfaces/prescription-modal.inteface';
-import { ModelsState } from '@reuse/code/states/models.state';
-import {
-  ToggleHistoricPrescriptionsComponent
-} from '@reuse/code/components/toggle-historic-prescriptions/toggle-historic-prescriptions.component';
+  ModelEntityDto,
+  PageModelEntityDto,
+  ReadRequestListResource,
+  ReadRequestResource,
+  Template,
+} from '@reuse/code/openapi';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ModelsState } from '@reuse/code/states/api/models.state';
+import { ToggleHistoricPrescriptionsComponent } from '@reuse/code/components/toggle-historic-prescriptions/toggle-historic-prescriptions.component';
 import { isModel, isPrescription, isProposal } from '@reuse/code/utils/utils';
 
 interface ViewState {
-  prescriptions: PrescriptionSummaryList;
-  proposals: PrescriptionSummaryList;
-  models: PrescriptionModelRequest;
-  templates: EvfTemplate[];
+  prescriptions?: ReadRequestListResource;
+  proposals?: ReadRequestListResource;
+  models?: PageModelEntityDto;
+  templates?: Template[];
 }
 
 @Component({
@@ -68,26 +71,25 @@ interface ViewState {
     TranslateModule,
     FormsModule,
     PrescriptionModelsTableComponent,
-    ToggleHistoricPrescriptionsComponent
-  ]
+    ToggleHistoricPrescriptionsComponent,
+  ],
 })
 export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
-
-  protected readonly searchCriteria$ = signal<{ historical: boolean }>({historical: false});
+  protected readonly searchCriteria$ = signal<{ historical: boolean }>({ historical: false });
 
   readonly viewStateProposals$: Signal<DataState<ViewState>> = combineSignalDataState({
     proposals: this.proposalsState.state,
-    templates: this.templatesState.state
+    templates: this.templatesState.state,
   });
 
   readonly viewStatePrescriptions$: Signal<DataState<ViewState>> = combineSignalDataState({
     prescriptions: this.prescriptionsState.state,
-    templates: this.templatesState.state
+    templates: this.templatesState.state,
   });
 
   readonly viewStateModels$: Signal<DataState<ViewState>> = combineSignalDataState({
     models: this.modelsState.state,
-    templates: this.templatesState.state
+    templates: this.templatesState.state,
   });
 
   isPrescriptionValue = false;
@@ -95,15 +97,22 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
   isModelValue = false;
 
   @HostBinding('attr.lang')
-  @Input() lang?: string;
+  @Input()
+  lang?: string;
   @Input() patientSsin?: string;
   @Input() requesterSsin?: string;
   @Input() performerSsin?: string;
-  @Input() services! : { getAccessToken: (audience?: string) => Promise<string | null> };
-  @Input() intent!: string;
+  @Input() services!: { getAccessToken: (audience?: string) => Promise<string | null> };
+  @Input() intent?: string;
 
-  @Output() clickOpenPrescriptionDetails = new EventEmitter<PrescriptionSummary>();
-  @Output() clickOpenModelDetails = new EventEmitter<PrescriptionModel>();
+  @Output() clickOpenPrescriptionDetails = new EventEmitter<ReadRequestResource>();
+  @Output() clickOpenModelDetails = new EventEmitter<ModelEntityDto>();
+
+  errorCard: ErrorCard = {
+    show: false,
+    message: '',
+    errorResponse: undefined,
+  };
 
   constructor(
     private translate: TranslateService,
@@ -133,12 +142,23 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
       this.dateAdapter.setLocale(this.lang!);
       this.translate.use(this.lang!);
     }
-    if ((changes['patientSsin'] || changes['requesterSsin'] || changes['performerSsin'] || changes['intent']) && this.intent) {
+    if (
+      (changes['patientSsin'] || changes['requesterSsin'] || changes['performerSsin'] || changes['intent']) &&
+      this.intent
+    ) {
       this.loadData(1);
     }
   }
 
   loadData(page?: number, pageSize?: number) {
+    if (!this.intent) {
+      this.errorCard = {
+        show: true,
+        message: 'common.somethingWentWrong',
+      };
+      return;
+    }
+
     if (isPrescription(this.intent)) {
       this.isPrescriptionValue = true;
       this.loadPrescriptions(page, pageSize);
@@ -153,41 +173,57 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
 
   loadPrescriptions(page?: number, pageSize?: number) {
     if (this.patientSsin) {
-      this.getPatientIdentifier(this.patientSsin).then((identifier) => {
-        this.prescriptionsState.loadPrescriptions({
-          patient: identifier,
-          requester: this.requesterSsin,
-          performer: this.performerSsin,
-          historical: this.searchCriteria$().historical
-        }, page, pageSize);
+      void this.getPatientIdentifier(this.patientSsin).then(identifier => {
+        this.prescriptionsState.loadPrescriptions(
+          {
+            patient: identifier,
+            requester: this.requesterSsin,
+            performer: this.performerSsin,
+            historical: this.searchCriteria$().historical,
+          },
+          page,
+          pageSize
+        );
       });
     } else {
-      this.prescriptionsState.loadPrescriptions({
-        patient: this.patientSsin,
-        requester: this.requesterSsin,
-        performer: this.performerSsin,
-        historical: this.searchCriteria$().historical
-      }, page, pageSize);
+      this.prescriptionsState.loadPrescriptions(
+        {
+          patient: this.patientSsin,
+          requester: this.requesterSsin,
+          performer: this.performerSsin,
+          historical: this.searchCriteria$().historical,
+        },
+        page,
+        pageSize
+      );
     }
   }
 
   loadProposals(page?: number, pageSize?: number) {
     if (this.patientSsin) {
-      this.getPatientIdentifier(this.patientSsin).then((identifier) => {
-        this.proposalsState.loadProposals({
-          patient: identifier,
-          requester: this.requesterSsin,
-          performer: this.performerSsin,
-          historical: this.searchCriteria$().historical
-        }, page, pageSize);
+      void this.getPatientIdentifier(this.patientSsin).then(identifier => {
+        this.proposalsState.loadProposals(
+          {
+            patient: identifier,
+            requester: this.requesterSsin,
+            performer: this.performerSsin,
+            historical: this.searchCriteria$().historical,
+          },
+          page,
+          pageSize
+        );
       });
     } else {
-      this.proposalsState.loadProposals({
-        patient: this.patientSsin,
-        requester: this.requesterSsin,
-        performer: this.performerSsin,
-        historical: this.searchCriteria$().historical
-      }, page, pageSize);
+      this.proposalsState.loadProposals(
+        {
+          patient: this.patientSsin,
+          requester: this.requesterSsin,
+          performer: this.performerSsin,
+          historical: this.searchCriteria$().historical,
+        },
+        page,
+        pageSize
+      );
     }
   }
 
@@ -196,7 +232,15 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
     this.modelsState.loadModels(pg, pageSize || 10);
   }
 
-  retryFailedCalls(error: { prescriptions?: any, templates?: any, proposals?: any, models?: any }) {
+  retryFailedCalls(error: Record<keyof ViewState, unknown> | undefined) {
+    if (!error) {
+      this.errorCard = {
+        show: true,
+        message: 'common.somethingWentWrong',
+      };
+      return;
+    }
+
     if (error.prescriptions || error.proposals || error.models) {
       this.loadData();
     }
@@ -211,12 +255,25 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
 
   handleHistoricPrescriptions(showHistoricPrescriptions: boolean) {
     this.searchCriteria$.set({
-      historical: showHistoricPrescriptions
-    })
+      historical: showHistoricPrescriptions,
+    });
     this.loadData(1);
   }
 
+  getHttpErrorFromState(state: { error?: Record<string, unknown> }): HttpErrorResponse | undefined {
+    if (!state.error) return undefined;
+
+    for (const key of Object.keys(state.error)) {
+      const value = state.error[key];
+      if (value instanceof HttpErrorResponse) {
+        return value;
+      }
+    }
+
+    return undefined;
+  }
+
   ngOnDestroy() {
-    this.searchCriteria$.set({historical: false});
+    this.searchCriteria$.set({ historical: false });
   }
 }

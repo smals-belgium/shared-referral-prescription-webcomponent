@@ -2,24 +2,23 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
-import { NgIf } from '@angular/common';
-import { Person, PrescriptionCancellation, ReadPrescription } from '../../interfaces';
-import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overlay-spinner.component';
-import { ToastService } from '../../services/toast.service';
-import { PrescriptionState } from '../../states/prescription.state';
+import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
+import { ToastService } from '@reuse/code/services/helpers/toast.service';
+import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { v4 as uuidv4 } from 'uuid';
-import { ErrorCardComponent } from '../../components/error-card/error-card.component';
-import { BaseDialog } from '../base.dialog';
+import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
+import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
 import { tap } from 'rxjs/operators';
-import { ProposalState } from '@reuse/code/states/proposal.state';
+import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
+import { PersonResource, ReadRequestResource } from '@reuse/code/openapi';
 import { Observable } from 'rxjs';
 import { isProposal } from '@reuse/code/utils/utils';
 import { TranslateByIntentPipe } from '@reuse/code/pipes/translate-by-intent.pipe';
 
 interface CancelMedicalDocumentDialogData {
-  prescription: ReadPrescription;
-  patient: Person;
+  prescription: ReadRequestResource;
+  patient: PersonResource;
 }
 
 @Component({
@@ -30,16 +29,14 @@ interface CancelMedicalDocumentDialogData {
     MatDialogModule,
     MatButtonModule,
     OverlaySpinnerComponent,
-    NgIf,
     ErrorCardComponent,
     TemplateNamePipe,
-    TranslateByIntentPipe
-  ]
+    TranslateByIntentPipe,
+  ],
 })
-export class CancelMedicalDocumentDialog extends BaseDialog implements OnInit {
-
-  readonly prescription: ReadPrescription;
-  readonly patient: Person;
+export class CancelPrescriptionDialog extends BaseDialog implements OnInit {
+  readonly prescription: ReadRequestResource;
+  readonly patient?: PersonResource;
   loading = false;
   generatedUUID = '';
 
@@ -47,10 +44,10 @@ export class CancelMedicalDocumentDialog extends BaseDialog implements OnInit {
     private readonly prescriptionStateService: PrescriptionState,
     private readonly proposalStateService: ProposalState,
     private readonly toastService: ToastService,
-    dialogRef: MatDialogRef<CancelMedicalDocumentDialog>,
-    @Inject(MAT_DIALOG_DATA) private readonly data: CancelMedicalDocumentDialogData,
+    dialogRef: MatDialogRef<CancelPrescriptionDialog>,
+    @Inject(MAT_DIALOG_DATA) private readonly data: CancelMedicalDocumentDialogData
   ) {
-    super(dialogRef)
+    super(dialogRef);
     this.prescription = data.prescription;
     this.patient = data.patient;
   }
@@ -59,42 +56,47 @@ export class CancelMedicalDocumentDialog extends BaseDialog implements OnInit {
     this.generatedUUID = uuidv4();
   }
 
-  onCancel(): void {
-    const cancellation = {
-      reason: undefined,
-    } as PrescriptionCancellation;
+  cancelPrescription() {
+    if (!this.prescription.id) {
+      this.showErrorCard('common.somethingWentWrong');
+      return;
+    }
 
     this.loading = true;
-    if(isProposal(this.prescription.intent)){
-      this.executeCancel(() => this.proposalStateService.cancelProposal(this.prescription.id, cancellation, this.generatedUUID), 'proposal');
-    }
-    else{
-      this.executeCancel(() => this.prescriptionStateService.cancelMedicalDocument(this.prescription.id, cancellation, this.generatedUUID), 'prescription');
+
+    if (isProposal(this.prescription.intent)) {
+      this.executeCancel(
+        () => this.proposalStateService.cancelProposal(this.prescription.id!, this.generatedUUID),
+        'proposal'
+      );
+    } else {
+      this.executeCancel(
+        () => this.prescriptionStateService.cancelPrescription(this.prescription.id!, this.generatedUUID),
+        'prescription'
+      );
     }
   }
 
-  private executeCancel(serviceCall: () => Observable<void>, successPrefix : string){
+  private executeCancel(serviceCall: () => Observable<void>, successPrefix: string) {
     serviceCall()
-      .pipe(this.getMedicalDocument())
+      .pipe(this.getPrescriptionsOrProposals())
       .subscribe({
         next: () => {
           this.closeErrorCard();
           this.toastService.show(successPrefix + '.cancel.success');
           this.closeDialog(true);
         },
-        error: (err) => {
+        error: err => {
           this.loading = false;
-          this.showErrorCard('common.somethingWentWrong', err)
+          this.showErrorCard('common.somethingWentWrong', err);
         },
       });
   }
 
-  private getMedicalDocument() {
+  private getPrescriptionsOrProposals() {
     if (isProposal(this.prescription.intent)) {
-      return tap(() => this.proposalStateService.loadProposal(this.prescription.id));
+      return tap(() => this.proposalStateService.loadProposal(this.prescription.id!));
     }
-    return tap(() => this.prescriptionStateService.loadPrescription(this.prescription.id));
+    return tap(() => this.prescriptionStateService.loadPrescription(this.prescription.id!));
   }
-
-
 }

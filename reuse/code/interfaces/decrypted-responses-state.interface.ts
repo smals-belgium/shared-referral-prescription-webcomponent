@@ -1,4 +1,4 @@
 export interface DecryptedResponsesState {
-  data: Record<string, any> | null;
-  error: string | null;
+  data?: Record<string, unknown>;
+  error?: Record<string, unknown>;
 }

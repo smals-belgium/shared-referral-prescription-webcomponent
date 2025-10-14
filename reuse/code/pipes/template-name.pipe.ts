@@ -1,43 +1,45 @@
 import { ChangeDetectorRef, DestroyRef, Pipe, PipeTransform } from '@angular/core';
 import { combineLatest, startWith } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { EvfTemplate, TemplateId } from '../interfaces';
-import { templateIdsAreEqual, templateIdToString } from '../utils/template.utils';
-import { TemplatesState } from '../states/templates.state';
+import { TemplateId } from '@reuse/code/interfaces';
+import { templateIdsAreEqual, templateIdToString } from '@reuse/code/utils/template.utils';
+import { TemplatesState } from '@reuse/code/states/api/templates.state';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { Template } from '@reuse/code/openapi';
 
-@Pipe({name: 'templateName', pure: false, standalone: true})
+@Pipe({ name: 'templateName', pure: false, standalone: true })
 export class TemplateNamePipe implements PipeTransform {
-
   private readonly templates$ = toObservable(this.templatesStateService.state);
 
-  private templates: EvfTemplate[] = [];
+  private templates: Template[] = [];
   private templateCodeOrId?: string | TemplateId;
   private translated?: string;
 
   constructor(
-    private readonly translateService: TranslateService,
-    private readonly templatesStateService: TemplatesState,
-    private readonly destroyRef: DestroyRef,
-    private readonly cd: ChangeDetectorRef
+    private translateService: TranslateService,
+    private templatesStateService: TemplatesState,
+    private destroyRef: DestroyRef,
+    private cd: ChangeDetectorRef
   ) {
     this.listenForLangChanges();
   }
 
-  transform(templateCodeOrId: string | TemplateId): string {
+  transform(templateCodeOrId?: string | TemplateId): string {
+    if (!templateCodeOrId) return '';
+
     if (!this.translated || this.templateCodeOrId !== templateCodeOrId) {
       this.templateCodeOrId = templateCodeOrId;
       this.translate();
     }
-    return this.translated ?? '';
+    return this.translated || '';
   }
 
   private listenForLangChanges() {
-    const lang$ = this.translateService.onLangChange.pipe(startWith({lang: this.translateService.currentLang}));
+    const lang$ = this.translateService.onLangChange.pipe(startWith({ lang: this.translateService.currentLang }));
     combineLatest([this.templates$, lang$])
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(([templatesState]) => {
-        this.templates = templatesState.data ?? [];
+        this.templates = templatesState.data || [];
         this.translate();
         this.cd.markForCheck();
       });
@@ -47,13 +49,32 @@ export class TemplateNamePipe implements PipeTransform {
     if (this.templateCodeOrId == null) {
       this.translated = '';
     } else if (typeof this.templateCodeOrId === 'string') {
-      const template = this.templates.find((t) => t.code === this.templateCodeOrId);
-      const lang = (this.translateService.currentLang ?? this.translateService.defaultLang).substring(0, 2) as 'nl' | 'fr' | 'de' | 'en';
-      this.translated = template?.labelTranslations[lang] ?? this.templateCodeOrId ?? '';
+      const template = this.templates.find(t => t.code === this.templateCodeOrId);
+      const lang = (this.translateService.currentLang || this.translateService.defaultLang).substring(0, 2) as
+        | 'nl'
+        | 'fr'
+        | 'de'
+        | 'en';
+      this.translated = template?.labelTranslations?.[lang] || this.templateCodeOrId || '';
     } else {
-      const template = this.templates.find((t) => templateIdsAreEqual(this.templateCodeOrId as TemplateId, t.metadata));
-      const lang = (this.translateService.currentLang ?? this.translateService.defaultLang).substring(0, 2) as 'nl' | 'fr' | 'de' | 'en';
-      this.translated = template?.labelTranslations[lang] ?? templateIdToString(this.templateCodeOrId) ?? '';
+      const template = this.templates.find(t => {
+        if (!isTemplateId(t.metadata)) return false;
+        return templateIdsAreEqual(this.templateCodeOrId as TemplateId, t.metadata);
+      });
+      const lang = (this.translateService.currentLang || this.translateService.defaultLang).substring(0, 2) as
+        | 'nl'
+        | 'fr'
+        | 'de'
+        | 'en';
+      this.translated = template?.labelTranslations?.[lang] || templateIdToString(this.templateCodeOrId) || '';
     }
   }
+}
+
+function isTemplateId(obj: unknown): obj is TemplateId {
+  if (typeof obj === 'object' && obj !== null && 'snomed' in obj) {
+    const maybeTemplateId = obj as { snomed: unknown };
+    return typeof maybeTemplateId.snomed === 'string';
+  }
+  return false;
 }

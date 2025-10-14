@@ -1,10 +1,11 @@
 <div class="ng-test-skip-styles">
-  <evf-dynamic-form *ngIf="demoTemplate"
-                    [template]="demoTemplate"
+  @if(demoTemplate) {
+  <evf-dynamic-form [template]="demoTemplate"
                     [enableDraft]="false"
                     [showBody]="false"
                     [showHelp]="false"
                     [showButtons]="true"
                     [responses]="responses"
   ></evf-dynamic-form>
+  }
 </div>

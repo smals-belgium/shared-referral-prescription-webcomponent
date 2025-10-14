@@ -8,39 +8,36 @@ import {
   OnDestroy,
   Output,
   SimpleChanges,
-  ViewChild
+  ViewChild,
 } from '@angular/core';
-import { ElementGroup, FormTemplate, isObject, removeNulls } from '@smals/vas-evaluation-form-ui-core';
+import { ElementGroup, isObject, removeNulls } from '@smals/vas-evaluation-form-ui-core';
 import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
-import { FormatSsinPipe } from '../../pipes/format-ssin.pipe';
-import { TemplateNamePipe } from '../../pipes/template-name.pipe';
-import { IfStatusSuccessDirective } from '../../directives/if-status-success.directive';
-import { IfStatusErrorDirective } from '../../directives/if-status-error.directive';
-import { OverlaySpinnerComponent } from '../overlay-spinner/overlay-spinner.component';
-import { IfStatusLoadingDirective } from '../../directives/if-status-loading.directive';
+import { FormatSsinPipe } from '@reuse/code/pipes/format-ssin.pipe';
+import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
+import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
+import { IfStatusErrorDirective } from '@reuse/code/directives/if-status-error.directive';
+import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
+import { IfStatusLoadingDirective } from '@reuse/code/directives/if-status-loading.directive';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
-import { LoadingStatus, Person } from '../../interfaces';
-import { ErrorCardComponent } from '../error-card/error-card.component';
-import { SuccessCardComponent } from '../success-card/success-card.component';
-import { PrescriptionModelState } from '../../states/prescriptionModel.state';
-import {
-  CreatePrescriptionModelDialog
-} from '../../dialogs/create-prescription-modal/create-prescription-model.dialog';
+import { CreatePrescriptionForm, ErrorCard, LoadingStatus } from '@reuse/code/interfaces';
+import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
+import { SuccessCardComponent } from '@reuse/code/components/success-card/success-card.component';
+import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionModel.state';
+import { CreatePrescriptionModelDialog } from '@reuse/code/dialogs/create-prescription-modal/create-prescription-model.dialog';
 import { MatDialog } from '@angular/material/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
-import { CreatePrescriptionForm } from '../../interfaces/create-prescription-form.interface';
-import { ErrorCard } from '../../interfaces/error-card.interface';
 import { isOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
-import { isModel, isPrescription, isProposal } from '@reuse/code/utils/utils';
+import { isPrescription, isProposal } from '@reuse/code/utils/utils';
+import { PersonResource, TemplateVersion } from '@reuse/code/openapi';
 
 @Component({
-    selector: 'app-create-multiple-prescriptions',
-    templateUrl: './create-multiple-prescriptions.component.html',
-    styleUrls: ['./create-multiple-prescriptions.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  selector: 'app-create-multiple-prescriptions',
+  templateUrl: './create-multiple-prescriptions.component.html',
+  styleUrls: ['./create-multiple-prescriptions.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     TranslateModule,
     MatExpansionModule,
@@ -53,25 +50,24 @@ import { isModel, isPrescription, isProposal } from '@reuse/code/utils/utils';
     TemplateNamePipe,
     FormatSsinPipe,
     ErrorCardComponent,
-    SuccessCardComponent
-  ]
+    SuccessCardComponent,
+  ],
 })
 export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestroy {
-
-  readonly trackByFn = (index: number, item: CreatePrescriptionForm) => item?.trackId || index
+  readonly trackByFn = (index: number, item: CreatePrescriptionForm) => item?.trackId || index;
   modelState = this.prescriptionModelState.modalState;
 
   isPrescriptionValue = false;
 
   @Input() lang!: string;
   @Input() intent!: string;
-  @Input() patient?: Person;
+  @Input() patient?: PersonResource;
   @Input() status: boolean = false;
   @Input() createPrescriptionForms: CreatePrescriptionForm[] = [];
   @Input() errorCard: ErrorCard = {
     show: false,
     message: '',
-    errorResponse: undefined
+    errorResponse: undefined,
   };
 
   @Output() clickAddPrescription = new EventEmitter<void>();
@@ -79,16 +75,18 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
   @Output() clickPublish = new EventEmitter<void>();
   @Output() clickCancel = new EventEmitter<void>();
   @Input() services!: {
-    getAccessToken: (audience?: string) => Promise<string | null>
-  }
+    getAccessToken: (audience?: string) => Promise<string | null>;
+  };
 
-  @ViewChild(MatAccordion, {static: true}) accordion!: MatAccordion;
+  @ViewChild(MatAccordion, { static: true }) accordion!: MatAccordion;
 
-  constructor(private prescriptionModelState: PrescriptionModelState, private dialog: MatDialog) {
-  }
+  constructor(
+    private prescriptionModelState: PrescriptionModelState,
+    private dialog: MatDialog
+  ) {}
 
   get numberOfPrescriptionsToCreate(): number {
-    return this.createPrescriptionForms.filter((f) => f.status !== LoadingStatus.SUCCESS).length;
+    return this.createPrescriptionForms.filter(f => f.status !== LoadingStatus.SUCCESS).length;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -104,30 +102,30 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
     const responseOccurrenceTiming: unknown = responses['occurrenceTiming'];
     const occurrenceTiming = isOccurrenceTiming(responseOccurrenceTiming) ? responseOccurrenceTiming : undefined;
 
-    if(!occurrenceTiming) return responses;
+    if (!occurrenceTiming) return responses;
 
     const repeat = occurrenceTiming.repeat;
 
     if (!repeat) return responses;
 
-    if (!repeat.count) return {...responses, ...repeat};
+    if (!repeat.count) return { ...responses, ...repeat };
 
     let dayPeriod = {};
-    if(repeat.when) {
-      if(Array.isArray(repeat.when)) {
-        dayPeriod = {dayPeriod: repeat.when[0]};
+    if (repeat.when) {
+      if (Array.isArray(repeat.when)) {
+        dayPeriod = { dayPeriod: repeat.when[0] };
       } else {
-        dayPeriod = {dayPeriod: repeat.when};
+        dayPeriod = { dayPeriod: repeat.when };
       }
     }
 
-    const maxSessions = {nbSessions: repeat.count};
+    const maxSessions = { nbSessions: repeat.count };
 
     if (isObject(repeat.boundsDuration)) {
       delete repeat.boundsDuration;
     }
 
-    return {...responses, ...maxSessions, ...dayPeriod, ...repeat};
+    return { ...responses, ...maxSessions, ...dayPeriod, ...repeat };
   }
 
   setElementGroup(prescriptionForm: CreatePrescriptionForm, elementGroup: ElementGroup) {
@@ -137,65 +135,72 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
       const currentValues = prescriptionForm.elementGroup.getOutputValue() as Record<string, unknown>;
       elementGroup.setValue(currentValues);
     }
-
     if (prescriptionForm.initialPrescription || prescriptionForm.modelResponses) {
-      const initialResponses = prescriptionForm.initialPrescription?.responses || prescriptionForm.modelResponses
+      const initialResponses = prescriptionForm.initialPrescription?.responses || prescriptionForm.modelResponses;
       let responses: Record<string, unknown> = removeNulls(initialResponses || {}) as Record<string, unknown>;
-      responses = this.mapResponsesToRepeatObject(responses)
+      responses = this.mapResponsesToRepeatObject(responses);
 
       const currentValues = elementGroup.getOutputValue() as Record<string, unknown>;
 
       elementGroup.setValue({
         ...currentValues,
-        ...responses
+        ...responses,
       });
     }
   }
 
   getResponses(prescriptionForm: CreatePrescriptionForm) {
     if (prescriptionForm.initialPrescription) {
-      let responses: Record<string, unknown> = removeNulls(prescriptionForm.initialPrescription?.responses || {}) as Record<string, unknown>;
-      responses = this.mapResponsesToRepeatObject(responses)
+      let responses: Record<string, unknown> = removeNulls(
+        prescriptionForm.initialPrescription?.responses || {}
+      ) as Record<string, unknown>;
+      responses = this.mapResponsesToRepeatObject(responses);
 
       const currentValues = prescriptionForm.elementGroup?.getOutputValue() as Record<string, unknown>;
 
-      return {...currentValues, ...responses}
+      return { ...currentValues, ...responses };
     } else {
       return prescriptionForm.elementGroup?.getOutputValue() as Record<string, unknown>;
     }
   }
 
-  handleClick(prescriptionForm: CreatePrescriptionForm, template?: FormTemplate) {
-    if(!template) {
-      this.prescriptionModelState.setModalState(LoadingStatus.ERROR, undefined, new HttpErrorResponse({
-        error: "No templateCode found."
-      }))
+  handleClick(prescriptionForm: CreatePrescriptionForm, template?: TemplateVersion) {
+    if (!template) {
+      this.prescriptionModelState.setModalState(
+        LoadingStatus.ERROR,
+        undefined,
+        new HttpErrorResponse({
+          error: 'No templateCode found.',
+        })
+      );
     }
     const responses = this.getResponses(prescriptionForm);
 
-    this.dialog.open<CreatePrescriptionModelDialog, unknown>(CreatePrescriptionModelDialog, {
-      data: {
-        template: template,
-        templateCode: prescriptionForm.templateCode,
-        responses: responses
-      }
-    }).afterClosed().subscribe((createdSuccessfully: boolean) => {
-      if(createdSuccessfully){
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-
-    })
+    this.dialog
+      .open<CreatePrescriptionModelDialog, unknown>(CreatePrescriptionModelDialog, {
+        data: {
+          template: template,
+          templateCode: prescriptionForm.templateCode,
+          responses: responses,
+        },
+      })
+      .afterClosed()
+      .subscribe((createdSuccessfully: boolean) => {
+        if (createdSuccessfully) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
   }
 
   ngOnDestroy() {
     this.prescriptionModelState.setInitialState();
   }
 
-  isPrescription(intent : string): boolean {
+  isPrescription(intent: string): boolean {
     return isPrescription(intent);
   }
 
-  isProposal(intent : string): boolean {
+  isProposal(intent: string): boolean {
     return isProposal(intent);
   }
 
