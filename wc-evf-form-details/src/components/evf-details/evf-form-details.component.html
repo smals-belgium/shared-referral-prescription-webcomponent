@@ -1,5 +1,5 @@
-<evf-form-detail-group
-  *ngIf="elementGroup"
+@if(elementGroup){
+  <evf-form-detail-group
   [elementControls]="elementGroup.childElementControls"
   [options]="{showDividers: false, detailLayout: detailLayout}"
   [metadata]="{
@@ -7,6 +7,7 @@
     isProfessional : isProfessional
     }"
 ></evf-form-detail-group>
+}
 
 <ng-template #detailLayout let-content="content" let-label="label">
   <div class="info-item">

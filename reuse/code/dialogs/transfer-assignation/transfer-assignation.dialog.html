@@ -72,7 +72,7 @@
                 </button>
               </mat-chip-row>
             }
-            @if ((formGroup.get('cities')!.value?.length ?? 0) < 5) {
+            @if ((formGroup.get('cities')!.value?.length || 0) < 5) {
               <input
                 #searchInput
                 formControlName="searchCity"
@@ -89,21 +89,26 @@
                 (optionSelected)="addCity($event, searchInput)"
               >
                 @if (cityOptions$ | async; as cityOptions) {
-                  <mat-option data-cy="no-locality-found-message" *ngIf="!cityOptions?.length" [value]="null"
+                  @if(!cityOptions?.length) {
+                  <mat-option data-cy="no-locality-found-message" [value]="null"
                               class="warning">
                     <mat-icon>warning</mat-icon>
                     {{ 'prescription.transferAssignation.noResults' | translate }}
                   </mat-option>
-                  <mat-option *ngFor="let option of cityOptions" [value]="option">
+                  }
+                  @for(option of cityOptions; track option){
+                  <mat-option [value]="option">
                     {{ option.zipCode }} - {{ option.cityName | translation }}
                   </mat-option>
+                  }
                 }
               </mat-autocomplete>
             }
           </mat-chip-grid>
-          <mat-error
-            *ngIf="control.hasError('required') ?? control.hasError('minlength')">{{ 'common.mandatory' | translate }}
+          @if(control.hasError('required') || control.hasError('minlength')){
+          <mat-error>{{ 'common.mandatory' | translate }}
           </mat-error>
+          }
         </mat-form-field>
       }
     </div>
@@ -126,28 +131,36 @@
     </div>
     <div class="results">
       <table>
+        @for(professional of professionalState.data; track professional) {
         <tr class="result-item"
-             *ngFor="let professional of professionalState.data!"
-            [attr.data-cy]="'result-professional-' + (professional.nihii8 ?? professional.nihii11) + professional.id.qualificationCode"
+             [attr.data-cy]="'result-professional-' + (professional.nihii8 || professional.nihii11) + (professional.id?.qualificationCode || '')"
              (click)="onTransfer(professional)"
              (keydown.enter)="onTransfer(professional)"
              tabindex="0"
         >
-          <td data-cy="professional-name"><b>{{professional.healthcarePerson.firstName}} {{professional.healthcarePerson.lastName}}</b></td>
-          <td data-cy="professional-nihdi" *ngIf="professional.nihii8">{{professional.nihii8 | formatNihdi: professional.id.qualificationCode}}</td>
-          <td data-cy="professional-nihdi" *ngIf="professional.nihii11">{{ professional.nihii11 | formatNihdi: professional.id.qualificationCode}}</td>
+          <td data-cy="professional-name">
+            @if(professional.healthcarePerson; as person){
+            <b>{{ (person.firstName || '') + ' ' + (person.lastName || '') }}</b>
+            }</td>
+          @if(professional.nihii8){
+          <td data-cy="professional-nihdi">{{professional.nihii8 | formatNihdi: professional.id?.qualificationCode}}</td>
+          }
+          @if(professional.nihii11){
+          <td data-cy="professional-nihdi">{{ professional.nihii11 | formatNihdi: professional.id?.qualificationCode}}</td>
+          }
 
           @if(professional.address) {
-            <td
-              data-cy="professional-address-street">{{ professional.address.street | formatMultilingualObject: 'street': currentLang }} {{ professional.address.houseNumber || '' }} {{ professional.address.box || '' }}
-            </td>
-            <td data-cy="professional-address-postalCode">{{ professional.address.zipCode || '' }}</td>
-            <td data-cy="professional-address-city">{{ professional.address.municipality | formatMultilingualObject: 'municipality': currentLang}}</td>
+            <td data-cy="professional-address-street">{{ professional.address.street | formatMultilingualObject: currentLang }} {{professional.address.houseNumber || ''}} {{professional.address.box || ''}}</td>
+            <td data-cy="professional-address-postalCode">{{professional.address.zipCode || ''}}</td>
+            <td data-cy="professional-address-city">{{ professional.address.municipality | formatMultilingualObject: currentLang}}</td>
           }
       </tr>
+        }
       </table>
     </div>
   </ng-container>
 }
 
-<app-overlay-spinner mode="dialog" *ngIf="loading"></app-overlay-spinner>
+@if(loading){
+  <app-overlay-spinner mode="dialog"></app-overlay-spinner>
+}

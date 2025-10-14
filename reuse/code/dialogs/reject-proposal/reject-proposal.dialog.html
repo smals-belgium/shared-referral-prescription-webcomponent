@@ -16,9 +16,10 @@
         rows="5"
         data-cy="proposal-reject-reason-textarea"
       ></textarea>
-      <mat-error
-        *ngIf="formGroup.get('reason')?.hasError('required')">{{ 'common.mandatory' | translate }}
+      @if(formGroup.get('reason')?.hasError('required')){
+        <mat-error>{{ 'common.mandatory' | translate }}
       </mat-error>
+      }
     </mat-form-field>
   </div>
   <div mat-dialog-actions>
@@ -27,5 +28,7 @@
     <button [mat-dialog-close]="undefined" data-cy="dialog-cancel-button" mat-flat-button
             type="button">{{'common.cancel' | translate}}</button>
   </div>
-  <app-overlay-spinner mode="dialog" *ngIf="loading"></app-overlay-spinner>
+  @if(loading){
+    <app-overlay-spinner mode="dialog"></app-overlay-spinner>
+  }
 </form>

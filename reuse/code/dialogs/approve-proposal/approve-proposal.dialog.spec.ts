@@ -6,11 +6,11 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import * as uuid from 'uuid';
 
 import { ApproveProposalDialog } from './approve-proposal.dialog';
-import { ToastService } from '../../services/toast.service';
-import { ProposalState } from '../../states/proposal.state';
-import { EncryptionHelperService } from '@reuse/code/services/encryption-helper.service';
-import { ReadPrescription } from '../../interfaces';
+import { ToastService } from '../../services/helpers/toast.service';
+import { ProposalState } from '../../states/api/proposal.state';
+import { EncryptionHelperService } from '@reuse/code/states/privacy/encryption-helper.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ReadRequestResource } from '@reuse/code/openapi';
 
 const mockToastService = {
   show: jest.fn(),
@@ -28,12 +28,12 @@ const mockDialogRef = {
   close: jest.fn(),
 };
 
-const mockDialogData: { proposal: ReadPrescription } = {
+const mockDialogData: { proposal: ReadRequestResource } = {
   proposal: {
     id: 'proposal-123',
     kid: 'kid-abc',
     pseudonymizedKey: 'existing-pseudo-key-xyz',
-  } as ReadPrescription,
+  } as ReadRequestResource,
 };
 
 describe('ApproveProposalDialog', () => {
@@ -43,21 +43,16 @@ describe('ApproveProposalDialog', () => {
   let translate: TranslateService;
 
   beforeEach(async () => {
-    uuidSpy = jest.spyOn(uuid, 'v4').mockReturnValue('mock-uuid-12345' as unknown as Uint8Array<ArrayBuffer>);
+    uuidSpy = jest.spyOn(uuid, 'v4').mockReturnValue('mock-uuid-12345' as unknown as Uint8Array);
 
     await TestBed.configureTestingModule({
-      imports: [
-        ApproveProposalDialog,
-        ReactiveFormsModule,
-        NoopAnimationsModule,
-        TranslateModule.forRoot(),
-      ],
+      imports: [ApproveProposalDialog, ReactiveFormsModule, NoopAnimationsModule, TranslateModule.forRoot()],
       providers: [
-        {provide: ToastService, useValue: mockToastService},
-        {provide: ProposalState, useValue: mockProposalState},
-        {provide: EncryptionHelperService, useValue: mockEncryptionHelper},
-        {provide: MatDialogRef, useValue: mockDialogRef},
-        {provide: MAT_DIALOG_DATA, useValue: mockDialogData},
+        { provide: ToastService, useValue: mockToastService },
+        { provide: ProposalState, useValue: mockProposalState },
+        { provide: EncryptionHelperService, useValue: mockEncryptionHelper },
+        { provide: MatDialogRef, useValue: mockDialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
       ],
     }).compileComponents();
     translate = TestBed.inject(TranslateService);
@@ -81,24 +76,24 @@ describe('ApproveProposalDialog', () => {
   });
 
   describe('approveProposal', () => {
-
     it('should approve proposal with a NEW pseudonymized key if generated', fakeAsync(() => {
       const reasonText = 'Approval reason';
-      const encryptedData = {encryptedText: 'encrypted-text', pseudonymizedKey: 'new-pseudo-key'};
+      const encryptedData = { encryptedText: 'encrypted-text', pseudonymizedKey: 'new-pseudo-key' };
       component.formGroup.get('reason')?.setValue(reasonText);
       mockEncryptionHelper.getEncryptedReasonAndPseudoKey.mockReturnValue(of(encryptedData));
-      mockProposalState.approveProposal.mockReturnValue(of({success: true}));
-      mockDialogData.proposal.pseudonymizedKey=undefined;
+      mockProposalState.approveProposal.mockReturnValue(of({ success: true }));
+      mockDialogData.proposal.pseudonymizedKey = undefined;
 
       component.approveProposal();
       tick();
-      expect(mockEncryptionHelper.getEncryptedReasonAndPseudoKey).toHaveBeenCalledWith(reasonText, mockDialogData.proposal.pseudonymizedKey);
+      expect(mockEncryptionHelper.getEncryptedReasonAndPseudoKey).toHaveBeenCalledWith(
+        reasonText,
+        mockDialogData.proposal.pseudonymizedKey
+      );
       expect(mockProposalState.approveProposal).toHaveBeenCalledWith(
         'proposal-123',
-        'mock-uuid-12345',
-        encryptedData.encryptedText,
-        'kid-abc',
-        encryptedData.pseudonymizedKey
+        { kid: 'kid-abc', pseudonymizedKey: encryptedData.pseudonymizedKey, reason: encryptedData.encryptedText },
+        'mock-uuid-12345'
       );
       expect(mockToastService.show).toHaveBeenCalledWith('proposal.approve.success');
       expect(mockDialogRef.close).toHaveBeenCalledWith(true);
@@ -107,20 +102,22 @@ describe('ApproveProposalDialog', () => {
 
     it('should approve proposal with the EXISTING pseudonymized key if a new one is not generated', fakeAsync(() => {
       const reasonText = 'Another reason';
-      const encryptedData = {encryptedText: 'encrypted-text-2', pseudonymizedKey: undefined};
+      const encryptedData = { encryptedText: 'encrypted-text-2', pseudonymizedKey: undefined };
       component.formGroup.get('reason')?.setValue(reasonText);
       mockEncryptionHelper.getEncryptedReasonAndPseudoKey.mockReturnValue(of(encryptedData));
-      mockProposalState.approveProposal.mockReturnValue(of({success: true}));
+      mockProposalState.approveProposal.mockReturnValue(of({ success: true }));
 
       component.approveProposal();
       tick();
 
       expect(mockProposalState.approveProposal).toHaveBeenCalledWith(
         'proposal-123',
-        'mock-uuid-12345',
-        encryptedData.encryptedText,
-        'kid-abc',
-        mockDialogData.proposal.pseudonymizedKey,
+        {
+          kid: 'kid-abc',
+          pseudonymizedKey: mockDialogData.proposal.pseudonymizedKey,
+          reason: encryptedData.encryptedText,
+        },
+        'mock-uuid-12345'
       );
       expect(mockToastService.show).toHaveBeenCalledWith('proposal.approve.success');
       expect(mockDialogRef.close).toHaveBeenCalledWith(true);
@@ -145,7 +142,7 @@ describe('ApproveProposalDialog', () => {
     it('should handle error from proposal state service during approval', fakeAsync(() => {
       const error = new Error('API approval failed');
       const reasonText = 'A reason';
-      const encryptedData = {encryptedText: 'encrypted-text', pseudonymizedKey: 'new-key'};
+      const encryptedData = { encryptedText: 'encrypted-text', pseudonymizedKey: 'new-key' };
 
       component.formGroup.get('reason')?.setValue(reasonText);
       mockEncryptionHelper.getEncryptedReasonAndPseudoKey.mockReturnValue(of(encryptedData));

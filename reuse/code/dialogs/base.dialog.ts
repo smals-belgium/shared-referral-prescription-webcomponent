@@ -1,11 +1,11 @@
 import { MatDialogRef } from '@angular/material/dialog';
-import { ErrorCard } from '../interfaces/error-card.interface';
+import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
 
 export abstract class BaseDialog<T = any> {
   errorCard: ErrorCard = {
     show: false,
     message: '',
-    errorResponse: undefined
+    errorResponse: undefined,
   };
 
   constructor(protected dialogRef: MatDialogRef<T>) {}

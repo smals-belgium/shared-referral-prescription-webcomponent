@@ -1,16 +1,23 @@
-import { Pipe } from '@angular/core';
-import { PerformerTask, ReadPrescription, Status } from '../interfaces';
-import { AccessMatrixState } from '../states/access-matrix.state';
+import { Pipe, PipeTransform } from '@angular/core';
+import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
+import { PerformerTaskResource, ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
 
-@Pipe({name: 'canSelfAssign', standalone: true})
-export class CanSelfAssignPipe {
+@Pipe({ name: 'canSelfAssign', standalone: true })
+export class CanSelfAssignPipe implements PipeTransform {
+  constructor(private accessMatrixState: AccessMatrixState) {}
 
-  constructor(private readonly accessMatrixState: AccessMatrixState) {
-  }
-
-  transform(prescription: ReadPrescription, task?: PerformerTask): boolean {
-    return [Status.DRAFT, Status.PENDING, Status.OPEN, Status.IN_PROGRESS].includes(prescription.status!)
-      && this.accessMatrixState.hasAtLeastOnePermission(['executeTreatment'], prescription.templateCode)
-      && (task == null);
+  transform(prescription: ReadRequestResource, task?: PerformerTaskResource): boolean {
+    const allowedStatuses: RequestStatus[] = [
+      RequestStatus.Draft,
+      RequestStatus.Pending,
+      RequestStatus.Open,
+      RequestStatus.InProgress,
+    ];
+    return (
+      !!prescription.status &&
+      allowedStatuses.includes(prescription.status) &&
+      this.accessMatrixState.hasAtLeastOnePermission(['executeTreatment'], prescription.templateCode) &&
+      !task
+    );
   }
 }

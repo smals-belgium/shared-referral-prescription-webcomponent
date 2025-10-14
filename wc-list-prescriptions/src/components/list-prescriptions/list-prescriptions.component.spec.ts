@@ -1,55 +1,55 @@
-import {
-  PrescriptionDetailsWebComponent
-} from '../../../../wc-prescription-details/src/components/prescription-details/prescription-details.component';
+import { PrescriptionDetailsWebComponent } from '../../../../wc-prescription-details/src/components/prescription-details/prescription-details.component';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateAdapter, MatNativeDateModule } from '@angular/material/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { importProvidersFrom, SimpleChange, SimpleChanges } from '@angular/core';
-import { ConfigurationService } from '@reuse/code/services/configuration.service';
-import { AuthService } from '@reuse/code/services/auth.service';
+import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
 import { ListPrescriptionsWebComponent } from './list-prescriptions.component';
-import { Observable, of } from 'rxjs';
-import { Intent, LoadingStatus, PrescriptionModelRequest } from '@reuse/code/interfaces';
-import { PrescriptionSummaryList } from '@reuse/code/interfaces/prescription-summary.interface';
+import { of } from 'rxjs';
+import { Intent, LoadingStatus } from '@reuse/code/interfaces';
 import { By } from '@angular/platform-browser';
+import { PageModelEntityDto, ReadRequestListResource } from '@reuse/code/openapi';
 
 const mockPerson = {
   ssin: '90122712173',
-  name: "name of patient"
-}
+  name: 'name of patient',
+};
 
 const mockAuthService = {
   init: jest.fn(),
-  getClaims: jest.fn(() => of({
-    userProfile: mockPerson
-  })),
-  isProfessional: jest.fn(() => of(false))
-}
+  getClaims: jest.fn(() =>
+    of({
+      userProfile: mockPerson,
+    })
+  ),
+  isProfessional: jest.fn(() => of(false)),
+};
 
 const mockPseudoClient = {
   getDomain: jest.fn(),
   identify: jest.fn(),
   identifyMultiple: jest.fn(),
   pseudonymize: jest.fn(),
-  pseudonymizeMultiple: jest.fn()
-}
+  pseudonymizeMultiple: jest.fn(),
+};
 
 function MockPseudoHelperFactory() {
-  return new PseudonymisationHelper(mockPseudoClient)
+  return new PseudonymisationHelper(mockPseudoClient);
 }
 
 const mockConfigService = {
   getEnvironment: jest.fn(),
-  getEnvironmentVariable: jest.fn()
-}
+  getEnvironmentVariable: jest.fn(),
+};
 
 class FakeLoader implements TranslateLoader {
-  getTranslation(lang: string): Observable<any> {
+  getTranslation() {
     return of({});
   }
 }
@@ -65,35 +65,36 @@ describe('ListPrescriptionsWebComponent', () => {
   let translate: TranslateService;
   let dateAdapter: MockDateAdapter;
 
-
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PrescriptionDetailsWebComponent, TranslateModule.forRoot({
-        loader: {provide: TranslateLoader, useClass: FakeLoader},
-      }), HttpClientTestingModule, MatDatepickerModule,
-        MatNativeDateModule],
+      imports: [
+        PrescriptionDetailsWebComponent,
+        TranslateModule.forRoot({
+          loader: { provide: TranslateLoader, useClass: FakeLoader },
+        }),
+        MatDatepickerModule,
+        MatNativeDateModule,
+      ],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),
         DateAdapter,
         importProvidersFrom(MatNativeDateModule),
-        {provide: ConfigurationService, useValue: mockConfigService},
-        {provide: AuthService, useValue: mockAuthService},
-        {provide: PseudonymisationHelper, useValue: MockPseudoHelperFactory()},
+        { provide: ConfigurationService, useValue: mockConfigService },
+        { provide: AuthService, useValue: mockAuthService },
+        { provide: PseudonymisationHelper, useValue: MockPseudoHelperFactory() },
       ],
-    })
-      .compileComponents();
+    }).compileComponents();
 
     httpMock = TestBed.inject(HttpTestingController);
     translate = TestBed.inject(TranslateService);
     dateAdapter = TestBed.inject(DateAdapter) as unknown as MockDateAdapter;
-  })
+  });
 
   afterEach(() => {
     httpMock.verify();
   });
-
 
   it('should create the app', () => {
     createFixture();
@@ -108,19 +109,19 @@ describe('ListPrescriptionsWebComponent', () => {
     component.intent = 'order';
     component.isPrescriptionValue = true;
 
-    const simpleChanges: SimpleChanges = {patientSsin: new SimpleChange('', ssin, true)}
+    const simpleChanges: SimpleChanges = { patientSsin: new SimpleChange('', ssin, true) };
     component.patientSsin = ssin;
     component.ngOnChanges(simpleChanges);
 
     expect(loadDataSpy).toHaveBeenCalledWith(1);
     expect(loadPrescriptionsSpy).toHaveBeenCalledWith(1, undefined);
 
-    jest.spyOn(component['prescriptionsState'], 'loadPrescriptions').mockReturnValue()
+    jest.spyOn(component['prescriptionsState'], 'loadPrescriptions').mockReturnValue();
   });
 
   it('should display a table when viewStatePrescriptions$ has data and state success', () => {
     createFixture();
-    const {debugElement} = fixture;
+    const { debugElement } = fixture;
     let prescriptionTable = debugElement.query(By.css('app-prescriptions-table'));
     expect(prescriptionTable).toBeNull();
     component.intent = 'order';
@@ -129,10 +130,10 @@ describe('ListPrescriptionsWebComponent', () => {
 
     const expectedState = {
       data: {
-        prescriptions: {} as PrescriptionSummaryList,
+        prescriptions: {} as ReadRequestListResource,
         templates: [],
-        proposals: {} as PrescriptionSummaryList,
-        models: {} as PrescriptionModelRequest
+        proposals: {} as ReadRequestListResource,
+        models: {} as PageModelEntityDto,
       },
       error: {},
       params: {
@@ -144,10 +145,12 @@ describe('ListPrescriptionsWebComponent', () => {
           },
           page: 1,
           pageSize: 10,
-        }
+        },
       },
-      status: LoadingStatus.SUCCESS
+      status: LoadingStatus.SUCCESS,
     };
+
+    // @ts-expect-error: it's a test where we define the object, so the type check is not needed
     jest.spyOn(component, 'viewStatePrescriptions$').mockReturnValue(expectedState);
 
     fixture.detectChanges();
@@ -166,17 +169,17 @@ describe('ListPrescriptionsWebComponent', () => {
     component.intent = Intent.PROPOSAL;
     component.isProposalValue = true;
 
-    const simpleChanges: SimpleChanges = {patientSsin: new SimpleChange('', ssin, true)}
+    const simpleChanges: SimpleChanges = { patientSsin: new SimpleChange('', ssin, true) };
     component.patientSsin = ssin;
     component.ngOnChanges(simpleChanges);
 
     expect(loadDataSpy).toHaveBeenCalledWith(1);
     expect(loadProposalsSpy).toHaveBeenCalledWith(1, undefined);
 
-    jest.spyOn(component['proposalsState'], 'loadProposals').mockReturnValue()
+    jest.spyOn(component['proposalsState'], 'loadProposals').mockReturnValue();
   });
 
-  describe("language switch", () => {
+  describe('language switch', () => {
     it('should initialize language and locale if currentLang is not set', () => {
       translate.currentLang = '';
       const setLocalesSpy = jest.spyOn(dateAdapter, 'setLocale');
@@ -195,12 +198,12 @@ describe('ListPrescriptionsWebComponent', () => {
 
       expect(setLocalesSpy).not.toHaveBeenCalled();
     });
-  })
+  });
 
   const createFixture = () => {
     fixture = TestBed.createComponent(ListPrescriptionsWebComponent);
     component = fixture.componentInstance;
     component.intent = 'order';
     fixture.detectChanges();
-  }
+  };
 });

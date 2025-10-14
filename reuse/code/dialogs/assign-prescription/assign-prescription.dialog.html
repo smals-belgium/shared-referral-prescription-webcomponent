@@ -177,19 +177,21 @@
               <td data-cy="professional-name" colspan="2">
                 @if (isProfessional(healthcareProvider)) {
                   <div>
-                    <b>{{ healthcareProvider.healthcarePerson.firstName + ' ' + healthcareProvider.healthcarePerson.lastName }}</b>
+                    @if(healthcareProvider.healthcarePerson; as person){
+                      <b>{{ (person.firstName || '') + ' ' + (person.lastName || '') }}</b>
+                    }
                   </div>
-                  <div>{{ 'common.professions.' + healthcareProvider.id.profession | translate }}</div>
+                  <div>{{ 'common.professions.' + healthcareProvider.id?.profession | translate }}</div>
                 } @else {
                   <div>
-                    <b>{{ healthcareProvider.organizationName | formatMultilingualObject: 'name': currentLang }}</b>
+                    <b>{{ healthcareProvider.organizationName | formatMultilingualObject: currentLang }}</b>
                   </div>
                   <div>{{ 'common.organizations.' + getGroupName(healthcareProvider.typeCode) | translate }}</div>
                 }
               </td>
               <td class="table-td-ssin">
                 @if (isProfessional(healthcareProvider)) {
-                  {{ healthcareProvider.id.ssin | formatSsin }}
+                  {{ healthcareProvider.id?.ssin | formatSsin }}
                 } @else {
                   {{healthcareProvider.nihii8 ?? healthcareProvider.nihii11 | formatNihdi: healthcareProvider.qualificationCode}}
                 }
@@ -198,11 +200,11 @@
               <td class="table-td-address">
                 @if (healthcareProvider.address) {
                   <span data-cy="professional-address-street"
-                        [ngClass]="hasStreet(healthcareProvider.address.street) || healthcareProvider.address.houseNumber ? 'street-address' : ''">{{ healthcareProvider.address.street | formatMultilingualObject: 'street': currentLang }} {{ healthcareProvider.address.houseNumber || '' }} {{ healthcareProvider.address.box || '' }}</span>
+                        [ngClass]="hasStreet(healthcareProvider.address.street) || healthcareProvider.address.houseNumber ? 'street-address' : ''">{{ healthcareProvider.address.street | formatMultilingualObject: currentLang }} {{ healthcareProvider.address.houseNumber || '' }} {{ healthcareProvider.address.box || '' }}</span>
                   <span
-                    data-cy="professional-address-postalCode">{{ healthcareProvider.address!.zipCode + ' ' || '' }}</span>
+                    data-cy="professional-address-postalCode">{{ healthcareProvider.address.zipCode + ' ' || '' }}</span>
                   <span
-                    data-cy="professional-address-city">{{ healthcareProvider.address!.municipality | formatMultilingualObject: 'municipality': currentLang }}</span>
+                    data-cy="professional-address-city">{{ healthcareProvider.address.municipality | formatMultilingualObject:  currentLang }}</span>
                 }
               </td>
 
@@ -225,7 +227,7 @@
                 <td></td>
                 <td colspan="5">
                   @if (isProfessional(healthcareProvider) && healthcareProvider.healthcareQualification) {
-                    {{ healthcareProvider.healthcareQualification | formatMultilingualObject: 'description': currentLang }}
+                    {{ healthcareProvider.healthcareQualification.description | formatMultilingualObject: currentLang }}
                   }
                 </td>
               </tr>
@@ -236,7 +238,7 @@
                     <mat-icon>call</mat-icon>
                   </td>
                   <td class="vertical-align-top">
-                    @for (telephoneNumber of healthcareProvider.phoneNumbers.telephoneNumbers | keyvalue; track telephoneNumber) {
+                    @for (telephoneNumber of telephoneNumbersList(healthcareProvider) | keyvalue; track telephoneNumber) {
                       <div>
                         <a [href]="'tel:' + telephoneNumber.value">{{ telephoneNumber.value }}</a>
                       </div>

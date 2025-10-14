@@ -8,19 +8,25 @@
         [showRetry]="false"
       ></app-error-card>
     }
-    <mat-form-field *ngIf="formGroup.get('endDate') as control" appearance="fill">
+    @if(formGroup.get('endDate'); as control) {
+    <mat-form-field appearance="fill">
       <mat-label>{{ 'prescription.finishExecution.endDate' | translate }}</mat-label>
       <input [formControlName]="'endDate'" [matDatepicker]="picker" [max]="maxDate" [min]="minDate" matInput
              type="text" data-cy="end-date-execution-prescription">
       <mat-datepicker-toggle [for]="picker" matSuffix></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
+      @if(control.hasError('matDatepickerMin')){
       <mat-error
-        *ngIf="control.hasError('matDatepickerMin')">{{ 'prescription.errors.dateMustBeLaterOrEqualTo' | translate:{date: (minDate | date)} }}</mat-error>
-      <mat-error
-        *ngIf="control.hasError('matDatepickerMax')">{{ 'prescription.errors.dateMustBeEarlierOrEqualTo' | translate: {date: (maxDate | date)} }}</mat-error>
-      <mat-error
-        *ngIf="control.hasError('matDatepickerParse')">{{ 'prescription.errors.invalidDateFormat' | translate }}</mat-error>
+        >{{ 'prescription.errors.dateMustBeLaterOrEqualTo' | translate:{date: (minDate | date)} }}</mat-error>
+      }
+      @if(control.hasError('matDatepickerMax')){
+      <mat-error>{{ 'prescription.errors.dateMustBeEarlierOrEqualTo' | translate: {date: (maxDate | date)} }}</mat-error>
+      }
+      @if(control.hasError('matDatepickerParse')) {
+      <mat-error>{{ 'prescription.errors.invalidDateFormat' | translate }}</mat-error>
+      }
     </mat-form-field>
+    }
   </div>
   <div mat-dialog-actions>
     <button color="accent" data-cy="dialog-confirm-button"
@@ -30,4 +36,6 @@
   </div>
 </form>
 
-<app-overlay-spinner *ngIf="loading" mode="dialog"></app-overlay-spinner>
+@if(loading){
+<app-overlay-spinner mode="dialog"></app-overlay-spinner>
+}

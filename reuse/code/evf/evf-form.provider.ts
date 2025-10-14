@@ -6,7 +6,7 @@ import {
   withFormatDateExpressionPipe,
   withJavaScriptSideEffect,
   withParseDateExpressionPipe,
-  withTransformDateExpressionPipe
+  withTransformDateExpressionPipe,
 } from '@smals/vas-evaluation-form-ui-core';
 import { withCheckboxElement } from '@smals/vas-evaluation-form-ui-material/elements/checkbox';
 import { withInputTextElement } from '@smals/vas-evaluation-form-ui-material/elements/input-text';
@@ -21,12 +21,9 @@ import { withMultiSelectElement, withSelectElement } from '@smals/vas-evaluation
 import { withRowElement } from '@smals/vas-evaluation-form-ui-material/elements/row';
 import { withCheckboxListElement } from '@smals/vas-evaluation-form-ui-material/elements/checkbox-list';
 import { EVF_MATERIAL_OPTIONS } from '@smals/vas-evaluation-form-ui-material';
-import { MedicationComponent } from './medication/element/medication.component';
-import { withAutocompleteElement } from "@smals/vas-evaluation-form-ui-material/elements/autocomplete";
-import { ExternalSourceService } from "../services/externalSourceService.service";
-import {
-  AutocompleteMultiselectComponent
-} from '@reuse/code/evf/autocomplete-multiselect/element/autocomplete-multiselect.component';
+import { withAutocompleteElement } from '@smals/vas-evaluation-form-ui-material/elements/autocomplete';
+import { ExternalSourceService } from '@reuse/code/services/api/externalSourceService.service';
+import { AutocompleteMultiselectComponent } from '@reuse/code/evf/autocomplete-multiselect/element/autocomplete-multiselect.component';
 import { RecommendationsComponent } from '@reuse/code/evf/pss-recommendations/element/recommendations.component';
 import { withRepeatableInlineElement } from '@smals/vas-evaluation-form-ui-material/elements/repeatable-inline';
 import { withSlideToggleElement } from '@smals/vas-evaluation-form-ui-material/elements/slide-toggle';
@@ -45,23 +42,21 @@ export function provideEvfForm() {
       withSectionElement(),
       withRowElement(),
       withSelectElement(),
-      withInfoElement(),
-      withRepeatableElement(),
       withRepeatableInlineElement(),
       withMultiSelectElement(),
       withSlideToggleElement(),
-      evfElementConfigFeature({
-        name: 'medication',
-        element: MedicationComponent
-        },
+      withInfoElement(),
+      withRepeatableElement(),
+      evfElementConfigFeature(
         {
           name: 'autocompleteMultiselect',
-          element: AutocompleteMultiselectComponent
+          element: AutocompleteMultiselectComponent,
         },
         {
           name: 'recommendations',
-          element: RecommendationsComponent
-        }),
+          element: RecommendationsComponent,
+        }
+      ),
       withAutocompleteElement(),
       // expression pipes
       withParseDateExpressionPipe(),
@@ -74,9 +69,9 @@ export function provideEvfForm() {
     {
       provide: EVF_MATERIAL_OPTIONS,
       useValue: {
-        appearance: 'fill'
-      }
+        appearance: 'fill',
+      },
     },
-    {provide: EvfExternalSourceService, useClass: ExternalSourceService}
+    { provide: EvfExternalSourceService, useClass: ExternalSourceService },
   ];
 }

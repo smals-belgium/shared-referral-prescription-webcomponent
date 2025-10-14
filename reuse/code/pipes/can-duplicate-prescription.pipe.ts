@@ -1,8 +1,8 @@
-import { Pipe } from '@angular/core';
-import { AccessMatrixState } from '../states/access-matrix.state';
-import { ReadPrescription, Role, UserInfo } from "../interfaces";
-import { isProposal } from '@reuse/code/utils/utils';
-
+import { Pipe, PipeTransform } from '@angular/core';
+import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
+import { UserInfo } from '@reuse/code/interfaces';
+import { ReadRequestResource } from '@reuse/code/openapi';
+import { isProfesionalBasedOnRole, isProposal } from '@reuse/code/utils/utils';
 
 /**
  * This pipe determines whether a prescription can be duplicated.
@@ -19,18 +19,16 @@ import { isProposal } from '@reuse/code/utils/utils';
  * @pipe
  * @name canDuplicatePrescription
  */
-@Pipe({name: 'canDuplicatePrescription', standalone: true})
-export class CanDuplicatePrescriptionPipe {
+@Pipe({ name: 'canDuplicatePrescription', standalone: true })
+export class CanDuplicatePrescriptionPipe implements PipeTransform {
+  constructor(private accessMatrixState: AccessMatrixState) {}
 
-  constructor(
-    private readonly accessMatrixState: AccessMatrixState,
-  ) {
-  }
+  transform(prescription: ReadRequestResource, currentUser?: Partial<UserInfo>): boolean {
+    if (currentUser == undefined || isProposal(prescription.intent)) return false;
 
-  transform(prescription: ReadPrescription, currentUser?: UserInfo): boolean {
-    if (currentUser == undefined || isProposal(prescription.intent))
-      return false;
-
-    return currentUser.role === Role.professional && this.accessMatrixState.hasAtLeastOnePermission(['createPrescription'], prescription.templateCode);
+    return (
+      isProfesionalBasedOnRole(currentUser.role) &&
+      this.accessMatrixState.hasAtLeastOnePermission(['createPrescription'], prescription.templateCode)
+    );
   }
 }

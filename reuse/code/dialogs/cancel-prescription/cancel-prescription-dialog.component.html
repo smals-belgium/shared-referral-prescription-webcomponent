@@ -8,28 +8,31 @@
         [showRetry]="false"
       ></app-error-card>
     }
-    <div>
-      {{ (prescription.intent ?? '') | translateByIntent:{
-          order: 'prescription.cancel.message',
-          proposal: 'proposal.cancel.message'
-        }:{
-          firstName: patient.firstName,
-          lastName:  patient.lastName,
-          templateName: (prescription.templateCode | templateName)
-        }
-      }}
-    </div>
+    @if(prescription.intent) {
+      <div>
+        {{ prescription.intent | translateByIntent:{
+        order: 'prescription.cancel.message',
+        proposal: 'proposal.cancel.message'
+      }:{
+        firstName: patient?.firstName,
+        lastName:  patient?.lastName,
+        templateName: (prescription.templateCode | templateName)
+      }
+        }}
+      </div>
+    }
   </div>
   <div mat-dialog-actions>
-    <button data-cy="dialog-confirm-button" mat-raised-button color="accent" (click)="onCancel()">
+    <button type="button" data-cy="dialog-confirm-button" mat-raised-button color="accent" (click)="cancelPrescription()">
       {{ 'common.confirm' | translate }}
     </button>
-    <button data-cy="dialog-cancel-button" mat-flat-button [mat-dialog-close]="undefined">{{
+    <button type="button" data-cy="dialog-cancel-button" mat-flat-button [mat-dialog-close]="undefined">{{
         'common.cancel' |
           translate
       }}
     </button>
   </div>
-
-  <app-overlay-spinner mode="dialog" *ngIf="loading"></app-overlay-spinner>
+@if(loading){
+  <app-overlay-spinner mode="dialog"></app-overlay-spinner>
+}
 </div>

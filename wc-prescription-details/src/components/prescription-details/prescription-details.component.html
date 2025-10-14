@@ -1,484 +1,566 @@
 <div class="container">
-  <ng-container *ngIf="viewState$() as viewState">
+  @if (viewState$(); as viewState) {
     <app-overlay-spinner *ifStatusLoading="viewState" mode="inline"></app-overlay-spinner>
     <app-error-card
       *ifStatusError="viewState"
       [message]="'prescription.errors.failedToLoadPrescription' | translate"
-      [error]="viewState.error.prescription"
+      [error]="prescriptionHttpError"
       [showRetry]="showRetryButton()"
       (clickRetry)="loadPrescriptionOrProposal()"
     ></app-error-card>
     <ng-container *ifStatusSuccess="viewState">
-      <ng-container *ngIf="viewState.data!.prescription as prescription">
-        <div class="card no-padding">
-          <div class="card-column">
-            <div>
-              <div class="prescription-header">
-                <div class="id" data-cy="prescription-id">Id : {{prescription.id}}</div>
-                <div class="default-info">
-                  <button data-cy="prescription-print-button" mat-icon-button (click)="print()" [attr.aria-label]="'prescription.ariaLabel.print' | translate">
-                    <mat-icon>print</mat-icon>
-                  </button>
-                  <div class="status" data-cy="prescription-status" [ngStyle]="{'border-color': getStatusBorderColor(prescription.status!), 'background-color': getStatusBorderColor(prescription.status!)}">{{'prescription.statuses.' + prescription.status | translate}}</div>
-                </div>
-              </div>
-              <div class="actions">
-                <button
-                  *ngIf="prescription | canCancelPrescriptionOrProposal: viewState.data!.patient.ssin: viewState.data!.currentUser"
-                  mat-raised-button
-                  type="button"
-                  color="accent"
-                  (click)="openCancelPrescriptionDialog(prescription, viewState.data!.patient)"
-                  data-cy="prescription-cancel-treatment-button"
-                  [attr.aria-label]="'prescription.ariaLabel.reject' | translate"
-                ><mat-icon>cancel</mat-icon>
-                  {{'prescription.cancel.action' | translate}}
-                </button>
-                <button
-                  *ngIf="prescription | canDuplicatePrescription: viewState.data!.currentUser"
-                  mat-raised-button
-                  type="button"
-                  (click)="handleDuplicateClick()"
-                  data-cy="prescription-duplicate-button"
-                ><mat-icon>control_point_duplicate</mat-icon>
-                  {{'prescription.duplicate' | translate}}
-                </button>
-                <button
-                  *ngIf="prescription | canExtendPrescription: viewState.data!.currentUser"
-                  mat-raised-button
-                  type="button"
-                  (click)="handleExtendClick()"
-                  data-cy="prescription-extend-button"
-                ><mat-icon>edit_document</mat-icon>
-                  {{'prescription.extend' | translate}}
-                </button>
-              </div>
-              <h2 data-cy="prescription-type">{{prescription.templateCode | templateName}}</h2>
-              <div class="row">
-                <div class="info-item">
-                  <div data-cy="prescription-date-label">{{'prescription.prescriptionDate' | translate}}</div>
-                  <div data-cy="prescription-date">{{$any(prescription.authoredOn) | date: 'D'}}</div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="info-item">
-                  <div data-cy="prescription-author-label">{{'prescription.author' | translate}}</div>
-                  <div data-cy="prescription-author">
-                    <app-professional-display
-                      [professional]="prescription.requester"
-                      [currentUser]="viewState.data?.currentUser"
-                    ></app-professional-display>
-                    @if (prescription.requester?.id?.profession) {
-                      ({{ 'common.professions.' + prescription.requester?.id?.profession | translate }})<br>
-                    }
-                    @if (prescription.requester?.nihii8) {
-                      {{prescription.requester!.nihii8 | formatNihdi: prescription.requester?.id?.qualificationCode }}
-                    } @else if (prescription.requester?.nihii11) {
-                      {{prescription.requester!.nihii11 | formatNihdi: prescription.requester?.id?.qualificationCode}}
-                    }
-                  </div>
-                </div>
-              </div>
-              @if (viewState.data!.patient; as patient) {
-                <div class="row">
-                  <div class="info-item">
-                    <div data-cy="prescription-patient-label">{{ 'prescription.patient' | translate }}</div>
-                    <div data-cy="prescription-patient">
-                      {{ patient.firstName ?? '' }} {{ patient.lastName ?? '' }}<br/>
-                      {{patient.ssin | formatSsin}}
-                      @if(prescription.templateCode === 'ANNEX_82') {
-                        <br/>{{patient.birthDate | date: 'dd/MM/yyyy'}}
-                        <br/>{{'common.gender' | translate}}: {{'common.genders.'+patient.gender | translate}}
-                      }
+      @if (viewState.data!.prescription; as prescription) {
+        <div>
+          <div class="card no-padding">
+            <div class="card-column">
+              <div>
+                <div class="prescription-header">
+                  <div class="id" data-cy="prescription-id">Id : {{ prescription.id }}</div>
+                  <div class="default-info">
+                    <button data-cy="prescription-print-button" mat-icon-button (click)="print()"
+                            [attr.aria-label]="'prescription.ariaLabel.print' | translate">
+                      <mat-icon>print</mat-icon>
+                    </button>
+                    <div class="status" data-cy="prescription-status"
+                         [ngStyle]="{'border-color': getStatusBorderColor(prescription.status), 'background-color': getStatusBorderColor(prescription.status)}">{{ 'prescription.statuses.' + prescription.status | translate }}
                     </div>
                   </div>
                 </div>
-              }
-
-
-              @if (prescription.shortCode) {
-                <div class="row">
-                  <div class="info-item">
-                    <div data-cy="prescription-shortcode-label">{{'prescription.shortcode' | translate}}</div>
-                    <div data-cy="prescription-shortcode">
-                      {{prescription.shortCode}}
-                    </div>
-                  </div>
-                </div>
-              }
-
-              <div class="row">
-                <div class="info-item">
-                  <div data-cy="prescription-validity-period-label">{{'prescription.validityPeriod' | translate}}</div>
-                  <div data-cy="prescription-validity-period">
-                    {{prescription.period.start | date}} - {{prescription.period.end | date}}
-                  </div>
-                </div>
-              </div>
-              @if(viewState.data!.decryptedResponses) {
-                <nihdi-referral-prescription-form-details
-                  [lang]="lang"
-                  [template]="viewState.data!.templateVersion"
-                  [responses]="viewState.data!.decryptedResponses"
-                  [services]="services"
-                  [status]="status$.getValue()"
-                  [isProfessional]="isProfessional$()"
-                ></nihdi-referral-prescription-form-details>
-              }
-            </div>
-            <div>
-              <div class="caregiver-actions">
-                <ng-container *ngIf="!viewState.data!.performerTask?.careGiverSsin">
-                  @if(!isProposal(prescription.intent)) {
+                <div class="actions">
+                  @if (prescription | canCancelPrescriptionOrProposal: viewState.data?.patient?.ssin: viewState.data?.currentUser) {
                     <button
-                      *ngIf="prescription | canSelfAssign"
-                      (click)="onSelfAssign(prescription,viewState.data!.currentUser)"
-                      mat-raised-button
-                      type="button"
-                      data-cy="prescription-self-assign-button"
-                    >
-                      <mat-icon>add_task</mat-icon>
-                      {{'prescription.assignMe' | translate}}</button>
-                    <button
-                      *ngIf="prescription | canStartTreatment"
-                      (click)="openStartExecutionDialog(prescription)"
                       mat-raised-button
                       type="button"
                       color="accent"
-                      data-cy="prescription-start-execution-button"
+                      (click)="openCancelPrescriptionDialog(prescription, viewState.data?.patient)"
+                      data-cy="prescription-cancel-treatment-button"
+                      [attr.aria-label]="'prescription.ariaLabel.reject' | translate"
                     >
-                      <mat-icon>play_circle</mat-icon>
-                      {{'prescription.startExecution.action' | translate}}</button>
+                      <mat-icon>cancel</mat-icon>
+                      {{ 'prescription.cancel.action' | translate }}
+                    </button>
                   }
-                </ng-container>
-              </div>
-              <div class="caregiver-title">
-                <div>
-                  <h3 data-cy="prescription-assign-to-label">{{'prescription.careGivers' | translate}}</h3>
+                  @if (prescription | canDuplicatePrescription: viewState.data?.currentUser) {
+                    <button
+                      mat-raised-button
+                      type="button"
+                      (click)="handleDuplicateClick()"
+                      data-cy="prescription-duplicate-button"
+                    >
+                      <mat-icon>control_point_duplicate</mat-icon>
+                      {{ 'prescription.duplicate' | translate }}
+                    </button>
+                  }
+                  @if (prescription | canExtendPrescription: viewState.data?.currentUser) {
+                    <button
+                      mat-raised-button
+                      type="button"
+                      (click)="handleExtendClick()"
+                      data-cy="prescription-extend-button"
+                    >
+                      <mat-icon>edit_document</mat-icon>
+                      {{ 'prescription.extend' | translate }}
+                    </button>
+                  }
                 </div>
-                <div>
-                  <button
-                    *ngIf="prescription | canAssignCaregiver"
-                    mat-raised-button
-                    type="button"
-                    color="accent"
-                    (click)="openAssignDialog(prescription)"
-                    data-cy="prescription-assign-caregiver-button"
-                  >
-                    <mat-icon>add</mat-icon>
-                    {{'prescription.assign' | translate}}</button>
+                <h2 data-cy="prescription-type">{{ prescription.templateCode | templateName }}</h2>
+                <div class="row">
+                  <div class="info-item">
+                    <div data-cy="prescription-date-label">{{ 'prescription.prescriptionDate' | translate }}</div>
+                    <div data-cy="prescription-date">{{ $any(prescription.authoredOn) | date: 'D' }}</div>
+                  </div>
                 </div>
-              </div>
-              <div class="caregiver-list"
-                   *ngIf="(prescription.performerTasks && prescription.performerTasks.length > 0) ?? (prescription.organizationTasks && prescription.organizationTasks.length > 0)"
-                   data-cy="prescription-assign-to-list">
-                <ng-container *ngFor="let task of prescription.organizationTasks">
-                  <div class="organization-row " data-cy="prescription-assign-to">
-                    <div class="caregiver-name">
-                      @if(!task.organization.organizationName){
-                        <b>{{'common.organization.notFound' | translate}}</b>
-                        <mat-icon matTooltip="{{'common.organization.tooltip' | translate}}"
-                                  matTooltipPosition="after">
-                          error
-                        </mat-icon>
+                <div class="row">
+                  <div class="info-item">
+                    <div data-cy="prescription-author-label">{{ 'prescription.author' | translate }}</div>
+                    <div data-cy="prescription-author">
+                      <app-professional-display
+                        [professional]="prescription.requester"
+                        [currentUser]="viewState.data?.currentUser"
+                      ></app-professional-display>
+                      @if (prescription.requester?.healthcareQualification?.id?.profession) {
+                        ({{ 'common.professions.' + prescription.requester?.healthcareQualification?.id?.profession | translate }})<br>
                       }
-                      @else{
-                        <b>{{task.organization.organizationName | formatMultilingualObject: 'name': currentLang}}</b>
+                      @if (prescription.requester?.nihii8 ?? prescription.requester?.nihii11 ; as nihii) {
+                        {{ nihii }}
                       }
-                      <ng-container *ngIf="task.organization.nihii8 || task.organization.nihii11">
-                        ({{ task.organization.nihii8 ?? task.organization.nihii11 | formatNihdi: task.organization.qualificationCode }})
-                      </ng-container><br>
-                      <ng-container *ngIf="task.executionPeriod?.start">
-                        <span style="font-size: 14px; color:#8f8f8f">{{task.executionPeriod?.start! | date: 'dd/MM/yyyy'}} - </span>
-                      </ng-container>
-                      <ng-container *ngIf="task.executionPeriod?.end">
-                        <span style="font-size: 14px; color:#8f8f8f">{{task.executionPeriod?.end! | date: 'dd/MM/yyyy'}}</span>
-                      </ng-container>
-                    </div>
-                    <div class="organization-caregiver-list">
-                      <ng-container *ngFor="let performertask of task.performerTasks">
-                        <div class="organization-caregiver-row">
-                          <div class="organization-caregiver-name-row" data-cy="prescription-assign-to">
-                            <div class="caregiver-name">
-                              <app-professional-display
-                                [professional]="performertask.careGiver"
-                                [currentUser]="viewState.data?.currentUser"
-                              ></app-professional-display>
-                              @if (performertask.careGiver.nihii8) {
-                                ({{performertask.careGiver.nihii8 | formatNihdi: performertask.careGiver.id.qualificationCode}})
-                                <br>
-                              } @else if (performertask.careGiver.nihii11) {
-                                ({{performertask.careGiver.nihii11 | formatNihdi: performertask.careGiver.id.qualificationCode}})
-                              }<br>
-                              @if (performertask.executionPeriod?.start) {
-                                <span style="font-size: 14px; color:#8f8f8f">{{performertask.executionPeriod?.start! | date: 'dd/MM/yyyy'}} - </span>
-                              }
-                              @if (performertask.executionPeriod?.end) {
-                                <span style="font-size: 14px; color:#8f8f8f">{{performertask.executionPeriod?.end! | date: 'dd/MM/yyyy'}}</span>
-                              }
-                            </div>
-                            <div class="button-group">
-                            <button
-                              *ngIf="prescription | canRejectAssignation : performertask : viewState.data!.patient.ssin : viewState.data!.currentUser"
-                              (click)="openRejectAssignationDialog(prescription, performertask, viewState.data!.patient)"
-                              mat-icon-button
-                              data-cy="prescription-reject-assignation-button"
-                            >
-                              <mat-icon>cancel</mat-icon>
-                            </button>
-                            <button
-                              *ngIf="prescription | canInterruptTreatment : performertask : viewState.data!.currentUser"
-                              (click)="openInterruptExecutionDialog(prescription, performertask, viewState.data!.patient)"
-                              mat-icon-button
-                              data-cy="prescription-interrupt-execution-button"
-                              [attr.aria-label]="'prescription.ariaLabel.interrupt' | translate"
-                            >
-                              <mat-icon>pause_circle</mat-icon>
-                            </button>
-                            <button
-                              *ngIf="prescription | canRestartTreatment : performertask : viewState.data!.performerTask?.careGiverSsin"
-                              (click)="openRestartExecutionDialog(prescription, performertask, viewState.data!.patient)"
-                              mat-icon-button
-                              data-cy="prescription-restart-execution-button"
-                              [attr.aria-label]="'prescription.ariaLabel.restart' | translate"
-                            >
-                              <mat-icon>play_circle</mat-icon>
-                            </button>
-                            </div>
-                          </div>
-                          <ng-container *ngIf="viewState.data!.performerTask == performertask">
-                            <div class="button-group">
-                            <button
-                              *ngIf="prescription | canStartTreatment:performertask"
-                              (click)="openStartExecutionDialog(prescription, performertask)"
-                              mat-raised-button
-                              type="button"
-                              color="accent"
-                              data-cy="prescription-start-execution-button"
-                            >
-                              <mat-icon>play_circle</mat-icon>
-                              {{'prescription.startExecution.action' | translate}}</button>
-                            <button
-                              *ngIf="prescription | canFinishTreatment:performertask"
-                              (click)="openFinishExecutionDialog(prescription, performertask)"
-                              mat-raised-button
-                              type="button"
-                              color="accent"
-                              data-cy="prescription-finish-execution-button"
-                            >
-                              <mat-icon>event_busy</mat-icon>
-                              {{'prescription.finishExecution.action' | translate}}</button>
-                            <button
-                              *ngIf="prescription | canCancelTreatment:performertask:viewState.data?.currentUser"
-                              (click)="openCancelExecutionDialog(prescription, performertask, viewState.data!.patient)"
-                              mat-raised-button
-                              type="button"
-                              color="accent"
-                              data-cy="prescription-cancel-execution-button"
-                            >
-                              <mat-icon>cancel</mat-icon>
-                              {{'prescription.cancelExecution.action' | translate}}</button>
-                            <button
-                              *ngIf="prescription | canTransferAssignation:performertask:viewState.data?.currentUser"
-                              mat-raised-button
-                              (click)="openTransferAssignationDialog(prescription, performertask)"
-                              data-cy="prescription-transfer-assignation-button"
-                            >
-                              <mat-icon>forward</mat-icon>
-                              {{'prescription.transfer' | translate}}</button>
-                            </div>
-                          </ng-container>
-                        </div>
-                      </ng-container>
                     </div>
                   </div>
-                </ng-container>
-                <ng-container *ngFor="let task of prescription.performerTasks">
-                  <div class="caregiver-row">
-                    <div class="caregiver-name-row" data-cy="prescription-assign-to">
-                      <div class="caregiver-name">
-                        <app-professional-display
-                          [professional]="task.careGiver"
-                          [currentUser]="viewState.data?.currentUser"
-                        ></app-professional-display>
-                        @if (task.careGiver.nihii8) {
-                          ({{task.careGiver.nihii8 | formatNihdi: task.careGiver.id.qualificationCode}})
-                          <br>
-                        } @else if (task.careGiver.nihii11) {
-                          ({{task.careGiver.nihii11 | formatNihdi: task.careGiver.id.qualificationCode}})
-                        }<br>
-                        @if (task.executionPeriod?.start) {
-                          <span style="font-size: 14px; color:#8f8f8f">{{task.executionPeriod?.start! | date: 'dd/MM/yyyy'}} - </span>
+                </div>
+                @if (viewState.data!.patient; as patient) {
+                  <div class="row">
+                    <div class="info-item">
+                      <div data-cy="prescription-patient-label">{{ 'prescription.patient' | translate }}</div>
+                      <div data-cy="prescription-patient">
+                        {{ patient.firstName || '' }} {{ patient.lastName || '' }}<br />
+                        {{ patient.ssin | formatSsin }}
+                        @if (prescription.templateCode === 'ANNEX_82') {
+                          <br />{{ patient.birthDate | date: 'dd/MM/yyyy' }}
+                          <br />{{ 'common.gender' | translate }}: {{ 'common.genders.' + patient.gender | translate }}
                         }
-                        @if (task.executionPeriod?.end) {
-                          <span style="font-size: 14px; color:#8f8f8f">{{task.executionPeriod?.end! | date: 'dd/MM/yyyy'}}</span>
-                        }
-                      </div>
-
-                      <div class="button-group">
-                      <button
-                        *ngIf="prescription | canRejectAssignation : task : viewState.data!.patient.ssin : viewState.data!.currentUser"
-                        (click)="openRejectAssignationDialog(prescription, task, viewState.data!.patient)"
-                        mat-icon-button
-                        data-cy="prescription-reject-assignation-button"
-                        [attr.aria-label]="'prescription.ariaLabel.reject' | translate"
-                      >
-                        <mat-icon>cancel</mat-icon>
-                      </button>
-                      <button
-                        *ngIf="prescription | canInterruptTreatment : task : viewState.data!.currentUser"
-                        (click)="openInterruptExecutionDialog(prescription, task, viewState.data!.patient)"
-                        mat-icon-button
-                        data-cy="prescription-interrupt-execution-button"
-                        [attr.aria-label]="'prescription.ariaLabel.interrupt' | translate"
-                      >
-                        <mat-icon>pause_circle</mat-icon>
-                      </button>
-                      <button
-                        *ngIf="prescription | canRestartTreatment : task : viewState.data!.performerTask?.careGiverSsin"
-                        (click)="openRestartExecutionDialog(prescription, task, viewState.data!.patient)"
-                        mat-icon-button
-                        data-cy="prescription-restart-execution-button"
-                        [attr.aria-label]="'prescription.ariaLabel.restart' | translate"
-                      >
-                        <mat-icon>play_circle</mat-icon>
-                      </button>
                       </div>
                     </div>
-                    <ng-container *ngIf="viewState.data!.performerTask == task">
-                      <div class="button-group">
+                  </div>
+                }
+
+
+                @if (prescription.shortCode) {
+                  <div class="row">
+                    <div class="info-item">
+                      <div data-cy="prescription-shortcode-label">{{ 'prescription.shortcode' | translate }}</div>
+                      <div data-cy="prescription-shortcode">
+                        {{ prescription.shortCode }}
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                <div class="row">
+                  <div class="info-item">
+                    <div data-cy="prescription-validity-period-label">{{ 'prescription.validityPeriod' | translate }}
+                    </div>
+                    <div data-cy="prescription-validity-period">
+                      @if (prescription.period; as period) {
+                        {{ period.start | date }} - {{ period.end | date }}
+                      }
+                    </div>
+                  </div>
+                </div>
+                @if (viewState.data!.decryptedResponses) {
+                  <nihdi-referral-prescription-form-details
+                    [lang]="lang"
+                    [template]="viewState.data!.templateVersion"
+                    [responses]="viewState.data!.decryptedResponses"
+                    [services]="services"
+                    [status]="status$.getValue()"
+                    [isProfessional]="isProfessional$()"
+                  ></nihdi-referral-prescription-form-details>
+                }
+              </div>
+              <div>
+                <div class="caregiver-actions">
+                  @if (!viewState.data!.performerTask?.careGiverSsin && prescription.intent?.toLowerCase() !== 'proposal') {
+                    @if (prescription | canSelfAssign) {
                       <button
-                        *ngIf="prescription | canStartTreatment:task"
-                        (click)="openStartExecutionDialog(prescription, task)"
+                        (click)="onSelfAssign(prescription, viewState.data?.currentUser)"
+                        mat-raised-button
+                        type="button"
+                        data-cy="prescription-self-assign-button"
+                      >
+                        <mat-icon>add_task</mat-icon>
+                        {{ 'prescription.assignMe' | translate }}
+                      </button>
+                    }
+                    @if (prescription | canStartTreatment) {
+                      <button
+                        (click)="openStartExecutionDialog(prescription)"
                         mat-raised-button
                         type="button"
                         color="accent"
                         data-cy="prescription-start-execution-button"
                       >
                         <mat-icon>play_circle</mat-icon>
-                        {{'prescription.startExecution.action' | translate}}</button>
-                      <button
-                        *ngIf="prescription | canFinishTreatment:task"
-                        (click)="openFinishExecutionDialog(prescription, task)"
-                        mat-raised-button
-                        type="button"
-                        color="accent"
-                        data-cy="prescription-finish-execution-button"
-                      >
-                        <mat-icon>event_busy</mat-icon>
-                        {{'prescription.finishExecution.action' | translate}}</button>
-                      <button
-                        *ngIf="prescription | canCancelTreatment:task:viewState.data?.currentUser"
-                        (click)="openCancelExecutionDialog(prescription, task, viewState.data!.patient)"
-                        mat-raised-button
-                        type="button"
-                        color="accent"
-                        data-cy="prescription-cancel-execution-button"
-                      >
-                        <mat-icon>cancel</mat-icon>
-                        {{'prescription.cancelExecution.action' | translate}}</button>
-                      <button
-                        *ngIf="prescription | canTransferAssignation:task:viewState.data?.currentUser"
-                        mat-raised-button
-                        (click)="openTransferAssignationDialog(prescription, task)"
-                        data-cy="prescription-transfer-assignation-button"
-                      >
-                        <mat-icon>forward</mat-icon>
-                        {{'prescription.transfer' | translate}}</button>
-                      </div>
-                    </ng-container>
+                        {{ 'prescription.startExecution.action' | translate }}
+                      </button>
+                    }
+                  }
+                </div>
+                <div class="caregiver-title">
+                  <div>
+                    <h3 data-cy="prescription-assign-to-label">{{ 'prescription.careGivers' | translate }}</h3>
                   </div>
-                </ng-container>
+                  <div>
+                    @if (prescription | canAssignCaregiver) {
+                      <button
+                        mat-raised-button
+                        type="button"
+                        color="accent"
+                        (click)="openAssignDialog(prescription)"
+                        data-cy="prescription-assign-caregiver-button"
+                      >
+                        <mat-icon>add</mat-icon>
+                        {{ 'prescription.assign' | translate }}
+                      </button>
+                    }
+                  </div>
+                </div>
+                @if ((prescription.performerTasks && prescription.performerTasks.length > 0) || (prescription.organizationTasks && prescription.organizationTasks.length > 0)) {
+                  <div class="caregiver-list" data-cy="prescription-assign-to-list">
+                    @for (task of prescription.organizationTasks; track task) {
+                      <div class="organization-row " data-cy="prescription-assign-to">
+                        <div class="caregiver-name">
+                          @if (!task.organization?.organizationName) {
+                            <b>{{ 'common.organization.notFound' | translate }}</b>
+                            <mat-icon matTooltip="{{'common.organization.tooltip' | translate}}"
+                                      matTooltipPosition="after"
+                                      style="color: grey; cursor: pointer;">
+                              error
+                            </mat-icon>
+                          } @else {
+                            <b>{{ task.organization?.organizationName | formatMultilingualObject: currentLang }}</b>
+                          }
+
+                          @if (task.organization?.nihii8 ?? task.organization?.nihii11; as nihii) {
+                            <span>
+                        ({{ nihii }})
+                      </span><br>
+                          }
+                          @if (task.executionPeriod?.start) {
+                            <span
+                              style="font-size: 14px; color:#8f8f8f">{{ task.executionPeriod?.start! | date: 'dd/MM/yyyy' }}
+                              - </span>
+                          }
+                          @if (task.executionPeriod?.end) {
+                            <span
+                              style="font-size: 14px; color:#8f8f8f">{{ task.executionPeriod?.end! | date: 'dd/MM/yyyy' }}</span>
+                          }
+                        </div>
+                        <div class="organization-caregiver-list">
+                          @for (performertask of task.performerTasks; track performertask) {
+                            <div class="organization-caregiver-row">
+                              <div class="organization-caregiver-name-row" data-cy="prescription-assign-to">
+                                <div class="caregiver-name">
+                                  @if (performertask.careGiver; as caregiver) {
+                                    @if (!caregiver.healthcarePerson?.lastName) {
+                                      @if (caregiver.healthcarePerson?.ssin === viewState.data?.currentUser?.ssin) {
+                                        {{ viewState.data?.currentUser?.firstName }} {{ viewState.data?.currentUser?.lastName }}
+                                      } @else {
+                                        <b>{{ 'common.professional.notFound' | translate }}</b>
+                                        <mat-icon matTooltip="{{'common.professional.tooltip' | translate}}"
+                                                  matTooltipPosition="right"
+                                                  style="color: grey; cursor: pointer;">
+                                          error
+                                        </mat-icon>
+                                      }
+                                    } @else {
+                                      <b>{{ caregiver.healthcarePerson?.firstName }} {{ caregiver.healthcarePerson?.lastName }}</b>
+                                    }
+                                    @if (caregiver.nihii8 ?? caregiver.nihii11; as nihii) {
+                                      ({{ nihii }})
+                                    }
+                                  }
+                                  <br>
+                                  @if (performertask.executionPeriod?.start) {
+                                    <span
+                                      style="font-size: 14px; color:#8f8f8f">{{ performertask.executionPeriod?.start! | date: 'dd/MM/yyyy' }}
+                                      - </span>
+                                  }
+                                  @if (performertask.executionPeriod?.end) {
+                                    <span
+                                      style="font-size: 14px; color:#8f8f8f">{{ performertask.executionPeriod?.end! | date: 'dd/MM/yyyy' }}</span>
+                                  }
+                                </div>
+                                <div class="button-group">
+                                  @if (prescription | canRejectAssignation : performertask : viewState.data?.patient?.ssin : viewState.data?.currentUser) {
+                                    <button
+                                      type="button"
+                                      (click)="openRejectAssignationDialog(prescription, performertask, viewState.data?.patient)"
+                                      mat-icon-button
+                                      data-cy="prescription-reject-assignation-button"
+                                    >
+                                      <mat-icon>cancel</mat-icon>
+                                    </button>
+                                  }
+                                  @if (prescription | canInterruptTreatment : performertask : viewState.data?.currentUser) {
+                                    <button
+                                      type="button"
+                                      (click)="openInterruptExecutionDialog(prescription, performertask, viewState.data?.patient)"
+                                      mat-icon-button
+                                      data-cy="prescription-interrupt-execution-button"
+                                      [attr.aria-label]="'prescription.ariaLabel.interrupt' | translate"
+                                    >
+                                      <mat-icon>pause_circle</mat-icon>
+                                    </button>
+                                  }
+                                  @if (prescription | canRestartTreatment : performertask : viewState.data!.performerTask?.careGiverSsin) {
+                                    <button
+                                      type="button"
+                                      (click)="openRestartExecutionDialog(prescription, performertask, viewState.data!.patient)"
+                                      mat-icon-button
+                                      data-cy="prescription-restart-execution-button"
+                                      [attr.aria-label]="'prescription.ariaLabel.restart' | translate"
+                                    >
+                                      <mat-icon>play_circle</mat-icon>
+                                    </button>
+                                  }
+                                </div>
+                              </div>
+                              @if (viewState.data!.performerTask === performertask) {
+                                <div class="button-group">
+                                  @if (prescription | canStartTreatment:performertask) {
+                                    <button
+                                      (click)="openStartExecutionDialog(prescription, performertask)"
+                                      mat-raised-button
+                                      type="button"
+                                      color="accent"
+                                      data-cy="prescription-start-execution-button"
+                                    >
+                                      <mat-icon>play_circle</mat-icon>
+                                      {{ 'prescription.startExecution.action' | translate }}
+                                    </button>
+                                  }
+                                  @if (prescription | canFinishTreatment:performertask) {
+                                    <button
+                                      (click)="openFinishExecutionDialog(prescription, performertask)"
+                                      mat-raised-button
+                                      type="button"
+                                      color="accent"
+                                      data-cy="prescription-finish-execution-button"
+                                    >
+                                      <mat-icon>event_busy</mat-icon>
+                                      {{ 'prescription.finishExecution.action' | translate }}
+                                    </button>
+                                  }
+                                  @if (prescription | canCancelTreatment:performertask:viewState.data?.currentUser) {
+                                    <button
+                                      (click)="openCancelExecutionDialog(prescription, performertask, viewState.data!.patient)"
+                                      mat-raised-button
+                                      type="button"
+                                      color="accent"
+                                      data-cy="prescription-cancel-execution-button"
+                                    >
+                                      <mat-icon>cancel</mat-icon>
+                                      {{ 'prescription.cancelExecution.action' | translate }}
+                                    </button>
+                                  }
+                                  @if (prescription | canTransferAssignation:performertask:viewState.data?.currentUser) {
+                                    <button
+                                      mat-raised-button
+                                      (click)="openTransferAssignationDialog(prescription, performertask)"
+                                      data-cy="prescription-transfer-assignation-button"
+                                    >
+                                      <mat-icon>forward</mat-icon>
+                                      {{ 'prescription.transfer' | translate }}
+                                    </button>
+                                  }
+                                </div>
+                              }
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    }
+                    @for (task of prescription.performerTasks; track task) {
+                      <div class="caregiver-row">
+                        <div class="caregiver-name-row" data-cy="prescription-assign-to">
+                          <div class="caregiver-name">
+                            @if (task.careGiver; as careGiver) {
+                              @if (!careGiver.healthcarePerson?.lastName) {
+                                @if (careGiver.healthcarePerson?.ssin === viewState.data?.currentUser?.ssin) {
+                                  {{ viewState.data?.currentUser?.firstName }} {{ viewState.data?.currentUser?.lastName }}
+                                } @else {
+                                  <b>{{ 'common.professional.notFound' | translate }}</b>
+                                  <mat-icon matTooltip="{{'common.professional.tooltip' | translate}}"
+                                            matTooltipPosition="right"
+                                            style="color: grey; cursor: pointer;">
+                                    error
+                                  </mat-icon>
+                                }
+                              } @else {
+                                <b>{{ careGiver.healthcarePerson?.firstName }} {{ careGiver.healthcarePerson?.lastName }}</b>
+                              }
+                              @if (careGiver.nihii8 || careGiver.nihii11; as nihii) {
+                                ({{ nihii }})
+                              }<br>
+                            }
+                            @if (task.executionPeriod?.start) {
+                              <span
+                                style="font-size: 14px; color:#8f8f8f">{{ task.executionPeriod?.start! | date: 'dd/MM/yyyy' }}
+                                - </span>
+                            }
+                            @if (task.executionPeriod?.end) {
+                              <span
+                                style="font-size: 14px; color:#8f8f8f">{{ task.executionPeriod?.end! | date: 'dd/MM/yyyy' }}</span>
+                            }
+                          </div>
+
+                          <div class="button-group">
+                            @if (prescription | canRejectAssignation : task : viewState.data?.patient?.ssin : viewState.data?.currentUser) {
+                              <button
+                                type="button"
+                                (click)="openRejectAssignationDialog(prescription, task, viewState.data?.patient)"
+                                mat-icon-button
+                                data-cy="prescription-reject-assignation-button"
+                                [attr.aria-label]="'prescription.ariaLabel.reject' | translate"
+                              >
+                                <mat-icon>cancel</mat-icon>
+                              </button>
+                            }
+                            @if (prescription | canInterruptTreatment : task : viewState.data?.currentUser) {
+                              <button
+                                type="button"
+                                (click)="openInterruptExecutionDialog(prescription, task, viewState.data?.patient)"
+                                mat-icon-button
+                                data-cy="prescription-interrupt-execution-button"
+                                [attr.aria-label]="'prescription.ariaLabel.interrupt' | translate"
+                              >
+                                <mat-icon>pause_circle</mat-icon>
+                              </button>
+                            }
+                            @if (prescription | canRestartTreatment : task : viewState.data!.performerTask?.careGiverSsin) {
+                              <button
+                                (click)="openRestartExecutionDialog(prescription, task, viewState.data!.patient)"
+                                mat-icon-button
+                                data-cy="prescription-restart-execution-button"
+                                [attr.aria-label]="'prescription.ariaLabel.restart' | translate"
+                              >
+                                <mat-icon>play_circle</mat-icon>
+                              </button>
+                            }
+                          </div>
+                        </div>
+                        @if (viewState.data!.performerTask === task) {
+                          <div class="button-group">
+                            @if (prescription | canStartTreatment:task) {
+                              <button
+                                (click)="openStartExecutionDialog(prescription, task)"
+                                mat-raised-button
+                                type="button"
+                                color="accent"
+                                data-cy="prescription-start-execution-button"
+                              >
+                                <mat-icon>play_circle</mat-icon>
+                                {{ 'prescription.startExecution.action' | translate }}
+                              </button>
+                            }
+                            @if (prescription | canFinishTreatment:task) {
+                              <button
+                                (click)="openFinishExecutionDialog(prescription, task)"
+                                mat-raised-button
+                                type="button"
+                                color="accent"
+                                data-cy="prescription-finish-execution-button"
+                              >
+                                <mat-icon>event_busy</mat-icon>
+                                {{ 'prescription.finishExecution.action' | translate }}
+                              </button>
+                            }
+                            @if (prescription | canCancelTreatment:task:viewState.data?.currentUser) {
+                              <button
+                                (click)="openCancelExecutionDialog(prescription, task, viewState.data?.patient)"
+                                mat-raised-button
+                                type="button"
+                                color="accent"
+                                data-cy="prescription-cancel-execution-button"
+                              >
+                                <mat-icon>cancel</mat-icon>
+                                {{ 'prescription.cancelExecution.action' | translate }}
+                              </button>
+                            }
+                            @if (prescription | canTransferAssignation:task:viewState.data?.currentUser) {
+                              <button
+                                mat-raised-button
+                                (click)="openTransferAssignationDialog(prescription, task)"
+                                data-cy="prescription-transfer-assignation-button"
+                                type="button"
+                              >
+                                <mat-icon>forward</mat-icon>
+                                {{ 'prescription.transfer' | translate }}
+                              </button>
+                            }
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="card no-padding"
-             *ngIf="isProposalValue">
-          <div class="card-column">
-            <div>
-              <div class="prescriber-title">
-                <p>
+          @if (isProposalValue) {
+            <div class="card no-padding">
+              <div class="card-column">
+                <div>
+                  <div class="prescriber-title">
+                    <p>
         <span data-cy="proposal-date-label">
-          @if(!prescription.requester?.healthcarePerson?.lastName){
-            @if (prescription.requester?.id?.ssin === viewState.data?.currentUser?.ssin){
-              {{
-                'proposal.proposalInfoTitle' | translate: {
-                  firstName: viewState.data?.currentUser?.firstName || '',
-                  lastName: viewState.data?.currentUser?.lastName || '',
-                  date: $any(prescription.authoredOn) | date: 'D'
-                }
-              }}
-            }
-            @else{
-              {{
-                'proposal.proposalInfoTitle' | translate: {
-                  firstName: 'common.professional.notFound' | translate,
-                  lastName: '',
-                  date: $any(prescription.authoredOn) | date: 'D'
-                }
-              }}
-              <mat-icon matTooltip="{{'common.professional.tooltip' | translate}}"
-                        matTooltipPosition="right">
+          @if (prescription.requester; as requester) {
+            @if (!requester.healthcarePerson?.lastName) {
+              @if (requester.healthcarePerson?.ssin === viewState.data?.currentUser?.ssin) {
+                {{
+                  'proposal.proposalInfoTitle' | translate: {
+                    firstName: viewState.data?.currentUser?.firstName || '',
+                    lastName: viewState.data?.currentUser?.lastName || '',
+                    date: $any(prescription.authoredOn) | date: 'D'
+                  }
+                }}
+              } @else {
+                {{
+                  'proposal.proposalInfoTitle' | translate: {
+                    firstName: 'common.professional.notFound' | translate,
+                    lastName: '',
+                    date: $any(prescription.authoredOn) | date: 'D'
+                  }
+                }}
+                <mat-icon matTooltip="{{'common.professional.tooltip' | translate}}"
+                          matTooltipPosition="right"
+                          style="color: grey; cursor: pointer;">
                           error
                         </mat-icon>
+              }
+            } @else {
+              {{
+                'proposal.proposalInfoTitle' | translate: {
+                  firstName: requester.healthcarePerson?.firstName || '',
+                  lastName: requester.healthcarePerson?.lastName || '',
+                  date: $any(prescription.authoredOn) | date: 'D'
+                }
+              }}
             }
           }
-          @else{
-            {{
-              'proposal.proposalInfoTitle' | translate: {
-                firstName: prescription.requester?.healthcarePerson?.firstName || '',
-                lastName: prescription.requester?.healthcarePerson?.lastName || '',
-                date: $any(prescription.authoredOn) | date: 'D'
-              }
-            }}
-          }
           </span>
-                </p>
-              </div>
-              <div class="prescriber-actions">
-                <button
-                  *ngIf="prescription | canApproveProposal"
-                  (click)="openApproveProposalDialog(prescription)"
-                  mat-raised-button
-                  type="button"
-                  color="success"
-                  data-cy="approve-proposal-action-button"
-                >
-                  <mat-icon>done</mat-icon>
-                  {{ 'proposal.approve.action' | translate }}
-                </button>
-
-                <button
-                  *ngIf="prescription | canRejectProposal"
-                  (click)="openRejectProposalDialog(prescription)"
-                  mat-raised-button
-                  type="button"
-                  color="reject"
-                  data-cy="reject-proposal-action-button"
-                >
-                  <mat-icon>close</mat-icon>
-                  {{ 'proposal.reject.action' | translate }}
-                </button>
+                    </p>
+                  </div>
+                  <div class="prescriber-actions">
+                    @if (prescription | canApproveProposal) {
+                      <button
+                        (click)="openApproveProposalDialog(prescription)"
+                        mat-raised-button
+                        type="button"
+                        color="success"
+                        data-cy="approve-proposal-action-button"
+                      >
+                        <mat-icon>done</mat-icon>
+                        {{ 'proposal.approve.action' | translate }}
+                      </button>
+                    }
+                    @if (prescription | canRejectProposal) {
+                      <button
+                        (click)="openRejectProposalDialog(prescription)"
+                        mat-raised-button
+                        type="button"
+                        color="reject"
+                        data-cy="reject-proposal-action-button"
+                      >
+                        <mat-icon>close</mat-icon>
+                        {{ 'proposal.reject.action' | translate }}
+                      </button>
+                    }
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          }
 
-        <nihdi-referral-prescription-pdf
-          *ngIf="printer"
-          [lang]="lang"
-          [prescription]="prescription"
-          [responses]="viewState.data!.decryptedResponses"
-          [patient]="viewState.data!.patient"
-          [template]="viewState.data!.template"
-          [templateVersion]="viewState.data!.templateVersion"
-          (pdfReady)="printer = false"
-        ></nihdi-referral-prescription-pdf>
-      </ng-container>
+          @if (printer) {
+            <nihdi-referral-prescription-pdf
+              [lang]="lang"
+              [prescription]="prescription"
+              [responses]="viewState.data!.decryptedResponses"
+              [patient]="viewState.data!.patient"
+              [template]="viewState.data!.template"
+              [templateVersion]="viewState.data!.templateVersion"
+              (pdfReady)="printer = false"
+            ></nihdi-referral-prescription-pdf>
+          }
+        </div>
+      }
     </ng-container>
-  </ng-container>
+  }
+
 </div>
 
-<app-overlay-spinner *ngIf="loading"></app-overlay-spinner>
+@if (loading) {
+  <app-overlay-spinner></app-overlay-spinner>
+}

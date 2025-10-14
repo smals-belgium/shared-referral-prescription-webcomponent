@@ -3,15 +3,16 @@ import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { CreateMultiplePrescriptionsComponent } from './create-multiple-prescriptions.component';
-import { PrescriptionModelState } from '@reuse/code/states/prescriptionModel.state';
+import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionModel.state';
 import { CreatePrescriptionForm, Intent, LoadingStatus } from '@reuse/code/interfaces';
-import { ElementGroup, FormTemplate } from '@smals/vas-evaluation-form-ui-core';
+import { ElementGroup } from '@smals/vas-evaluation-form-ui-core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { By } from '@angular/platform-browser';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { TemplateVersion } from '@reuse/code/openapi';
 
 describe('CreateMultiplePrescriptionsComponent', () => {
   let component: CreateMultiplePrescriptionsComponent;
@@ -24,13 +25,13 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     jest.useFakeTimers(); // to control setTimeout
 
     mockDialog = {
-      open: jest.fn().mockReturnValue({afterClosed: () => of(true)})
+      open: jest.fn().mockReturnValue({ afterClosed: () => of(true) }),
     };
 
     mockModelState = {
       modalState: {},
       setInitialState: jest.fn(),
-      setModalState: jest.fn()
+      setModalState: jest.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -39,13 +40,14 @@ describe('CreateMultiplePrescriptionsComponent', () => {
         TranslateModule.forRoot(),
         MatExpansionModule,
         MatIconModule,
-        NoopAnimationsModule],
+        NoopAnimationsModule,
+      ],
       providers: [
-        {provide: MatDialog, useValue: mockDialog},
-        {provide: PrescriptionModelState, useValue: mockModelState},
+        { provide: MatDialog, useValue: mockDialog },
+        { provide: PrescriptionModelState, useValue: mockModelState },
         provideHttpClient(),
-        provideHttpClientTesting()
-      ]
+        provideHttpClientTesting(),
+      ],
     }).compileComponents();
 
     translate = TestBed.inject(TranslateService);
@@ -71,15 +73,15 @@ describe('CreateMultiplePrescriptionsComponent', () => {
 
   it('should return correct value from trackByFn', () => {
     fixture.detectChanges();
-    const mockItem = {trackId: 'trackId_01'} as unknown as CreatePrescriptionForm;
+    const mockItem = { trackId: 'trackId_01' } as unknown as CreatePrescriptionForm;
     expect(component.trackByFn(0, mockItem)).toBe('trackId_01');
   });
 
   it('should compute numberOfPrescriptionsToCreate correctly', () => {
     fixture.detectChanges();
     component.createPrescriptionForms = [
-      {status: LoadingStatus.SUCCESS} as CreatePrescriptionForm,
-      {status: LoadingStatus.LOADING} as CreatePrescriptionForm,
+      { status: LoadingStatus.SUCCESS } as CreatePrescriptionForm,
+      { status: LoadingStatus.LOADING } as CreatePrescriptionForm,
     ];
     expect(component.numberOfPrescriptionsToCreate).toBe(1);
   });
@@ -87,17 +89,17 @@ describe('CreateMultiplePrescriptionsComponent', () => {
   it('should open accordion when one form is present on change', () => {
     fixture.detectChanges();
     const openAll = jest.fn();
-    component.accordion = {openAll} as any;
+    component.accordion = { openAll } as any;
 
-    component.createPrescriptionForms = [{status: LoadingStatus.LOADING}] as CreatePrescriptionForm[];
+    component.createPrescriptionForms = [{ status: LoadingStatus.LOADING }] as CreatePrescriptionForm[];
 
     component.ngOnChanges({
       createPrescriptionForms: {
         currentValue: component.createPrescriptionForms,
         previousValue: [],
         firstChange: true,
-        isFirstChange: () => true
-      }
+        isFirstChange: () => true,
+      },
     });
 
     jest.runOnlyPendingTimers();
@@ -112,9 +114,9 @@ describe('CreateMultiplePrescriptionsComponent', () => {
           count: 3,
           when: ['AM'],
           frequency: 1,
-          period: 1
-        }
-      }
+          period: 1,
+        },
+      },
     };
 
     const result = component.mapResponsesToRepeatObject(responses);
@@ -127,42 +129,41 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     const setValue = jest.fn();
     const mockElementGroup = {
       setValue,
-      getOutputValue: () => ({foo: 'bar'})
+      getOutputValue: () => ({ foo: 'bar' }),
     } as unknown as ElementGroup;
 
     const mockForm = {
       elementGroup: mockElementGroup,
-      initialPrescription: {responses: {a: 1, b: null}}
+      initialPrescription: { responses: { a: 1, b: null } },
     } as unknown as CreatePrescriptionForm;
 
     component.setElementGroup(mockForm, mockElementGroup);
-    expect(setValue).toHaveBeenCalledWith(expect.objectContaining({a: 1}));
+    expect(setValue).toHaveBeenCalledWith(expect.objectContaining({ a: 1 }));
   });
 
   it('should call dialog.open in handleClick', () => {
     fixture.detectChanges();
-    const scrollTo = jest.spyOn(window, 'scrollTo').mockImplementation(() => {
-    });
+    const scrollTo = jest.spyOn(window, 'scrollTo').mockImplementation(() => {});
     const form = {
       templateCode: 'template_01',
-      initialPrescription: {responses: {}},
-      elementGroup: {getOutputValue: () => ({})}
+      initialPrescription: { responses: {} },
+      elementGroup: { getOutputValue: () => ({}) },
     } as CreatePrescriptionForm;
 
-    const template = {} as FormTemplate;
+    const template = {} as TemplateVersion;
 
     component.handleClick(form, template);
 
     expect(mockDialog.open).toHaveBeenCalled();
-    expect(scrollTo).toHaveBeenCalledWith({top: 0, behavior: 'smooth'});
+    expect(scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' });
   });
 
   it('should set modal state to error if template is missing', () => {
     fixture.detectChanges();
     const form = {
       templateCode: 'template_01',
-      initialPrescription: {responses: {}},
-      elementGroup: {getOutputValue: () => ({})}
+      initialPrescription: { responses: {} },
+      elementGroup: { getOutputValue: () => ({}) },
     } as CreatePrescriptionForm;
 
     component.handleClick(form);
@@ -180,7 +181,7 @@ describe('CreateMultiplePrescriptionsComponent', () => {
   });
 
   it('should display patient info when patient is set', () => {
-    component.patient = {firstName: 'John', lastName: 'Doe', ssin: '12345678901'};
+    component.patient = { firstName: 'John', lastName: 'Doe', ssin: '12345678901' };
     fixture.detectChanges();
 
     const nameEl = fixture.nativeElement.querySelector('[data-cy="patient-name"]');
@@ -202,22 +203,14 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     component.errorCard = {
       show: true,
       message: 'error.message',
-      errorResponse: {status: 500} as unknown as HttpErrorResponse,
-      translationOptions: {}
+      errorResponse: { status: 500 } as unknown as HttpErrorResponse,
+      translationOptions: {},
     };
     fixture.detectChanges();
 
     const errorCard = fixture.nativeElement.querySelector('app-error-card');
     expect(errorCard).not.toBeNull();
   });
-
-
-  function setForms(forms: any[]) {
-    const mockSignal = jest.fn().mockReturnValue({status: LoadingStatus.SUCCESS});
-    (component as any).modelState = mockSignal;
-    component.createPrescriptionForms = forms;
-    fixture.detectChanges();
-  }
 
   it('should set hideToggle true when only one form', () => {
     setOneTemplate();
@@ -227,7 +220,7 @@ describe('CreateMultiplePrescriptionsComponent', () => {
   });
 
   it('should render one expansion panel per form and expand last', () => {
-    const mockSignal = jest.fn().mockReturnValue({status: LoadingStatus.SUCCESS});
+    const mockSignal = jest.fn().mockReturnValue({ status: LoadingStatus.SUCCESS });
     (component as any).modelState = mockSignal;
 
     setTwoTemplates(LoadingStatus.INITIAL, LoadingStatus.ERROR);
@@ -277,10 +270,9 @@ describe('CreateMultiplePrescriptionsComponent', () => {
 
     expect(component.clickDeletePrescription.emit).toHaveBeenCalledWith({
       form: component.createPrescriptionForms[0],
-      templateName: expect.any(String)
+      templateName: expect.any(String),
     });
   });
-
 
   it('should show the add prescription button when intent is "order" and templateCode is not "ANNEX_82" AND click it', () => {
     jest.spyOn(component.clickAddPrescription, 'emit');
@@ -298,15 +290,17 @@ describe('CreateMultiplePrescriptionsComponent', () => {
   });
 
   it('should NOT show the add prescription button when templateCode is "ANNEX_82"', () => {
-    const mockFormTemplateState = jest.fn().mockReturnValue({
+    const mockTemplateVersionState = jest.fn().mockReturnValue({
       data: {
         id: '1',
-        templateId: 'ANNEX_82'
+        templateId: 'ANNEX_82',
       },
-      status: LoadingStatus.SUCCESS
+      status: LoadingStatus.SUCCESS,
     });
 
-    setForms([{templateCode: 'ANNEX_82', status: LoadingStatus.SUCCESS, formTemplateState$: mockFormTemplateState}]);
+    setForms([
+      { templateCode: 'ANNEX_82', status: LoadingStatus.SUCCESS, formTemplateState$: mockTemplateVersionState },
+    ]);
     fixture.detectChanges();
 
     const button = fixture.debugElement.query(By.css('[data-cy="prescription-create-add"]'));
@@ -376,38 +370,45 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     expect(component.clickCancel.emit).toHaveBeenCalled();
   });
 
+  function setForms(forms: any[]) {
+    const mockSignal = jest.fn().mockReturnValue({ status: LoadingStatus.SUCCESS });
+    (component as any).modelState = mockSignal;
+    component.createPrescriptionForms = forms;
+    fixture.detectChanges();
+  }
+
   function setOneTemplate() {
-    const mockFormTemplateState = jest.fn().mockReturnValue({
+    const mockTemplateVersionState = jest.fn().mockReturnValue({
       data: {
         id: '1',
-        templateId: 'A'
+        templateId: 'A',
       },
-      status: LoadingStatus.INITIAL
+      status: LoadingStatus.INITIAL,
     });
 
-    setForms([{templateCode: 'A', status: LoadingStatus.INITIAL, formTemplateState$: mockFormTemplateState}]);
+    setForms([{ templateCode: 'A', status: LoadingStatus.INITIAL, formTemplateState$: mockTemplateVersionState }]);
   }
 
   function setTwoTemplates(state1: LoadingStatus, state2: LoadingStatus) {
-    const mockFormTemplateState_A = jest.fn().mockReturnValue({
+    const mockTemplateVersionState_A = jest.fn().mockReturnValue({
       data: {
         id: '1',
-        templateId: 'A'
+        templateId: 'A',
       },
-      status: state1
+      status: state1,
     });
 
-    const mockFormTemplateState_B = jest.fn().mockReturnValue({
+    const mockTemplateVersionState_B = jest.fn().mockReturnValue({
       data: {
         id: '2',
-        templateId: 'B'
+        templateId: 'B',
       },
-      status: state2
+      status: state2,
     });
 
     setForms([
-      {templateCode: 'A', status: state1, submitted: true, formTemplateState$: mockFormTemplateState_A},
-      {templateCode: 'B', status: state2, submitted: true, formTemplateState$: mockFormTemplateState_B}
+      { templateCode: 'A', status: state1, submitted: true, formTemplateState$: mockTemplateVersionState_A },
+      { templateCode: 'B', status: state2, submitted: true, formTemplateState$: mockTemplateVersionState_B },
     ]);
   }
 });

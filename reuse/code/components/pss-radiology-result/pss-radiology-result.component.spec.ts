@@ -2,11 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { EvfTranslateService, Language } from '@smals/vas-evaluation-form-ui-core';
-import { SupportOption } from '@reuse/code/interfaces/pss.interface';
-import {
-  PssRadiologyResultComponent
-} from '@reuse/code/components/pss-radiology-result/pss-radiology-result.component';
-
+import { PssRadiologyResultComponent } from '@reuse/code/components/pss-radiology-result/pss-radiology-result.component';
+import { SupportOption } from '@reuse/code/openapi';
 
 describe('PssRadiologyResultComponent', () => {
   let component: PssRadiologyResultComponent;
@@ -16,43 +13,43 @@ describe('PssRadiologyResultComponent', () => {
 
   const mockSupportOptions: SupportOption[] = [
     {
-      id: "1",
+      id: '1',
       score: 7,
       instruction: {
-        system: "pss",
-        code: "123",
-        translations: []
-      },
-      system: {
-        code: "123",
+        system: 'pss',
+        code: '123',
         translations: [],
-        version: "1"
+      },
+      evidenceSummary: {
+        code: '123',
+        translations: [],
+        version: '1',
       },
       supportOptionMetadata: {
         isRequested: true,
         radiationLevel: 2,
-        relativeCost: 3
-      }
+        relativeCost: 3,
+      },
     },
     {
-      id: "2",
+      id: '2',
       score: 7,
       instruction: {
-        system: "pss",
-        code: "123",
-        translations: []
-      },
-      system: {
-        code: "123",
+        system: 'pss',
+        code: '123',
         translations: [],
-        version: "1"
+      },
+      evidenceSummary: {
+        code: '123',
+        translations: [],
+        version: '1',
       },
       supportOptionMetadata: {
         isRequested: true,
         radiationLevel: 4,
-        relativeCost: 1
-      }
-    }
+        relativeCost: 1,
+      },
+    },
   ];
 
   beforeEach(async () => {
@@ -60,14 +57,12 @@ describe('PssRadiologyResultComponent', () => {
 
     mockEvfTranslateService = {
       currentLang: 'nl',
-      currentLang$: currentLangSubject.asObservable()
+      currentLang$: currentLangSubject.asObservable(),
     };
 
     await TestBed.configureTestingModule({
       imports: [PssRadiologyResultComponent, TranslateModule.forRoot()],
-      providers: [
-        {provide: EvfTranslateService, useValue: mockEvfTranslateService},
-      ]
+      providers: [{ provide: EvfTranslateService, useValue: mockEvfTranslateService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PssRadiologyResultComponent);
@@ -116,7 +111,7 @@ describe('PssRadiologyResultComponent', () => {
 
   it('should emit selectSupportOption event', () => {
     let emittedValue: SupportOption | undefined;
-    component.selectSupportOption.subscribe(value => emittedValue = value);
+    component.selectSupportOption.subscribe(value => (emittedValue = value));
 
     const testOption = mockSupportOptions[0];
     component.confirm(testOption);
@@ -131,7 +126,6 @@ describe('PssRadiologyResultComponent', () => {
     const tableElement = fixture.nativeElement.querySelector('table[mat-table]');
     expect(tableElement).toBeTruthy();
   });
-
 
   it('should not render table when supportOptions is undefined', () => {
     component.supportOptions = undefined;
@@ -172,7 +166,7 @@ describe('PssRadiologyResultComponent', () => {
 
   it('should check checkbox when row is selected', () => {
     component.supportOptions = mockSupportOptions;
-    component.confirm(mockSupportOptions[0])
+    component.confirm(mockSupportOptions[0]);
     fixture.detectChanges();
 
     const firstCheckbox = fixture.nativeElement.querySelector('mat-checkbox');
@@ -180,7 +174,7 @@ describe('PssRadiologyResultComponent', () => {
   });
 
   it('should display score with error class for score < 4', () => {
-    const lowScoreOption = {...mockSupportOptions[0], score: 2};
+    const lowScoreOption = { ...mockSupportOptions[0], score: 2 };
     component.supportOptions = [lowScoreOption];
     fixture.detectChanges();
 
@@ -191,7 +185,7 @@ describe('PssRadiologyResultComponent', () => {
   });
 
   it('should display score with warning class for score 4-6', () => {
-    const mediumScoreOption = {...mockSupportOptions[0], score: 5};
+    const mediumScoreOption = { ...mockSupportOptions[0], score: 5 };
     component.supportOptions = [mediumScoreOption];
     fixture.detectChanges();
 
@@ -210,7 +204,6 @@ describe('PssRadiologyResultComponent', () => {
     expect(scoreElement.className).toContain('pss-success');
     expect(scoreElement.className).toContain('pss-score-7');
   });
-
 
   it('should render correct number of radiation icons', () => {
     component.supportOptions = [mockSupportOptions[0]];
@@ -287,9 +280,7 @@ describe('PssRadiologyResultComponent', () => {
     component['selectedRow'] = mockSupportOptions[0];
     fixture.detectChanges();
 
-
     const firstRow = fixture.nativeElement.querySelector('tr[mat-row]');
     expect(firstRow.className).toContain('row-is-selected');
   });
-
 });

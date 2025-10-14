@@ -1,27 +1,26 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ToastService } from '../../services/toast.service';
+import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
   MatDialogClose,
   MatDialogContent,
   MatDialogRef,
-  MatDialogTitle
+  MatDialogTitle,
 } from '@angular/material/dialog';
-import { ReadPrescription } from '../../interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import { MatButton } from '@angular/material/button';
 import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { NgIf } from '@angular/common';
-import { OverlaySpinnerComponent } from '../../components/overlay-spinner/overlay-spinner.component';
+import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
 import { TranslateModule } from '@ngx-translate/core';
-import { ProposalState } from '../../states/proposal.state';
-import { ErrorCardComponent } from '../../components/error-card/error-card.component';
-import { BaseDialog } from '../base.dialog';
+import { ProposalState } from '@reuse/code/states/api/proposal.state';
+import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
+import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
+import { ReadRequestResource } from '@reuse/code/openapi';
 import { catchError, switchMap } from 'rxjs';
-import { EncryptionHelperService } from '@reuse/code/services/encryption-helper.service';
+import { EncryptionHelperService } from '@reuse/code/states/privacy/encryption-helper.service';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -36,20 +35,18 @@ import { HttpErrorResponse } from '@angular/common/http';
     MatFormField,
     MatInput,
     MatLabel,
-    NgIf,
     OverlaySpinnerComponent,
     TranslateModule,
     ReactiveFormsModule,
     MatDialogClose,
-    ErrorCardComponent
+    ErrorCardComponent,
   ],
   templateUrl: './approve-proposal.dialog.html',
-  styleUrl: './approve-proposal.dialog.scss'
+  styleUrl: './approve-proposal.dialog.scss',
 })
 export class ApproveProposalDialog extends BaseDialog implements OnInit {
-
   readonly formGroup = new FormGroup({
-    reason: new FormControl<string>('')
+    reason: new FormControl<string>(''),
   });
 
   loading = false;
@@ -60,9 +57,11 @@ export class ApproveProposalDialog extends BaseDialog implements OnInit {
     private readonly proposalStateService: ProposalState,
     private readonly encryptionHelperService: EncryptionHelperService,
     dialogRef: MatDialogRef<ApproveProposalDialog>,
-    @Inject(MAT_DIALOG_DATA) private readonly data: {
-      proposal: ReadPrescription
-    }) {
+    @Inject(MAT_DIALOG_DATA)
+    private readonly data: {
+      proposal: ReadRequestResource;
+    }
+  ) {
     super(dialogRef);
   }
 
@@ -70,41 +69,48 @@ export class ApproveProposalDialog extends BaseDialog implements OnInit {
     this.generatedUUID = uuidv4();
   }
 
-  /**
-   * Approve a proposal and encrypt the reason of approval.
-   * For the encryption : reuse the existing encryption key + kid if exists
-   * If not, generate a new encryptionKey
-   * see getPrescriptionKey() in prescription.details component for the loading of crypto key based on pseudonymizedKey
-   */
   approveProposal(): void {
     this.formGroup.markAllAsTouched();
     if (this.formGroup.invalid) {
       return;
     }
+
+    if (!this.data.proposal.id) {
+      this.showErrorCard('common.somethingWentWrong');
+      return;
+    }
     this.loading = true;
-    const reason = this.formGroup.get('reason')?.value ?? '';
-    this.encryptionHelperService.getEncryptedReasonAndPseudoKey(reason, this.data.proposal?.pseudonymizedKey).pipe(
-      switchMap((result) =>
-        this.proposalStateService.approveProposal(this.data.proposal.id,
-          this.generatedUUID,
-          result?.encryptedText,
-          this.data.proposal?.kid,
-          result?.pseudonymizedKey
-        ).pipe(
-          catchError((error) => {
-            throw new Error("API approval failed", error.message);
-          })
+    const reason = this.formGroup.get('reason')?.value ?? undefined;
+
+    this.encryptionHelperService
+      .getEncryptedReasonAndPseudoKey(reason, this.data.proposal?.pseudonymizedKey)
+      .pipe(
+        switchMap(result =>
+          this.proposalStateService
+            .approveProposal(
+              this.data.proposal.id!,
+              {
+                reason: result?.encryptedText,
+                kid: this.data.proposal?.kid,
+                pseudonymizedKey: result?.pseudonymizedKey,
+              },
+              this.generatedUUID
+            )
+            .pipe(
+              catchError(error => {
+                throw new Error('API approval failed', error.message);
+              })
+            )
         )
       )
-    ).subscribe({
-      next: () => {
-        this.handleSuccess();
-      },
-      error: (e) => {
-        this.handleError(e);
-      }
-    });
-
+      .subscribe({
+        next: () => {
+          this.handleSuccess();
+        },
+        error: e => {
+          this.handleError(e);
+        },
+      });
   }
 
   private handleSuccess(): void {
@@ -112,7 +118,6 @@ export class ApproveProposalDialog extends BaseDialog implements OnInit {
     this.closeErrorCard();
     this.toastService.show('proposal.approve.success');
     this.closeDialog(true);
-
   }
 
   private handleError(error?: HttpErrorResponse): void {

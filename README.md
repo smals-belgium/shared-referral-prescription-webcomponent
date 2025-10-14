@@ -75,3 +75,36 @@ If you have run out of energy or time for your project, put a note at the top of
 ### Slots
 
 * radiation: Icon indicating the level of radiation exposure associated with the suggested radiology solution.
+
+# API Contracts
+
+- **webapi**: https://git.vascloud.be/nihdi/uhmep/healix/api-contract   
+  The `webapi` contract is included as a Git submodule.      
+  To initiate git submodule run
+  ```bash
+  git submodule init
+  ```
+  To update it, run:
+  ```bash
+  git submodule update --remote
+  ```
+  Or to initialize and update the submodule
+  ```bash
+  git submodule update --init --recursive
+  ```
+  To enter the submodule and switch branches
+  ```
+  cd api-contract
+  git fetch
+  git checkout my-branch
+  ```
+
+  The API client in `reuse/code/openapi` is generated from `openapi.yaml`.
+  
+  Steps to use the api generate
+    - First step: download the jar file: https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/7.14.0/openapi-generator-cli-7.14.0.jar
+    - Second step: past the jar file in ./node_modules/@openapitools/openapi-generator-cli/versions/
+    - Third step run the following command
+
+  ! Before generating the api contract remove the old folder !
+  To regenerate: `npm run generate-api:local`

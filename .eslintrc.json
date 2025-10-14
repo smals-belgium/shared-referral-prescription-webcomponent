@@ -12,7 +12,8 @@
         "suffixes": [
           "Component",
           "Container",
-          "Page"
+          "Page",
+          "Dialog"
         ]
       }
     ],
@@ -70,7 +71,6 @@
           "error",
           {
             "type": "element",
-            "prefix": "app",
             "style": "kebab-case"
           }
         ],
@@ -78,11 +78,10 @@
           "error",
           {
             "type": "attribute",
-            "prefix": "app",
             "style": "camelCase"
           }
         ]
-      }
+      },
     },
     {
       "files": [
@@ -107,6 +106,12 @@
         "@angular-eslint/template/mouse-events-have-key-events": "error",
         "@angular-eslint/template/no-autofocus": "error",
         "@angular-eslint/template/no-distracting-elements": "error"
+      }
+    },
+    {
+      files: ["*.spec.ts", "*.test.ts"], // adjust this to match your test files
+      rules: {
+        "@typescript-eslint/no-explicit-any": "off"
       }
     }
   ]

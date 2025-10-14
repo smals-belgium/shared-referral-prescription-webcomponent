@@ -8,18 +8,19 @@ import { EvfFormDetailsWebComponent } from './components/evf-details/evf-form-de
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ErrorHandler, importProvidersFrom } from '@angular/core';
 import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { WcTranslateLoader } from '@reuse/code/services/translate.loader';
+import { WcTranslateLoader } from '@reuse/code/services/helpers/translate.loader';
 import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-compiler';
-import { apiUrlInterceptor } from '@reuse/code/services/api-url.interceptor';
-import { ConfigurationService } from '@reuse/code/services/configuration.service';
-import { WcConfigurationService } from '@reuse/code/services/wc-configuration.service';
-import { AuthService } from '@reuse/code/services/auth.service';
-import { WcAuthService } from '@reuse/code/services/wc-auth.service';
-import { getErrorHandlerFromConfiguration } from '@reuse/code/services/sentry-error-handler.service';
-
+import { apiUrlInterceptor } from '@reuse/code/interceptors/api-url.interceptor';
+import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
+import { WcConfigurationService } from '@reuse/code/services/config/wc-configuration.service';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
+import { WcAuthService } from '@reuse/code/services/auth/wc-auth.service';
+import { getErrorHandlerFromConfiguration } from '@reuse/code/services/helpers/sentry-error-handler.service';
+import { provideOpenApi } from '@reuse/code/providers/open-api.provider';
 
 (async () => {
-  const app = createApplication({providers:[
+  const app = createApplication({
+    providers: [
       provideCore(),
       provideAnimations(),
       provideHttpClient(withInterceptors([apiUrlInterceptor])),
@@ -34,26 +35,28 @@ import { getErrorHandlerFromConfiguration } from '@reuse/code/services/sentry-er
       {
         provide: ErrorHandler,
         useFactory: getErrorHandlerFromConfiguration,
-        deps: [ConfigurationService]
+        deps: [ConfigurationService],
       },
+      provideOpenApi(),
       provideEvfFormDetails(),
       provideMarkdown(),
       importProvidersFrom(
         TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
-            useClass: WcTranslateLoader
+            useClass: WcTranslateLoader,
           },
           compiler: {
             provide: TranslateCompiler,
-            useClass: TranslateMessageFormatCompiler
-          }
-        }),
-      )
-    ]});
+            useClass: TranslateMessageFormatCompiler,
+          },
+        })
+      ),
+    ],
+  });
 
   const evfFormElement = createCustomElement(EvfFormDetailsWebComponent, {
-    injector: (await app).injector
+    injector: (await app).injector,
   });
   customElements.define('nihdi-referral-prescription-form-details', evfFormElement);
 })();

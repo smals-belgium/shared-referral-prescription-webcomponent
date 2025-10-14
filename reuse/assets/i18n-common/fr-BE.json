@@ -32,7 +32,7 @@
     },
     "organizations": {
       "THIRD_PARTY_PAYING_GROUP": "Groupement avec un n° INAMI tiers payant (infirmiers, sages-femmes e.a.)",
-      "GROUPOFDOCTORS": "Groupement de médecins généralistes au même lieu d'installation",
+      "GROUP_OF_DOCTORS": "Groupement de médecins généralistes au même lieu d'installation",
       "GUARD_POST": "Poste de garde",
       "MEDICAL_HOUSE": "Maison médicale",
       "HOME_SERVICES": "Service de soins intégrés à domicile"

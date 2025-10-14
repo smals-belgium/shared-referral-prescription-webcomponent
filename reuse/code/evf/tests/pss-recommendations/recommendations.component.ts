@@ -1,17 +1,13 @@
 import { Component, Input } from '@angular/core';
-import { EvfDynamicFormComponent } from "@smals/vas-evaluation-form-ui-material/dynamic-form";
-import { FormTemplate } from "@smals/vas-evaluation-form-ui-core";
-import { NgIf } from "@angular/common";
+import { EvfDynamicFormComponent } from '@smals/vas-evaluation-form-ui-material/dynamic-form';
+import { FormTemplate } from '@smals/vas-evaluation-form-ui-core';
 
 @Component({
   selector: 'evf-wrapper-recommendations',
-  imports: [
-    EvfDynamicFormComponent,
-    NgIf
-  ],
-  templateUrl: './recommendations.component.html'
+  imports: [EvfDynamicFormComponent],
+  templateUrl: './recommendations.component.html',
 })
 export class RecommendationsComponent {
-  @Input() demoTemplate!: FormTemplate
-  @Input() responses!: Record<string, any>
+  @Input() demoTemplate!: FormTemplate;
+  @Input() responses!: Record<string, any>;
 }

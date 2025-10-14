@@ -8,52 +8,48 @@ import {
   OnInit,
   Output,
   SimpleChanges,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import {
   BaseElementControl,
   ElementGroup,
   EvfTranslateService,
   FormTemplate,
-  SupportedLocales
+  SupportedLocales,
 } from '@smals/vas-evaluation-form-ui-core';
 import { EvfDynamicFormComponent } from '@smals/vas-evaluation-form-ui-material/dynamic-form';
-import { NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { DateAdapter } from '@angular/material/core';
 import { DateTime } from 'luxon';
-import { PssService } from "@reuse/code/services/pss.service";
-import { AuthService } from '@reuse/code/services/auth.service';
+import { PssService } from '@reuse/code/services/api/pss.service';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-    templateUrl: './evf-form.component.html',
-    styleUrls: ['./evf-form.component.scss'],
-    encapsulation: ViewEncapsulation.ShadowDom,
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        EvfDynamicFormComponent,
-        NgTemplateOutlet,
-        NgIf
-    ]
+  templateUrl: './evf-form.component.html',
+  styleUrls: ['./evf-form.component.scss'],
+  encapsulation: ViewEncapsulation.ShadowDom,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [EvfDynamicFormComponent, NgTemplateOutlet],
 })
 export class EvfFormWebComponent implements OnChanges, OnInit {
-
   private elementGroup?: ElementGroup;
 
   parsedTemplate?: FormTemplate;
 
   metaData = {
-    pssActive: false
-  }
+    pssActive: false,
+  };
 
   @HostBinding('attr.lang')
-  @Input() lang = 'fr-BE';
+  @Input()
+  lang = 'fr-BE';
   @Input() template!: FormTemplate | string;
   @Input() readonly = false;
   @Input() submitted = false;
   @Input() services?: {
-    getAccessToken: (audience?: string) => Promise<string | null>
-  }
+    getAccessToken: (audience?: string) => Promise<string | null>;
+  };
   @Input() status: boolean | undefined;
 
   @Output() changeElementGroup = new EventEmitter<ElementGroup>();
@@ -64,8 +60,7 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
     private readonly pssService: PssService,
     private readonly authService: AuthService,
     private readonly translate: TranslateService
-  ) {
-  }
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['lang']) {
@@ -75,9 +70,7 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
       this.translate.use(this.lang);
     }
     if (changes['template']) {
-      this.parsedTemplate = typeof this.template === 'string'
-        ? JSON.parse(this.template)
-        : this.template;
+      this.parsedTemplate = typeof this.template === 'string' ? JSON.parse(this.template) : this.template;
     }
     if (changes['readonly'] && this.readonly && this.elementGroup) {
       this.disableFields(this.elementGroup.childElementControls);
@@ -87,8 +80,8 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
       if (this.status !== undefined) {
         this.pssService.setStatus(this.status);
         this.metaData = {
-          pssActive: this.status
-        }
+          pssActive: this.status,
+        };
       }
     }
 
@@ -104,7 +97,7 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
   }
 
   private disableFields(elementControls: BaseElementControl[]): void {
-    elementControls?.forEach((f) => {
+    elementControls?.forEach(f => {
       f.nativeControl.disable();
       this.disableFields(f.childElementControls);
     });
@@ -122,29 +115,29 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
     this.evfTranslate.addTranslations({
       DATE_NOT_AFTER: {
         nl: 'Datum mag niet na ${date} liggen',
-        fr: 'La date doit être <= ${date}'
+        fr: 'La date doit être <= ${date}',
       },
       DATE_NOT_BEFORE: {
         nl: 'Datum mag niet voor ${date} liggen',
-        fr: 'La date doit être >= ${date}'
+        fr: 'La date doit être >= ${date}',
       },
       NO_AGE_OR_GENDER_SPECIFIED: {
         nl: 'Leeftijd en geslacht zijn verplicht!',
-        fr: 'L\'âge et le sexe sont obligatoires!'
+        fr: "L'âge et le sexe sont obligatoires!",
       },
       NO_AGE_SPECIFIED: {
         nl: 'Leeftijd is verplicht!',
-        fr: 'L\'âge est obligatoires!'
+        fr: "L'âge est obligatoires!",
       },
       NO_GENDER_SPECIFIED: {
         nl: 'Leeftijd en geslacht zijn verplicht!',
-        fr: 'Le sexe est obligatoires!'
-      }
+        fr: 'Le sexe est obligatoires!',
+      },
     });
   }
 
   private formatToEvfLangCode(localeCode: string): 'nl' | 'fr' {
-    return localeCode?.substring(0, 2) as 'nl' | 'fr' ?? 'fr';
+    return (localeCode?.substring(0, 2) as 'nl' | 'fr') ?? 'fr';
   }
 
   setElementGroup(elementGroup: ElementGroup): void {

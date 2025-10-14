@@ -1,7 +1,8 @@
-import { Pipe } from '@angular/core';
-import { AccessMatrixState } from '../states/access-matrix.state';
-import { Intent, ReadPrescription, Role, Status, UserInfo } from "../interfaces";
-import { isProposal } from '@reuse/code/utils/utils';
+import { Pipe, PipeTransform } from '@angular/core';
+import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
+import { UserInfo } from '@reuse/code/interfaces';
+import { ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
+import { isProfesionalBasedOnRole, isProposal } from '@reuse/code/utils/utils';
 
 /**
  * This pipe determines whether a prescription can be extended.
@@ -20,26 +21,25 @@ import { isProposal } from '@reuse/code/utils/utils';
  * @pipe
  * @name canExtendPrescription
  */
-@Pipe({name: 'canExtendPrescription', standalone: true})
-export class CanExtendPrescriptionPipe {
+@Pipe({ name: 'canExtendPrescription', standalone: true })
+export class CanExtendPrescriptionPipe implements PipeTransform {
+  constructor(private accessMatrixState: AccessMatrixState) {}
 
-  constructor(
-    private readonly accessMatrixState: AccessMatrixState,
-  ) {
-  }
-
-  transform(prescription: ReadPrescription, currentUser?: UserInfo): boolean {
-    if (currentUser == undefined || isProposal(prescription.intent))
-      return false;
+  transform(prescription: ReadRequestResource, currentUser?: Partial<UserInfo>): boolean {
+    if (currentUser == undefined || isProposal(prescription.intent)) return false;
 
     const now = new Date();
-    const endDate = prescription.period?.end ? new Date(prescription.period.end) : false
+    const endDate = prescription.period?.end ? new Date(prescription.period.end) : false;
 
-    return currentUser.role === Role.professional
-      && this.accessMatrixState.hasAtLeastOnePermission(['createPrescription'], prescription.templateCode)
-      && !!prescription.status
-      && [Status.OPEN, Status.IN_PROGRESS].includes(prescription.status)
-      && endDate
-      && endDate > now;
+    const allowedStatuses: RequestStatus[] = [RequestStatus.Open, RequestStatus.InProgress];
+
+    return (
+      isProfesionalBasedOnRole(currentUser.role) &&
+      this.accessMatrixState.hasAtLeastOnePermission(['createPrescription'], prescription.templateCode) &&
+      !!prescription.status &&
+      allowedStatuses.includes(prescription.status) &&
+      endDate &&
+      endDate > now
+    );
   }
 }

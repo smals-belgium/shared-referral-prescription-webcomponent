@@ -1,54 +1,47 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ToastService } from '@reuse/code/services/toast.service';
+import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { of, Subject, throwError } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ChangeDetectorRef, SimpleChanges } from '@angular/core';
-import {
-  RecommendationsDetailComponent
-} from '@reuse/code/evf/pss-recommendations/detail/recommendations-detail.component';
+import { RecommendationsDetailComponent } from '@reuse/code/evf/pss-recommendations/detail/recommendations-detail.component';
 import { EvfTranslateService } from '@smals/vas-evaluation-form-ui-core';
-jest.mock('@reuse/code/utils/pss-relevant-info-message.utils', () => ({
-  generateWarningMessage: jest.fn(() => 'Mocked warning message')
-}));
 import { generateWarningMessage } from '@reuse/code/utils/pss-relevant-info-message.utils';
-import { PssService } from '@reuse/code/services/pss.service';
+import { PssService } from '@reuse/code/services/api/pss.service';
 
+jest.mock('@reuse/code/utils/pss-relevant-info-message.utils', () => ({
+  generateWarningMessage: jest.fn(() => 'Mocked warning message'),
+}));
 
 describe('RecommendationsDetailComponent (Jest)', () => {
   let component: RecommendationsDetailComponent;
   let fixture: ComponentFixture<RecommendationsDetailComponent>;
   const mockPssService = {
-    getPssRecommendationsByExchangeId: jest.fn()
+    getPssRecommendationsByExchangeId: jest.fn(),
   };
-
 
   const mockToastService = {
     show: jest.fn(),
-    showSomethingWentWrong: jest.fn()
+    showSomethingWentWrong: jest.fn(),
   };
 
   const currentLangSubject = new Subject<string>();
   const mockTranslateService = {
     currentLang: 'fr',
-    currentLang$: currentLangSubject.asObservable()
+    currentLang$: currentLangSubject.asObservable(),
   };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        RecommendationsDetailComponent,
-        TranslateModule.forRoot(),
-        MatIconModule,
-        MatProgressSpinnerModule],
+      imports: [RecommendationsDetailComponent, TranslateModule.forRoot(), MatIconModule, MatProgressSpinnerModule],
       providers: [
         { provide: PssService, useValue: mockPssService },
         { provide: ToastService, useValue: mockToastService },
         { provide: EvfTranslateService, useValue: mockTranslateService },
         { provide: ChangeDetectorRef, useValue: { markForCheck: jest.fn() } },
-      ]
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RecommendationsDetailComponent);
@@ -63,14 +56,14 @@ describe('RecommendationsDetailComponent (Jest)', () => {
     mockPssService.getPssRecommendationsByExchangeId.mockReturnValue(of({ supportOptions: [] }));
 
     component.elementControl = {
-      getOutputValue: () => 'exchangeId123'
+      getOutputValue: () => 'exchangeId123',
     } as any;
 
     const spy = jest.spyOn(component, 'getPssRecommendationsByPssId');
 
     component.metadata = {
       pssActive: true,
-      isProfessional: true
+      isProfessional: true,
     };
 
     const changes: SimpleChanges = {
@@ -78,8 +71,8 @@ describe('RecommendationsDetailComponent (Jest)', () => {
         currentValue: { pssActive: true, isProfessional: true },
         previousValue: {},
         firstChange: false,
-        isFirstChange: () => false
-      }
+        isFirstChange: () => false,
+      },
     };
 
     component.ngOnChanges(changes);
@@ -119,9 +112,9 @@ describe('RecommendationsDetailComponent (Jest)', () => {
     component.elementControl = {
       elementGroup: {
         getOutputValue: () => ({
-          'additional-relevant-information': ['pacemaker']
-        })
-      }
+          'additional-relevant-information': ['pacemaker'],
+        }),
+      },
     } as any;
 
     expect(component.hasAdditionalRelevantInformation()).toBe(true);
@@ -130,8 +123,8 @@ describe('RecommendationsDetailComponent (Jest)', () => {
   it('should return false if no relevant info is present', () => {
     component.elementControl = {
       elementGroup: {
-        getOutputValue: () => ({})
-      }
+        getOutputValue: () => ({}),
+      },
     } as any;
 
     expect(component.hasAdditionalRelevantInformation()).toBe(false);
@@ -141,9 +134,9 @@ describe('RecommendationsDetailComponent (Jest)', () => {
     component.elementControl = {
       elementGroup: {
         getOutputValue: () => ({
-          'intendedProcedure': 'MRI Thorax'
-        })
-      }
+          intendedProcedure: 'MRI Thorax',
+        }),
+      },
     } as any;
 
     expect(component.getPrescribedExam()).toBe('MRI Thorax');
@@ -155,13 +148,17 @@ describe('RecommendationsDetailComponent (Jest)', () => {
       elementGroup: {
         getOutputValue: () => ({
           'additional-relevant-information': ['tmp-addInfo-impl', 'tmp-addInfo-diab'],
-          'implants': ['tmp-impl-stent']
-        })
-      }
+          implants: ['tmp-impl-stent'],
+        }),
+      },
     } as any;
 
     const result = component.getWarningMessage();
-    expect(generateWarningMessage).toHaveBeenCalledWith(['tmp-addInfo-impl', 'tmp-addInfo-diab'], ['tmp-impl-stent'], 'fr');
+    expect(generateWarningMessage).toHaveBeenCalledWith(
+      ['tmp-addInfo-impl', 'tmp-addInfo-diab'],
+      ['tmp-impl-stent'],
+      'fr'
+    );
     expect(result).toBe('Mocked warning message');
   });
 });

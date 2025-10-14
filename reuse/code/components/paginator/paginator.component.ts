@@ -5,28 +5,21 @@ import {
   Input,
   OnChanges,
   Output,
-  SimpleChanges
+  SimpleChanges,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { NgFor, NgIf } from '@angular/common';
+import { NgFor } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import {TranslateModule} from "@ngx-translate/core";
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
-    selector: 'app-paginator',
-    templateUrl: './paginator.component.html',
-    styleUrls: ['./paginator.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        MatButtonModule,
-        MatIconModule,
-        NgIf,
-        NgFor,
-        TranslateModule
-    ]
+  selector: 'app-paginator',
+  templateUrl: './paginator.component.html',
+  styleUrls: ['./paginator.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatButtonModule, MatIconModule, NgFor, TranslateModule],
 })
 export class PaginatorComponent implements OnChanges {
-
   totalPages = 0;
   displayedPages: (number | string)[] = [];
 
@@ -39,7 +32,7 @@ export class PaginatorComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     this.totalPages = this.total > 0 ? Math.ceil(this.total / this.pageSize) : 1;
     if (this.totalPages < 6) {
-      this.displayedPages = Array.from({length: this.totalPages}, (_, i) => i + 1);
+      this.displayedPages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
     } else if (this.page < 3) {
       this.displayedPages = [1, 2, 3, 4, '...', this.totalPages];
     } else if (this.page === 3) {
@@ -52,5 +45,4 @@ export class PaginatorComponent implements OnChanges {
       this.displayedPages = [1, '...', this.page - 1, this.page, this.page + 1, '...', this.totalPages];
     }
   }
-
 }

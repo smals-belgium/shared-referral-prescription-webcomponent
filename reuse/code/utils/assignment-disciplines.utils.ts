@@ -1,27 +1,25 @@
 import { Intent } from '@reuse/code/interfaces';
 import { isProposal } from '@reuse/code/utils/utils';
+import { HealthcareOrganizationResource, HealthcareProResource } from '@reuse/code/openapi';
 
 export function getAssignableProfessionalDisciplines(category: string, intent: Intent): string[] {
   switch (category) {
-    case "nursing":
-      if(isProposal(intent)){
+    case 'nursing':
+      if (isProposal(intent)) {
         return ['PHYSICIAN'];
-      }
-      else {
+      } else {
         return ['NURSE'];
       }
-    case "physiotherapy":
-      if(isProposal(intent)){
+    case 'physiotherapy':
+      if (isProposal(intent)) {
         return ['PHYSICIAN', 'DENTIST'];
-      }
-      else {
+      } else {
         return ['PHYSIOTHERAPIST'];
       }
-    case "diagnosticImaging":
-      if(isProposal(intent)){
+    case 'diagnosticImaging':
+      if (isProposal(intent)) {
         return ['PHYSICIAN', 'DENTIST'];
-      }
-      else {
+      } else {
         return ['PHYSICIAN', 'DENTIST'];
       }
     default:
@@ -31,28 +29,31 @@ export function getAssignableProfessionalDisciplines(category: string, intent: I
 
 export function getAssignableOrganizationInstitutionTypes(category: string, intent: Intent): string[] {
   switch (category) {
-    case "nursing":
-      if(isProposal(intent)){
+    case 'nursing':
+      if (isProposal(intent)) {
         return [];
-      }
-      else {
+      } else {
         return ['THIRD_PARTY_PAYING_GROUP', 'GUARD_POST', 'MEDICAL_HOUSE', 'HOME_SERVICES'];
       }
-    case "physiotherapy":
-      if(isProposal(intent)){
+    case 'physiotherapy':
+      if (isProposal(intent)) {
         return [];
-      }
-      else {
+      } else {
         return ['MEDICAL_HOUSE'];
       }
-    case "diagnosticImaging":
-      if(isProposal(intent)){
+    case 'diagnosticImaging':
+      if (isProposal(intent)) {
         return ['THIRD_PARTY_PAYING_GROUP', 'GUARD_POST', 'MEDICAL_HOUSE', 'HOME_SERVICES'];
-      }
-      else {
+      } else {
         return ['MEDICAL_HOUSE'];
       }
     default:
       return [];
   }
+}
+
+export function isProfessional(
+  object: HealthcareProResource | HealthcareOrganizationResource
+): object is HealthcareProResource {
+  return object.type === 'Professional';
 }

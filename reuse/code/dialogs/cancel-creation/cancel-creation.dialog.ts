@@ -4,8 +4,8 @@ import { NgFor } from '@angular/common';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
-import { TemplateNamePipe } from '../../pipes/template-name.pipe';
-import { CreatePrescriptionForm } from "@reuse/code/interfaces";
+import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
+import { CreatePrescriptionForm } from '@reuse/code/interfaces';
 
 export interface CancelCreationDialogData {
   prescriptionForms: CreatePrescriptionForm[];
@@ -16,27 +16,18 @@ export interface CancelCreationDialogResult {
 }
 
 @Component({
-    templateUrl: './cancel-creation.dialog.html',
-    styleUrls: ['./cancel-creation.dialog.scss'],
-    imports: [
-        TranslateModule,
-        MatDialogModule,
-        MatButtonModule,
-        MatCheckboxModule,
-        TemplateNamePipe,
-        NgFor
-    ]
+  templateUrl: './cancel-creation.dialog.html',
+  styleUrls: ['./cancel-creation.dialog.scss'],
+  imports: [TranslateModule, MatDialogModule, MatButtonModule, MatCheckboxModule, TemplateNamePipe, NgFor],
 })
 export class CancelCreationDialog {
-
   readonly prescriptionForms = this.data.prescriptionForms;
   formsToDelete: number[] = [];
 
   constructor(
     private readonly dialogRef: MatDialogRef<CancelCreationDialog, CancelCreationDialogResult>,
     @Inject(MAT_DIALOG_DATA) private readonly data: CancelCreationDialogData
-  ) {
-  }
+  ) {}
 
   toggleDeleteForm(trackId: number) {
     if (this.formsToDelete.includes(trackId)) {
@@ -55,6 +46,6 @@ export class CancelCreationDialog {
   }
 
   cancelPrescriptions(): void {
-    this.dialogRef.close({formsToDelete: this.formsToDelete});
+    this.dialogRef.close({ formsToDelete: this.formsToDelete });
   }
 }

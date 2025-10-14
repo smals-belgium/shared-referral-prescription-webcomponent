@@ -3,7 +3,7 @@ import { ProfessionalDisplayComponent } from './professional-display.component';
 import { TranslateFakeLoader, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Discipline, Role } from '@reuse/code/interfaces';
+import { Discipline, Role } from '@reuse/code/openapi';
 
 describe('ProfessionalDisplayComponent', () => {
   let component: ProfessionalDisplayComponent;
@@ -14,11 +14,11 @@ describe('ProfessionalDisplayComponent', () => {
       imports: [
         ProfessionalDisplayComponent,
         TranslateModule.forRoot({
-          loader: { provide: TranslateLoader, useClass: TranslateFakeLoader }
+          loader: { provide: TranslateLoader, useClass: TranslateFakeLoader },
         }),
         MatIconModule,
-        MatTooltipModule
-      ]
+        MatTooltipModule,
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProfessionalDisplayComponent);
@@ -32,26 +32,29 @@ describe('ProfessionalDisplayComponent', () => {
       address: {} as any,
       licenseToPractice: true,
       type: 'Professional',
-      visaActive: false,
-      visaEndDate: '',
+      healthcareVisaList: [
+        {
+          active: false,
+          endDate: '',
+        },
+      ],
       subscriptionEndDate: '',
       id: {
-        profession : 'NURSE',
+        profession: 'NURSE',
         qualificationCode: '789',
-        ssin: '123'
+        ssin: '123',
       },
-      healthcarePerson: {} as any
+      healthcarePerson: {} as any,
     };
     component.currentUser = {
-      discipline: Discipline.NURSE,
+      discipline: Discipline.Nurse,
       nihii11: '',
       professional: true,
-      role: Role.professional,
+      role: Role.Caregiver,
       ssin: '123',
       firstName: 'Alice',
-      lastName: 'Dupont'
+      lastName: 'Dupont',
     };
-
 
     fixture.detectChanges();
 
@@ -66,24 +69,28 @@ describe('ProfessionalDisplayComponent', () => {
       address: {} as any,
       licenseToPractice: true,
       type: 'Professional',
-      visaActive: false,
-      visaEndDate: '',
+      healthcareVisaList: [
+        {
+          active: false,
+          endDate: '',
+        },
+      ],
       subscriptionEndDate: '',
       id: {
-        profession : 'NURSE',
+        profession: 'NURSE',
         qualificationCode: '789',
-        ssin: '123'
+        ssin: '123',
       },
-      healthcarePerson: {} as any
+      healthcarePerson: {} as any,
     };
     component.currentUser = {
-      discipline: Discipline.NURSE,
+      discipline: Discipline.Nurse,
       nihii11: '',
       professional: true,
-      role: Role.professional,
+      role: Role.Caregiver,
       ssin: '456',
       firstName: 'Alice',
-      lastName: 'Dupont'
+      lastName: 'Dupont',
     };
 
     fixture.detectChanges();
@@ -100,27 +107,31 @@ describe('ProfessionalDisplayComponent', () => {
       address: {} as any,
       licenseToPractice: true,
       type: 'Professional',
-      visaActive: false,
-      visaEndDate: '',
+      healthcareVisaList: [
+        {
+          active: false,
+          endDate: '',
+        },
+      ],
       subscriptionEndDate: '',
       id: {
-        profession : 'NURSE',
+        profession: 'NURSE',
         qualificationCode: '123',
-        ssin: '789'
+        ssin: '789',
       },
       healthcarePerson: {
         firstName: 'John',
-        lastName: 'Doe'
-      }
+        lastName: 'Doe',
+      },
     };
     component.currentUser = {
-      discipline: Discipline.NURSE,
+      discipline: Discipline.Nurse,
       nihii11: '',
       professional: true,
-      role: Role.professional,
+      role: Role.Caregiver,
       ssin: '123',
       firstName: 'Alice',
-      lastName: 'Dupont'
+      lastName: 'Dupont',
     };
 
     fixture.detectChanges();

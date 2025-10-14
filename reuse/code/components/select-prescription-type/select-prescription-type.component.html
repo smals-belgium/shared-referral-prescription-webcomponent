@@ -98,9 +98,11 @@
           }
           <mat-autocomplete autoActiveFirstOption #typeAuto="matAutocomplete" [displayWith]="displayModelWith">
             @for (option of modelOption; track option) {
+              @if(option.label) {
               <mat-option [value]="option">
                 <div class="option-with-highlight" [innerHTML]="option.label | highlightFilter:control.value"></div>
               </mat-option>
+              }
             }
             @if (modelOption.length === 0 && !control.value?.code) {
               <mat-option><i>-- {{ 'prescription.selectModel.noOptions' | translate }} --</i></mat-option>

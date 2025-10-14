@@ -1,18 +1,22 @@
-import { Pipe } from '@angular/core';
-import { PerformerTask, ReadPrescription, Status, TaskStatus } from '../interfaces';
-import { AccessMatrixState } from '../states/access-matrix.state';
+import { Pipe, PipeTransform } from '@angular/core';
+import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
+import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
 
-@Pipe({name: 'canStartTreatment', standalone: true})
-export class CanStartTreatmentPipe {
+@Pipe({ name: 'canStartTreatment', standalone: true })
+export class CanStartTreatmentPipe implements PipeTransform {
+  constructor(private accessMatrixState: AccessMatrixState) {}
 
-  constructor(
-    private readonly accessMatrixState: AccessMatrixState,
-  ) {
-  }
-
-  transform(prescription: ReadPrescription, task?: PerformerTask): boolean {
-    return [Status.DRAFT, Status.PENDING, Status.OPEN, Status.IN_PROGRESS].includes(prescription.status!)
-      && this.accessMatrixState.hasAtLeastOnePermission(['executeTreatment'], prescription.templateCode)
-      && (task == null || task.status === TaskStatus.READY);
+  transform(prescription: ReadRequestResource, task?: PerformerTaskResource): boolean {
+    const allowedStatuses: RequestStatus[] = [
+      RequestStatus.Draft,
+      RequestStatus.Pending,
+      RequestStatus.Open,
+      RequestStatus.InProgress,
+    ];
+    return (
+      allowedStatuses.includes(prescription.status!) &&
+      this.accessMatrixState.hasAtLeastOnePermission(['executeTreatment'], prescription.templateCode) &&
+      (!task || task.status === FhirR4TaskStatus.Ready)
+    );
   }
 }

@@ -6,7 +6,7 @@ import {
   OnChanges,
   OnInit,
   SimpleChanges,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import {
   ElementGroup,
@@ -14,43 +14,39 @@ import {
   EvfFormDetailGroupComponent,
   EvfTranslateService,
   FormTemplate,
-  SupportedLocales
+  SupportedLocales,
 } from '@smals/vas-evaluation-form-ui-core';
-import { NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { DateAdapter } from '@angular/material/core';
 import { DateTime } from 'luxon';
-import { AuthService } from '@reuse/code/services/auth.service';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { TranslateService } from '@ngx-translate/core';
-import { PssService } from '@reuse/code/services/pss.service';
+import { PssService } from '@reuse/code/services/api/pss.service';
 
 @Component({
-    templateUrl: './evf-form-details.component.html',
-    styleUrls: ['./evf-form-details.component.scss'],
-    encapsulation: ViewEncapsulation.ShadowDom,
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [EvfTranslateService],
-    imports: [
-        EvfFormDetailGroupComponent,
-        NgTemplateOutlet,
-        NgIf
-    ]
+  templateUrl: './evf-form-details.component.html',
+  styleUrls: ['./evf-form-details.component.scss'],
+  encapsulation: ViewEncapsulation.ShadowDom,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [EvfTranslateService],
+  imports: [EvfFormDetailGroupComponent, NgTemplateOutlet],
 })
 export class EvfFormDetailsWebComponent implements OnChanges, OnInit {
-
   elementGroup!: ElementGroup;
 
   metaData = {
     pssActive: false,
-    isProfessional: false
-  }
+    isProfessional: false,
+  };
 
   @HostBinding('attr.lang')
-  @Input() lang = 'fr-BE';
+  @Input()
+  lang = 'fr-BE';
   @Input() template!: FormTemplate;
   @Input() responses!: Record<string, any>;
   @Input() services?: {
-    getAccessToken: (audience?: string) => Promise<string | null>
-  }
+    getAccessToken: (audience?: string) => Promise<string | null>;
+  };
   @Input() status: boolean | undefined;
   @Input() isProfessional: boolean | undefined;
 
@@ -61,8 +57,7 @@ export class EvfFormDetailsWebComponent implements OnChanges, OnInit {
     private readonly elementGroupBuilder: ElementGroupBuilder,
     private readonly authService: AuthService,
     private readonly translate: TranslateService
-  ) {
-  }
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['lang']) {
@@ -84,12 +79,12 @@ export class EvfFormDetailsWebComponent implements OnChanges, OnInit {
     if (changes['status']) {
       if (this.status !== undefined) {
         this.pssService.setStatus(this.status);
-        this.metaData.pssActive = this.status
+        this.metaData.pssActive = this.status;
       }
     }
     if (changes['isProfessional']) {
       if (this.isProfessional !== undefined) {
-        this.metaData.isProfessional = this.isProfessional
+        this.metaData.isProfessional = this.isProfessional;
       }
     }
   }

@@ -2,6 +2,7 @@
   image: gcloud-docker-internet.repo.gcloud.belgium.be/node:20-alpine
   tags:
     - docker
+
 .sonar:
   image:
     name: gcloud-docker-internet.repo.gcloud.belgium.be/sonarsource/sonar-scanner-cli:5.0.1@sha256:494ecc3b5b1ee1625bd377b3905c4284e4f0cc155cff397805a244dee1c7d575
@@ -19,12 +20,48 @@ cache:
     - node_modules/
 
 stages:
+  - open-api
   - test
   - report
+
+generate-api-client:
+  image: gcloud-docker-internet.repo.gcloud.belgium.be/openapitools/openapi-generator-cli:v7.8.0
+  stage: open-api
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  script:
+    - java -jar /opt/openapi-generator/modules/openapi-generator-cli/target/openapi-generator-cli.jar generate -i api-contract/openapi.yaml -g typescript-angular -o reuse/code/openapi --additional-properties fileNaming=kebab-case,withInterfaces=true --generate-alias-as-model
+  artifacts:
+    paths:
+      - reuse/code/openapi/
+  only:
+    - merge_requests
+    - develop
+
+validate-generated-api:
+  extends: .npm
+  stage: test
+  needs:
+    - job: generate-api-client
+      optional: true
+  script:
+    - echo "Validating generated API client files"
+    - ls -la reuse/code/openapi/
+    - echo "Checking if key files exist"
+    - test -f reuse/code/openapi/api.module.ts || (echo "api.module.ts not found" && exit 1)
+    - test -d reuse/code/openapi/api/ || (echo "api directory not found" && exit 1)
+    - test -d reuse/code/openapi/model/ || (echo "model directory not found" && exit 1)
+    - echo "Generated API client validation passed"
+  only:
+    - merge_requests
+    - develop
 
 test:
   extends: .npm
   stage: test
+  needs:
+    - job: generate-api-client
+      optional: true
   script:
     - echo "Running the install step"
     - npm install
@@ -41,7 +78,8 @@ test:
 
 sonar-report:
   extends: .sonar
-  needs: ["test"]
+  needs:
+    - test
   stage: report
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"

@@ -1,10 +1,10 @@
 import { Observable } from 'rxjs';
-import { DataState, LoadingStatus } from '../interfaces';
+import { DataState, LoadingStatus } from '@reuse/code/interfaces';
 import { computed, Signal } from '@angular/core';
 
 export function combineSignalDataState<T>(states: Record<string, Signal<DataState<any>>>): Signal<DataState<T>> {
-  return computed(
-    () => Object.entries(states).reduce(
+  return computed(() =>
+    Object.entries(states).reduce(
       (acc, [key, state$]) => {
         const state = state$();
         if (state.data) {
@@ -31,25 +31,26 @@ export function combineSignalDataState<T>(states: Record<string, Signal<DataStat
         status: LoadingStatus.INITIAL,
         data: {} as Record<string, any>,
         params: {} as Record<string, any>,
-        error: {} as Record<string, any>
-      } as DataState<T>)
+        error: {} as Record<string, any>,
+      } as DataState<T>
+    )
   );
 }
 
 export function toDataState(params?: Record<string, any>) {
   return function <T>(source: Observable<T>): Observable<DataState<T>> {
     return new Observable<DataState<T>>(subscriber => {
-      subscriber.next({status: LoadingStatus.LOADING, params});
+      subscriber.next({ status: LoadingStatus.LOADING, params });
       source.subscribe({
         next(data) {
-          subscriber.next({status: LoadingStatus.SUCCESS, data, params});
+          subscriber.next({ status: LoadingStatus.SUCCESS, data, params });
         },
         error(error) {
-          subscriber.next({status: LoadingStatus.ERROR, error, params});
+          subscriber.next({ status: LoadingStatus.ERROR, error, params });
         },
         complete() {
           subscriber.complete();
-        }
+        },
       });
     });
   };

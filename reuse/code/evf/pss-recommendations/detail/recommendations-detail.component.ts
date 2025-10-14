@@ -1,15 +1,12 @@
-import { ChangeDetectorRef, Component, signal, SimpleChanges, } from '@angular/core';
+import { ChangeDetectorRef, Component, OnChanges, signal, SimpleChanges } from '@angular/core';
 import {
   EvfBaseFormDetailComponent,
   EvfDetailLabelComponent,
-  EvfFormDetailLayoutComponent
+  EvfFormDetailLayoutComponent,
 } from '@smals/vas-evaluation-form-ui-material/elements/shared';
-import { SupportOption } from '@reuse/code/interfaces/pss.interface';
-import {
-  PssRadiologyResultComponent
-} from '@reuse/code/components/pss-radiology-result/pss-radiology-result.component';
-import { PssService } from '@reuse/code/services/pss.service';
-import { ToastService } from '@reuse/code/services/toast.service';
+import { PssRadiologyResultComponent } from '@reuse/code/components/pss-radiology-result/pss-radiology-result.component';
+import { PssService } from '@reuse/code/services/api/pss.service';
+import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -18,6 +15,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { EvfTranslateService } from '@smals/vas-evaluation-form-ui-core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { generateWarningMessage } from '@reuse/code/utils/pss-relevant-info-message.utils';
+import { SupportOption } from '@reuse/code/openapi';
+import { EMPTY_OBJECT } from '@reuse/code/constants/common.constants';
 
 @Component({
   selector: 'recommendations-detail',
@@ -30,10 +29,10 @@ import { generateWarningMessage } from '@reuse/code/utils/pss-relevant-info-mess
     MatProgressSpinnerModule,
     ErrorCardComponent,
     ReactiveFormsModule,
-    MatIconModule
+    MatIconModule,
   ],
   templateUrl: './recommendations-detail.component.html',
-  styleUrl: './recommendations-detail.component.scss'
+  styleUrl: './recommendations-detail.component.scss',
 })
 /**
  * Component responsible for the management of the EVF custom element "recommendations"
@@ -54,13 +53,11 @@ import { generateWarningMessage } from '@reuse/code/utils/pss-relevant-info-mess
  *
  * @public
  */
-export class RecommendationsDetailComponent extends EvfBaseFormDetailComponent {
-
+export class RecommendationsDetailComponent extends EvfBaseFormDetailComponent implements OnChanges {
   readonly isLoading = signal(false);
   readonly controlRecommendations = signal<SupportOption[] | undefined>(undefined);
   readonly isPssActive = signal(false);
   readonly isProfessional = signal(false);
-
 
   private pssExchangeId: string = '';
   private userIsProfessional: boolean = false;
@@ -71,25 +68,24 @@ export class RecommendationsDetailComponent extends EvfBaseFormDetailComponent {
     private readonly cdRef: ChangeDetectorRef,
     private readonly pssService: PssService,
     private readonly toastService: ToastService,
-    private readonly evfTranslate: EvfTranslateService,
+    private readonly evfTranslate: EvfTranslateService
   ) {
     super(cdRef);
     this.language = this.evfTranslate.currentLang as 'nl' | 'fr';
-    this.evfTranslate.currentLang$
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        this.language = this.evfTranslate.currentLang as 'nl' | 'fr';
-        this.cdRef.markForCheck();
-      });
+    this.evfTranslate.currentLang$.pipe(takeUntilDestroyed()).subscribe(() => {
+      this.language = this.evfTranslate.currentLang as 'nl' | 'fr';
+      this.cdRef.markForCheck();
+    });
   }
 
   override ngOnChanges(changes: SimpleChanges) {
     super.ngOnChanges(changes);
     if (changes['metadata']) {
       if (this.metadata != undefined) {
-        this.pssStatus = this.metadata['pssActive'] ?? false;
+        this.pssStatus = this.metadata['pssActive'] != undefined ? this.metadata['pssActive'] : false;
         this.isPssActive.set(this.pssStatus);
-        this.userIsProfessional = this.metadata['isProfessional'] ?? false;
+        this.userIsProfessional =
+          this.metadata['isProfessional'] != undefined ? this.metadata['isProfessional'] : false;
         this.isProfessional.set(this.userIsProfessional);
 
         if (this.userIsProfessional && this.pssStatus) {
@@ -101,8 +97,8 @@ export class RecommendationsDetailComponent extends EvfBaseFormDetailComponent {
   }
 
   getPssRecommendationsByPssId(): void {
-    if(this.pssExchangeId){
-      this.isLoading.set(true)
+    if (this.pssExchangeId) {
+      this.isLoading.set(true);
       this.controlAnnex82();
     } else {
       this.toastService.show('prescription.create.control.error.required');
@@ -113,34 +109,34 @@ export class RecommendationsDetailComponent extends EvfBaseFormDetailComponent {
     this.pssService.getPssRecommendationsByExchangeId(this.pssExchangeId).subscribe({
       next: result => {
         this.controlRecommendations.set(result.supportOptions);
-        this.isLoading.set(false)
+        this.isLoading.set(false);
       },
       error: () => {
         this.toastService.showSomethingWentWrong();
-        this.isLoading.set(false)
-      }
-    })
+        this.isLoading.set(false);
+      },
+    });
   }
 
   hasAdditionalRelevantInformation() {
     const prescriptionForm = this.elementControl;
-    const formValues = prescriptionForm.elementGroup?.getOutputValue() ?? {};
+    const formValues = prescriptionForm.elementGroup?.getOutputValue() || EMPTY_OBJECT;
     const relevantInfo = formValues['additional-relevant-information'];
 
-    return !!relevantInfo && (relevantInfo.length > 0 && !relevantInfo.includes('tmp-addInfo-none'))
+    return !!relevantInfo && relevantInfo.length > 0 && !relevantInfo.includes('tmp-addInfo-none');
   }
 
-  getWarningMessage(){
+  getWarningMessage() {
     const prescriptionForm = this.elementControl;
-    const formValues = prescriptionForm.elementGroup?.getOutputValue() ?? {};
+    const formValues = prescriptionForm.elementGroup?.getOutputValue() || EMPTY_OBJECT;
     const relevantInfo: string[] = formValues['additional-relevant-information'];
     const implants: string[] = formValues['implants'];
     return generateWarningMessage(relevantInfo, implants, this.language!);
   }
 
-  getPrescribedExam(){
+  getPrescribedExam() {
     const prescriptionForm = this.elementControl;
-    const formValues = prescriptionForm.elementGroup?.getOutputValue() ?? {};
+    const formValues = prescriptionForm.elementGroup?.getOutputValue() || EMPTY_OBJECT;
     return formValues['intendedProcedure'];
   }
 }

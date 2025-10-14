@@ -1,20 +1,26 @@
-<h1 *ngIf="titleLabel" mat-dialog-title>{{titleLabel! | translate: params}}</h1>
+@if(titleLabel){
+<h1  mat-dialog-title>{{titleLabel! | translate: params}}</h1>
+}
 
-<mat-dialog-content *ngIf="messageLabel">
+@if(messageLabel){
+<mat-dialog-content>
   {{ messageLabel! | translate: params }}
 </mat-dialog-content>
+}
 
 <mat-dialog-actions>
+  @if(okLabel) {
   <button
-    *ngIf="okLabel"
     mat-raised-button
     color="accent"
     (click)="confirm()"
   >{{  okLabel! | translate: params  }}</button>
+  }
+  @if(cancelLabel){
   <button
-    *ngIf="cancelLabel"
     type="button"
     mat-button
     mat-dialog-close
   >{{cancelLabel! | translate: params}}</button>
+  }
 </mat-dialog-actions>

@@ -1,14 +1,13 @@
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges } from '@angular/core';
 
 @Component({
   standalone: true,
   selector: 'app-active-page',
   templateUrl: './active-page.component.html',
   styleUrls: ['./active-page.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ActivePageComponent implements OnChanges {
-
   rangeStart = 0;
   rangeEnd = 0;
 
@@ -17,12 +16,8 @@ export class ActivePageComponent implements OnChanges {
   @Input() pageSize = 10;
   @Input() label!: string;
 
-  ngOnChanges(changes: SimpleChanges): void {
-    this.rangeStart = ((this.page - 1) * this.pageSize) + 1;
-    this.rangeEnd = Math.min(
-      ((this.page - 1) * this.pageSize) + this.pageSize,
-      this.total
-    );
+  ngOnChanges(): void {
+    this.rangeStart = (this.page - 1) * this.pageSize + 1;
+    this.rangeEnd = Math.min((this.page - 1) * this.pageSize + this.pageSize, this.total);
   }
-
 }

@@ -33,7 +33,7 @@
     },
     "organizations": {
       "THIRD_PARTY_PAYING_GROUP": "Groepering met een RIZIV-nr derdebetaler (verpleegkundigen, vroedvrouwen, e.a.)",
-      "GROUPOFDOCTORS": "Groepering van huisartsen op dezelfde installatieplaats",
+      "GROUP_OF_DOCTORS": "Groepering van huisartsen op dezelfde installatieplaats",
       "GUARD_POST": "Wachtpost",
       "MEDICAL_HOUSE": "Medische huis",
       "HOME_SERVICES": "Geïntegreerde diensten thuisverzorging"

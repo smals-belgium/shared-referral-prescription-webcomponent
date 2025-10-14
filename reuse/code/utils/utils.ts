@@ -1,4 +1,5 @@
 import { Intent } from '@reuse/code/interfaces';
+import { Role } from '@reuse/code/openapi';
 
 const UuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SsinRegex = /^\d{11}$/i;
@@ -46,21 +47,26 @@ function bigNumberModulo(checkNumber: string, modulo: number): number {
 export function toSearchString(str: string): string {
   return str
     ? str
-      .toString()
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
+        .toString()
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
     : '';
 }
 
-export function isPrescription(intent: String|undefined): boolean {
+export function isPrescription(intent: String | undefined): boolean {
   return intent?.toLowerCase() === Intent.ORDER;
 }
 
-export function isProposal(intent: String|undefined): boolean {
+export function isProposal(intent: String | undefined): boolean {
   return intent?.toLowerCase() === Intent.PROPOSAL;
 }
 
-export function isModel(intent: String|undefined): boolean {
+export function isModel(intent: String | undefined): boolean {
   return intent?.toLowerCase() === Intent.MODEL;
+}
+
+export function isProfesionalBasedOnRole(role?: Role): boolean {
+  if (!role) return false;
+  return role !== Role.Patient;
 }

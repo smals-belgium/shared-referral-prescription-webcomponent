@@ -1,22 +1,30 @@
 import { CanRejectAssignationPipe } from './can-reject-assignation.pipe';
-import { AccessMatrixState } from '../states/access-matrix.state';
-import { Discipline, Intent, PerformerTask, ReadPrescription, Role, Status, TaskStatus, UserInfo } from '../interfaces';
+import { AccessMatrixState } from '../states/api/access-matrix.state';
+import { Intent, UserInfo } from '../interfaces';
+import {
+  Discipline,
+  FhirR4TaskStatus,
+  PerformerTaskResource,
+  ReadRequestResource,
+  RequestStatus,
+  Role,
+} from '../openapi';
 
 const patient: UserInfo = {
-  discipline: Discipline.PATIENT,
+  discipline: Discipline.Patient,
   firstName: '',
   lastName: '',
   professional: true,
   ssin: '123',
-  role: Role.patient
+  role: Role.Patient,
 };
 const currentUser: UserInfo = {
-  discipline: Discipline.NURSE,
+  discipline: Discipline.Nurse,
   firstName: '',
   lastName: '',
   professional: true,
   ssin: '456',
-  role: Role.professional
+  role: Role.Prescriber,
 };
 
 const caregiverSsin = '789';
@@ -33,18 +41,23 @@ describe('CanRejectAssignationPipe', () => {
   });
 
   it('should return false if currentUser is not provided', () => {
-    const prescription = {} as ReadPrescription;
-    const task = {} as PerformerTask;
+    const prescription = {} as ReadRequestResource;
+    const task = {} as PerformerTaskResource;
     const result = pipe.transform(prescription, task, patient.ssin);
     expect(result).toBe(false);
   });
 
   it('should return false if the prescription status is not OPEN nor PENDING nor IN_PROGRESS', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
-    const prescription = { status: Status.BLACKLISTED } as ReadPrescription;
-    const task = { status: TaskStatus.READY, careGiver: {
-        id: { ssin: caregiverSsin }
-      } } as PerformerTask;
+    const prescription = { status: RequestStatus.Blacklisted } as ReadRequestResource;
+    const task = {
+      status: FhirR4TaskStatus.Ready,
+      careGiver: {
+        healthcarePerson: {
+          ssin: caregiverSsin,
+        },
+      },
+    } as PerformerTaskResource;
 
     const result = pipe.transform(prescription, task, patient.ssin, currentUser);
     expect(result).toBe(false);
@@ -52,10 +65,15 @@ describe('CanRejectAssignationPipe', () => {
 
   it('should return false if the task status is not READY', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
-    const prescription = { status: Status.OPEN } as ReadPrescription;
-    const task = { status: TaskStatus.COMPLETED, careGiver: {
-        id: { ssin: caregiverSsin }
-      } } as PerformerTask;
+    const prescription = { status: RequestStatus.Open } as ReadRequestResource;
+    const task = {
+      status: FhirR4TaskStatus.Completed,
+      careGiver: {
+        healthcarePerson: {
+          ssin: caregiverSsin,
+        },
+      },
+    } as PerformerTaskResource;
 
     const result = pipe.transform(prescription, task, patient.ssin, currentUser);
     expect(result).toBe(false);
@@ -63,12 +81,15 @@ describe('CanRejectAssignationPipe', () => {
 
   it('should return false if currentUser is not the patient nor the caregiver', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
-    const prescription = { status: Status.OPEN } as ReadPrescription;
-    const task = { status: TaskStatus.READY, careGiver: {
-        id: { ssin: caregiverSsin }
-      }} as PerformerTask;
+    const prescription = { status: RequestStatus.Open } as ReadRequestResource;
+    const task = {
+      status: FhirR4TaskStatus.Ready,
+      careGiver: {
+        id: { ssin: caregiverSsin },
+      },
+    } as PerformerTaskResource;
 
-    const anotherUser = {...currentUser, ssin: 'anotherSsin'}
+    const anotherUser = { ...currentUser, ssin: 'anotherSsin' };
 
     const result = pipe.transform(prescription, task, patient.ssin, anotherUser);
     expect(result).toBe(false);
@@ -78,16 +99,24 @@ describe('CanRejectAssignationPipe', () => {
     const prescription = {
       intent: Intent.PROPOSAL,
       templateCode: 'template1',
-      status: Status.OPEN,
-    } as ReadPrescription;
+      status: RequestStatus.Open,
+    } as ReadRequestResource;
 
-    const task = { status: TaskStatus.READY, careGiver: {
-        id: { ssin: currentUser.ssin }
-      } } as PerformerTask;
+    const task = {
+      status: FhirR4TaskStatus.Ready,
+      careGiver: {
+        healthcarePerson: {
+          ssin: currentUser.ssin,
+        },
+      },
+    } as PerformerTaskResource;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
     const result = pipe.transform(prescription, task, patient.ssin, currentUser);
-    expect(mockAccessMatrixState.hasAtLeastOnePermission).toHaveBeenCalledWith(['removeAssignationProposal'], 'template1');
+    expect(mockAccessMatrixState.hasAtLeastOnePermission).toHaveBeenCalledWith(
+      ['removeAssignationProposal'],
+      'template1'
+    );
     expect(result).toBe(true);
   });
 
@@ -95,16 +124,24 @@ describe('CanRejectAssignationPipe', () => {
     const prescription = {
       intent: Intent.ORDER,
       templateCode: 'template2',
-      status: Status.IN_PROGRESS,
-    } as ReadPrescription;
+      status: RequestStatus.InProgress,
+    } as ReadRequestResource;
 
-    const task = { status: TaskStatus.READY, careGiver: {
-        id: { ssin: currentUser.ssin }
-      } } as PerformerTask;
+    const task = {
+      status: FhirR4TaskStatus.Ready,
+      careGiver: {
+        healthcarePerson: {
+          ssin: currentUser.ssin,
+        },
+      },
+    } as PerformerTaskResource;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
     const result = pipe.transform(prescription, task, patient.ssin, currentUser);
-    expect(mockAccessMatrixState.hasAtLeastOnePermission).toHaveBeenCalledWith(['removeAssignationPrescription'], 'template2');
+    expect(mockAccessMatrixState.hasAtLeastOnePermission).toHaveBeenCalledWith(
+      ['removeAssignationPrescription'],
+      'template2'
+    );
     expect(result).toBe(true);
   });
 
@@ -112,12 +149,17 @@ describe('CanRejectAssignationPipe', () => {
     const prescription = {
       intent: Intent.ORDER,
       templateCode: 'template2',
-      status: Status.OPEN,
-    } as ReadPrescription;
+      status: RequestStatus.Open,
+    } as ReadRequestResource;
 
-    const task = { status: TaskStatus.READY, careGiver: {
-        id: { ssin: currentUser.ssin }
-      } } as PerformerTask;
+    const task = {
+      status: FhirR4TaskStatus.Ready,
+      careGiver: {
+        healthcarePerson: {
+          ssin: currentUser.ssin,
+        },
+      },
+    } as PerformerTaskResource;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
@@ -129,13 +171,18 @@ describe('CanRejectAssignationPipe', () => {
     const prescription = {
       intent: Intent.ORDER,
       templateCode: 'template2',
-      status: Status.OPEN,
-    } as ReadPrescription;
+      status: RequestStatus.Open,
+    } as ReadRequestResource;
 
-    const task = { status: TaskStatus.READY, careGiver: {
-        id: { ssin: currentUser.ssin }
-      } } as PerformerTask;
-    const nurse = {...currentUser, ssin: patient.ssin}
+    const task = {
+      status: FhirR4TaskStatus.Ready,
+      careGiver: {
+        healthcarePerson: {
+          ssin: currentUser.ssin,
+        },
+      },
+    } as PerformerTaskResource;
+    const nurse = { ...currentUser, ssin: patient.ssin };
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
@@ -147,17 +194,21 @@ describe('CanRejectAssignationPipe', () => {
     const prescription = {
       intent: Intent.PROPOSAL,
       templateCode: 'template3',
-      status: Status.OPEN,
-    } as ReadPrescription;
+      status: RequestStatus.Open,
+    } as ReadRequestResource;
 
-    const task = { status: TaskStatus.READY, careGiver: {
-        id: { ssin: currentUser.ssin }
-      } } as PerformerTask;
+    const task = {
+      status: FhirR4TaskStatus.Ready,
+      careGiver: {
+        healthcarePerson: {
+          ssin: currentUser.ssin,
+        },
+      },
+    } as PerformerTaskResource;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(false);
 
     const result = pipe.transform(prescription, task, patient.ssin, currentUser);
     expect(result).toBe(false);
   });
-
 });
