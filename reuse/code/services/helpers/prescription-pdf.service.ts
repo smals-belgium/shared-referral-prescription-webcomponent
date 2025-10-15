@@ -273,6 +273,7 @@ export class PrescriptionsPdfService {
         label: this.evfTranslate(templateVersion, q.labelTranslationId!, language),
         values: this.getResponseLabels(responses[q.id!], q, templateVersion, responses, language),
       }));
+
     return [...valueLabels, ...dynamicValueLabels].reduce(
       (acc, cur: { label: string; values: unknown[] }) => {
         if (acc.table.body.length === 0 || !Array.isArray(acc.table.body[acc.table.body.length - 1][1])) {

@@ -208,7 +208,7 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     };
     fixture.detectChanges();
 
-    const errorCard = fixture.nativeElement.querySelector('app-error-card');
+    const errorCard = fixture.nativeElement.querySelector('app-alert');
     expect(errorCard).not.toBeNull();
   });
 

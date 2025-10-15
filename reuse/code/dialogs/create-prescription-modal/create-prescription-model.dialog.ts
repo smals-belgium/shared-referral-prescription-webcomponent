@@ -10,7 +10,7 @@ import {
 } from '@angular/material/dialog';
 import { LoadingStatus } from '@reuse/code/interfaces';
 import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
-import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { PrescriptionModelService } from '@reuse/code/services/api/prescriptionModel.service';
 import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionModel.state';
@@ -42,6 +42,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrl: './create-prescription-model.dialog.scss',
 })
 export class CreatePrescriptionModelDialog implements OnInit {
+  protected readonly LoadingStatus = LoadingStatus;
   formGroup!: FormGroup<{ name: FormControl<string | null> }>;
   modalState = this.prescriptionModelState.modalState().state;
 
@@ -115,6 +116,4 @@ export class CreatePrescriptionModelDialog implements OnInit {
       return filteredValues;
     }, {});
   }
-
-  protected readonly LoadingStatus = LoadingStatus;
 }

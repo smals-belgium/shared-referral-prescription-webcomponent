@@ -92,7 +92,7 @@
   </mat-form-field>
 
   <!-- Chips representing the actual form control value -->
-  <div [class]="selectedItems().length > 0 ? 'uhmep-chips uhmep-margin-bottom' : 'uhmep-chips'">
+  <div [class]="selectedItems().length > 0 ? 'mh-chips mh-margin-bottom' : 'mh-chips'">
     @for (item of selectedItems(); track item) {
       <mat-chip (removed)="remove(item)" [removable]="true">
         {{ item.label[currentLang] }}

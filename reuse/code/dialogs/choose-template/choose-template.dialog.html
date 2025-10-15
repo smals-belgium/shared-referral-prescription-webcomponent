@@ -1,22 +1,22 @@
 <form [formGroup]="formGroup" (ngSubmit)="submit()">
-  <h1 mat-dialog-title>{{'prescription.selectTemplate.prescriptionModel' | translate}}</h1>
+  <h2 mat-dialog-title>{{'prescription.selectTemplate.prescriptionModel' | translate}}</h2>
 
   @if(viewState$(); as viewState) {
-    <div mat-dialog-content>
+    <mat-dialog-content class="mat-typography">
       <app-overlay-spinner *ifStatusLoading="viewState" mode="dialog"></app-overlay-spinner>
       <ng-container *ifStatusSuccess="viewState">
         <app-select-prescription-type
           [formGroup]="formGroup"
-          [templates]="viewState.data!.templates!"
-          [models]="viewState.data!.models.content"
+          [templates]="viewState.data?.templates || []"
+          [models]="viewState.data?.models?.content"
           [showTitle]="false"
         ></app-select-prescription-type>
       </ng-container>
-    </div>
+    </mat-dialog-content>
   }
 
-  <div mat-dialog-actions>
-    <button data-cy="choose-template-confirm-button" mat-raised-button color="accent">{{'common.confirm' | translate}}</button>
-    <button data-cy="choose-template-cancel-button" mat-flat-button [mat-dialog-close]="undefined">{{'common.cancel' | translate}}</button>
-  </div>
+  <mat-dialog-actions align="end">
+    <button type="submit" mat-flat-button color="primary" data-cy="choose-template-confirm-button">{{'common.confirm' | translate}}</button>
+    <button type="button" mat-stroked-button color="primary" data-cy="choose-template-cancel-button" [mat-dialog-close]="undefined">{{'common.cancel' | translate}}</button>
+  </mat-dialog-actions>
 </form>

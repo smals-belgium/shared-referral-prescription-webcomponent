@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({name: 'formatNihdi', standalone: true})
+@Pipe({ name: 'formatNihdi', standalone: true })
 export class FormatNihdiPipe implements PipeTransform {
   private static readonly mask = '0-00000-00-000';
   private static readonly maskParts = FormatNihdiPipe.mask.split('-');
@@ -10,7 +10,7 @@ export class FormatNihdiPipe implements PipeTransform {
     if (!value) {
       return '';
     }
-    if(qualificationCode) {
+    if (qualificationCode) {
       nihidi = value + qualificationCode;
     }
     nihidi = nihidi!.replace(/\D+/g, '');
@@ -20,6 +20,6 @@ export class FormatNihdiPipe implements PipeTransform {
       formattedParts.push(nihidi.substring(0, endIndex));
       nihidi = nihidi.substring(endIndex);
     }
-    return formattedParts.join('-');
+    return formattedParts.join('/');
   }
 }

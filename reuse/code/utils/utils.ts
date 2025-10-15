@@ -1,5 +1,5 @@
 import { Intent } from '@reuse/code/interfaces';
-import { Role } from '@reuse/code/openapi';
+import { RequestStatus, Role } from '@reuse/code/openapi';
 
 const UuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SsinRegex = /^\d{11}$/i;
@@ -64,6 +64,23 @@ export function isProposal(intent: String | undefined): boolean {
 
 export function isModel(intent: String | undefined): boolean {
   return intent?.toLowerCase() === Intent.MODEL;
+}
+
+const STATUS_CLASS_MAP: Record<RequestStatus, string> = {
+  DRAFT: 'mh-black',
+  BLACKLISTED: 'mh-red',
+  PENDING: 'mh-orange',
+  OPEN: 'mh-black',
+  CANCELLED: 'mh-red',
+  EXPIRED: 'mh-red',
+  IN_PROGRESS: 'mh-blue',
+  APPROVED: 'mh-black',
+  REJECTED: 'mh-black',
+  DONE: 'mh-green',
+};
+
+export function getStatusClassFromMap(status?: RequestStatus): string {
+  return status ? STATUS_CLASS_MAP[status] || 'mh-black' : 'mh-black';
 }
 
 export function isProfesionalBasedOnRole(role?: Role): boolean {

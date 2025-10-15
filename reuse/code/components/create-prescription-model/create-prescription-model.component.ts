@@ -17,8 +17,8 @@ import { IfStatusLoadingDirective } from '@reuse/code/directives/if-status-loadi
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
-import { CreatePrescriptionForm, DataState, LoadingStatus } from '@reuse/code/interfaces';
-import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
+import { CreatePrescriptionForm, DataState, LoadingStatus, AlertType } from '@reuse/code/interfaces';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { SuccessCardComponent } from '@reuse/code/components/success-card/success-card.component';
 import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionModel.state';
 import { CreatePrescriptionModelDialog } from '@reuse/code/dialogs/create-prescription-modal/create-prescription-model.dialog';
@@ -30,7 +30,7 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { UniqueModelNameValidator } from '@reuse/code/directives/unique-model-name.directive';
 import { isOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
-import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { FormDataType, FormElement, TemplateVersion } from '@reuse/code/openapi';
 import TypeEnum = FormDataType.TypeEnum;
 
@@ -43,7 +43,7 @@ import TypeEnum = FormDataType.TypeEnum;
   imports: [
     ReactiveFormsModule,
     MatIcon,
-    ErrorCardComponent,
+    AlertComponent,
     SuccessCardComponent,
     OverlaySpinnerComponent,
     MatFormField,
@@ -58,6 +58,8 @@ import TypeEnum = FormDataType.TypeEnum;
   ],
 })
 export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
+  protected readonly LoadingStatus = LoadingStatus;
+  protected readonly AlertType = AlertType;
   modelState = this.prescriptionModelState.modalState;
 
   @Input() lang!: string;
@@ -71,10 +73,10 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
   });
 
   constructor(
-    private prescriptionModelState: PrescriptionModelState,
-    private dialog: MatDialog,
-    private prescriptionModalService: PrescriptionModelService,
-    private nameValidator: UniqueModelNameValidator
+    private readonly prescriptionModelState: PrescriptionModelState,
+    private readonly dialog: MatDialog,
+    private readonly prescriptionModalService: PrescriptionModelService,
+    private readonly nameValidator: UniqueModelNameValidator
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -240,6 +242,4 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
   ngOnDestroy() {
     this.prescriptionModelState.setInitialState();
   }
-
-  protected readonly LoadingStatus = LoadingStatus;
 }

@@ -1,4 +1,14 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HighlightFilterPipe } from '../../pipes/highlight-filter.pipe';
 import { MatButton } from '@angular/material/button';
@@ -24,6 +34,7 @@ export interface SearchFilter {
   styleUrl: './prescription-filter.component.scss',
 })
 export class PrescriptionFilterComponent implements OnChanges, OnInit, OnDestroy {
+  private readonly translate = inject(TranslateService);
   @Input({ required: true }) templates!: Template[];
   @Input({ required: true }) intent!: 'order' | 'proposal';
   @Input({ required: true }) accessMatrix!: AccessMatrix[];
@@ -36,7 +47,7 @@ export class PrescriptionFilterComponent implements OnChanges, OnInit, OnDestroy
   statusOptions?: MultiselectOption[];
   private langChangeSubscription!: Subscription;
 
-  constructor(private translate: TranslateService) {
+  constructor() {
     this.formGroup = new FormGroup({
       status: new FormControl<MultiselectOption[] | undefined>(undefined),
       prescriptionType: new FormControl<MultiselectOption[] | undefined>(undefined),

@@ -1,10 +1,10 @@
-import { Component, computed, OnDestroy, OnInit } from '@angular/core';
+import { Component, computed, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
-import { DataState, LoadingStatus } from '@reuse/code/interfaces';
-import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
+import { DataState, Intent, LoadingStatus } from '@reuse/code/interfaces';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { SelectPrescriptionTypeComponent } from '@reuse/code/components/select-prescription-type/select-prescription-type.component';
 import { IfStatusLoadingDirective } from '@reuse/code/directives/if-status-loading.directive';
 import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
@@ -15,15 +15,15 @@ import { distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { ModelsState } from '@reuse/code/states/api/models.state';
 import { AccessMatrix, ModelEntityDto, PageModelEntityDto, Template } from '@reuse/code/openapi';
 
-export interface NewPrescriptionDialogResult {
+export interface SelectedTemplate {
   templateCode?: string;
-  model: ModelEntityDto;
+  model?: ModelEntityDto;
 }
 
 interface ViewState {
   accessMatrices: AccessMatrix[];
   templates?: Template[];
-  models: PageModelEntityDto;
+  models?: PageModelEntityDto;
   [key: string]: AccessMatrix[] | Template[] | PageModelEntityDto | undefined;
 }
 
@@ -52,16 +52,47 @@ export class ChooseTemplateDialog implements OnInit, OnDestroy {
 
   readonly viewState$ = computed<DataState<ViewState>>(() => {
     const sourceState = this.sourceState$();
+
+    if (this.data.intent === Intent.PROPOSAL && sourceState.status === LoadingStatus.INITIAL) {
+      return {
+        ...sourceState,
+        status: LoadingStatus.SUCCESS,
+        data: {
+          accessMatrices: sourceState.data!.accessMatrices,
+          templates: this.filterTemplatesOnAccessMatrices(
+            sourceState.data!.templates,
+            sourceState.data!.accessMatrices
+          ),
+          models: sourceState.data!.models,
+        },
+      };
+    }
+
     if (sourceState.status !== LoadingStatus.SUCCESS) {
       return sourceState;
     }
+
+    const viewStateData =
+      this.data.intent === Intent.ORDER
+        ? {
+            accessMatrices: sourceState.data!.accessMatrices,
+            templates: this.filterTemplatesOnAccessMatrices(
+              sourceState.data!.templates,
+              sourceState.data!.accessMatrices
+            ),
+            models: sourceState.data!.models,
+          }
+        : {
+            accessMatrices: sourceState.data!.accessMatrices,
+            templates: this.filterTemplatesOnAccessMatrices(
+              sourceState.data!.templates,
+              sourceState.data!.accessMatrices
+            ),
+          };
+
     return {
       ...sourceState,
-      data: {
-        accessMatrices: sourceState.data!.accessMatrices,
-        templates: this.filterTemplatesOnAccessMatrices(sourceState.data!.templates, sourceState.data!.accessMatrices),
-        models: sourceState.data!.models,
-      },
+      data: viewStateData,
     };
   });
 
@@ -72,14 +103,20 @@ export class ChooseTemplateDialog implements OnInit, OnDestroy {
   });
 
   constructor(
-    private accessMatrixStateService: AccessMatrixState,
-    private templatesStateService: TemplatesState,
-    private modelStateService: ModelsState,
-    private dialogRef: MatDialogRef<ChooseTemplateDialog, NewPrescriptionDialogResult>
+    private readonly accessMatrixStateService: AccessMatrixState,
+    private readonly templatesStateService: TemplatesState,
+    private readonly modelStateService: ModelsState,
+    private readonly dialogRef: MatDialogRef<ChooseTemplateDialog, SelectedTemplate>,
+    @Inject(MAT_DIALOG_DATA)
+    private data: {
+      intent: Intent;
+    }
   ) {}
 
   ngOnInit() {
-    this.modelStateService.loadModels(0, -1);
+    if (this.data.intent === Intent.ORDER) {
+      this.modelStateService.loadModels(0, -1);
+    }
     this.onCreateGroupFormValueChange();
   }
 
@@ -131,7 +168,11 @@ export class ChooseTemplateDialog implements OnInit, OnDestroy {
     if (!templates || !matrices) {
       return [];
     }
-    return templates.filter(t => matrices.find(m => t.code === m.templateName)?.createPrescription);
+    if (this.data.intent !== Intent.PROPOSAL) {
+      return templates.filter(t => matrices.find(m => t.code === m.templateName)?.createPrescription);
+    } else {
+      return templates.filter(t => matrices.find(m => t.code === m.templateName)?.createProposal);
+    }
   }
 
   private getTemplateByModel(model: ModelEntityDto) {

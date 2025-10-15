@@ -1,12 +1,1 @@
-:host {
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-  --mdc-dialog-supporting-text-color: black;
 
-  mat-form-field {
-    min-width: 280px;
-  }
-
-  ::ng-deep .mat-mdc-dialog-actions {
-    padding: 0 24px 20px 24px;
-  }
-}

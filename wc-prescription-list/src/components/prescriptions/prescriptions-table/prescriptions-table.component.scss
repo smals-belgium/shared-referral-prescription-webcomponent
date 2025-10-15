@@ -1,0 +1,23 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+.mat-mdc-row .mat-mdc-cell {
+  cursor: pointer;
+}
+tr.no-prescriptions {
+  > td {
+    text-align: center;
+    cursor: none;
+    border-radius: mh.$border-radius-m;
+  }
+}
+
+tr.no-data {
+  height: var(--mh-table-empty-footer-container-height, 0);
+}
+
+span.info{
+  display: block;
+  @include mh.font-extra-small-regular();
+  color: mh.$typography-brand-neutral-dark;
+}
+

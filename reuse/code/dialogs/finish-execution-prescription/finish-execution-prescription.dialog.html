@@ -2,11 +2,12 @@
   <h1 mat-dialog-title>{{'prescription.finishExecution.title' | translate}}</h1>
   <div mat-dialog-content>
     @if(errorCard.show){
-      <app-error-card
+      <app-alert
+        [alert]="AlertType.Error"
         [message]="errorCard.message | translate : errorCard.translationOptions"
         [error]="errorCard.errorResponse"
         [showRetry]="false"
-      ></app-error-card>
+      ></app-alert>
     }
     @if(formGroup.get('endDate'); as control) {
     <mat-form-field appearance="fill">
@@ -37,5 +38,5 @@
 </form>
 
 @if(loading){
-<app-overlay-spinner mode="dialog"></app-overlay-spinner>
+  <app-overlay-spinner mode="dialog"></app-overlay-spinner>
 }

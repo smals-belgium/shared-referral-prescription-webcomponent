@@ -6,4 +6,4 @@ export * from './service-request.interface';
 export * from './prescription-modal.inteface';
 export * from './create-prescription-form.interface';
 export * from './evf-template.interface';
-export * from './error-card.interface';
+export * from './alert.interface';

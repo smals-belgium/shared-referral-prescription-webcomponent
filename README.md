@@ -106,5 +106,4 @@ If you have run out of energy or time for your project, put a note at the top of
     - Second step: past the jar file in ./node_modules/@openapitools/openapi-generator-cli/versions/
     - Third step run the following command
 
-  ! Before generating the api contract remove the old folder !
   To regenerate: `npm run generate-api:local`

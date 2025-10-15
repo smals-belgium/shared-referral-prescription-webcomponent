@@ -118,31 +118,31 @@
         }
       }
     },
-    "wc-list-prescriptions": {
+    "wc-prescription-list": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
         }
       },
-      "root": "wc-list-prescriptions",
-      "sourceRoot": "/wc-list-prescriptions/src",
+      "root": "wc-prescription-list",
+      "sourceRoot": "/wc-prescription-list/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/wc-list-prescriptions",
-            "index": "wc-list-prescriptions/src/index.html",
-            "browser": "/wc-list-prescriptions/src/main.ts",
+            "outputPath": "dist/wc-prescription-list",
+            "index": "wc-prescription-list/src/index.html",
+            "browser": "/wc-prescription-list/src/main.ts",
             "polyfills": [
               "zone.js"
             ],
-            "tsConfig": "wc-list-prescriptions/tsconfig.app.json",
+            "tsConfig": "wc-prescription-list/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [],
             "styles": [
-              "wc-list-prescriptions/src/styles.scss"
+              "wc-prescription-list/src/styles.scss"
             ],
             "allowedCommonJsDependencies": [
               "buffer",
@@ -178,10 +178,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "wc-list-prescriptions:build:production"
+              "buildTarget": "wc-prescription-list:build:production"
             },
             "development": {
-              "buildTarget": "wc-list-prescriptions:build:development"
+              "buildTarget": "wc-prescription-list:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -207,8 +207,8 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": [
-              "wc-list-prescriptions/src/**/*.ts",
-              "wc-list-prescriptions/src/**/*.html"
+              "wc-prescription-list/src/**/*.ts",
+              "wc-prescription-list/src/**/*.html"
             ]
           }
         }

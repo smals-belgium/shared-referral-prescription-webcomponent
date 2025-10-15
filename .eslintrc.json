@@ -49,7 +49,7 @@
         "wc-create-prescription/src/**/*.ts",
         "wc-evf-form/src/**/*.ts",
         "wc-evf-form-details/src/**/*.ts",
-        "wc-list-prescriptions/src/**/*.ts",
+        "wc-prescription-list/src/**/*.ts",
         "wc-pdfmake/src/**/*.ts",
         "wc-prescription-details/src/**/*.ts"
       ],
@@ -81,7 +81,7 @@
             "style": "camelCase"
           }
         ]
-      }
+      },
     },
     {
       "files": [

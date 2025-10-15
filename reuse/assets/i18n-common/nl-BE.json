@@ -49,6 +49,7 @@
       "null": "Onbekend"
     },
     "somethingWentWrong": "Er is iets misgegaan. Gelieve opnieuw te proberen.",
+    "somethingWentWrongWithoutRetry": "Er is iets misgegaan.",
     "forbiddenAction": "U bent niet bevoegd om deze actie uit te voeren.",
     "forbiddenResource": "U heeft geen toegang tot deze pagina.",
     "notFoundResource": "De gevraagde pagina bestaat niet.",
@@ -74,6 +75,10 @@
     "sureDeleteCareGiver": "Bent u zeker dat u deze zorgverlener wil verwijderen?"
   },
   "prescription": {
+    "creationDate": "Aangemaakt op",
+    "details": {
+      "link": "Bekijk details"
+    },
     "selectTemplate": {
       "prescriptionModel": "Voorschrift model",
       "pickOptionFromList": "Kies een optie uit de lijst",
@@ -118,9 +123,12 @@
         "title": "Annuleer één of meerdere voorschriften",
         "cancelAll": "Alles annuleren"
       },
-      "cancelCreation": "Bent u zeker dat u het aanmaken van dit voorschrift wilt annuleren?"
+      "cancelCreation": "Bent u zeker dat u het aanmaken van dit voorschrift wilt annuleren?",
+      "prescription": "Voorschrift aanmaken"
     },
+    "allPrescriptionsFetched": "Alle voorschriften opgehaald",
     "model": {
+      "allModalsFetched": "Alle sjablonen opgehaald",
       "title": "Sjabloon",
       "create": {
         "title": "Opslaan als sjabloon",
@@ -129,7 +137,8 @@
           "title": "Wilt u het voorschrift opslaan als een sjabloon?",
           "label": "Sjabloonnaam",
           "labelNotUnique": "De sjabloonnaam is niet uniek."
-        }
+        },
+        "model": "Sjabloon aanmaken"
       },
       "update": {
         "title": "Update sjabloon"
@@ -315,6 +324,10 @@
     }
   },
   "proposal": {
+    "creationDate": "Aangemaakt op",
+    "details": {
+      "link": "Bekijk details"
+    },
     "selectTemplate": {
       "proposalModel": "Voorstel model",
       "pickOptionFromList": "Kies een optie uit de lijst",
@@ -336,8 +349,10 @@
         "title": "Annuleer één of meerdere voorstellen",
         "cancelAll": "Alles annuleren"
       },
-      "cancelCreation": "Bent u zeker dat u het aanmaken van dit voorstel wil annuleren?"
+      "cancelCreation": "Bent u zeker dat u het aanmaken van dit voorstel wil annuleren?",
+      "proposal": "Voorstel aanmaken"
     },
+    "allProposalsFetched": "Alle voorstellen opgehaald",
     "print": {
       "content-electronic-prescription": "Inhoud van het elektronisch voorstel",
       "guideline": "Gelieve dit document voor te leggen aan uw behandelende arts. U kunt de QR-code scannen om toegang te krijgen tot de gegevens in het digitale recept.",

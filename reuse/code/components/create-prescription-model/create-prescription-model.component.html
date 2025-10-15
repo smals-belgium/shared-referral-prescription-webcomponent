@@ -13,10 +13,11 @@
 
 
     @if (modelState().state === LoadingStatus.ERROR) {
-      <app-error-card
+      <app-alert
+        [alert]="AlertType.Error"
         [message]="'prescription.errors.failedToCreateModel' | translate"
         [error]="modelState().error"
-      ></app-error-card>
+      ></app-alert>
     } @else if (modelState().state === LoadingStatus.SUCCESS) {
       <app-success-card
         [message]="'prescription.model.create.success' | translate:{name: modelState().success}"

@@ -2,11 +2,12 @@
   <h1 mat-dialog-title>{{'prescription.restartExecution.title' | translate}}</h1>
   <div mat-dialog-content>
     @if(errorCard.show){
-      <app-error-card
+      <app-alert
+        [alert]="AlertType.Error"
         [message]="errorCard.message | translate : errorCard.translationOptions"
         [error]="errorCard.errorResponse"
         [showRetry]="false"
-      ></app-error-card>
+      ></app-alert>
     }
     <div>{{'prescription.restartExecution.message' | translate: {
         firstName: patient.firstName,

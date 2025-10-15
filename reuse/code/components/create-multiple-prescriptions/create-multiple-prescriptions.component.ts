@@ -16,13 +16,13 @@ import { FormatSsinPipe } from '@reuse/code/pipes/format-ssin.pipe';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
 import { IfStatusErrorDirective } from '@reuse/code/directives/if-status-error.directive';
-import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { IfStatusLoadingDirective } from '@reuse/code/directives/if-status-loading.directive';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
-import { CreatePrescriptionForm, ErrorCard, LoadingStatus } from '@reuse/code/interfaces';
-import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
+import { AlertType, CreatePrescriptionForm, LoadingStatus } from '@reuse/code/interfaces';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { SuccessCardComponent } from '@reuse/code/components/success-card/success-card.component';
 import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionModel.state';
 import { CreatePrescriptionModelDialog } from '@reuse/code/dialogs/create-prescription-modal/create-prescription-model.dialog';
@@ -31,6 +31,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { isOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
 import { isPrescription, isProposal } from '@reuse/code/utils/utils';
 import { PersonResource, TemplateVersion } from '@reuse/code/openapi';
+import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
 
 @Component({
   selector: 'app-create-multiple-prescriptions',
@@ -49,11 +50,14 @@ import { PersonResource, TemplateVersion } from '@reuse/code/openapi';
     IfStatusSuccessDirective,
     TemplateNamePipe,
     FormatSsinPipe,
-    ErrorCardComponent,
+    AlertComponent,
     SuccessCardComponent,
   ],
 })
 export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestroy {
+  protected readonly LoadingStatus = LoadingStatus;
+  protected readonly AlertType = AlertType;
+
   readonly trackByFn = (index: number, item: CreatePrescriptionForm) => item?.trackId || index;
   modelState = this.prescriptionModelState.modalState;
 
@@ -203,6 +207,4 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
   isProposal(intent: string): boolean {
     return isProposal(intent);
   }
-
-  protected readonly LoadingStatus = LoadingStatus;
 }

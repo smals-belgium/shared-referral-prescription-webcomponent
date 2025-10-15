@@ -8,6 +8,6 @@ export class ModelsState extends BaseState<PageModelEntityDto> {
   private prescriptionModelService = inject(PrescriptionModelService);
 
   loadModels(page: number, pageSize: number) {
-    this.load(this.prescriptionModelService.findAllModels(page, pageSize));
+    this.load(this.prescriptionModelService.findAll(page, pageSize));
   }
 }

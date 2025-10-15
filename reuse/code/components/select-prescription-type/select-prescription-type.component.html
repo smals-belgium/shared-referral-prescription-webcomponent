@@ -1,14 +1,15 @@
-<div [formGroup]="formGroup">
+<div [formGroup]="formGroup" class="mh-form-field">
   @if (showTitle) {
     <div class="title"><b>{{ 'prescription.selectTemplate.prescriptionModel' | translate }}</b></div>
   }
-  <div data-cy="prescriptionCategory-label"><b>{{'common.category' | translate}}</b></div>
-  <div>
+
+  <label for="category" data-cy="prescriptionCategory-label">{{'common.category' | translate}}</label>
     @if (formGroup.get('category'); as control) {
-      <mat-form-field appearance="fill">
+      <mat-form-field appearance="outline">
         <input
           type="text"
           matInput
+          id="category"
           formControlName="category"
           data-cy="prescription-create-category"
           [placeholder]="'-- ' + ('common.chooseFromList' | translate)+ ' --'"
@@ -31,19 +32,18 @@
         }
       </mat-form-field>
     }
-  </div>
 
-  <div
+  <label for="template"
     data-cy="prescriptionType-label"
     [class.invalid]="formGroup.get('template')?.touched && formGroup.get('template')?.invalid"
-  ><b>{{'common.typeOfPrescription' | translate}} *</b></div>
+  >{{'common.typeOfPrescription' | translate}} <span class="mh-label-required">*</span></label>
   @if (templatesOptions$ | async; as templateOptions) {
-    <div>
       @if (formGroup.get('template'); as control) {
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline">
           <input
             type="text"
             matInput
+            id="template"
             formControlName="template"
             data-cy="prescription-create-prescriptionType"
             [placeholder]="'-- ' + ('common.chooseFromList' | translate)+ ' --'"
@@ -70,22 +70,21 @@
           }
         </mat-form-field>
       }
-    </div>
   }
 
   @if (modelOptions$ | async; as modelOption) {
-    <div
+    <label for="model"
       data-cy="model-label"
       [class.invalid]="formGroup.get('model')?.touched && formGroup.get('model')?.invalid"
-    ><b>{{ 'common.prescriptionModel' | translate }} @if (isRequiredField('model')) {
-      <span>*</span>
-    }</b></div>
-    <div>
+    >{{ 'common.prescriptionModel' | translate }} @if (isRequiredField('model')) {
+      <span class="mh-label-required">*</span>
+    }</label>
       @if (formGroup.get('model'); as control) {
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline">
           <input
             type="text"
             matInput
+            id="model"
             formControlName="model"
             data-cy="prescription-create-model"
             [placeholder]="'-- ' + ('common.chooseFromList' | translate)+ ' --'"
@@ -113,6 +112,5 @@
           }
         </mat-form-field>
       }
-    </div>
   }
 </div>

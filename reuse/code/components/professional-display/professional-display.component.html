@@ -1,11 +1,11 @@
 @if (hasName) {
-  <b>{{professional?.healthcarePerson?.firstName}} {{professional?.healthcarePerson?.lastName}}</b>
+  {{professional?.healthcarePerson?.firstName}} {{professional?.healthcarePerson?.lastName}}
 }
 @else if (isCurrentUser) {
   {{currentUser?.firstName}} {{currentUser?.lastName}}
 }
 @else {
-  <b>{{'common.professional.notFound' | translate}}</b>
+  {{'common.professional.notFound' | translate}}
   <mat-icon matTooltip="{{'common.professional.tooltip' | translate}}"
             matTooltipPosition="right">
     error

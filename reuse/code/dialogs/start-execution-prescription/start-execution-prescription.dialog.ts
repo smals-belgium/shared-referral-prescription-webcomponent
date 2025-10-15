@@ -9,13 +9,13 @@ import { TranslateModule } from '@ngx-translate/core';
 import { DatePipe } from '@reuse/code/pipes/date.pipe';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { map, Observable, switchMap } from 'rxjs';
-import { PrescriptionExecutionStart } from '@reuse/code/interfaces';
-import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
+import { AlertType, PrescriptionExecutionStart } from '@reuse/code/interfaces';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { v4 as uuidv4 } from 'uuid';
-import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
 import { PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
 
@@ -38,10 +38,11 @@ interface StartExecutionPrescriptionDialogData {
     MatDatepickerModule,
     OverlaySpinnerComponent,
     DatePipe,
-    ErrorCardComponent,
+    AlertComponent,
   ],
 })
 export class StartExecutionPrescriptionDialog extends BaseDialog implements OnInit {
+  protected readonly AlertType = AlertType;
   readonly prescription: ReadRequestResource;
   readonly performerTask: PerformerTaskResource;
 
@@ -54,11 +55,11 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
   generatedUUID = '';
 
   constructor(
-    private prescriptionStateService: PrescriptionState,
-    private authService: AuthService,
-    private toastService: ToastService,
+    private readonly prescriptionStateService: PrescriptionState,
+    private readonly authService: AuthService,
+    private readonly toastService: ToastService,
     dialogRef: MatDialogRef<StartExecutionPrescriptionDialog>,
-    @Inject(MAT_DIALOG_DATA) private data: StartExecutionPrescriptionDialogData
+    @Inject(MAT_DIALOG_DATA) private readonly data: StartExecutionPrescriptionDialogData
   ) {
     super(dialogRef);
     this.prescription = data.prescription;
