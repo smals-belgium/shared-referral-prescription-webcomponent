@@ -1,0 +1,30 @@
+@if (filteredItems().length && formControl) {
+  <mat-form-field appearance="fill" [attr.data-form]="key">
+    @if (label) {
+      <mat-label>{{ label }}</mat-label>
+    }
+    <mat-chip-grid #chipGrid>
+      @for (item of selectedItems(); track item) {
+        <mat-chip-row (removed)="remove(item)">
+          {{ item.name }}
+          <button matChipRemove [attr.aria-label]="'remove ' + item.name">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip-row>
+      }
+    </mat-chip-grid>
+    <input
+      [formControl]="formControl"
+      [placeholder]="placeholder || '-- ' + ('common.chooseFromList' | translate)+ ' --'"
+      #itemInput
+      [matChipInputFor]="chipGrid"
+      [matAutocomplete]="auto"
+      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+    />
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event); itemInput.value = ''">
+      @for (item of filteredItems(); track item) {
+        <mat-option [value]="item.value">{{ item.name }}</mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+}

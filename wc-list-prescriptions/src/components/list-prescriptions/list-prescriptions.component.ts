@@ -35,6 +35,7 @@ import { FormsModule } from '@angular/forms';
 import { PrescriptionModelsTableComponent } from '@reuse/code/components/prescription-models-table/prescription-models-table.component';
 import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
 import {
+  AccessMatrix,
   ModelEntityDto,
   PageModelEntityDto,
   ReadRequestListResource,
@@ -45,12 +46,23 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ModelsState } from '@reuse/code/states/api/models.state';
 import { ToggleHistoricPrescriptionsComponent } from '@reuse/code/components/toggle-historic-prescriptions/toggle-historic-prescriptions.component';
 import { isModel, isPrescription, isProposal } from '@reuse/code/utils/utils';
+import {
+  PrescriptionFilterComponent,
+  SearchFilter,
+} from '@reuse/code/components/prescription-filter/prescription-filter.component';
+import { FeatureFlagDirective } from '@reuse/code/directives/feature-flag.directive';
+import { FeatureFlagService } from '@reuse/code/services/helpers/feature-flag.service';
 
 interface ViewState {
   prescriptions?: ReadRequestListResource;
   proposals?: ReadRequestListResource;
   models?: PageModelEntityDto;
   templates?: Template[];
+  accessMatrix: AccessMatrix[];
+}
+
+interface SearchCriteria extends SearchFilter {
+  historical: boolean;
 }
 
 @Component({
@@ -72,24 +84,32 @@ interface ViewState {
     FormsModule,
     PrescriptionModelsTableComponent,
     ToggleHistoricPrescriptionsComponent,
+    PrescriptionFilterComponent,
+    FeatureFlagDirective,
   ],
 })
 export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
-  protected readonly searchCriteria$ = signal<{ historical: boolean }>({ historical: false });
-
+  protected readonly searchCriteria$ = signal<SearchCriteria>({
+    historical: false,
+    status: undefined,
+    prescriptionType: undefined,
+  });
   readonly viewStateProposals$: Signal<DataState<ViewState>> = combineSignalDataState({
     proposals: this.proposalsState.state,
     templates: this.templatesState.state,
+    accessMatrix: this.accessMatrixState.state,
   });
 
   readonly viewStatePrescriptions$: Signal<DataState<ViewState>> = combineSignalDataState({
     prescriptions: this.prescriptionsState.state,
     templates: this.templatesState.state,
+    accessMatrix: this.accessMatrixState.state,
   });
 
   readonly viewStateModels$: Signal<DataState<ViewState>> = combineSignalDataState({
     models: this.modelsState.state,
     templates: this.templatesState.state,
+    accessMatrix: this.accessMatrixState.state,
   });
 
   isPrescriptionValue = false;
@@ -123,13 +143,16 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
     private prescriptionsState: PrescriptionsState,
     private proposalsState: ProposalsState,
     private templatesState: TemplatesState,
-    private modelsState: ModelsState
+    private modelsState: ModelsState,
+    featureFlagService: FeatureFlagService
   ) {
     const currentLang = this.translate.currentLang;
     if (!currentLang) {
       this.translate.use('fr-BE');
       this.dateAdapter.setLocale('fr-BE');
     }
+
+    featureFlagService.getFeatureFlags();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -172,14 +195,19 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
   }
 
   loadPrescriptions(page?: number, pageSize?: number) {
+    const defaultParams = {
+      requester: this.requesterSsin,
+      performer: this.performerSsin,
+      historical: this.searchCriteria$().historical,
+      status: this.searchCriteria$().status,
+      template: this.searchCriteria$().prescriptionType,
+    };
     if (this.patientSsin) {
       void this.getPatientIdentifier(this.patientSsin).then(identifier => {
         this.prescriptionsState.loadPrescriptions(
           {
+            ...defaultParams,
             patient: identifier,
-            requester: this.requesterSsin,
-            performer: this.performerSsin,
-            historical: this.searchCriteria$().historical,
           },
           page,
           pageSize
@@ -188,10 +216,8 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
     } else {
       this.prescriptionsState.loadPrescriptions(
         {
+          ...defaultParams,
           patient: this.patientSsin,
-          requester: this.requesterSsin,
-          performer: this.performerSsin,
-          historical: this.searchCriteria$().historical,
         },
         page,
         pageSize
@@ -200,14 +226,20 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
   }
 
   loadProposals(page?: number, pageSize?: number) {
+    const defaultParams = {
+      requester: this.requesterSsin,
+      performer: this.performerSsin,
+      historical: this.searchCriteria$().historical,
+      status: this.searchCriteria$().status,
+      template: this.searchCriteria$().prescriptionType,
+    };
+
     if (this.patientSsin) {
       void this.getPatientIdentifier(this.patientSsin).then(identifier => {
         this.proposalsState.loadProposals(
           {
+            ...defaultParams,
             patient: identifier,
-            requester: this.requesterSsin,
-            performer: this.performerSsin,
-            historical: this.searchCriteria$().historical,
           },
           page,
           pageSize
@@ -216,10 +248,8 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
     } else {
       this.proposalsState.loadProposals(
         {
+          ...defaultParams,
           patient: this.patientSsin,
-          requester: this.requesterSsin,
-          performer: this.performerSsin,
-          historical: this.searchCriteria$().historical,
         },
         page,
         pageSize
@@ -255,7 +285,16 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
 
   handleHistoricPrescriptions(showHistoricPrescriptions: boolean) {
     this.searchCriteria$.set({
+      ...this.searchCriteria$(),
       historical: showHistoricPrescriptions,
+    });
+    this.loadData(1);
+  }
+
+  onFilterUpdate(e: SearchFilter) {
+    this.searchCriteria$.set({
+      historical: this.searchCriteria$().historical,
+      ...e,
     });
     this.loadData(1);
   }
@@ -274,6 +313,10 @@ export class ListPrescriptionsWebComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.searchCriteria$.set({ historical: false });
+    this.searchCriteria$.set({
+      historical: false,
+      status: undefined,
+      prescriptionType: undefined,
+    });
   }
 }

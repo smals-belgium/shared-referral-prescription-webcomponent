@@ -32,27 +32,36 @@
                 [label]="'prescription.pagination.prescriptions' | translate:{count:prescriptionState.data?.['prescriptions']?.total || 0}"
               ></app-active-page>
 
-              <div class="page-size">
-                <span>{{'prescription.pagination.pageSize' | translate}}:</span>
-                <mat-select
-                  data-cy="select-prescription-pagination"
-                  [value]="prescriptionState.params?.['prescriptions']?.['pageSize'] || 10"
-                  (selectionChange)="loadData(1, $event.value)"
-                >
-                  <mat-option [value]="10">10</mat-option>
-                  <mat-option [value]="15">15</mat-option>
-                  <mat-option [value]="20">20</mat-option>
-                  <mat-option [value]="25">25</mat-option>
-                </mat-select>
-              </div>
+            <div class="page-size">
+              <span>{{'prescription.pagination.pageSize' | translate}}:</span>
+              <mat-select
+                data-cy="select-prescription-pagination"
+                [value]="prescriptionState.params?.['prescriptions']?.['pageSize'] || 10"
+                (selectionChange)="loadData(1, $event.value)"
+              >
+                <mat-option [value]="10">10</mat-option>
+                <mat-option [value]="15">15</mat-option>
+                <mat-option [value]="20">20</mat-option>
+                <mat-option [value]="25">25</mat-option>
+              </mat-select>
+            </div>
+          </div>
+          @if (prescriptionState.data?.prescriptions) {
+
+            <div *featureFlag="'filters'">
+              @if (prescriptionState.data?.templates) {
+                <app-prescription-filter intent="order" [templates]="prescriptionState.data!.templates!"
+                                         [accessMatrix]="prescriptionState.data!.accessMatrix!"
+                                         [initialFilter]="searchCriteria$()"
+                                         (filterChange)="onFilterUpdate($event)"></app-prescription-filter>
+              }
             </div>
 
-            @if(prescriptionState.data?.prescriptions) {
-              <app-prescriptions-table
-                [prescriptions]="prescriptionState.data?.prescriptions"
-                (clickPrescription)="clickOpenPrescriptionDetails.emit($event)"
-              ></app-prescriptions-table>
-            }
+            <app-prescriptions-table
+              [prescriptions]="prescriptionState.data!.prescriptions!"
+              (clickPrescription)="clickOpenPrescriptionDetails.emit($event)"
+            ></app-prescriptions-table>
+          }
 
             <div class="pagination">
               <app-paginator
@@ -108,7 +117,16 @@
             </div>
           </div>
 
-          @if(proposalState.data?.proposals) {
+        @if (proposalState.data?.proposals) {
+          <div *featureFlag="'filters'">
+            @if (proposalState.data?.templates) {
+              <app-prescription-filter intent="proposal" [templates]="proposalState.data!.templates!"
+                                       [accessMatrix]="proposalState.data!.accessMatrix!"
+                                       [initialFilter]="searchCriteria$()"
+                                       (filterChange)="onFilterUpdate($event)"></app-prescription-filter>
+            }
+          </div>
+
             <app-prescriptions-table
               [prescriptions]="proposalState.data?.proposals"
               (clickPrescription)="clickOpenPrescriptionDetails.emit($event)"

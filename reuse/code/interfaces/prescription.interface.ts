@@ -1,4 +1,4 @@
-import { ReadRequestResource } from '@reuse/code/openapi';
+import { ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
 
 export interface TemplateId {
   snomed: string;
@@ -18,6 +18,8 @@ export interface SearchPrescriptionCriteria {
   requester?: string;
   performer?: string;
   historical?: boolean;
+  status?: RequestStatus[];
+  template?: string[];
 }
 
 export interface CreatePrescriptionInitialValues {

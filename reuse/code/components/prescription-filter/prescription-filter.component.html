@@ -1,0 +1,35 @@
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()" class="filter-form">
+  @if (statusOptions) {
+    <app-multiselect
+      label="{{ 'prescription.filter.status.label' | translate }}"
+      key="status"
+      [formGroup]="formGroup"
+      [data]="statusOptions"
+      [initialValue]="initialFilter.status"
+    ></app-multiselect>
+  } @if (templateOptions) {
+  <app-multiselect
+    label="{{ 'prescription.filter.prescriptionType.label' | translate }}"
+    key="prescriptionType"
+    [formGroup]="formGroup"
+    [data]="templateOptions"
+    [initialValue]="initialFilter.prescriptionType"
+  ></app-multiselect>
+  }
+  <button
+    type="submit"
+    color="accent"
+    mat-raised-button
+  >{{ 'prescription.filter.submit' | translate }}
+  </button>
+
+  @if (hasValues) {
+    <button
+      type="button"
+      color="secondary"
+      (click)="resetForm()"
+      mat-button
+    >{{ 'prescription.filter.clear' | translate }}
+    </button>
+  }
+</form>

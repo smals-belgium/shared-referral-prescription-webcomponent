@@ -148,7 +148,15 @@
       }
     },
     "filter": {
-      "historicToggle": "Historique"
+      "historicToggle": "Historique",
+      "prescriptionType": {
+        "label": "Filtrer par prescription"
+      },
+      "status": {
+        "label": "Filtrer par statut"
+      },
+      "submit": "Soumettre",
+      "clear": "Effacer tout"
     },
     "print": {
       "content-electronic-prescription": "Contenu de la prescription électronique",
