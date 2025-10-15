@@ -149,7 +149,15 @@
       }
     },
     "filter": {
-      "historicToggle": "Archief"
+      "historicToggle": "Archief",
+      "prescriptionType": {
+        "label": "Filter op voorschift"
+      },
+      "status": {
+        "label": "Filter op status"
+      },
+      "submit": "Indienen",
+      "clear": "Alles wissen"
     },
     "print": {
       "content-electronic-prescription": "Inhoud van het elektronisch voorschrift",
