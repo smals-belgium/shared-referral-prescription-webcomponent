@@ -14,9 +14,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatChipsModule } from '@angular/material/chips';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatInputModule } from '@angular/material/input';
-import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { CaregiverNamePatternValidator } from '@reuse/code/utils/validators';
-import { Intent } from '@reuse/code/interfaces';
+import { AlertType, Intent } from '@reuse/code/interfaces';
 import { GeographyService } from '@reuse/code/services/api/geography.service';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
@@ -32,7 +32,7 @@ import { PaginatorComponent } from '@reuse/code/components/paginator/paginator.c
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { OrganizationService } from '@reuse/code/services/helpers/organization.service';
 import { v4 as uuidv4 } from 'uuid';
-import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
 import {
   CityResource,
@@ -91,11 +91,13 @@ interface AssignPrescriptionDialogData {
     KeyValuePipe,
     MatButtonToggleModule,
     FormatMultilingualObjectPipe,
-    ErrorCardComponent,
+    AlertComponent,
   ],
   providers: [provideNgxMask()],
 })
 export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
+  protected readonly isProfessional = isProfessional;
+  protected readonly AlertType = AlertType;
   private readonly nameValidators = [Validators.minLength(2), CaregiverNamePatternValidator];
   readonly searchCriteria$ = signal<{
     query: string;
@@ -502,6 +504,4 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
     if (!code) return '';
     return this.organizationService.getGroupNameByCode(code) ?? '';
   }
-
-  protected readonly isProfessional = isProfessional;
 }

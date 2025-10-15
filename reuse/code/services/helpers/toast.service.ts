@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -8,12 +8,8 @@ export interface ToastOptions {
 
 @Injectable({ providedIn: 'root' })
 export class ToastService {
-
-  constructor(
-    private readonly snackBar: MatSnackBar,
-    private readonly translate: TranslateService
-  ) {
-  }
+  private readonly snackBar = inject(MatSnackBar);
+  private readonly translate = inject(TranslateService);
 
   show(messageLabel: string, options?: ToastOptions): void {
     this.snackBar.open(this.translate.instant(messageLabel, options?.interpolation), 'X', { duration: 8000 });

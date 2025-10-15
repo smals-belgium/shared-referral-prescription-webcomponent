@@ -24,7 +24,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DateAdapter } from '@angular/material/core';
 import { DateTime } from 'luxon';
 import { DOCUMENT, NgStyle } from '@angular/common';
-import { DataState, IdToken, LoadingStatus, UserInfo } from '@reuse/code/interfaces';
+import { AlertType, DataState, IdToken, LoadingStatus, UserInfo } from '@reuse/code/interfaces';
 import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { AssignPrescriptionDialog } from '@reuse/code/dialogs/assign-prescription/assign-prescription.dialog';
@@ -49,9 +49,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
 import { IfStatusErrorDirective } from '@reuse/code/directives/if-status-error.directive';
-import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { IfStatusLoadingDirective } from '@reuse/code/directives/if-status-loading.directive';
-import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { DatePipe } from '@reuse/code/pipes/date.pipe';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { TemplatesState } from '@reuse/code/states/api/templates.state';
@@ -120,7 +120,7 @@ interface ViewState {
     NgStyle,
     IfStatusLoadingDirective,
     OverlaySpinnerComponent,
-    ErrorCardComponent,
+    AlertComponent,
     IfStatusErrorDirective,
     IfStatusSuccessDirective,
     MatButtonModule,
@@ -149,6 +149,9 @@ interface ViewState {
   ],
 })
 export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDestroy {
+  protected readonly signal = signal;
+  protected readonly HttpErrorResponse = HttpErrorResponse;
+  protected readonly AlertType = AlertType;
   protected readonly isProposal = isProposal;
   loading = false;
   printer = false;
@@ -898,7 +901,4 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       this.prescriptionStateService.resetPrescription();
     }
   }
-
-  protected readonly signal = signal;
-  protected readonly HttpErrorResponse = HttpErrorResponse;
 }

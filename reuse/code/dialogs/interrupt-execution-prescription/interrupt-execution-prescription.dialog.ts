@@ -3,13 +3,14 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
-import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { v4 as uuidv4 } from 'uuid';
-import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
 import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
 import { PerformerTaskResource, PersonResource, ReadRequestResource } from '@reuse/code/openapi';
+import { AlertType } from '@reuse/code/interfaces';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 
 interface InterruptExecutionPrescriptionDialogData {
   prescription: ReadRequestResource;
@@ -26,10 +27,11 @@ interface InterruptExecutionPrescriptionDialogData {
     MatButtonModule,
     OverlaySpinnerComponent,
     TemplateNamePipe,
-    ErrorCardComponent,
+    AlertComponent,
   ],
 })
 export class InterruptExecutionPrescriptionDialog extends BaseDialog implements OnInit {
+  protected readonly AlertType = AlertType;
   prescription: ReadRequestResource;
   performerTask: PerformerTaskResource;
   patient: PersonResource;

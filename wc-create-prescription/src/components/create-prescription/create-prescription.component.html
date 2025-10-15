@@ -32,11 +32,12 @@
     <app-overlay-spinner></app-overlay-spinner>
   }
 } @else {
-  <app-error-card
+  <app-alert
+    [alert]="AlertType.Error"
     [message]="'common.errors.pseudoDisabled' | translate"
     [error]="errorResponseBadGateway"
     [showRetry]="false"
-  ></app-error-card>
+  ></app-alert>
 }
 
 

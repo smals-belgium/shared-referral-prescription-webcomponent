@@ -3,11 +3,10 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
-import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { v4 as uuidv4 } from 'uuid';
-import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
 import { PerformerTaskResource, PersonResource, ReadRequestResource } from '@reuse/code/openapi';
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
@@ -15,6 +14,8 @@ import { isProposal } from '@reuse/code/utils/utils';
 import { Observable } from 'rxjs';
 import { TranslateByIntentPipe } from '@reuse/code/pipes/translate-by-intent.pipe';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AlertType } from '@reuse/code/interfaces';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 
 interface RejectAssignationDialogData {
   prescription: ReadRequestResource;
@@ -31,11 +32,12 @@ interface RejectAssignationDialogData {
     MatButtonModule,
     OverlaySpinnerComponent,
     TemplateNamePipe,
-    ErrorCardComponent,
+    AlertComponent,
     TranslateByIntentPipe,
   ],
 })
 export class RejectAssignationDialog extends BaseDialog implements OnInit {
+  protected readonly AlertType = AlertType;
   readonly prescription: ReadRequestResource;
   readonly patient?: PersonResource;
   readonly performerTask: PerformerTaskResource;

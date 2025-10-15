@@ -22,10 +22,11 @@ import { MatButton } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { generateWarningMessage } from '@reuse/code/utils/pss-relevant-info-message.utils';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlRequest, SupportOption } from '@reuse/code/openapi';
+import { AlertType } from '@reuse/code/interfaces';
 import { EMPTY_OBJECT } from '@reuse/code/constants/common.constants';
 
 @Component({
@@ -49,12 +50,12 @@ import { EMPTY_OBJECT } from '@reuse/code/constants/common.constants';
     EvfCommonErrorsPipe,
     MatIconModule,
     MatProgressSpinnerModule,
-    ErrorCardComponent,
+    AlertComponent,
   ],
   templateUrl: './recommendations.component.html',
-  styleUrl: './recommendations.component.scss',
 })
 export class RecommendationsComponent extends EvfBaseFormElementComponent {
+  protected readonly AlertType = AlertType;
   readonly isLoading = signal(false);
   readonly hasValue = signal(false);
   readonly controlIndications = signal<SupportOption[] | undefined>(undefined);

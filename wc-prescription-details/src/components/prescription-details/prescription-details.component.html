@@ -1,13 +1,14 @@
 <div class="container">
   @if (viewState$(); as viewState) {
     <app-overlay-spinner *ifStatusLoading="viewState" mode="inline"></app-overlay-spinner>
-    <app-error-card
+    <app-alert
       *ifStatusError="viewState"
+      [alert]="AlertType.Error"
       [message]="'prescription.errors.failedToLoadPrescription' | translate"
       [error]="prescriptionHttpError"
       [showRetry]="showRetryButton()"
       (clickRetry)="loadPrescriptionOrProposal()"
-    ></app-error-card>
+    ></app-alert>
     <ng-container *ifStatusSuccess="viewState">
       @if (viewState.data!.prescription; as prescription) {
         <div>

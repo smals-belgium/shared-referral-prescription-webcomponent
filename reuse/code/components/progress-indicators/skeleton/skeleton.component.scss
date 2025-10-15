@@ -1,0 +1,6 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+.skeleton-grid-container {
+  display: grid;
+  gap: mh.$spacing-rem-m;
+}

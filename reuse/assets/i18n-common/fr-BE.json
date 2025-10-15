@@ -48,6 +48,7 @@
       "null": "Inconnu"
     },
     "somethingWentWrong": "Une erreur s'est produite. Veuillez ré-essayer.",
+    "somethingWentWrongWithoutRetry": "Une erreur s'est produite.",
     "forbiddenAction": "Vous n'êtes pas autorisé(e) à effectuer cette action.",
     "forbiddenResource": "Vous n'êtes pas autorisé(e) à consulter cette page.",
     "notFoundResource": "La page demandée n'existe pas.",
@@ -73,6 +74,10 @@
     "sureDeleteCareGiver": "Êtes-vous sûr(e) de vouloir supprimer ce prestataire?"
   },
   "prescription": {
+    "creationDate": "Créé le",
+    "details": {
+      "link": "Voir détails"
+    },
     "selectTemplate": {
       "prescriptionModel": "Modèle de prescription",
       "pickOptionFromList": "Choisissez une option dans la liste",
@@ -117,9 +122,12 @@
         "title": "Annuler une ou plusieurs prescriptions",
         "cancelAll": "Annuler tout"
       },
-      "cancelCreation": "Êtes-vous sûr(e) de vouloir annuler la création de cette prescription ?"
+      "cancelCreation": "Êtes-vous sûr(e) de vouloir annuler la création de cette prescription ?",
+      "prescription": "Créer prescription"
     },
+    "allPrescriptionsFetched": "Toutes les prescriptions récupérées",
     "model": {
+      "allModalsFetched": "Toutes les modèles récupérées",
       "title": "Modèle",
       "create": {
         "title": "Enregistrer comme modèle",
@@ -128,7 +136,8 @@
           "title": "Voulez-vous enregistrer la prescription comme modèle?",
           "label": "Nom du modèle",
           "labelNotUnique": "Le nom du modèle n'est pas unique."
-        }
+        },
+        "model": "Créer modèle"
       },
       "update": {
         "title": "Mettre à jour le modèle"
@@ -314,6 +323,10 @@
     }
   },
   "proposal": {
+    "creationDate": "Aangemaakt op",
+    "details": {
+      "link": "Bekijk details"
+    },
     "selectTemplate": {
       "proposalModel": "Modèle de proposition",
       "pickOptionFromList": "Choisissez une option dans la liste",
@@ -335,8 +348,10 @@
         "title": "Annuler une ou plusieurs propositions",
         "cancelAll": "Annuler tout"
       },
-      "cancelCreation": "Êtes-vous sûr de vouloir annuler la création de cette proposition ?"
+      "cancelCreation": "Êtes-vous sûr de vouloir annuler la création de cette proposition ?",
+      "proposal": "Créer proposition"
     },
+    "allProposalsFetched": "Toutes les propositions récupérées",
     "print": {
       "content-electronic-proposal": "Contenu de la proposition électronique",
       "guideline": "Veuillez présenter ce document à votre médecin soignant. Il vous est possible de scanner le code QR pour avoir accès au détail présent dans la proposition digital.",

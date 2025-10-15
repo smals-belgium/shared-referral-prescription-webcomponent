@@ -10,12 +10,13 @@ import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { EvfTranslateService } from '@smals/vas-evaluation-form-ui-core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { generateWarningMessage } from '@reuse/code/utils/pss-relevant-info-message.utils';
 import { SupportOption } from '@reuse/code/openapi';
+import { AlertType } from '@reuse/code/interfaces';
 import { EMPTY_OBJECT } from '@reuse/code/constants/common.constants';
 
 @Component({
@@ -27,7 +28,7 @@ import { EMPTY_OBJECT } from '@reuse/code/constants/common.constants';
     TranslateModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    ErrorCardComponent,
+    AlertComponent,
     ReactiveFormsModule,
     MatIconModule,
   ],
@@ -54,6 +55,7 @@ import { EMPTY_OBJECT } from '@reuse/code/constants/common.constants';
  * @public
  */
 export class RecommendationsDetailComponent extends EvfBaseFormDetailComponent implements OnChanges {
+  protected readonly AlertType = AlertType;
   readonly isLoading = signal(false);
   readonly controlRecommendations = signal<SupportOption[] | undefined>(undefined);
   readonly isPssActive = signal(false);

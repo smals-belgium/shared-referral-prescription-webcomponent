@@ -12,11 +12,12 @@
   </div>
 
   @if(errorCard.show){
-    <app-error-card
+    <app-alert
+      [alert]="AlertType.Error"
       [message]="errorCard.message | translate : errorCard.translationOptions"
       [error]="errorCard.errorResponse"
       [showRetry]="false"
-    ></app-error-card>
+    ></app-alert>
   }
 
   <mat-accordion [hideToggle]="createPrescriptionForms.length === 1" togglePosition="before">
@@ -58,10 +59,11 @@
         </mat-expansion-panel-header>
 
         @if(modelState().state === LoadingStatus.ERROR) {
-          <app-error-card
+          <app-alert
+            [alert]="AlertType.Error"
             [message]="'prescription.errors.failedToCreateModel' | translate"
             [error]="modelState().error"
-          ></app-error-card>
+          ></app-alert>
         } @else if(modelState().state === LoadingStatus.SUCCESS) {
           <app-success-card
             [message]="'prescription.model.create.success' | translate:{name: modelState().success}"

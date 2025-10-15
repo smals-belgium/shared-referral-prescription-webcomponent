@@ -1,0 +1,11 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+.mh-chips {
+  gap: mh.$spacing-xs;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.mh-margin-bottom {
+  margin-bottom: 22px;
+}

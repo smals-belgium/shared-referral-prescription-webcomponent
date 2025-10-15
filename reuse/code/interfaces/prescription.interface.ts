@@ -1,4 +1,4 @@
-import { ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
+import { ReadRequestResource, RequestStatus  } from '@reuse/code/openapi';
 
 export interface TemplateId {
   snomed: string;

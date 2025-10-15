@@ -973,7 +973,7 @@ describe('PrescriptionDetailsWebComponent', () => {
     fixture.detectChanges();
 
     const { debugElement } = fixture;
-    const errorCard = debugElement.query(By.css('app-error-card'));
+    const errorCard = debugElement.query(By.css('app-alert'));
     expect(errorCard).toBeTruthy();
   });
 

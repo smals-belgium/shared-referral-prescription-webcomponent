@@ -21,10 +21,11 @@
     <p>{{ 'prescription.create.control.table.title' | translate }}</p>
     @if (hasAdditionalRelevantInformation()) {
 
-      <app-error-card
+      <app-alert
+        [alert]="AlertType.Error"
         [message]=getWarningMessage()
         [showRetry]="false"
-      ></app-error-card>
+      ></app-alert>
     }
 
     <app-pss-radiology-result-dialog [supportOptions]="controlRecommendations()"
@@ -34,9 +35,10 @@
   </section>
 }
 @if (isProfessional() && !isPssActive()) {
-  <app-error-card
+  <app-alert
+    [alert]="AlertType.Error"
     [title]="'pss.unavailable.title' | translate"
     [message]="'pss.unavailable.message' | translate"
     [showRetry]="false"
-  ></app-error-card>
+  ></app-alert>
 }

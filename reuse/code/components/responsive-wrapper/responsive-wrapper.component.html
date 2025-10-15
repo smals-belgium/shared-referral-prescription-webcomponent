@@ -1,0 +1,5 @@
+@if(isDesktop()) {
+  <ng-container [ngTemplateOutlet]="desktopTemplate"></ng-container>
+} @else {
+  <ng-container [ngTemplateOutlet]="mobileTemplate"></ng-container>
+}

@@ -3,14 +3,15 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
-import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { v4 as uuidv4 } from 'uuid';
 import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
-import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { PerformerTaskResource, PersonResource, ReadRequestResource } from '@reuse/code/openapi';
 import { HttpErrorResponse } from '@angular/common/http';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
+import { AlertType } from '@reuse/code/interfaces';
 
 interface CancelExecutionPrescriptionDialogData {
   prescription: ReadRequestResource;
@@ -27,10 +28,12 @@ interface CancelExecutionPrescriptionDialogData {
     MatButtonModule,
     OverlaySpinnerComponent,
     TemplateNamePipe,
-    ErrorCardComponent,
+    AlertComponent,
   ],
 })
 export class CancelExecutionPrescriptionDialog implements OnInit {
+  protected readonly AlertType = AlertType;
+
   prescription: ReadRequestResource;
   patient?: PersonResource;
   performerTask: PerformerTaskResource;

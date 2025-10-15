@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatButton } from '@angular/material/button';
@@ -9,12 +9,13 @@ import { MatInput } from '@angular/material/input';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { v4 as uuidv4 } from 'uuid';
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
-import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
 import { ReadRequestResource } from '@reuse/code/openapi';
 import { catchError, switchMap } from 'rxjs';
 import { EncryptionHelperService } from '@reuse/code/states/privacy/encryption-helper.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AlertType } from '@reuse/code/interfaces';
 
 @Component({
   imports: [
@@ -28,12 +29,13 @@ import { HttpErrorResponse } from '@angular/common/http';
     MatError,
     MatLabel,
     FormsModule,
-    ErrorCardComponent,
+    AlertComponent,
   ],
   templateUrl: './reject-proposal.dialog.html',
   styleUrl: './reject-proposal.dialog.scss',
 })
 export class RejectProposalDialog extends BaseDialog implements OnInit {
+  protected readonly AlertType = AlertType;
   readonly formGroup = new FormGroup({
     reason: new FormControl<string>(''),
   });

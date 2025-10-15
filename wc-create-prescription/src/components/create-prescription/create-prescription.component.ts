@@ -26,6 +26,7 @@ import {
   CancelCreationDialogResult,
 } from '@reuse/code/dialogs/cancel-creation/cancel-creation.dialog';
 import {
+  AlertType,
   CreatePrescriptionForm,
   CreatePrescriptionInitialValues,
   DataState,
@@ -35,7 +36,7 @@ import { CreateMultiplePrescriptionsComponent } from '@reuse/code/components/cre
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionService } from '@reuse/code/services/api/prescription.service';
 import { ConfirmDialog, ConfirmDialogData } from '@reuse/code/dialogs/confirm/confirm.dialog';
-import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
 import { AsyncPipe, DOCUMENT } from '@angular/common';
 import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
@@ -51,7 +52,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { CreatePrescriptionModelComponent } from '@reuse/code/components/create-prescription-model/create-prescription-model.component';
 import { PrescriptionModelService } from '@reuse/code/services/api/prescriptionModel.service';
 import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
-import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { HttpErrorResponse } from '@angular/common/http';
 import { setOccurrenceTimingResponses } from '@reuse/code/utils/occurrence-timing.utils';
 import {
@@ -62,10 +63,7 @@ import {
   ReadRequestResource,
   TemplateVersion,
 } from '@reuse/code/openapi';
-import {
-  ChooseTemplateDialog,
-  NewPrescriptionDialogResult,
-} from '@reuse/code/dialogs/choose-template/choose-template.dialog';
+import { ChooseTemplateDialog, SelectedTemplate } from '@reuse/code/dialogs/choose-template/choose-template.dialog';
 import { isModel, isPrescription } from '@reuse/code/utils/utils';
 import { EncryptionKeyInitializerService } from '@reuse/code/states/privacy/encryption-key-initializer.service';
 
@@ -82,10 +80,11 @@ import { EncryptionKeyInitializerService } from '@reuse/code/states/privacy/encr
     AsyncPipe,
     TranslateModule,
     CreatePrescriptionModelComponent,
-    ErrorCardComponent,
+    AlertComponent,
   ],
 })
 export class CreatePrescriptionWebComponent implements OnChanges {
+  protected readonly AlertType = AlertType;
   isEnabled$: Observable<boolean>;
   errorResponseBadGateway = new HttpErrorResponse({
     status: 502,
@@ -243,7 +242,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
 
   addPrescription(): void {
     this.dialog
-      .open<ChooseTemplateDialog, unknown, NewPrescriptionDialogResult>(ChooseTemplateDialog, {
+      .open<ChooseTemplateDialog, unknown, SelectedTemplate>(ChooseTemplateDialog, {
         maxWidth: '100vw',
         width: '500px',
         autoFocus: false,

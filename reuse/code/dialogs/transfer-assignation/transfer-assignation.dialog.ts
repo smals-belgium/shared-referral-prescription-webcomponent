@@ -16,9 +16,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatChipsModule } from '@angular/material/chips';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatInputModule } from '@angular/material/input';
-import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { CaregiverNamePatternValidator } from '@reuse/code/utils/validators';
-import { DataState, Intent } from '@reuse/code/interfaces';
+import { AlertType, DataState, Intent } from '@reuse/code/interfaces';
 import { GeographyService } from '@reuse/code/services/api/geography.service';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
@@ -28,7 +28,7 @@ import { toDataState } from '@reuse/code/utils/rxjs.utils';
 import { FormatMultilingualObjectPipe } from '@reuse/code/pipes/format-multilingual-object.pipe';
 import { v4 as uuidv4 } from 'uuid';
 import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
-import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import { getAssignableProfessionalDisciplines } from '@reuse/code/utils/assignment-disciplines.utils';
 import { isProposal } from '@reuse/code/utils/utils';
@@ -65,11 +65,12 @@ interface TransferAssignation {
     FormatNihdiPipe,
     AsyncPipe,
     FormatMultilingualObjectPipe,
-    ErrorCardComponent,
+    AlertComponent,
   ],
   providers: [provideNgxMask()],
 })
 export class TransferAssignationDialog extends BaseDialog implements OnInit {
+  protected readonly AlertType = AlertType;
   private readonly nameValidators = [Validators.minLength(2), CaregiverNamePatternValidator];
   private readonly searchCriteria$ = signal<{ query: string; zipCodes: number[] }>({ query: '', zipCodes: [] });
 

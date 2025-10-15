@@ -7,12 +7,12 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { TranslateModule } from '@ngx-translate/core';
 import { DatePipe } from '@reuse/code/pipes/date.pipe';
-import { OverlaySpinnerComponent } from '@reuse/code/components/overlay-spinner/overlay-spinner.component';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
-import { PrescriptionExecutionFinish } from '@reuse/code/interfaces';
+import { AlertType, PrescriptionExecutionFinish } from '@reuse/code/interfaces';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { v4 as uuidv4 } from 'uuid';
-import { ErrorCardComponent } from '@reuse/code/components/error-card/error-card.component';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
 import { PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
 
@@ -28,10 +28,11 @@ import { PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi'
     MatInputModule,
     OverlaySpinnerComponent,
     DatePipe,
-    ErrorCardComponent,
+    AlertComponent,
   ],
 })
 export class FinishExecutionPrescriptionDialog extends BaseDialog implements OnInit {
+  protected readonly AlertType = AlertType;
   readonly formGroup = new FormGroup({
     endDate: new FormControl<DateTime>(DateTime.now()),
   });

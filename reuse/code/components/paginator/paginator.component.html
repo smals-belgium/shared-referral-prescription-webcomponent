@@ -1,37 +1,10 @@
-<button data-cy="double_arrow_left" mat-icon-button color="accent" type="button" (click)="changePage.emit(1)" [disabled]="page === 1" [attr.aria-label]="'pagination.ariaLabel.firstPage' | translate">
-  <mat-icon>keyboard_double_arrow_left</mat-icon>
-</button>
-<button data-cy="simple_arrow_left" mat-icon-button color="accent" type="button" (click)="changePage.emit(page - 1)" [disabled]="page === 1" [attr.aria-label]="'pagination.ariaLabel.previousPage' | translate">
-  <mat-icon>keyboard_arrow_left</mat-icon>
-</button>
-
-<div class="pages">
-  <ng-container *ngFor="let p of displayedPages">
-    @if(p === page) {
-    <button data-cy="pagination"
-      class="active"
-      color="accent"
-      tabindex="-1"
-      mat-flat-button
-    >{{p}}</button>
-    }
-    @if(p !== '...' && p !== page) {
-    <button data-cy="pagination"
-      mat-flat-button
-      (click)="changePage.emit($any(p))"
-    >{{p}}</button>
-    }
-    @if(p === '...'){
-      <div data-cy="pagination_points" class="spacer">...</div>
-    }
-  </ng-container>
-</div>
-
-<button data-cy="simple_arrow_right" mat-icon-button color="accent" type="button" (click)="changePage.emit(page + 1)"
-        [disabled]="page === totalPages" [attr.aria-label]="'pagination.ariaLabel.nextPage' | translate">
-  <mat-icon>keyboard_arrow_right</mat-icon>
-</button>
-<button data-cy="double_arrow_right" mat-icon-button color="accent" type="button" (click)="changePage.emit(totalPages)"
-        [disabled]="page === totalPages" [attr.aria-label]="'pagination.ariaLabel.lastPage' | translate">
-  <mat-icon>keyboard_double_arrow_right</mat-icon>
-</button>
+<mat-paginator
+  #paginator
+  (page)="handlePageEvent($event)"
+  [length]="total"
+  [showFirstLastButtons]="true"
+  [pageSizeOptions]="pageSizeOptions"
+  [pageSize]="pageSize"
+  [pageIndex]="pageIndex"
+  aria-label="'pagination.ariaLabel.selectPage' | translate"
+/>

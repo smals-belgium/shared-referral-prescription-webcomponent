@@ -77,10 +77,11 @@
     <p>{{ 'prescription.create.control.table.title' | translate }}</p>
     @if (hasAdditionalRelevantInformation()) {
 
-      <app-error-card
+      <app-alert
+        [alert]="AlertType.Error"
         [message]=getWarningMessage()
         [showRetry]="false"
-      ></app-error-card>
+      ></app-alert>
     }
 
     <app-pss-radiology-result-dialog [supportOptions]="controlIndications()"
