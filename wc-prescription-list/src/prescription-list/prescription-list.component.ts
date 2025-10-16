@@ -339,6 +339,7 @@ export class PrescriptionListWebComponent implements OnChanges, OnDestroy, After
   openDeleteModelDialog(model: ModelEntityDto) {
     this.dialog
       .open(ConfirmDialog, {
+        panelClass: 'mh-dialog-container',
         data: {
           titleLabel: 'prescription.model.delete.title',
           messageLabel: 'prescription.model.delete.message',

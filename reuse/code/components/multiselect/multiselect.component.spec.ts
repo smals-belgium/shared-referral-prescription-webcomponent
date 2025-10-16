@@ -11,30 +11,22 @@ import { By } from '@angular/platform-browser';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
-  imports: [
-    ReactiveFormsModule,
-    MultiselectComponent
-  ],
+  imports: [ReactiveFormsModule, MultiselectComponent],
   template: `
     <form [formGroup]="form">
-      <app-multiselect
-        [data]="options"
-        [key]="'testKey'"
-        [formGroup]="form"
-        [label]="'Test Label'"
-      ></app-multiselect>
+      <app-multiselect [data]="options" [key]="'testKey'" [formGroup]="form" [label]="'Test Label'"></app-multiselect>
     </form>
-  `
+  `,
 })
 class TestHostComponent {
   @ViewChild(MultiselectComponent) multiselectComponent!: MultiselectComponent;
   options = [
-    {name: 'Option 1', value: 'value1'},
-    {name: 'Option 2', value: 'value2'},
-    {name: 'Option 3', value: 'value3'}
+    { name: 'Option 1', value: 'value1' },
+    { name: 'Option 2', value: 'value2' },
+    { name: 'Option 3', value: 'value3' },
   ];
   form = new FormGroup({
-    testKey: new FormControl([])
+    testKey: new FormControl([]),
   });
 }
 
@@ -54,9 +46,9 @@ describe('MultiselectComponent', () => {
         MatChipsModule,
         MatFormFieldModule,
         NoopAnimationsModule,
-        TranslateModule.forRoot()
+        TranslateModule.forRoot(),
       ],
-      providers: [LiveAnnouncer]
+      providers: [LiveAnnouncer],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestHostComponent);
@@ -89,7 +81,7 @@ describe('MultiselectComponent', () => {
 
   it('should add item when selected from autocomplete', () => {
     const event = {
-      option: {value: 'value1', deselect: jest.fn()}
+      option: { value: 'value1', deselect: jest.fn() },
     } as unknown as MatAutocompleteSelectedEvent;
 
     jest.spyOn(announcer, 'announce');
@@ -107,7 +99,7 @@ describe('MultiselectComponent', () => {
 
   it('should remove item when chip remove button is clicked', () => {
     const event = {
-      option: {value: 'value1', deselect: jest.fn()}
+      option: { value: 'value1', deselect: jest.fn() },
     } as unknown as MatAutocompleteSelectedEvent;
     multiselect.selected(event);
     fixture.detectChanges();
@@ -131,7 +123,7 @@ describe('MultiselectComponent', () => {
     fixture.detectChanges();
 
     const event = {
-      option: {value: 'value1', deselect: jest.fn()}
+      option: { value: 'value1', deselect: jest.fn() },
     } as unknown as MatAutocompleteSelectedEvent;
     multiselect.selected(event);
     fixture.detectChanges();
@@ -152,7 +144,7 @@ describe('MultiselectComponent', () => {
     const setupSpy = jest.spyOn(multiselect, 'setupAutocompleteOptions');
 
     multiselect.ngOnChanges({
-      data: {currentValue: [], previousValue: null, firstChange: true, isFirstChange: () => true}
+      data: { currentValue: [], previousValue: null, firstChange: true, isFirstChange: () => true },
     });
 
     expect(setupSpy).toHaveBeenCalled();
@@ -168,7 +160,7 @@ describe('MultiselectComponent', () => {
 
   it('should not show selected items in filtered options', () => {
     const event = {
-      option: {value: 'value1', deselect: jest.fn()}
+      option: { value: 'value1', deselect: jest.fn() },
     } as unknown as MatAutocompleteSelectedEvent;
     multiselect.selected(event);
     fixture.detectChanges();
@@ -179,7 +171,7 @@ describe('MultiselectComponent', () => {
 
   it('should mark form control as dirty when items are added or removed', () => {
     const event = {
-      option: {value: 'value1', deselect: jest.fn()}
+      option: { value: 'value1', deselect: jest.fn() },
     } as unknown as MatAutocompleteSelectedEvent;
 
     const markDirtySpy = jest.spyOn(multiselect.formControl as FormControl, 'markAsDirty');

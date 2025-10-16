@@ -27,6 +27,7 @@ import { AutocompleteMultiselectComponent } from '@reuse/code/evf/autocomplete-m
 import { RecommendationsComponent } from '@reuse/code/evf/pss-recommendations/element/recommendations.component';
 import { withRepeatableInlineElement } from '@smals/vas-evaluation-form-ui-material/elements/repeatable-inline';
 import { withSlideToggleElement } from '@smals/vas-evaluation-form-ui-material/elements/slide-toggle';
+import { ToggleResponsiveWrapperComponent } from '@reuse/code/evf/toggle-responsive-wrapper/element/toggle-responsive-wrapper.component';
 
 export function provideEvfForm() {
   return [
@@ -55,6 +56,10 @@ export function provideEvfForm() {
         {
           name: 'recommendations',
           element: RecommendationsComponent,
+        },
+        {
+          name: 'toggleButton',
+          element: ToggleResponsiveWrapperComponent,
         }
       ),
       withAutocompleteElement(),
@@ -69,7 +74,7 @@ export function provideEvfForm() {
     {
       provide: EVF_MATERIAL_OPTIONS,
       useValue: {
-        appearance: 'fill',
+        appearance: 'outline',
       },
     },
     { provide: EvfExternalSourceService, useClass: ExternalSourceService },

@@ -46,7 +46,7 @@
     {
       "files": [
         "reuse/code/**/*.ts",
-        "wc-create-prescription/src/**/*.ts",
+        "wc-prescription-create/src/**/*.ts",
         "wc-evf-form/src/**/*.ts",
         "wc-evf-form-details/src/**/*.ts",
         "wc-prescription-list/src/**/*.ts",

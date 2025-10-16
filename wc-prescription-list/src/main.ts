@@ -15,7 +15,10 @@ import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { WcAuthService } from '@reuse/code/services/auth/wc-auth.service';
 import { providePseudonymisation } from '@reuse/code/providers/pseudo.provider';
 import { provideOpenApi } from '@reuse/code/providers/open-api.provider';
-import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
+import {
+  OVERLAY_QUERY_SELECTOR,
+  ShadowDomOverlayContainer,
+} from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { OverlayContainer } from '@angular/cdk/overlay';
 
 (async () => {
@@ -37,7 +40,11 @@ import { OverlayContainer } from '@angular/cdk/overlay';
         useFactory: getErrorHandlerFromConfiguration,
         deps: [ConfigurationService],
       },
-      { provide: OverlayContainer, useExisting: ShadowDomOverlayContainer },
+      { provide: OVERLAY_QUERY_SELECTOR, useValue: ['nihdi-referral-prescription-list'] },
+      {
+        provide: OverlayContainer,
+        useClass: ShadowDomOverlayContainer,
+      },
       provideOpenApi(),
       importProvidersFrom(
         TranslateModule.forRoot({

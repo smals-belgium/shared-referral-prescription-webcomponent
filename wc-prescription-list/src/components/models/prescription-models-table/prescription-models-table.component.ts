@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { DatePipe } from '@reuse/code/pipes/date.pipe';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
@@ -24,7 +24,7 @@ import { ModelEntityDto, RequestStatus } from '@reuse/code/openapi';
 import { FormatEnum, SkeletonComponent } from '@reuse/code/components/progress-indicators/skeleton/skeleton.component';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
-import { MatMenuModule } from '@angular/material/menu';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { AlertType } from '@reuse/code/interfaces';
 
 @Component({
@@ -77,8 +77,11 @@ export class PrescriptionModelsTableComponent {
 
   displayedColumns: string[] = ['creationDate', 'label', 'template', 'actions'];
 
+  @ViewChild(MatMenuTrigger) menuTrigger: MatMenuTrigger | undefined;
+
   onActionButtonClick = (event: Event, model: ModelEntityDto) => {
     event.stopPropagation();
     this.deletePrescriptionModel.emit(model);
+    this.menuTrigger?.closeMenu();
   };
 }

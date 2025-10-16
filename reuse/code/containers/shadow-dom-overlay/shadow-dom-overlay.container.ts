@@ -1,10 +1,15 @@
-import { Injectable, ElementRef, Inject, OnDestroy } from '@angular/core';
+import { Inject, Injectable, InjectionToken, OnDestroy } from '@angular/core';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { DOCUMENT } from '@angular/common';
 
+export const OVERLAY_QUERY_SELECTOR = new InjectionToken<string[]>('Overlay query selector');
+
 @Injectable({ providedIn: 'root' })
 export class ShadowDomOverlayContainer extends OverlayContainer implements OnDestroy {
-  constructor(@Inject(DOCUMENT) _document: any) {
+  constructor(
+    @Inject(DOCUMENT) _document: any,
+    @Inject(OVERLAY_QUERY_SELECTOR) private selectors: string[]
+  ) {
     super(_document);
   }
 
@@ -12,9 +17,15 @@ export class ShadowDomOverlayContainer extends OverlayContainer implements OnDes
     super.ngOnDestroy();
   }
 
-  getRootElement(): Element {
-    // @ts-ignore
-    return this._document.querySelector('nihdi-referral-prescription-list').shadowRoot;
+  getRootElement(): Element | null {
+    let root: Document | ShadowRoot | Element | null = this._document;
+    for (const selector of this.selectors) {
+      if (!root) return null;
+      const next: Element | null = (root as Document | ShadowRoot | Element).querySelector(selector);
+      root = next?.shadowRoot ?? next;
+    }
+
+    return root as Element | null;
   }
 
   createContainer(): void {

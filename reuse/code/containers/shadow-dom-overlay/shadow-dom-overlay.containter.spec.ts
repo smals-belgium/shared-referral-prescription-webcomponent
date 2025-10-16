@@ -1,7 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { DOCUMENT } from '@angular/common';
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { ShadowDomOverlayContainer } from './shadow-dom-overlay.container';
+import { OVERLAY_QUERY_SELECTOR, ShadowDomOverlayContainer } from './shadow-dom-overlay.container';
+
+const overlayQuerySelector = 'nihdi-referral-prescription-create';
 
 describe('ShadowDomOverlayContainer', () => {
   let service: ShadowDomOverlayContainer;
@@ -46,7 +48,11 @@ describe('ShadowDomOverlayContainer', () => {
     };
 
     TestBed.configureTestingModule({
-      providers: [ShadowDomOverlayContainer, { provide: DOCUMENT, useValue: mockDocument }],
+      providers: [
+        ShadowDomOverlayContainer,
+        { provide: DOCUMENT, useValue: mockDocument },
+        { provide: OVERLAY_QUERY_SELECTOR, useValue: [overlayQuerySelector] },
+      ],
     });
 
     service = TestBed.inject(ShadowDomOverlayContainer);
@@ -72,7 +78,7 @@ describe('ShadowDomOverlayContainer', () => {
   it('should return shadow root from getRootElement()', () => {
     const result = service.getRootElement();
 
-    expect(mockDocument.querySelector).toHaveBeenCalledWith('nihdi-referral-prescription-list');
+    expect(mockDocument.querySelector).toHaveBeenCalledWith(overlayQuerySelector);
     expect(result).toBe(mockShadowRoot);
   });
 

@@ -55,9 +55,9 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
   generatedUUID = '';
 
   constructor(
-    private readonly prescriptionStateService: PrescriptionState,
-    private readonly authService: AuthService,
-    private readonly toastService: ToastService,
+    private prescriptionStateService: PrescriptionState,
+    private authService: AuthService,
+    private toastService: ToastService,
     dialogRef: MatDialogRef<StartExecutionPrescriptionDialog>,
     @Inject(MAT_DIALOG_DATA) private readonly data: StartExecutionPrescriptionDialogData
   ) {

@@ -123,7 +123,8 @@
         "cancelAll": "Annuler tout"
       },
       "cancelCreation": "Êtes-vous sûr(e) de vouloir annuler la création de cette prescription ?",
-      "prescription": "Créer prescription"
+      "prescription": "Créer prescription",
+      "requiredFields": "Champs obligatoires"
     },
     "allPrescriptionsFetched": "Toutes les prescriptions récupérées",
     "model": {

@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
@@ -32,7 +33,6 @@ import {
   DataState,
   LoadingStatus,
 } from '@reuse/code/interfaces';
-import { CreateMultiplePrescriptionsComponent } from '@reuse/code/components/create-multiple-prescriptions/create-multiple-prescriptions.component';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionService } from '@reuse/code/services/api/prescription.service';
 import { ConfirmDialog, ConfirmDialogData } from '@reuse/code/dialogs/confirm/confirm.dialog';
@@ -49,7 +49,6 @@ import { ProposalService } from '@reuse/code/services/api/proposal.service';
 import { PssService } from '@reuse/code/services/api/pss.service';
 import { EncryptionService } from '@reuse/code/services/privacy/encryption.service';
 import { v4 as uuidv4 } from 'uuid';
-import { CreatePrescriptionModelComponent } from '@reuse/code/components/create-prescription-model/create-prescription-model.component';
 import { PrescriptionModelService } from '@reuse/code/services/api/prescriptionModel.service';
 import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
@@ -66,6 +65,9 @@ import {
 import { ChooseTemplateDialog, SelectedTemplate } from '@reuse/code/dialogs/choose-template/choose-template.dialog';
 import { isModel, isPrescription } from '@reuse/code/utils/utils';
 import { EncryptionKeyInitializerService } from '@reuse/code/states/privacy/encryption-key-initializer.service';
+import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
+import { CreateMultiplePrescriptionsComponent } from '../components/create-multiple-prescriptions/create-multiple-prescriptions.component';
+import { CreatePrescriptionModelComponent } from '../components/create-prescription-model/create-prescription-model.component';
 
 @Component({
   templateUrl: './create-prescription.component.html',
@@ -83,29 +85,29 @@ import { EncryptionKeyInitializerService } from '@reuse/code/states/privacy/encr
     AlertComponent,
   ],
 })
-export class CreatePrescriptionWebComponent implements OnChanges {
+export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit {
   protected readonly AlertType = AlertType;
-  isEnabled$: Observable<boolean>;
-  errorResponseBadGateway = new HttpErrorResponse({
+  private trackId = 0;
+  public readonly errorResponseBadGateway = new HttpErrorResponse({
     status: 502,
     statusText: 'Bad Gateway',
   });
-
-  private trackId = 0;
-  isModelValue: boolean = false;
-
-  readonly patientState$: Signal<DataState<PersonResource>> = this.patientStateService.state;
-  public status$ = new BehaviorSubject<boolean>(false);
-  prescriptionForms = signal<CreatePrescriptionForm[]>([]);
-  loading = signal(false);
-  generatedUUID = '';
-
-  errorCard: ErrorCard = {
+  public isModelValue: boolean = false;
+  public displayCreateButtonOnly = false;
+  public errorCard: ErrorCard = {
     show: false,
     message: '',
     errorResponse: undefined,
   };
 
+  // OBSERVABLES & SIGNALS
+  public readonly isEnabled$: Observable<boolean>;
+  public readonly status$ = new BehaviorSubject<boolean>(false);
+  public readonly patientState$: Signal<DataState<PersonResource>> = this.patientStateService.state;
+  public readonly prescriptionForms = signal<CreatePrescriptionForm[]>([]);
+  public readonly loading = signal(false);
+
+  // INPUTS
   @HostBinding('attr.lang')
   @Input()
   lang = 'fr-BE';
@@ -117,9 +119,11 @@ export class CreatePrescriptionWebComponent implements OnChanges {
   @Input() intent!: string;
   @Input() extend?: boolean = false;
 
+  // OUTPUTS
   @Output() prescriptionsCreated = new EventEmitter<void>();
   @Output() clickCancel = new EventEmitter<void>();
   @Output() modelCreated = new EventEmitter<void>();
+
   constructor(
     private readonly authService: AuthService,
     private readonly dialog: MatDialog,
@@ -139,6 +143,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
     private readonly pssService: PssService,
     private readonly configService: WcConfigurationService,
     private readonly encryptionKeyInitializer: EncryptionKeyInitializerService,
+    private readonly shadowDomOverlay: ShadowDomOverlayContainer,
     @Inject(DOCUMENT) private readonly _document: Document
   ) {
     this.isEnabled$ = of(this.configService.getEnvironmentVariable('enablePseudo')).pipe(
@@ -188,6 +193,10 @@ export class CreatePrescriptionWebComponent implements OnChanges {
         this.handlePrescriptionChanges(this.initialValues);
       }
     }
+  }
+
+  ngAfterViewInit() {
+    this.shadowDomOverlay.createContainer();
   }
 
   private handleTokenChange(): void {
@@ -246,6 +255,10 @@ export class CreatePrescriptionWebComponent implements OnChanges {
         maxWidth: '100vw',
         width: '500px',
         autoFocus: false,
+        panelClass: 'mh-dialog-container',
+        data: {
+          intent: this.initialValues?.intent,
+        },
       })
       .beforeClosed()
       .pipe(filter(result => result?.templateCode != null))
@@ -276,7 +289,6 @@ export class CreatePrescriptionWebComponent implements OnChanges {
 
   private addPrescriptionFormByModel(templateCode: string, model: ModelEntityDto) {
     this.templateVersionsStateService.loadTemplateVersion(templateCode);
-    //@todo fix when open-api is updated model.modelData as unknown as Record<string, unknown>
     this.prescriptionForms.update(prescriptionForms => [
       ...prescriptionForms,
       {
@@ -321,6 +333,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
             templateName,
           },
         },
+        panelClass: 'mh-dialog-container',
       })
       .beforeClosed()
       .subscribe(accepted => {
@@ -663,6 +676,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
       this.dialog
         .open<CancelCreationDialog, CancelCreationDialogData, CancelCreationDialogResult>(CancelCreationDialog, {
           data: { prescriptionForms: this.prescriptionForms() },
+          panelClass: 'mh-dialog-container',
         })
         .beforeClosed()
         .subscribe(result => {
@@ -684,6 +698,7 @@ export class CreatePrescriptionWebComponent implements OnChanges {
             cancelLabel: 'common.close',
             okLabel: 'common.confirm',
           },
+          panelClass: 'mh-dialog-container',
         })
         .beforeClosed()
         .pipe(filter(result => result === true))

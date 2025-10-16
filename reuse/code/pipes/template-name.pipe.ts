@@ -16,10 +16,10 @@ export class TemplateNamePipe implements PipeTransform {
   private translated?: string;
 
   constructor(
-    private readonly translateService: TranslateService,
-    private readonly templatesStateService: TemplatesState,
-    private readonly destroyRef: DestroyRef,
-    private readonly cd: ChangeDetectorRef
+    private translateService: TranslateService,
+    private templatesStateService: TemplatesState,
+    private destroyRef: DestroyRef,
+    private cd: ChangeDetectorRef
   ) {
     this.listenForLangChanges();
   }

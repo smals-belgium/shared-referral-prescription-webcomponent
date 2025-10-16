@@ -582,6 +582,7 @@ describe('ListPrescriptionsWebComponent', () => {
             templateName: mockModel.label,
           },
         },
+        panelClass: 'mh-dialog-container',
       });
     });
 

@@ -1,13 +1,9 @@
 <div class="wrapper">
   <div class="patient">
     @if (patient) {
-    <div data-cy="patient-label">
-      {{'common.patient' | translate}}
-    </div>
-    <div>
-      <div data-cy="patient-name" [attr.translate]="'no'">{{patient.firstName}} {{patient.lastName}}</div>
-      <div data-cy="patient-ssin" [attr.translate]="'no'">{{patient.ssin | formatSsin}}</div>
-    </div>
+      <h1 data-cy="patient-name" [attr.translate]="'no'">{{patient.firstName}} {{patient.lastName}}</h1>
+      <span data-cy="patient-ssin" [attr.translate]="'no'">{{patient.ssin | formatSsin}}</span>
+      <span data-cy="patient-gender" [attr.translate]="'no'">{{patient.gender}}</span>
     }
   </div>
 
@@ -20,7 +16,7 @@
     ></app-alert>
   }
 
-  <mat-accordion [hideToggle]="createPrescriptionForms.length === 1" togglePosition="before">
+  <mat-accordion [hideToggle]="createPrescriptionForms.length === 1" togglePosition="after">
     @for (prescriptionForm of createPrescriptionForms; track trackByFn($index, prescriptionForm); let last = $last) {
       <mat-expansion-panel
         [expanded]="last"
@@ -31,7 +27,10 @@
         >
           <mat-panel-title
             [class.invalid]="prescriptionForm.submitted && (!prescriptionForm.elementGroup?.valid || prescriptionForm.status === 'ERROR')">
-            <h3 data-cy="template-label">{{prescriptionForm.templateCode | templateName}}</h3>
+            <div>
+            <h2 data-cy="template-label">{{prescriptionForm.templateCode | templateName}}</h2>
+            <p><span class="invalid">* </span>{{'prescription.create.requiredFields' | translate}}</p>
+            </div>
           </mat-panel-title>
           <mat-panel-description>
 
@@ -65,9 +64,10 @@
             [error]="modelState().error"
           ></app-alert>
         } @else if(modelState().state === LoadingStatus.SUCCESS) {
-          <app-success-card
+          <app-alert
+            [alert]="AlertType.Success"
             [message]="'prescription.model.create.success' | translate:{name: modelState().success}"
-          ></app-success-card>
+          ></app-alert>
         }  @else if(modelState().state === LoadingStatus.LOADING) {
           <app-overlay-spinner mode="inline"></app-overlay-spinner>
         }
@@ -108,18 +108,13 @@
 
   @if (isPrescriptionValue) {
   <div class="actions">
-    <div>
-      <div class="spacer">&nbsp;</div>
-      <div>
         @if (createPrescriptionForms?.[0]?.templateCode !== 'ANNEX_82') {
-          <button type="button" (click)="clickAddPrescription.emit()" mat-raised-button
+          <button type="button" (click)="clickAddPrescription.emit()" mat-stroked-button
                   data-cy="prescription-create-add">
-          <mat-icon color="accent">add_box</mat-icon>
+          <mat-icon>add</mat-icon>
           {{'prescription.create.addPrescription' | translate}}
         </button>
         }
-      </div>
-    </div>
   </div>
   }
   <div class="general-actions">
@@ -129,8 +124,7 @@
         <button
           (click)="clickPublish.emit()"
           [disabled]="createPrescriptionForms.length === 0"
-          color="accent"
-          mat-raised-button
+          mat-flat-button
           data-cy="prescription-create-publish"
         >{{'prescription.create.publish' | translate}}
           @if(createPrescriptionForms.length > 1) {
@@ -139,9 +133,10 @@
         </button>
         <button
           (click)="clickCancel.emit()"
-          mat-flat-button
+          mat-button
+          color="error"
           data-cy="prescription-create-cancel"
-        >{{'common.cancel' | translate}}</button>
+        ><mat-icon>delete</mat-icon>{{'common.cancel' | translate}}</button>
       </div>
     </div>
   </div>

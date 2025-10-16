@@ -124,7 +124,8 @@
         "cancelAll": "Alles annuleren"
       },
       "cancelCreation": "Bent u zeker dat u het aanmaken van dit voorschrift wilt annuleren?",
-      "prescription": "Voorschrift aanmaken"
+      "prescription": "Voorschrift aanmaken",
+      "requiredFields": "Verplichte velden"
     },
     "allPrescriptionsFetched": "Alle voorschriften opgehaald",
     "model": {

@@ -19,9 +19,10 @@
         [error]="modelState().error"
       ></app-alert>
     } @else if (modelState().state === LoadingStatus.SUCCESS) {
-      <app-success-card
+      <app-alert
+        [alert]="AlertType.Success"
         [message]="'prescription.model.create.success' | translate:{name: modelState().success}"
-      ></app-success-card>
+      ></app-alert>
     } @else if (modelState().state === LoadingStatus.LOADING) {
       <app-overlay-spinner mode="inline"></app-overlay-spinner>
     }
@@ -32,8 +33,8 @@
         <div *ifStatusError="formTemplateState">Failed to load prescription form template.</div>
             @if(!!titleControl && prescriptionForm.modelId) {
               <div class="form-model-group">
-                <mat-label>{{ ('prescription.model.create.dialog.label' | translate) + '*' }}</mat-label>
-                <mat-form-field appearance="fill">
+                <mat-label class="referral-prescription-label">{{ ('prescription.model.create.dialog.label' | translate) }} <span class="required">*</span></mat-label>
+                <mat-form-field appearance="outline">
                   <input
                     [formControl]="titleControl"
                     matInput
@@ -50,6 +51,7 @@
             }
 
               <nihdi-referral-prescription-form
+                class="referral-prescription-form"
                 *ifStatusSuccess="formTemplateState"
                 [lang]="lang"
                 [readonly]="prescriptionForm.status === LoadingStatus.SUCCESS"
@@ -61,8 +63,7 @@
 
         @if(this.prescriptionForm.modelId) {
           <button
-            mat-raised-button
-            color="accent"
+            mat-flat-button
             (click)="handleUpdate(prescriptionForm, formTemplateState.data)"
           >
             <mat-icon>update</mat-icon>
@@ -70,8 +71,7 @@
           </button>
         } @else {
           <button
-            mat-raised-button
-            color="accent"
+            mat-flat-button
             (click)="handleClick(prescriptionForm, formTemplateState.data)"
           >
             <mat-icon>save</mat-icon>
