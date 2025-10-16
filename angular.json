@@ -214,20 +214,20 @@
         }
       }
     },
-    "wc-create-prescription": {
+    "wc-prescription-create": {
       "projectType": "application",
-      "root": "wc-create-prescription",
-      "sourceRoot": "wc-create-prescription/src",
+      "root": "wc-prescription-create",
+      "sourceRoot": "wc-prescription-create/src",
       "prefix": "healix",
       "architect": {
         "serve": {
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "wc-create-prescription:build:production"
+              "buildTarget": "wc-prescription-create:build:production"
             },
             "development": {
-              "buildTarget": "wc-create-prescription:build:development"
+              "buildTarget": "wc-prescription-create:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -235,13 +235,13 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/wc-create-prescription",
-            "index": "wc-create-prescription/src/index.html",
-            "browser": "wc-create-prescription/src/main.ts",
+            "outputPath": "dist/wc-prescription-create",
+            "index": "wc-prescription-create/src/index.html",
+            "browser": "wc-prescription-create/src/main.ts",
             "polyfills": [
               "zone.js"
             ],
-            "tsConfig": "wc-create-prescription/tsconfig.app.json",
+            "tsConfig": "wc-prescription-create/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "outputHashing": "all",
             "optimization": {
@@ -255,7 +255,7 @@
               }
             ],
             "styles": [
-              "wc-create-prescription/src/styles.scss"
+              "wc-prescription-create/src/styles.scss"
             ],
             "scripts": [
               "node_modules/marked/marked.min.js"
@@ -315,8 +315,8 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": [
-              "wc-create-prescription/src/**/*.ts",
-              "wc-create-prescription/src/**/*.html"
+              "wc-prescription-create/src/**/*.ts",
+              "wc-prescription-create/src/**/*.html"
             ]
           }
         }
@@ -486,7 +486,11 @@
             "styles": [
               "wc-evf-form/src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "buffer",
+              "@messageformat/core"
+            ]
           },
           "configurations": {
             "production": {

@@ -1,6 +1,16 @@
 @use '@myhealth-belgium/design-kit' as mh;
 
-@include mh.core($use-material: true, $use-local-fonts: true, $symbols-font-url: url('@reuse/assets/fonts/MatSymbols-Rounded.ttf'));
+@include mh.use-font-material-symbols(
+    true,
+    url('@reuse/assets/fonts/MatSymbols-Rounded.ttf'),
+    'Material Symbols Rounded',
+      (
+        'material-icons',
+        'material-symbols',
+      ));
+@include mh.use-globals();
+@include mh.use-classes();
+@include mh.use-all-components();
 @include mh.override-mat-slide-toggle();
 @include mh.override-mat-table();
 @include mh.override-mat-chips();
@@ -27,8 +37,9 @@
   margin-left: auto;
 }
 
-.mat-mdc-paginator-container mat-select .mat-mdc-select-arrow:after{
-  font-family: 'Material Icons', sans-serif;
+.mat-mdc-paginator-outer-container mat-select .mat-mdc-select-arrow:after {
+  content: 'keyboard_arrow_down';
+  font-family: 'Material Symbols Rounded', sans-serif;
 }
 
 :host {

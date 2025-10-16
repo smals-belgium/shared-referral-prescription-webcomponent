@@ -1,0 +1,79 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+@include mh.override-mat-button();
+@include mh.override-mat-button-icon(false);
+@include mh.override-mat-expansion();
+
+//current component and all its descendants
+:host ::ng-deep{
+  .mat-expansion-panel-body {
+    padding: 0 0 mh.$spacing-m;
+  }
+}
+
+.patient {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: mh.$spacing-l;
+}
+
+.mat-accordion>.mat-expansion-panel {
+  box-shadow: var(--mh-accordion-box-shadow, unset);
+  border-bottom: var(--mh-accordion-border-bottom, 1px solid var(--mdc-outlined-text-field-outline-color));
+}
+
+mat-expansion-panel-header {
+  padding: 0;
+  &.no-toggle {
+    pointer-events: none;
+  }
+}
+
+.mat-expansion-panel-header-title {
+  flex-grow: 4;
+  h2{
+    @include mh.font-heading-2();
+    & {
+      margin-bottom: 0;
+    }
+  }
+  p{
+    @include mh.font-body-1();
+    & {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    .invalid{
+      color: var(--mh-label-invalid-color, mh.$typography-semantic-error-medium);
+    }
+  }
+}
+
+.mat-expansion-panel-header-description {
+  flex-grow: 1;
+  justify-content: flex-end;
+}
+
+button + button {
+  margin-left: mh.$spacing-l;
+}
+
+.mat-mdc-button.mat-error{
+  &:not(:disabled){
+    color: var(--mh-mat-button-error-color, mh.$error-30);
+    --mat-text-button-state-layer-color: var(--mh-mat-button-error-color,#{mh.$error-30});
+  }
+  text-decoration: var(--mh-mat-button-error-decoration, underline);
+}
+
+.actions{
+  margin-top: mh.$spacing-m;
+}
+
+mat-accordion.mat-accordion mat-expansion-panel.mat-expansion-panel, mat-accordion.mat-accordion mat-expansion-panel.mat-expansion-panel:not(.mat-expanded), mat-accordion.mat-accordion mat-expansion-panel.mat-expansion-panel:first-of-type{
+  border-radius: var(--mh-mat-expansion-container-not-expanded-shape, 0);
+}
+mat-accordion.mat-accordion {
+  gap: var(--mh-mat-expansion-gap, 0);
+}

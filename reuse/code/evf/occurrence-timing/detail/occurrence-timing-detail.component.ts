@@ -9,7 +9,6 @@ import { OccurrenceTimingPipe } from '@reuse/code/pipes/occurrence-timing.pipe';
 @Component({
   selector: 'evf-occurrence-timing-detail',
   templateUrl: './occurrence-timing-detail.component.html',
-  styleUrls: ['./occurrence-timing-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [EvfFormDetailLayoutComponent, EvfDetailLabelComponent, OccurrenceTimingPipe],
 })

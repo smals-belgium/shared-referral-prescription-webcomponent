@@ -17,6 +17,11 @@ import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-transl
 import { WcTranslateLoader } from '@reuse/code/services/helpers/translate.loader';
 import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-compiler';
 import { provideOpenApi } from '@reuse/code/providers/open-api.provider';
+import {
+  OVERLAY_QUERY_SELECTOR,
+  ShadowDomOverlayContainer,
+} from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
+import { OverlayContainer } from '@angular/cdk/overlay';
 
 (async () => {
   const app = createApplication({
@@ -35,6 +40,14 @@ import { provideOpenApi } from '@reuse/code/providers/open-api.provider';
         provide: ErrorHandler,
         useFactory: getErrorHandlerFromConfiguration,
         deps: [ConfigurationService],
+      },
+      {
+        provide: OVERLAY_QUERY_SELECTOR,
+        useValue: ['nihdi-referral-prescription-create', 'nihdi-referral-prescription-form'],
+      },
+      {
+        provide: OverlayContainer,
+        useClass: ShadowDomOverlayContainer,
       },
       provideOpenApi(),
       provideAnimations(),

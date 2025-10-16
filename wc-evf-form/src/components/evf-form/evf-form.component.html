@@ -12,14 +12,14 @@
 }
 
 <ng-template #elementLayout let-content="content" let-elementControl="elementControl" let-label="label" let-body="body" let-subLabel="subLabel">
-  <div [class.evf-element-wrapper]="!['row', 'radio'].includes(elementControl.parent?.element?.viewType)">
+  <div [class.evf-element-wrapper]="!['row', 'radio'].includes(elementControl.parent?.element?.viewType)" [class.has-evf-required-wrapper]="elementControl.parent?.element?.custom?.['required']" [class.has-evf-required-wrapper-with-labels]="hasEvfRequiredWrapperWithLabel(elementControl.parent)">
     <div>
       <ng-container *ngTemplateOutlet="label"></ng-container>
     </div>
     <div>
       <ng-container *ngTemplateOutlet="body"></ng-container>
-      <ng-container *ngTemplateOutlet="subLabel"></ng-container>
       <ng-container *ngTemplateOutlet="content"></ng-container>
+      <ng-container *ngTemplateOutlet="subLabel"></ng-container>
     </div>
   </div>
 </ng-template>

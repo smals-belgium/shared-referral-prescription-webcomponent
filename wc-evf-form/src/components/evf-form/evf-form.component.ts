@@ -1,8 +1,10 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
   HostBinding,
+  inject,
   Input,
   OnChanges,
   OnInit,
@@ -24,6 +26,7 @@ import { DateTime } from 'luxon';
 import { PssService } from '@reuse/code/services/api/pss.service';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { TranslateService } from '@ngx-translate/core';
+import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 
 @Component({
   templateUrl: './evf-form.component.html',
@@ -32,7 +35,14 @@ import { TranslateService } from '@ngx-translate/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [EvfDynamicFormComponent, NgTemplateOutlet],
 })
-export class EvfFormWebComponent implements OnChanges, OnInit {
+export class EvfFormWebComponent implements OnChanges, OnInit, AfterViewInit {
+  private readonly evfTranslate = inject(EvfTranslateService);
+  private readonly dateAdapter = inject(DateAdapter<DateTime>);
+  private readonly pssService = inject(PssService);
+  private readonly authService = inject(AuthService);
+  private readonly translate = inject(TranslateService);
+  private readonly shadowDomOverlay = inject(ShadowDomOverlayContainer);
+
   private elementGroup?: ElementGroup;
 
   parsedTemplate?: FormTemplate;
@@ -53,14 +63,6 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
   @Input() status: boolean | undefined;
 
   @Output() changeElementGroup = new EventEmitter<ElementGroup>();
-
-  constructor(
-    private readonly evfTranslate: EvfTranslateService,
-    private readonly dateAdapter: DateAdapter<DateTime>,
-    private readonly pssService: PssService,
-    private readonly authService: AuthService,
-    private readonly translate: TranslateService
-  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['lang']) {
@@ -107,6 +109,10 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
     this.initEvfTranslate();
   }
 
+  ngAfterViewInit() {
+    this.shadowDomOverlay.createContainer();
+  }
+
   private initEvfTranslate(): void {
     const formattedLang = this.formatToEvfLangCode(this.lang);
     this.dateAdapter.setLocale(SupportedLocales[formattedLang]);
@@ -143,5 +149,10 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
   setElementGroup(elementGroup: ElementGroup): void {
     this.elementGroup = elementGroup;
     this.changeElementGroup.emit(elementGroup);
+  }
+
+  hasEvfRequiredWrapperWithLabel(parent: ElementGroup): boolean {
+    if (!parent?.element?.custom?.['required']) return false;
+    return parent?.element?.elements?.some(element => element.labelTranslationId) ?? false;
   }
 }

@@ -23,7 +23,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 import { AlertType, CreatePrescriptionForm, LoadingStatus } from '@reuse/code/interfaces';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
-import { SuccessCardComponent } from '@reuse/code/components/success-card/success-card.component';
 import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionModel.state';
 import { CreatePrescriptionModelDialog } from '@reuse/code/dialogs/create-prescription-modal/create-prescription-model.dialog';
 import { MatDialog } from '@angular/material/dialog';
@@ -51,7 +50,6 @@ import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
     TemplateNamePipe,
     FormatSsinPipe,
     AlertComponent,
-    SuccessCardComponent,
   ],
 })
 export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestroy {

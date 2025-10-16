@@ -27,6 +27,8 @@ import { PssService } from '@reuse/code/services/api/pss.service';
 import { EncryptionKeyInitializerService } from '@reuse/code/states/privacy/encryption-key-initializer.service';
 import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
 import { v4 as uuidv4 } from 'uuid';
+import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 class FakeLoader implements TranslateLoader {
   getTranslation(lang: string): Observable<any> {
@@ -92,6 +94,17 @@ jest.mock('uuid', () => ({
 class MockDateAdapter {
   setLocale = jest.fn();
 }
+const containerElement = document.createElement('div');
+const mockShadowDomOverlayContainer = {
+  ngOnDestroy: jest.fn(),
+
+  getRootElement: jest.fn().mockReturnValue(document.createElement('div').attachShadow({ mode: 'open' })),
+  createContainer: jest.fn(),
+  getContainerElement: jest.fn().mockReturnValue(containerElement),
+  _createContainer: jest.fn(),
+  _containerElement: containerElement,
+  _document: document,
+};
 
 const BASE_URL = 'http://localhost';
 
@@ -150,6 +163,13 @@ describe('CreatePrescriptionWebComponent', () => {
           useValue: mockEncryptionKeyInitializerService,
         },
         { provide: PssService, useValue: mockPssService },
+        { provide: ShadowDomOverlayContainer, useValue: mockShadowDomOverlayContainer },
+        {
+          provide: BreakpointObserver,
+          useValue: {
+            observe: jest.fn().mockReturnValue(of({ matches: true })),
+          },
+        },
       ],
     }).compileComponents();
 
@@ -246,6 +266,7 @@ describe('CreatePrescriptionWebComponent', () => {
           okLabel: 'common.delete',
           params: { templateName },
         },
+        panelClass: 'mh-dialog-container',
       });
     });
     it('should open CancelCreationDialog when prescriptionForms length is greater than 1', () => {
@@ -264,6 +285,7 @@ describe('CreatePrescriptionWebComponent', () => {
         data: {
           prescriptionForms: component.prescriptionForms(),
         },
+        panelClass: 'mh-dialog-container',
       });
     });
     it('should open ConfirmDialog and emit clickCancel when prescriptionForms length is 1', () => {
@@ -286,6 +308,7 @@ describe('CreatePrescriptionWebComponent', () => {
           cancelLabel: 'common.close',
           okLabel: 'common.confirm',
         },
+        panelClass: 'mh-dialog-container',
       });
       expect(componentClickCancelEmitSpy).toHaveBeenCalled();
     });
@@ -1381,7 +1404,7 @@ describe('CreatePrescriptionWebComponent', () => {
     component = fixture.componentInstance;
     mockEncryptionKeyInitializerService.getPseudonymizedKey.mockReturnValue(() => ({ data: pseudonymizedKey }));
     component.initialValues = { intent: 'order' };
-    component.isEnabled$ = of(true);
+    (component as any).isEnabled$ = of(true);
 
     if (pseudonymizedKey) {
       jest.spyOn(pseudoService, 'byteArrayToValue').mockReturnValue({ pseudonymize: jest.fn() } as any);

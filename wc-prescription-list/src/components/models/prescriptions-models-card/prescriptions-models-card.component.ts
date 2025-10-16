@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,7 +12,7 @@ import { MatCardModule } from '@angular/material/card';
 import { DatePipe } from '@reuse/code/pipes/date.pipe';
 import { FormatEnum, SkeletonComponent } from '@reuse/code/components/progress-indicators/skeleton/skeleton.component';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
-import { MatMenuModule } from '@angular/material/menu';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 
 @Component({
   selector: 'app-prescriptions-models-card',
@@ -53,6 +53,8 @@ export class PrescriptionsModelsCardComponent {
   // Public signals from service
   readonly modelData = toSignal(this.dataService.modelEntityData$, { initialValue: [] });
   readonly isLoading = toSignal(this.dataService.loading$, { initialValue: false });
+
+  @ViewChild(MatMenuTrigger) menuTrigger: MatMenuTrigger | undefined;
 
   // Scroll values
   private oldScroll: any;
@@ -139,5 +141,7 @@ export class PrescriptionsModelsCardComponent {
     event.stopPropagation();
 
     this.deletePrescriptionModel.emit(model);
+
+    this.menuTrigger?.closeMenu();
   };
 }

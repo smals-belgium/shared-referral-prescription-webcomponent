@@ -1,179 +1,233 @@
 @use '@angular/material' as mat;
-@use '../../../../node_modules/@smals/vas-evaluation-form-ui-material' as evf;
+@use '@myhealth-belgium/design-kit' as mh;
+@use '../../../../node_modules/@smals/vas-evaluation-form-ui-material/index' as evf;
 
-$app-primary: mat.m2-define-palette(mat.$m2-light-blue-palette, 800);
-$app-accent: mat.m2-define-palette(mat.$m2-light-blue-palette, A200, A100, A400);
-$app-warn: mat.m2-define-palette(mat.$m2-red-palette);
-$app-theme: mat.m2-define-light-theme((
-  color: (
-    primary: $app-primary,
-    accent: $app-accent,
-    warn: $app-warn,
-  ),
-  typography: mat.m2-define-typography-config(),
-  density: 0,
-));
-@include mat.elevation-classes();
-@include mat.app-background();
-@include mat.ripple-theme($app-theme);
-@include mat.button-theme($app-theme);
-@include mat.elevation-classes();
-@include mat.app-background();
-@include mat.form-field-theme($app-theme);
-@include mat.radio-theme($app-theme);
-@include mat.datepicker-theme($app-theme);
-@include mat.input-theme($app-theme);
-@include mat.select-theme($app-theme);
-@include mat.icon-theme($app-theme);
-@include mat.progress-spinner-theme($app-theme);
-@include evf.evf-theme($app-primary, 800, 600, 700);
+@include mh.use-font-material-symbols(
+    true,
+    url('@reuse/assets/fonts/MatSymbols-Rounded.ttf'),
+    'Material Symbols Rounded',
+      (
+        'material-icons',
+        'material-symbols',
+      ));
+@include mh.use-globals();
+@include mh.use-classes();
+@include mh.use-all-components();
 
-.evf-element-wrapper > div:first-of-type {
-  font-weight: bold;
-}
+$app-primary-palette: (
+  50: mh.$primary-90,
+  100: mh.$primary-80,
+  200: mh.$primary-70,
+  300: mh.$primary-60,
+  400: mh.$primary-50,
+  500: mh.$primary-40,
+  600: mh.$primary-35,
+  700: mh.$primary-30,
+  800: mh.$primary-20,
+  900: mh.$primary-10,
+  A100: mh.$primary-95,
+  A200: mh.$primary-98,
+  A400: mh.$primary-99,
+  A700: mh.$primary-100,
+  contrast: ()
+);
 
-evf-checkbox-list[data-evf-element-id="additional-relevant-information-checked"] {
-  .sub-group .checkbox-group {
-    &> div:last-child{
-      mat-checkbox{
-        pointer-events: unset;
-        opacity: 1;
-      }
-    }
-  }
-  .checkbox-group{
-    &> div:last-child{
-      mat-checkbox{
-        pointer-events: none;
-        opacity: 0.5;
-      }
-    }
-  }
-}
+$app-primary: mat.m2-define-palette($app-primary-palette, 800);
+@include evf.evf-theme($app-primary, 800, 600, 700, mh.$color-white, transparent);
 
-evf-checkbox-list[data-evf-element-id="additional-relevant-information-unknown"] {
-  .sub-group .checkbox-group {
-    &> div{
-      mat-checkbox{
-        pointer-events: none;
-        opacity: 0.5;
-      }
-    }
-  }
-  .checkbox-group{
-    &> div:not(:last-child){
-      mat-checkbox{
-        pointer-events: none;
-        opacity: 0.5;
-      }
-    }
-  }
-}
-
-evf-checkbox-list[data-evf-element-id="previous-relevant-examinations-checked"] {
-  .checkbox-group{
-    &> div:last-child{
-      mat-checkbox{
-        pointer-events: none;
-        opacity: 0.5;
-      }
-    }
-  }
-}
-
-evf-checkbox-list[data-evf-element-id="previous-relevant-examinations-unknown"] {
-  .checkbox-group{
-    &> div:not(:last-child){
-      mat-checkbox{
-        pointer-events: none;
-        opacity: 0.5;
-      }
-    }
-  }
-}
-
-@media (min-width: 768px) {
-  .evf-element-wrapper {
-    display: flex;
-    align-items: flex-start;
-    column-gap: 1rem;
-
-    > div {
-      flex-basis: 0;
-
-      &:first-of-type {
-        display: flex;
-        justify-content: flex-end;
-        flex-grow: 3;
-        text-align: right;
-        padding-top: 15px;
-      }
-
-      &:last-of-type {
-        flex-grow: 7;
-      }
-    }
-  }
-}
+@include mh.override-all-mat-components();
+@include mh.override-mat-button-toggle();
+@include mh.override-mat-dialog();
+@include mh.override-all-mat-components();
+@include mh.override-mat-form-field();
+@include mh.override-mat-autocomplete();
+@include mh.override-mat-select();
+@include mh.override-mat-datepicker();
+@include mh.override-mat-button();
+@include mh.override-mat-button-icon(false);
 
 evf-dynamic-form {
-  evf-radio {
-    .radio-item-wrapper {
-      .evf-element-wrapper {
-        flex-direction: column;
+  --mdc-typography-body2-font-size: var(--mat-sys-body-large-line-height);
+  --mdc-typography-body2-line-height: var(--mat-sys-body-large-size);
+  color: var(--evf-typography-body-color, mh.$typography-brand-neutral-darker);
+  .mdc-text-field__input, .mat-mdc-form-field-input-control{
+    &::placeholder{
+      color: var(--evf-typography-body-color, mh.$typography-brand-neutral-darker);
+    }
+  }
+  evf-element-label{
+    margin: var(--evf-typography-label-margin, 4px 0);
+    &.invalid{
+      color: var(--mat-form-field-error-text-color, mh.$error-30);
+    }
+  }
+}
 
-        > div {
-          &:first-of-type {
-            padding: 0 !important;
+evf-element-body .infoblock{
+  display: flex;
+  padding: mh.$spacing-s;
+  gap: mh.$spacing-s;
+  border-radius: var(--evf-infoblock-radius-small, 6px);
+  box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.13);
+  background:  var(--evf-infoblock-background-color, mh.$surface-brand-primary-lighter);
+  margin: mh.$spacing-m 0;
+
+  &>span>ul{
+    margin: 0;
+  }
+
+  h2 {
+    @include mh.font-default-semibold;
+    & {
+      color: var(--evf-infoblock-heading-color, mh.$typography-brand-primary-dark);
+      margin: 0;
+    }
+  }
+
+  p, ul, ol, span {
+    @include mh.font-small-regular;
+    & {
+      color: var(--evf-infoblock-body-color, mh.$typography-brand-primary-dark);
+      margin: 0;
+    }
+  }
+
+  .material-icons {
+    font-family: 'Material Icons';
+    color:  var(--evf-infoblock-matrial-icon-color, mh.$typography-brand-primary-dark);
+  }
+}
+
+.evf-element-wrapper mat-select .mat-mdc-select-arrow:after{
+    font-family: 'Material Icons';
+}
+
+evf-tooltip {
+  background-color: var(--evf-tooltip-background-color, rgba(0, 0, 0, 0.75));
+  color:var(--evf-tooltip-color, mh.$primary-100);
+  p {
+    color: var(--evf-tooltip-color, mh.$primary-100);
+  }
+}
+
+evf-row{
+  .evf-element-wrapper{
+    evf-element-label{
+      label{
+        span{
+          &.required, .asterisk{
+            color: var(--mdc-outlined-text-field-error-outline-color, mh.$error-30);
           }
+        }
+      }
+    }
+  }
+  .evf-element-wrapper:has(.invalid)>div>evf-element-label{
+    color: var(--mdc-outlined-text-field-error-outline-color, mh.$error-30);
+  }
+}
 
-          width: 100%;
+.has-evf-required-wrapper{
+  evf-element-label{
+    @include mh.font-extra-small-regular;
+    & {
+      color: var(--evf-typography-body2-color, mh.$typography-brand-neutral-dark);
+      line-height: 1.2;
+      label{
+        .asterisk{
+          display: none;
         }
       }
     }
   }
 }
-
-.infoblock {
-  display: flex;
-  background-color: mat.m2-get-color-from-palette($app-primary, 50);
-  border-radius: 10px;
-  padding: 12px;
-  margin: 8px 0;
-
-  i {
-    color: mat.m2-get-color-from-palette($app-primary, 600);
-  }
-
-  span {
-    display: block;
-    margin: 2px 6px;
-  }
-
-  p {
-    white-space: pre-line;
-    &:first-of-type {
-      margin-top: 0;
+.has-evf-required-wrapper-with-labels {
+  evf-element-label {
+    &:empty {
+      display: block;
+      height: var(--evf-typography-label-empty-height, calc(1.2 * var(--mat-sys-body-small-size)));
     }
+  }
+}
+.has-evf-required-wrapper .mat-mdc-form-field-infix {
+  width: unset;
+}
 
-    &:last-of-type {
-      margin-bottom: 0;
+.mat-mdc-form-field.mat-form-field-invalid .mat-mdc-notch-piece {
+  background-color: var(--mat-form-field-error-background-color, mh.$error-99);
+}
+
+evf-radio, evf-checkbox-list {
+  .mat-button-toggle-animations-enabled .mat-button-toggle-button{
+    padding: var(--evf-button-toggle-animations-enabled-padding, 0 15px);
+    .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
+      width: var(--evf-button-toggle-mat-pseudo-checkbox-width, 10px);
+      height: var(--evf-button-toggle-mat-pseudo-checkbox-height, 4px);
+    }
+    &:has(.mat-button-toggle-checkbox-wrapper) {
+      padding-left: var(--evf-button-toggle-checked-padding-left, 15px);
+    }
+  }
+  .mat-pseudo-checkbox{
+    right: 2px;
+  }
+  &.invalid{
+    mat-button-toggle-group.mat-button-toggle-group {
+      border-color: var(--mat-form-field-error-text-color, mh.$error-30);
+      color: var(--mat-form-field-error-text-color, mh.$error-30);
+
+      .mat-button-toggle-button {
+        border-color: var(--mat-form-field-error-text-color, mh.$error-30);
+      }
+
+      .mat-button-toggle-appearance-standard {
+        color: var(--mat-form-field-error-text-color, mh.$error-30);
+      }
+
+      mat-button-toggle.mat-button-toggle:hover:not(.mat-button-toggle-checked) {
+        background-color: var(--mat-form-field-error-background-color, mh.$error-99);
+        color: var(--mat-form-field-error-text-color, mh.$error-30);
+      }
+
+      mat-button-toggle.mat-button-toggle + mat-button-toggle.mat-button-toggle, mat-button-toggle.mat-button-toggle + mat-button-toggle.mat-button-toggle:hover{
+        border-color:var(--mat-form-field-error-text-color, mh.$error-30);
+      }
     }
   }
 }
 
-.material-icons {
-  font-family: 'Material Icons';
-  font-weight: normal;
-  font-style: normal;
-  font-size: 24px;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-block;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-feature-settings: 'liga';
-  -webkit-font-smoothing: antialiased;
+evf-dynamic-form mat-form-field .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix,
+.evf-dialog mat-form-field .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
+  min-height: var(--mat-form-field-container-height, 46px);
+  padding-top: var(--mat-form-field-filled-with-label-container-padding-top, 12px);
+  padding-bottom: var(--mat-form-field-filled-with-label-container-padding-bottom, 12px);
 }
+
+evf-input-number{
+  max-width: var(--evf-input-number-field-max-width, 140px);
+}
+evf-input-date{
+  max-width: var(--evf-input-date-field-max-width, 240px);
+}
+
+@media (hover: hover) {
+  .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover>.mat-calendar-body-cell-content:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical) {
+    background-color: var(--mat-datepicker-calendar-date-hover-state-background-color,
+      color-mix(in srgb, var(--mat-sys-on-surface) calc(var(--mat-sys-hover-state-layer-opacity) * 100%), transparent));
+  }
+}
+
+evf-row {
+  evf-form-element-group {
+    column-gap: var(--evf-row-column-gap, mh.$spacing-m);
+  }
+  &.column-gap-large{
+    evf-form-element-group {
+      column-gap: var(--evf-row-column-gap-l, mh.$spacing-xl);
+    }
+  }
+}
+
+
+
+

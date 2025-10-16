@@ -11,7 +11,7 @@ import { apiUrlInterceptor } from '@reuse/code/interceptors/api-url.interceptor'
 import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { WcTranslateLoader } from '@reuse/code/services/helpers/translate.loader';
 import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-compiler';
-import { CreatePrescriptionWebComponent } from './components/create-prescription/create-prescription.component';
+import { CreatePrescriptionWebComponent } from './create-prescription/create-prescription.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
@@ -19,6 +19,11 @@ import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { WcAuthService } from '@reuse/code/services/auth/wc-auth.service';
 import { providePseudonymisation } from '@reuse/code/providers/pseudo.provider';
 import { provideOpenApi } from '@reuse/code/providers/open-api.provider';
+import { OverlayContainer } from '@angular/cdk/overlay';
+import {
+  OVERLAY_QUERY_SELECTOR,
+  ShadowDomOverlayContainer,
+} from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 
 (async () => {
   const app = createApplication({
@@ -41,6 +46,11 @@ import { provideOpenApi } from '@reuse/code/providers/open-api.provider';
         provide: ErrorHandler,
         useFactory: getErrorHandlerFromConfiguration,
         deps: [ConfigurationService],
+      },
+      { provide: OVERLAY_QUERY_SELECTOR, useValue: ['nihdi-referral-prescription-create'] },
+      {
+        provide: OverlayContainer,
+        useClass: ShadowDomOverlayContainer,
       },
       provideOpenApi(),
       importProvidersFrom(
