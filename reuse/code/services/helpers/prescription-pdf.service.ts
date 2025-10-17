@@ -279,13 +279,19 @@ export class PrescriptionsPdfService {
         if (acc.table.body.length === 0 || !Array.isArray(acc.table.body[acc.table.body.length - 1][1])) {
           acc.table.body.push([
             {
-              stack: [{ text: this.wrapLongWords(cur.label), bold: true }, ...cur.values.map(text => ({ text }))],
+              stack: [
+                { text: this.wrapLongWords(cur.label), bold: true },
+                ...cur.values.map(text => ({ text })),
+              ] as Content[],
             },
             [],
           ]);
         } else {
           acc.table.body[acc.table.body.length - 1][1] = {
-            stack: [{ text: this.wrapLongWords(cur.label), bold: true }, ...cur.values.map(text => ({ text }))],
+            stack: [
+              { text: this.wrapLongWords(cur.label), bold: true },
+              ...cur.values.map(text => ({ text })),
+            ] as Content[],
           };
         }
         return acc;
