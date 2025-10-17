@@ -44,6 +44,7 @@ import { catchError, tap } from 'rxjs/operators';
 import { MatChipsModule } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { isEmptyValue } from '@reuse/code/utils/utils';
 
 @Component({
   selector: 'autocomplete-multiselect',
@@ -137,7 +138,7 @@ export class AutocompleteMultiselectComponent extends EvfBaseFormElementComponen
       this.options$ = merge(this.queryTrigger$, controlCleared$).pipe(
         debounceTime(300),
         switchMap(value =>
-          value == null
+          isEmptyValue(value)
             ? of(null)
             : this.externalSourceService
                 .handleAutocomplete(
@@ -196,6 +197,9 @@ export class AutocompleteMultiselectComponent extends EvfBaseFormElementComponen
 
   selected(event: MatAutocompleteSelectedEvent): void {
     const option = event.option.value;
+    if (!option) {
+      return;
+    }
     this.selectedItems.update(options => [...options, option]);
     this.addAnnouncer(`added ${option.label[this.evfTranslate.currentLang]}`);
 
