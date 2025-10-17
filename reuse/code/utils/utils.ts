@@ -66,6 +66,26 @@ export function isModel(intent: String | undefined): boolean {
   return intent?.toLowerCase() === Intent.MODEL;
 }
 
+export function isEmptyValue(value: any): boolean {
+  if (value == null) {
+    return true;
+  }
+
+  if (typeof value === 'string') {
+    return value.trim() === '';
+  }
+
+  if (Array.isArray(value)) {
+    return value.length === 0;
+  }
+
+  if (typeof value === 'object') {
+    return Object.keys(value).length === 0;
+  }
+
+  return false;
+}
+
 const STATUS_CLASS_MAP: Record<RequestStatus, string> = {
   DRAFT: 'mh-black',
   BLACKLISTED: 'mh-red',
