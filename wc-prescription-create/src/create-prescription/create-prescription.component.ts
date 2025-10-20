@@ -760,10 +760,10 @@ export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit 
     }
 
     const htmlCollection = document.getElementsByTagName('script');
-    const script = Array.from(htmlCollection).find(e => e.src.includes('wc-create-prescription.js'));
+    const script = Array.from(htmlCollection).find(e => e.src.includes('wc-prescription-create.js'));
 
     if (!script) return;
-    const url = script.src.replace('wc-create-prescription.js', '');
+    const url = script.src.replace('wc-prescription-create.js', '');
     const scripts = ['assets/evf-form/evf-form.js'];
 
     scripts.forEach(src => {
