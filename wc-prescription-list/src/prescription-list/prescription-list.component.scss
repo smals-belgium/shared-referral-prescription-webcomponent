@@ -111,7 +111,6 @@
   --mdc-switch-selected-pressed-track-color: #{mh.$primary-35};
 
   /* Tooltip */
-  --mat-sys-corner-extra-small: #{mh.calculateRem(4px)};
   --mat-sys-body-small-font: var(--mh-default-font-family, #{mh.$font-stack});
   --mat-sys-body-small-size: #{mh.$font-size-xs};
   --mat-sys-body-small-weight: #{mh.$font-weight-regular};
