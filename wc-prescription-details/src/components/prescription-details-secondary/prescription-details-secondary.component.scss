@@ -1,0 +1,31 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+.secondary_details_container{
+  flex: 1;
+  margin-left: mh.$spacing-rem-3xl;
+
+  @media (max-width: mh.$media-breakpoint-s) {
+    margin-left: unset;
+    padding-top: mh.$spacing-rem-l;
+    padding-bottom: mh.$spacing-rem-l;
+  }
+
+  .caregiver_actions{
+    display: flex;
+    gap: mh.$spacing-rem-s;
+  }
+  // custom behavior, needs to be defined in design
+  .caregiver_title{
+    display: flex;
+    align-items: center;
+    gap: mh.$spacing-rem-s;
+
+    h4{
+      color: var(--mh-secondary-details-container-care-giver-title, mh.$typography-brand-primary-darker);
+    }
+
+    button{
+      width: min-content;
+    }
+  }
+}

@@ -7,20 +7,22 @@ import { translateOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.u
 import * as pdfMake from 'pdfmake/build/pdfmake.js';
 import { HealthcareProResource, PersonResource, ReadRequestResource, Template, Translation } from '@reuse/code/openapi';
 import { OccurrenceTiming } from '@reuse/code/interfaces';
+import { TCreatedPdf } from 'pdfmake/build/pdfmake.js';
 
 @Injectable({ providedIn: 'root' })
 export class PrescriptionsPdfService {
   constructor(private readonly translate: TranslateService) {}
 
-  printPDF(
+  createCommonPdf(
     prescription: ReadRequestResource,
     responses: Record<string, unknown>,
     patient: PersonResource,
     template: Template,
     templateVersion: FormTemplate,
     language: string
-  ) {
-    pdfMake
+  ): TCreatedPdf{
+
+    return pdfMake
       .createPdf(
         {
           pageSize: 'A4',
@@ -132,7 +134,6 @@ export class PrescriptionsPdfService {
         },
         this.getFontVfs()
       )
-      .print();
   }
 
   private getCurrentDate() {

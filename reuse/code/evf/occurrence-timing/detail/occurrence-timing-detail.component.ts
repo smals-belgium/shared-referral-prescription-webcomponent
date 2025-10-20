@@ -4,12 +4,13 @@ import {
   EvfDetailLabelComponent,
   EvfFormDetailLayoutComponent,
 } from '@smals/vas-evaluation-form-ui-material/elements/shared';
-import { OccurrenceTimingPipe } from '@reuse/code/pipes/occurrence-timing.pipe';
+import { OccurrenceDurationPipe } from '@reuse/code/pipes/occurrence-duration.pipe';
 
 @Component({
   selector: 'evf-occurrence-timing-detail',
   templateUrl: './occurrence-timing-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [EvfFormDetailLayoutComponent, EvfDetailLabelComponent, OccurrenceTimingPipe],
+  imports: [EvfFormDetailLayoutComponent, EvfDetailLabelComponent, OccurrenceDurationPipe],
+  standalone: true
 })
 export class OccurrenceTimingDetailComponent extends EvfBaseFormDetailComponent {}

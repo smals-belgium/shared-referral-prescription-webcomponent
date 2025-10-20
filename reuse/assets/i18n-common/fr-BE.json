@@ -47,6 +47,11 @@
       "F": "F",
       "null": "Inconnu"
     },
+    "gendersFull": {
+      "M": "Homme",
+      "F": "Femme",
+      "null": "Inconnu"
+    },
     "somethingWentWrong": "Une erreur s'est produite. Veuillez ré-essayer.",
     "somethingWentWrongWithoutRetry": "Une erreur s'est produite.",
     "forbiddenAction": "Vous n'êtes pas autorisé(e) à effectuer cette action.",
@@ -74,6 +79,7 @@
     "sureDeleteCareGiver": "Êtes-vous sûr(e) de vouloir supprimer ce prestataire?"
   },
   "prescription": {
+    "beneficiary": "Bénéficiaire",
     "creationDate": "Créé le",
     "details": {
       "link": "Voir détails"
@@ -194,6 +200,8 @@
     "transfer": "Transférer",
     "assignMe": "Prendre en charge",
     "reject": "Rejeter",
+    "copy": "Copier",
+    "printAction": "Imprimer",
     "duplicate": "Dupliquer",
     "extend": "Étendre",
     "careGivers": "Prestataire(s) de soins",

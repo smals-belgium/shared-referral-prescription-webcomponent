@@ -48,6 +48,11 @@
       "F": "V",
       "null": "Onbekend"
     },
+    "gendersFull": {
+      "M": "Man",
+      "F": "Vrouw",
+      "null": "Onbekend"
+    },
     "somethingWentWrong": "Er is iets misgegaan. Gelieve opnieuw te proberen.",
     "somethingWentWrongWithoutRetry": "Er is iets misgegaan.",
     "forbiddenAction": "U bent niet bevoegd om deze actie uit te voeren.",
@@ -75,6 +80,7 @@
     "sureDeleteCareGiver": "Bent u zeker dat u deze zorgverlener wil verwijderen?"
   },
   "prescription": {
+    "beneficiary": "Begunstigde",
     "creationDate": "Aangemaakt op",
     "details": {
       "link": "Bekijk details"
@@ -195,6 +201,8 @@
     "transfer": "Overmaken",
     "assignMe": "Neem de leiding",
     "reject": "Afwijzen",
+    "copy": "Kopiëren",
+    "printAction": "Afdrukken",
     "duplicate": "Dupliceren",
     "extend": "Verlengen",
     "careGivers": "Zorgverlener(s)",

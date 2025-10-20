@@ -1,12 +1,12 @@
-@if(elementGroup){
+@if (elementGroup){
   <evf-form-detail-group
-  [elementControls]="elementGroup.childElementControls"
-  [options]="{showDividers: false, detailLayout: detailLayout}"
-  [metadata]="{
+    [elementControls]="elementGroup.childElementControls"
+    [options]="{showDividers: false, detailLayout: detailLayout}"
+    [metadata]="{
     pssActive: status,
     isProfessional : isProfessional
     }"
-></evf-form-detail-group>
+  ></evf-form-detail-group>
 }
 
 <ng-template #detailLayout let-content="content" let-label="label">

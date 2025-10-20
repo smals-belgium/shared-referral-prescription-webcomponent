@@ -85,9 +85,4 @@
   /* expansion panel */
   --mat-expansion-header-expanded-state-height: #{mh.calculateRem(70px)};
   --mat-expansion-container-shape: 0;
-
-  /* Dialog */
-  --mdc-dialog-subhead-color: #{mh.$mat-primary-900};
-  --mdc-dialog-subhead-size: #{mh.$font-size-m};
-  --mdc-dialog-subhead-weight: #{mh.$font-weight-semibold};
 }

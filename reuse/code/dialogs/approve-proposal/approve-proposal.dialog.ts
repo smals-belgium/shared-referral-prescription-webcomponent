@@ -11,12 +11,12 @@ import {
 } from '@angular/material/dialog';
 import { v4 as uuidv4 } from 'uuid';
 import { MatButton } from '@angular/material/button';
-import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { TranslateModule } from '@ngx-translate/core';
-import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
+import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import { ReadRequestResource } from '@reuse/code/openapi';
 import { catchError, switchMap } from 'rxjs';
 import { EncryptionHelperService } from '@reuse/code/states/privacy/encryption-helper.service';
@@ -35,7 +35,6 @@ import { AlertComponent } from '@reuse/code/components/alert-component/alert.com
     MatError,
     MatFormField,
     MatInput,
-    MatLabel,
     OverlaySpinnerComponent,
     TranslateModule,
     ReactiveFormsModule,

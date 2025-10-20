@@ -56,12 +56,12 @@ export class WcAuthService extends AuthService {
     );
   }
 
-  override discipline(): Observable<string> {
+  override discipline(): Observable<Discipline> {
     return this.getClaims().pipe(
       map(claims => {
         const keys = claims?.['userProfile'] ? Object.keys(claims?.['userProfile']).map(k => k.toLowerCase()) : [];
         const match = Object.values(Discipline).find(discipline => keys.includes(discipline.toLowerCase()));
-        return match ?? '';
+        return match ?? Discipline.Patient;
       })
     );
   }

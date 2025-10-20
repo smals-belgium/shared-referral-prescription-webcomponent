@@ -1,0 +1,66 @@
+<div class="main_details_container">
+  <div class="beneficiary_container">
+    <span class="beneficiary_label">{{ 'prescription.beneficiary' | translate }}</span>
+    <div class="beneficiary_data">
+      <span class="beneficiary_full_name">{{ patient?.lastName }} {{ patient?.firstName }}</span>
+      <span class="beneficiary_gender">({{ 'common.gendersFull.'+patient?.gender | translate }})</span>
+    </div>
+    <div class="beneficiary_other_data">
+      <span class="beneficiary_ssin">{{patient?.ssin | formatSsin}} </span>
+      <span class="prescription_shortcode">{{prescription?.shortCode }} </span>
+    </div>
+  </div>
+
+  @if (decryptedResponses().data && templateVersion) {
+    <div class="evf_form_detail_container">
+      <nihdi-referral-prescription-form-details
+        [lang]="currentLang()"
+        [template]="templateVersion"
+        [responses]="decryptedResponses().data"
+        [services]="services"
+        [status]="status()"
+        [isProfessional]="isProfessional$()"
+      ></nihdi-referral-prescription-form-details>
+    </div>
+
+  }
+  <div class="row">
+    <div class="info-item">
+      <div data-cy="prescription-validity-period-label">{{ 'prescription.validityPeriod' | translate }}
+      </div>
+      <div data-cy="prescription-validity-period">
+        @if (prescription?.period; as period) {
+          {{ period.start | date }} - {{ period.end | date }}
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="info-item">
+      <div data-cy="prescription-date-label">{{ 'prescription.prescriptionDate' | translate }}</div>
+      <div data-cy="prescription-date">{{ $any(prescription?.authoredOn) | date: 'D' }}</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="info-item">
+      <div data-cy="prescription-author-label">{{ 'prescription.author' | translate }}</div>
+      <div data-cy="prescription-author">
+        <app-professional-display
+          [professional]="prescription?.requester"
+          [currentUser]="currentUser"
+        ></app-professional-display>
+
+        @if (prescription?.requester?.nihii8 ?? prescription?.requester?.nihii11 ; as nihii) {
+          <span class="nihii">({{ nihii }})</span>
+        }
+        <div>
+          @if (prescription?.requester?.healthcareQualification?.id?.profession) {
+            {{ 'common.professions.' + prescription?.requester?.healthcareQualification?.id?.profession | translate }}
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

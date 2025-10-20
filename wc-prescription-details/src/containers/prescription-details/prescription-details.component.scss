@@ -1,0 +1,255 @@
+@use '@angular/material' as mat;
+@use '@myhealth-belgium/design-kit' as mh;
+@use '../../../../node_modules/@smals/vas-evaluation-form-ui-material/index' as evf;
+
+@include mh.use-font-material-symbols(
+    true,
+    url('@reuse/assets/fonts/MatSymbols-Rounded.ttf'),
+    'Material Symbols Rounded',
+      (
+        'material-icons',
+        'material-symbols',
+      ));
+
+@include mh.override-all-mat-components();
+@include mh.use-globals();
+@include mh.use-classes();
+@include mh.use-all-components();
+
+$app-primary-palette: (
+  50: mh.$primary-90,
+  100: mh.$primary-80,
+  200: mh.$primary-70,
+  300: mh.$primary-60,
+  400: mh.$primary-50,
+  500: mh.$primary-40,
+  600: mh.$primary-35,
+  700: mh.$primary-30,
+  800: mh.$primary-20,
+  900: mh.$primary-10,
+  A100: mh.$primary-95,
+  A200: mh.$primary-98,
+  A400: mh.$primary-99,
+  A700: mh.$primary-100,
+  contrast: ()
+);
+
+$app-primary: mat.m2-define-palette($app-primary-palette, 800);
+@include evf.evf-theme($app-primary, 800, 600, 700, mh.$color-white, transparent);
+
+:host{
+
+  /* Box Shadows */
+  --mat-sys-level0: 0px 0px 0px 0px rgba(0, 0, 0, 0.2), 0px 0px 0px 0px rgba(0, 0, 0, 0.14), 0px 0px 0px 0px rgba(0, 0, 0, 0.12);
+  --mat-sys-level1: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+  --mat-sys-level2: 0px 3px 3px -2px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+  --mat-sys-level3: 0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+  --mat-sys-level4: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
+  --mat-sys-level5: 0px 7px 8px -4px rgba(0, 0, 0, 0.2), 0px 12px 17px 2px rgba(0, 0, 0, 0.14), 0px 5px 22px 4px rgba(0, 0, 0, 0.12);
+
+  /* Default font */
+  --mh-default-font-family: #{mh.$font-stack};
+
+  /* Body Large */
+  --mat-sys-body-large: #{mh.$font-weight-regular} #{mh.$font-size-m} / #{mh.calculateRem(22px)} var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-body-large-font: var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-body-large-line-height: #{mh.calculateRem(22px)};
+  --mat-sys-body-large-size: #{mh.$font-size-m};
+  --mat-sys-body-large-tracking: 0.016rem;
+  --mat-sys-body-large-weight: #{mh.$font-weight-regular};
+
+  /* Body Medium */
+  --mat-sys-body-medium: #{mh.$font-weight-regular} #{mh.$font-size-s} / #{mh.calculateRem(20px)} var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-body-medium-font: var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-body-medium-line-height: #{mh.calculateRem(20px)};
+  --mat-sys-body-medium-size: #{mh.$font-size-s};
+  --mat-sys-body-medium-tracking: 0.016rem;
+  --mat-sys-body-medium-weight: #{mh.$font-weight-regular};
+
+  /* Label Large */
+  --mat-sys-label-large: #{mh.$font-weight-medium} #{mh.$font-size-s} / #{mh.calculateRem(28px)} var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-label-large-font: var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-label-large-line-height: #{mh.calculateRem(28px)};
+  --mat-sys-label-large-size: #{mh.$font-size-m};
+  --mat-sys-label-large-tracking: #{mh.calculateRem(0.04px)};
+  --mat-sys-label-large-weight: #{mh.$font-weight-semibold};
+  --mat-sys-label-large-weight-prominent: #{mh.$font-weight-bold};
+
+  /* Heading Small */
+  --mat-sys-headline-small: #{mh.$font-weight-regular} #{mh.$font-size-2xl} / 2rem var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-headline-small-font: var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-headline-small-line-height: 2rem;
+  --mat-sys-headline-small-size: #{mh.$font-size-2xl};
+  --mat-sys-headline-small-tracking: 0;
+  --mat-sys-headline-small-weight: #{mh.$font-weight-regular};
+
+  /* Buttons */
+  --mat-sys-primary: #{mh.$primary-40};
+  --mat-sys-on-primary: #{mh.$primary-100};
+  --mdc-outlined-button-container-shape: #{mh.$border-radius-xl};
+  --mat-sys-dragged-state-layer-opacity: 0.16;
+  --mat-sys-focus-state-layer-opacity: 0.12;
+  --mat-sys-hover-state-layer-opacity: 0.08;
+  --mat-sys-pressed-state-layer-opacity: 0.12;
+
+  --mdc-outlined-button-outline-width: 2px;
+  --mdc-outlined-button-label-text-weight: #{mh.$font-weight-semibold};
+
+  --mdc-protected-button-container-shape: #{mh.$border-radius-xl};
+  --mdc-protected-button-label-text-weight: #{mh.$font-weight-semibold};
+  --mdc-protected-button-container-color: #{mh.$box-shadow-dropdown};
+
+  --mdc-filled-button-container-shape: #{mh.$border-radius-xl};
+
+  /* Dialog */
+  --mdc-dialog-subhead-color: #{mh.$mat-primary-900};
+  --mdc-dialog-subhead-size: #{mh.$font-size-m};
+  --mdc-dialog-subhead-weight: #{mh.$font-weight-semibold};
+
+  /* Tooltip */
+  --mat-sys-corner-extra-small: #{mh.calculateRem(4px)};
+  --mat-sys-body-small-font: var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-body-small-size: #{mh.$font-size-xs};
+  --mat-sys-body-small-weight: #{mh.$font-weight-regular};
+  --mat-sys-body-small-line-height: #{mh.$font-size-m};
+  --mat-sys-body-small-tracking: 0.025rem;
+  --mat-sys-inverse-surface: #{mh.$neutral-20};
+  --mat-sys-inverse-on-surface: #{mh.$neutral-95};
+
+  /* Icons */
+  --mh-prescriber-details-icon-color : yellow;
+
+  /* Form Fields */
+  --mdc-outlined-text-field-error-outline-color: #{mh.$error-30};
+  --mdc-outlined-text-field-outline-width: #{mh.calculateRem(1px)};
+  --mdc-outlined-text-field-error-focus-outline-color: #{mh.$error-30};
+  --mdc-outlined-text-field-error-hover-outline-color: #{mh.$error-30};
+  --mdc-outlined-text-field-container-shape: #{mh.$border-radius-s};
+  --mat-form-field-error-text-color: #{mh.$error-30};
+  --mat-standard-button-toggle-selected-state-text-color: #{mh.$primary-30};
+  --mat-sys-body-small-size: #{mh.$font-size-xs};
+  --mat-standard-button-toggle-height: 44px;
+  --mdc-outlined-text-field-outline-color: #{mh.$neutral-50};
+  --mdc-outlined-text-field-input-text-color: #{mh.$typography-brand-neutral-dark};
+  --mat-datepicker-calendar-container-shape: #{mh.$border-radius-m};
+  --mat-sys-body-medium-font: #{mh.$font-stack};
+  --mat-sys-body-medium-size: #{mh.$font-size-s};
+  --mat-sys-surface-container-high: #{mh.$primary-100};
+  --mat-sys-on-surface-variant: #414753;
+  --mdc-text-button-label-text-color: var(--mat-datepicker-calendar-period-button-text-color, var(--mat-sys-on-surface-variant));
+  --mat-datepicker-calendar-container-elevation-shadow: rgba(0, 0, 0, 0.12) 0px 1px 9px 0px;
+  --mat-datepicker-calendar-period-button-icon-color: #{mh.$primary-40};
+  --mat-sys-hover-state-layer-opacity: 0.08;
+  --mat-datepicker-calendar-date-hover-state-background-color: #{mh.$primary-95};
+  --mat-sys-on-surface: #{mh.$neutral-10};
+  --mat-sys-pressed-state-layer-opacity: 0.12;
+  --mat-icon-button-focus-state-layer-opacity: 0;
+  --mat-form-field-container-vertical-padding: 12px;
+  --mat-form-field-container-height: 46px;
+  --mat-sys-surface-container: #{mh.$primary-100};
+  --mdc-outlined-text-field-error-outline-color: #{mh.$error-30};
+  --mdc-outlined-text-field-outline-width:  #{mh.calculateRem(1px)};
+  --mdc-outlined-text-field-error-focus-outline-color: #{mh.$error-30};
+  --mdc-outlined-text-field-error-hover-outline-color: #{mh.$error-30};
+
+  /* Paginator / Corners */
+  --mdc-outlined-text-field-container-shape: #{mh.calculateRem(6px)};
+  --mat-select-enabled-arrow-color: #{mh.$primary-40};
+
+  /* Toggle / Switch */
+  --mat-sys-corner-full: #{mh.$border-radius-round};
+  --mat-switch-label-text-color: #{mh.$color-black};
+  --mat-switch-label-text-size: #{mh.$font-size-m};
+  --mdc-switch-unselected-icon-color: #{mh.$neutral-50};
+  --mat-switch-track-outline-color: #{mh.$neutral-50};
+  --mdc-switch-unselected-track-color: #{mh.$neutral-50};
+  --mdc-switch-unselected-handle-color: #{mh.$primary-100};
+  --mdc-switch-unselected-hover-handle-color: #{mh.$primary-100};
+  --mdc-switch-unselected-hover-track-color: #{mh.$neutral-25};
+  --mdc-switch-unselected-focus-handle-color: #{mh.$primary-100};
+  --mdc-switch-unselected-focus-track-color: #{mh.$neutral-25};
+  --mdc-switch-unselected-pressed-handle-color: #{mh.$primary-100};
+  --mdc-switch-unselected-pressed-track-color: #{mh.$neutral-25};
+  --mdc-switch-selected-icon-color: #{mh.$primary-40};
+  --mdc-switch-selected-track-color: #{mh.$primary-40};
+  --mdc-switch-selected-handle-color: #{mh.$primary-100};
+  --mdc-switch-selected-hover-handle-color: #{mh.$primary-100};
+  --mdc-switch-selected-hover-track-color: #{mh.$primary-35};
+  --mdc-switch-selected-focus-handle-color: #{mh.$primary-100};
+  --mdc-switch-selected-focus-track-color: #{mh.$primary-35};
+  --mdc-switch-selected-pressed-handle-color: #{mh.$primary-100};
+  --mdc-switch-selected-pressed-track-color: #{mh.$primary-35};
+  --mat-standard-button-toggle-shape: #{mh.$border-radius-xl};
+  --mat-standard-button-toggle-divider-color: #{mh.$neutral-50};
+  --mat-standard-button-toggle-selected-state-text-color: #{mh.$primary-40};
+  --mat-standard-button-toggle-text-color: #{mh.$primary-40};
+  --mat-standard-button-toggle-selected-state-background-color: #{mh.$primary-95};
+
+  /* Surface Colors */
+  --mat-sys-on-surface-variant: #414753;
+  --mat-sys-surface-container: #{mh.$primary-100};
+  --mat-select-focused-arrow-color: #{mh.$primary-40};
+  --mat-sys-on-secondary-container: #{mh.$secondary-30};
+
+  /* Side Navigation */
+  --mat-menu-item-icon-color: #{mh.$primary-40};
+
+  /* Set fallback style for icons */
+  .material-icons{
+    font-family: 'Material Symbols Rounded', 'Material Icons', sans-serif;
+  }
+
+}
+
+.details_container{
+  font-family: var(--mh-default-font-family), sans-serif;
+
+  display: flex;
+  flex-direction: column;
+  gap: mh.$spacing-rem-xl;
+
+  .details_header{
+    display: flex;
+    justify-content: space-between;
+
+    .details_title_container{
+      display: flex;
+      flex-direction: column;
+      gap: mh.$spacing-rem-s;
+
+      .details_title{
+        display: block;
+        margin: 0;
+      }
+
+      .status{
+        max-width: min-content;
+      }
+    }
+    .details_action_container{
+      display: flex;
+      gap: mh.$spacing-rem-m;
+
+      button{
+        max-height: mh.$font-size-3xl;
+      }
+    }
+  }
+
+  .details_body{
+    display: flex;
+    flex-direction: row;
+
+    @media (max-width: mh.$media-breakpoint-s) {
+      flex-direction: column;
+    }
+
+    > :nth-child(1){
+      flex: 2;
+    }
+
+    > :nth-child(2){
+      flex: 1;
+    }
+  }
+}

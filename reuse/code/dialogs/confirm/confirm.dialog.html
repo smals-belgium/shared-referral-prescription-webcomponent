@@ -1,26 +1,28 @@
-@if(titleLabel){
-<h1  mat-dialog-title>{{titleLabel! | translate: params}}</h1>
+@if (titleLabel){
+  <h1 mat-dialog-title>{{titleLabel! | translate: params}}</h1>
 }
 
-@if(messageLabel){
-<mat-dialog-content>
-  {{ messageLabel! | translate: params }}
-</mat-dialog-content>
+@if (messageLabel){
+  <mat-dialog-content>
+    {{ messageLabel! | translate: params }}
+  </mat-dialog-content>
 }
 
 <mat-dialog-actions>
-  @if(okLabel) {
-  <button
-    mat-raised-button
-    color="accent"
-    (click)="confirm()"
-  >{{  okLabel! | translate: params  }}</button>
+  @if (okLabel){
+    <button
+      type="button"
+      mat-raised-button
+      (click)="confirm()"
+    >{{  okLabel! | translate: params  }}</button>
   }
-  @if(cancelLabel){
-  <button
-    type="button"
-    mat-stroked-button
-    mat-dialog-close
-  >{{cancelLabel! | translate: params}}</button>
+
+  @if (cancelLabel){
+    <button
+      type="button"
+      mat-stroked-button
+      mat-dialog-close
+    >{{cancelLabel! | translate: params}}</button>
   }
+
 </mat-dialog-actions>
