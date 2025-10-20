@@ -16,7 +16,18 @@ import {
 } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
-import { BehaviorSubject, catchError, concatMap, filter, forkJoin, from, Observable, of, switchMap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  concatMap,
+  filter,
+  firstValueFrom,
+  forkJoin,
+  from,
+  Observable,
+  of,
+  switchMap,
+} from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { DateAdapter } from '@angular/material/core';
@@ -33,6 +44,7 @@ import {
   DataState,
   LoadingStatus,
 } from '@reuse/code/interfaces';
+import { CreateMultiplePrescriptionsComponent } from '../components/create-multiple-prescriptions/create-multiple-prescriptions.component';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionService } from '@reuse/code/services/api/prescription.service';
 import { ConfirmDialog, ConfirmDialogData } from '@reuse/code/dialogs/confirm/confirm.dialog';
@@ -49,6 +61,7 @@ import { ProposalService } from '@reuse/code/services/api/proposal.service';
 import { PssService } from '@reuse/code/services/api/pss.service';
 import { EncryptionService } from '@reuse/code/services/privacy/encryption.service';
 import { v4 as uuidv4 } from 'uuid';
+import { CreatePrescriptionModelComponent } from '../components/create-prescription-model/create-prescription-model.component';
 import { PrescriptionModelService } from '@reuse/code/services/api/prescriptionModel.service';
 import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
@@ -56,6 +69,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { setOccurrenceTimingResponses } from '@reuse/code/utils/occurrence-timing.utils';
 import {
   CreateRequestResource,
+  Discipline,
   FormElement,
   ModelEntityDto,
   PersonResource,
@@ -66,8 +80,7 @@ import { ChooseTemplateDialog, SelectedTemplate } from '@reuse/code/dialogs/choo
 import { isModel, isPrescription } from '@reuse/code/utils/utils';
 import { EncryptionKeyInitializerService } from '@reuse/code/states/privacy/encryption-key-initializer.service';
 import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
-import { CreateMultiplePrescriptionsComponent } from '../components/create-multiple-prescriptions/create-multiple-prescriptions.component';
-import { CreatePrescriptionModelComponent } from '../components/create-prescription-model/create-prescription-model.component';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   templateUrl: './create-prescription.component.html',
@@ -87,13 +100,14 @@ import { CreatePrescriptionModelComponent } from '../components/create-prescript
 })
 export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit {
   protected readonly AlertType = AlertType;
+  protected readonly discipline$ = toSignal(this.authService.discipline());
+
   private trackId = 0;
   public readonly errorResponseBadGateway = new HttpErrorResponse({
     status: 502,
     statusText: 'Bad Gateway',
   });
   public isModelValue: boolean = false;
-  public displayCreateButtonOnly = false;
   public errorCard: ErrorCard = {
     show: false,
     message: '',
@@ -106,6 +120,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit 
   public readonly patientState$: Signal<DataState<PersonResource>> = this.patientStateService.state;
   public readonly prescriptionForms = signal<CreatePrescriptionForm[]>([]);
   public readonly loading = signal(false);
+  public readonly displaySelectDialog$ = signal(false);
 
   // INPUTS
   @HostBinding('attr.lang')
@@ -116,7 +131,6 @@ export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit 
   @Input() services!: {
     getAccessToken: (audience?: string) => Promise<string | null>;
   };
-  @Input() intent!: string;
   @Input() extend?: boolean = false;
 
   // OUTPUTS
@@ -182,8 +196,20 @@ export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit 
     }
 
     if (changes['initialValues'] && this.initialValues) {
-      this.loading.set(true);
       this.isModelValue = isModel(this.initialValues.intent);
+      const initialPrescriptionType =
+        this.initialValues.initialPrescriptionType || this.initialValues.initialPrescription?.templateCode;
+
+      if (!initialPrescriptionType) {
+        // No initialPrescriptionType → just display the template selection modal
+        this.loading.set(false);
+        this.displaySelectDialog$.set(true);
+        void this.openSelectDialog();
+        return;
+      }
+
+      // InitialPrescriptionType exists → continue with the flow
+      this.loading.set(true);
       if (
         this.initialValues.initialPrescription?.templateCode === 'ANNEX_82' ||
         this.initialValues.initialPrescriptionType === 'ANNEX_82'
@@ -192,6 +218,15 @@ export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit 
       } else {
         this.handlePrescriptionChanges(this.initialValues);
       }
+    }
+  }
+
+  async openSelectDialog() {
+    if (await this.isNurse()) {
+      this.displaySelectDialog$.set(false);
+      this.addPrescriptionForm('ANNEX_81');
+    } else {
+      this.addPrescription();
     }
   }
 
@@ -263,6 +298,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit 
       .beforeClosed()
       .pipe(filter(result => result?.templateCode != null))
       .subscribe(result => {
+        this.displaySelectDialog$.set(false);
         if (result?.model?.id && result?.templateCode) {
           this.findModelById(result.templateCode, result.model.id);
         } else if (result?.templateCode) {
@@ -748,5 +784,10 @@ export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit 
         };
       });
     });
+  }
+
+  private async isNurse() {
+    await firstValueFrom(this.authService.discipline());
+    return this.discipline$() != null && this.discipline$() === Discipline.Nurse;
   }
 }
