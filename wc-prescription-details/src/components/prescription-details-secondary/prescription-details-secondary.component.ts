@@ -1,8 +1,8 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, WritableSignal } from '@angular/core';
 import { MatButton } from '@angular/material/button';
-import { MatIcon} from '@angular/material/icon';
+import { MatIcon } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
-import { PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
+import { PerformerTaskIdResource, PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
 import { AssignPrescriptionDialog } from '@reuse/code/dialogs/assign-prescription/assign-prescription.dialog';
 import { UserInfo } from '@reuse/code/interfaces';
 import { isPrescription } from '@reuse/code/utils/utils';
@@ -11,16 +11,9 @@ import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { Observable } from 'rxjs';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
-import {
-  PrescriptionDetailsOrganizationListComponent
-} from './prescription-details-organization-list/prescription-details-organization-list.component';
-import {
-  PrescriptionDetailsCaregiverListComponent
-} from './prescription-details-caregiver-list/prescription-details-caregiver-list.component';
+import { PrescriptionDetailsOrganizationListComponent } from './prescription-details-organization-list/prescription-details-organization-list.component';
+import { PrescriptionDetailsCaregiverListComponent } from './prescription-details-caregiver-list/prescription-details-caregiver-list.component';
 import { PrescriptionDetailsSecondaryService } from './prescription-details-secondary.service';
-import { CanStartTreatmentPipe } from '@reuse/code/pipes/can-start-treatment.pipe';
-import { CanAssignCaregiverPipe } from '@reuse/code/pipes/can-assign-caregiver.pipe';
-import { CanSelfAssignPipe } from '@reuse/code/pipes/can-self-assign.pipe';
 
 @Component({
   selector: 'app-prescription-details-secondary',
@@ -30,9 +23,6 @@ import { CanSelfAssignPipe } from '@reuse/code/pipes/can-self-assign.pipe';
     TranslatePipe,
     PrescriptionDetailsOrganizationListComponent,
     PrescriptionDetailsCaregiverListComponent,
-    CanStartTreatmentPipe,
-    CanAssignCaregiverPipe,
-    CanSelfAssignPipe,
   ],
   templateUrl: './prescription-details-secondary.component.html',
   styleUrl: './prescription-details-secondary.component.scss',
@@ -102,7 +92,7 @@ export class PrescriptionDetailsSecondaryComponent {
     }
   }
 
-  private selfAssign(serviceCall: () => Observable<void>, successPrefix: string) {
+  private selfAssign(serviceCall: () => Observable<PerformerTaskIdResource>, successPrefix: string) {
     serviceCall().subscribe({
       next: () => {
         this.loading.set(false);

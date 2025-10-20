@@ -148,6 +148,15 @@ describe('CreatePrescriptionWebComponent', () => {
   });
 
   beforeEach(async () => {
+    jest.spyOn(MatDialog.prototype, 'open').mockImplementation(
+      () =>
+        ({
+          afterClosed: () => of(null),
+          beforeClosed: () => of(null),
+        }) as any
+    );
+    jest.spyOn(ToastService.prototype, 'show').mockImplementation((message: string) => {});
+
     await TestBed.configureTestingModule({
       imports: [
         CreatePrescriptionExtendedWebComponent,
@@ -200,6 +209,7 @@ describe('CreatePrescriptionWebComponent', () => {
 
   afterEach(() => {
     httpMock.verify();
+    jest.restoreAllMocks();
   });
 
   it('should create the app', () => {
@@ -259,7 +269,8 @@ describe('CreatePrescriptionWebComponent', () => {
       const mockUpdate = jest.fn(updateFn => updateFn([{ submitted: true }]));
       jest.spyOn(component.prescriptionForms, 'update').mockImplementation(mockUpdate);
 
-      jest.spyOn(component['prescriptionService'], 'create').mockReturnValue(of());
+      jest.spyOn(component['prescriptionService'], 'create').mockReturnValue(of({ id: '123' }));
+      const emitPrescriptionCreated = jest.spyOn(component.prescriptionsCreated, 'emit');
 
       const mockPublish = jest.spyOn(component, 'publishPrescriptions');
       const mockPublishOnePrescription = jest.spyOn(component as any, 'publishOnePrescriptionOrProposal');
@@ -269,6 +280,8 @@ describe('CreatePrescriptionWebComponent', () => {
 
       expect(mockPublish).toHaveBeenCalled();
       expect(mockPublishOnePrescription).toHaveBeenCalled();
+
+      expect(emitPrescriptionCreated).toHaveBeenCalledWith(['123']);
     }));
     it('should call publishMultiplePrescriptions when more then one prescription form is present and valid', fakeAsync(() => {
       createFixture('mockPseudomizedKey');
@@ -1208,8 +1221,8 @@ describe('CreatePrescriptionWebComponent', () => {
       const emitPrescriptionCreated = jest.spyOn(component.prescriptionsCreated, 'emit');
 
       const results = [
-        { trackId: 1, status: LoadingStatus.SUCCESS },
-        { trackId: 2, status: LoadingStatus.SUCCESS },
+        { responseId: '123', trackId: 1, status: LoadingStatus.SUCCESS },
+        { responseId: '234', trackId: 2, status: LoadingStatus.SUCCESS },
       ];
 
       component.initialValues = {
@@ -1218,13 +1231,13 @@ describe('CreatePrescriptionWebComponent', () => {
       component.handleCreateBulkResultExtended(results);
 
       expect(toasterSpy).toHaveBeenCalledWith('prescription.create.allSuccess', { interpolation: { count: 2 } });
-      expect(emitPrescriptionCreated).toHaveBeenCalled();
+      expect(emitPrescriptionCreated).toHaveBeenCalledWith(['123', '234']);
     });
     it('should show mixed success message when some succeed and some fail', () => {
       createFixture('mockPseudomizedKey');
       const results = [
-        { trackId: 1, status: LoadingStatus.SUCCESS },
-        { trackId: 2, status: LoadingStatus.ERROR, error: 'Error 2' },
+        { responseId: '123', trackId: 1, status: LoadingStatus.SUCCESS },
+        { responseId: '234', trackId: 2, status: LoadingStatus.ERROR, error: 'Error 2' },
       ];
 
       const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {});

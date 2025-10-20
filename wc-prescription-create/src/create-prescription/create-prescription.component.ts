@@ -134,7 +134,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit 
   @Input() extend?: boolean = false;
 
   // OUTPUTS
-  @Output() prescriptionsCreated = new EventEmitter<void>();
+  @Output() prescriptionsCreated = new EventEmitter<string[]>();
   @Output() clickCancel = new EventEmitter<void>();
   @Output() modelCreated = new EventEmitter<void>();
 
@@ -431,12 +431,13 @@ export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit 
         )
       )
       .subscribe({
-        next: () => {
+        next: readRequestIdResource => {
           this.closeErrorCard();
           this.toastService.show(
             isPrescription(this.initialValues?.intent) ? 'prescription.create.success' : 'proposal.create.success'
           );
-          this.prescriptionsCreated.emit();
+          const ids = readRequestIdResource.id ? [readRequestIdResource.id] : [];
+          this.prescriptionsCreated.emit(ids);
         },
         error: (err: HttpErrorResponse) => {
           const errorBody = err.error as { detail?: string };
@@ -478,6 +479,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit 
   private mapToCreatePrescriptionStreams(identifier: string): Observable<{
     trackId: number;
     status: LoadingStatus;
+    responseId?: string;
     error?: unknown;
   }>[] {
     return this.prescriptionForms()
@@ -493,9 +495,10 @@ export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit 
           switchMap(createPrescriptionRequest => {
             if (isPrescription(this.initialValues?.intent)) {
               return this.prescriptionService.create(createPrescriptionRequest, f.generatedUUID).pipe(
-                map(() => ({
+                map(readRequestIdResource => ({
                   trackId: f.trackId,
                   status: LoadingStatus.SUCCESS,
+                  responseId: readRequestIdResource.id,
                   error: undefined,
                 })),
                 catchError((error: unknown) => {
@@ -504,15 +507,17 @@ export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit 
                   return of({
                     trackId: f.trackId,
                     status: LoadingStatus.ERROR,
+                    responseId: undefined,
                     error,
                   });
                 })
               );
             } else {
               return this.proposalService.create(createPrescriptionRequest, f.generatedUUID).pipe(
-                map(() => ({
+                map(readRequestIdResource => ({
                   trackId: f.trackId,
                   status: LoadingStatus.SUCCESS,
+                  responseId: readRequestIdResource.id,
                   error: undefined,
                 })),
                 catchError((error: unknown) => {
@@ -521,6 +526,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit 
                   return of({
                     trackId: f.trackId,
                     status: LoadingStatus.ERROR,
+                    responseId: undefined,
                     error,
                   });
                 })
@@ -646,7 +652,9 @@ export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit 
     );
   }
 
-  protected handleCreateBulkResult(results: { trackId: number; status: LoadingStatus; error?: unknown }[]): void {
+  protected handleCreateBulkResult(
+    results: { trackId: number; status: LoadingStatus; responseId?: string; error?: unknown }[]
+  ): void {
     const successCount = results.filter(r => r.status === LoadingStatus.SUCCESS).length;
     const failedCount = results.filter(r => r.status === LoadingStatus.ERROR).length;
     if (failedCount === 0) {
@@ -654,7 +662,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit 
         isPrescription(this.initialValues?.intent) ? 'prescription.create.allSuccess' : 'proposal.create.allSuccess',
         { interpolation: { count: successCount } }
       );
-      this.prescriptionsCreated.emit();
+      const ids = results.map(r => r.responseId).filter((id): id is string => !!id);
+      this.prescriptionsCreated.emit(ids);
     } else if (successCount === 0) {
       if (isPrescription(this.initialValues?.intent)) {
         this.errorCard = {

@@ -38,6 +38,7 @@ import {
   CityResource,
   HealthcareOrganizationResource,
   HealthcareProResource,
+  PerformerTaskIdResource,
   TelephoneNumbers,
   Translation,
 } from '@reuse/code/openapi';
@@ -376,7 +377,7 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
 
   private executeAssignment(
     healthcareProvider: HealthcareProResource | HealthcareOrganizationResource,
-    serviceCall: () => Observable<void>,
+    serviceCall: () => Observable<PerformerTaskIdResource>,
     successPrefix: string
   ): void {
     this.loading = true;
