@@ -81,7 +81,7 @@
             "style": "camelCase"
           }
         ]
-      },
+      }
     },
     {
       "files": [
@@ -109,8 +109,8 @@
       }
     },
     {
-      files: ["*.spec.ts", "*.test.ts"], // adjust this to match your test files
-      rules: {
+      "files": ["*.spec.ts", "*.test.ts"],
+      "rules": {
         "@typescript-eslint/no-explicit-any": "off"
       }
     }

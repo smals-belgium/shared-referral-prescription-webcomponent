@@ -6,91 +6,133 @@ const translations = {
     masculine: {
       nl: 'Elke',
       fr: 'Tous les',
+      de: 'TO BE DEFINED',
+      en: 'TO BE DEFINED'
     },
     feminine: {
       nl: 'Elke',
       fr: 'Toutes les',
+      de: 'TO BE DEFINED',
+      en: 'TO BE DEFINED'
     },
   },
   timesPer: {
     nl: 'keer per',
     fr: 'fois par',
+    de: 'TO BE DEFINED',
+    en: 'TO BE DEFINED'
   },
   on: {
     nl: 'op',
     fr: 'le',
+    de: 'TO BE DEFINED',
+    en: 'TO BE DEFINED'
   },
   and: {
     nl: 'en',
     fr: 'et',
+    de: 'TO BE DEFINED',
+    en: 'TO BE DEFINED'
   },
   sessionDuration: {
     nl: 'een sessie van',
     fr: 'une séance de',
+    de: 'TO BE DEFINED',
+    en: 'TO BE DEFINED'
   },
   during: {
     nl: 'gedurende',
     fr: 'durant',
+    de: 'TO BE DEFINED',
+    en: 'TO BE DEFINED'
   },
   unitsOfTime: {
     one: {
       s: {
         nl: 'seconde',
         fr: 'seconde',
+        de: 'TO BE DEFINED',
+        en: 'TO BE DEFINED'
       },
       min: {
         nl: 'minuut',
         fr: 'minute',
+        de: 'TO BE DEFINED',
+        en: 'TO BE DEFINED'
       },
       h: {
         nl: 'uur',
         fr: 'heure',
+        de: 'TO BE DEFINED',
+        en: 'TO BE DEFINED'
       },
       d: {
         nl: 'dag',
         fr: 'jour',
+        de: 'TO BE DEFINED',
+        en: 'TO BE DEFINED'
       },
       wk: {
         nl: 'week',
         fr: 'semaine',
+        de: 'TO BE DEFINED',
+        en: 'TO BE DEFINED'
       },
       mo: {
         nl: 'maand',
         fr: 'mois',
+        de: 'TO BE DEFINED',
+        en: 'TO BE DEFINED'
       },
       a: {
         nl: 'jaar',
         fr: 'an',
+        de: 'TO BE DEFINED',
+        en: 'TO BE DEFINED'
       },
     },
     multiple: {
       s: {
         nl: 'seconden',
         fr: 'secondes',
+        de: 'TO BE DEFINED',
+        en: 'TO BE DEFINED'
       },
       min: {
         nl: 'minuten',
         fr: 'minutes',
+        de: 'TO BE DEFINED',
+        en: 'TO BE DEFINED'
       },
       h: {
         nl: 'uren',
         fr: 'heures',
+        de: 'TO BE DEFINED',
+        en: 'TO BE DEFINED'
       },
       d: {
         nl: 'dagen',
         fr: 'jours',
+        de: 'TO BE DEFINED',
+        en: 'TO BE DEFINED'
       },
       wk: {
         nl: 'weken',
         fr: 'semaines',
+        de: 'TO BE DEFINED',
+        en: 'TO BE DEFINED'
       },
       mo: {
         nl: 'maanden',
         fr: 'mois',
+        de: 'TO BE DEFINED',
+        en: 'TO BE DEFINED'
       },
       a: {
         nl: 'jaren',
         fr: 'ans',
+        de: 'TO BE DEFINED',
+        en: 'TO BE DEFINED'
       },
     },
   },
@@ -98,35 +140,49 @@ const translations = {
     mon: {
       nl: 'maandag',
       fr: 'lundi',
+      de: 'TO BE DEFINED',
+      en: 'TO BE DEFINED'
     },
     tue: {
       nl: 'dinsdag',
       fr: 'mardi',
+      de: 'TO BE DEFINED',
+      en: 'TO BE DEFINED'
     },
     wed: {
       nl: 'woensdag',
       fr: 'mercredi',
+      de: 'TO BE DEFINED',
+      en: 'TO BE DEFINED'
     },
     thu: {
       nl: 'donderdag',
       fr: 'jeudi',
+      de: 'TO BE DEFINED',
+      en: 'TO BE DEFINED'
     },
     fri: {
       nl: 'vrijdag',
       fr: 'vendredi',
+      de: 'TO BE DEFINED',
+      en: 'TO BE DEFINED'
     },
     sat: {
       nl: 'zaterdag',
       fr: 'samedi',
+      de: 'TO BE DEFINED',
+      en: 'TO BE DEFINED'
     },
     sun: {
       nl: 'zondag',
       fr: 'dimanche',
+      de: 'TO BE DEFINED',
+      en: 'TO BE DEFINED'
     },
   },
 };
 
-export function translateOccurrenceTiming(occurrenceTiming: OccurrenceTiming, language: 'nl' | 'fr'): string {
+export function translateOccurrenceTiming(occurrenceTiming: OccurrenceTiming, language: 'nl' | 'fr' | 'en' | 'de'): string {
   const words = [];
   const frequencyAndPeriod = translateFrequencyAndPeriod(occurrenceTiming, language);
   const dayOfWeek = translateDayOfWeek(occurrenceTiming, language);
@@ -147,7 +203,7 @@ export function translateOccurrenceTiming(occurrenceTiming: OccurrenceTiming, la
   return words.join(', ');
 }
 
-export function translateFrequencyAndPeriod(occurrenceTiming: OccurrenceTiming, language: 'nl' | 'fr'): string {
+export function translateFrequencyAndPeriod(occurrenceTiming: OccurrenceTiming, language: 'nl' | 'fr' | 'en' | 'de'): string {
   const words = [];
   if (occurrenceTiming.repeat?.frequency && occurrenceTiming.repeat?.frequency > 0) {
     if (occurrenceTiming.repeat.frequency > 1 && occurrenceTiming.repeat.period === 1) {
@@ -179,7 +235,7 @@ export function translateFrequencyAndPeriod(occurrenceTiming: OccurrenceTiming, 
   return words.join(' ');
 }
 
-function translateEvery(occurrenceTiming: OccurrenceTiming, language: 'nl' | 'fr'): string {
+function translateEvery(occurrenceTiming: OccurrenceTiming, language: 'nl' | 'fr' | 'en' | 'de'): string {
   const gender =
     occurrenceTiming.repeat.periodUnit && ['d', 'mo', 'a'].includes(occurrenceTiming.repeat.periodUnit)
       ? 'masculine'
@@ -187,7 +243,7 @@ function translateEvery(occurrenceTiming: OccurrenceTiming, language: 'nl' | 'fr
   return translations.every[gender][language];
 }
 
-export function translateDayOfWeek(occurrenceTiming: OccurrenceTiming, language: 'nl' | 'fr'): string {
+export function translateDayOfWeek(occurrenceTiming: OccurrenceTiming, language: 'nl' | 'fr' | 'en' | 'de'): string {
   const words = [];
   if (occurrenceTiming.repeat.dayOfWeek?.length) {
     const translatedDays = occurrenceTiming.repeat.dayOfWeek.map(d => translations.weekdays[d]?.[language] || d);
@@ -203,7 +259,7 @@ export function translateDayOfWeek(occurrenceTiming: OccurrenceTiming, language:
   return words.join(' ');
 }
 
-export function translateBoundsDuration(occurrenceTiming: OccurrenceTiming, language: 'nl' | 'fr'): string {
+export function translateBoundsDuration(occurrenceTiming: OccurrenceTiming, language: 'nl' | 'fr' | 'en' | 'de'): string {
   const words = [];
   if (occurrenceTiming.repeat.boundsDuration) {
     words.push(translations.during[language]);
@@ -220,8 +276,18 @@ export function translateBoundsDuration(occurrenceTiming: OccurrenceTiming, lang
   }
   return words.join(' ');
 }
+export function translateOccurrenceDuration(occurrenceTiming: OccurrenceTiming, language: 'nl' | 'fr' | 'en' | 'de'): string {
+  const words = [];
+  if (occurrenceTiming.repeat.boundsDuration) {
+    words.push(occurrenceTiming.repeat.boundsDuration.value);
+    if (occurrenceTiming.repeat.boundsDuration.code) {
+      words.push(translateTimeUnit(occurrenceTiming.repeat.boundsDuration.value, occurrenceTiming.repeat.boundsDuration.code, language));
+    }
+  }
+  return words.join(' ');
+}
 
-export function translateDuration(occurrenceTiming: OccurrenceTiming, language: 'nl' | 'fr'): string {
+export function translateDuration(occurrenceTiming: OccurrenceTiming, language: 'nl' | 'fr' | 'en' | 'de'): string {
   const words = [];
   if (!occurrenceTiming.repeat.duration) return '';
   else {
@@ -234,7 +300,7 @@ export function translateDuration(occurrenceTiming: OccurrenceTiming, language: 
   return words.join(' ');
 }
 
-export function translateTimeUnit(unit = 1, unitOfTime?: UnitsOfTime, language: 'nl' | 'fr' = 'nl'): string {
+export function translateTimeUnit(unit = 1, unitOfTime?: UnitsOfTime, language: 'nl' | 'fr' | 'en' | 'de' = 'nl'): string {
   const oneOrMultiple = unit !== 1 ? 'multiple' : 'one';
   return unitOfTime ? translations.unitsOfTime[oneOrMultiple][unitOfTime]?.[language] || unitOfTime : '';
 }

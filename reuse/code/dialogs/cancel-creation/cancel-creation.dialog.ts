@@ -1,6 +1,5 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { NgFor } from '@angular/common';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,7 +17,7 @@ export interface CancelCreationDialogResult {
 @Component({
   templateUrl: './cancel-creation.dialog.html',
   styleUrls: ['./cancel-creation.dialog.scss'],
-  imports: [TranslateModule, MatDialogModule, MatButtonModule, MatCheckboxModule, TemplateNamePipe, NgFor],
+  imports: [TranslateModule, MatDialogModule, MatButtonModule, MatCheckboxModule, TemplateNamePipe],
 })
 export class CancelCreationDialog {
   readonly prescriptionForms = this.data.prescriptionForms;

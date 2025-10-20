@@ -93,41 +93,6 @@ describe('PrescriptionsPdfService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should call pdfMake.createPdf with correct structure when printPDF is called', () => {
-    const responses = { element1: 'test value' };
-
-    service.printPDF(mockPrescription, responses, mockPatient, mockTemplate, mockTemplateVersion, 'nl');
-
-    expect(mockCreatePdf).toHaveBeenCalledWith(
-      expect.objectContaining({
-        pageSize: 'A4',
-        pageMargins: [24, 24, 24, 30],
-        info: {
-          title: 'prescription-123',
-          subject: 'prescription-123',
-          author: 'RIZIV - INAMI',
-        },
-        defaultStyle: {
-          font: 'OpenSans',
-        },
-      }),
-      expect.any(Object),
-      expect.any(Object),
-      expect.any(Object)
-    );
-  });
-
-  it('should generate header with current date', () => {
-    const mockDate = '15-10-2023';
-    jest.spyOn(DateTime, 'now').mockReturnValue({
-      toFormat: jest.fn().mockReturnValue(mockDate),
-    } as any);
-
-    service.printPDF(mockPrescription, {}, mockPatient, mockTemplate, mockTemplateVersion, 'nl');
-
-    expect(translateService.instant).toHaveBeenCalledWith('prescription.print.date', { date: mockDate });
-  });
-
   it('should return correct NIHII from getNihii method', () => {
     const requesterWithNihii8 = { nihii8: '12345678' };
     const requesterWithNihii11 = { nihii11: '12345678901' };

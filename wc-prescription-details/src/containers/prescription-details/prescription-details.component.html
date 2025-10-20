@@ -1,0 +1,142 @@
+@if (viewState$(); as viewState) {
+  <app-overlay-spinner *ifStatusLoading="viewState" mode="inline"></app-overlay-spinner>
+  <app-alert
+    *ifStatusError="viewState"
+    [alert]="AlertType.Error"
+    [message]="'prescription.errors.failedToLoadPrescription' | translate"
+    [error]="prescriptionHttpError"
+    [showRetry]="showRetryButton()"
+    (clickRetry)="loadPrescriptionOrProposal()"
+  ></app-alert>
+  <ng-container *ifStatusSuccess="viewState">
+
+    @if (viewState.data?.prescription; as prescription) {
+      <div class="details_container">
+        <div class="details_header">
+          <div class="details_title_container">
+            <h2 class="details_title" data-cy="prescription-type">{{ prescription.templateCode | templateName }}</h2>
+            <mat-chip [disableRipple]="true"
+                      data-cy="prescription-status"
+                      [class]="getStatusClass(prescription.status)+' status'">
+              {{ 'prescription.statuses.' + prescription.status | translate }}
+            </mat-chip>
+          </div>
+
+          <div class="details_action_container">
+            @if (deviceService.isDesktop()){
+              <button
+                mat-stroked-button
+                data-cy="prescription-print-button"
+                type="button"
+                (click)="print()"
+                [attr.aria-label]="'prescription.ariaLabel.print' | translate">
+                <mat-icon>print</mat-icon>
+                {{ 'prescription.printAction' | translate}}
+              </button>
+
+              @if (prescription | canDuplicatePrescription: viewState.data?.currentUser) {
+                <button
+                  mat-stroked-button
+                  type="button"
+                  (click)="handleDuplicateClick()"
+                  data-cy="prescription-duplicate-button"
+                >
+                  <mat-icon>content_copy</mat-icon>
+                  {{ 'prescription.copy' | translate }}
+                </button>
+              }
+
+              @if (prescription | canExtendPrescription: viewState.data?.currentUser) {
+                <button
+                  mat-stroked-button
+                  type="button"
+                  (click)="handleExtendClick()"
+                  data-cy="prescription-extend-button"
+                >
+                  <mat-icon>edit_document</mat-icon>
+                  {{ 'prescription.extend' | translate }}
+                </button>
+              }
+            } @else {
+              <button
+                    type="button"
+                    mat-icon-button
+                    [matMenuTriggerFor]="menu" >
+                <mat-icon>more_vert</mat-icon>
+              </button>
+
+              <mat-menu #menu="matMenu">
+                <button
+                  data-cy="prescription-print-button"
+                  mat-menu-item
+                  type="button"
+                  (click)="print()"
+                  [attr.aria-label]="'prescription.ariaLabel.print' | translate">
+                  <mat-icon>print</mat-icon>
+                  {{ 'prescription.printAction' | translate}}
+                </button>
+
+                @if (prescription | canDuplicatePrescription: viewState.data?.currentUser) {
+
+                  <mat-divider></mat-divider>
+
+                  <button
+                    mat-menu-item
+                    type="button"
+                    (click)="handleDuplicateClick()"
+                    data-cy="prescription-duplicate-button"
+                  >
+                    <mat-icon>content_copy</mat-icon>
+                    {{ 'prescription.copy' | translate }}
+                  </button>
+                }
+
+                @if (prescription | canExtendPrescription: viewState.data?.currentUser) {
+
+                  <mat-divider></mat-divider>
+
+                  <button
+                    mat-menu-item
+                    type="button"
+                    (click)="handleExtendClick()"
+                    data-cy="prescription-extend-button"
+                  >
+                    <mat-icon>edit_document</mat-icon>
+                    {{ 'prescription.extend' | translate }}
+                  </button>
+                }
+              </mat-menu>
+            }
+
+          </div>
+        </div>
+
+        @if (templateHasAlert){
+          <div class="details_alert">
+            <app-alert [alert]="AlertType.Info" [showRetry]="false" [message]="getTemplateAlert?.labelTranslationId | evfLabel">
+            </app-alert>
+          </div>
+        }
+
+        <div class="details_body">
+          <app-prescription-details-main>
+          </app-prescription-details-main>
+
+          <app-prescription-details-secondary>
+          </app-prescription-details-secondary>
+        </div>
+      </div>
+
+      @if (isProposalValue) {
+        <hr>
+
+        <app-prescription-details-bottom>
+        </app-prescription-details-bottom>
+      }
+    }
+  </ng-container>
+}
+
+@if (loading()) {
+  <app-overlay-spinner></app-overlay-spinner>
+}

@@ -1,0 +1,85 @@
+@if (prescriptionServiceData && currentUserServiceData && performerTaskServiceData){
+
+  @let prescription = prescriptionServiceData;
+  @let currentUser = currentUserServiceData;
+  @let performerTaskData = performerTaskServiceData;
+
+  @for (task of prescription.organizationTasks; track task) {
+    <div class="organization_row" data-cy="prescription-assign-to">
+      <div class="caregiver_name">
+        @if (!task.organization?.organizationName) {
+          <span class="text_bold" >{{ 'common.organization.notFound' | translate }}</span>
+          <mat-icon matTooltip="{{'common.organization.tooltip' | translate}}"
+                    matTooltipPosition="after"
+                    style="color: grey;cursor: pointer;">
+            error
+          </mat-icon>
+        } @else {
+          <span class="text_bold">{{ task.organization?.organizationName | formatMultilingualObject: currentLang() }}</span>
+        }
+
+        @if (task.organization?.nihii8 ?? task.organization?.nihii11; as nihii) {
+          <span>({{ nihii }})</span>
+          <br/>
+        }
+        @if (task.executionPeriod?.start) {
+          <span>{{ task.executionPeriod?.start! | date: 'dd/MM/yyyy' }} - </span>
+        }
+        @if (task.executionPeriod?.end) {
+          <span>{{ task.executionPeriod?.end! | date: 'dd/MM/yyyy' }}</span>
+        }
+      </div>
+      <div class="organization_caregiver_list">
+        @for (performertask of task.performerTasks; track performertask) {
+          <div class="organization_caregiver_row">
+            <div class="organization_caregiver_name_row" data-cy="prescription-assign-to">
+              <div class="caregiver_name">
+                @if (performertask.careGiver; as caregiver) {
+                  @let hasLastName = !!caregiver.healthcarePerson?.lastName;
+                  @let isCurrentUser = caregiver.healthcarePerson?.ssin === currentUser?.ssin;
+                  @let nihii = caregiver.nihii8 ?? caregiver.nihii11;
+
+                  @if (hasLastName) {
+                    <span class="text_bold">{{ caregiver.healthcarePerson?.firstName }} {{ caregiver.healthcarePerson?.lastName }}</span>
+                  }@else if (isCurrentUser) {
+                    {{ currentUser?.firstName }} {{ currentUser?.lastName }}
+                  } @else {
+                    <span class="text_bold">{{ 'common.professional.notFound' | translate }}</span>
+                    <mat-icon
+                      matTooltip="{{ 'common.professional.tooltip' | translate }}"
+                      matTooltipPosition="right">
+                      error
+                    </mat-icon>
+                  }
+
+                  @if (nihii) {
+                    ({{ nihii }})
+                  }
+                }
+
+
+                <br/>
+                @if (performertask.executionPeriod?.start) {
+                  <span>{{ performertask.executionPeriod?.start! | date: 'dd/MM/yyyy' }} - </span>
+                }
+                @if (performertask.executionPeriod?.end) {
+                  <span>{{ performertask.executionPeriod?.end! | date: 'dd/MM/yyyy' }}</span>
+                }
+              </div>
+
+              <app-task-button-group>
+              </app-task-button-group>
+            </div>
+
+            @if (performerTaskData === performertask) {
+              <app-prescription-button-group
+                [currentPerformerTask]="performertask"
+              >
+              </app-prescription-button-group>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+}

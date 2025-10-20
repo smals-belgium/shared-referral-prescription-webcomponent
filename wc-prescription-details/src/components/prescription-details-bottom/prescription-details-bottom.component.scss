@@ -1,0 +1,17 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+.bottom_details_container{
+  display: flex;
+  flex-direction: column;
+
+  .prescriber_details{
+    mat-icon{
+      color: var(--mh-prescriber-details-icon-color,--mat-icon-color,inherit);
+      cursor: pointer;
+    }
+  }
+  .prescriber_actions{
+    display: flex;
+    gap: mh.$spacing-rem-s;
+  }
+}

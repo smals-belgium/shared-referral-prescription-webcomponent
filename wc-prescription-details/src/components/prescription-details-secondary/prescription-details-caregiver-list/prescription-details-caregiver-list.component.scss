@@ -1,0 +1,13 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+.caregiver_row{
+  padding-bottom: mh.$spacing-rem-s;
+  padding-top: mh.$spacing-rem-s;
+  border-bottom: var(--mh-caregiver-row-border-bottom, 1px solid mh.$border-brand-primary-light);
+
+  .caregiver_info{
+    .caregiver_info_fullName,.caregiver_info_nihii{
+      @include mh.font-default-semibold();
+    }
+  }
+}

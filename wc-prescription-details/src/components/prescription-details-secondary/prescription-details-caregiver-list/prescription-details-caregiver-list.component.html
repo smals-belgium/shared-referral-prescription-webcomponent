@@ -1,0 +1,90 @@
+@if (prescriptionServiceData && currentUserServiceData && patientServiceData){
+
+  @let prescriptionData = prescriptionServiceData;
+  @let currentUserData = currentUserServiceData;
+  @let patientData = patientServiceData;
+
+  @for (performerTask of prescriptionData.performerTasks; track performerTask) {
+    <div class="caregiver_row">
+      <div class="caregiver_container_row" data-cy="prescription-assign-to">
+        <div class="caregiver_info">
+          @if (performerTask.careGiver; as careGiver) {
+            @if (!careGiver.healthcarePerson?.lastName) {
+              @if (careGiver.healthcarePerson?.ssin === currentUserData.ssin) {
+                {{ currentUserData?.firstName }} {{ currentUserData?.lastName }}
+              } @else {
+                <b>{{ 'common.professional.notFound' | translate }}</b>
+                <mat-icon matTooltip="{{'common.professional.tooltip' | translate}}"
+                          matTooltipPosition="right"
+                          style="color: grey;cursor: pointer;">
+                  error
+                </mat-icon>
+              }
+            } @else {
+              <span class="caregiver_info_fullName">{{ careGiver.healthcarePerson?.firstName }} {{ careGiver.healthcarePerson?.lastName }} </span>
+            }
+            @if (careGiver.nihii8 || careGiver.nihii11; as nihii) {
+              <span class="caregiver_info_nihii">({{ nihii }})</span>
+            }
+
+            @if (careGiver.healthcareQualification?.id?.profession) {
+              <div class="caregiver_info_profession">{{ 'common.professions.' + careGiver?.healthcareQualification?.id?.profession | translate }}</div>
+            }
+            @if (performerTask.executionPeriod?.start) {
+              <span>{{ performerTask.executionPeriod?.start! | date: 'dd/MM/yyyy' }} - </span>
+            }
+            @if (performerTask.executionPeriod?.end) {
+              <span>{{ performerTask.executionPeriod?.end! | date: 'dd/MM/yyyy' }}</span>
+            }
+          }
+        </div>
+
+        <div class="button-group">
+          @if (prescriptionServiceData | canRejectAssignation : performerTask : patientServiceData.ssin : currentUserData) {
+            <button
+              type="button"
+              (click)="service.openRejectAssignationDialog(prescriptionData, performerTask, patientServiceData)"
+              mat-icon-button
+              data-cy="prescription-reject-assignation-button"
+              [attr.aria-label]="'prescription.ariaLabel.reject' | translate"
+            >
+              <mat-icon>cancel</mat-icon>
+            </button>
+          }
+          @if (prescriptionServiceData | canInterruptTreatment : performerTask : currentUserServiceData) {
+            <button
+              type="button"
+              (click)="service.openInterruptExecutionDialog(prescriptionData, performerTask, patientServiceData)"
+              mat-icon-button
+              data-cy="prescription-interrupt-execution-button"
+              [attr.aria-label]="'prescription.ariaLabel.interrupt' | translate"
+            >
+              <mat-icon>pause_circle</mat-icon>
+            </button>
+          }
+          @if (prescriptionServiceData | canRestartTreatment : performerTask : performerTask?.careGiverSsin) {
+            <button
+              type="button"
+              (click)="service.openRestartExecutionDialog(prescriptionData, performerTask, patientData)"
+              mat-icon-button
+              data-cy="prescription-restart-execution-button"
+              [attr.aria-label]="'prescription.ariaLabel.restart' | translate"
+            >
+              <mat-icon>play_circle</mat-icon>
+            </button>
+          }
+        </div>
+      </div>
+      @if (performerTaskServiceData === performerTask) {
+        <div class="button-group">
+          @if (prescriptionServiceData | canStartTreatment:performerTask) {
+            <app-prescription-button-group
+              [currentPerformerTask]="performerTask"
+            >
+            </app-prescription-button-group>
+          }
+        </div>
+      }
+    </div>
+  }
+}

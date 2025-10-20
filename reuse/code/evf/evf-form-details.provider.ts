@@ -21,6 +21,9 @@ import { SlideToggleDetailComponent } from '@smals/vas-evaluation-form-ui-materi
 import { AutocompleteDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/autocomplete';
 import { SectionDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/section';
 
+import { withInfoElement } from '@smals/vas-evaluation-form-ui-material/elements/info';
+import { OccurrencesComponent } from '@reuse/code/evf/occurrences/detail/occurrences.component';
+
 export function provideEvfFormDetails() {
   return [
     provideEvfCore(
@@ -67,6 +70,10 @@ export function provideEvfFormDetails() {
           detail: OccurrenceTimingDetailComponent,
         },
         {
+          name: 'occurrences',
+          detail: OccurrencesComponent,
+        },
+        {
           name: 'row',
           detail: RowDetailComponent,
         },
@@ -96,7 +103,8 @@ export function provideEvfFormDetails() {
         }
       ),
       withParseDateExpressionPipe(),
-      withTransformDateExpressionPipe()
+      withTransformDateExpressionPipe(),
+      withInfoElement()
     ),
   ];
 }

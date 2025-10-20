@@ -1,0 +1,73 @@
+@use '@angular/material' as mat;
+@use '@myhealth-belgium/design-kit' as mh;
+
+
+.main_details_container{
+
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: mh.$spacing-rem-l;
+  border-right: var(--mh-main-details-container-border-right, 1px solid mh.$border-brand-neutral-light);
+
+  @media (max-width: mh.$media-breakpoint-s) {
+    border-right: unset;
+    border-bottom: var(--mh-main-details-container-border-bottom, 1px solid mh.$border-brand-neutral-light);
+    padding-bottom: mh.$spacing-rem-l;
+
+  }
+  .beneficiary_container{
+    width: min-content;
+    border: var(--mh-main-beneficiary-container-border, 2px solid mh.$border-brand-primary-medium);
+    border-radius: var(--mh-main-beneficiary-container-border-radius, mh.$border-radius-s);
+    padding: mh.$spacing-rem-s;
+
+    .beneficiary_label{
+      @include mh.font-body-1();
+      margin: 0;
+      color: var(--mh-main-beneficiary-label-color, mh.$typography-brand-neutral-dark);
+    }
+
+    .beneficiary_data{
+      display: flex;
+      align-items: center;
+      gap: mh.$spacing-rem-xs;
+
+      .beneficiary_full_name{
+        @include mh.font-default-bold();
+        width: max-content;
+      }
+
+      .beneficiary_gender{
+        @include mh.font-extra-small-regular();
+      }
+    }
+    .beneficiary_other_data{
+      display: flex;
+      align-items: center;
+      gap: mh.$spacing-rem-m;
+
+      .beneficiary_ssin{
+        @include mh.font-small-regular();
+      }
+      .prescription_shortcode{
+        @include mh.font-default-bold();
+      }
+    }
+  }
+
+  .row{
+    .info-item{
+      display: flex;
+      flex-direction: column;
+
+      > :first-child{
+        @include mh.font-default-semibold();
+      }
+
+      .nihii{
+        color: var(--mh-info-item-nihii, mh.$typography-brand-neutral-dark);
+      }
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IdToken } from '@reuse/code/interfaces';
+import { Discipline } from '@reuse/code/openapi';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -22,7 +23,7 @@ export class AuthService {
     throw new Error('Not implemented');
   }
 
-  discipline(): Observable<string> {
+  discipline(): Observable<Discipline> {
     throw new Error('Not implemented');
   }
 

@@ -1,0 +1,72 @@
+@if (prescriptionServiceData && currentUserServiceData){
+
+  @let prescription = prescriptionServiceData;
+  @let currentUser = currentUserServiceData;
+
+  <div class="bottom_details_container">
+    <div class="prescriber_details">
+      <p data-cy="proposal-date-label">
+        @if (prescription.requester; as requester) {
+          @let hasLastName = !!requester.healthcarePerson?.lastName;
+          @let isCurrentUser = requester.healthcarePerson?.ssin === currentUser?.ssin;
+          @let prescriptionDate = $any(prescription.authoredOn) | date: 'D';
+
+
+
+          @if (hasLastName) {
+            {{ 'proposal.proposalInfoTitle' | translate: {
+              firstName: requester.healthcarePerson?.firstName || '',
+              lastName: requester.healthcarePerson?.lastName || '',
+              date: prescriptionDate
+            } }}
+          } @else if (isCurrentUser) {
+            {{ 'proposal.proposalInfoTitle' | translate: {
+              firstName: currentUser?.firstName || '',
+              lastName: currentUser?.lastName || '',
+              date: prescriptionDate
+            } }}
+          } @else {
+            {{ 'proposal.proposalInfoTitle' | translate: {
+              firstName: 'common.professional.notFound' | translate,
+              lastName: '',
+              date: prescriptionDate
+            } }}
+            <mat-icon
+              matTooltip="{{ 'common.professional.tooltip' | translate }}"
+              matTooltipPosition="right">
+              error
+            </mat-icon>
+          }
+
+        }
+      </p>
+    </div>
+    <div class="prescriber_actions">
+      @if (prescription | canApproveProposal) {
+        <button
+          (click)="service.openApproveProposalDialog(prescription)"
+          mat-raised-button
+          type="button"
+          color="success"
+          data-cy="approve-proposal-action-button"
+        >
+          <mat-icon>done</mat-icon>
+          {{ 'proposal.approve.action' | translate }}
+        </button>
+      }
+      @if (prescription | canRejectProposal) {
+        <button
+          (click)="service.openRejectProposalDialog(prescription)"
+          mat-raised-button
+          type="button"
+          color="reject"
+          data-cy="reject-proposal-action-button"
+        >
+          <mat-icon>close</mat-icon>
+          {{ 'proposal.reject.action' | translate }}
+        </button>
+      }
+    </div>
+  </div>
+}
+

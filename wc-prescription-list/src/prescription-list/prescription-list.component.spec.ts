@@ -1,4 +1,4 @@
-import { PrescriptionDetailsWebComponent } from '../../../wc-prescription-details/src/components/prescription-details/prescription-details.component';
+import { PrescriptionDetailsWebComponent } from '../../../wc-prescription-details/src/containers/prescription-details/prescription-details.component';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TranslateLoader, TranslateModule, TranslateService, Translation } from '@ngx-translate/core';
