@@ -1,40 +1,41 @@
-@if(isEnabled$ | async) {
-  <div class="container">
-    @if (isModelValue) {
-      <app-create-prescription-model
-        [prescriptionForm]="prescriptionForms()[0]"
-        [lang]="lang"
-        (modelSaved)="modelSaved()"
-      ></app-create-prescription-model>
-    } @else if (patientState$() && initialValues?.intent) {
-      <app-create-multiple-prescriptions
-        *ifStatusSuccess="patientState$()"
-        [createPrescriptionForms]="prescriptionForms()"
-        [intent]="initialValues!.intent"
-        [errorCard]="errorCard"
-        [patient]="patientState$().data"
-        [status]="status$.getValue()"
-        [lang]="lang"
-        [services]="services"
-        (clickAddPrescription)="addPrescription()"
-        (clickDeletePrescription)="deletePrescriptionForm($event)"
-        (clickPublish)="publishPrescriptions()"
-        (clickCancel)="cancelCreation()"
-      ></app-create-multiple-prescriptions>
+@if (!displaySelectDialog$()) {
+  @if (isEnabled$ | async) {
+    <div class="container">
+      @if (isModelValue) {
+        <app-create-prescription-model
+          [prescriptionForm]="prescriptionForms()[0]"
+          [lang]="lang"
+          (modelSaved)="modelSaved()"
+        ></app-create-prescription-model>
+      } @else if (patientState$() && initialValues?.intent) {
+        <app-create-multiple-prescriptions
+          *ifStatusSuccess="patientState$()"
+          [createPrescriptionForms]="prescriptionForms()"
+          [intent]="initialValues!.intent"
+          [errorCard]="errorCard"
+          [patient]="patientState$().data"
+          [status]="status$.getValue()"
+          [lang]="lang"
+          [services]="services"
+          (clickAddPrescription)="addPrescription()"
+          (clickDeletePrescription)="deletePrescriptionForm($event)"
+          (clickPublish)="publishPrescriptions()"
+          (clickCancel)="cancelCreation()"
+        ></app-create-multiple-prescriptions>
+      }
+    </div>
+
+    @if (loading()) {
+      <app-overlay-spinner></app-overlay-spinner>
     }
-
-  </div>
-
-  @if (loading()) {
-    <app-overlay-spinner></app-overlay-spinner>
+  } @else {
+    <app-alert
+      [alert]="AlertType.Error"
+      [message]="'common.errors.pseudoDisabled' | translate"
+      [error]="errorResponseBadGateway"
+      [showRetry]="false"
+    ></app-alert>
   }
-} @else {
-  <app-alert
-    [alert]="AlertType.Error"
-    [message]="'common.errors.pseudoDisabled' | translate"
-    [error]="errorResponseBadGateway"
-    [showRetry]="false"
-  ></app-alert>
 }
 
 

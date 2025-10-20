@@ -13,7 +13,13 @@ import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { CreatePrescriptionWebComponent } from './create-prescription.component';
 import { Observable, of, throwError } from 'rxjs';
 import { ElementGroup } from '@smals/vas-evaluation-form-ui-core';
-import { CreatePrescriptionForm, Intent, LoadingStatus } from '@reuse/code/interfaces';
+import {
+  CreatePrescriptionForm,
+  CreatePrescriptionInitialValues,
+  Intent,
+  LoadingStatus,
+  UserProfile,
+} from '@reuse/code/interfaces';
 import { EncryptionService } from '@reuse/code/services/privacy/encryption.service';
 import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
 import { CreatePrescriptionExtendedWebComponent } from './create-prescription-extended.component';
@@ -21,7 +27,7 @@ import { By } from '@angular/platform-browser';
 import { ConfirmDialog } from '@reuse/code/dialogs/confirm/confirm.dialog';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { CancelCreationDialog } from '@reuse/code/dialogs/cancel-creation/cancel-creation.dialog';
-import { PersonResource, ReadRequestResource, ReferralTaskResource } from '@reuse/code/openapi';
+import { Discipline, PersonResource, ReadRequestResource, ReferralTaskResource, Role } from '@reuse/code/openapi';
 import { HttpCacheService } from '@reuse/code/services/cache/http-cache.service';
 import { PssService } from '@reuse/code/services/api/pss.service';
 import { EncryptionKeyInitializerService } from '@reuse/code/states/privacy/encryption-key-initializer.service';
@@ -29,6 +35,14 @@ import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
 import { v4 as uuidv4 } from 'uuid';
 import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { BreakpointObserver } from '@angular/cdk/layout';
+
+jest.spyOn(MatDialog.prototype, 'open').mockImplementation(
+  () =>
+    ({
+      afterClosed: () => of(null),
+      beforeClosed: () => of(null),
+    }) as any
+);
 
 class FakeLoader implements TranslateLoader {
   getTranslation(lang: string): Observable<any> {
@@ -56,7 +70,7 @@ const mockEncryptionKeyInitializerService = {
 const mockPersonResource = {
   ssin: '90122712173',
   name: 'name of patient',
-};
+} as unknown as UserProfile;
 
 const mockAuthService = {
   init: jest.fn(),
@@ -66,7 +80,10 @@ const mockAuthService = {
     })
   ),
   isProfessional: jest.fn(() => of(false)),
-};
+  discipline: jest.fn(() => of(Discipline.Physician)),
+  getAccessToken: jest.fn(() => of('')),
+  role: jest.fn(() => of(Role.Prescriber)),
+} as jest.Mocked<AuthService>;
 
 const mockPssService = {
   getPssStatus: jest.fn(),
@@ -97,7 +114,6 @@ class MockDateAdapter {
 const containerElement = document.createElement('div');
 const mockShadowDomOverlayContainer = {
   ngOnDestroy: jest.fn(),
-
   getRootElement: jest.fn().mockReturnValue(document.createElement('div').attachShadow({ mode: 'open' })),
   createContainer: jest.fn(),
   getContainerElement: jest.fn().mockReturnValue(containerElement),
@@ -191,6 +207,48 @@ describe('CreatePrescriptionWebComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('intent switch', () => {
+    it('should set displaySelectDialog to true and loading to false when no intent is provided', () => {
+      createFixture('mockPseudomizedKey');
+
+      fixture = TestBed.createComponent(CreatePrescriptionExtendedWebComponent);
+      component = fixture.componentInstance;
+      (component as any).isEnabled$ = of(true);
+      component.initialValues = {} as CreatePrescriptionInitialValues;
+      fixture.detectChanges();
+
+      const initialValues = { intent: null };
+      const changes = {
+        initialValues: new SimpleChange(null, initialValues, true),
+      };
+
+      component.ngOnChanges(changes);
+
+      expect(component.loading()).toBe(false);
+      expect(component.displaySelectDialog$()).toBe(true);
+    });
+
+    it('should set loading to true and call handlePrescriptionChanges when intent exists without ANNEX_82', () => {
+      createFixture('mockPseudomizedKey');
+      const initialValues = {
+        intent: 'order',
+        initialPrescription: { templateCode: 'TEST' },
+        initialPrescriptionType: 'TEST',
+      };
+      component.initialValues = initialValues;
+      const changes = {
+        initialValues: new SimpleChange(null, initialValues, true),
+      };
+      const changeSpy = jest.spyOn(component as any, 'handlePrescriptionChanges').mockImplementation(() => {});
+
+      component.ngOnChanges(changes);
+
+      expect(component.loading()).toBe(true);
+      expect(component.displaySelectDialog$()).toBe(false);
+      expect(changeSpy).toHaveBeenCalled();
+    });
+  });
+
   describe('Publish prescriptions', () => {
     it('should call publishOnePrescription when one prescription form is present and valid', fakeAsync(() => {
       createFixture('mockPseudomizedKey');
@@ -246,6 +304,23 @@ describe('CreatePrescriptionWebComponent', () => {
 
       expect(dialog.open).toHaveBeenCalled();
     });
+
+    it('should NOT open the dialog when addPrescription is called and discipline is Nurse', async () => {
+      createFixture('mockPseudomizedKey');
+      const openDialogSpy = jest.spyOn(dialog, 'open');
+      const addPrescriptionFormSpy = jest.spyOn(component as any, 'addPrescriptionForm');
+      jest.spyOn(cacheHttpService, 'loadFromCache').mockReturnValue(of(null));
+      jest.spyOn(component as any, 'isNurse').mockResolvedValue(true);
+
+      component.openSelectDialog();
+      await Promise.resolve();
+
+      expect(openDialogSpy).not.toHaveBeenCalled();
+      expect(addPrescriptionFormSpy).toHaveBeenCalledWith('ANNEX_81');
+
+      getTemplate('ANNEX_81');
+    });
+
     it('should open the confirmation dialog with correct data', () => {
       createFixture('mockPseudomizedKey');
       const openDialogSpy = jest.spyOn(dialog, 'open');
@@ -1363,9 +1438,9 @@ describe('CreatePrescriptionWebComponent', () => {
         },
       };
       component.ngOnChanges(changes);
-      expect(loadingSpy).toHaveBeenCalledWith(true);
+      expect(loadingSpy).toHaveBeenCalledWith(false);
       expect(mockPssService.getPssStatus).not.toHaveBeenCalled();
-      expect(handleSpy).toHaveBeenCalledWith(component.initialValues);
+      expect(handleSpy).not.toHaveBeenCalledWith(component.initialValues);
     });
   });
 
