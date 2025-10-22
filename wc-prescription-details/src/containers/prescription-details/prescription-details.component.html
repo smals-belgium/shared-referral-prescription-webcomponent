@@ -34,6 +34,19 @@
                 {{ 'prescription.printAction' | translate}}
               </button>
 
+              @if (prescription | canCancelPrescriptionOrProposal: viewState.data?.patient?.ssin: viewState.data?.currentUser) {
+                <button
+                  mat-stroked-button
+                  type="button"
+                  (click)="openCancelPrescriptionDialog(prescription, viewState.data?.patient)"
+                  data-cy="prescription-cancel-treatment-button"
+                  [attr.aria-label]="'prescription.ariaLabel.reject' | translate"
+                >
+                  <mat-icon>cancel</mat-icon>
+                  {{ 'prescription.cancel.action' | translate }}
+                </button>
+              }
+
               @if (prescription | canDuplicatePrescription: viewState.data?.currentUser) {
                 <button
                   mat-stroked-button
@@ -75,6 +88,20 @@
                   <mat-icon>print</mat-icon>
                   {{ 'prescription.printAction' | translate}}
                 </button>
+
+                @if (prescription | canCancelPrescriptionOrProposal: viewState.data?.patient?.ssin: viewState.data?.currentUser) {
+                  <mat-divider></mat-divider>
+                  <button
+                    mat-menu-item
+                    type="button"
+                    (click)="openCancelPrescriptionDialog(prescription, viewState.data?.patient)"
+                    data-cy="prescription-cancel-treatment-button"
+                  >
+                    <mat-icon>cancel</mat-icon>
+                    {{ 'prescription.cancel.action' | translate }}
+                  </button>
+                }
+
 
                 @if (prescription | canDuplicatePrescription: viewState.data?.currentUser) {
 
