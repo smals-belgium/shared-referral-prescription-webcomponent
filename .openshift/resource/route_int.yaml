@@ -1,27 +1,39 @@
 apiVersion: v1
 kind: Route
 metadata:
-  labels:
-    deploymentconfig: &deploymentconfig referral-prescription-web-components
   name: referral-prescription-web-components-ext
+  annotations:
+    app.openshift.io/vcs-uri: 'https://git.vascloud.be/nihdi/uhmep/healix/web-components'
+  labels:
+    app.kubernetes.io/part-of: referral-prescription
+    app.kubernetes.io/name: referral-prescription-web-components
+    app.kubernetes.io/instance: &instance referral-prescription-web-components
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/managed-by: deploywh
 spec:
   host: referral-prescription.int.ext.vascloud.be
   path: /web-components
   to:
     kind: Service
-    name: *deploymentconfig
+    name: *instance
     weight: 100
 ---
 apiVersion: v1
 kind: Route
 metadata:
-  labels:
-    deploymentconfig: &deploymentconfig referral-prescription-web-components
   name: referral-prescription-web-components-pub
+  annotations:
+    app.openshift.io/vcs-uri: 'https://git.vascloud.be/nihdi/uhmep/healix/web-components'
+  labels:
+    app.kubernetes.io/part-of: referral-prescription
+    app.kubernetes.io/name: referral-prescription-web-components
+    app.kubernetes.io/instance: &instance referral-prescription-web-components
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/managed-by: deploywh
 spec:
   host: referral-prescription.int.pub.vascloud.be
   path: /web-components
   to:
     kind: Service
-    name: *deploymentconfig
+    name: *instance
     weight: 100

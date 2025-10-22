@@ -14,6 +14,9 @@ import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import { PrescriptionDetailsOrganizationListComponent } from './prescription-details-organization-list/prescription-details-organization-list.component';
 import { PrescriptionDetailsCaregiverListComponent } from './prescription-details-caregiver-list/prescription-details-caregiver-list.component';
 import { PrescriptionDetailsSecondaryService } from './prescription-details-secondary.service';
+import { CanStartTreatmentPipe } from '@reuse/code/pipes/can-start-treatment.pipe';
+import { CanAssignCaregiverPipe } from '@reuse/code/pipes/can-assign-caregiver.pipe';
+import { CanSelfAssignPipe } from '@reuse/code/pipes/can-self-assign.pipe';
 
 @Component({
   selector: 'app-prescription-details-secondary',
@@ -23,6 +26,9 @@ import { PrescriptionDetailsSecondaryService } from './prescription-details-seco
     TranslatePipe,
     PrescriptionDetailsOrganizationListComponent,
     PrescriptionDetailsCaregiverListComponent,
+    CanStartTreatmentPipe,
+    CanAssignCaregiverPipe,
+    CanSelfAssignPipe,
   ],
   templateUrl: './prescription-details-secondary.component.html',
   styleUrl: './prescription-details-secondary.component.scss',
