@@ -1,4 +1,4 @@
-@if (prescriptionServiceData && currentUserServiceData && patientServiceData){
+@if (prescriptionServiceData && currentUserServiceData && patientServiceData) {
 
   @let prescriptionData = prescriptionServiceData;
   @let currentUserData = currentUserServiceData;
@@ -21,14 +21,17 @@
                 </mat-icon>
               }
             } @else {
-              <span class="caregiver_info_fullName">{{ careGiver.healthcarePerson?.firstName }} {{ careGiver.healthcarePerson?.lastName }} </span>
+              <span
+                class="caregiver_info_fullName">{{ careGiver.healthcarePerson?.firstName }} {{ careGiver.healthcarePerson?.lastName }} </span>
             }
             @if (careGiver.nihii8 || careGiver.nihii11; as nihii) {
               <span class="caregiver_info_nihii">({{ nihii }})</span>
             }
 
             @if (careGiver.healthcareQualification?.id?.profession) {
-              <div class="caregiver_info_profession">{{ 'common.professions.' + careGiver?.healthcareQualification?.id?.profession | translate }}</div>
+              <div
+                class="caregiver_info_profession">{{ 'common.professions.' + careGiver?.healthcareQualification?.id?.profession | translate }}
+              </div>
             }
             @if (performerTask.executionPeriod?.start) {
               <span>{{ performerTask.executionPeriod?.start! | date: 'dd/MM/yyyy' }} - </span>
@@ -76,14 +79,10 @@
         </div>
       </div>
       @if (performerTaskServiceData === performerTask) {
-        <div class="button-group">
-          @if (prescriptionServiceData | canStartTreatment:performerTask) {
-            <app-prescription-button-group
-              [currentPerformerTask]="performerTask"
-            >
-            </app-prescription-button-group>
-          }
-        </div>
+        <app-prescription-button-group
+          [currentPerformerTask]="performerTask"
+        >
+        </app-prescription-button-group>
       }
     </div>
   }

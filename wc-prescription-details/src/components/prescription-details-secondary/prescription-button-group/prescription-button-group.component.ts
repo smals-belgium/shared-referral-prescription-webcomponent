@@ -22,6 +22,7 @@ import { MatIconModule } from '@angular/material/icon';
     CanStartTreatmentPipe,
   ],
   templateUrl: './prescription-button-group.component.html',
+  styleUrl: './prescription-button-group.component.scss',
   standalone: true,
 })
 export class PrescriptionButtonGroupComponent {

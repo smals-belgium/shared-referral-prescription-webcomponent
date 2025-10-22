@@ -2,7 +2,6 @@ import { Component, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
-import { CanStartTreatmentPipe } from '@reuse/code/pipes/can-start-treatment.pipe';
 import { DatePipe } from '@angular/common';
 import { CanRejectAssignationPipe } from '@reuse/code/pipes/can-reject-assignation.pipe';
 import { MatIconButton } from '@angular/material/button';
@@ -11,9 +10,7 @@ import { CanRestartTreatmentPipe } from '@reuse/code/pipes/can-restart-treatment
 import { UserInfo } from '@reuse/code/interfaces';
 import { PerformerTaskResource, PersonResource, ReadRequestResource } from '@reuse/code/openapi';
 import { PrescriptionDetailsSecondaryService } from '../prescription-details-secondary.service';
-import {
-  PrescriptionButtonGroupComponent
-} from '../prescription-button-group/prescription-button-group.component';
+import { PrescriptionButtonGroupComponent } from '../prescription-button-group/prescription-button-group.component';
 
 @Component({
   selector: 'app-prescription-details-caregiver-list',
@@ -21,7 +18,6 @@ import {
     TranslatePipe,
     MatIcon,
     MatTooltip,
-    CanStartTreatmentPipe,
     DatePipe,
     CanRejectAssignationPipe,
     MatIconButton,
