@@ -158,13 +158,13 @@ describe('ListPrescriptionsWebComponent', () => {
       const simpleChanges: SimpleChanges = { intent: new SimpleChange('', intent, true) };
       component.ngOnChanges(simpleChanges);
 
-      expect(loadDataSpy).toHaveBeenCalledWith(1);
+      expect(loadDataSpy).toHaveBeenCalledWith({ pageIndex: 1 });
       expect(loadPrescriptionsSpy).not.toHaveBeenCalledWith();
 
       expect(component.errorCard.show).toBeTruthy();
       fixture.detectChanges();
       const { debugElement } = fixture;
-      let alertComponent = debugElement.query(By.css('app-alert'));
+      const alertComponent = debugElement.query(By.css('app-alert'));
       expect(alertComponent).toBeTruthy();
     });
 
@@ -180,7 +180,7 @@ describe('ListPrescriptionsWebComponent', () => {
       component.patientSsin = ssin;
       component.ngOnChanges(simpleChanges);
 
-      expect(loadDataSpy).toHaveBeenCalledWith(1);
+      expect(loadDataSpy).toHaveBeenCalledWith({ pageIndex: 1 });
       expect(loadPrescriptionsSpy).toHaveBeenCalledWith(1, undefined);
 
       jest.spyOn(component['prescriptionsState'], 'loadPrescriptions').mockReturnValue();
@@ -447,7 +447,7 @@ describe('ListPrescriptionsWebComponent', () => {
       component.patientSsin = ssin;
       component.ngOnChanges(simpleChanges);
 
-      expect(loadDataSpy).toHaveBeenCalledWith(1);
+      expect(loadDataSpy).toHaveBeenCalledWith({ pageIndex: 1 });
       expect(loadProposalsSpy).toHaveBeenCalledWith(1, undefined);
 
       jest.spyOn(component['proposalsState'], 'loadProposals').mockReturnValue();
@@ -465,7 +465,7 @@ describe('ListPrescriptionsWebComponent', () => {
       component.patientSsin = ssin;
       component.ngOnChanges(simpleChanges);
 
-      expect(loadDataSpy).toHaveBeenCalledWith(1);
+      expect(loadDataSpy).toHaveBeenCalledWith({ pageIndex: 1 });
       expect(loadProposalsSpy).toHaveBeenCalledWith(1, undefined);
 
       jest.spyOn(component['proposalsState'], 'loadProposals').mockReturnValue();
@@ -644,7 +644,7 @@ describe('ListPrescriptionsWebComponent', () => {
       component.handleHistoricPrescriptions(true);
 
       expect((component as any).searchCriteria$()).toEqual({ historical: true });
-      expect(spyOnLoadData).toHaveBeenCalledWith(1);
+      expect(spyOnLoadData).toHaveBeenCalledWith({ pageIndex: 1 });
     });
 
     it('should set searchCriteria historical to false and call loadData with page 1', () => {
@@ -654,7 +654,7 @@ describe('ListPrescriptionsWebComponent', () => {
       component.handleHistoricPrescriptions(false);
 
       expect((component as any).searchCriteria$()).toEqual({ historical: false });
-      expect(spyOnLoadData).toHaveBeenCalledWith(1);
+      expect(spyOnLoadData).toHaveBeenCalledWith({ pageIndex: 1 });
     });
 
     it('should call shadowDomOverlay.createContainer', () => {

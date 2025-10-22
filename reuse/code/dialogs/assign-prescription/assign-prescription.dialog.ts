@@ -116,11 +116,11 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
     toObservable(this.searchCriteria$).pipe(
       switchMap(criteria => {
         this.isLoading.set(true);
-        let institutionTypes: string[] = getAssignableOrganizationInstitutionTypes(
+        const institutionTypes: string[] = getAssignableOrganizationInstitutionTypes(
           this.data.category,
           this.data.intent
         );
-        let disciplines: string[] = getAssignableProfessionalDisciplines(this.data.category, this.data.intent);
+        const disciplines: string[] = getAssignableProfessionalDisciplines(this.data.category, this.data.intent);
         return criteria
           ? this.healthcareProviderService
               .findAll(
@@ -293,7 +293,7 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
     }
   }
 
-  loadData(page?: number, pageSize?: number) {
+  loadData(pageValues?: { pageIndex?: number; pageSize?: number }) {
     const values = this.formGroup.value;
     const cities = values.cities as CityResource[];
     const zipCodes = cities?.map(c => c.zipCode).filter((z): z is number => z !== undefined) || [];
@@ -301,8 +301,8 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
     this.searchCriteria$.set({
       query: values.query!,
       zipCodes,
-      page,
-      pageSize,
+      page: pageValues?.pageIndex,
+      pageSize: pageValues?.pageSize,
       professionalType: this.selectedFilter,
     });
   }

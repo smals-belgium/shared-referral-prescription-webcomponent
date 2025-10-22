@@ -37,6 +37,10 @@ $app-primary-palette: (
 $app-primary: mat.m2-define-palette($app-primary-palette, 800);
 @include evf.evf-theme($app-primary, 800, 600, 700, mh.$color-white, transparent);
 
+.mat-mdc-dialog-inner-container .mat-mdc-dialog-surface{
+  max-height: 100vh;
+}
+
 :host{
 
   /* Box Shadows */

@@ -62,7 +62,7 @@ describe('PaginatorComponent', () => {
 
       component.handlePageEvent(pageEvent);
 
-      expect(changePageSpy).toHaveBeenCalledWith(3); // pageIndex + 1
+      expect(changePageSpy).toHaveBeenCalledWith({ pageIndex: 3, pageSize: 10 }); // pageIndex + 1
     });
 
     it('should emit new page size when pageSize changes', () => {
@@ -77,7 +77,7 @@ describe('PaginatorComponent', () => {
 
       component.handlePageEvent(pageEvent);
 
-      expect(changePageSpy).toHaveBeenCalledWith(20);
+      expect(changePageSpy).toHaveBeenCalledWith({ pageIndex: 1, pageSize: 20 });
     });
 
     it('should not emit when neither pageIndex nor pageSize changes', () => {
@@ -108,7 +108,7 @@ describe('PaginatorComponent', () => {
       component.handlePageEvent(pageEvent);
 
       // Should emit page number (pageIndex + 1), not pageSize
-      expect(changePageSpy).toHaveBeenCalledWith(4);
+      expect(changePageSpy).toHaveBeenCalledWith({ pageIndex: 4, pageSize: 25 });
       expect(changePageSpy).toHaveBeenCalledTimes(1);
     });
 
@@ -125,7 +125,7 @@ describe('PaginatorComponent', () => {
 
       component.handlePageEvent(pageEvent);
 
-      expect(changePageSpy).toHaveBeenCalledWith(1);
+      expect(changePageSpy).toHaveBeenCalledWith({ pageIndex: 1, pageSize: 10 });
     });
   });
 });

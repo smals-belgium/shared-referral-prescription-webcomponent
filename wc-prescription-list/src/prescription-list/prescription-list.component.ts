@@ -184,7 +184,7 @@ export class PrescriptionListWebComponent implements OnChanges, OnDestroy, After
       (changes['patientSsin'] || changes['requesterSsin'] || changes['performerSsin'] || changes['intent']) &&
       this.intent
     ) {
-      this.loadData(1);
+      this.loadData({ pageIndex: 1 });
     }
   }
 
@@ -192,7 +192,9 @@ export class PrescriptionListWebComponent implements OnChanges, OnDestroy, After
     this.shadowDomOverlay.createContainer();
   }
 
-  loadData(page?: number, pageSize?: number) {
+  loadData(pageValues?: { pageIndex?: number; pageSize?: number }) {
+    const { pageIndex, pageSize } = pageValues ?? {};
+
     if (!this.intent) {
       this.showErrorCard();
       return;
@@ -200,13 +202,13 @@ export class PrescriptionListWebComponent implements OnChanges, OnDestroy, After
 
     if (isPrescription(this.intent)) {
       this.isPrescriptionValue = true;
-      this.loadPrescriptions(page, pageSize);
+      this.loadPrescriptions(pageIndex, pageSize);
     } else if (isProposal(this.intent)) {
       this.isProposalValue = true;
-      this.loadProposals(page, pageSize);
+      this.loadProposals(pageIndex, pageSize);
     } else if (isModel(this.intent)) {
       this.isModelValue = true;
-      this.loadModels(page, pageSize);
+      this.loadModels(pageIndex, pageSize);
     }
   }
 
@@ -280,7 +282,7 @@ export class PrescriptionListWebComponent implements OnChanges, OnDestroy, After
       ...this.searchCriteria$(),
       historical: showHistoricPrescriptions,
     });
-    this.loadData(1);
+    this.loadData({ pageIndex: 1 });
   }
 
   onFilterUpdate(e: SearchFilter) {
@@ -289,7 +291,7 @@ export class PrescriptionListWebComponent implements OnChanges, OnDestroy, After
       ...e,
     });
 
-    this.loadData(1);
+    this.loadData({ pageIndex: 1 });
   }
 
   getHttpErrorFromState(state: { error?: Record<string, unknown> }): HttpErrorResponse | undefined {

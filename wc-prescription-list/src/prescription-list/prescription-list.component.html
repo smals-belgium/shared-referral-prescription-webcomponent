@@ -77,7 +77,7 @@
               [total]="prescriptionState.data?.prescriptions?.total || 0"
               [page]="prescriptionState.params?.['prescriptions']?.['page'] || 1"
               [pageSize]="prescriptionState.params?.['prescriptions']?.['pageSize'] || 10"
-              (changePage)="loadData($event, prescriptionState.params?.['prescriptions']?.['pageSize'])"
+              (changePage)="loadData($event)"
             ></app-paginator>
           </ng-template>
         </app-responsive-wrapper>
@@ -154,7 +154,7 @@
               [total]="proposalState.data?.proposals?.total || 0"
               [page]="proposalState.params?.['proposals']?.['page'] || 1"
               [pageSize]="proposalState.params?.['proposals']?.['pageSize'] || 10"
-              (changePage)="loadData($event, proposalState.params?.['proposals']?.['pageSize'])"
+              (changePage)="loadData($event)"
             ></app-paginator>
           </ng-template>
         </app-responsive-wrapper>
@@ -215,7 +215,7 @@
               [total]="modelState.data?.models?.totalElements || 0"
               [page]="(modelState.data?.models?.number || 0) + 1"
               [pageSize]="modelState.data?.models?.size || 10"
-              (changePage)="loadData($event, modelState.data?.models?.size)"
+              (changePage)="loadData($event)"
             ></app-paginator>
           </ng-template>
         </app-responsive-wrapper>

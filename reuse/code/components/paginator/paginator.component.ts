@@ -15,17 +15,15 @@ export class PaginatorComponent {
   @Input() page = 1;
   @Input() pageSize = 10;
 
-  @Output() changePage = new EventEmitter<number>();
+  @Output() changePage = new EventEmitter<{ pageIndex?: number; pageSize?: number }>();
 
   get pageIndex() {
     return this.page - 1;
   }
 
   handlePageEvent(e: PageEvent) {
-    if (e.pageIndex !== this.pageIndex) {
-      this.changePage.emit(e.pageIndex + 1);
-    } else if (e.pageSize !== this.pageSize) {
-      this.changePage.emit(e.pageSize);
+    if (e.pageIndex !== this.pageIndex || e.pageSize !== this.pageSize) {
+      this.changePage.emit({ pageIndex: e.pageIndex + 1, pageSize: e.pageSize });
     }
   }
 }
