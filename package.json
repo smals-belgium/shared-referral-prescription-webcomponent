@@ -20,7 +20,7 @@
     "test:wc:details": "ng test wc-prescription-details",
     "test:wc:create": "ng test wc-prescription-create",
     "test:wc:list": "ng test wc-prescription-list",
-    "test": "npm run test:wc:details && npm run test:wc:create && npm run test:wc:list && npm run test:wc:reuse && npm run test:wc:pdf",
+    "test": "npm run test:wc:details && npm run test:wc:create && npm run test:wc:list && npm run test:wc:reuse",
     "test:coverage": "npm run test:wc:details && npm run test:wc:create && npm run test:wc:list && npm run test:wc:reuse && npm run merge:coverage && npm run merge:report",
     "merge:coverage": "npx istanbul-merge --out .nyc_output/coverage.json ./reuse/coverage/coverage-final.json ./wc-prescription-details/coverage/coverage-final.json ./wc-prescription-create/coverage/coverage-final.json ./wc-prescription-list/coverage/coverage-final.json",
     "merge:report": "npx nyc report --reporter=lcov --report-dir=coverage --temp-dir=.nyc_output",

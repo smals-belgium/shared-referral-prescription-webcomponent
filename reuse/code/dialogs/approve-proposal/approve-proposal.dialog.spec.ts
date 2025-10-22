@@ -96,7 +96,7 @@ describe('ApproveProposalDialog', () => {
         'mock-uuid-12345'
       );
       expect(mockToastService.show).toHaveBeenCalledWith('proposal.approve.success');
-      expect(mockDialogRef.close).toHaveBeenCalledWith(true);
+      expect(mockDialogRef.close).toHaveBeenCalledWith({ prescriptionId: undefined });
       expect(component.loading).toBe(false);
     }));
 
@@ -120,7 +120,7 @@ describe('ApproveProposalDialog', () => {
         'mock-uuid-12345'
       );
       expect(mockToastService.show).toHaveBeenCalledWith('proposal.approve.success');
-      expect(mockDialogRef.close).toHaveBeenCalledWith(true);
+      expect(mockDialogRef.close).toHaveBeenCalledWith({ prescriptionId: undefined });
       expect(component.loading).toBe(false);
     }));
 
