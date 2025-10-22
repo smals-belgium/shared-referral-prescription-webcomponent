@@ -9,21 +9,11 @@ import {
   TemplateVersion,
 } from '@reuse/code/openapi';
 import { RejectAssignationDialog } from '@reuse/code/dialogs/reject-assignation/reject-assignation.dialog';
-import {
-  InterruptExecutionPrescriptionDialog
-} from '@reuse/code/dialogs/interrupt-execution-prescription/interrupt-execution-prescription.dialog';
-import {
-  RestartExecutionPrescriptionDialog
-} from '@reuse/code/dialogs/restart-execution-prescription/restart-execution-prescription.dialog';
-import {
-  StartExecutionPrescriptionDialog
-} from '@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog';
-import {
-  FinishExecutionPrescriptionDialog
-} from '@reuse/code/dialogs/finish-execution-prescription/finish-execution-prescription.dialog';
-import {
-  CancelExecutionPrescriptionDialog
-} from '@reuse/code/dialogs/cancel-execution-prescription/cancel-execution-prescription.dialog';
+import { InterruptExecutionPrescriptionDialog } from '@reuse/code/dialogs/interrupt-execution-prescription/interrupt-execution-prescription.dialog';
+import { RestartExecutionPrescriptionDialog } from '@reuse/code/dialogs/restart-execution-prescription/restart-execution-prescription.dialog';
+import { StartExecutionPrescriptionDialog } from '@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog';
+import { FinishExecutionPrescriptionDialog } from '@reuse/code/dialogs/finish-execution-prescription/finish-execution-prescription.dialog';
+import { CancelExecutionPrescriptionDialog } from '@reuse/code/dialogs/cancel-execution-prescription/cancel-execution-prescription.dialog';
 import { TransferAssignationDialog } from '@reuse/code/dialogs/transfer-assignation/transfer-assignation.dialog';
 import { MatDialog } from '@angular/material/dialog';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -47,10 +37,9 @@ export interface DetailsServices {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PrescriptionDetailsSecondaryService {
-
   private readonly _dialog = inject(MatDialog);
   private readonly authService = inject(AuthService);
   private readonly patientStateService = inject(PatientState);
@@ -88,7 +77,7 @@ export class PrescriptionDetailsSecondaryService {
   //Not used for the moment
   proposalsRejected = new EventEmitter<boolean>();
 
-  getPatient(): DataState<PersonResource>{
+  getPatient(): DataState<PersonResource> {
     const patientState = this.patientStateService.state();
     const identifyState = this.identifyState.state();
     const ssin = identifyState.data;
@@ -113,11 +102,11 @@ export class PrescriptionDetailsSecondaryService {
     };
   }
 
-  getCryptoKey(){
-    return this.encryptionStateService.state()
+  getCryptoKey() {
+    return this.encryptionStateService.state();
   }
 
-  getPrescription(): DataState<ReadRequestResource>{
+  getPrescription(): DataState<ReadRequestResource> {
     const prescriptionState = isProposal(this.intent())
       ? this.proposalStateService.state()
       : this.prescriptionStateService.state();
@@ -146,7 +135,7 @@ export class PrescriptionDetailsSecondaryService {
     return prescriptionState;
   }
 
-  getDecryptedResponses(): DataState<Record<string, unknown>>{
+  getDecryptedResponses(): DataState<Record<string, unknown>> {
     const responses = this.decryptedResponses$();
     const prescriptionState = isProposal(this.intent())
       ? this.proposalStateService.state()
@@ -175,7 +164,7 @@ export class PrescriptionDetailsSecondaryService {
     return responses ? { status: LoadingStatus.SUCCESS, data: responses.data } : { status: LoadingStatus.LOADING };
   }
 
-  getPerformerTask(): DataState<PerformerTaskResource>{
+  getPerformerTask(): DataState<PerformerTaskResource> {
     const state = isProposal(this.intent()) ? this.proposalStateService.state() : this.prescriptionStateService.state();
     const ssin = (this.tokenClaims$()?.['userProfile'] as PersonResource)?.['ssin'];
     if (!ssin || state.status !== LoadingStatus.SUCCESS) {
@@ -200,44 +189,43 @@ export class PrescriptionDetailsSecondaryService {
     const nestedPerformerTask = organizationTask?.performerTasks?.find(t => t.careGiverSsin === ssin);
     return nestedPerformerTask
       ? {
-        status: state.status,
-        data: nestedPerformerTask,
-      }
+          status: state.status,
+          data: nestedPerformerTask,
+        }
       : {
-        status: state.status,
-      };
+          status: state.status,
+        };
   }
 
-  getTemplate(): DataState<Template | undefined>{
+  getTemplate(): DataState<Template | undefined> {
     const templateCode = this.templateCode$();
     const templatesState = this.templatesStateService.state();
     return this.getPrescriptionTemplateStream(templateCode, templatesState);
   }
 
-  getTemplateVersion(): DataState<TemplateVersion>{
+  getTemplateVersion(): DataState<TemplateVersion> {
     const templateCode = this.templateCode$();
     return templateCode
       ? this.templateVersionsStateService.getState('READ_' + templateCode)()
       : { status: LoadingStatus.LOADING };
   }
 
-  getCurrentUser(): DataState<Partial<UserInfo>>{
+  getCurrentUser(): DataState<Partial<UserInfo>> {
     const token = this.tokenClaims$()?.['userProfile'];
     const professional = this.isProfessional$();
     const discipline = this.discipline$();
 
     return token
       ? {
-        status: LoadingStatus.SUCCESS,
-        data: {
-          ...token,
-          role: professional ? Role.Prescriber : Role.Patient,
-          discipline: discipline,
-        },
-      }
+          status: LoadingStatus.SUCCESS,
+          data: {
+            ...token,
+            role: professional ? Role.Prescriber : Role.Patient,
+            discipline: discipline,
+          },
+        }
       : { status: LoadingStatus.LOADING };
   }
-
 
   openRejectAssignationDialog(
     prescription: ReadRequestResource,
@@ -332,7 +320,6 @@ export class PrescriptionDetailsSecondaryService {
         intent: prescription.intent,
       },
       panelClass: 'mh-dialog-container',
-
     });
   }
 
@@ -374,5 +361,4 @@ export class PrescriptionDetailsSecondaryService {
       panelClass: 'mh-dialog-container',
     });
   }
-
 }

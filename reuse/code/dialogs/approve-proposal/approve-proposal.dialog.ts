@@ -17,7 +17,7 @@ import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicat
 import { TranslateModule } from '@ngx-translate/core';
 import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
-import { ReadRequestResource } from '@reuse/code/openapi';
+import { PrescriptionResource, ReadRequestResource } from '@reuse/code/openapi';
 import { catchError, switchMap } from 'rxjs';
 import { EncryptionHelperService } from '@reuse/code/states/privacy/encryption-helper.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -105,8 +105,8 @@ export class ApproveProposalDialog extends BaseDialog implements OnInit {
         )
       )
       .subscribe({
-        next: () => {
-          this.handleSuccess();
+        next: e => {
+          this.handleSuccess(e);
         },
         error: e => {
           this.handleError(e);
@@ -114,11 +114,11 @@ export class ApproveProposalDialog extends BaseDialog implements OnInit {
       });
   }
 
-  private handleSuccess(): void {
+  private handleSuccess(e: PrescriptionResource): void {
     this.loading = false;
     this.closeErrorCard();
     this.toastService.show('proposal.approve.success');
-    this.closeDialog(true);
+    this.closeDialog({ prescriptionId: e.prescriptionId });
   }
 
   private handleError(error?: HttpErrorResponse): void {
