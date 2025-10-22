@@ -4,7 +4,8 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   effect,
   EventEmitter,
-  HostBinding, inject,
+  HostBinding,
+  inject,
   Input,
   OnChanges,
   OnDestroy,
@@ -71,22 +72,17 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { MatChip } from '@angular/material/chips';
 import { EvfLabelPipe, EvfTranslateService, FormTemplate, FormTranslations } from '@smals/vas-evaluation-form-ui-core';
 import { PrescriptionsPdfService } from '@reuse/code/services/helpers/prescription-pdf.service';
-import {
-  PrescriptionDetailsMainComponent
-} from '../../components/prescription-details-main/prescription-details-main.component';
-import {
-  PrescriptionDetailsSecondaryComponent
-} from '../../components/prescription-details-secondary/prescription-details-secondary.component';
+import { PrescriptionDetailsMainComponent } from '../../components/prescription-details-main/prescription-details-main.component';
+import { PrescriptionDetailsSecondaryComponent } from '../../components/prescription-details-secondary/prescription-details-secondary.component';
 import {
   DetailsServices,
   PrescriptionDetailsSecondaryService,
 } from '../../components/prescription-details-secondary/prescription-details-secondary.service';
-import {
-  PrescriptionDetailsBottomComponent
-} from '../../components/prescription-details-bottom/prescription-details-bottom.component';
+import { PrescriptionDetailsBottomComponent } from '../../components/prescription-details-bottom/prescription-details-bottom.component';
 import { DeviceService } from '@reuse/code/services/helpers/device.service';
 import { MatMenuItem, MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatDivider } from '@angular/material/divider';
+import { CanCancelPrescriptionOrProposalPipe } from '@reuse/code/pipes/can-cancel-prescription-or-proposal.pipe';
 
 export interface ViewState {
   prescription: ReadRequestResource;
@@ -115,6 +111,7 @@ export interface ViewState {
     TemplateNamePipe,
     CanExtendPrescriptionPipe,
     CanDuplicatePrescriptionPipe,
+    CanCancelPrescriptionOrProposalPipe,
     MatChip,
     EvfLabelPipe,
     PrescriptionDetailsMainComponent,
@@ -129,7 +126,6 @@ export interface ViewState {
   standalone: true,
 })
 export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDestroy {
-
   private readonly _translate = inject(TranslateService);
   private readonly _dateAdapter = inject(DateAdapter<DateTime>);
   private readonly _dialog = inject(MatDialog);
@@ -267,7 +263,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
             },
           });
         }
-        if (!!template) {
+        if (template) {
           this.evfTranslateService.addTranslations(template.translations as FormTranslations);
         }
       });
@@ -396,7 +392,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
           this.viewState$().data!.decryptedResponses!,
           this.viewState$().data!.patient,
           this.viewState$().data!.template!,
-          this.viewState$().data!.templateVersion! as FormTemplate,
+          this.viewState$().data!.templateVersion as FormTemplate,
           this.currentLang()
         )
         .getBlob((blob: Blob) => {
