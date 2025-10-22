@@ -277,15 +277,13 @@ describe('PrescriptionsModelsCardComponent', () => {
     it('should emit openPrescriptionModel when model details button is clicked', () => {
       jest.spyOn(component.openPrescriptionModel, 'emit');
 
-      const buttons = fixture.debugElement.nativeElement.querySelectorAll('button[mat-button]');
+      const buttons = fixture.debugElement.nativeElement.querySelectorAll('button[mat-button]') as HTMLElement[];
       const detailsButton = Array.from(buttons).find(button => {
-        // @ts-ignore
         return button.textContent?.trim().includes('prescription.model.details.link');
       });
 
       expect(detailsButton).toBeTruthy();
-      // @ts-ignore
-      detailsButton.click();
+      detailsButton?.click();
 
       expect(component.openPrescriptionModel.emit).toHaveBeenCalledWith(mockModelEntityDto);
     });

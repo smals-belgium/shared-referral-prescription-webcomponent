@@ -256,7 +256,7 @@
           [total]="healthcareProviderState.data?.total ?? 0"
           [page]="healthcareProviderState.data?.page ?? 1"
           [pageSize]="healthcareProviderState.data?.pageSize ?? 10"
-          (changePage)="loadData($event, healthcareProviderState.data?.pageSize)"
+          (changePage)="loadData($event)"
         ></app-paginator>
       </div>
     }
