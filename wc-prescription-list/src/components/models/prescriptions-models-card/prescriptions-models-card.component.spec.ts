@@ -11,8 +11,9 @@ import { DataLoadConfig, RequestSummaryDataService } from '@reuse/code/services/
 import { BehaviorSubject, of } from 'rxjs';
 import { Discipline, ModelEntityDto, PageModelEntityDto } from '@reuse/code/openapi';
 import { FormatEnum } from '@reuse/code/components/progress-indicators/skeleton/skeleton.component';
-import { SimpleChanges } from '@angular/core';
+import { ElementRef, SimpleChanges } from '@angular/core';
 import { Intent } from '@reuse/code/interfaces';
+import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
 
 const mockConfigService = {
   getEnvironment: jest.fn(),
@@ -41,6 +42,7 @@ const mockDataService = {
   initializeDataStream: jest.fn(),
   triggerLoad: jest.fn(),
   retryLoad: jest.fn(),
+  reset: jest.fn(),
 } as any;
 
 class FakeLoader implements TranslateLoader {
@@ -59,12 +61,36 @@ const mockModelEntityPage: PageModelEntityDto = {
   numberOfElements: 1,
   totalElements: 10,
 };
+const mockModelEntityPage10: PageModelEntityDto = {
+  content: [mockModelEntityDto],
+  numberOfElements: 10,
+  totalElements: 10,
+};
 
 describe('PrescriptionsModelsCardComponent', () => {
   let component: PrescriptionsModelsCardComponent;
   let fixture: ComponentFixture<PrescriptionsModelsCardComponent>;
+  let mockObserve: jest.Mock;
+  let mockDisconnect: jest.Mock;
+  let observerCallback: IntersectionObserverCallback;
 
   beforeEach(async () => {
+    mockObserve = jest.fn();
+    mockDisconnect = jest.fn();
+
+    global.IntersectionObserver = jest.fn().mockImplementation(callback => {
+      observerCallback = callback;
+      return {
+        observe: mockObserve,
+        disconnect: mockDisconnect,
+        unobserve: jest.fn(),
+        takeRecords: jest.fn(),
+        root: null,
+        rootMargin: '',
+        thresholds: [],
+      };
+    }) as any;
+
     await TestBed.configureTestingModule({
       imports: [
         PrescriptionsModelsCardComponent,
@@ -78,13 +104,22 @@ describe('PrescriptionsModelsCardComponent', () => {
         DateAdapter,
         { provide: ConfigurationService, useValue: mockConfigService },
         { provide: AuthService, useValue: mockAuthService },
-        { provide: RequestSummaryDataService, useValue: mockDataService },
       ],
-    }).compileComponents();
+    })
+      .overrideComponent(PrescriptionsModelsCardComponent, {
+        set: {
+          providers: [{ provide: RequestSummaryDataService, useValue: mockDataService }],
+        },
+      })
+      .compileComponents();
 
     fixture = TestBed.createComponent(PrescriptionsModelsCardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should create and initialize with default values', () => {
@@ -124,34 +159,73 @@ describe('PrescriptionsModelsCardComponent', () => {
     expect(component['initializeDataStream']).toHaveBeenCalled();
   });
 
-  it('should handle scroll events and trigger loadMore when near bottom', () => {
-    // Setup
-    component.modelEntityPage = mockModelEntityPage;
+  it('should trigger loadMore when anchor element intersects', () => {
+    component.modelEntityPage = mockModelEntityPage10;
     component.loading = false;
     component.error = false;
-    (component as any).oldScroll = 0;
-    mockDataService.loading$.next(false);
-
-    // Mock window properties for near bottom
-    Object.defineProperty(window, 'scrollY', { value: 1950, writable: true });
-    Object.defineProperty(window, 'innerHeight', { value: 800, writable: true });
-    Object.defineProperty(document.body, 'scrollHeight', { value: 2000, writable: true });
+    expect(component.itemsLength).toBe(10);
 
     jest.spyOn(component, 'loadMore');
     jest.spyOn(component, 'canLoadMore').mockReturnValue(true);
+    jest.spyOn(component, 'isLoading').mockReturnValue(false);
 
-    component.scrolled();
+    const mockScrollframe = document.createElement('div');
+    const mockAnchor = document.createElement('div');
+    component.scrollframe = { nativeElement: mockScrollframe } as ElementRef;
+    component.anchor = { nativeElement: mockAnchor } as ElementRef;
+
+    component.ngAfterViewInit();
+
+    expect(mockObserve).toHaveBeenCalledWith(mockAnchor);
+
+    // Simulate intersection
+    observerCallback([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver);
 
     expect(component.loadMore).toHaveBeenCalled();
   });
 
-  it('should not trigger loadMore when in loading or error state', () => {
-    component.modelEntityPage = mockModelEntityPage;
-    component.error = true; // Error state
+  it('should not trigger loadMore when conditions are not met', () => {
+    component.modelEntityPage = mockModelEntityPage10;
+    component.loading = true;
+    component.error = false;
+    expect(component.itemsLength).toBe(10);
 
     jest.spyOn(component, 'loadMore');
+    jest.spyOn(component, 'canLoadMore').mockReturnValue(true);
+    jest.spyOn(component, 'isLoading').mockReturnValue(false);
 
-    component.scrolled();
+    const mockScrollframe = document.createElement('div');
+    const mockAnchor = document.createElement('div');
+    component.scrollframe = { nativeElement: mockScrollframe } as ElementRef;
+    component.anchor = { nativeElement: mockAnchor } as ElementRef;
+
+    component.ngAfterViewInit();
+
+    // Simulate intersection
+    observerCallback!([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver);
+
+    expect(component.loadMore).not.toHaveBeenCalled();
+  });
+
+  it('should not trigger loadMore when not intersecting', () => {
+    component.modelEntityPage = mockModelEntityPage10;
+    component.loading = false;
+    component.error = false;
+    expect(component.itemsLength).toBe(10);
+
+    jest.spyOn(component, 'loadMore');
+    jest.spyOn(component, 'canLoadMore').mockReturnValue(true);
+    jest.spyOn(component, 'isLoading').mockReturnValue(false);
+
+    const mockScrollframe = document.createElement('div');
+    const mockAnchor = document.createElement('div');
+    component.scrollframe = { nativeElement: mockScrollframe } as ElementRef;
+    component.anchor = { nativeElement: mockAnchor } as ElementRef;
+
+    component.ngAfterViewInit();
+
+    // Simulate no intersection
+    observerCallback!([{ isIntersecting: false } as IntersectionObserverEntry], {} as IntersectionObserver);
 
     expect(component.loadMore).not.toHaveBeenCalled();
   });
@@ -168,7 +242,8 @@ describe('PrescriptionsModelsCardComponent', () => {
 
     // All items loaded
     const allItems = Array(10).fill(mockModelEntityDto);
-    component.modelEntityPage = { content: allItems, totalElements: 10 };
+    component.modelEntityPage = { content: allItems, numberOfElements: 10, totalElements: 10 };
+    expect(component.itemsLength).toBe(10);
     mockDataService.modelEntityData$.next(allItems);
     expect(component.canLoadMore()).toBe(false);
   });

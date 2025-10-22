@@ -24,13 +24,6 @@
                @if (getProfessional(prescription.requester); as professional) {
                  ({{ (professional.nihii8 || professional.nihii11) | formatNihdi: professional.id.qualificationCode }})
                }
-
-                <!--
-                          @todo set back when openapi contract is merged
-                              @if (prescription.requester) {
-                                ({{ (prescription.requester.nihii) | formatNihdi }})
-                              }
-                -->
             </span>
             </div>
 
@@ -67,11 +60,13 @@
   }
 
   @if (!canLoadMore()) {
+    <div class="mh-margin-bottom">
     <app-alert
       [alert]="AlertType.Info"
       [message]="'prescription.allPrescriptionsFetched' | translate"
       [showRetry]="false"
     ></app-alert>
+    </div>
   }
 
   @if (loading || isLoading()) {
@@ -88,4 +83,6 @@
       ></app-alert>
     </div>
   }
+
+  <div #anchor></div>
 </div>
