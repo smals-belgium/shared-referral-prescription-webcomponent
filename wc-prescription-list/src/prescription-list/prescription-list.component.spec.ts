@@ -6,12 +6,12 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateAdapter, MatNativeDateModule } from '@angular/material/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
-import { importProvidersFrom, signal, SimpleChange, SimpleChanges } from '@angular/core';
+import { ElementRef, importProvidersFrom, signal, SimpleChange, SimpleChanges } from '@angular/core';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
 import { PrescriptionListWebComponent } from './prescription-list.component';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { Intent, LoadingStatus } from '@reuse/code/interfaces';
 import { By } from '@angular/platform-browser';
 import { AccessMatrix, Discipline, PageModelEntityDto, ReadRequestListResource, Template } from '@reuse/code/openapi';
@@ -21,6 +21,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { PrescriptionFilterComponent } from '@reuse/code/components/prescription-filter/prescription-filter.component';
 import { FeatureFlagService } from '@reuse/code/services/helpers/feature-flag.service';
 import { FeatureFlagDirective } from '@reuse/code/directives/feature-flag.directive';
+import { PrescriptionsCardComponent } from '../components/prescriptions/prescriptions-card/prescriptions-card.component';
+import { RequestSummaryDataService } from '@reuse/code/services/helpers/request-summary-data.service';
 
 const BASE_URL = 'http://localhost';
 
@@ -81,6 +83,15 @@ const mockShadowDomOverlayContainer = {
   _document: document,
 };
 
+const mockDataService = {
+  requestSummaryData$: new BehaviorSubject([]),
+  loading$: new BehaviorSubject(false),
+  initializeDataStream: jest.fn(),
+  triggerLoad: jest.fn(),
+  retryLoad: jest.fn(),
+  reset: jest.fn(),
+} as any;
+
 describe('ListPrescriptionsWebComponent', () => {
   let component: PrescriptionListWebComponent;
   let fixture: ComponentFixture<PrescriptionListWebComponent>;
@@ -123,7 +134,13 @@ describe('ListPrescriptionsWebComponent', () => {
           },
         },
       ],
-    }).compileComponents();
+    })
+      .overrideComponent(PrescriptionsCardComponent, {
+        set: {
+          providers: [{ provide: RequestSummaryDataService, useValue: mockDataService }],
+        },
+      })
+      .compileComponents();
 
     httpMock = TestBed.inject(HttpTestingController);
     translate = TestBed.inject(TranslateService);
@@ -233,6 +250,24 @@ describe('ListPrescriptionsWebComponent', () => {
       const breakpointObserverTest = TestBed.inject(BreakpointObserver) as any;
       (breakpointObserverTest.observe as jest.Mock).mockReturnValue(of({ matches: false }));
 
+      // Mock IntersectionObserver BEFORE createFixture()
+      const mockObserve = jest.fn();
+      const mockDisconnect = jest.fn();
+      let observerCallback: IntersectionObserverCallback;
+
+      global.IntersectionObserver = jest.fn().mockImplementation(callback => {
+        observerCallback = callback;
+        return {
+          observe: mockObserve,
+          disconnect: mockDisconnect,
+          unobserve: jest.fn(),
+          takeRecords: jest.fn(),
+          root: null,
+          rootMargin: '',
+          thresholds: [],
+        };
+      }) as any;
+
       createFixture();
 
       const { debugElement } = fixture;
@@ -266,6 +301,15 @@ describe('ListPrescriptionsWebComponent', () => {
 
       // @ts-expect-error: it's a test where we define the object, so the type check is not needed
       jest.spyOn(component, 'viewStatePrescriptions$').mockReturnValue(expectedState);
+
+      fixture.detectChanges();
+
+      // Verify observer was created and observe was called
+      expect(global.IntersectionObserver).toHaveBeenCalled();
+      expect(mockObserve).toHaveBeenCalled();
+
+      // Simulate intersection
+      observerCallback!([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver);
 
       fixture.detectChanges();
 

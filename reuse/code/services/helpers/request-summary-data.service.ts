@@ -76,6 +76,7 @@ export class RequestSummaryDataService {
   }
 
   triggerLoad(): void {
+    this.setLoadingState(true);
     this.loadTrigger.next();
   }
 

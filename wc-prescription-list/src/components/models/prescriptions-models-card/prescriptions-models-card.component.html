@@ -56,11 +56,13 @@
   }
 
   @if (!canLoadMore()) {
+    <div class="mh-margin-bottom">
     <app-alert
       [alert]="AlertType.Info"
       [message]="'prescription.model.allModelsFetched' | translate"
       [showRetry]="false"
     ></app-alert>
+    </div>
   }
 
   @if (loading || isLoading()) {
@@ -77,4 +79,5 @@
       ></app-alert>
     </div>
   }
+  <div #anchor></div>
 </div>

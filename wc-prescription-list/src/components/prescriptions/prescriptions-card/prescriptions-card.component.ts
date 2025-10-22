@@ -1,4 +1,15 @@
-import { Component, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Output,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import {
   HealthcareProResource,
   RequestStatus,
@@ -40,8 +51,9 @@ import { getStatusClassFromMap } from '@reuse/code/utils/utils';
   ],
   templateUrl: './prescriptions-card.component.html',
   styleUrls: ['./prescriptions-card.component.scss'],
+  providers: [RequestSummaryDataService],
 })
-export class PrescriptionsCardComponent implements OnChanges {
+export class PrescriptionsCardComponent implements OnChanges, AfterViewInit, OnDestroy {
   // Input properties
   @Input() intent?: Intent;
   @Input() requestSummaryListResource?: RequestSummaryListResource;
@@ -62,8 +74,14 @@ export class PrescriptionsCardComponent implements OnChanges {
   @Output() clickPrescription = new EventEmitter<RequestSummaryResource>();
   @Output() retryOnError = new EventEmitter<void>();
 
+  @ViewChild('anchor', { static: true }) anchor!: ElementRef<HTMLElement>;
+  @ViewChild('scrollframe', { static: true }) scrollframe!: ElementRef<HTMLElement>;
+
   protected readonly FormatEnum = FormatEnum;
   protected readonly AlertType = AlertType;
+
+  private observer?: IntersectionObserver;
+  private destroyed = false;
 
   // Public signals from service
   readonly requestData = toSignal(this.dataService.requestSummaryData$, {
@@ -73,26 +91,6 @@ export class PrescriptionsCardComponent implements OnChanges {
 
   // Protected signals from service
   protected readonly isProfessional$ = toSignal(this.authService.isProfessional());
-
-  // Scroll values
-  private oldScroll: any;
-  private scrollY: any;
-
-  @HostListener('window:scroll', ['$event'])
-  scrolled(): void {
-    if (this.itemsLength <= 0 || !this.canLoadMore() || this.isLoading() || this.loading || this.error) {
-      return;
-    }
-
-    const isNearBottom = this.isUserNearBottom();
-
-    this.scrollY = window.scrollY;
-    if (isNearBottom && this.oldScroll < this.scrollY) {
-      this.loadMore();
-    }
-
-    this.oldScroll = this.scrollY;
-  }
 
   constructor(
     private readonly dataService: RequestSummaryDataService,
@@ -105,11 +103,43 @@ export class PrescriptionsCardComponent implements OnChanges {
     }
   }
 
-  private isUserNearBottom(): boolean {
-    const threshold = 50;
-    const position = window.scrollY + window.innerHeight; // <- Measure position differently
-    const height = document.body.scrollHeight; // <- Measure height differently
-    return position > height - threshold;
+  ngAfterViewInit() {
+    const root = this.getScrollContainer(this.scrollframe.nativeElement);
+
+    this.observer = new IntersectionObserver(
+      entries => {
+        if (this.destroyed) return;
+        if (entries.some(e => e.isIntersecting)) {
+          if (this.itemsLength <= 0 || !this.canLoadMore() || this.isLoading() || this.loading || this.error) {
+            return;
+          } else {
+            this.loadMore();
+          }
+        }
+      },
+      {
+        root,
+        rootMargin: '0px',
+        threshold: 1.0,
+      }
+    );
+
+    this.observer.observe(this.anchor.nativeElement);
+  }
+
+  private getScrollContainer(el: HTMLElement): HTMLElement | null {
+    let current: HTMLElement | null = el.parentElement;
+
+    while (current) {
+      const style = window.getComputedStyle(current);
+      const overflowY = style.overflowY;
+      const canScroll = (overflowY === 'auto' || overflowY === 'scroll') && current.scrollHeight > current.clientHeight;
+
+      if (canScroll) return current;
+      current = current.parentElement;
+    }
+
+    return null;
   }
 
   onErrorRetryClick(): void {
@@ -171,5 +201,11 @@ export class PrescriptionsCardComponent implements OnChanges {
       return null;
     }
     return requester as unknown as any;
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed = true;
+    this.observer?.disconnect();
+    this.dataService.reset();
   }
 }
