@@ -1,12 +1,11 @@
 import { ChangeDetectorRef, inject, Pipe, PipeTransform } from '@angular/core';
 import { EvfTranslateService } from '@smals/vas-evaluation-form-ui-core';
-import { OccurrenceTiming } from '@reuse/code/interfaces';
+import { BoundsDuration } from '@reuse/code/interfaces';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  translateOccurrenceDuration,
-  validateOccurrenceTiming,
-} from '@reuse/code/utils/occurrence-timing.utils';
+import { translateBoundsDuration, validateBoundsDuration } from '@reuse/code/utils/occurrence-timing.utils';
+import { Translation } from '@reuse/code/openapi';
 
+type TranslationType = keyof Translation;
 @Pipe({
   standalone: true,
   name: 'occurrenceDuration',
@@ -15,32 +14,30 @@ export class OccurrenceDurationPipe implements PipeTransform {
   private readonly _evfTranslate = inject(EvfTranslateService);
   private readonly _cdRef = inject(ChangeDetectorRef);
 
-  private occurrenceTiming?: OccurrenceTiming;
-  private language?: 'nl' | 'fr';
+  private boundsDuration?: BoundsDuration;
+  private language?: TranslationType;
   private translated = '';
 
   constructor() {
-    this.language = this._evfTranslate.currentLang as 'nl' | 'fr';
+    this.language = this._evfTranslate.currentLang as TranslationType;
     this._evfTranslate.currentLang$.pipe(takeUntilDestroyed()).subscribe(() => {
-      this.language = this._evfTranslate.currentLang as 'nl' | 'fr';
+      this.language = this._evfTranslate.currentLang as TranslationType;
       this.translate();
       this._cdRef.markForCheck();
     });
   }
 
-  transform(occurrenceTiming?: OccurrenceTiming): unknown {
-    if (occurrenceTiming !== this.occurrenceTiming) {
-      this.occurrenceTiming = occurrenceTiming;
+  transform(boundsDuration?: BoundsDuration): unknown {
+    if (boundsDuration !== this.boundsDuration) {
+      this.boundsDuration = boundsDuration;
       this.translate();
     }
     return this.translated;
   }
 
   private translate() {
-    if (validateOccurrenceTiming(this.occurrenceTiming)) {
-      this.translated = this.occurrenceTiming
-        ? translateOccurrenceDuration(this.occurrenceTiming, this.language ?? 'fr')
-        : '';
+    if (validateBoundsDuration(this.boundsDuration)) {
+      this.translated = this.boundsDuration ? translateBoundsDuration(this.boundsDuration, this.language ?? 'fr') : '';
     } else {
       this.translated = '';
     }

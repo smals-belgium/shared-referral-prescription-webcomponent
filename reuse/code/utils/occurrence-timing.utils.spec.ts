@@ -1,6 +1,7 @@
 import {
   isOccurrenceTiming,
   setOccurrenceTimingResponses,
+  translateBoundsDuration,
   translateOccurrenceTiming,
   validateOccurrenceTiming,
 } from './occurrence-timing.utils';
@@ -51,13 +52,15 @@ const frequencyAndDayOfWeek: OccurrenceTiming = {
   },
 };
 
+const boundsDuration: BoundsDuration = {
+  value: 3,
+  code: 'mo',
+  system: '',
+};
+
 const full: OccurrenceTiming = {
   repeat: {
-    boundsDuration: {
-      value: 3,
-      code: 'mo',
-      system: '',
-    },
+    boundsDuration: boundsDuration,
     count: 10,
     duration: 30,
     durationUnit: 'min',
@@ -109,6 +112,14 @@ describe('OccurrenceTimingUtils', () => {
 
     const readableTextNl = translateOccurrenceTiming(frequencyOnly, 'nl');
     expect(readableTextNl).toBe('3 keer per week');
+  });
+
+  it('should return the correct bounds duration', () => {
+    const readableTextFr = translateBoundsDuration(boundsDuration, 'fr');
+    expect(readableTextFr).toBe('3 mois');
+
+    const readableTextNl = translateBoundsDuration(boundsDuration, 'nl');
+    expect(readableTextNl).toBe('3 maanden');
   });
 });
 
