@@ -45,12 +45,14 @@
     "genders": {
       "M": "M",
       "F": "F",
-      "null": "Inconnu"
+      "null": "Inconnu",
+      "undefined": "Inconnu"
     },
     "gendersFull": {
       "M": "Homme",
       "F": "Femme",
-      "null": "Inconnu"
+      "null": "Inconnu",
+      "undefined": "Inconnu"
     },
     "somethingWentWrong": "Une erreur s'est produite. Veuillez ré-essayer.",
     "somethingWentWrongWithoutRetry": "Une erreur s'est produite.",
