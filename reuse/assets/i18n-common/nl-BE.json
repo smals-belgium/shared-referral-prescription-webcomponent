@@ -46,12 +46,14 @@
     "genders": {
       "M": "M",
       "F": "V",
-      "null": "Onbekend"
+      "null": "Onbekend",
+      "undefined": "Onbekend"
     },
     "gendersFull": {
       "M": "Man",
       "F": "Vrouw",
-      "null": "Onbekend"
+      "null": "Onbekend",
+      "undefined": "Onbekend"
     },
     "somethingWentWrong": "Er is iets misgegaan. Gelieve opnieuw te proberen.",
     "somethingWentWrongWithoutRetry": "Er is iets misgegaan.",
