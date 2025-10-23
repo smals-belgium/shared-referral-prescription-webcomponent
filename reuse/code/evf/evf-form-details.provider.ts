@@ -23,6 +23,7 @@ import { SectionDetailComponent } from '@smals/vas-evaluation-form-ui-material/e
 
 import { withInfoElement } from '@smals/vas-evaluation-form-ui-material/elements/info';
 import { OccurrencesComponent } from '@reuse/code/evf/occurrences/detail/occurrences.component';
+import { BoundsDurationComponent } from '@reuse/code/evf/bounds-duration/detail/bounds-duration.component';
 
 export function provideEvfFormDetails() {
   return [
@@ -72,6 +73,10 @@ export function provideEvfFormDetails() {
         {
           name: 'occurrences',
           detail: OccurrencesComponent,
+        },
+        {
+          name: 'boundsDuration',
+          detail: BoundsDurationComponent,
         },
         {
           name: 'row',
