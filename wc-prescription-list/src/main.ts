@@ -20,12 +20,13 @@ import {
   ShadowDomOverlayContainer,
 } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { OverlayContainer } from '@angular/cdk/overlay';
+import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
 
 (async () => {
   const app = createApplication({
     providers: [
       provideCore(),
-      provideHttpClient(withInterceptors([apiUrlInterceptor])),
+      provideHttpClient(withInterceptors([demoHttpInterceptor, apiUrlInterceptor])),
       providePseudonymisation(),
       {
         provide: ConfigurationService,

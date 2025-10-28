@@ -1,0 +1,872 @@
+[
+  {
+    "id": 17,
+    "code": "DIABETIC_EDUCATION_VIA_CONVENTION_CENTER",
+    "label": "DIABETIC_EDUCATION_VIA_CONVENTION_CENTER",
+    "labelTranslations": {
+      "en": "Diabetes education - Convention center",
+      "nl": "Diabeteseducatie - Conventiecentrum",
+      "fr": "Éducation au diabète - Centre de convention",
+      "de": "Diabetesschulung - Konventionszentrum"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "385805005"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "orderDetails": [
+        {
+          "code": [
+            "tmp-with-tion-7"
+          ],
+          "system": "https://www.ehealth.fgov.be/standards/fhir/referral/CodeSystem/be-cs-temp-requested-service-detail"
+        }
+      ]
+    }
+  },
+  {
+    "id": 27,
+    "code": "MEDICATION_PREFILL_PREPARATION",
+    "label": "MEDICATION_PREFILL_PREPARATION",
+    "labelTranslations": {
+      "en": "Medication preparation - Not reimbursed",
+      "nl": "Medicijnbereiding - Niet vergoed",
+      "fr": "Préparation de médicament - Non remboursé",
+      "de": "Medikamentenvorbereitung - Nicht erstattet"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "385796006"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 1,
+    "code": "ASSISTING_WITH_PERSONAL_HYGIENE",
+    "label": "ASSISTING_WITH_PERSONAL_HYGIENE",
+    "labelTranslations": {
+      "en": "Hygienic care",
+      "nl": "Hygiënische zorg",
+      "fr": "Soins hygiéniques",
+      "de": "Hygienische Pflege"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "225964003"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "code": "BLEEDING",
+    "label": "BLEEDING",
+    "labelTranslations": {
+      "en": "Bleeding",
+      "nl": "Aderlating",
+      "fr": "Phlébotomie",
+      "de": "Aderlass"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "127606004"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 5,
+    "code": "CATHETER_CARE",
+    "label": "CATHETER_CARE",
+    "labelTranslations": {
+      "en": "Template 18 : Catheter care",
+      "nl": "Template 18 : Katheterzorg ",
+      "fr": "Template 18 : Soins de cathéter",
+      "de": "Template 18 : Katheterpflege"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "CATHETER_CARE"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 7,
+    "code": "CHRONIC_PERITONEAL_DIALYSIS",
+    "label": "CHRONIC_PERITONEAL_DIALYSIS",
+    "labelTranslations": {
+      "en": "Chronic Dialysis",
+      "nl": "Chronische dialyse",
+      "fr": "Dialyse chronique",
+      "de": "Chronische Dialyse"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "225230008"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 37,
+    "code": "UROGENITAL_CARE",
+    "label": "UROGENITAL_CARE",
+    "labelTranslations": {
+      "en": "Template 17 : Urogenital care",
+      "nl": "Template 17 : Uro-genitale zorgen ",
+      "fr": "Template 17 : Soins urogénitaux",
+      "de": "Template 17 : Urogenitale Pflege"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "UROGENITAL_CARE"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 39,
+    "code": "WOUND_CARE",
+    "label": "WOUND_CARE",
+    "labelTranslations": {
+      "en": "Template 19 : Wound care",
+      "nl": "Template 19 : Wondverzorging",
+      "fr": "Template 19 : Soins de plaies",
+      "de": "Template 19 : Wundversorgung"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "WOUND_CARE"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 9,
+    "code": "COMPRESSION_THERAPY",
+    "label": "COMPRESSION_THERAPY",
+    "labelTranslations": {
+      "en": "🚧 Compression therapy",
+      "nl": "🚧 Compressie therapie",
+      "fr": "🚧 Thérapie de compression",
+      "de": "🚧 Kompressionstherapie"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "413899004"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 29,
+    "code": "MEDICATION_PREPARATION_PSYCHIATRIC_PATIENT",
+    "label": "MEDICATION_PREPARATION_PSYCHIATRIC_PATIENT",
+    "labelTranslations": {
+      "en": "Medication preparation Psychiatric Patient",
+      "nl": "Medicijnbereiding - Psychiatrische atiënt ",
+      "fr": "Préparation de médicament - Patient Psychiatrique",
+      "de": "Medikamentenvorbereitung - Psychiatrischer Patient"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "tmp-prep-ient"
+          ],
+          "system": "https://www.ehealth.fgov.be/standards/fhir/referral/CodeSystem/be-cs-temp-requested-service"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 31,
+    "code": "PARAMETERS",
+    "label": "PARAMETERS",
+    "labelTranslations": {
+      "en": "Parameters",
+      "nl": "Parameters",
+      "fr": "Paramètres",
+      "de": "Parameter"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "182777000"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 33,
+    "code": "RESPIRATORY_CARE",
+    "label": "RESPIRATORY_CARE",
+    "labelTranslations": {
+      "en": "Template 15 : Airway concerns",
+      "nl": "Template 15 : Zorgen aan luchtwegen",
+      "fr": "Template 15 : Problèmes respiratoires",
+      "de": "Template 15 : Atemwegsprobleme"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "427391006"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 35,
+    "code": "SAMPLING",
+    "label": "SAMPLING",
+    "labelTranslations": {
+      "en": "Sampling",
+      "nl": "Staalname",
+      "fr": "Échantillon",
+      "de": "Probenahme"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "17636008"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 11,
+    "code": "DIABETIC_EDUCATION_FOR_PATIENTS_WITH_CARE_PATH",
+    "label": "DIABETIC_EDUCATION_FOR_PATIENTS_WITH_CARE_PATH",
+    "labelTranslations": {
+      "en": "Diabetes education with a care pathway",
+      "nl": "Diabetesvoorlichting met een zorgtraject",
+      "fr": "Éducation au diabète avec parcours de soins",
+      "de": "Diabetesschulung mit Behandlungspfad"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "385805005"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "orderDetails": [
+        {
+          "code": [
+            "370858005"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 13,
+    "code": "DIABETIC_EDUCATION_FOR_PATIENTS_WITH_MODEL_OF_CARE",
+    "label": "DIABETIC_EDUCATION_FOR_PATIENTS_WITH_MODEL_OF_CARE",
+    "labelTranslations": {
+      "en": "Diabetes education (follow-up of type 2 diabetes)",
+      "nl": "Diabetesvoorlichting (opvolging diabetes type 2)",
+      "fr": "Éducation au diabète (suivi du diabète de type 2)",
+      "de": "Diabetesschulung (Nachsorge Typ-2-Diabetes)"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "385805005"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 15,
+    "code": "DIABETIC_EDUCATION_FOR_PATIENTS_WITHOUT_CARE_PATH",
+    "label": "DIABETIC_EDUCATION_FOR_PATIENTS_WITHOUT_CARE_PATH",
+    "labelTranslations": {
+      "en": "Diabetes education - Without care pathway",
+      "nl": "Diabeteseducatie - Zonder traject",
+      "fr": "Éducation au diabète - Sans trajet de soins",
+      "de": "Diabetesschulung - Ohne Behandlungspfad"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "385805005"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "orderDetails": [
+        {
+          "code": [
+            "tmp-with-tory-8"
+          ],
+          "system": "https://www.ehealth.fgov.be/standards/fhir/referral/CodeSystem/be-cs-temp-requested-service-detail"
+        }
+      ]
+    }
+  },
+  {
+    "id": 21,
+    "code": "GASTROINTESTINAL_CARE",
+    "label": "GASTROINTESTINAL_CARE",
+    "labelTranslations": {
+      "en": "Template 16 : Gastrointestinal concerns",
+      "nl": "Template 16 : Gastro-intestinale zorgen",
+      "fr": "Template 16 : Problèmes gastrointestinaux",
+      "de": "Template 16 : Gastrointestinale Probleme"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "GASTROINTESTINAL_CARE"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 23,
+    "code": "GLYCEMIC_TEST",
+    "label": "GLYCEMIC_TEST",
+    "labelTranslations": {
+      "en": "Glycemia control with glucometer",
+      "nl": "Glycemiecontrole met glucometer",
+      "fr": "Contrôle de la glycémie avec glucomètre",
+      "de": "Blutzuckerkontrolle mit Glukometer"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "166900001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 25,
+    "code": "MEDICATION_ADMINISTRATION",
+    "label": "MEDICATION_ADMINISTRATION",
+    "labelTranslations": {
+      "en": "Medication Administration",
+      "nl": "Medication Administration",
+      "fr": "Administration de médicament",
+      "de": "Medikamentenverabreichung"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "18629005"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 19,
+    "code": "ANNEX_81",
+    "label": "ANNEX_81",
+    "labelTranslations": {
+      "en": "🚧 Medication preparation (Annex 81)",
+      "nl": "🚧 Medicatie klaarzetten (Bijlage 81)",
+      "fr": "🚧 Préparation de médicament (Annexe 81)",
+      "de": "🚧 Medikamentenvorbereitung (Anlage 81)"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "tmp-prep-x081-2"
+          ],
+          "system": "https://www.ehealth.fgov.be/standards/fhir/referral/CodeSystem/be-cs-temp-requested-service"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 47,
+    "code": "PHYSIOTHERAPY_GENERAL",
+    "label": "PHYSIOTHERAPY_GENERAL",
+    "labelTranslations": {
+      "en": "General Physiotherapy Prescription",
+      "nl": "Algemeen Kinesitherapeutisch voorschrift",
+      "fr": "Prescription générale de kinésithérapie",
+      "de": "Allgemeine Physiotherapieverordnung"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "PHYSIOTHERAPY_GENERAL"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "722138006"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 49,
+    "code": "PHYSIOTHERAPY_PALLIATIVE",
+    "label": "PHYSIOTHERAPY_PALLIATIVE",
+    "labelTranslations": {
+      "en": "Palliative Physiotherapy",
+      "nl": "Palliatieve kinesitherapie",
+      "fr": "Kinésithérapie palliative",
+      "de": "Palliative Physiotherapie"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "PHYSIOTHERAPY_PALLIATIVE"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "722138006"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 41,
+    "code": "GENERIC",
+    "label": "GENERIC",
+    "labelTranslations": {
+      "en": "Specific technical care",
+      "nl": "Specifieke technische verstrekking",
+      "fr": "Soin spécifique technique",
+      "de": "Spezifische technische Pflege"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "9632001"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 43,
+    "code": "ANNEX_82",
+    "label": "ANNEX_82",
+    "labelTranslations": {
+      "en": "Radiology (Annex 82)",
+      "nl": "Radiologie (Bijlage 82)",
+      "fr": "Radiologie (Annexe 82)",
+      "de": "Radiologie (Anlage 82)"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "tmp-img-ct",
+            "tmp-img-mri",
+            "tmp-img-xray",
+            "tmp-img-us"
+          ],
+          "system": "http://snomed.info/sct"
+        },
+        {
+          "code": [
+            "*"
+          ],
+          "system": "http://qsi.code"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "363679005"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 51,
+    "code": "PHYSIOTHERAPY_PERINATAL",
+    "label": "PHYSIOTHERAPY_PERINATAL",
+    "labelTranslations": {
+      "en": "Perinatal Physiotherapy",
+      "nl": "Perinatale kinesitherapie",
+      "fr": "Kinésithérapie périnatale",
+      "de": "Perinatale Physiotherapie"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "PHYSIOTHERAPY_PERINATAL"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "722138006"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 53,
+    "code": "PHYSIOTHERAPY_TEMPOROMANDIBULAR_DYSFUNCTION",
+    "label": "PHYSIOTHERAPY_TEMPOROMANDIBULAR_DYSFUNCTION",
+    "labelTranslations": {
+      "en": "Temporomandibular dysfunction physiotherapy",
+      "nl": "Temporomandibulaire dysfunctie kinesitherapie",
+      "fr": "Kinésithérapie de la dysfonction temporo-mandibulaire",
+      "de": "Physiotherapie bei temporomandibulärer Dysfunktion"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "PHYSIOTHERAPY_TEMPOROMANDIBULAR_DYSFUNCTION"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "722138006"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  },
+  {
+    "id": 45,
+    "code": "PHYSIOTHERAPY_CONSULTATIVE",
+    "label": "PHYSIOTHERAPY_CONSULTATIVE",
+    "labelTranslations": {
+      "en": "Physiotherapy Consultative Examination",
+      "nl": "Consultatief Kinesitherapeutisch Onderzoek",
+      "fr": "Examen consultatif de kinésithérapie",
+      "de": "Physiotherapeutische Konsultativuntersuchung"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": [
+            "PHYSIOTHERAPY_CONSULTATIVE"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": [
+            "722138006"
+          ],
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  }
+]

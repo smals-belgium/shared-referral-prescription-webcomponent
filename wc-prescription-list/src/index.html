@@ -6,32 +6,68 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <script src="keycloak.js"></script>
+  <script src="/assets/keycloak.js"></script>
 </head>
 <body>
-  <script>
-    window.referralPrescriptionEnv = 'test';
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const env = urlParams.get('env') === 'demo' ? 'demo' : 'test';
+  window.referralPrescriptionEnv = env;
+  function createListComponent(services) {
+
+    const listElement = document.createElement('nihdi-referral-prescription-list');
+    listElement.lang = navigator.language.includes('nl') || navigator.language.includes('fr')
+      ? navigator.language
+      : 'nl-BE';
+    listElement.patientSsin = '90122712173';
+    listElement.intent = "order";
+    listElement.services = services;
+
+    listElement.addEventListener('prescriptionsCreated', () => {
+      document.body.removeChild(listElement);
+      setTimeout(() => {
+        alert('Prescription(s) were created. Refresh to start again.');
+      }, 100);
+    });
+
+    document.body.append(listElement);
+  }
+
+  if (env === 'demo') {
+
+    const fakeHeader = btoa(JSON.stringify({ alg: 'none', typ: 'JWT' }));
+    const fakePayload = btoa(JSON.stringify({
+      sub: 'demo',
+      name: 'Jean Doe',
+      preferred_username: 'Jean Doe',
+      realm_access: { roles: ['user', 'admin'] },
+      resource_access: {
+        'nihdi-uhmep-api': { roles: ['admin', 'demo'] },
+      },
+      exp: Math.floor(Date.now() / 1000) + 3600,
+      iat: Math.floor(Date.now() / 1000),
+    }));
+    const demoJwt = `${fakeHeader}.${fakePayload}.`;
+    createListComponent('demo', {
+      getAccessToken: (audience) => Promise.resolve(demoJwt),
+    });
+  } else {
     var keycloak = new Keycloak({
-      url: 'http://vasiam.test.paas.vasdc.be/auth',
+      url: 'https://vasiam.test.ext.vascloud.be/auth',
       realm: 'MOOSE_UHMEP',
-      clientId: 'uhmep-webapp'
+      clientId: 'nihdi-uhmep-hcp'
     });
-    keycloak.init({onLoad: 'login-required', checkLoginIframe: false}).then(function (authenticated) {
-      console.log(authenticated ? 'authenticated' : 'not authenticated');
-      const listElement = document.createElement('nihdi-referral-prescription-list');
-      listElement.lang = navigator.language.includes('nl') ?? navigator.language.includes('fr') ? navigator.language : 'nl-BE';
-      listElement.patientSsin = '90122712173';
-      listElement.getToken = () => Promise.resolve(keycloak.token);
-      listElement.addEventListener('prescriptionsCreated', () => {
-        document.body.removeChild(listElement);
-        setTimeout(() => {
-          alert('Prescription(s) were created. Refresh to start again.');
-        }, 100);
+
+    keycloak.init({onLoad: 'login-required', checkLoginIframe: false})
+      .then(function (authenticated) {
+        createListComponent( {
+          getAccessToken: (audience) => Promise.resolve(keycloak.token)
+        });
+      })
+      .catch(function (error) {
+        alert('Failed to initialize authentication');
       });
-      document.body.append(listElement);
-    }).catch(function () {
-      alert('failed to initialize');
-    });
-  </script>
+  }
+</script>
 </body>
 </html>

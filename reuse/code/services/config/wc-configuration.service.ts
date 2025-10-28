@@ -8,6 +8,7 @@ import { EMPTY_OBJECT } from '@reuse/code/constants/common.constants';
 })
 export class WcConfigurationService extends ConfigurationService {
   private readonly referralPrescriptionEnvironment:
+    | 'demo'
     | 'local'
     | 'testHcp'
     | 'testPatient'
