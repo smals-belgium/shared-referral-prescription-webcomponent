@@ -12,7 +12,7 @@ import { EvfDynamicFormComponent } from '@smals/vas-evaluation-form-ui-material/
 import { BrowserModule, By } from '@angular/platform-browser';
 import { MarkdownModule } from 'ngx-markdown';
 import { of } from 'rxjs';
-import { AutocompleteMultiselectComponent } from '../../autocomplete-multiselect/element/autocomplete-multiselect.component';
+import { AutocompleteMultiselectComponent } from '../../components/autocomplete-multiselect/element/autocomplete-multiselect.component';
 import { ExternalSourceService } from '@reuse/code/services/api/externalSourceService.service';
 
 const mockAutocompleteOptions: AutocompleteOption[] = [

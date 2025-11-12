@@ -228,6 +228,66 @@ evf-row {
   }
 }
 
+evf-checkbox-list[data-evf-element-id="additional-relevant-information-checked"] {
+  .sub-group .checkbox-group {
+    &> div:last-child{
+      mat-checkbox{
+        pointer-events: unset;
+        opacity: 1;
+      }
+    }
+  }
+  .checkbox-group{
+    &> div:last-child{
+      mat-checkbox{
+        pointer-events: none;
+        opacity: 0.5;
+      }
+    }
+  }
+}
+
+evf-checkbox-list[data-evf-element-id="additional-relevant-information-unknown"] {
+  .sub-group .checkbox-group {
+    &> div{
+      mat-checkbox{
+        pointer-events: none;
+        opacity: 0.5;
+      }
+    }
+  }
+  .checkbox-group{
+    &> div:not(:last-child){
+      mat-checkbox{
+        pointer-events: none;
+        opacity: 0.5;
+      }
+    }
+  }
+}
+
+evf-checkbox-list[data-evf-element-id="previous-relevant-examinations-checked"] {
+  .checkbox-group{
+    &> div:last-child{
+      mat-checkbox{
+        pointer-events: none;
+        opacity: 0.5;
+      }
+    }
+  }
+}
+
+evf-checkbox-list[data-evf-element-id="previous-relevant-examinations-unknown"] {
+  .checkbox-group{
+    &> div:not(:last-child){
+      mat-checkbox{
+        pointer-events: none;
+        opacity: 0.5;
+      }
+    }
+  }
+}
+
 
 
 

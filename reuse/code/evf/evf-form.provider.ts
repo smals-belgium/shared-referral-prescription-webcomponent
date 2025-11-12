@@ -4,7 +4,6 @@ import {
   provideEvfCore,
   withDefaultDateExpressionPipe,
   withFormatDateExpressionPipe,
-  withJavaScriptSideEffect,
   withParseDateExpressionPipe,
   withTransformDateExpressionPipe,
 } from '@smals/vas-evaluation-form-ui-core';
@@ -23,11 +22,13 @@ import { withCheckboxListElement } from '@smals/vas-evaluation-form-ui-material/
 import { EVF_MATERIAL_OPTIONS } from '@smals/vas-evaluation-form-ui-material';
 import { withAutocompleteElement } from '@smals/vas-evaluation-form-ui-material/elements/autocomplete';
 import { ExternalSourceService } from '@reuse/code/services/api/externalSourceService.service';
-import { AutocompleteMultiselectComponent } from '@reuse/code/evf/autocomplete-multiselect/element/autocomplete-multiselect.component';
-import { RecommendationsComponent } from '@reuse/code/evf/pss-recommendations/element/recommendations.component';
+import { AutocompleteMultiselectComponent } from '@reuse/code/evf/components/autocomplete-multiselect/element/autocomplete-multiselect.component';
+import { RecommendationsComponent } from '@reuse/code/evf/components/pss-recommendations/element/recommendations.component';
 import { withRepeatableInlineElement } from '@smals/vas-evaluation-form-ui-material/elements/repeatable-inline';
 import { withSlideToggleElement } from '@smals/vas-evaluation-form-ui-material/elements/slide-toggle';
-import { ToggleResponsiveWrapperComponent } from '@reuse/code/evf/toggle-responsive-wrapper/element/toggle-responsive-wrapper.component';
+import { ToggleResponsiveWrapperComponent } from '@reuse/code/evf/components/toggle-responsive-wrapper/element/toggle-responsive-wrapper.component';
+import { withNbSessionsSideEffect } from '@reuse/code/evf/side-effects/effects/nb-sessions.side-effect';
+import { withElementIdBasedOnValueEffect } from '@reuse/code/evf/side-effects/effects/element-id-based-on-value.side-effect';
 
 export function provideEvfForm() {
   return [
@@ -69,7 +70,8 @@ export function provideEvfForm() {
       withFormatDateExpressionPipe(),
       withDefaultDateExpressionPipe(),
       // side effects
-      withJavaScriptSideEffect()
+      withNbSessionsSideEffect(),
+      withElementIdBasedOnValueEffect()
     ),
     {
       provide: EVF_MATERIAL_OPTIONS,
