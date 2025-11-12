@@ -1,9 +1,7 @@
 <div class="wrapper">
   <div class="patient">
     @if (patient) {
-      <h1 data-cy="patient-name" [attr.translate]="'no'">{{patient.firstName}} {{patient.lastName}}</h1>
-      <span data-cy="patient-ssin" [attr.translate]="'no'">{{patient.ssin | formatSsin}}</span>
-      <span data-cy="patient-gender" [attr.translate]="'no'">{{patient.gender}}</span>
+      <app-patient-info-bar [patient]="patient"></app-patient-info-bar>
     }
   </div>
 

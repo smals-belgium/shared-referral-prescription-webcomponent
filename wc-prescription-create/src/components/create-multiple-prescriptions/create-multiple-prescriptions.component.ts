@@ -31,6 +31,7 @@ import { isOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
 import { isPrescription, isProposal } from '@reuse/code/utils/utils';
 import { PersonResource, TemplateVersion } from '@reuse/code/openapi';
 import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
+import { PatientInfoBarComponent } from '../patient-info-bar/patient-info-bar.component';
 
 @Component({
   selector: 'app-create-multiple-prescriptions',
@@ -50,6 +51,7 @@ import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
     TemplateNamePipe,
     FormatSsinPipe,
     AlertComponent,
+    PatientInfoBarComponent,
   ],
 })
 export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestroy {
