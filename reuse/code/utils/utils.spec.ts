@@ -1,5 +1,8 @@
-import { getStatusClassFromMap } from './utils';
-import { RequestStatus } from '../openapi';
+import {
+  checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline,
+  getStatusClassFromMap, isProfesionalBasedOnRole
+} from './utils';
+import { Discipline, PerformerTaskResource, RequestStatus, Role } from '../openapi';
 import {
   isSsin,
   isPrescriptionId,
@@ -13,7 +16,7 @@ import {
   isModel,
   isEmptyValue
 } from './utils';
-import { Intent } from '@reuse/code/interfaces';
+import { Intent, UserInfo } from '@reuse/code/interfaces';
 
 describe('getStatusClassFromMap', () => {
   it('should return mh-red for error states', () => {
@@ -115,5 +118,34 @@ describe('Utils', () => {
     expect(isEmptyValue([1])).toBe(false);
     expect(isEmptyValue({})).toBe(true);
     expect(isEmptyValue({ a: 1 })).toBe(false);
+  });
+});
+
+describe('Role and Caregiver Utils', () => {
+  it('should detect if role is professional', () => {
+    expect(isProfesionalBasedOnRole(Role.Patient)).toBe(false);
+    expect(isProfesionalBasedOnRole(Role.Prescriber)).toBe(true);
+    expect(isProfesionalBasedOnRole(undefined)).toBe(false);
+  });
+
+  it('should validate caregiver SSIN and profession matching', () => {
+    const task = {
+      careGiverSsin: '12345678901',
+      careGiver: { id: { profession: 'NURSE' } }
+    } as PerformerTaskResource;
+
+    const user = { ssin: '12345678901', discipline: 'NURSE' } as Partial<UserInfo>;
+
+    expect(checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline(task, user)).toBe(true);
+  });
+
+  it('should fail caregiver check if SSIN or profession does not match', () => {
+    const task = {
+      careGiverSsin: '12345678901',
+      careGiver: { id: { profession: 'NURSE' } }
+    } as PerformerTaskResource;
+
+    const wrongUser = { ssin: '000', discipline: Discipline.Physician } as Partial<UserInfo>;
+    expect(checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline(task, wrongUser)).toBe(false);
   });
 });
