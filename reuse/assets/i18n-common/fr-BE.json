@@ -191,6 +191,7 @@
     "patient": "Patient",
     "note": "Note",
     "shortcode": "RefID",
+    "extendedShortId": "Prolongation de la prescription",
     "typeOfCare": "Type de soin",
     "services": "Prestations",
     "frequency": "Fréquence",
