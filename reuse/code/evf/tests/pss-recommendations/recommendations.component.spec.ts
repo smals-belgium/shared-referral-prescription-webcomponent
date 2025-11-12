@@ -5,7 +5,7 @@ import { EvfDynamicFormComponent } from '@smals/vas-evaluation-form-ui-material/
 import { BrowserModule, By } from '@angular/platform-browser';
 import { MarkdownModule } from 'ngx-markdown';
 import { RecommendationsComponent as Wrapper } from './recommendations.component';
-import { RecommendationsComponent } from '../../pss-recommendations/element/recommendations.component';
+import { RecommendationsComponent } from '@reuse/code/evf/components/pss-recommendations/element/recommendations.component';
 import { PssService } from '@reuse/code/services/api/pss.service';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { TranslateModule } from '@ngx-translate/core';
