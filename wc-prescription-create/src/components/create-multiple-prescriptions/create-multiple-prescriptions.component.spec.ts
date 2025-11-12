@@ -7,12 +7,13 @@ import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionM
 import { CreatePrescriptionForm, Intent, LoadingStatus } from '@reuse/code/interfaces';
 import { ElementGroup } from '@smals/vas-evaluation-form-ui-core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
+import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { By } from '@angular/platform-browser';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TemplateVersion } from '@reuse/code/openapi';
+import { QueryList } from '@angular/core';
 
 describe('CreateMultiplePrescriptionsComponent', () => {
   let component: CreateMultiplePrescriptionsComponent;
@@ -88,9 +89,13 @@ describe('CreateMultiplePrescriptionsComponent', () => {
 
   it('should open accordion when one form is present on change', () => {
     fixture.detectChanges();
-    const openAll = jest.fn();
-    component.accordion = { openAll } as any;
 
+    const mockPanel = { open: jest.fn() } as any;
+    const mockQueryList = {
+      first: mockPanel
+    } as any;
+
+    component.panels = mockQueryList;
     component.createPrescriptionForms = [{ status: LoadingStatus.LOADING }] as CreatePrescriptionForm[];
 
     component.ngOnChanges({
@@ -103,7 +108,8 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     });
 
     jest.runOnlyPendingTimers();
-    expect(openAll).toHaveBeenCalled();
+
+    expect(mockPanel.open).toHaveBeenCalled();
   });
 
   it('should map repeat object correctly in mapResponsesToRepeatObject', () => {
@@ -368,6 +374,29 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     cancelButton.nativeElement.click();
 
     expect(component.clickCancel.emit).toHaveBeenCalled();
+  });
+
+  it('should call open() on the first panel after timeout in ngOnChanges', () => {
+    fixture.detectChanges();
+
+    const mockPanel = { open: jest.fn() } as any;
+    component.panels = {
+      first: mockPanel
+    } as unknown as QueryList<MatExpansionPanel>;
+    component.createPrescriptionForms = [{ status: LoadingStatus.SUCCESS }] as CreatePrescriptionForm[];
+
+    component.ngOnChanges({
+      createPrescriptionForms: {
+        currentValue: component.createPrescriptionForms,
+        previousValue: [],
+        firstChange: false,
+        isFirstChange: () => false,
+      },
+    });
+
+    jest.runAllTimers();
+
+    expect(mockPanel.open).toHaveBeenCalled();
   });
 
   function setForms(forms: any[]) {
