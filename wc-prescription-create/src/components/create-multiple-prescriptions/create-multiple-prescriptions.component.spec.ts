@@ -187,7 +187,7 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     const nameEl = fixture.nativeElement.querySelector('[data-cy="patient-name"]');
     const ssinEl = fixture.nativeElement.querySelector('[data-cy="patient-ssin"]');
 
-    expect(nameEl?.textContent).toContain('John Doe');
+    expect(nameEl?.textContent).toContain('Doe John');
     expect(ssinEl?.textContent).toContain('12.34.56-789.01'); // depends on your formatSsin pipe
   });
 

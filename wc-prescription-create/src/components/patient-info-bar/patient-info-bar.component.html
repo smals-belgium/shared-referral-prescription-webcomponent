@@ -1,0 +1,7 @@
+<div class="patient_info_container">
+  <h1 data-cy="patient-name" [attr.translate]="'no'">{{ patient.lastName }} {{ patient.firstName }}</h1>
+  <div class="patient_info_inner_container">
+    <span data-cy="patient-ssin">{{ patient.ssin | formatSsin }}</span>
+    <span data-cy="patient-gender">{{ 'common.gendersFull.'+patient?.gender | translate }}</span>
+  </div>
+</div>
