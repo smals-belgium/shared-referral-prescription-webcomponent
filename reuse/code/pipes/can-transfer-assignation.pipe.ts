@@ -2,7 +2,11 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { UserInfo } from '@reuse/code/interfaces';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
-import { isProfesionalBasedOnRole, isProposal } from '@reuse/code/utils/utils';
+import {
+  checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline,
+  isProfesionalBasedOnRole,
+  isProposal
+} from '@reuse/code/utils/utils';
 
 /**
  * This pipe determines whether an assignation can be transferred.
@@ -39,7 +43,7 @@ export class CanTransferAssignationPipe implements PipeTransform {
       !!task.status &&
       allowedTaskStatuses.includes(task.status) &&
       isProfesionalBasedOnRole(currentUser.role) &&
-      task.careGiverSsin == currentUser.ssin
+      checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline(task, currentUser)
     );
   }
 
