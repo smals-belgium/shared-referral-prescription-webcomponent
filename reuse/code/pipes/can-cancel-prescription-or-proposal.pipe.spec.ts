@@ -1,7 +1,7 @@
 import { CanCancelPrescriptionOrProposalPipe } from './can-cancel-prescription-or-proposal.pipe';
 import { Intent, UserInfo } from '../interfaces';
 import { AccessMatrixState } from '../states/api/access-matrix.state';
-import { Discipline, ReadRequestResource, RequestStatus, Role } from '@reuse/code/openapi';
+import { Discipline, FhirR4TaskStatus, ReadRequestResource, RequestStatus, Role } from '@reuse/code/openapi';
 
 const requester: UserInfo = {
   discipline: Discipline.Nurse,
@@ -132,6 +132,107 @@ describe('CanCancelPrescriptionOrProposal', () => {
         },
       },
     } as ReadRequestResource;
+
+    const result = pipe.transform(prescription, patient.ssin, requester);
+    expect(result).toBe(true);
+  });
+
+  it('should return false if performerTasks contain a completed execution (FHIR status)', () => {
+    mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
+
+    const prescription = {
+      intent: Intent.ORDER,
+      status: RequestStatus.Open,
+      performerTasks: [
+        { status: FhirR4TaskStatus.Completed },
+      ],
+      requester: {
+        healthcarePerson: {
+          ssin: requester.ssin,
+        },
+      },
+    } as unknown as ReadRequestResource;
+
+    const result = pipe.transform(prescription, patient.ssin, requester);
+    expect(result).toBe(false);
+  });
+
+  it('should return false if performerTasks is an empty array', () => {
+    mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
+
+    const prescription = {
+      intent: Intent.ORDER,
+      status: RequestStatus.Open,
+      performerTasks: [],
+      requester: {
+        healthcarePerson: {
+          ssin: requester.ssin,
+        },
+      },
+    } as unknown as ReadRequestResource;
+
+    const result = pipe.transform(prescription, patient.ssin, requester);
+    expect(result).toBe(true);
+  });
+
+  it('should return false if caregiverSsin or patientSsin is missing', () => {
+    mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
+
+    const result = pipe['checkIfCurrentUserIsPatientOrAssignedCaregiver'](requester, undefined, requester.ssin);
+    expect(result).toBe(false);
+  });
+
+  it('should return true when currentUser is caregiver (not patient) with matching ssin', () => {
+    const caregiverUser = { ...currentUser, ssin: requester.ssin, role: Role.Prescriber };
+    const result = pipe['checkIfCurrentUserIsPatientOrAssignedCaregiver'](caregiverUser, patient.ssin, requester.ssin);
+    expect(result).toBe(true);
+  });
+
+  it('should return false when currentUser has no permissions', () => {
+    mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(false);
+
+    const prescription = {
+      intent: Intent.ORDER,
+      status: RequestStatus.Open,
+      requester: {
+        healthcarePerson: {
+          ssin: requester.ssin,
+        },
+      },
+      templateCode: 'temp',
+    } as unknown as ReadRequestResource;
+
+    const result = pipe.transform(prescription, patient.ssin, requester);
+    expect(result).toBe(false);
+  });
+
+  it('should call hasCancelPermissions with cancelProposal when intent is proposal', () => {
+    mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
+    const prescription = {
+      intent: Intent.PROPOSAL,
+      status: RequestStatus.Open,
+      templateCode: 'template-proposal',
+      requester: {
+        healthcarePerson: { ssin: requester.ssin },
+      },
+    } as unknown as ReadRequestResource;
+
+    pipe.transform(prescription, patient.ssin, requester);
+    expect(mockAccessMatrixState.hasAtLeastOnePermission).toHaveBeenCalledWith(['cancelProposal'], 'template-proposal');
+  });
+
+  it('should handle undefined performerTasks gracefully (no errors)', () => {
+    mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
+
+    const prescription = {
+      intent: Intent.ORDER,
+      status: RequestStatus.Open,
+      requester: {
+        healthcarePerson: {
+          ssin: requester.ssin,
+        },
+      },
+    } as unknown as ReadRequestResource;
 
     const result = pipe.transform(prescription, patient.ssin, requester);
     expect(result).toBe(true);
