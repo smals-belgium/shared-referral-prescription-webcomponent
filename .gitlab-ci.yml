@@ -5,7 +5,7 @@
 
 .sonar:
   image:
-    name: gcloud-docker-internet.repo.gcloud.belgium.be/sonarsource/sonar-scanner-cli:5.0.1@sha256:494ecc3b5b1ee1625bd377b3905c4284e4f0cc155cff397805a244dee1c7d575
+    name: gcloud-docker-internet.repo.gcloud.belgium.be/sonarsource/sonar-scanner-cli:latest
     entrypoint: [""]
   tags:
     - shared
