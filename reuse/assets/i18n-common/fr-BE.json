@@ -108,7 +108,7 @@
         "title": "Contrôler",
         "warning": "Les informations pertinentes ci-dessous ne sont pas prises en compte dans ces résultats:",
         "error": {
-          "required": "Indications sont obligatoire."
+          "required": "Veuillez remplir tous les champs obligatoires avant de continuer."
         },
         "table": {
           "title": "Résultat PSS",

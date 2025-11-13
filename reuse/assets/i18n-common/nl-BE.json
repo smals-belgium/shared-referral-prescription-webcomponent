@@ -109,7 +109,7 @@
         "title": "Controleren",
         "warning": "Aanvullende relevante indicaties zijn niet meegenomen in deze resultaten.",
         "error": {
-          "required": "Indicaties zijn verplicht."
+          "required": "Vul alle verplichte velden in voordat u verdergaat."
         },
         "table": {
           "title": "Resultaten PSS",
