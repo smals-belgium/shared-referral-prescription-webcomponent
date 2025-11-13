@@ -28,6 +28,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlRequest, SupportOption } from '@reuse/code/openapi';
 import { AlertType } from '@reuse/code/interfaces';
 import { EMPTY_OBJECT } from '@reuse/code/constants/common.constants';
+import {isEmptyValue} from "@reuse/code/utils/utils";
 
 @Component({
   selector: 'recommendations',
@@ -63,6 +64,7 @@ export class RecommendationsComponent extends EvfBaseFormElementComponent {
   private language?: 'nl' | 'fr';
 
   readonly id = 'evf-recommendations-' + RecommendationsComponent.counter++;
+  private readonly REQUIRED_FIELDS = ['age', 'gender', 'clinicalIndications'] as const;
 
   constructor(
     private readonly cdRef: ChangeDetectorRef,
@@ -81,29 +83,23 @@ export class RecommendationsComponent extends EvfBaseFormElementComponent {
   pssControl(): void {
     this.isLoading.set(true);
     const prescriptionForm = this.elementControl;
-    const formValues = prescriptionForm.elementGroup?.getOutputValue() || EMPTY_OBJECT;
+    const formGroup = prescriptionForm.elementGroup;
+    const invalidFields = this.validateRequiredFields(formGroup, this.REQUIRED_FIELDS);
 
-    const clinicalIndications = formValues['clinicalIndications'];
-    const intendedProcedure = formValues['intendedProcedure'];
-    const age = formValues['age'];
-    const gender = formValues['gender'];
-
-    if (!clinicalIndications) {
+    if (invalidFields.length > 0) {
       this.toastService.show('prescription.create.control.error.required');
-      prescriptionForm.elementGroup?.get('clinicalIndications')?.markAsTouched();
       this.isLoading.set(false);
       return;
     }
 
-    const hasClinicalData = Array.isArray(clinicalIndications) && clinicalIndications.length > 0;
+    const formValues = formGroup?.getOutputValue() ?? {};
 
-    if (hasClinicalData) {
-      this.controlAnnex82(age, gender, clinicalIndications, intendedProcedure);
-    } else {
-      this.isLoading.set(false);
-      this.toastService.show('prescription.create.control.error.required');
-      prescriptionForm.elementGroup?.get('clinicalIndications')?.markAsTouched();
-    }
+    this.controlAnnex82(
+      formValues['age'],
+      formValues['gender'],
+      formValues['clinicalIndications'],
+      formValues['intendedProcedure']
+    );
   }
 
   private controlAnnex82(
@@ -166,4 +162,19 @@ export class RecommendationsComponent extends EvfBaseFormElementComponent {
     }
     return generateWarningMessage(relevantInfo, implants, this.language!);
   }
+
+  private validateRequiredFields(formGroup: any, requiredFields: readonly string[]): string[] {
+    const invalidFields: string[] = [];
+
+    requiredFields.forEach(fieldName => {
+      const control = formGroup.get(fieldName);
+
+      if (isEmptyValue(control?.value)) {
+        control?.markAsTouched();
+        invalidFields.push(fieldName);
+      }
+    });
+    return invalidFields;
+  }
+
 }

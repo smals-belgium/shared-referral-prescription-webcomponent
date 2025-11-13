@@ -1,5 +1,10 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { evfElementConfigFeature, FormTemplate, provideEvfCore } from '@smals/vas-evaluation-form-ui-core';
+import {
+  AutocompleteOption,
+  evfElementConfigFeature,
+  FormTemplate,
+  provideEvfCore
+} from '@smals/vas-evaluation-form-ui-core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EvfDynamicFormComponent } from '@smals/vas-evaluation-form-ui-material/dynamic-form';
 import { BrowserModule, By } from '@angular/platform-browser';
@@ -38,6 +43,31 @@ const formTemplate: FormTemplate = {
 
 const disableAnimations =
   !('animate' in document.documentElement) || (navigator && /iPhone OS (8|9|10|11|12|13)_/.test(navigator.userAgent));
+
+const indicationMock: AutocompleteOption = {
+  label: {nl: 'Indicatie NL', fr: 'Indication FR', de: 'Indikation DE', en: 'Indication EN'},
+  value: 'indication1',
+};
+
+const procedureMock: AutocompleteOption = {
+  label: {nl: 'Procedure NL', fr: 'Procédure FR', de: 'Prozedur DE', en: 'Procedure EN'},
+  value: 'procedure1',
+};
+
+const mockGroup = {
+  get: (field: string) => ({
+    value: field === 'age' ? 35 :
+      field === 'gender' ? 'M' :
+        [indicationMock],
+    markAsTouched: jest.fn()
+  }),
+  getOutputValue: jest.fn().mockReturnValue({
+    age: 35,
+    gender: 'M',
+    clinicalIndications: [indicationMock],
+    intendedProcedure: procedureMock
+  })
+};
 
 describe('AutocompleteMultiselectComponent', () => {
   let component: Wrapper;
@@ -98,8 +128,7 @@ describe('AutocompleteMultiselectComponent', () => {
   });
 
   it('should call API when valid clinical indications provided', fakeAsync(() => {
-    const mockIndications = [{ value: 'indication1' }];
-    const mockResult: SupportResponseRadiology = {
+   const mockResult: SupportResponseRadiology = {
       exchangeId: '',
       supportOptions: [
         {
@@ -114,11 +143,7 @@ describe('AutocompleteMultiselectComponent', () => {
     };
 
     const recommendationFormDebugElement = fixture.debugElement.query(By.directive(RecommendationsComponent));
-    recommendationFormDebugElement.componentInstance.elementControl.elementGroup.getOutputValue = jest
-      .fn()
-      .mockReturnValue({
-        clinicalIndications: mockIndications,
-      });
+    recommendationFormDebugElement.componentInstance.elementControl.elementGroup = mockGroup as any;
 
     pssServiceMock.getPssRecommendations.mockReturnValue(of(mockResult));
 
@@ -133,14 +158,10 @@ describe('AutocompleteMultiselectComponent', () => {
   }));
 
   it('should handle API error', () => {
-    const mockIndications = [{ value: 'indication1' }];
 
     const recommendationFormDebugElement = fixture.debugElement.query(By.directive(RecommendationsComponent));
-    recommendationFormDebugElement.componentInstance.elementControl.elementGroup.getOutputValue = jest
-      .fn()
-      .mockReturnValue({
-        clinicalIndications: mockIndications,
-      });
+    recommendationFormDebugElement.componentInstance.elementControl.elementGroup = mockGroup as any;
+
     pssServiceMock.getPssRecommendations.mockReturnValue(throwError('API Error'));
 
     recommendationFormDebugElement.componentInstance.pssControl();
@@ -268,4 +289,126 @@ describe('AutocompleteMultiselectComponent', () => {
 
     expect(recommendationFormDebugElement.componentInstance.pssControl).toHaveBeenCalled();
   });
+
+  describe('pssControl - validate required fields indirectly', () => {
+    let recommendationFormDebugElement: any;
+    let elementGroupMock: any;
+
+    beforeEach(() => {
+      recommendationFormDebugElement = fixture.debugElement.query(By.directive(RecommendationsComponent));
+
+      elementGroupMock = {
+        get: (field: string) => ({
+          value: null,
+          markAsTouched: jest.fn(),
+        }),
+        getOutputValue: jest.fn().mockReturnValue({
+          age: 35,
+          gender: 'M',
+          clinicalIndications: [indicationMock],
+          intendedProcedure: procedureMock
+        }),
+      };
+
+      recommendationFormDebugElement.componentInstance.elementControl.elementGroup = elementGroupMock as any;
+    });
+
+    it('should show error when required fields are missing', () => {
+      const ageMock = {value: null, markAsTouched: jest.fn()};
+      const genderMock = {value: null, markAsTouched: jest.fn()};
+      const clinicalMock = {value: null, markAsTouched: jest.fn()};
+
+      elementGroupMock.get = (field: string) => {
+        if (field === 'age') return ageMock;
+        if (field === 'gender') return genderMock;
+        if (field === 'clinicalIndications') return clinicalMock;
+        return {value: null, markAsTouched: jest.fn()};
+      };
+
+      recommendationFormDebugElement.componentInstance.pssControl();
+
+      expect(toastServiceMock.show).toHaveBeenCalledWith('prescription.create.control.error.required');
+      expect(recommendationFormDebugElement.componentInstance.isLoading()).toBe(false);
+
+      expect(ageMock.markAsTouched).toHaveBeenCalled();
+      expect(genderMock.markAsTouched).toHaveBeenCalled();
+      expect(clinicalMock.markAsTouched).toHaveBeenCalled();
+    });
+
+    it('should show error when gender is an empty string', () => {
+
+      const genderMock = {value: '', markAsTouched: jest.fn()};
+
+      const elementGroupMock = {
+        get: (field: string) => {
+          if (field === 'age') return {value: 35, markAsTouched: jest.fn()}; // valide
+          if (field === 'gender') return genderMock;
+          if (field === 'clinicalIndications') return {value: [indicationMock], markAsTouched: jest.fn()};
+          return {value: null, markAsTouched: jest.fn()};
+        },
+        getOutputValue: jest.fn().mockReturnValue({
+          age: 35,
+          gender: '',
+          clinicalIndications: [indicationMock]
+        }),
+      };
+      recommendationFormDebugElement.componentInstance.elementControl.elementGroup = elementGroupMock as any;
+
+      recommendationFormDebugElement.componentInstance.pssControl();
+
+      expect(toastServiceMock.show).toHaveBeenCalledWith('prescription.create.control.error.required');
+      expect(genderMock.markAsTouched).toHaveBeenCalled();
+      expect(recommendationFormDebugElement.componentInstance.isLoading()).toBe(false);
+    });
+
+    it('should show error when clinicalIndications is empty', () => {
+
+      const clinicalIndicationsMock = {value: [], markAsTouched: jest.fn()};
+
+      const elementGroupMock = {
+        get: (field: string) => {
+          if (field === 'age') return {value: 35, markAsTouched: jest.fn()}; // valide
+          if (field === 'gender') return {value: 'M', markAsTouched: jest.fn()};
+          if (field === 'clinicalIndications') return clinicalIndicationsMock;
+          return {value: null, markAsTouched: jest.fn()};
+        },
+        getOutputValue: jest.fn().mockReturnValue({
+          age: 35,
+          gender: '',
+          clinicalIndications: []
+        }),
+      };
+
+      recommendationFormDebugElement.componentInstance.elementControl.elementGroup = elementGroupMock as any;
+
+      recommendationFormDebugElement.componentInstance.pssControl();
+
+      expect(toastServiceMock.show).toHaveBeenCalledWith('prescription.create.control.error.required');
+      expect(clinicalIndicationsMock.markAsTouched).toHaveBeenCalled();
+      expect(recommendationFormDebugElement.componentInstance.isLoading()).toBe(false);
+    });
+
+    it('should not show error when all required fields are filled', fakeAsync(() => {
+      elementGroupMock.get = (field: string) => ({
+        value: field === 'age' ? 35 : field === 'gender' ? 'M' : [indicationMock],
+        markAsTouched: jest.fn(),
+      });
+
+      pssServiceMock.getPssRecommendations.mockReturnValue(of({
+        exchangeId: '',
+        request: undefined,
+        supportOptions: [],
+        conclusions: []
+      }));
+
+      recommendationFormDebugElement.componentInstance.pssControl();
+      tick();
+
+      expect(toastServiceMock.show).not.toHaveBeenCalled();
+      expect(recommendationFormDebugElement.componentInstance.isLoading()).toBe(false);
+      expect(pssServiceMock.getPssRecommendations).toHaveBeenCalled();
+    }));
+  });
+
+
 });
