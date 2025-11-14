@@ -47,11 +47,13 @@ Three Web Components are available :
 3. **List of prescriptions** : this Web Component is presenting the available prescriptions for a specific patient in a
    paginated list.
 
+⚠️ In the last release, the URL's of the list and create web components have been aligned to be corherent ⚠️
+
 |      Component       | Component name                      |                                                                 Acceptance URL                                                                 |
 |:--------------------:|-------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------:|
-| Create prescription  | nihdi-referral-prescription-create  |  [wc-create-prescription](https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/create-prescription/wc-create-prescription.js)   |
+| Create prescription  | nihdi-referral-prescription-create  |  [wc-create-prescription](https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/prescription-create/wc-prescription-create.js)   |
 | Prescription details | nihdi-referral-prescription-details | [wc-prescription-details](https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/prescription-details/wc-prescription-details.js) |
-|  List prescriptions  | nihdi-referral-prescription-list    |    [wc-list-prescriptions](https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/list-prescriptions/wc-list-prescriptions.js)    |
+|  List prescriptions  | nihdi-referral-prescription-list    |    [wc-list-prescriptions](https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/prescription-list/wc-prescription-list.js)    |
 
 ### Input/output contract
 
