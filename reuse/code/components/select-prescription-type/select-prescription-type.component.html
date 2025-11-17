@@ -16,7 +16,7 @@
           [matAutocomplete]="catAuto"
         >
         @if (control?.value) {
-          <button matSuffix mat-icon-button (click)="control?.setValue('')">
+          <button matSuffix mat-icon-button (click)="control?.setValue('')" class="button-close-icon">
             <mat-icon>close</mat-icon>
           </button>
         }
@@ -50,7 +50,7 @@
             [matAutocomplete]="typeAuto"
           >
           @if (control?.value) {
-            <button matSuffix mat-icon-button (click)="control?.setValue('')">
+            <button matSuffix mat-icon-button (click)="control?.setValue('')"  class="button-close-icon">
               <mat-icon>close</mat-icon>
             </button>
           }
@@ -91,7 +91,7 @@
             [matAutocomplete]="typeAuto"
           >
           @if (control?.value) {
-            <button matSuffix mat-icon-button (click)="control?.setValue('')">
+            <button matSuffix mat-icon-button (click)="control?.setValue('')"  class="button-close-icon">
               <mat-icon>close</mat-icon>
             </button>
           }
