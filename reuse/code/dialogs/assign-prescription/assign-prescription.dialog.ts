@@ -25,7 +25,6 @@ import { toDataState } from '@reuse/code/utils/rxjs.utils';
 import { HealthcareProviderService } from '@reuse/code/services/api/healthcareProvider.service';
 import { SsinOrOrganizationIdPipe } from '@reuse/code/pipes/ssin-or-cbe.pipe';
 import { ShowDetailsPipe } from '@reuse/code/pipes/show-details.pipe';
-import { FormatSsinPipe } from '@reuse/code/pipes/format-ssin.pipe';
 import { ActivePageComponent } from '@reuse/code/components/active-page/active-page.component';
 import { MatSelect } from '@angular/material/select';
 import { PaginatorComponent } from '@reuse/code/components/paginator/paginator.component';
@@ -86,13 +85,12 @@ interface AssignPrescriptionDialogData {
     MatSelect,
     SsinOrOrganizationIdPipe,
     ShowDetailsPipe,
-    FormatSsinPipe,
     NgClass,
     PaginatorComponent,
     KeyValuePipe,
     MatButtonToggleModule,
     FormatMultilingualObjectPipe,
-    AlertComponent,
+    AlertComponent
   ],
   providers: [provideNgxMask()],
 })
