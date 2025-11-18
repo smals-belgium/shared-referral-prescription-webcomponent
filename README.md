@@ -47,13 +47,13 @@ Three Web Components are available :
 3. **List of prescriptions** : this Web Component is presenting the available prescriptions for a specific patient in a
    paginated list.
 
-⚠️ In the last release, the URL's of the list and create web components have been aligned to be corherent ⚠️
+⚠️ In the last release, the URL's of the list and create web components have been aligned to be coherent ⚠️
 
 |      Component       | Component name                      |                                                                 Acceptance URL                                                                 |
 |:--------------------:|-------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------:|
 | Create prescription  | nihdi-referral-prescription-create  |  [wc-create-prescription](https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/prescription-create/wc-prescription-create.js)   |
 | Prescription details | nihdi-referral-prescription-details | [wc-prescription-details](https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/prescription-details/wc-prescription-details.js) |
-|  List prescriptions  | nihdi-referral-prescription-list    |    [wc-list-prescriptions](https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/prescription-list/wc-prescription-list.js)    |
+|  List prescriptions  | nihdi-referral-prescription-list    |     [wc-list-prescriptions](https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/prescription-list/wc-prescription-list.js)     |
 
 ### Input/output contract
 
@@ -61,32 +61,61 @@ Web Components are designed to take input values and provide output events as fe
 
 1. Here are the detailed input data structures expected by the Web Components :
    
-   | Create prescription                                 | List prescriptions               | Prescription details                 |
-   |-----------------------------------------------------|----------------------------------|--------------------------------------|
-   | **lang**: 'fr-BE'/nl-BE                             | **lang**: 'fr-BE'/nl-BE          | **lang** : 'fr-BE'/nl-BE             |
-   | **patientSsin?**: string                            | **patientSsin?**: string         | **patientSsin?**: string             |
-   | **initialValues?**: CreatePrescriptionInitialValues | **requesterSsin?**: string       | **prescriptionId!**: string          |
-   | **services!**: ComponentServices                    | **services!**: ComponentServices | **services!**: ComponentServices     |
-   |                                                     | **performerSsin?**: string       | **intent!**: string                  |
-   |                                                     | **intent!**: string              | **initialPrescriptionType?**: string |
+   | Create prescription                                | Allowed values                                   | Mandatory  | Default | Description                                                                                        |
+   |----------------------------------------------------|--------------------------------------------------|:----------:|---------|----------------------------------------------------------------------------------------------------|
+   | **lang**: string                                   | 'fr-BE' / 'nl-BE'                                |     ❎      | 'fr-BE' | The lang parameter can be used to control the rendering language of the component.                 |
+   | **patientSsin**: string                            | Any valid SSIN                                   |     ❎      | N/A     | The SSIN of the patient for which the prescription should be created.                              |
+   | **initialValues**: CreatePrescriptionInitialValues | See the [data structure table](#data-structures) |     ❎      | N/A     | Give the initial context to the component. More details are given below the related data structure |
+   | **services**: ComponentServices                    | See the [data structure table](#data-structures) |     ✅      | N/A     | Provide methods to retrieve the access or id tokens.                                               |
+
+
+   
+   | List prescriptions              | Allowed values                                   | Mandatory | Default | Description                                                                        |
+   |---------------------------------|--------------------------------------------------|:---------:|---------|------------------------------------------------------------------------------------|
+   | **lang**: string                | 'fr-BE' / 'nl-BE'                                |     ❎     | 'fr-BE' | The lang parameter can be used to control the rendering language of the component. |
+   | **patientSsin**: string         | Any valid SSIN                                   |     ❎     | N/A     | The SSIN of the patient for which the prescription should be listed.               |
+   | **requesterSsin**: string       | Any valid SSIN                                   |     ❎     | N/A     | The requestor SSIN for which the prescriptions/proposals should be loaded.         |
+   | **performerSsin**: string       | Any valid SSIN                                   |     ❎     | N/A     | The performer SSIN for which the prescriptions/proposals should be loaded.         |
+   | **services**: ComponentServices | See the [data structure table](#data-structures) |     ✅     | N/A     | Provide methods to retrieve the access or id tokens.                               |
+   | **intent**: string              | order / proposal                                 |     ✅     | N/A     | Indicates if the list should display the proposals or the prescriptions.           |
+   
+   
+   | Prescription details                  | Allowed values                                   | Mandatory | Default | Description                                                                          |
+   |---------------------------------|--------------------------------------------------|:---------:|---------|--------------------------------------------------------------------------------------|
+   | **lang**: string                      | 'fr-BE' / 'nl-BE'                                |     ❎     | 'fr-BE' | The lang parameter can be used to control the rendering language of the component.   |
+   | **patientSsin**: string               | Any valid SSIN                                   |     ❎     | N/A     | The SSIN of the patient for which the prescription should be listed.                 |
+   | **prescriptionId**: string            | Any valid prescription/proposal identifier       |     ✅     | N/A     | The prescription/proposal identifier for which the details should be displayed.      |
+   | **services**: ComponentServices       | See the [data structure table](#data-structures) |     ✅     | N/A     | Provide methods to retrieve the access or id tokens.                                 |
+   | **intent**: string                    | order / proposal                                 |     ✅     | N/A     | Indicates the nature of the loaded resource, either a proposals or a prescriptions.  |
 
    #### Data structures
    ```typescript
-   interface CreatePrescriptionInitialValues {
+   
+    /**
+     * intent (required) : the value can be either order | proposal, 'order' should be specified when creating a prescription,
+     *                     while 'proposal' should be specified when creating a proposal.
+     * initialPrescriptionType (optional) : the value can be one of the ones listed in the list right bellow the code snippet.
+     * initialPrescription (optional) : the prescription to be extended, only required when the extend parameter is set to true.
+     * initialModelId (optional) : the id of the model to be used in order to create a prescription.
+     * extend (optional) : true if the prescription should be extended, false otherwise.  
+     * */
+    interface CreatePrescriptionInitialValues {
        intent: string;
        initialPrescriptionType?: string;
        initialPrescription?: ReadPrescription;
        initialModelId?: string;
        extend?: boolean;
    }
-   
+
+    /**
+     * The services allowing the retrieval of the access and id tokens.
+     * getAccessToken (required) : the method expects to retrieve the access token related to specified audience.
+     * getIdToken (optional) : the method expects to retrieve the id token related to the current user. Only required
+     *                         when using the details web component.
+     */
    interface ComponentServices {
        getAccessToken: (audience: string) => Promise<string | null>,
        getIdToken?: () => IdToken
-   }
-   
-   interface IdToken {
-       UserProfile: UserProfile
    }
    
    type Professional = {
@@ -125,13 +154,15 @@ Web Components are designed to take input values and provide output events as fe
 
 2. Here are the output data structures emitted by the Web Components :
    
-   | Create prescription            | List prescriptions                                     | Prescription details                           |
-   |--------------------------------|--------------------------------------------------------|------------------------------------------------|
-   | **prescriptionsCreated**: void | **clickOpenPrescriptionDetails** : PrescriptionSummary | **clickDuplicate**: ReadPrescription           |
-   | **clickCancel**: void          | **clickOpenModelDetails** : PrescriptionModel          | **clickExtend**: ReadPrescription              |
-   | **modelCreated**: void         |                                                        | **proposalApproved**: {prescriptionId: string} |
-   |                                |                                                        | **proposalRejected**: boolean                  |
-   
+   | Create prescription                | List prescriptions                                     | Prescription details                           |
+   |------------------------------------|--------------------------------------------------------|------------------------------------------------|
+   | **prescriptionsCreated**: string[] | **clickOpenPrescriptionDetails** : PrescriptionSummary | **clickDuplicate**: ReadPrescription           |
+   | **clickCancel**: void              | **clickOpenModelDetails** : PrescriptionModel          | **clickExtend**: ReadPrescription              |
+   | **modelCreated**: void             |                                                        | **proposalApproved**: {prescriptionId: string} |
+   |                                    |                                                        | **proposalRejected**: boolean                  |
+
+   ℹ️ After the successful creation of a prescription, the Web Components will emit the _prescriptionsCreated_ event with the list of identifiers of the newly created prescriptions.
+
    #### Data structures
    ```typescript
    interface PrescriptionSummary {
@@ -208,7 +239,7 @@ In the showcase, the library is initialized via the following instruction
     // Initialization of the authentication library
     keycloak.init({onLoad: 'login-required', checkLoginIframe: false})
             .then(function (authenticated) {
-                // User is successfuly authenticated
+                // User is successfully authenticated
             })
 
     /**
@@ -243,7 +274,7 @@ In the showcase, the library is initialized via the following instruction
 ### Reference the Web Component resources
 
 To continue configuring the Web Components, it is necessary to add the references to the Web Component specific
-resources. Web Components resources are composed of CSS and Javascript files (for clarity, only the additional resources
+resources. Web Components resources are composed of a Javascript file (for clarity, only the additional resources
 are shown in the following sample code) :
 
 ```html
@@ -251,8 +282,6 @@ are shown in the following sample code) :
 <html>
 <head>
     <script src="../lib/keycloak.js"></script>
-    <link rel="stylesheet"
-          href="https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/create-prescription/wc-create-prescription.css">
 </head>
 <body>
 ...
