@@ -131,15 +131,14 @@
   </mat-dialog-actions>
 </form>
 
-@if (professionalsState$ | async; as professionalState) {
-  <app-overlay-spinner mode="inline" *ifStatusLoading="professionalState"></app-overlay-spinner>
-  <ng-container *ifStatusSuccess="professionalState">
-    <div class="results-bar">
-      <div data-cy="results-number">{{professionalState.data!.length}} {{'common.results' | translate:{count:professionalState.data!.length} }}</div>
-    </div>
-    <div class="results">
+@if (professionalsState$(); as professionalsState) {
+  <ng-container>
+    @if (isLoading()) {
+      <app-overlay-spinner mode="inline"></app-overlay-spinner>
+    } @else {
+      <div class="results">
       <table>
-        @for(professional of professionalState.data; track professional) {
+        @for(professional of professionalsState?.data?.items; track professional) {
         <tr class="result-item"
              [attr.data-cy]="'result-professional-' + (professional.nihii8 || professional.nihii11) + (professional.id?.qualificationCode ?? '')"
              (click)="onTransfer(professional)"
@@ -166,6 +165,15 @@
         }
       </table>
     </div>
+      <div class="pagination">
+        <app-paginator
+          [total]="professionalsState.data?.total ?? 0"
+          [page]="professionalsState.data?.page ?? 1"
+          [pageSize]="professionalsState.data?.pageSize ?? 10"
+          (changePage)="loadData($event)"
+        ></app-paginator>
+      </div>
+    }
   </ng-container>
 }
 

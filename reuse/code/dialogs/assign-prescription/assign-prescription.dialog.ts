@@ -14,7 +14,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatChipsModule } from '@angular/material/chips';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatInputModule } from '@angular/material/input';
-import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
+import {
+  OverlaySpinnerComponent
+} from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { CaregiverNamePatternValidator } from '@reuse/code/utils/validators';
 import { AlertType, Intent } from '@reuse/code/interfaces';
 import { GeographyService } from '@reuse/code/services/api/geography.service';
@@ -37,7 +39,7 @@ import {
   CityResource,
   HealthcareOrganizationResource,
   HealthcareProResource,
-  PerformerTaskIdResource,
+  PerformerTaskIdResource, ProviderType,
   TelephoneNumbers,
   Translation,
 } from '@reuse/code/openapi';
@@ -121,20 +123,21 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
         const disciplines: string[] = getAssignableProfessionalDisciplines(this.data.category, this.data.intent);
         return criteria
           ? this.healthcareProviderService
-              .findAll(
-                criteria.query,
-                criteria.zipCodes,
-                criteria.professionalType !== 'ORGANIZATION' ? disciplines : [],
-                criteria.professionalType !== 'CAREGIVER' ? institutionTypes : [],
-                criteria.page,
-                criteria.pageSize
-              )
-              .pipe(
-                catchError(error => {
-                  console.error('Error fetching healthcare providers:', error);
-                  return of([]);
-                })
-              )
+            .findAll(
+              criteria.query,
+              criteria.zipCodes,
+              criteria.professionalType !== 'ORGANIZATION' ? disciplines : [],
+              criteria.professionalType !== 'CAREGIVER' ? institutionTypes : [],
+              ProviderType.All,
+              criteria.page,
+              criteria.pageSize
+            )
+            .pipe(
+              catchError(error => {
+                console.error('Error fetching healthcare providers:', error);
+                return of([]);
+              })
+            )
           : of([]);
       }),
       map(healthcareProvider => {
@@ -389,9 +392,9 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
 
         this.closeErrorCard();
         if (healthcareProvider.type === 'Professional') {
-          this.toastService.show(successPrefix + '.assignPerformer.success', { interpolation: name });
+          this.toastService.show(successPrefix + '.assignPerformer.success', {interpolation: name});
         } else {
-          this.toastService.show(successPrefix + '.assignPerformer.successOrganization', { interpolation: name });
+          this.toastService.show(successPrefix + '.assignPerformer.successOrganization', {interpolation: name});
         }
         this.closeDialog(healthcareProvider);
       },
@@ -405,7 +408,7 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
   private getOrganizationNameTranslation(healthcareProvider: HealthcareProResource | HealthcareOrganizationResource): {
     name: string;
   } {
-    if (isProfessional(healthcareProvider) || !healthcareProvider.organizationName) return { name: '' };
+    if (isProfessional(healthcareProvider) || !healthcareProvider.organizationName) return {name: ''};
     type Lang = keyof Translation;
     const lang = (this.currentLang && this.currentLang.length >= 2 ? this.currentLang.slice(0, 2) : 'fr') as Lang;
     return {
@@ -463,7 +466,7 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
   hasStreet(street?: Translation): boolean {
     if (!street) return false;
 
-    const { fr, nl, de } = street;
+    const {fr, nl, de} = street;
     return (fr && fr.length > 0) || (nl && nl.length > 0) || (de && de.length > 0) || false;
   }
 
