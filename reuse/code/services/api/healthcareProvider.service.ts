@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { HealthCareProviderService as ApiHealthCareProviderService } from '@reuse/code/openapi';
+import { HealthCareProviderService as ApiHealthCareProviderService, ProviderType } from '@reuse/code/openapi';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class HealthcareProviderService {
   private api = inject(ApiHealthCareProviderService);
 
@@ -9,7 +9,8 @@ export class HealthcareProviderService {
     query: string,
     zipCodes: number[],
     disciplines: string[],
-    institutionTypes: string[],
+    institutionTypes?: string[],
+    providerType: ProviderType = ProviderType.All,
     page?: number,
     pageSize?: number
   ) {
@@ -17,8 +18,9 @@ export class HealthcareProviderService {
       undefined,
       query,
       zipCodes.map(String),
-      disciplines,
-      institutionTypes,
+      providerType,
+      disciplines ?? undefined,
+      institutionTypes ?? undefined,
       page,
       pageSize
     );
