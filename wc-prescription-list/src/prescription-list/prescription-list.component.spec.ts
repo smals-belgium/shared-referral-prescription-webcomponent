@@ -6,7 +6,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateAdapter, MatNativeDateModule } from '@angular/material/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
-import { ElementRef, importProvidersFrom, signal, SimpleChange, SimpleChanges } from '@angular/core';
+import { importProvidersFrom, signal, SimpleChange, SimpleChanges } from '@angular/core';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
@@ -201,6 +201,25 @@ describe('ListPrescriptionsWebComponent', () => {
       expect(loadPrescriptionsSpy).toHaveBeenCalledWith(1, undefined);
 
       jest.spyOn(component['prescriptionsState'], 'loadPrescriptions').mockReturnValue();
+    });
+
+    it('should switch from prescription to proposal correctly', () => {
+      createFixture();
+      // Start with prescription
+      (global as any).isPrescription = jest.fn().mockReturnValue(true);
+      component.intent = Intent.ORDER;
+      component.loadData();
+      expect(component.isPrescriptionValue).toBe(true);
+
+      // Switch to proposal
+      (global as any).isPrescription = jest.fn().mockReturnValue(false);
+      (global as any).isProposal = jest.fn().mockReturnValue(true);
+      component.intent = Intent.PROPOSAL;
+      component.loadData();
+
+      expect(component.isPrescriptionValue).toBe(false);
+      expect(component.isProposalValue).toBe(true);
+      expect(component.isModelValue).toBe(false);
     });
 
     it('should display a table when viewStatePrescriptions$ has data and state success and breakpoint is NOT mobile', () => {
@@ -513,6 +532,21 @@ describe('ListPrescriptionsWebComponent', () => {
       expect(loadProposalsSpy).toHaveBeenCalledWith(1, undefined);
 
       jest.spyOn(component['proposalsState'], 'loadProposals').mockReturnValue();
+    });
+  });
+
+  describe('resetOutdatedValues', () => {
+    it('should reset all intent type flags to false', () => {
+      createFixture();
+      component.isPrescriptionValue = true;
+      component.isProposalValue = true;
+      component.isModelValue = true;
+
+      component.resetOutdatedValues();
+
+      expect(component.isPrescriptionValue).toBe(false);
+      expect(component.isProposalValue).toBe(false);
+      expect(component.isModelValue).toBe(false);
     });
   });
 
