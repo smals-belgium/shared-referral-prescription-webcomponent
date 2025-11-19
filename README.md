@@ -94,7 +94,9 @@ Web Components are designed to take input values and provide output events as fe
     /**
      * intent (required) : the value can be either order | proposal, 'order' should be specified when creating a prescription,
      *                     while 'proposal' should be specified when creating a proposal.
-     * initialPrescriptionType (optional) : the value can be one of the ones listed in the list right bellow the code snippet.
+     * initialPrescriptionType (optional) : the value can be one of the ones listed in the list right bellow the code snippet or left empty.
+     *                                      If the value is not provided, the web component will first open a modal panel that lets the user 
+     *                                      choose the prescription type from a list.
      * initialPrescription (optional) : the prescription to be extended, only required when the extend parameter is set to true.
      * initialModelId (optional) : the id of the model to be used in order to create a prescription.
      * extend (optional) : true if the prescription should be extended, false otherwise.  
@@ -134,7 +136,7 @@ Web Components are designed to take input values and provide output events as fe
    type UserProfile = Personal & Professional;
    ```
    
-   To create a prescription, it is necessary to provide the _initialPrescriptionType_ parameters in the _CreatePrescriptionInitialValues_.
+   To create a prescription, you can choose to explicitly provide the _initialPrescriptionType_ parameters in the _CreatePrescriptionInitialValues_.
    One of the following values can be provided with the intent value _**order**_ :
    * ASSISTING_WITH_PERSONAL_HYGIENE
    * BLEEDING
@@ -364,9 +366,230 @@ are shown in the following sample code) :
 
 ## Compatibility
 
-The Web Components have been developed based on the Angular framework so the compatibility is in line with
-the [Angular browser support](https://angular.dev/reference/versions#browser-support), which is the two latest versions
-of the navigators. The current version of Angular that is used is 19.
+The Web Components have been developed based on the Angular framework, so the compatibility is in line with
+the [Angular browser support](https://angular.dev/reference/versions#browser-support), which is the two latest versions of the navigators. The current version of 
+Angular that is used is 19.
+
+## Styles and override
+
+As already stated, the web components have been developped based on the Angular framework. Therefore, the styles can
+be changed by overriding the Angular variables.
+
+Here is a complete list of the variables that can be overridden :
+
+### Default variables
+* --mh-default-font-family;
+
+### 1. List prescriptions
+#### Body Medium
+* --mat-sys-body-medium;
+* --mat-sys-body-medium-font;
+* --mat-sys-body-medium-line-height;
+* --mat-sys-body-medium-size;
+* --mat-sys-body-medium-tracking;
+* --mat-sys-body-medium-weight;
+
+### Label Large
+* --mat-sys-label-large;
+* --mat-sys-label-large-font;
+* --mat-sys-label-large-line-height;
+* --mat-sys-label-large-size;
+* --mat-sys-label-large-tracking;
+* --mat-sys-label-large-weight;
+* --mat-sys-label-large-weight-prominent;
+
+### Title Small
+* --mat-sys-title-small-tracking;
+
+### Heading Small
+* --mat-sys-headline-small;
+* --mat-sys-headline-small-font;
+* --mat-sys-headline-small-line-heigh;
+* --mat-sys-headline-small-size;
+* --mat-sys-headline-small-tracking;
+* --mat-sys-headline-small-weight;
+
+### Paginator / Corners
+* --mdc-outlined-text-field-container-shape;
+* --mat-sys-corner-extra-small;
+* --mat-select-enabled-arrow-color;
+* --mat-sys-dragged-state-layer-opacity;
+* --mat-sys-focus-state-layer-opacity;
+* --mat-sys-hover-state-layer-opacity;
+* --mat-sys-pressed-state-layer-opacity;
+
+### Surface Colors
+* --mat-sys-on-surface-variant;
+* --mat-sys-surface-container;
+* --mat-select-focused-arrow-color;
+* --mat-sys-on-secondary-container;
+
+### Toggle / Switch
+* --mat-sys-corner-full;
+* --mat-switch-label-text-color;
+* --mat-switch-label-text-size;
+* --mdc-switch-unselected-icon-color;
+* --mat-switch-track-outline-color;
+* --mdc-switch-unselected-track-color;
+* --mdc-switch-unselected-handle-color;
+* --mdc-switch-unselected-hover-handle-color;
+* --mdc-switch-unselected-hover-track-color;
+* --mdc-switch-unselected-focus-handle-color;
+* --mdc-switch-unselected-focus-track-color;
+* --mdc-switch-unselected-pressed-handle-color;
+* --mdc-switch-unselected-pressed-track-color;
+* --mdc-switch-selected-icon-color;
+* --mdc-switch-selected-track-color;
+* --mdc-switch-selected-handle-color;
+* --mdc-switch-selected-hover-handle-color;
+* --mdc-switch-selected-hover-track-color;
+* --mdc-switch-selected-focus-handle-color;
+* --mdc-switch-selected-focus-track-color;
+* --mdc-switch-selected-pressed-handle-color;
+* --mdc-switch-selected-pressed-track-color;
+
+### Tooltip
+* --mat-sys-body-small-font;
+* --mat-sys-body-small-size;
+* --mat-sys-body-small-weight;
+* --mat-sys-body-small-line-height;
+* --mat-sys-body-small-tracking;
+* --mat-sys-inverse-surface;
+* --mat-sys-inverse-on-surface;
+
+### Card
+* --mdc-elevated-card-container-color;
+* --mat-sys-corner-medium;
+* --mdc-elevated-card-container-elevation;
+* --mat-sys-level1;
+
+### Buttons
+* --mat-sys-primary;     
+* --mat-sys-on-primary;
+
+### Dialog
+* --mdc-dialog-subhead-color;
+* --mdc-dialog-subhead-size;
+* --mdc-dialog-subhead-weight;
+
+### Form Fields
+* --mdc-outlined-text-field-error-outline-color;
+* --mdc-outlined-text-field-outline-width;
+* --mdc-outlined-text-field-error-focus-outline-color;
+* --mdc-outlined-text-field-error-hover-outline-color;
+* --mh-label-field-error-color;
+
+## 2. Create prescription
+
+### Buttons
+* --evf-button-toggle-animations-enabled-padding
+* --evf-button-toggle-mat-pseudo-checkbox-width
+* --evf-button-toggle-mat-pseudo-checkbox-height
+* --evf-button-toggle-checked-padding-left
+* --mh-mat-button-error-color
+* --mh-mat-button-error-decoration
+* --mat-sys-primary
+* --mat-sys-on-primary
+* --mat-standard-button-toggle-text-color
+* --mat-standard-button-toggle-divider-color
+* --mat-sys-corner-full
+* --mat-text-button-horizontal-padding
+* --mat-standard-button-toggle-selected-state-text-color
+* --mat-standard-button-toggle-height
+
+### Form Fields
+* --mat-form-field-container-height
+* --mat-form-field-filled-with-label-container-padding-top
+* --mat-form-field-filled-with-label-container-padding-bottom
+* --mat-form-field-error-background-color
+* --mat-form-field-error-text-color
+* --mdc-outlined-text-field-error-outline-color
+* --mdc-outlined-text-field-outline-width
+* --mdc-outlined-text-field-error-focus-outline-color
+* --mdc-outlined-text-field-error-hover-outline-color
+* --mdc-outlined-text-field-container-shape
+* --mdc-outlined-text-field-outline-color
+* --mdc-outlined-text-field-input-text-color
+* --evf-input-number-field-max-width
+* --evf-input-date-field-max-width
+* --mh-label-invalid-color
+* --mat-form-field-container-vertical-padding
+* --mat-form-field-container-height
+* --mat-sys-surface-container
+
+### Info Block
+* --evf-infoblock-radius-small
+* --evf-infoblock-background-color
+* --evf-infoblock-heading-color
+* --evf-infoblock-body-color
+* --evf-infoblock-matrial-icon-color
+
+### Typography / Labels
+* --mdc-typography-body2-font-size
+* --mdc-typography-body2-line-height
+* --mat-sys-body-large-line-height
+* --mat-sys-body-large-size
+* --mat-sys-body-small-size
+* --evf-typography-body-color
+* --evf-typography-label-margin
+* --evf-typography-body2-color
+* --evf-typography-label-empty-height
+* --mat-sys-body-large
+* --mat-sys-body-large-font
+* --mat-sys-body-large-tracking
+* --mat-sys-body-large-weight
+* --mat-sys-label-large
+* --mat-sys-label-large-font
+* --mat-sys-label-large-line-height
+* --mat-sys-label-large-size
+* --mat-sys-label-large-tracking
+* --mat-sys-label-large-weight
+* --mat-sys-label-large-weight-prominent
+* --mat-sys-body-medium-font
+* --mat-sys-body-medium-size
+
+### Dialog
+* --mdc-dialog-subhead-color
+* --mdc-dialog-subhead-size
+* --mdc-dialog-subhead-weight
+
+### Datepicker
+* --mat-datepicker-calendar-date-hover-state-background-color
+* --mat-sys-on-surface
+* --mat-sys-hover-state-layer-opacity
+* --mat-datepicker-calendar-container-shape
+* --mat-sys-surface-container-high
+* --mat-sys-on-surface-variant
+* --mdc-text-button-label-text-color
+* --mat-datepicker-calendar-container-elevation-shadow
+* --mat-datepicker-calendar-period-button-icon-color
+* --mat-sys-pressed-state-layer-opacity
+* --mat-icon-button-focus-state-layer-opacity
+
+### Layout / Row Spacing
+* --evf-row-column-gap
+* --evf-row-column-gap-l
+
+### Expansion panel
+* --mat-expansion-header-expanded-state-height
+* --mh-accordion-box-shadow
+* --mh-accordion-border-bottom
+* --mat-expansion-container-shape
+* --mh-mat-expansion-container-not-expanded-shape
+* --mh-mat-expansion-gap
+
+### Dialog
+* --mdc-dialog-subhead-color;
+* --mdc-dialog-subhead-size;
+* --mdc-dialog-subhead-weight;
+
+### Heading Small
+* --mat-sys-headline-small;
+* --mat-sys-headline-small-font;
+* --mat-sys-headline-small-line-heigh;
+* --mat-sys-headline-small-size;
+* --mat-sys-headline-small-tracking;
+* --mat-sys-headline-small-weight;
 
 ## 🚀 Getting started
 
