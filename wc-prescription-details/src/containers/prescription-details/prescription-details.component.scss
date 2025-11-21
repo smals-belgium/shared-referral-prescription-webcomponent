@@ -226,6 +226,16 @@ $app-primary: mat.m2-define-palette($app-primary-palette, 800);
         margin: 0;
       }
 
+      .prescription_extended_shortcode_label {
+        color: mh.$typography-brand-primary-dark;
+        text-decoration: underline;
+
+        .prescription_extended_shortcode {
+          @include mh.font-default-bold();
+          color: mh.$typography-brand-primary-dark;
+        }
+      }
+
       .status{
         max-width: min-content;
       }

@@ -6,8 +6,8 @@ import {
 } from '@smals/vas-evaluation-form-ui-core';
 import { CheckboxDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/checkbox';
 import { DateDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/date';
-import { OccurrenceTimingDetailComponent } from '@reuse/code/evf/occurrence-timing/detail/occurrence-timing-detail.component';
-import { RecommendationsDetailComponent } from '@reuse/code/evf/pss-recommendations/detail/recommendations-detail.component';
+import { OccurrenceTimingDetailComponent } from '@reuse/code/evf/components/occurrence-timing/detail/occurrence-timing-detail.component';
+import { RecommendationsDetailComponent } from '@reuse/code/evf/components/pss-recommendations/detail/recommendations-detail.component';
 import {
   EvfNumberDetailComponent,
   EvfResponseDetailComponent,
@@ -22,8 +22,8 @@ import { AutocompleteDetailComponent } from '@smals/vas-evaluation-form-ui-mater
 import { SectionDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/section';
 
 import { withInfoElement } from '@smals/vas-evaluation-form-ui-material/elements/info';
-import { OccurrencesComponent } from '@reuse/code/evf/occurrences/detail/occurrences.component';
-import { BoundsDurationComponent } from '@reuse/code/evf/bounds-duration/detail/bounds-duration.component';
+import { OccurrencesComponent } from '@reuse/code/evf/components/occurrences/detail/occurrences.component';
+import { BoundsDurationComponent } from '@reuse/code/evf/components/bounds-duration/detail/bounds-duration.component';
 
 export function provideEvfFormDetails() {
   return [

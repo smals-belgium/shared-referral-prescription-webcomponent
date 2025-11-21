@@ -201,15 +201,24 @@ export class PrescriptionListWebComponent implements OnChanges, OnDestroy, After
     }
 
     if (isPrescription(this.intent)) {
+      this.resetOutdatedValues();
       this.isPrescriptionValue = true;
       this.loadPrescriptions(pageIndex, pageSize);
     } else if (isProposal(this.intent)) {
+      this.resetOutdatedValues();
       this.isProposalValue = true;
       this.loadProposals(pageIndex, pageSize);
     } else if (isModel(this.intent)) {
+      this.resetOutdatedValues();
       this.isModelValue = true;
       this.loadModels(pageIndex, pageSize);
     }
+  }
+
+  resetOutdatedValues() {
+    this.isPrescriptionValue = false;
+    this.isProposalValue = false;
+    this.isModelValue = false;
   }
 
   loadPrescriptions(page?: number, pageSize?: number) {

@@ -10,7 +10,7 @@ export class FormatNihdiPipe implements PipeTransform {
     if (!value) {
       return '';
     }
-    if (qualificationCode) {
+    if (qualificationCode && value.length === 8) {
       nihidi = value + qualificationCode;
     }
     nihidi = nihidi!.replace(/\D+/g, '');

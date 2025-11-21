@@ -192,6 +192,7 @@
     "patient": "Patiënt",
     "note": "Notitie",
     "shortcode": "RefID",
+    "extendedShortId": "Verlenging van voorschrift",
     "typeOfCare": "Type zorg",
     "services": "Beurten",
     "frequency": "Frequentie",

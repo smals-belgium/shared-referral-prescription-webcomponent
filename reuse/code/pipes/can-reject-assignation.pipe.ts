@@ -2,7 +2,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { UserInfo } from '@reuse/code/interfaces';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource, RequestStatus, Role } from '@reuse/code/openapi';
-import { isProposal } from '@reuse/code/utils/utils';
+import {
+  checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline,
+  isProposal
+} from '@reuse/code/utils/utils';
 
 /**
  * This pipe determines whether an assignation can be rejected.
@@ -42,7 +45,7 @@ export class CanRejectAssignationPipe implements PipeTransform {
       this.checkIfCurrentUserIsPatientOrAssignedCaregiver(
         currentUser,
         patientSsin,
-        task.careGiver?.healthcarePerson?.ssin
+        task
       )
     );
   }
@@ -50,12 +53,14 @@ export class CanRejectAssignationPipe implements PipeTransform {
   private checkIfCurrentUserIsPatientOrAssignedCaregiver(
     currentUser: Partial<UserInfo>,
     patientSsin: string,
-    caregiverSsin?: string
-  ): boolean {
+    task: PerformerTaskResource): boolean {
+
+    let caregiverSsin = task?.careGiver?.healthcarePerson?.ssin;
+
     if (!caregiverSsin) return false;
 
     const isPatient = currentUser.role === Role.Patient && currentUser.ssin === patientSsin;
-    const isCaregiver = currentUser.role !== Role.Patient && currentUser.ssin === caregiverSsin;
+    const isCaregiver = currentUser.role !== Role.Patient && checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline(task, currentUser)
 
     return isPatient || isCaregiver;
   }

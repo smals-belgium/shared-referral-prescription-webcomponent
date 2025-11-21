@@ -174,7 +174,7 @@
               </td>
               <td class="table-td-ssin">
                 @if (isProfessional(healthcareProvider)) {
-                  {{ healthcareProvider.id?.ssin | formatSsin }}
+                  {{healthcareProvider.nihii8 ?? healthcareProvider.nihii11 | formatNihdi: healthcareProvider.healthcareQualification?.id?.code}}
                 } @else {
                   {{healthcareProvider.nihii8 ?? healthcareProvider.nihii11 | formatNihdi: healthcareProvider.qualificationCode}}
                 }

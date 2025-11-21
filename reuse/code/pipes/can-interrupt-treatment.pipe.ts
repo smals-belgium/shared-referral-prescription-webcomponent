@@ -2,7 +2,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { UserInfo } from '@reuse/code/interfaces';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
-import { isProfesionalBasedOnRole } from '@reuse/code/utils/utils';
+import {
+  checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline,
+  isProfesionalBasedOnRole
+} from '@reuse/code/utils/utils';
 
 /**
  * This pipe determines whether an assignation can be interrupted.
@@ -31,7 +34,7 @@ export class CanInterruptTreatmentPipe implements PipeTransform {
 
     return (
       isProfesionalBasedOnRole(currentUser.role) &&
-      task.careGiverSsin == currentUser.ssin &&
+      checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline(task, currentUser) &&
       this.accessMatrixState.hasAtLeastOnePermission(['interruptTreatment'], prescription.templateCode) &&
       !!task.status &&
       allowedStatuses.includes(task.status)

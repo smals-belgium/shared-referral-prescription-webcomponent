@@ -15,6 +15,13 @@
         <div class="details_header">
           <div class="details_title_container">
             <h2 class="details_title" data-cy="prescription-type">{{ prescription.templateCode | templateName }}</h2>
+            @if (prescription.extendedShortId) {
+              <div class="row">
+                  <div class="prescription_extended_shortcode_label" data-cy="prescription-extendedShortId-label">{{'prescription.extendedShortId' | translate}}
+                    <span class="prescription_extended_shortcode">{{prescription?.extendedShortId }} </span>
+                  </div>
+              </div>
+            }
             <mat-chip [disableRipple]="true"
                       data-cy="prescription-status"
                       [class]="getStatusClass(prescription.status)+' status'">

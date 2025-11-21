@@ -1,5 +1,5 @@
-import { Intent } from '@reuse/code/interfaces';
-import { RequestStatus, Role } from '@reuse/code/openapi';
+import { Intent, UserInfo } from '@reuse/code/interfaces';
+import { PerformerTaskResource, RequestStatus, Role } from '@reuse/code/openapi';
 
 const UuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SsinRegex = /^\d{11}$/i;
@@ -106,4 +106,8 @@ export function getStatusClassFromMap(status?: RequestStatus): string {
 export function isProfesionalBasedOnRole(role?: Role): boolean {
   if (!role) return false;
   return role !== Role.Patient;
+}
+
+export const checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline = (task: PerformerTaskResource, currentUser: Partial<UserInfo>) => {
+  return task.careGiverSsin == currentUser.ssin && task.careGiver?.id?.profession == currentUser.discipline;
 }

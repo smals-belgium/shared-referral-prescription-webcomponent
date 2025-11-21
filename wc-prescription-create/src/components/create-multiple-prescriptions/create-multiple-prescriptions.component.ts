@@ -6,12 +6,12 @@ import {
   Input,
   OnChanges,
   OnDestroy,
-  Output,
+  Output, QueryList,
   SimpleChanges,
-  ViewChild,
+  ViewChild, ViewChildren,
 } from '@angular/core';
 import { ElementGroup, isObject, removeNulls } from '@smals/vas-evaluation-form-ui-core';
-import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
+import { MatAccordion, MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { FormatSsinPipe } from '@reuse/code/pipes/format-ssin.pipe';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
@@ -31,6 +31,7 @@ import { isOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
 import { isPrescription, isProposal } from '@reuse/code/utils/utils';
 import { PersonResource, TemplateVersion } from '@reuse/code/openapi';
 import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
+import { PatientInfoBarComponent } from '../patient-info-bar/patient-info-bar.component';
 
 @Component({
   selector: 'app-create-multiple-prescriptions',
@@ -50,6 +51,7 @@ import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
     TemplateNamePipe,
     FormatSsinPipe,
     AlertComponent,
+    PatientInfoBarComponent,
   ],
 })
 export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestroy {
@@ -81,7 +83,7 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
   };
 
   @ViewChild(MatAccordion, { static: true }) accordion!: MatAccordion;
-
+  @ViewChildren(MatExpansionPanel) panels!: QueryList<MatExpansionPanel>;
   constructor(
     private prescriptionModelState: PrescriptionModelState,
     private dialog: MatDialog
@@ -93,7 +95,7 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['createPrescriptionForms'] && this.createPrescriptionForms?.length === 1) {
-      setTimeout(() => this.accordion.openAll(), 1);
+      setTimeout(() =>  this.panels?.first?.open(), 1);
     }
     this.isPrescriptionValue = isPrescription(this.intent);
   }

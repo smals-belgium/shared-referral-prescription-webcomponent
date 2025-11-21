@@ -16,14 +16,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatChipsModule } from '@angular/material/chips';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatInputModule } from '@angular/material/input';
-import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
+import {
+  OverlaySpinnerComponent
+} from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { CaregiverNamePatternValidator } from '@reuse/code/utils/validators';
 import { AlertType, DataState, Intent } from '@reuse/code/interfaces';
 import { GeographyService } from '@reuse/code/services/api/geography.service';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
-import { toObservable } from '@angular/core/rxjs-interop';
-import { ProfessionalService } from '@reuse/code/services/api/professional.service';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { toDataState } from '@reuse/code/utils/rxjs.utils';
 import { FormatMultilingualObjectPipe } from '@reuse/code/pipes/format-multilingual-object.pipe';
 import { v4 as uuidv4 } from 'uuid';
@@ -32,7 +33,14 @@ import { AlertComponent } from '@reuse/code/components/alert-component/alert.com
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import { getAssignableProfessionalDisciplines } from '@reuse/code/utils/assignment-disciplines.utils';
 import { isProposal } from '@reuse/code/utils/utils';
-import { CityResource, HealthcareProResource } from '@reuse/code/openapi';
+import {
+  CityResource,
+  HealthcareProResource,
+  HealthCareProviderRequestResource,
+  ProviderType
+} from '@reuse/code/openapi';
+import { PaginatorComponent } from '@reuse/code/components/paginator/paginator.component';
+import { HealthcareProviderService } from '@reuse/code/services/api/healthcareProvider.service';
 
 interface TransferAssignation {
   prescriptionId?: string;
@@ -66,33 +74,81 @@ interface TransferAssignation {
     AsyncPipe,
     FormatMultilingualObjectPipe,
     AlertComponent,
+    PaginatorComponent,
   ],
   providers: [provideNgxMask()],
 })
 export class TransferAssignationDialog extends BaseDialog implements OnInit {
   protected readonly AlertType = AlertType;
   private readonly nameValidators = [Validators.minLength(2), CaregiverNamePatternValidator];
-  private readonly searchCriteria$ = signal<{ query: string; zipCodes: number[] }>({ query: '', zipCodes: [] });
+  private readonly searchCriteria$ = signal<{
+    query: string;
+    zipCodes: number[];
+    page?: number;
+    pageSize?: number;
+  } | null>(null);
+  readonly isLoading = signal(false);
 
-  readonly professionalsState$: Observable<DataState<HealthcareProResource[]>> = toObservable(
-    this.searchCriteria$
-  ).pipe(
-    switchMap(criteria => {
-      let disciplines: string[] = getAssignableProfessionalDisciplines(this.data.category, this.data.intent);
-      if (criteria.query.length === 0 && criteria.zipCodes.length === 0) {
-        return of([]);
-      }
-      return this.professionalService.findAll(criteria.query, criteria.zipCodes.map(String), disciplines);
-    }),
-    map(professionals =>
-      professionals?.filter(p => {
-        if (!p.id?.ssin) {
-          return false;
+  readonly professionalsState$ = toSignal(
+    toObservable(this.searchCriteria$).pipe(
+      switchMap(criteria => {
+        this.isLoading.set(true);
+
+        const disciplines: string[] = getAssignableProfessionalDisciplines(
+          this.data.category,
+          this.data.intent
+        );
+
+        if (!criteria || (criteria.query.length === 0 && criteria.zipCodes.length === 0)) {
+          return of({
+            items: [],
+            total: 0,
+            page: criteria?.page ?? 1,
+            pageSize: criteria?.pageSize ?? 10,
+          });
         }
-        return !this.data.assignedCareGivers?.includes(p.id.ssin);
-      })
-    ),
-    toDataState()
+        return this.healthcareProviderService
+          .findAll(
+            criteria.query,
+            criteria.zipCodes,
+            disciplines,
+            undefined,
+            ProviderType.Professional,
+            criteria.page,
+            criteria.pageSize
+          )
+          .pipe(
+            catchError(error => {
+              console.error('Error fetching professionals:', error);
+              return of({
+                items: [],
+                total: 0,
+                page: criteria.page,
+                pageSize: criteria.pageSize,
+              });
+            })
+          );
+      }),
+      map((response: HealthCareProviderRequestResource) => {
+        const professionals = response.healthcareProfessionals ?? [];
+        const total = response.total ?? professionals.length;
+
+        const filtered = professionals.filter(p => {
+          if (!p?.id?.ssin) return false;
+          return !this.data.assignedCareGivers?.includes(p.id.ssin);
+        });
+
+        this.isLoading.set(false);
+
+        return {
+          items: filtered,
+          total: total,
+          page: this.searchCriteria$()?.page ?? 1,
+          pageSize: this.searchCriteria$()?.pageSize ?? 10,
+        };
+      }),
+      toDataState()
+    )
   );
   readonly formGroup = new FormGroup({
     query: new FormControl<string>(''),
@@ -114,7 +170,7 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
   constructor(
     private readonly prescriptionStateService: PrescriptionState,
     private readonly proposalStateService: ProposalState,
-    private readonly professionalService: ProfessionalService,
+    private readonly healthcareProviderService: HealthcareProviderService,
     private readonly toastService: ToastService,
     private readonly geographyService: GeographyService,
     dialogRef: MatDialogRef<TransferAssignationDialog>,
@@ -128,6 +184,19 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
 
   ngOnInit() {
     this.generatedUUID = uuidv4();
+  }
+
+  loadData(pageValues?: { pageIndex?: number; pageSize?: number }) {
+    const values = this.formGroup.value;
+    const cities = values.cities as CityResource[];
+    const zipCodes = cities?.map(c => c.zipCode).filter((z): z is number => z !== undefined) || [];
+
+    this.searchCriteria$.set({
+      query: values.query!,
+      zipCodes,
+      page: pageValues?.pageIndex,
+      pageSize: pageValues?.pageSize,
+    });
   }
 
   private setValidators(): void {
@@ -152,10 +221,13 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
     this.formGroup.markAllAsTouched();
     if (this.formGroup.valid) {
       const values = this.formGroup.value;
-      const zipCodes = values.cities?.map(c => c.zipCode).filter((zip): zip is number => zip !== undefined) || [];
+      const cities = values.cities as CityResource[];
+      const zipCodes = cities?.map(c => c.zipCode).filter((z): z is number => z !== undefined) || [];
       this.searchCriteria$.set({
         query: values.query!,
         zipCodes,
+        page: 1,
+        pageSize: this.professionalsState$()?.data?.pageSize || 10,
       });
     }
   }
