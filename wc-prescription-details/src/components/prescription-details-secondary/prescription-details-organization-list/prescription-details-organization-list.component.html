@@ -1,13 +1,16 @@
-@if (prescriptionServiceData && currentUserServiceData && performerTaskServiceData){
+@if (prescriptionServiceData && currentUserServiceData){
 
   @let prescription = prescriptionServiceData;
   @let currentUser = currentUserServiceData;
   @let performerTaskData = performerTaskServiceData;
 
   @for (task of prescription.organizationTasks; track task) {
+
+    @let organizationName = task.organization?.organizationName | formatMultilingualObject: currentLang();
+
     <div class="organization_row" data-cy="prescription-assign-to">
       <div class="caregiver_name">
-        @if (!task.organization?.organizationName) {
+        @if (!organizationName) {
           <span class="text_bold" >{{ 'common.organization.notFound' | translate }}</span>
           <mat-icon matTooltip="{{'common.organization.tooltip' | translate}}"
                     matTooltipPosition="after"
@@ -15,7 +18,7 @@
             error
           </mat-icon>
         } @else {
-          <span class="text_bold">{{ task.organization?.organizationName | formatMultilingualObject: currentLang() }}</span>
+          <span class="text_bold">{{ organizationName }} </span>
         }
 
         @if (task.organization?.nihii8 ?? task.organization?.nihii11; as nihii) {
