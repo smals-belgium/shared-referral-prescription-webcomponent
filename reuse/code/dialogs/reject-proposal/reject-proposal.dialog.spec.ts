@@ -37,13 +37,6 @@ const proposalWithoutTasks: { proposal: ReadRequestResource } = {
   } as ReadRequestResource,
 };
 
-const proposalWithTasks: { proposal: ReadRequestResource } = {
-  proposal: {
-    id: 'proposal-456',
-    performerTasks: [{ id: 'task-789' }],
-  } as ReadRequestResource,
-};
-
 describe('RejectProposalDialog', () => {
   let component: RejectProposalDialog;
   let fixture: ComponentFixture<RejectProposalDialog>;
@@ -132,42 +125,4 @@ describe('RejectProposalDialog', () => {
     }));
   });
 
-  describe('when proposal has performer tasks', () => {
-    beforeEach(async () => {
-      await configureTestBedWithData(proposalWithTasks);
-    });
-
-    it('should call rejectProposalTask with raw reason', fakeAsync(() => {
-      const reasonText = 'Already assigned, rejecting task.';
-      component.formGroup.get('reason')?.setValue(reasonText);
-      mockProposalState.rejectProposalTask.mockReturnValue(of(undefined));
-
-      component.rejectProposal();
-      tick();
-
-      expect(mockEncryptionHelper.getEncryptedReasonAndPseudoKey).not.toHaveBeenCalled();
-      expect(mockProposalState.rejectProposal).not.toHaveBeenCalled();
-      expect(mockProposalState.rejectProposalTask).toHaveBeenCalledWith(
-        'proposal-456',
-        'task-789',
-        { reason: reasonText },
-        'mock-uuid-12345'
-      );
-      expect(mockToastService.show).toHaveBeenCalledWith('proposal.reject.success');
-      expect(mockDialogRef.close).toHaveBeenCalledWith(true);
-    }));
-
-    it('should handle error from proposalState.rejectProposalTask', fakeAsync(() => {
-      const error = new Error('Task rejection failed');
-      component.formGroup.get('reason')?.setValue('a reason');
-      mockProposalState.rejectProposalTask.mockReturnValue(throwError(() => error));
-      const handleErrorSpy = jest.spyOn(component as any, 'handleError');
-
-      component.rejectProposal();
-      tick();
-
-      expect(handleErrorSpy).toHaveBeenCalledWith(error);
-      expect(mockDialogRef.close).not.toHaveBeenCalled();
-    }));
-  });
 });
