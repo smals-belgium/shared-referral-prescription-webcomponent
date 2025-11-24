@@ -73,57 +73,35 @@ export class RejectProposalDialog extends BaseDialog implements OnInit {
     }
 
     this.loading = true;
-    if (!this.data.proposal.performerTasks?.length) {
-      this.encryptionHelperService
-        .getEncryptedReasonAndPseudoKey(reason, this.data.proposal?.pseudonymizedKey)
-        .pipe(
-          switchMap(result =>
-            this.proposalStateService
-              .rejectProposal(
-                this.data.proposal.id!,
-                {
-                  reason: result?.encryptedText,
-                  kid: this.data.proposal?.kid,
-                  pseudonymizedKey: result?.pseudonymizedKey,
-                },
-                this.generatedUUID
-              )
-              .pipe(
-                catchError(error => {
-                  throw new Error('API rejection failed', error.message);
-                })
-              )
-          )
+    this.encryptionHelperService
+      .getEncryptedReasonAndPseudoKey(reason, this.data.proposal?.pseudonymizedKey)
+      .pipe(
+        switchMap(result =>
+          this.proposalStateService
+            .rejectProposal(
+              this.data.proposal.id!,
+              {
+                reason: result?.encryptedText,
+                kid: this.data.proposal?.kid,
+                pseudonymizedKey: result?.pseudonymizedKey,
+              },
+              this.generatedUUID
+            )
+            .pipe(
+              catchError(error => {
+                throw new Error('API rejection failed', error.message);
+              })
+            )
         )
-        .subscribe({
-          next: () => {
-            this.handleSuccess();
-          },
-          error: error => {
-            this.handleError(error);
-          },
-        });
-    } else {
-      const performerTasks = this.data.proposal.performerTasks;
-      const lastPerformerTask = performerTasks[performerTasks.length - 1];
-
-      if (!lastPerformerTask.id) {
-        this.loading = false;
-        this.showErrorCard('common.somethingWentWrong');
-        return;
-      }
-
-      this.proposalStateService
-        .rejectProposalTask(this.data.proposal.id, lastPerformerTask.id, { reason: reason }, this.generatedUUID)
-        .subscribe({
-          next: () => {
-            this.handleSuccess();
-          },
-          error: error => {
-            this.handleError(error);
-          },
-        });
-    }
+      )
+      .subscribe({
+        next: () => {
+          this.handleSuccess();
+        },
+        error: error => {
+          this.handleError(error);
+        },
+      });
   }
 
   private handleSuccess(): void {
