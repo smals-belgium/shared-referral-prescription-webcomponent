@@ -1,6 +1,6 @@
 {
   "name": "@smals/nihdi-uhmep-healix-web-components",
-  "version": "1.13.2",
+  "version": "1.13.3-SNAPSHOT",
   "scripts": {
     "ng": "ng",
     "start": "npm run serve:wc:details",
