@@ -1,18 +1,22 @@
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core';
-import {DatePipe} from '@reuse/code/pipes/date.pipe';
-import {FormatSsinPipe} from '@reuse/code/pipes/format-ssin.pipe';
-import {ProfessionalDisplayComponent} from '@reuse/code/components/professional-display/professional-display.component';
-import {TranslatePipe} from '@ngx-translate/core';
+import { DatePipe } from '@reuse/code/pipes/date.pipe';
+import {
+  ProfessionalDisplayComponent
+} from '@reuse/code/components/professional-display/professional-display.component';
+import { TranslatePipe } from '@ngx-translate/core';
 import { DataState, UserInfo } from '@reuse/code/interfaces';
 import { PersonResource, ReadRequestResource, TemplateVersion } from '@reuse/code/openapi';
 import {
   DetailsServices,
   PrescriptionDetailsSecondaryService,
 } from '../prescription-details-secondary/prescription-details-secondary.service';
+import {
+  PrescriptionDetailsBeneficiaryComponent
+} from './prescription-details-beneficiary/prescription-details-beneficiary.component';
 
 @Component({
   selector: 'app-prescription-details-main',
-  imports: [DatePipe, FormatSsinPipe, ProfessionalDisplayComponent, TranslatePipe],
+  imports: [DatePipe, ProfessionalDisplayComponent, TranslatePipe, PrescriptionDetailsBeneficiaryComponent],
   templateUrl: './prescription-details-main.component.html',
   styleUrl: './prescription-details-main.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
