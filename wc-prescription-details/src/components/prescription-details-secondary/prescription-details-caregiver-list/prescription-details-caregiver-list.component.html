@@ -11,7 +11,7 @@
           @if (performerTask.careGiver; as careGiver) {
             @if (!careGiver.healthcarePerson?.lastName) {
               @if (careGiver.healthcarePerson?.ssin === currentUserData.ssin) {
-                {{ currentUserData?.firstName }} {{ currentUserData?.lastName }}
+                <span class="caregiver_info_fullName">{{ currentUserData?.firstName }} {{ currentUserData?.lastName }} </span>
               } @else {
                 <b>{{ 'common.professional.notFound' | translate }}</b>
                 <mat-icon matTooltip="{{'common.professional.tooltip' | translate}}"
