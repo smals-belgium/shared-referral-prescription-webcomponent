@@ -27,8 +27,6 @@ import { toDataState } from '@reuse/code/utils/rxjs.utils';
 import { HealthcareProviderService } from '@reuse/code/services/api/healthcareProvider.service';
 import { SsinOrOrganizationIdPipe } from '@reuse/code/pipes/ssin-or-cbe.pipe';
 import { ShowDetailsPipe } from '@reuse/code/pipes/show-details.pipe';
-import { ActivePageComponent } from '@reuse/code/components/active-page/active-page.component';
-import { MatSelect } from '@angular/material/select';
 import { PaginatorComponent } from '@reuse/code/components/paginator/paginator.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { OrganizationService } from '@reuse/code/services/helpers/organization.service';
@@ -39,7 +37,8 @@ import {
   CityResource,
   HealthcareOrganizationResource,
   HealthcareProResource,
-  PerformerTaskIdResource, ProviderType,
+  PerformerTaskIdResource,
+  ProviderType,
   TelephoneNumbers,
   Translation,
 } from '@reuse/code/openapi';
@@ -83,8 +82,6 @@ interface AssignPrescriptionDialogData {
     TranslationPipe,
     FormatNihdiPipe,
     AsyncPipe,
-    ActivePageComponent,
-    MatSelect,
     SsinOrOrganizationIdPipe,
     ShowDetailsPipe,
     NgClass,
@@ -325,22 +322,33 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
     });
   }
 
-  onKeyUp(event: KeyboardEvent) {
+  onInput(event: Event) {
     this.formGroup.get('cities')!.updateValueAndValidity();
     this.updateQueryTypeAndValidators(event);
   }
 
-  private updateQueryTypeAndValidators(event: KeyboardEvent) {
+  private updateQueryTypeAndValidators(event: Event) {
     const oldQueryIsNumeric = this.queryIsNumeric;
     const inputValue = (event.target as HTMLInputElement).value;
+    const control = this.formGroup.get('query')!;
+
     this.queryIsNumeric = !!inputValue && !Number.isNaN(Number(inputValue?.substring(0, 1)));
+
+    if (this.queryIsNumeric) {
+      const sanitizedValue = inputValue.replace(/-/g, '');
+
+      if (control.value !== sanitizedValue) {
+        control.setValue(sanitizedValue, {emitEvent: false});
+      }
+    }
+
     if (this.queryIsNumeric !== oldQueryIsNumeric) {
-      const control = this.formGroup.get('query')!;
       if (this.queryIsNumeric) {
         control.removeValidators(this.nameValidators);
       } else {
         control.addValidators(this.nameValidators);
       }
+      control.updateValueAndValidity({ emitEvent: false });
     }
   }
 
