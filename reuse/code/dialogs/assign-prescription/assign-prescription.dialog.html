@@ -27,7 +27,7 @@
               [placeholder]="'prescription.assignPerformer.searchPerformerPlaceHolder' | translate"
               [validation]="queryIsNumeric"
               maxlength="50"
-              (keyup)="onKeyUp($event)"
+              (input)="onInput($event)"
             >
             @if (!queryIsNumeric) {
               <mat-hint align="end">{{ control.value?.length }}/ {{ caregiverNameMaxLength }}
