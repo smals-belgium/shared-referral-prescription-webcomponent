@@ -1,15 +1,8 @@
 <div class="main_details_container">
-  <div class="beneficiary_container">
-    <span class="beneficiary_label">{{ 'prescription.beneficiary' | translate }}</span>
-    <div class="beneficiary_data">
-      <span class="beneficiary_full_name">{{ patient?.lastName }} {{ patient?.firstName }}</span>
-      <span class="beneficiary_gender">({{ 'common.gendersFull.'+patient?.gender | translate }})</span>
-    </div>
-    <div class="beneficiary_other_data">
-      <span class="beneficiary_ssin">{{patient?.ssin | formatSsin}} </span>
-      <span class="prescription_shortcode">{{prescription?.shortCode }} </span>
-    </div>
-  </div>
+  <app-prescription-details-beneficiary
+  [patient]="patient"
+  [prescription]="prescription"
+  ></app-prescription-details-beneficiary>
 
   @if (decryptedResponses().data && templateVersion) {
     <div class="evf_form_detail_container">

@@ -1,0 +1,51 @@
+@use '@angular/material' as mat;
+@use '@myhealth-belgium/design-kit' as mh;
+
+
+.container {
+  width: min-content;
+  border: var(--mh-main-beneficiary-container-border, 2px solid mh.$border-brand-primary-medium);
+  border-radius: var(--mh-main-beneficiary-container-border-radius, mh.$border-radius-s);
+  padding: mh.$spacing-rem-s;
+
+  .label {
+    @include mh.font-body-1();
+    margin: 0;
+    color: var(--mh-main-beneficiary-label-color, mh.$typography-brand-neutral-dark);
+  }
+
+  .data {
+    display: flex;
+    align-items: center;
+    gap: mh.$spacing-rem-xs;
+
+    .full_name {
+      @include mh.font-default-bold();
+      width: max-content;
+    }
+
+    .gender {
+      @include mh.font-extra-small-regular();
+    }
+  }
+
+  .other_data {
+    display: flex;
+    align-items: center;
+    gap: mh.$spacing-rem-m;
+
+    .ssin {
+      @include mh.font-small-regular();
+      //
+      text-wrap: nowrap;
+    }
+
+    .prescription_shortcode {
+      @include mh.font-default-bold();
+    }
+  }
+}
+
+
+
+
