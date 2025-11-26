@@ -1,0 +1,148 @@
+{
+  "total": 13,
+  "items": [
+    {
+      "id": "2003e84e-a8bd-45f2-8543-949ed6c82940",
+      "templateCode": "ASSISTING_WITH_PERSONAL_HYGIENE",
+      "authoredOn": "2025-10-09T22:00:00.000+00:00",
+      "requester": { "address": {}, "nihii8": "", "nihii11": "", "type": "", "id": {}, "phoneNumbers": {}, "licenseToPractice": true, "subscriptionEndDate": null, "healthcareQualification": {}, "healthcareStatus": {}, "healthcarePerson": { "ssin": "72101200102", "firstName": "Asra", "lastName": "Quin", "deceased": false }, "healthcareVisaList": [] },
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": { "start": "2025-10-09T22:00:00.000+00:00", "end": "2026-10-09T22:00:00.000+00:00" },
+      "assigned": false
+    },
+    {
+      "id": "a2a0bd09-8ad2-47d3-a9b0-b79b85e7ac6a",
+      "templateCode": "ASSISTING_WITH_PERSONAL_HYGIENE",
+      "authoredOn": "2025-10-05T22:00:00.000+00:00",
+      "requester": { "address": {}, "nihii8": "", "nihii11": "", "type": "", "id": {}, "phoneNumbers": {}, "licenseToPractice": true, "subscriptionEndDate": null, "healthcareQualification": {}, "healthcareStatus": {}, "healthcarePerson": { "ssin": "72101200102", "firstName": "Asra", "lastName": "Quin", "deceased": false }, "healthcareVisaList": [] },
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": { "start": "2025-10-05T22:00:00.000+00:00", "end": "2026-10-05T22:00:00.000+00:00" },
+      "assigned": false
+    },
+    {
+      "id": "9fd64a18-8220-4433-a256-1452a78005ed",
+      "templateCode": "DIABETIC_EDUCATION_VIA_CONVENTION_CENTER",
+      "authoredOn": "2025-09-28T22:00:00.000+00:00",
+      "requester": { "address": {}, "nihii8": "", "nihii11": "", "type": "", "id": {}, "phoneNumbers": {}, "licenseToPractice": true, "subscriptionEndDate": null, "healthcareQualification": {}, "healthcareStatus": {}, "healthcarePerson": { "ssin": "72101200102", "firstName": "Asra", "lastName": "Quin", "deceased": false }, "healthcareVisaList": [] },
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": { "start": "2025-09-28T22:00:00.000+00:00", "end": "2026-09-28T22:00:00.000+00:00" },
+      "assigned": false
+    },
+    {
+      "id": "78ca6693-a0e6-49e2-8354-76358139a5ca",
+      "templateCode": "DIABETIC_EDUCATION_VIA_CONVENTION_CENTER",
+      "authoredOn": "2025-09-20T22:00:00.000+00:00",
+      "requester": { "address": {}, "nihii8": "", "nihii11": "", "type": "", "id": {}, "phoneNumbers": {}, "licenseToPractice": true, "subscriptionEndDate": null, "healthcareQualification": {}, "healthcareStatus": {}, "healthcarePerson": { "ssin": "72101200102", "firstName": "Asra", "lastName": "Quin", "deceased": false }, "healthcareVisaList": [] },
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": { "start": "2025-09-20T22:00:00.000+00:00", "end": "2026-09-20T22:00:00.000+00:00" },
+      "assigned": false
+    },
+    {
+      "id": "49dd1d6d-352a-47e0-b530-5eed78b5f6f8",
+      "templateCode": "ASSISTING_WITH_PERSONAL_HYGIENE",
+      "authoredOn": "2025-09-12T22:00:00.000+00:00",
+      "requester": { "address": {}, "nihii8": "", "nihii11": "", "type": "", "id": {}, "phoneNumbers": {}, "licenseToPractice": true, "subscriptionEndDate": null, "healthcareQualification": {}, "healthcareStatus": {}, "healthcarePerson": { "ssin": "72101200102", "firstName": "Asra", "lastName": "Quin", "deceased": false }, "healthcareVisaList": [] },
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": { "start": "2025-09-12T22:00:00.000+00:00", "end": "2026-09-12T22:00:00.000+00:00" },
+      "assigned": false
+    },
+    {
+      "id": "246eadc1-fc0c-4823-9e5a-b37cc30952a8",
+      "templateCode": "BLEEDING",
+      "authoredOn": "2025-09-01T22:00:00.000+00:00",
+      "requester": { "address": {}, "nihii8": "", "nihii11": "", "type": "", "id": {}, "phoneNumbers": {}, "licenseToPractice": true, "subscriptionEndDate": null, "healthcareQualification": {}, "healthcareStatus": {}, "healthcarePerson": { "ssin": "72101200102", "firstName": "Asra", "lastName": "Quin", "deceased": false }, "healthcareVisaList": [] },
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": { "start": "2025-09-01T22:00:00.000+00:00", "end": "2026-09-01T22:00:00.000+00:00" },
+      "assigned": true
+    },
+    {
+      "id": "f3a4fe54-5a40-4ee3-bac6-d9408d1ff357",
+      "templateCode": "CHRONIC_PERITONEAL_DIALYSIS",
+      "authoredOn": "2025-08-25T22:00:00.000+00:00",
+      "requester": { "address": {}, "nihii8": "", "nihii11": "", "type": "", "id": {}, "phoneNumbers": {}, "licenseToPractice": true, "subscriptionEndDate": null, "healthcareQualification": {}, "healthcareStatus": {}, "healthcarePerson": { "ssin": "62120200002", "firstName": "Xara", "lastName": "Morn", "deceased": false }, "healthcareVisaList": [] },
+      "careGivers": null,
+      "organizations": null,
+      "status": "IN_PROGRESS",
+      "period": { "start": "2025-08-25T22:00:00.000+00:00", "end": "2026-08-25T22:00:00.000+00:00" },
+      "assigned": true
+    },
+    {
+      "id": "d4c6a866-cbb0-4e23-9391-d026c57ae69f",
+      "templateCode": "ASSISTING_WITH_PERSONAL_HYGIENE",
+      "authoredOn": "2025-08-15T22:00:00.000+00:00",
+      "requester": { "address": {}, "nihii8": "", "nihii11": "", "type": "", "id": {}, "phoneNumbers": {}, "licenseToPractice": true, "subscriptionEndDate": null, "healthcareQualification": {}, "healthcareStatus": {}, "healthcarePerson": { "ssin": "62120200002", "firstName": "Xara", "lastName": "Morn", "deceased": false }, "healthcareVisaList": [] },
+      "careGivers": null,
+      "organizations": null,
+      "status": "IN_PROGRESS",
+      "period": { "start": "2025-08-15T22:00:00.000+00:00", "end": "2026-08-15T22:00:00.000+00:00" },
+      "assigned": true
+    },
+    {
+      "id": "b67443f7-955e-44c0-b5b2-26806e508985",
+      "templateCode": "DIABETIC_EDUCATION_VIA_CONVENTION_CENTER",
+      "authoredOn": "2025-07-28T22:00:00.000+00:00",
+      "requester": { "address": {}, "nihii8": "", "nihii11": "", "type": "", "id": {}, "phoneNumbers": {}, "licenseToPractice": true, "subscriptionEndDate": null, "healthcareQualification": {}, "healthcareStatus": {}, "healthcarePerson": { "ssin": "62120200002", "firstName": "Xara", "lastName": "Morn", "deceased": false }, "healthcareVisaList": [] },
+      "careGivers": null,
+      "organizations": null,
+      "status": "APPROVED",
+      "period": { "start": "2025-07-28T22:00:00.000+00:00", "end": "2026-07-28T22:00:00.000+00:00" },
+      "assigned": true
+    },
+    {
+      "id": "37ae3248-efa6-4e6f-aae1-17aae53ff8aa",
+      "templateCode": "BLEEDING",
+      "authoredOn": "2025-06-10T22:00:00.000+00:00",
+      "requester": { "address": {}, "nihii8": "", "nihii11": "", "type": "", "id": {}, "phoneNumbers": {}, "licenseToPractice": true, "subscriptionEndDate": null, "healthcareQualification": {}, "healthcareStatus": {}, "healthcarePerson": { "ssin": "62120200002", "firstName": "Xara", "lastName": "Morn", "deceased": false }, "healthcareVisaList": [] },
+      "careGivers": null,
+      "organizations": null,
+      "status": "APPROVED",
+      "period": { "start": "2025-06-10T22:00:00.000+00:00", "end": "2026-06-10T22:00:00.000+00:00" },
+      "assigned": true
+    },
+    {
+      "id": "d4c6a866-cbb0-4e23-9391-d026c57ae69g",
+      "templateCode": "ASSISTING_WITH_PERSONAL_HYGIENE",
+      "authoredOn": "2025-05-15T22:00:00.000+00:00",
+      "requester": { "address": {}, "nihii8": "", "nihii11": "", "type": "", "id": {}, "phoneNumbers": {}, "licenseToPractice": true, "subscriptionEndDate": null, "healthcareQualification": {}, "healthcareStatus": {}, "healthcarePerson": { "ssin": "62120200002", "firstName": "Xara", "lastName": "Morn", "deceased": false }, "healthcareVisaList": [] },
+      "careGivers": null,
+      "organizations": null,
+      "status": "DONE",
+      "period": { "start": "2025-05-15T22:00:00.000+00:00", "end": "2026-05-15T22:00:00.000+00:00" },
+      "assigned": true
+    },
+    {
+      "id": "b67443f7-955e-44c0-b5b2-26806e508967",
+      "templateCode": "DIABETIC_EDUCATION_VIA_CONVENTION_CENTER",
+      "authoredOn": "2025-05-15T22:00:00.000+00:00",
+      "requester": { "address": {}, "nihii8": "", "nihii11": "", "type": "", "id": {}, "phoneNumbers": {}, "licenseToPractice": true, "subscriptionEndDate": null, "healthcareQualification": {}, "healthcareStatus": {}, "healthcarePerson": { "ssin": "62120200002", "firstName": "Xara", "lastName": "Morn", "deceased": false }, "healthcareVisaList": [] },
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": { "start": "2025-05-15T22:00:00.000+00:00", "end": "2026-05-15T22:00:00.000+00:00" },
+      "assigned": true
+    },
+    {
+      "id": "37ae3248-efa6-4e6f-aae1-17aae53ff8bb",
+      "templateCode": "DIABETIC_EDUCATION_FOR_PATIENTS_WITH_MODEL_OF_CARE",
+      "authoredOn": "2025-07-10T22:00:00.000+00:00",
+      "requester": { "address": {}, "nihii8": "", "nihii11": "", "type": "", "id": {}, "phoneNumbers": {}, "licenseToPractice": true, "subscriptionEndDate": null, "healthcareQualification": {}, "healthcareStatus": {}, "healthcarePerson": { "ssin": "62120200002", "firstName": "Xara", "lastName": "Morn", "deceased": false }, "healthcareVisaList": [] },
+      "careGivers": null,
+      "organizations": null,
+      "status": "IN_PROGRESS",
+      "period": { "start": "2025-07-10T22:00:00.000+00:00", "end": "2026-07-10T22:00:00.000+00:00" },
+      "assigned": true
+    }
+  ]
+}

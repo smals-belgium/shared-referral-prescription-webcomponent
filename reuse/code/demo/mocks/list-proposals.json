@@ -1,0 +1,152 @@
+{
+  "total": 3,
+  "items": [
+    {
+      "id": "e37d4206-f7d1-4095-8911-b44f5c12982a",
+      "templateCode": "MeelaEX_81",
+      "authoredOn": "2025-09-23T09:29:58.000+00:00",
+      "requester": {
+        "address": {
+          "street": {},
+          "houseNumber": "",
+          "box": "",
+          "zipCode": "",
+          "municipality": {}
+        },
+        "nihii8": "",
+        "nihii11": "45369373428",
+        "type": "Professional",
+        "id": {
+          "profession": "NURSE",
+          "ssin": "",
+          "qualificationCode": ""
+        },
+        "phoneNumbers": {
+          "telephoneNumbers": null,
+          "mobileNumber": ""
+        },
+        "licenseToPractice": true,
+        "subscriptionEndDate": null,
+        "healthcareQualification": {},
+        "healthcareStatus": {
+          "descriptionFr": "Actif",
+          "descriptionNl": "Actief",
+          "descriptionDe": "",
+          "descriptionEn": "",
+          "code": "01"
+        },
+        "healthcarePerson": {
+          "ssin": "",
+          "firstName": "Meela",
+          "lastName": "Vandar",
+          "deceased": false
+        },
+        "healthcareVisaList": []
+      },
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": {
+        "start": "2025-09-22T22:00:00.000+00:00",
+        "end": "2026-09-21T22:00:00.000+00:00"
+      },
+      "assigned": true
+    },
+    {
+      "id": "ad2ae739-9549-4246-b727-761378759186",
+      "templateCode": "MeelaEX_81",
+      "authoredOn": "2025-09-21T08:01:09.000+00:00",
+      "requester": {
+        "address": {
+          "street": {},
+          "houseNumber": "",
+          "box": "",
+          "zipCode": "",
+          "municipality": {}
+        },
+        "nihii8": "",
+        "nihii11": "45369373428",
+        "type": "Professional",
+        "id": {
+          "profession": "NURSE",
+          "ssin": "",
+          "qualificationCode": ""
+        },
+        "phoneNumbers": {
+          "telephoneNumbers": null,
+          "mobileNumber": ""
+        },
+        "licenseToPractice": true,
+        "subscriptionEndDate": null,
+        "healthcareQualification": {},
+        "healthcareStatus": {},
+        "healthcarePerson": {
+          "ssin": "",
+          "firstName": "Meela",
+          "lastName": "Vandar",
+          "deceased": false
+        },
+        "healthcareVisaList": []
+      },
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": {
+        "start": "2025-09-21T22:00:00.000+00:00",
+        "end": "2026-09-20T22:00:00.000+00:00"
+      },
+      "assigned": true
+    },
+    {
+      "id": "6e5920d7-f985-4d7f-9962-b69565fc3e2f",
+      "templateCode": "MeelaEX_81",
+      "authoredOn": "2025-08-20T06:58:43.000+00:00",
+      "requester": {
+        "address": {
+          "street": {},
+          "houseNumber": "",
+          "box": "",
+          "zipCode": "",
+          "municipality": {}
+        },
+        "nihii8": "",
+        "nihii11": "45369373428",
+        "type": "Professional",
+        "id": {
+          "profession": "NURSE",
+          "ssin": "",
+          "qualificationCode": ""
+        },
+        "phoneNumbers": {
+          "telephoneNumbers": null,
+          "mobileNumber": ""
+        },
+        "licenseToPractice": true,
+        "subscriptionEndDate": null,
+        "healthcareQualification": {},
+        "healthcareStatus": {
+          "descriptionFr": "Actif",
+          "descriptionNl": "Actief",
+          "descriptionDe": "Aktiv",
+          "descriptionEn": "Active",
+          "code": "01"
+        },
+        "healthcarePerson": {
+          "ssin": "",
+          "firstName": "Meela",
+          "lastName": "Vandar",
+          "deceased": false
+        },
+        "healthcareVisaList": []
+      },
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": {
+        "start": "2025-08-19T22:00:00.000+00:00",
+        "end": "2026-08-18T22:00:00.000+00:00"
+      },
+      "assigned": false
+    }
+  ]
+}

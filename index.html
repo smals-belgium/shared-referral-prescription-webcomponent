@@ -72,7 +72,9 @@
     } else if (host.includes("wwwacc.referral-prescription.ehealth.fgov.be") ??
       host.includes("extranet-acpt.referral-prescription.ehealth.fgov.be")) {
       return 'acc';
-    }else if (host.includes("localhost")) {
+    } else if (host.includes("demo")) {
+      return 'demo';
+    } else if (host.includes("localhost")) {
       return 'local';
     }
   }
@@ -98,7 +100,7 @@
         clientId: 'nihdi-uhmep-hcp'
       });
     } else if (env === 'local') {
-      return new Keycloak( {
+      return new Keycloak({
         url: 'https://vasiam.test.ext.vascloud.be/auth',
         realm: 'MOOSE_UHMEP',
         clientId: 'uhmep-webapp'
