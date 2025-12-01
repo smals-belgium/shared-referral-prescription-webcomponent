@@ -7,29 +7,79 @@
 
   <meta content="width=device-width, initial-scale=1" name="viewport"/>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <script src="keycloak.js"></script>
+  <script src="assets/keycloak.js"></script>
 </head>
 <body>
 <script>
-  window.referralPrescriptionEnv = 'local';
-  var keycloak = new Keycloak({
-    url: 'http://vasiam.test.paas.vasdc.be/auth',
-    realm: 'MOOSE_UHMEP',
-    clientId: 'uhmep-webapp'
-  });
-  keycloak.init({onLoad: 'login-required', checkLoginIframe: false}).then(function (authenticated) {
-    console.log(authenticated ? 'authenticated' : 'not authenticated');
+  const urlParams = new URLSearchParams(window.location.search);
+  const env = urlParams.get('env') === 'demo' ? 'demo' : 'local';
+  window.referralPrescriptionEnv = env;
+  function createDetailsComponent(services) {
+
     const create = document.createElement('nihdi-referral-prescription-details');
-    create.lang = navigator.language.includes('nl') ?? navigator.language.includes('fr') ? navigator.language : 'nl-BE';
-    create.prescriptionId = '13f22a72-8d73-4a76-bf21-4eb07ab1ab7d';
-    create.getToken = () => Promise.resolve(keycloak.token);
+    create.lang = navigator.language.includes('nl') || navigator.language.includes('fr')
+      ? navigator.language
+      : 'nl-BE';
+    create.prescriptionId = '17f0c1ab-5879-409d-a62c-5da3c857eba3';
+    // create.patientSsin = '90122712173';
+    create.intent = 'order';
+    create.services = services;
+
     document.body.append(create);
-  }).catch(function () {
-    alert('failed to initialize');
-  });
+  }
+
+  if (env === 'demo') {
+
+    const fakeHeader = btoa(JSON.stringify({ alg: 'none', typ: 'JWT' }));
+    const fakePayload = btoa(JSON.stringify({
+      sub: 'demo',
+      name: 'Jean Doe',
+      preferred_username: 'Jean Doe',
+      realm_access: { roles: ['user', 'admin'] },
+      resource_access: {
+        'nihdi-uhmep-api': { roles: ['admin', 'demo'] },
+      },
+      exp: Math.floor(Date.now() / 1000) + 3600,
+      iat: Math.floor(Date.now() / 1000),
+    }));
+    const demoJwt = `${fakeHeader}.${fakePayload}.`;
+    createDetailsComponent( {
+      getAccessToken: (audience) => Promise.resolve(demoJwt),
+      getIdToken: () => {
+        return {
+          userProfile: {
+            ssin: '90122712173',
+            firstName: 'Jean',
+            lastName: 'Dupont',
+            gender: 'male',
+            role: 'Patient'
+          }
+        };
+      }
+    });
+  }
+
+  else {
+    var keycloak = new Keycloak({
+      url: 'https://vasiam.test.ext.vascloud.be/auth',
+      realm: 'MOOSE_UHMEP',
+      clientId: 'nihdi-uhmep-hcp'
+    });
+
+    keycloak.init({onLoad: 'login-required', checkLoginIframe: false})
+      .then(function (authenticated) {
+
+        createDetailsComponent({
+          getAccessToken: (audience) => Promise.resolve(keycloak.token),
+          getIdToken: () => keycloak.tokenParsed
+        });
+      })
+      .catch(function (error) {
+        alert('Failed to initialize authentication');
+      });
+  }
 </script>
 
 <script src="/assets/evf-form-details/evf-form-details.js" type="module"></script>
-<script src="/assets/pdfmake/pdfmake.js" type="module"></script>
 </body>
 </html>

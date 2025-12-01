@@ -17,13 +17,14 @@ import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { WcAuthService } from '@reuse/code/services/auth/wc-auth.service';
 import { getErrorHandlerFromConfiguration } from '@reuse/code/services/helpers/sentry-error-handler.service';
 import { provideOpenApi } from '@reuse/code/providers/open-api.provider';
+import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
 
 (async () => {
   const app = createApplication({
     providers: [
       provideCore(),
       provideAnimations(),
-      provideHttpClient(withInterceptors([apiUrlInterceptor])),
+      provideHttpClient(withInterceptors([demoHttpInterceptor, apiUrlInterceptor])),
       {
         provide: ConfigurationService,
         useClass: WcConfigurationService,
