@@ -47,7 +47,87 @@ it('should expose templates in the body property', () => {
   expect(typeof mock.body).toBe('object');
 });
 
-describe('Prescriptions  summary mock', () => {
+it('should return paginated organizations when institutionType is set', () => {
+  const mock = findMockByUrl(/\/healthCareProviders/);
+  const params = new URLSearchParams({ institutionType: 'HOSPITAL', page: '1', pageSize: '5' }) as any;
+  const req = new HttpRequest('GET', '/healthCareProviders', { params });
+
+  const result = mock.handler!(req, null);
+
+  expect(result).toHaveProperty('healthcareOrganizations');
+  expect(result).toHaveProperty('total');
+  expect(Array.isArray(result.healthcareOrganizations)).toBe(true);
+});
+
+it('should return filtered professionals when discipline is set', () => {
+  const mock = findMockByUrl(/\/healthCareProviders/);
+  const params = new URLSearchParams({ discipline: 'ALL', page: '1', pageSize: '5' }) as any;
+  const req = new HttpRequest('GET', '/healthCareProviders', { params });
+
+  const result = mock.handler!(req, null);
+
+  expect(result).toHaveProperty('healthcareProfessionals');
+  expect(result).toHaveProperty('total');
+  expect(Array.isArray(result.healthcareProfessionals)).toBe(true);
+});
+
+it('should return default resource when no params are provided', () => {
+  const mock = findMockByUrl(/\/healthCareProviders/);
+  const params = new URLSearchParams() as any;
+  const req = new HttpRequest('GET', '/healthCareProviders', { params });
+
+  const result = mock.handler!(req, null);
+
+  expect(result).toHaveProperty('healthcareOrganizations');
+  expect(result).toHaveProperty('healthcareProfessionals');
+});
+
+it('should return templateVersionsLatest body', () => {
+  const mock = findMockByUrl(/\/templates\/READ_[A-Z0-9_]+\/versions\/latest$/);
+  expect(mock.body).toBeDefined();
+  expect(typeof mock.body).toBe('object');
+});
+
+it('should return an id when assigning a prescription', () => {
+  const mock = findMockByUrl(/\/prescriptions\/[a-z0-9-]+\/assign\/[a-z0-9-]+$/i);
+  const req = new HttpRequest('POST', '/prescriptions/123/assign/456', null);
+  const result = typeof mock.body === 'function' ? mock.body(req, null) : mock.body;
+
+  expect(result).toHaveProperty('id');
+});
+
+it('should return an id when assigning a proposal', () => {
+  const mock = findMockByUrl(/\/proposals\/[a-z0-9-]+\/assign\/[a-z0-9-]+$/i);
+  const req = new HttpRequest('POST', '/proposals/123/assign/456', null);
+  const result = typeof mock.body === 'function' ? mock.body(req, null) : mock.body;
+
+  expect(result).toHaveProperty('id');
+});
+
+it('should return an id when assigning an organization to a prescription', () => {
+  const mock = findMockByUrl(/\/prescriptions\/[a-z0-9-]+\/assignOrganization\/[a-z0-9-]+$/i);
+  const req = new HttpRequest('POST', '/prescriptions/123/assignOrganization/456', null);
+  const result = typeof mock.body === 'function' ? mock.body(req, null) : mock.body;
+
+  expect(result).toHaveProperty('id');
+});
+
+it('should return an id when assigning an organization to a proposal', () => {
+  const mock = findMockByUrl(/\/proposals\/[a-z0-9-]+\/assignOrganization\/[a-z0-9-]+$/i);
+  const req = new HttpRequest('POST', '/proposals/123/assignOrganization/456', null);
+  const result = typeof mock.body === 'function' ? mock.body(req, null) : mock.body;
+
+  expect(result).toHaveProperty('id');
+});
+
+describe('Prescriptions mock', () => {
+
+  it('should return prescription body', () => {
+    const mock = findMockByUrl(/\/prescriptions\/[a-z0-9-]+$/i);
+    expect(mock.body).toBeDefined();
+    expect(typeof mock.body).toBe('object');
+  });
+
   it('should return only OPEN and IN_PROGRESS prescriptions when historical=false', () => {
     const mock = findMockByUrl(/\/prescriptions\/summary/);
     const req = createHttpRequest('/prescriptions/summary', {
@@ -83,7 +163,15 @@ describe('Prescriptions  summary mock', () => {
   });
 });
 
-describe('Proposals summary mock', () => {
+describe('Proposals mock', () => {
+
+
+  it('should return proposal body', () => {
+    const mock = findMockByUrl(/\/proposals\/[a-z0-9-]+$/i);
+    expect(mock.body).toBeDefined();
+    expect(typeof mock.body).toBe('object');
+  });
+
   it('should filter out non-OPEN/IN_PROGRESS proposals when historical=false', () => {
     const mock = findMockByUrl(/\/proposals\/summary/);
     const req = createHttpRequest('/proposals/summary', {
@@ -117,4 +205,3 @@ describe('Proposals summary mock', () => {
     expect(result.total).toBeGreaterThanOrEqual(result.items.length);
   });
 });
-

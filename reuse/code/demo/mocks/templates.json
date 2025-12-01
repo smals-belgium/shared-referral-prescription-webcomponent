@@ -260,10 +260,10 @@
     "code": "COMPRESSION_THERAPY",
     "label": "COMPRESSION_THERAPY",
     "labelTranslations": {
-      "en": "🚧 Compression therapy",
-      "nl": "🚧 Compressie therapie",
-      "fr": "🚧 Thérapie de compression",
-      "de": "🚧 Kompressionstherapie"
+      "en": "Compression therapy",
+      "nl": "Compressie therapie",
+      "fr": "Thérapie de compression",
+      "de": "Kompressionstherapie"
     },
     "shortLabelTranslations": {},
     "metadata": {
@@ -617,10 +617,10 @@
     "code": "ANNEX_81",
     "label": "ANNEX_81",
     "labelTranslations": {
-      "en": "🚧 Medication preparation (Annex 81)",
-      "nl": "🚧 Medicatie klaarzetten (Bijlage 81)",
-      "fr": "🚧 Préparation de médicament (Annexe 81)",
-      "de": "🚧 Medikamentenvorbereitung (Anlage 81)"
+      "en": "Medication preparation (Annex 81)",
+      "nl": "Medicatie klaarzetten (Bijlage 81)",
+      "fr": "Préparation de médicament (Annexe 81)",
+      "de": "Medikamentenvorbereitung (Anlage 81)"
     },
     "shortLabelTranslations": {},
     "metadata": {

@@ -1,0 +1,16 @@
+[
+  {
+    "ssin" : "80222700163",
+    "firstName" : "John",
+    "lastName" : "Doe",
+    "gender" : "M",
+    "birthDate" : "1980-12-27"
+  },
+  {
+    "ssin" : "85132100215",
+    "firstName" : "Jane",
+    "lastName" : "Doe",
+    "gender" : "V",
+    "birthDate" : "1985-03-21"
+  }
+]

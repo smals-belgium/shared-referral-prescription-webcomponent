@@ -24,13 +24,14 @@ import {
 } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { provideEvfForm } from '@reuse/code/evf/evf-form.provider';
 import { provideMarkdown } from '@reuse/code/providers/markdown.provider';
+import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
 
 (async () => {
   const app = createApplication({
     providers: [
       provideAnimations(),
       provideCore(),
-      provideHttpClient(withInterceptors([apiUrlInterceptor])),
+      provideHttpClient(withInterceptors([demoHttpInterceptor, apiUrlInterceptor])),
       providePseudonymisation(),
       provideEvfForm(),
       provideMarkdown(),

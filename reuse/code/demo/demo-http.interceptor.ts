@@ -20,7 +20,6 @@ export const demoHttpInterceptor: HttpInterceptorFn = (
     if (config.getEnvironment() !== 'demo' || req.url.includes('assets/i18n/')) {
         return next(req);
     }
-
     const cleanUrl = req.url.split('?')[0];
     const match = DEMO_MOCKS.find(m =>
         m.method.includes(req.method as HttpMethod) && m.url.test(cleanUrl)
