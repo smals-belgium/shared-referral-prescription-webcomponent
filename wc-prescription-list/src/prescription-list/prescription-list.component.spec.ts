@@ -23,6 +23,7 @@ import { FeatureFlagService } from '@reuse/code/services/helpers/feature-flag.se
 import { FeatureFlagDirective } from '@reuse/code/directives/feature-flag.directive';
 import { PrescriptionsCardComponent } from '../components/prescriptions/prescriptions-card/prescriptions-card.component';
 import { RequestSummaryDataService } from '@reuse/code/services/helpers/request-summary-data.service';
+import { Lang } from '@reuse/code/interfaces/lang.enum';
 
 const BASE_URL = 'http://localhost';
 
@@ -557,17 +558,34 @@ describe('ListPrescriptionsWebComponent', () => {
 
       createFixture();
 
-      expect(translate.getDefaultLang()).toBe('fr-BE');
-      expect(setLocalesSpy).toHaveBeenCalledWith('fr-BE');
+      expect(translate.getDefaultLang()).toBe(Lang.FR);
+      expect(setLocalesSpy).toHaveBeenCalledWith(Lang.FR);
     });
 
-    it('should not call use() or setLocale() if language is already set', () => {
-      translate.use('nl-BE');
-      const setLocalesSpy = jest.spyOn(dateAdapter, 'setLocale');
+    it('should not call use() or setLocale() with initial language only once', () => {
+      translate.use(Lang.NL);
+
+      const translateUseSpy = jest.spyOn(translate, 'use');
+      const dateAdapterSpy = jest.spyOn(dateAdapter, 'setLocale');
 
       createFixture();
 
-      expect(setLocalesSpy).not.toHaveBeenCalled();
+      expect(translateUseSpy).toHaveBeenCalledTimes(1);
+      expect(dateAdapterSpy).toHaveBeenCalledTimes(1);
+      expect(translateUseSpy).toHaveBeenCalledWith(Lang.NL);
+      expect(dateAdapterSpy).toHaveBeenCalledWith(Lang.NL);
+    });
+
+    it('should update language by emitting a new lang with _languageChange()', () => {
+      const translateUseSpy = jest.spyOn(translate, 'use');
+      const dateAdapterSpy = jest.spyOn(dateAdapter, 'setLocale');
+
+      createFixture();
+
+      component['_languageChange'].next(Lang.FR);
+
+      expect(translateUseSpy).toHaveBeenCalledWith(Lang.FR);
+      expect(dateAdapterSpy).toHaveBeenCalledWith(Lang.FR);
     });
   });
 

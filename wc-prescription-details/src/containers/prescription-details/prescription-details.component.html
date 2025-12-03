@@ -1,14 +1,26 @@
 @if (viewState$(); as viewState) {
-  <app-overlay-spinner *ifStatusLoading="viewState" mode="inline"></app-overlay-spinner>
-  <app-alert
-    *ifStatusError="viewState"
-    [alert]="AlertType.Error"
-    [message]="'prescription.errors.failedToLoadPrescription' | translate"
-    [error]="prescriptionHttpError"
-    [showRetry]="showRetryButton()"
-    (clickRetry)="loadPrescriptionOrProposal()"
-  ></app-alert>
-  <ng-container *ifStatusSuccess="viewState">
+  @if (langAlertData()){
+    @let langValue = langAlertData()!;
+
+    <app-alert
+      [title]="langValue.title"
+      [message]="langValue.body"
+      [alert]="AlertType.Info"
+      [showRetry]="false"
+    >
+    </app-alert>
+  }
+  @else{
+    <app-overlay-spinner *ifStatusLoading="viewState" mode="inline"></app-overlay-spinner>
+    <app-alert
+      *ifStatusError="viewState"
+      [alert]="AlertType.Error"
+      [message]="'prescription.errors.failedToLoadPrescription' | translate"
+      [error]="prescriptionHttpError"
+      [showRetry]="showRetryButton()"
+      (clickRetry)="loadPrescriptionOrProposal()"
+    ></app-alert>
+    <ng-container *ifStatusSuccess="viewState">
 
     @if (viewState.data?.prescription; as prescription) {
       <div class="details_container">
@@ -162,13 +174,14 @@
       </div>
 
       @if (isProposalValue) {
-        <hr>
+          <hr>
 
-        <app-prescription-details-bottom>
-        </app-prescription-details-bottom>
+          <app-prescription-details-bottom>
+          </app-prescription-details-bottom>
+        }
       }
-    }
-  </ng-container>
+    </ng-container>
+  }
 }
 
 @if (loading()) {

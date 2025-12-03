@@ -1,5 +1,5 @@
 import { TranslateLoader } from '@ngx-translate/core';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import * as nlBe from '@reuse/assets/i18n-common/nl-BE.json';
 import * as frBe from '@reuse/assets/i18n-common/fr-BE.json';
 
@@ -11,7 +11,7 @@ export class WcTranslateLoader implements TranslateLoader {
       case 'fr':
         return of(frBe);
       default:
-        throw new Error('Language not supported: ' + lang);
+        return throwError(() => new Error(`Language not supported: ${lang}`))
     }
   }
 }

@@ -6,7 +6,18 @@
     [showRetry]="false"
     data-cy="failed-prescription-list-default-error-message"
   ></app-alert>
-} @else {
+} @else if (langAlertData()){
+
+  @let langValue = langAlertData()!;
+  <app-alert
+    [title]="langValue.title"
+    [message]="langValue.body"
+    [alert]="AlertType.Info"
+    [showRetry]="false"
+  >
+  </app-alert>
+
+}@else {
   @if (isPrescriptionValue) {
     @if (viewStatePrescriptions$(); as prescriptionState) {
       <div class="container">
