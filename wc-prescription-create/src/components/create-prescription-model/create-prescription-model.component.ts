@@ -7,6 +7,7 @@ import {
   OnChanges,
   OnDestroy,
   Output,
+  signal,
   SimpleChanges,
 } from '@angular/core';
 import { ElementGroup, removeNulls } from '@smals/vas-evaluation-form-ui-core';
@@ -27,12 +28,16 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { CreatePrescriptionForm } from '@reuse/code/interfaces/create-prescription-form.interface';
 import { PrescriptionModelService } from '@reuse/code/services/api/prescriptionModel.service';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { UniqueModelNameValidator } from '@reuse/code/directives/unique-model-name.directive';
+import {
+  nameValidatorWithOriginal,
+  UniqueModelNameValidator
+} from '@reuse/code/directives/unique-model-name.directive';
 import { isOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
 import { FormDataType, FormElement, TemplateVersion } from '@reuse/code/openapi';
 import TypeEnum = FormDataType.TypeEnum;
+
 
 @Component({
   selector: 'app-create-prescription-model',
@@ -54,6 +59,7 @@ import TypeEnum = FormDataType.TypeEnum;
     IfStatusSuccessDirective,
     IfStatusErrorDirective,
     IfStatusLoadingDirective,
+    MatError,
   ],
 })
 export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
@@ -65,9 +71,11 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
   @Input() prescriptionForm!: CreatePrescriptionForm;
   @Output() modelSaved = new EventEmitter<void>();
 
+  originalName = signal<string>('');
+
   titleControl = new FormControl<string>('', {
     validators: [control => Validators.required(control)],
-    asyncValidators: [this.nameValidator.validate.bind(this.nameValidator)],
+    asyncValidators: [nameValidatorWithOriginal(this.nameValidator, () => this.originalName())],
     updateOn: 'change',
   });
 
@@ -81,6 +89,8 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['prescriptionForm'] && this.prescriptionForm?.modelId) {
       this.titleControl.setValue(this.prescriptionForm.modelName || '');
+      this.originalName.set(this.prescriptionForm?.modelName || '');
+      this.titleControl.markAsTouched();
     }
   }
 
@@ -189,23 +199,29 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
       );
     }
 
-    this.prescriptionModelState.setModalState(LoadingStatus.LOADING);
-    const responses = this.getResponses(prescriptionForm);
-    const name = this.titleControl.getRawValue() || '';
+    this.titleControl.markAllAsTouched();
 
-    this.prescriptionModalService
-      .updateModel(this.prescriptionForm.modelId!, {
-        name: name || '',
-        responses: responses,
-      })
-      .subscribe({
-        next: () => {
-          this.modelSaved.emit();
-        },
-        error: (e: HttpErrorResponse) => {
-          this.prescriptionModelState.setModalState(LoadingStatus.ERROR, undefined, e);
-        },
-      });
+    if (this.titleControl.valid) {
+      this.prescriptionModelState.setModalState(LoadingStatus.LOADING);
+      const responses = this.getResponses(prescriptionForm);
+      const name = this.titleControl.getRawValue() || '';
+
+      this.prescriptionModalService
+        .updateModel(this.prescriptionForm.modelId!, {
+          name: name || '',
+          responses: responses,
+        })
+        .subscribe({
+          next: () => {
+            this.modelSaved.emit();
+          },
+          error: (e: HttpErrorResponse) => {
+            this.prescriptionModelState.setModalState(LoadingStatus.ERROR, undefined, e);
+          },
+        });
+    } else {
+      this.prescriptionModelState.setModalState(LoadingStatus.UPDATING);
+    }
   }
 
   private filterElements(elements: FormElement[]): FormElement[] {

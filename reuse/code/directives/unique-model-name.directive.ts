@@ -1,8 +1,18 @@
 import { Injectable } from '@angular/core';
-import { AbstractControl, AsyncValidator, ValidationErrors } from '@angular/forms';
+import { AbstractControl, AsyncValidator, AsyncValidatorFn, ValidationErrors } from '@angular/forms';
 import { PrescriptionModelService } from '@reuse/code/services/api/prescriptionModel.service';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+
+export const nameValidatorWithOriginal = (
+  nameValidator: UniqueModelNameValidator,
+  originalName: () => string
+): AsyncValidatorFn => (control: AbstractControl) => {
+  if (!originalName() || control.value === originalName()) {
+    return of(null);
+  }
+  return nameValidator.validate(control);
+};
 
 @Injectable({ providedIn: 'root' })
 export class UniqueModelNameValidator implements AsyncValidator {

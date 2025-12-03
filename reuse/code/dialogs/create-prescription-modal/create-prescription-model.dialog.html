@@ -9,6 +9,8 @@
           [formControlName]="'name'"
           matInput
           data-cy="prescription-modal-dialog-input"
+          minlength="1"
+          maxlength="100"
         />
         @if (formGroup.get('name')?.hasError('required')) {
           <mat-error>{{ 'common.mandatory' | translate }}</mat-error>
