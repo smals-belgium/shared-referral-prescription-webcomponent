@@ -149,12 +149,7 @@
             @if(professional.healthcarePerson; as person){
             <b>{{ (person.firstName || '') + ' ' + (person.lastName || '') }}</b>
             }</td>
-          @if(professional.nihii8){
-          <td data-cy="professional-nihdi">{{professional.nihii8 | formatNihdi: professional.id?.qualificationCode}}</td>
-          }
-          @if(professional.nihii11){
-          <td data-cy="professional-nihdi">{{ professional.nihii11 | formatNihdi: professional.id?.qualificationCode}}</td>
-          }
+          <td data-cy="professional-nihdi">{{professional.nihii8 ?? professional.nihii11 | formatNihdi: professional.healthcareQualification?.id?.code}}</td>
 
           @if(professional.address) {
             <td data-cy="professional-address-street">{{ professional.address.street | formatMultilingualObject: currentLang }} {{professional.address.houseNumber || ''}} {{professional.address.box || ''}}</td>

@@ -6,8 +6,6 @@ import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/ma
 import { catchError, map } from 'rxjs/operators';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { IfStatusLoadingDirective } from '@reuse/code/directives/if-status-loading.directive';
-import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
 import { AsyncPipe } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
@@ -20,7 +18,7 @@ import {
   OverlaySpinnerComponent
 } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { CaregiverNamePatternValidator } from '@reuse/code/utils/validators';
-import { AlertType, DataState, Intent } from '@reuse/code/interfaces';
+import { AlertType, Intent } from '@reuse/code/interfaces';
 import { GeographyService } from '@reuse/code/services/api/geography.service';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
@@ -67,8 +65,6 @@ interface TransferAssignation {
     MatAutocompleteModule,
     MatIconModule,
     OverlaySpinnerComponent,
-    IfStatusLoadingDirective,
-    IfStatusSuccessDirective,
     TranslationPipe,
     FormatNihdiPipe,
     AsyncPipe,
