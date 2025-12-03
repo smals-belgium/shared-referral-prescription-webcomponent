@@ -3,14 +3,13 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { DateAdapter, MatNativeDateModule } from '@angular/material/core';
+import { DateAdapter } from '@angular/material/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
-import { importProvidersFrom, signal, SimpleChange, SimpleChanges } from '@angular/core';
+import { signal, SimpleChange, SimpleChanges } from '@angular/core';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
-import { CreatePrescriptionWebComponent } from './create-prescription.component';
 import { Observable, of, throwError } from 'rxjs';
 import { ElementGroup } from '@smals/vas-evaluation-form-ui-core';
 import {
@@ -160,12 +159,10 @@ describe('CreatePrescriptionWebComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         CreatePrescriptionExtendedWebComponent,
-        CreatePrescriptionWebComponent,
         TranslateModule.forRoot({
           loader: { provide: TranslateLoader, useClass: FakeLoader },
         }),
         MatDatepickerModule,
-        MatNativeDateModule,
         MatDialogModule,
         NoopAnimationsModule,
       ],
@@ -173,8 +170,7 @@ describe('CreatePrescriptionWebComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),
-        DateAdapter,
-        importProvidersFrom(MatNativeDateModule),
+        { provide: DateAdapter, useClass: MockDateAdapter },
         { provide: ConfigurationService, useValue: mockConfigService },
         { provide: AuthService, useValue: mockAuthService },
         MatDialog,
@@ -1460,32 +1456,196 @@ describe('CreatePrescriptionWebComponent', () => {
   describe('language switch', () => {
     it('should initialize language and locale if currentLang is not set', () => {
       createFixture('mockPseudomizedKey');
-      const loadWebComponentsSpy = jest.spyOn(component as any, 'loadWebComponents');
       const setLocalesSpy = jest.spyOn(dateAdapter, 'setLocale');
 
       translate.currentLang = '';
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
-      (component as any).initializeWebComponent();
-
       expect(translate.getDefaultLang()).toBe('fr-BE');
       expect(setLocalesSpy).toHaveBeenCalledWith('fr-BE');
-      expect(loadWebComponentsSpy).toHaveBeenCalled();
     });
 
-    it('should not call use() or setLocale() if language is already set', () => {
-      createFixture('mockPseudomizedKey');
-      const loadWebComponentsSpy = jest.spyOn(component as any, 'loadWebComponents');
-      const setLocalesSpy = jest.spyOn(dateAdapter, 'setLocale');
+    it('should not call use() or setLocale() with initial language only once', () => {
       translate.use('nl-BE');
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
-      (component as any).initializeWebComponent();
+      const translateUseSpy = jest.spyOn(translate,'use');
+      const dateAdapterSpy = jest.spyOn(dateAdapter,'setLocale');
 
-      expect(setLocalesSpy).not.toHaveBeenCalled();
-      expect(loadWebComponentsSpy).toHaveBeenCalled();
+      createFixture('mockPseudomizedKey');
+
+      expect(translateUseSpy).toHaveBeenCalledTimes(1);
+      expect(dateAdapterSpy).toHaveBeenCalledTimes(1);
+      expect(translateUseSpy).toHaveBeenCalledWith('nl-BE');
+      expect(dateAdapterSpy).toHaveBeenCalledWith('nl-BE');
     });
+
+    it('should update language by emitting a new lang with _languageChange()', () => {
+      const translateUseSpy = jest.spyOn(translate,'use');
+      const dateAdapterSpy = jest.spyOn(dateAdapter,'setLocale');
+
+      createFixture('mockPseudomizedKey');
+
+      component['_languageChange'].next('fr-FR');
+
+      expect(translateUseSpy).toHaveBeenCalledWith('fr-FR');
+      expect(dateAdapterSpy).toHaveBeenCalledWith('fr-FR');
+    });
+
+    it('should set langAlertData to null on successful translation', () => {
+      createFixture('mockPseudomizedKey');
+      jest.spyOn(translate, 'use').mockReturnValue(of({}));
+
+      component.langAlertData.set({ title: 'Test', body: 'Test body' });
+
+      component['_languageChange'].next('fr-FR');
+
+      expect(component.langAlertData()).toBeNull();
+
+    });
+
+    it('should execute catchError operator and call handleMissingTranslationFile on error', (() => {
+      createFixture('mockPseudomizedKey');
+      jest.spyOn(translate, 'use').mockReturnValue(throwError(() => new Error('Translation error')));
+
+      (component as any)._languageChange.next('en-GB');
+
+      component.ngOnInit();
+
+      const alertData = component.langAlertData();
+      expect(alertData).not.toBeNull();
+      expect(alertData?.title).toBe('English translation coming soon.');
+    }));
+
+    it('should handle missing translation for DE language', (() => {
+      createFixture('mockPseudomizedKey');
+      jest.spyOn(translate, 'use').mockReturnValue(throwError(() => new Error('Missing translation')));
+
+      (component as any)._languageChange.next('de-BE');
+      component.ngOnInit();
+
+      expect(component.langAlertData()?.title).toBe('Deutsche Übersetzung folgt in Kürze.');
+    }));
+
+    it('should handle missing translation for FR language', (() => {
+      createFixture('mockPseudomizedKey');
+      jest.spyOn(translate, 'use').mockReturnValue(throwError(() => new Error('Missing translation')));
+
+      (component as any)._languageChange.next('fr-BE');
+      component.ngOnInit();
+
+      expect(component.langAlertData()?.title).toBe('Traduction en français à venir.');
+    }));
+
+    it('should handle missing translation for NL language', (() => {
+      createFixture('mockPseudomizedKey');
+      jest.spyOn(translate, 'use').mockReturnValue(throwError(() => new Error('Missing translation')));
+
+      (component as any)._languageChange.next('nl-BE');
+      component.ngOnInit();
+
+      expect(component.langAlertData()?.title).toBe('De Nederlandse vertaling ontbreekt.');
+    }));
+
+    it('should handle missing translation for EN language', () => {
+      createFixture('mockPseudomizedKey');
+      jest.spyOn(translate, 'use').mockReturnValue(throwError(() => new Error('Missing translation')));
+
+      component['_languageChange'].next('en-GB');
+
+      const alertData = component.langAlertData();
+      expect(alertData).not.toBeNull();
+      expect(alertData?.title).toBe('English translation coming soon.');
+      expect(alertData?.body).toBe('In the meantime, you can view the content in Dutch or French.');
+    });
+
+    it('should handle missing translation for unknown language', fakeAsync(() => {
+      createFixture('mockPseudomizedKey');
+      jest.spyOn(translate, 'use').mockReturnValue(throwError(() => new Error('Missing translation')));
+
+      const unknownLang = 'xx-XX';
+      (component as any)._languageChange.next(unknownLang);
+      component.ngOnInit();
+
+      const alertData = component.langAlertData();
+      expect(alertData?.title).toBe('Unknown lang');
+      expect(alertData?.body).toContain(unknownLang);
+    }));
+
   });
+
+  describe('ngOnInit tests', () => {
+    it('should call translate.use in ngOnInit subscription', () => {
+      createFixture('mockPseudomizedKey');
+      const translateUseSpy = jest.spyOn(translate, 'use').mockReturnValue(of({}));
+
+      translateUseSpy.mockClear();
+
+      component.ngOnInit();
+
+      expect(translateUseSpy).toHaveBeenCalled();
+    });
+
+    it('should set langAlertData to null on successful translation in ngOnInit',() => {
+      createFixture('mockPseudomizedKey');
+
+      component.langAlertData.set({ title: 'Test', body: 'Test body' });
+
+      component.ngOnInit();
+
+      expect(component.langAlertData()).toBeNull();
+    });
+
+    it('should execute tap operator to set dateAdapter locale in ngOnInit', () => {
+      createFixture('mockPseudomizedKey');
+      const setLocaleSpy = jest.spyOn(dateAdapter, 'setLocale');
+
+      const testLang = 'de-DE';
+      (component as any)._languageChange.next(testLang);
+
+      component.ngOnInit();
+
+      expect(setLocaleSpy).toHaveBeenCalledWith(testLang);
+    });
+
+    it('should execute catchError operator and return EMPTY on error in ngOnInit', () => {
+      createFixture('mockPseudomizedKey');
+      jest.spyOn(translate, 'use').mockReturnValue(throwError(() => new Error('Translation error')));
+
+      component.ngOnInit();
+
+      expect(component.langAlertData()).not.toBeNull();
+    });
+
+    it('should handle the complete pipe chain in ngOnInit: tap -> switchMap -> catchError -> subscribe', () => {
+      createFixture('mockPseudomizedKey');
+
+      const setLocaleSpy = jest.spyOn(dateAdapter, 'setLocale');
+      const translateUseSpy = jest.spyOn(translate, 'use').mockReturnValue(of({}));
+      const langAlertSetSpy = jest.spyOn(component.langAlertData, 'set');
+
+      const testLang = 'fr-FR';
+      (component as any)._languageChange.next(testLang);
+
+      component.ngOnInit();
+
+      expect(setLocaleSpy).toHaveBeenCalledWith(testLang);
+      expect(translateUseSpy).toHaveBeenCalledWith(testLang);
+      expect(langAlertSetSpy).toHaveBeenCalledWith(null);
+    });
+
+    it('should use currentLang from translate service when _languageChange is initialized in ngOnInit', () => {
+      translate.currentLang = 'nl-BE';
+
+      const translateUseSpy = jest.spyOn(translate, 'use').mockReturnValue(of({}));
+      const setLocaleSpy = jest.spyOn(dateAdapter, 'setLocale');
+
+      createFixture('mockPseudomizedKey');
+
+      component.ngOnInit();
+
+      expect(setLocaleSpy).toHaveBeenCalledWith('nl-BE');
+      expect(translateUseSpy).toHaveBeenCalledWith('nl-BE');
+    });
+  })
 
   const createFixture = (pseudonymizedKey?: string) => {
     fixture = TestBed.createComponent(CreatePrescriptionExtendedWebComponent);

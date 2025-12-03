@@ -11,7 +11,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  Renderer2,
+  Renderer2, signal,
   Signal,
   SimpleChanges,
   untracked,
@@ -54,7 +54,18 @@ import {
 } from '@reuse/code/utils/utils';
 import { EncryptionService } from '@reuse/code/services/privacy/encryption.service';
 import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
-import { catchError, concatMap, from, map, Observable, of, throwError } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  concatMap, EMPTY,
+  from,
+  map,
+  Observable,
+  of,
+  Subscription,
+  switchMap,
+  throwError,
+} from 'rxjs';
 import { EncryptionState } from '@reuse/code/states/privacy/encryption.state';
 import { v4 as uuidv4 } from 'uuid';
 import { CanDuplicatePrescriptionPipe } from '@reuse/code/pipes/can-duplicate-prescription.pipe';
@@ -83,6 +94,9 @@ import { DeviceService } from '@reuse/code/services/helpers/device.service';
 import { MatMenuItem, MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatDivider } from '@angular/material/divider';
 import { CanCancelPrescriptionOrProposalPipe } from '@reuse/code/pipes/can-cancel-prescription-or-proposal.pipe';
+import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
+import { Lang } from '@reuse/code/interfaces/lang.enum';
+import { tap } from 'rxjs/operators';
 
 export interface ViewState {
   prescription: ReadRequestResource;
@@ -151,7 +165,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
   @HostBinding('attr.lang')
   @Input()
-  lang = 'fr-BE';
+  lang = Lang.FR;
   @Input() initialPrescriptionType?: string;
   @Input() prescriptionId!: string;
   @Input() patientSsin?: string;
@@ -183,6 +197,10 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   loading: WritableSignal<boolean> = this._prescriptionSecondaryService.loading;
   generatedUUID = this._prescriptionSecondaryService.generatedUUID;
   currentLang = this._prescriptionSecondaryService.currentLang;
+  protected langAlertData: WritableSignal<{ title: string; body: string } | null> = signal(null);
+
+  private readonly _subscriptions: Subscription = new Subscription();
+  private readonly _languageChange = new BehaviorSubject<string>(this._translate.currentLang ?? Lang.FR);
 
   protected readonly AlertType = AlertType;
 
@@ -190,11 +208,11 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
   constructor() {
     this.currentLang.set(this._translate.currentLang);
-    this._translate.setDefaultLang('fr-BE');
+    this._translate.setDefaultLang(Lang.FR);
 
     if (!this.currentLang()) {
-      this._translate.use('fr-BE');
-      this._dateAdapter.setLocale('fr-BE');
+      this._translate.use(Lang.FR);
+      this._dateAdapter.setLocale(Lang.FR);
       this.currentLang.set(this._translate.currentLang);
     }
 
@@ -291,6 +309,32 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   ngOnInit() {
     this.generatedUUID.set(uuidv4());
     this.evfTranslateService.setDefaultLang('fr');
+
+    this._subscriptions.add(
+      this._languageChange
+        .pipe(
+          tap((lang) =>
+            this._dateAdapter.setLocale(lang)
+          ),
+          switchMap(lang => {
+            return this._translate.use(lang).pipe(
+              catchError(() => {
+                handleMissingTranslationFile(this.langAlertData, lang);
+                return EMPTY;
+              })
+            );
+          })
+        )
+        .subscribe({
+          next: () => {
+            this.langAlertData.set(null);
+            this._translate.use(this.lang);
+            const formattedLang = this.formatToEvfLangCode(this.lang);
+            this.evfTranslateService.setCurrentLang(formattedLang);
+            this._prescriptionSecondaryService.currentLang.set(formattedLang);
+          },
+        })
+    );
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -301,13 +345,10 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       this._prescriptionSecondaryService.services = this.services;
     }
     if (changes['lang']) {
-      this._dateAdapter.setLocale(this.lang);
-      this._translate.use(this.lang);
-      const formattedLang = this.formatToEvfLangCode(this.lang);
-      this.evfTranslateService.setCurrentLang(formattedLang);
-
-      this._prescriptionSecondaryService.currentLang.set(formattedLang);
+      const currentLang: string = (changes['lang'].currentValue ?? '') as string;
+      this._languageChange.next(currentLang);
     }
+
     if (changes['prescriptionId'] || changes['patientSsin']) {
       this.loadPrescriptionOrProposal();
     }

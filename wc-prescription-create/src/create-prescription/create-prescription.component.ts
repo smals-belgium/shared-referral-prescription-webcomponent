@@ -7,12 +7,14 @@ import {
   Inject,
   Input,
   OnChanges,
+  OnInit,
   Output,
   Renderer2,
   Signal,
   signal,
   SimpleChanges,
   ViewEncapsulation,
+  WritableSignal,
 } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
@@ -20,15 +22,17 @@ import {
   BehaviorSubject,
   catchError,
   concatMap,
+  EMPTY,
   filter,
   firstValueFrom,
   forkJoin,
   from,
   Observable,
   of,
+  Subscription,
   switchMap,
 } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { DateAdapter } from '@angular/material/core';
 import { DateTime } from 'luxon';
@@ -81,6 +85,8 @@ import { isModel, isPrescription } from '@reuse/code/utils/utils';
 import { EncryptionKeyInitializerService } from '@reuse/code/states/privacy/encryption-key-initializer.service';
 import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
+import { Lang } from '@reuse/code/interfaces/lang.enum';
 
 @Component({
   templateUrl: './create-prescription.component.html',
@@ -98,7 +104,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
     AlertComponent,
   ],
 })
-export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit {
+export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterViewInit {
   protected readonly AlertType = AlertType;
   protected readonly discipline$ = toSignal(this.authService.discipline());
 
@@ -114,18 +120,22 @@ export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit 
     errorResponse: undefined,
   };
 
-  // OBSERVABLES & SIGNALS
+  // OBSERVABLES & SIGNALS & SUBJECTS
   public readonly isEnabled$: Observable<boolean>;
   public readonly status$ = new BehaviorSubject<boolean>(false);
+  private readonly _languageChange = new BehaviorSubject<string>(this.translate.currentLang ?? Lang.FR);
   public readonly patientState$: Signal<DataState<PersonResource>> = this.patientStateService.state;
   public readonly prescriptionForms = signal<CreatePrescriptionForm[]>([]);
   public readonly loading = signal(false);
+  public readonly loadingLang = signal(false);
   public readonly displaySelectDialog$ = signal(false);
+  public readonly langAlertData: WritableSignal<{ title: string; body: string } | null> = signal(null);
+  private readonly _subscriptions: Subscription = new Subscription();
 
   // INPUTS
   @HostBinding('attr.lang')
   @Input()
-  lang = 'fr-BE';
+  lang = Lang.FR;
   @Input() initialValues?: CreatePrescriptionInitialValues;
   @Input() patientSsin?: string;
   @Input() services!: {
@@ -160,26 +170,44 @@ export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit 
     private readonly shadowDomOverlay: ShadowDomOverlayContainer,
     @Inject(DOCUMENT) private readonly _document: Document
   ) {
+    const currentLang = this.translate.currentLang;
+    if (!currentLang) {
+      this.translate.use(Lang.FR);
+      this.dateAdapter.setLocale(Lang.FR);
+    }
+
     this.isEnabled$ = of(this.configService.getEnvironmentVariable('enablePseudo')).pipe(
       map((value: boolean) => {
         if (value) {
-          this.initializeWebComponent();
+          this.loadWebComponents();
         }
         return value;
       })
     );
   }
 
-  private initializeWebComponent() {
-    this.translate.setDefaultLang('fr-BE');
-
-    const currentLang = this.translate.currentLang;
-    if (!currentLang) {
-      this.translate.use('fr-BE');
-      this.dateAdapter.setLocale('fr-BE');
-    }
-
-    this.loadWebComponents();
+  ngOnInit(): void {
+    this._subscriptions.add(
+      this._languageChange
+        .pipe(
+          tap(lang => {
+            this.dateAdapter.setLocale(lang);
+          }),
+          switchMap(lang => {
+            return this.translate.use(lang).pipe(
+              catchError(() => {
+                handleMissingTranslationFile(this.langAlertData, lang);
+                return EMPTY;
+              })
+            );
+          })
+        )
+        .subscribe({
+          next: () => {
+            this.langAlertData.set(null);
+          },
+        })
+    );
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -188,7 +216,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit 
     }
 
     if (changes['lang']) {
-      this.handleLanguageChange();
+      const currentLang: string = (changes['lang'].currentValue ?? '') as string;
+      this._languageChange.next(currentLang);
     }
 
     if (changes['patientSsin'] && this.patientSsin) {
@@ -238,11 +267,6 @@ export class CreatePrescriptionWebComponent implements OnChanges, AfterViewInit 
     this.authService.init(this.services.getAccessToken);
     this.accessMatrixStateService.loadAccessMatrix();
     this.templatesStateService.loadTemplates();
-  }
-
-  private handleLanguageChange(): void {
-    this.dateAdapter.setLocale(this.lang);
-    this.translate.use(this.lang);
   }
 
   private loadPssStatus(initialValues: CreatePrescriptionInitialValues) {

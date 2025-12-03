@@ -38,6 +38,7 @@ import {
 } from '../../../test.utils';
 import { ReadRequestResource } from '@reuse/code/openapi';
 import { CancelPrescriptionDialog } from '@reuse/code/dialogs/cancel-prescription/cancel-prescription-dialog.component';
+import { Lang } from '@reuse/code/interfaces/lang.enum';
 mockUuid();
 jest.mock('uuid');
 
@@ -244,13 +245,14 @@ describe('PrescriptionDetailsWebComponent', () => {
       expect(setLocalesSpy).toHaveBeenCalledWith('fr-BE');
     });
 
-    it('should not call use() or setLocale() if language is already set', () => {
+    it('should intialize and call only once setLocale() from dateAdapter', () => {
       translate.use('nl-BE');
       const setLocalesSpy = jest.spyOn(dateAdapter, 'setLocale');
 
       createFixture();
 
-      expect(setLocalesSpy).not.toHaveBeenCalled();
+      expect(setLocalesSpy).toHaveBeenCalledTimes(1);
+      expect(setLocalesSpy).toHaveBeenCalledWith(Lang.NL);
     });
   });
 

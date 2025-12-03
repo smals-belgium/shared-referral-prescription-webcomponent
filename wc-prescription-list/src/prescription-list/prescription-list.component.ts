@@ -5,12 +5,12 @@ import {
   HostBinding,
   Input,
   OnChanges,
-  OnDestroy,
+  OnDestroy, OnInit,
   Output,
   signal,
   Signal,
   SimpleChanges,
-  ViewEncapsulation,
+  ViewEncapsulation, WritableSignal,
 } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DateAdapter, MatOptionModule } from '@angular/material/core';
@@ -21,7 +21,6 @@ import { AlertType, DataState, Intent, LoadingStatus } from '@reuse/code/interfa
 import { PaginatorComponent } from '@reuse/code/components/paginator/paginator.component';
 import { PrescriptionsTableComponent } from '../components/prescriptions/prescriptions-table/prescriptions-table.component';
 import { MatSelectModule } from '@angular/material/select';
-import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { PrescriptionsState } from '@reuse/code/states/api/prescriptions.state';
 import { TemplatesState } from '@reuse/code/states/api/templates.state';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
@@ -60,6 +59,11 @@ import {
 } from '@reuse/code/components/prescription-filter/prescription-filter.component';
 import { FeatureFlagDirective } from '@reuse/code/directives/feature-flag.directive';
 import { FeatureFlagService } from '@reuse/code/services/helpers/feature-flag.service';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
+import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
+import { BehaviorSubject, catchError, EMPTY, Subscription, switchMap } from 'rxjs';
+import { Lang } from '@reuse/code/interfaces/lang.enum';
+import { tap } from 'rxjs/operators';
 
 interface ViewState {
   prescriptions?: ReadRequestListResource;
@@ -93,10 +97,10 @@ interface SearchCriteria extends SearchFilter {
     MatIcon,
     PrescriptionsModelsCardComponent,
     PrescriptionFilterComponent,
-    FeatureFlagDirective,
+    FeatureFlagDirective
   ],
 })
-export class PrescriptionListWebComponent implements OnChanges, OnDestroy, AfterViewInit {
+export class PrescriptionListWebComponent implements OnChanges,OnInit, OnDestroy, AfterViewInit {
   // Protected signals from service
   protected readonly searchCriteria$ = signal<SearchCriteria>({
     historical: false,
@@ -106,6 +110,8 @@ export class PrescriptionListWebComponent implements OnChanges, OnDestroy, After
   protected readonly discipline$ = toSignal(this.authService.discipline());
   protected readonly LoadingStatus = LoadingStatus;
   protected readonly AlertType = AlertType;
+
+  protected langAlertData: WritableSignal<{ title: string; body: string } | null> = signal(null);
 
   readonly viewStateProposals$: Signal<DataState<ViewState>> = combineSignalDataState({
     proposals: this.proposalsState.state,
@@ -125,13 +131,15 @@ export class PrescriptionListWebComponent implements OnChanges, OnDestroy, After
     accessMatrix: this.accessMatrixState.state,
   });
 
+  private _subscriptions: Subscription = new Subscription();
+
   isPrescriptionValue = false;
   isProposalValue = false;
   isModelValue = false;
 
   @HostBinding('attr.lang')
   @Input()
-  lang?: string;
+  lang = Lang.FR;
   @Input() patientSsin?: string;
   @Input() requesterSsin?: string;
   @Input() performerSsin?: string;
@@ -140,6 +148,8 @@ export class PrescriptionListWebComponent implements OnChanges, OnDestroy, After
 
   @Output() clickOpenDetail = new EventEmitter<ReadRequestResource | ModelEntityDto>();
   @Output() clickCreateDetail = new EventEmitter<SelectedTemplate>();
+
+  private readonly _languageChange = new BehaviorSubject<string>(this.translate.currentLang ?? Lang.FR);
 
   errorCard: ErrorCard = {
     show: false,
@@ -170,6 +180,28 @@ export class PrescriptionListWebComponent implements OnChanges, OnDestroy, After
     featureFlagService.getFeatureFlags();
   }
 
+  ngOnInit(): void {
+    this._subscriptions.add(
+      this._languageChange.pipe(
+        tap((lang) =>{
+          this.dateAdapter.setLocale(lang);
+        }),
+        switchMap((lang) => {
+          return this.translate.use(lang).pipe(
+            catchError(()=> {
+              handleMissingTranslationFile(this.langAlertData, lang);
+              return EMPTY;
+            })
+          );
+        }),
+      ).subscribe({
+        next:() => {
+          this.langAlertData.set(null);
+        },
+      })
+    );
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['services']) {
       this.authService.init(this.services.getAccessToken);
@@ -177,8 +209,8 @@ export class PrescriptionListWebComponent implements OnChanges, OnDestroy, After
       this.templatesState.loadTemplates();
     }
     if (changes['lang']) {
-      this.dateAdapter.setLocale(this.lang!);
-      this.translate.use(this.lang!);
+      const currentLang: string = (changes['lang'].currentValue ?? '') as string;
+      this._languageChange.next(currentLang);
     }
     if (
       (changes['patientSsin'] || changes['requesterSsin'] || changes['performerSsin'] || changes['intent']) &&
@@ -400,6 +432,8 @@ export class PrescriptionListWebComponent implements OnChanges, OnDestroy, After
       status: undefined,
       prescriptionType: undefined,
     });
+
+    this._subscriptions.unsubscribe()
   }
 
   showErrorCard() {
