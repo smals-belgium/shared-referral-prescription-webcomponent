@@ -105,6 +105,7 @@ describe('PrescriptionDetailsSecondaryService', () => {
         category: mockResponse.category,
       },
       panelClass: 'mh-dialog-container',
+      maxHeight: '90vh',
     };
 
     expect(openDialogSpy).toHaveBeenCalledTimes(1);
