@@ -61,6 +61,7 @@ export class PrescriptionDetailsSecondaryComponent {
         intent: prescription.intent,
       },
       panelClass: 'mh-dialog-container',
+      maxHeight: '90vh',
     });
   }
 

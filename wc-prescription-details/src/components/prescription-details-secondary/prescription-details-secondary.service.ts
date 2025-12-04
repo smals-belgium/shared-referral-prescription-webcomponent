@@ -320,6 +320,7 @@ export class PrescriptionDetailsSecondaryService {
         intent: prescription.intent,
       },
       panelClass: 'mh-dialog-container',
+      maxHeight: '90vh',
     });
   }
 
