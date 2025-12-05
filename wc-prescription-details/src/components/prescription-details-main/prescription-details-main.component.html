@@ -6,16 +6,14 @@
 
   @if (decryptedResponses().data && templateVersion) {
     <div class="evf_form_detail_container">
-      <nihdi-referral-prescription-form-details
-        [lang]="currentLang()"
-        [template]="templateVersion"
-        [responses]="decryptedResponses().data"
-        [services]="services"
-        [status]="status()"
-        [isProfessional]="isProfessional$()"
-      ></nihdi-referral-prescription-form-details>
+      <evf-form-details
+              [lang]="currentLang()"
+              [template]="templateVersion"
+              [responses]="decryptedResponses().data!"
+              [status]="status()"
+              [isProfessional]="isProfessional$()"
+      ></evf-form-details>
     </div>
-
   }
   <div class="row">
     <div class="info-item">

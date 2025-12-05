@@ -1,0 +1,38 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+evf-dynamic-form {
+  --mdc-typography-body2-font-size: var(--mat-sys-body-large-line-height);
+  --mdc-typography-body2-line-height: var(--mat-sys-body-large-size);
+  color: var(--evf-typography-body-color, mh.$typography-brand-neutral-darker);
+
+  .mdc-text-field__input, .mat-mdc-form-field-input-control {
+    &::placeholder {
+      color: var(--evf-typography-body-color, mh.$typography-brand-neutral-darker);
+    }
+  }
+
+  evf-element-label {
+    margin: var(--evf-typography-label-margin, 4px 0);
+
+    &.invalid {
+      color: var(--mat-form-field-error-text-color, mh.$error-30);
+    }
+  }
+}
+
+.mat-mdc-form-field.mat-form-field-invalid .mat-mdc-notch-piece {
+  background-color: var(--mat-form-field-error-background-color, mh.$error-99);
+}
+
+@media (hover: hover) {
+  .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover>.mat-calendar-body-cell-content:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical) {
+    background-color: var(--mat-datepicker-calendar-date-hover-state-background-color,
+      color-mix(in srgb, var(--mat-sys-on-surface) calc(var(--mat-sys-hover-state-layer-opacity) * 100%), transparent));
+  }
+}
+
+
+
+
+
+

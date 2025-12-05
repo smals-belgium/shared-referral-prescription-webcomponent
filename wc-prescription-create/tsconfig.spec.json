@@ -13,6 +13,7 @@
   },
   "include": [
     "src/**/*.spec.ts",
-    "src/**/*.d.ts"
+    "src/**/*.d.ts",
+    "../reuse/code/constants/global.d.ts"
   ]
 }

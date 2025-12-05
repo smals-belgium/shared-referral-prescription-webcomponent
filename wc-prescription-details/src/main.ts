@@ -49,27 +49,31 @@ import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
         deps: [ConfigurationService],
       },
       {
-        provide: OVERLAY_QUERY_SELECTOR, useValue: ['nihdi-referral-prescription-details'],
+        provide: OVERLAY_QUERY_SELECTOR,
+        useValue: ['nihdi-referral-prescription-details'],
       },
       {
         provide: OverlayContainer,
         useClass: ShadowDomOverlayContainer,
       },
       provideOpenApi(),
+      provideEvfForm(),
+      provideMarkdown(),
       importProvidersFrom(
         MatDialogModule,
         TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
-            useClass: WcTranslateLoader
+            useClass: WcTranslateLoader,
           },
           compiler: {
             provide: TranslateCompiler,
             useClass: TranslateMessageFormatCompiler,
-          }
-        }),
-      )
-    ]});
+          },
+        })
+      ),
+    ],
+  });
 
   const prescriptionDetailElement = createCustomElement(PrescriptionDetailsWebComponent, {
     injector: (await app).injector,

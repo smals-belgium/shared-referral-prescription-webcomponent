@@ -9,7 +9,6 @@ import {
   OnChanges,
   OnInit,
   Output,
-  Renderer2,
   Signal,
   signal,
   SimpleChanges,
@@ -162,7 +161,6 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
     private readonly pseudoService: PseudoService,
     private readonly prescriptionService: PrescriptionService,
     private readonly proposalService: ProposalService,
-    private readonly renderer: Renderer2,
     private readonly encryptionService: EncryptionService,
     private readonly pssService: PssService,
     private readonly configService: WcConfigurationService,
@@ -176,11 +174,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
       this.dateAdapter.setLocale(Lang.FR);
     }
 
-    this.isEnabled$ = of(this.configService.getEnvironmentVariable('enablePseudo')).pipe(
+    this.isEnabled$ = of(this.configService.getEnvironmentVariable('enablePseudo') as boolean).pipe(
       map((value: boolean) => {
-        if (value) {
-          this.loadWebComponents();
-        }
         return value;
       })
     );
@@ -785,27 +780,6 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
       message: '',
       errorResponse: undefined,
     };
-  }
-
-  private loadWebComponents(): void {
-    if (customElements.get('nihdi-referral-prescription-form') != undefined) {
-      return;
-    }
-
-    const htmlCollection = document.getElementsByTagName('script');
-    const script = Array.from(htmlCollection).find(e => e.src.includes('wc-prescription-create.js'));
-
-    if (!script) return;
-    const url = script.src.replace('wc-prescription-create.js', '');
-    const scripts = ['assets/evf-form/evf-form.js'];
-
-    scripts.forEach(src => {
-      const script = this.renderer.createElement('script') as HTMLScriptElement;
-      script.type = `text/javascript`;
-      script.src = url + src;
-      script.type = 'module';
-      this.renderer.appendChild(this._document.body, script);
-    });
   }
 
   private generateNewUuid() {

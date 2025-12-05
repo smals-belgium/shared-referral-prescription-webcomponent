@@ -52,16 +52,16 @@
               </div>
             }
 
-              <nihdi-referral-prescription-form
+              <evf-form
                 class="referral-prescription-form"
                 *ifStatusSuccess="formTemplateState"
                 [lang]="lang"
                 [readonly]="prescriptionForm.status === LoadingStatus.SUCCESS"
                 [submitted]="!!prescriptionForm.submitted"
-                [template]="getTemplateData(formTemplateState)"
+                [template]="getTemplateData(formTemplateState)!"
                 (changeElementGroup)="setElementGroup(prescriptionForm, $any($event)?.detail)"
                 [status]="false"
-              ></nihdi-referral-prescription-form>
+              ></evf-form>
 
         @if(this.prescriptionForm.modelId) {
           <button

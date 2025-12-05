@@ -13,7 +13,9 @@
           "Component",
           "Container",
           "Page",
-          "Dialog"
+          "Dialog",
+          "Details",
+          "List"
         ]
       }
     ],

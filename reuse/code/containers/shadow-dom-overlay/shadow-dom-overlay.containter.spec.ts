@@ -12,60 +12,43 @@ describe('ShadowDomOverlayContainer', () => {
   let mockRootElement: any;
 
   beforeEach(() => {
-    // Create mock shadow root
     mockShadowRoot = {
       appendChild: jest.fn(),
       querySelector: jest.fn(),
-      querySelectorAll: jest.fn().mockReturnValue([]),
       contains: jest.fn(),
     };
 
-    // Create mock root element with shadow root
     mockRootElement = {
       shadowRoot: mockShadowRoot,
       appendChild: jest.fn(),
-      contains: jest.fn().mockReturnValue(false),
     };
 
-    // Create mock document
     mockDocument = {
       body: {
         appendChild: jest.fn(),
         querySelector: jest.fn(),
-        contains: jest.fn().mockReturnValue(false),
       },
       querySelector: jest.fn().mockReturnValue(mockRootElement),
-      querySelectorAll: jest.fn().mockImplementation((selector: string) => {
-        // Return the mock root element when querying for the overlay selector
-        if (selector === overlayQuerySelector) {
-          return [mockRootElement];
-        }
-        return [];
-      }),
-      createElement: jest.fn().mockImplementation((tagName: string) => {
-        const element = {
-          tagName: tagName.toUpperCase(),
-          classList: {
-            add: jest.fn(),
-          },
-          appendChild: jest.fn(),
-          setAttribute: jest.fn(),
-          getAttribute: jest.fn(),
-          removeAttribute: jest.fn(),
-          remove: jest.fn(),
-          isConnected: true,
-          cloneNode: jest.fn(),
-        };
-        element.cloneNode.mockReturnValue({...element, cloneNode: jest.fn()});
-        return element;
-      }),
+      querySelectorAll: jest.fn().mockReturnValue([]),
+      createElement: jest.fn().mockImplementation((tagName: string) => ({
+        tagName: tagName.toUpperCase(),
+        classList: {
+          add: jest.fn(),
+        },
+        appendChild: jest.fn(),
+        setAttribute: jest.fn(),
+        getAttribute: jest.fn(),
+        removeAttribute: jest.fn(),
+        remove: jest.fn(),
+        isConnected: true,
+      })),
     };
 
     TestBed.configureTestingModule({
       providers: [
         ShadowDomOverlayContainer,
-        {provide: DOCUMENT, useValue: mockDocument},
-        {provide: OVERLAY_QUERY_SELECTOR, useValue: [overlayQuerySelector]},
+        { provide: DOCUMENT, useValue: mockDocument },
+        { provide: OVERLAY_QUERY_SELECTOR, useValue: [overlayQuerySelector] },
       ],
     });
 
@@ -89,11 +72,11 @@ describe('ShadowDomOverlayContainer', () => {
     expect(superNgOnDestroySpy).toHaveBeenCalled();
   });
 
-  it('should return shadow roots array from getRootElements()', () => {
-    const result = service.getRootElements();
+  it('should return shadow root from getRootElement()', () => {
+    const result = service.getRootElement();
 
-    expect(mockDocument.querySelectorAll).toHaveBeenCalledWith(overlayQuerySelector);
-    expect(result).toEqual([mockShadowRoot]);
+    expect(mockDocument.querySelector).toHaveBeenCalledWith(overlayQuerySelector);
+    expect(result).toBe(mockShadowRoot);
   });
 
   it('should call _createContainer() when createContainer() is invoked', () => {
@@ -144,23 +127,21 @@ describe('ShadowDomOverlayContainer', () => {
     expect(result).toBe(initialContainer);
   });
 
-  it('should append cloned container to shadow root when shadow root exists', () => {
+  it('should append container to shadow root when shadow root exists', () => {
     const appendToRootComponentSpy = jest.spyOn(service as any, '_appendToRootComponent');
 
-    const container = service.getContainerElement();
+    service.getContainerElement();
 
     expect(appendToRootComponentSpy).toHaveBeenCalled();
-    expect(container.cloneNode).toHaveBeenCalledWith(true);
     expect(mockShadowRoot.appendChild).toHaveBeenCalled();
   });
 
-  it('should append cloned container to document body when shadow root does not exist', () => {
+  it('should append container to document body when shadow root does not exist', () => {
     // Mock scenario where shadow root is null
     mockRootElement.shadowRoot = null;
 
-    const container = service.getContainerElement();
+    service.getContainerElement();
 
-    expect(container.cloneNode).toHaveBeenCalledWith(true);
     expect(mockDocument.body.appendChild).toHaveBeenCalled();
   });
 
@@ -172,61 +153,5 @@ describe('ShadowDomOverlayContainer', () => {
 
     expect(mockShadowRoot.appendChild).not.toHaveBeenCalled();
     expect(mockDocument.body.appendChild).not.toHaveBeenCalled();
-  });
-
-  describe('Multiple selectors behavior', () => {
-    it('should handle multiple selectors and return nested shadow roots', () => {
-      const selectorA = 'component-a';
-      const selectorB = 'component-b';
-
-      const shadowRootB1 = {
-        appendChild: jest.fn(),
-        querySelectorAll: jest.fn().mockReturnValue([]),
-        contains: jest.fn()
-      };
-      const shadowRootB2 = {
-        appendChild: jest.fn(),
-        querySelectorAll: jest.fn().mockReturnValue([]),
-        contains: jest.fn()
-      };
-
-      const elementB1 = {shadowRoot: shadowRootB1, querySelectorAll: jest.fn(), contains: jest.fn()};
-      const elementB2 = {shadowRoot: shadowRootB2, querySelectorAll: jest.fn(), contains: jest.fn()};
-
-      const shadowRootA1 = {
-        querySelectorAll: jest.fn().mockImplementation((s: string) => s === selectorB ? [elementB1] : []),
-        contains: jest.fn(),
-      };
-      const shadowRootA2 = {
-        querySelectorAll: jest.fn().mockImplementation((s: string) => s === selectorB ? [elementB2] : []),
-        contains: jest.fn(),
-      };
-
-      const elementA1 = {shadowRoot: shadowRootA1, contains: jest.fn()};
-      const elementA2 = {shadowRoot: shadowRootA2, contains: jest.fn()};
-
-      mockDocument.querySelectorAll = jest.fn().mockImplementation((s: string) => {
-        return s === selectorA ? [elementA1, elementA2] : [];
-      });
-
-      TestBed.resetTestingModule();
-      TestBed.configureTestingModule({
-        providers: [
-          ShadowDomOverlayContainer,
-          {provide: DOCUMENT, useValue: mockDocument},
-          {provide: OVERLAY_QUERY_SELECTOR, useValue: [selectorA, selectorB]},
-        ],
-      });
-
-      const localService = TestBed.inject(ShadowDomOverlayContainer);
-
-      const results = localService.getRootElements();
-
-      expect(mockDocument.querySelectorAll).toHaveBeenCalledWith(selectorA);
-      expect(shadowRootA1.querySelectorAll).toHaveBeenCalledWith(selectorB);
-      expect(shadowRootA2.querySelectorAll).toHaveBeenCalledWith(selectorB);
-
-      expect(results).toEqual([shadowRootB1, shadowRootB2]);
-    });
   });
 });

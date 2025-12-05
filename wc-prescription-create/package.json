@@ -1,0 +1,20 @@
+{
+  "name": "@smals-belgium-shared/uhmep-prescription-create",
+  "version": "1.0.0",
+  "description": "Prescription create web component",
+  "main": "build/wc-prescription-create.js",
+  "files": [
+    "build/"
+  ],
+  "keywords": [
+    "web-component",
+    "angular",
+    "prescription"
+  ],
+  "author": "UHMEP team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/smals-belgium/shared-referral-prescription-webcomponent"
+  }
+}

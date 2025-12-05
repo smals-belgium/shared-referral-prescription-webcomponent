@@ -177,7 +177,7 @@ export class PrescriptionListWebComponent implements OnChanges,OnInit, OnDestroy
       this.translate.use('fr-BE');
       this.dateAdapter.setLocale('fr-BE');
     }
-    featureFlagService.getFeatureFlags();
+    this.featureFlagService.getFeatureFlags();
   }
 
   ngOnInit(): void {

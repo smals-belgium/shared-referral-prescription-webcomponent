@@ -44,6 +44,11 @@ export type DemoMockEntry = {
 
 export const DEMO_MOCKS: DemoMockEntry[] = [
   {
+    method: ['POST'],
+    url: /\/pseudonymize$/,
+    body: { demo: true },
+  },
+  {
     method: ['GET'],
     url: /\/persons\/[^/]+/,
     body: () => {

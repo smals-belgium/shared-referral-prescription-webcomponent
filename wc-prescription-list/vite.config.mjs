@@ -8,17 +8,7 @@ export default defineConfig({
       output: {
         entryFileNames: '[name].js',
         assetFileNames: `[name].[ext]`,
-        manualChunks(id) {
-          if (id.includes('styles')) {
-            return 'wc-prescription-list';
-          }
-
-          const idArr = id.split('/');
-          const lastItem = idArr.pop();
-          const stringArr = lastItem.split('.');
-
-          return stringArr[0];
-        },
+        format: 'iife',
       },
       input: {
         'wc-prescription-list': path.resolve(__dirname, 'build.js'),

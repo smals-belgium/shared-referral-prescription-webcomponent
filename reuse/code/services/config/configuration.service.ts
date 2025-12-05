@@ -1,9 +1,4 @@
-import { Injectable } from '@angular/core';
-
-@Injectable({
-  providedIn: 'root',
-})
-export class ConfigurationService {
+export abstract class ConfigurationService {
   getEnvironment(): string {
     throw new Error('Not implemented');
   }
