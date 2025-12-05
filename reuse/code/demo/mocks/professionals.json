@@ -1,0 +1,86 @@
+[
+  { "address": {},
+    "nihii8": "",
+    "nihii11": "10000000026",
+    "type": "Professional",
+    "id": {
+      "profession": "prescriber",
+      "ssin": "",
+      "qualificationCode": ""
+    },
+    "phoneNumbers": {},
+    "licenseToPractice": true,
+    "subscriptionEndDate": null,
+    "healthcareQualification": {},
+    "healthcareStatus": {},
+    "healthcarePerson":
+    { "ssin": "10000000006",
+      "firstName": "Sophie",
+      "lastName": "Van den Berg",
+      "deceased": false },
+    "healthcareVisaList": []
+  },
+  { "address": {},
+    "nihii8": "",
+    "nihii11": "10000000027",
+    "type": "Professional",
+    "id": {
+      "profession": "prescriber",
+      "ssin": "",
+      "qualificationCode": ""
+    },
+    "phoneNumbers": {},
+    "licenseToPractice": true,
+    "subscriptionEndDate": null,
+    "healthcareQualification": {},
+    "healthcareStatus": {},
+    "healthcarePerson":
+    { "ssin": "10000000007",
+      "firstName": "Thomas",
+      "lastName": "Verhofstadt",
+      "deceased": false },
+    "healthcareVisaList": []
+  },
+  { "address": {},
+    "nihii8": "",
+    "nihii11": "10000000028",
+    "type": "Professional",
+    "id": {
+      "profession": "Nurse",
+      "ssin": "",
+      "qualificationCode": ""
+    },
+    "phoneNumbers": {},
+    "licenseToPractice": true,
+    "subscriptionEndDate": null,
+    "healthcareQualification": {},
+    "healthcareStatus": {},
+    "healthcarePerson":
+    { "ssin": "10000000008",
+      "firstName": "Anke",
+      "lastName": "Dubois",
+      "deceased": false },
+    "healthcareVisaList": []
+  },
+  { "address": {},
+    "nihii8": "",
+    "nihii11": "10000000029",
+    "type": "Professional",
+    "id": {
+      "profession": "Nurse",
+      "ssin": "",
+      "qualificationCode": ""
+    },
+    "phoneNumbers": {},
+    "licenseToPractice": true,
+    "subscriptionEndDate": null,
+    "healthcareQualification": {},
+    "healthcareStatus": {},
+    "healthcarePerson":
+    { "ssin": "10000000009",
+      "firstName": "Robin",
+      "lastName": "Dupont",
+      "deceased": false },
+    "healthcareVisaList": []
+  }
+]

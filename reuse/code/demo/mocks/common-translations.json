@@ -1,0 +1,1237 @@
+{
+  "commonTranslations" : {
+    "mg" : {
+      "nl" : "mg",
+      "fr" : "mg"
+    },
+    "ml" : {
+      "nl" : "ml",
+      "fr" : "ml"
+    },
+    "no" : {
+      "nl" : "Nee",
+      "fr" : "Non"
+    },
+    "day" : {
+      "nl" : "dag(en)",
+      "fr" : "jour(s)"
+    },
+    "ear" : {
+      "nl" : "Oor",
+      "fr" : "Oreille",
+      "de" : ""
+    },
+    "eye" : {
+      "nl" : "Oog",
+      "fr" : "Œil",
+      "de" : ""
+    },
+    "hip" : {
+      "nl" : "Heup",
+      "fr" : "Hanche",
+      "de" : ""
+    },
+    "leg" : {
+      "nl" : "Been",
+      "fr" : "Jambe entière",
+      "de" : ""
+    },
+    "lip" : {
+      "nl" : "Lip",
+      "fr" : "Lèvre",
+      "de" : ""
+    },
+    "yes" : {
+      "nl" : "Ja",
+      "fr" : "Oui"
+    },
+    "µg" : {
+      "nl" : "µg",
+      "fr" : "µg"
+    },
+    "PICC" : {
+      "nl" : "Centrale katheter type PICC",
+      "fr" : "Cathéther central de type PICC"
+    },
+    "anus" : {
+      "nl" : "Aars",
+      "fr" : "Anus",
+      "de" : ""
+    },
+    "calf" : {
+      "nl" : "Gehele kuit van onderbeen",
+      "fr" : "Mollet",
+      "de" : ""
+    },
+    "drop" : {
+      "nl" : "Druppels",
+      "fr" : "Gouttes"
+    },
+    "foot" : {
+      "nl" : "Voet",
+      "fr" : "Pied",
+      "de" : ""
+    },
+    "hand" : {
+      "nl" : "Hand",
+      "fr" : "Main",
+      "de" : ""
+    },
+    "head" : {
+      "nl" : "Hoofd",
+      "fr" : "Tête",
+      "de" : ""
+    },
+    "heel" : {
+      "nl" : "Hiel",
+      "fr" : "Talon",
+      "de" : ""
+    },
+    "hour" : {
+      "nl" : "uur(en)",
+      "fr" : "heure(s)"
+    },
+    "knee" : {
+      "nl" : "Knie",
+      "fr" : "Genou",
+      "de" : ""
+    },
+    "left" : {
+      "nl" : "Links",
+      "fr" : "Gauche",
+      "de" : ""
+    },
+    "neck" : {
+      "nl" : "Hals",
+      "fr" : "Cou",
+      "de" : ""
+    },
+    "nose" : {
+      "nl" : "Neus",
+      "fr" : "Nez",
+      "de" : ""
+    },
+    "oral" : {
+      "nl" : "Orale",
+      "fr" : "Orale"
+    },
+    "otic" : {
+      "nl" : "Oorindruppeling",
+      "fr" : "Otique"
+    },
+    "puff" : {
+      "nl" : "Puff",
+      "fr" : "Bouffée"
+    },
+    "shin" : {
+      "nl" : "Scheen",
+      "fr" : "Tibia",
+      "de" : ""
+    },
+    "week" : {
+      "nl" : "week(en)",
+      "fr" : "semaine(s)"
+    },
+    "year" : {
+      "nl" : "jaar(en)",
+      "fr" : "an(s)"
+    },
+    "zona" : {
+      "nl" : "Zona",
+      "fr" : "Zona"
+    },
+    "CH_06" : {
+      "nl" : "CH 06",
+      "fr" : "CH 06"
+    },
+    "CH_08" : {
+      "nl" : "CH 08",
+      "fr" : "CH 08"
+    },
+    "CH_10" : {
+      "nl" : "CH 10",
+      "fr" : "CH 10"
+    },
+    "CH_12" : {
+      "nl" : "CH 12",
+      "fr" : "CH 12"
+    },
+    "CH_14" : {
+      "nl" : "CH 14",
+      "fr" : "CH 14"
+    },
+    "CH_16" : {
+      "nl" : "CH 16",
+      "fr" : "CH 16"
+    },
+    "CH_18" : {
+      "nl" : "CH 18",
+      "fr" : "CH 18"
+    },
+    "ankle" : {
+      "nl" : "Enkel",
+      "fr" : "Cheville",
+      "de" : ""
+    },
+    "belly" : {
+      "nl" : "Buik",
+      "fr" : "Abdomen",
+      "de" : ""
+    },
+    "below" : {
+      "nl" : "Onder",
+      "fr" : "En-dessous",
+      "de" : ""
+    },
+    "blood" : {
+      "nl" : "Bloed",
+      "fr" : "Sang",
+      "de" : "Bloed"
+    },
+    "cheek" : {
+      "nl" : "Wang",
+      "fr" : "Joue",
+      "de" : ""
+    },
+    "chest" : {
+      "nl" : "Borstkas",
+      "fr" : "Thorax",
+      "de" : ""
+    },
+    "drops" : {
+      "nl" : "Druppels",
+      "fr" : "Gouttes"
+    },
+    "elbow" : {
+      "nl" : "Elleboog",
+      "fr" : "Coude",
+      "de" : ""
+    },
+    "every" : {
+      "nl" : "Om de",
+      "fr" : "Tou(te)s les"
+    },
+    "feces" : {
+      "nl" : "Faeces",
+      "fr" : "Fèces",
+      "de" : "Faeces"
+    },
+    "flask" : {
+      "nl" : "Flacon",
+      "fr" : "Fiole"
+    },
+    "month" : {
+      "nl" : "maand(en)",
+      "fr" : "mois"
+    },
+    "mouth" : {
+      "nl" : "Mond",
+      "fr" : "Bouche",
+      "de" : ""
+    },
+    "nurse" : {
+      "nl" : "Verpleeger/verpleegster",
+      "fr" : "Infirmier·ère"
+    },
+    "penis" : {
+      "nl" : "Penis",
+      "fr" : "Pénis",
+      "de" : ""
+    },
+    "puffs" : {
+      "nl" : "Puffs",
+      "fr" : "Bouffées"
+    },
+    "right" : {
+      "nl" : "Rechts",
+      "fr" : "Droite",
+      "de" : ""
+    },
+    "suppo" : {
+      "nl" : "Suppo",
+      "fr" : "Suppositoire"
+    },
+    "syrup" : {
+      "nl" : "Siroop",
+      "fr" : "Sirop"
+    },
+    "thigh" : {
+      "nl" : "Dij",
+      "fr" : "Cuisse",
+      "de" : ""
+    },
+    "thumb" : {
+      "nl" : "Duim",
+      "fr" : "Pouce",
+      "de" : ""
+    },
+    "urine" : {
+      "nl" : "Urine",
+      "fr" : "Urine",
+      "de" : "Urine"
+    },
+    "warts" : {
+      "nl" : "Wratten",
+      "fr" : "Verrues"
+    },
+    "bigToe" : {
+      "nl" : "Grote teen",
+      "fr" : "Gros orteil",
+      "de" : ""
+    },
+    "eczema" : {
+      "nl" : "Eczeem",
+      "fr" : "Eczéma"
+    },
+    "fibula" : {
+      "nl" : "Kuitbeen",
+      "fr" : "Péroné",
+      "de" : ""
+    },
+    "friday" : {
+      "nl" : "vrijdag",
+      "fr" : "vendredi"
+    },
+    "inShot" : {
+      "nl" : "In schot",
+      "fr" : "En shot"
+    },
+    "medial" : {
+      "nl" : "Mediaal",
+      "fr" : "Médial",
+      "de" : ""
+    },
+    "minute" : {
+      "nl" : "minuut(en)",
+      "fr" : "minute(s)"
+    },
+    "monday" : {
+      "nl" : "maandag",
+      "fr" : "lundi"
+    },
+    "plexus" : {
+      "nl" : "Katheter via plexus",
+      "fr" : "Cathéter via le plexus"
+    },
+    "rectal" : {
+      "nl" : "Rectale",
+      "fr" : "Rectale"
+    },
+    "repeat" : {
+      "nl" : "herhaling(en) om te",
+      "fr" : "réalisation(s) tou(te)s les"
+    },
+    "sacrum" : {
+      "nl" : "Heiligbeen",
+      "fr" : "Sacrum",
+      "de" : ""
+    },
+    "saliva" : {
+      "nl" : "Speeksel",
+      "fr" : "Salive",
+      "de" : "Speeksel"
+    },
+    "sputum" : {
+      "nl" : "Sputum",
+      "fr" : "Expectorations",
+      "de" : "Sputum"
+    },
+    "sunday" : {
+      "nl" : "zondag",
+      "fr" : "dimanche"
+    },
+    "tablet" : {
+      "nl" : "Tabletten",
+      "fr" : "Tablettes"
+    },
+    "vagina" : {
+      "nl" : "Vagina",
+      "fr" : "Vagin",
+      "de" : ""
+    },
+    "aerosol" : {
+      "nl" : "Aërosol",
+      "fr" : "Aérosol"
+    },
+    "ampoule" : {
+      "nl" : "Ampul",
+      "fr" : "Ampoule"
+    },
+    "cnkCode" : {
+      "nl" : "CNK Code",
+      "fr" : "Code CNK"
+    },
+    "enteral" : {
+      "nl" : "Enterale",
+      "fr" : "Entérale"
+    },
+    "forearm" : {
+      "nl" : "Voorarm",
+      "fr" : "Avant-bras",
+      "de" : ""
+    },
+    "hickman" : {
+      "nl" : "Centrale katheter type Hickman",
+      "fr" : "Cathéter central de type Hickman"
+    },
+    "lateral" : {
+      "nl" : "Lateraal",
+      "fr" : "Latéral",
+      "de" : ""
+    },
+    "malleol" : {
+      "nl" : "Malleolaire regio",
+      "fr" : "Région malléolaire",
+      "de" : ""
+    },
+    "midline" : {
+      "nl" : "Midline katheter",
+      "fr" : "Cathéter médian"
+    },
+    "scapula" : {
+      "nl" : "Scapula",
+      "fr" : "Scapula",
+      "de" : ""
+    },
+    "topical" : {
+      "nl" : "Topische",
+      "fr" : "Topique"
+    },
+    "tuesday" : {
+      "nl" : "dinsdag",
+      "fr" : "mardi"
+    },
+    "vaginal" : {
+      "nl" : "Vaginale",
+      "fr" : "Vaginale"
+    },
+    "careType" : {
+      "nl" : "Aard van de zorg",
+      "fr" : "Type de soin"
+    },
+    "epidural" : {
+      "nl" : "Epidurale",
+      "fr" : "Épidurale"
+    },
+    "everyDay" : {
+      "nl" : "Om de",
+      "fr" : "Tous les"
+    },
+    "external" : {
+      "nl" : "Extern",
+      "fr" : "Externe",
+      "de" : ""
+    },
+    "feedback" : {
+      "nl" : "Feedback vereist",
+      "fr" : "Feedback exigé"
+    },
+    "fifthToe" : {
+      "nl" : "Vijfde teen",
+      "fr" : "Cinquième orteil",
+      "de" : ""
+    },
+    "flowRate" : {
+      "nl" : "Debiet",
+      "fr" : "Débit"
+    },
+    "forehead" : {
+      "nl" : "Voorhoofd",
+      "fr" : "Front",
+      "de" : ""
+    },
+    "inferior" : {
+      "nl" : "Inferieur",
+      "fr" : "Inférieur",
+      "de" : ""
+    },
+    "infusion" : {
+      "nl" : "Perfusie",
+      "fr" : "Infusion"
+    },
+    "internal" : {
+      "nl" : "Intern",
+      "fr" : "Interne",
+      "de" : ""
+    },
+    "interval" : {
+      "nl" : "Interval",
+      "fr" : "Intervalle"
+    },
+    "lowerLeg" : {
+      "nl" : "Onderbeen",
+      "fr" : "Jambe inférieure",
+      "de" : ""
+    },
+    "ointment" : {
+      "nl" : "Zalf",
+      "fr" : "Pommade"
+    },
+    "repeatOn" : {
+      "nl" : "op",
+      "fr" : "le"
+    },
+    "saturday" : {
+      "nl" : "zaterdag",
+      "fr" : "samedi"
+    },
+    "shoulder" : {
+      "nl" : "Schouder",
+      "fr" : "Epaule",
+      "de" : ""
+    },
+    "superior" : {
+      "nl" : "Superieur",
+      "fr" : "Supérieur",
+      "de" : ""
+    },
+    "thirdToe" : {
+      "nl" : "Derde teen",
+      "fr" : "Troisième orteil",
+      "de" : ""
+    },
+    "thursday" : {
+      "nl" : "donderdag",
+      "fr" : "jeudi"
+    },
+    "upstairs" : {
+      "nl" : "Boven",
+      "fr" : "Au-dessus",
+      "de" : ""
+    },
+    "bilateral" : {
+      "nl" : "Bilateraal",
+      "fr" : "Bilatéral",
+      "de" : ""
+    },
+    "dayPeriod" : {
+      "nl" : "Periode van de dag",
+      "fr" : "Moment de la journée"
+    },
+    "diagnosis" : {
+      "nl" : "Diagnose",
+      "fr" : "Diagnostic"
+    },
+    "dosageRow" : {
+      "nl" : "Dosis",
+      "fr" : "Dosage"
+    },
+    "fourthToe" : {
+      "nl" : "Vierde teen",
+      "fr" : "Quatrième orteil",
+      "de" : ""
+    },
+    "frequency" : {
+      "nl" : "Aantal herhaling",
+      "fr" : "Nombre de répétitions"
+    },
+    "ophtalmic" : {
+      "nl" : "Oogindruppeling",
+      "fr" : "Ophtalmique"
+    },
+    "psoriasis" : {
+      "nl" : "Psoriasis",
+      "fr" : "Psoriasis"
+    },
+    "pubicBone" : {
+      "nl" : "Schaambeen",
+      "fr" : "Structure osseuse du pubis",
+      "de" : ""
+    },
+    "secondToe" : {
+      "nl" : "Tweede teen",
+      "fr" : "Second orteil",
+      "de" : ""
+    },
+    "thighBone" : {
+      "nl" : "Dijbeen",
+      "fr" : "Structure du fémur",
+      "de" : ""
+    },
+    "upperLimb" : {
+      "nl" : "Bovenste lidmaat",
+      "fr" : "Membre supérieur",
+      "de" : ""
+    },
+    "wednesday" : {
+      "nl" : "woensdag",
+      "fr" : "mercredi"
+    },
+    "atTheTopOf" : {
+      "nl" : "Bovenaan",
+      "fr" : "Haut",
+      "de" : ""
+    },
+    "bySolution" : {
+      "nl" : "In oplossing",
+      "fr" : "En solution"
+    },
+    "entireBack" : {
+      "nl" : "Gehele rug",
+      "fr" : "Dos entier",
+      "de" : ""
+    },
+    "medication" : {
+      "nl" : "Geneesmiddel",
+      "fr" : "Médicament"
+    },
+    "nasalFluid" : {
+      "nl" : "Neusvocht",
+      "fr" : "Liquide nasal",
+      "de" : "Neusvocht"
+    },
+    "nbSessions" : {
+      "nl" : "Maximum aantal zittingen",
+      "fr" : "Nombre maximal de séances"
+    },
+    "periodUnit" : {
+      "nl" : "Periode",
+      "fr" : "Période"
+    },
+    "peripheral" : {
+      "nl" : "Perifeer veneuze katheter",
+      "fr" : "Cathéter veineux périphérique"
+    },
+    "portToCath" : {
+      "nl" : "Centrale poortkatheter",
+      "fr" : "Port-à-cath central"
+    },
+    "ringFinger" : {
+      "nl" : "Ringvinger",
+      "fr" : "Annulaire",
+      "de" : ""
+    },
+    "sisticBone" : {
+      "nl" : "Zitbeen",
+      "fr" : "Ischium",
+      "de" : ""
+    },
+    "woundFluid" : {
+      "nl" : "Wondvocht",
+      "fr" : "Exsudat",
+      "de" : "Wondvocht"
+    },
+    "dayPeriod_C" : {
+      "nl" : "Tussen de maaltijden",
+      "fr" : "Entre les repas",
+      "de" : "Zwischen den Mahlzeiten"
+    },
+    "indexFinger" : {
+      "nl" : "Wijsvinger",
+      "fr" : "Index",
+      "de" : ""
+    },
+    "intervalDay" : {
+      "nl" : "Specifieke dag(en)",
+      "fr" : "Jour(s) spécifique(s)"
+    },
+    "intradermal" : {
+      "nl" : "Intradermaal",
+      "fr" : "Intradermale"
+    },
+    "intrathecal" : {
+      "nl" : "Intrathecale",
+      "fr" : "Intrathecal"
+    },
+    "intravenous" : {
+      "nl" : "Intravenous",
+      "fr" : "Intraveineuse"
+    },
+    "nasogastric" : {
+      "nl" : "Gastro-intestinaal",
+      "fr" : "Nasogastrique"
+    },
+    "sessionType" : {
+      "nl" : "Type verstrekking ",
+      "fr" : "Type de prestation"
+    },
+    "bodyLocation" : {
+      "nl" : "Gebied",
+      "fr" : "Zone",
+      "de" : ""
+    },
+    "catheterType" : {
+      "nl" : "",
+      "fr" : "Type de cathéter"
+    },
+    "dayPeriod_AC" : {
+      "nl" : "Voor de maaltijd",
+      "fr" : "Avant le repas",
+      "de" : "Vor der Mahlzeit"
+    },
+    "dayPeriod_CD" : {
+      "nl" : "Bij de lunch",
+      "fr" : "Au lunch",
+      "de" : "Beim Mittagessen"
+    },
+    "dayPeriod_CM" : {
+      "nl" : "Bij het ontbijt",
+      "fr" : "Au petit déjeuner",
+      "de" : "Beim Frühstück"
+    },
+    "dayPeriod_CV" : {
+      "nl" : "Bij het diner",
+      "fr" : "Au diner",
+      "de" : "Beim Abendessen"
+    },
+    "dayPeriod_HS" : {
+      "nl" : "voordat u aan een regelmatige periode van verlengde slaap begint",
+      "fr" : "Avant de commencer une période régulière de sommeil prolongé",
+      "de" : "Vor dem Beginn einer regelmäßigen längeren Schlafphase"
+    },
+    "dayPeriod_IC" : {
+      "nl" : "Tussen de maaltijden",
+      "fr" : "Entre les repas",
+      "de" : "Zwischen Mahlzeiten"
+    },
+    "dayPeriod_PC" : {
+      "nl" : "Na het eten",
+      "fr" : "Après le repas",
+      "de" : "Nach dem essen"
+    },
+    "frequencyDay" : {
+      "nl" : "dag",
+      "fr" : "jour"
+    },
+    "frequencyRow" : {
+      "nl" : "Frequentie",
+      "fr" : "Fréquence"
+    },
+    "littleFinger" : {
+      "nl" : "Pink",
+      "fr" : "Auriculaire",
+      "de" : ""
+    },
+    "middleFinger" : {
+      "nl" : "Middelvinger",
+      "fr" : "Majeur",
+      "de" : ""
+    },
+    "percutaneous" : {
+      "nl" : "Percutane",
+      "fr" : "Percutanée"
+    },
+    "solutionName" : {
+      "nl" : "Oplossingsnaam",
+      "fr" : "Nom de la solution"
+    },
+    "subcutaneous" : {
+      "nl" : "Subcutane",
+      "fr" : "Sous-cutanée"
+    },
+    "temporalLobe" : {
+      "nl" : "Temporaalkwab",
+      "fr" : "Lobe temporal",
+      "de" : ""
+    },
+    "afterheadArea" : {
+      "nl" : "Afterhoofdsgebied",
+      "fr" : "Arrière de la tête",
+      "de" : ""
+    },
+    "anteriorFront" : {
+      "nl" : "Anterior/Vooraan",
+      "fr" : "Antérieur",
+      "de" : ""
+    },
+    "anteriorNaris" : {
+      "nl" : "Uitwending neusgat",
+      "fr" : "Orifice narinaire",
+      "de" : ""
+    },
+    "atTheBottomOf" : {
+      "nl" : "Onderaan",
+      "fr" : "Dessous",
+      "de" : ""
+    },
+    "bodyLocations" : {
+      "nl" : "Lichaamsdelen",
+      "fr" : "Zones du corps",
+      "de" : ""
+    },
+    "centralVenous" : {
+      "nl" : "Centraal veneuze katheter",
+      "fr" : "Cathéter veineux central"
+    },
+    "dayPeriod_ACD" : {
+      "nl" : "Voor de lunch",
+      "fr" : "Avant le déjeuner",
+      "de" : "Vor dem Mittaggen"
+    },
+    "dayPeriod_ACM" : {
+      "nl" : "Voor het ontbijt",
+      "fr" : "Avant le petit-déjeuner",
+      "de" : "Vor dem Frühstück"
+    },
+    "dayPeriod_ACV" : {
+      "nl" : "Voor het diner",
+      "fr" : "Avant le diner",
+      "de" : "Vor dem Abendessen"
+    },
+    "dayPeriod_EVE" : {
+      "nl" : "Avond",
+      "fr" : "Soirée",
+      "de" : "Abend"
+    },
+    "dayPeriod_ICD" : {
+      "nl" : "Tussen lunch en diner",
+      "fr" : "Entre le déjeuner et le dîner",
+      "de" : "Zwischen Mittag- und Abendessen"
+    },
+    "dayPeriod_ICM" : {
+      "nl" : "Tussen ontbijt en lunch",
+      "fr" : "Entre le petit déjeuner et le déjeuner",
+      "de" : "Zwischen Frühstück und Mittagessen"
+    },
+    "dayPeriod_ICV" : {
+      "nl" : "Tussen het avondeten en het uur slapen",
+      "fr" : "Entre le dîner et l'heure du sommeil",
+      "de" : "Zwischen dem Abendessen und der Schlafstunde"
+    },
+    "dayPeriod_IMD" : {
+      "nl" : "Onmiddellijk",
+      "fr" : "Immédiatement",
+      "de" : "Unmittelbar"
+    },
+    "dayPeriod_PCD" : {
+      "nl" : "Na de lunch",
+      "fr" : "Après le déjeuner",
+      "de" : "Nach dem Mittagessen"
+    },
+    "dayPeriod_PCM" : {
+      "nl" : "Na de maaltijd",
+      "fr" : "Après le petit-déjeuner",
+      "de" : "Nach dem Frühstück"
+    },
+    "dayPeriod_PCV" : {
+      "nl" : "Na het diner",
+      "fr" : "Après le diner",
+      "de" : "Nach dem Abendessen"
+    },
+    "dayPeriod_PHS" : {
+      "nl" : "Na de slaap",
+      "fr" : "Après le coucher",
+      "de" : "Nach dem Schlaf"
+    },
+    "frequencyType" : {
+      "nl" : "Frequentie",
+      "fr" : "Type de fréquence"
+    },
+    "frequencyWeek" : {
+      "nl" : "Week",
+      "fr" : "semaine"
+    },
+    "frequencyYear" : {
+      "nl" : "jaar",
+      "fr" : "an"
+    },
+    "intramuscular" : {
+      "nl" : "Intramusculaire",
+      "fr" : "Intramusculaire"
+    },
+    "medicalReason" : {
+      "nl" : "Medische reden",
+      "fr" : "Raisons médicales"
+    },
+    "meltingTablet" : {
+      "nl" : "Smelttablet",
+      "fr" : "Tablette à faire fondre sous la langue"
+    },
+    "posteriorBack" : {
+      "nl" : "Posterior/Achteraan",
+      "fr" : "Postérieur",
+      "de" : ""
+    },
+    "swallowTablet" : {
+      "nl" : "Sliktablet",
+      "fr" : "Tablette à avaler"
+    },
+    "bodyLaterality" : {
+      "nl" : "Lateraliteit",
+      "fr" : "Latéralité",
+      "de" : ""
+    },
+    "boundsDuration" : {
+      "nl" : "Duur",
+      "fr" : "Durée"
+    },
+    "chewableTablet" : {
+      "nl" : "Kauwtablet",
+      "fr" : "Tablette à macher"
+    },
+    "dayPeriod_MORN" : {
+      "nl" : "Ochtend",
+      "fr" : "Matinée",
+      "de" : "Morgen"
+    },
+    "dayPeriod_NOON" : {
+      "nl" : "Middag",
+      "fr" : "Midi",
+      "de" : "Mittags"
+    },
+    "dayPeriod_WAKE" : {
+      "nl" : "Bij het ontwaken",
+      "fr" : "Au réveil",
+      "de" : "Beim Aufwachen"
+    },
+    "dermatomycosis" : {
+      "nl" : "Dermatomycose",
+      "fr" : "Dermatomycose"
+    },
+    "dosageQuantity" : {
+      "nl" : "Hoeveelheid",
+      "fr" : "Quantité"
+    },
+    "flowRateSuffix" : {
+      "nl" : "ml/h",
+      "fr" : "ml/h"
+    },
+    "frequencyMonth" : {
+      "nl" : "maand",
+      "fr" : "mois"
+    },
+    "generalRemarks" : {
+      "nl" : "Algemene opmerkingen",
+      "fr" : "Remarques générales"
+    },
+    "intervalPeriod" : {
+      "nl" : "Periode",
+      "fr" : "Période"
+    },
+    "medicationName" : {
+      "nl" : "Naam geneesmiddel",
+      "fr" : "Nom du médicament"
+    },
+    "unilateralLeft" : {
+      "nl" : "Unilateraal links",
+      "fr" : "Unilatéral Gauche",
+      "de" : ""
+    },
+    "validityPeriod" : {
+      "nl" : "Period van geldigheid",
+      "fr" : "Période de validité"
+    },
+    "customFrequency" : {
+      "nl" : "Custom",
+      "fr" : "Custom"
+    },
+    "dayPeriod_NIGHT" : {
+      "nl" : "Nacht",
+      "fr" : "Nuit",
+      "de" : "Nacht"
+    },
+    "frequencySuffix" : {
+      "nl" : "X per",
+      "fr" : "X par"
+    },
+    "gastronomicTube" : {
+      "nl" : "Gastronomische buis",
+      "fr" : "Tube gastronomique"
+    },
+    "intervalTooltip" : {
+      "nl" : "Bijv.: elke 3 dagen, elke week, elke maandag, ...",
+      "fr" : "Ex: Tous les 3 jours, toutes les semaines, tous les lundis, ..."
+    },
+    "malleolarRegion" : {
+      "nl" : "Maleolaire regio",
+      "fr" : "Région maléolaire",
+      "de" : ""
+    },
+    "otherSampleType" : {
+      "nl" : "Andere",
+      "fr" : "Autre",
+      "de" : "Andere"
+    },
+    "sessionDuration" : {
+      "nl" : "Duur",
+      "fr" : "Durée"
+    },
+    "unilateralRight" : {
+      "nl" : "Unilateraal rechts",
+      "fr" : "Unilatéral Droit",
+      "de" : ""
+    },
+    "validityEndDate" : {
+      "nl" : "Vervaldatum",
+      "fr" : "Fin de validité"
+    },
+    "chronicAnalgesia" : {
+      "nl" : "Chronische analgesie",
+      "fr" : "Analgésie chronique"
+    },
+    "enteralNutrition" : {
+      "nl" : "Enterale voeding",
+      "fr" : "Nutrition enteral"
+    },
+    "entireIliacCrest" : {
+      "nl" : "Gehele crista iliaca",
+      "fr" : "Crête iliaque entière",
+      "de" : ""
+    },
+    "gastroIntestinal" : {
+      "nl" : "Gastro-intestinaal",
+      "fr" : "Gastro-intestinal"
+    },
+    "intraventricular" : {
+      "nl" : "Intraventriculair",
+      "fr" : "Intraventriculaire"
+    },
+    "quantityByPeriod" : {
+      "nl" : "Hoeveelheid per periode",
+      "fr" : "Quantité par période"
+    },
+    "respiratoryTract" : {
+      "nl" : "Luchtweg",
+      "fr" : "Respiratoire"
+    },
+    "boundsDurationRow" : {
+      "nl" : "Duur van de behandeling",
+      "fr" : "Durée du traitement"
+    },
+    "contraindications" : {
+      "nl" : "Contra-indicaties",
+      "fr" : "Contre-indications"
+    },
+    "dayPeriod_AFTNOON" : {
+      "nl" : "Namiddag",
+      "fr" : "Après-midi",
+      "de" : "Nachmittag"
+    },
+    "greaterTrochanter" : {
+      "nl" : "Trochanter major",
+      "fr" : "Trochanter majeur",
+      "de" : ""
+    },
+    "patternErrorDates" : {
+      "nl" : "Ongeldig formaat: dd/mm/jjjj",
+      "fr" : "Format invalide: jj/mm/aaaa"
+    },
+    "validityStartDate" : {
+      "nl" : "Startdatum van geldigheid",
+      "fr" : "Début de validité"
+    },
+    "boundsDurationUnit" : {
+      "nl" : "Periode",
+      "fr" : "Période"
+    },
+    "dayPeriod_AFT.late" : {
+      "nl" : "Late namiddag",
+      "fr" : "Fin d'après-midi",
+      "de" : "Spätnachmittag"
+    },
+    "dayPeriod_EVE.late" : {
+      "nl" : "Late avond",
+      "fr" : "Fin de soirée",
+      "de" : "Später Abend"
+    },
+    "dosageQuantityUnit" : {
+      "nl" : "Eenheid",
+      "fr" : "Unité"
+    },
+    "effervescentTablet" : {
+      "nl" : "Bruistablet",
+      "fr" : "Tablette effervescent"
+    },
+    "intervalPeriodUnit" : {
+      "nl" : "Eenheid",
+      "fr" : "Unité"
+    },
+    "materialNeededInfo" : {
+      "nl" : "> Voor deze prestatie is materiaal nodig.",
+      "fr" : "> Cette prestation nécessite du matériel."
+    },
+    "pharmaceuticalForm" : {
+      "nl" : "Aard van het geneesmiddel",
+      "fr" : "Forme pharmaceutique"
+    },
+    "sessionDurationRow" : {
+      "nl" : "Sessieduur",
+      "fr" : "Durée de la séance"
+    },
+    "skinOfInstepOfFoot" : {
+      "nl" : "Huid van wreef",
+      "fr" : "Peau du cou-de-pied",
+      "de" : ""
+    },
+    "structureOfTheFace" : {
+      "nl" : "Structuur van het aangezicht",
+      "fr" : "Visage",
+      "de" : ""
+    },
+    "treatmentPeriodRow" : {
+      "nl" : "Periode",
+      "fr" : "Période"
+    },
+    "administrationRoute" : {
+      "nl" : "Toedieningsweg",
+      "fr" : "Voie d'administration"
+    },
+    "dayPeriod_AFT.early" : {
+      "nl" : "Vroege middag",
+      "fr" : "Début d'après-midi",
+      "de" : "Früher Nachmittag"
+    },
+    "dayPeriod_EVE.early" : {
+      "nl" : "Vroege avond",
+      "fr" : "Début de soirée",
+      "de" : "Früher Abend"
+    },
+    "dayPeriod_MORN.late" : {
+      "nl" : "Late ochtend",
+      "fr" : "Fin de matinée",
+      "de" : "Später Morgen"
+    },
+    "otherSkinConditions" : {
+      "nl" : "Andere huidproblemen",
+      "fr" : "Autres problèmes de peau"
+    },
+    "parenteralNutrition" : {
+      "nl" : "Parenterale voeding",
+      "fr" : "Nutrition parenteral"
+    },
+    "solutionNameTooltip" : {
+      "nl" : "U kunt een CNK-code kopiëren (zonder streepje of spatie) om het geneesmiddel direct te vinden",
+      "fr" : "Vous pouvez copier un code CNK (sans tiret, ni espace) pour retrouver le médicament directement"
+    },
+    "treatmentPeriodUnit" : {
+      "nl" : "Eenheid",
+      "fr" : "Unité"
+    },
+    "typeOfSkinCondition" : {
+      "nl" : "Soort huidprobleem",
+      "fr" : "Type de problème de peau"
+    },
+    "administrationMethod" : {
+      "nl" : "Wijze van toediening",
+      "fr" : "Méthode d'administration"
+    },
+    "catheterSubcutaneous" : {
+      "nl" : "Subcutane katheter",
+      "fr" : "Cathéter sous-cutané"
+    },
+    "dayPeriod_MORN.early" : {
+      "nl" : "Vroege ochtend",
+      "fr" : "Début de matinée",
+      "de" : "Früher Morgen"
+    },
+    "entireCalfOfLowerLeg" : {
+      "nl" : "hele kuit van het onderbeen",
+      "fr" : "Mollet entier de la jambe inférieure",
+      "de" : ""
+    },
+    "frequencyPlaceholder" : {
+      "nl" : "1 tot 99",
+      "fr" : "1 à 99"
+    },
+    "frequencyRowRequired" : {
+      "nl" : "Frequentie <span class='required'>*</span>",
+      "fr" : "Fréquence <span class='required'>*</span>"
+    },
+    "frequencyNumberSuffix" : {
+      "nl" : "X per",
+      "fr" : "X par"
+    },
+    "medicationNameTooltip" : {
+      "nl" : "U kunt een CNK-code kopiëren (zonder streepje of spatie) om het geneesmiddel direct te vinden",
+      "fr" : "Vous pouvez copier un code CNK (sans tiret, ni espace) pour retrouver le médicament directement"
+    },
+    "nbSessionsPlaceholder" : {
+      "nl" : "1 tot 10000",
+      "fr" : "1 à 10000"
+    },
+    "nbSessionsRowRequired" : {
+      "nl" : "Maximum aantal zittingen <span class='required'>*</span>",
+      "fr" : "Nombre maximal de séances <span class='required'>*</span>"
+    },
+    "validityPeriodTooltip" : {
+      "nl" : "Dit is de periode waarin de verwerking moet beginnen.",
+      "fr" : "Il s'agit de la période durant laquelle le traitement doit débuter."
+    },
+    "quantityByPeriodTooltip" : {
+      "nl" : "Bijv.: 3x per dag, 1x per week, ...",
+      "fr" : "Ex: 3x par jour, 1x par semaine, ..."
+    },
+    "solutionNamePlaceholder" : {
+      "nl" : "Naam geneesmiddel of CNK code",
+      "fr" : "Nom de la solution ou code CNK"
+    },
+    "treatmentPeriodQuantity" : {
+      "nl" : "Hoeveelheid",
+      "fr" : "Quantité"
+    },
+    "treatmentValidityEndDate" : {
+      "nl" : "Einddatum van de uitvoerbaarheid",
+      "fr" : "Date de fin d'exécution"
+    },
+    "boundsDurationPlaceholder" : {
+      "nl" : "1 tot 365",
+      "fr" : "1 à 365"
+    },
+    "boundsDurationRowRequired" : {
+      "nl" : "Duur van de behandeling <span class='required'>*</span>",
+      "fr" : "Durée du traitement <span class='required'>*</span>"
+    },
+    "dosageQuantityPlaceholder" : {
+      "nl" : "1 tot 365",
+      "fr" : "1 à 365"
+    },
+    "intervalPeriodPlaceholder" : {
+      "nl" : "1 tot 99",
+      "fr" : "1 à 99"
+    },
+    "medicationNamePlaceholder" : {
+      "nl" : "Naam geneesmiddel of CNK code",
+      "fr" : "Nom du médicament ou code CNK"
+    },
+    "sessionDurationPeriodUnit" : {
+      "nl" : "Periode",
+      "fr" : "Période"
+    },
+    "frequencyNumberPlaceholder" : {
+      "nl" : "1 tot 99",
+      "fr" : "1 à 99"
+    },
+    "nbSessionsPlaceholder1to99" : {
+      "nl" : "1 tot 99",
+      "fr" : "1 à 99"
+    },
+    "sessionDurationPlaceholder" : {
+      "nl" : "1 tot 100",
+      "fr" : "1 à 100"
+    },
+    "treatmentValidationEndDate" : {
+      "nl" : "Einddatum van de uitvoerbaarheid",
+      "fr" : "Date de fin d'exécution"
+    },
+    "structureOfOccipitalCondyle" : {
+      "nl" : "Structuur van de condylus occipitalis",
+      "fr" : "Structure du condyle occipital",
+      "de" : ""
+    },
+    "structureOfMalleolusOfFibula" : {
+      "nl" : "Structuur van malleolus van kuitbeen",
+      "fr" : "Structure malléolaire du péroné",
+      "de" : ""
+    },
+    "numberOfPrestationsPlaceholder" : {
+      "nl" : "1 tot 10000",
+      "fr" : "1 à 10000"
+    },
+    "treatmentValidityEndDateTooltip" : {
+      "nl" : "Dit is de datum waarop de verwerking voltooid moet zijn.",
+      "fr" : "Il s'agit de la date à laquelle le traitement doit être terminé."
+    },
+    "treatmentValidationEndDateTooltip" : {
+      "nl" : "Dit is de datum waarop de verwerking voltooid moet zijn.",
+      "fr" : "Il s'agit de la date à laquelle le traitement doit être terminé."
+    },
+    "treatmentPeriodQuantityPlaceholder" : {
+      "nl" : "1 tot 365",
+      "fr" : "1 à 365"
+    },
+    "patternErrorSpecificsPointsOfAttention" : {
+      "nl" : "Gebruik alleen toegestane letters, cijfers en symbolen: . , ; ? ! : \" ' ( ) - + @ < > = % ° µ \\ / ^ ² ³ # ~ &",
+      "fr" : "Veuillez n'utiliser que des lettres, chiffres et symboles autorisés: . , ; ? ! : \" ' ( ) - + @ < > = % ° µ \\ / ^ ² ³ # ~ &"
+    }
+  }
+}

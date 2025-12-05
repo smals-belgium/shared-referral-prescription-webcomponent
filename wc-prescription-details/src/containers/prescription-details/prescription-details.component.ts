@@ -264,11 +264,11 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
       untracked(() => {
         //Futur improvment :  make more generic for proposal with free text (physio) - https://jira.smals.be/browse/UHMEP-2166
-        if (
-          !template ||
-          (!cryptoKey && templateCode !== 'ANNEX_81') ||
-          (prescription?.responses?.['note'] && !cryptoKey && templateCode === 'ANNEX_81')
-        ) {
+        const missingCryptoKey = !cryptoKey;
+        const isAnnex81 = templateCode === 'ANNEX_81';
+        const hasNoteResponse = Boolean(prescription?.responses?.['note']);
+
+        if (!template || (missingCryptoKey && (!isAnnex81 || hasNoteResponse))) {
           return;
         }
         if (prescription?.responses) {

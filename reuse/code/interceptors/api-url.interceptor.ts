@@ -4,6 +4,7 @@ import { filter, mergeMap, Observable } from 'rxjs';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
 import { Buffer } from 'buffer';
+import { AccessToken } from '../interfaces';
 
 export const apiUrlInterceptor: HttpInterceptorFn = (
   req: HttpRequest<unknown>,
@@ -11,11 +12,12 @@ export const apiUrlInterceptor: HttpInterceptorFn = (
 ): Observable<HttpEvent<unknown>> => {
   const configService = inject(ConfigurationService);
   const authService = inject(AuthService);
-  const exchangeToClientId = configService.getEnvironmentVariable('fhirGatewayClientId');
+  const currentEnv = configService.getEnvironment();
 
-  const fhirGatewayUrl = configService.getEnvironmentVariable('fhirGatewayUrl');
+  const exchangeToClientId = configService.getEnvironmentVariable('fhirGatewayClientId') as string;
+  const fhirGatewayUrl = configService.getEnvironmentVariable('fhirGatewayUrl') as string;
 
-  if (req.url.includes('assets/')) {
+  if (req.url.includes('assets/') || currentEnv === 'demo') {
     return next(req);
   }
   if (req.url.includes('pseudo/')) {
@@ -35,7 +37,7 @@ export const apiUrlInterceptor: HttpInterceptorFn = (
   return authService.getAccessToken(exchangeToClientId).pipe(
     filter(token => token !== null),
     mergeMap(accessToken => {
-      const token = JSON.parse(Buffer.from(accessToken.split('.')[1], 'base64').toString());
+      const token = JSON.parse(Buffer.from(accessToken.split('.')[1], 'base64').toString()) as AccessToken;
       const authUrl = token.iss;
 
       if (req.url.includes(authUrl)) {

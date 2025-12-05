@@ -30,7 +30,6 @@ export const APP_CONFIG: AppConfig = {
       env: 'demo',
       fhirGatewayUrl: 'http://demo-mode:8080',
       apiUrl: 'http://demo-mode:8080/frontend/api',
-      pseudoApiUrl: 'https://demo-mode:8080/pseudo/v1',
       enablePseudo: false,
     },
     localPatient: {

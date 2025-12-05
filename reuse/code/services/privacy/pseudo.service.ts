@@ -8,11 +8,13 @@ import {
   Value,
 } from '@smals-belgium-shared/pseudo-helper';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
+import { pseudonymInTransitMock } from '@reuse/code/demo/mocks/pseudonymInTransit';
 
 @Injectable({ providedIn: 'root' })
 export class PseudoService {
   private pseudonymizationDomain: Domain | undefined;
-  private readonly pseudoApiUrl = this.configService.getEnvironmentVariable('pseudoApiUrl');
+  private readonly pseudoApiUrl = this.configService.getEnvironmentVariable('pseudoApiUrl') as string;
+  private readonly env = this.configService.getEnvironment();
 
   constructor(
     private configService: ConfigurationService,
@@ -87,6 +89,9 @@ export class PseudoService {
 
   toPseudonymInTransit(asn1Compressed: string) {
     if (!this.pseudonymizationDomain) {
+      if (this.env === 'demo') {
+        return pseudonymInTransitMock;
+      }
       this.handlePseudomizationNotEnabled();
       return null;
     }
