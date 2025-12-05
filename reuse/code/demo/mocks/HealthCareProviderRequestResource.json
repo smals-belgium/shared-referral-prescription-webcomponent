@@ -3,25 +3,25 @@
     {
       "id": {
         "profession": "NURSE",
-        "ssin": "55161800024",
-        "qualificationCode": "001"
+        "ssin": "10000000009",
+        "qualificationCode": "A12"
       },
       "phoneNumbers": {
-        "telephoneNumbers": null,
-        "mobileNumber": ""
+        "telephoneNumbers": { "phoneNumber1": "0000000011" },
+        "mobileNumber": "0990000011"
       },
       "licenseToPractice": true,
       "subscriptionEndDate": null,
       "healthcareQualification": {
         "id": {
-          "code": "001",
+          "code": "A12",
           "profession": "NURSE"
         },
         "description": {
-          "nl": "Gegradueerde verpleegkundigen of ermee gelijkgesteld",
-          "fr": "Infirmier(ère) gradué(e) ou assimilé(e)",
-          "de": "Diplomierte/r Krankenpfleger/in oder gleichgestellt(e)",
-          "en": "Registered nurse or equivalent"
+          "nl": "Gekwalificeerde verpleegkundige",
+          "fr": "Infirmier qualifié",
+          "de": "Qualifizierte Krankenschwester",
+          "en": "Qualified NURSE"
         }
       },
       "healthcareStatus": {
@@ -34,44 +34,29 @@
         }
       },
       "healthcarePerson": {
-        "ssin": "55161800024",
-        "firstName": "Diana",
-        "lastName": "Prince",
+        "ssin": "10000000009",
+        "firstName": "Robin",
+        "lastName": "Dupont",
         "deceased": false
       },
-      "healthcareVisaList": [
-        {
-          "id": "123456",
-          "active": true,
-          "definitive": true,
-          "startDate": "2006-04-04",
-          "endDate": null,
-          "withdrawalStartDate": null,
-          "withdrawalEndDate": null,
-          "healthcareProId": {
-            "profession": "NURSE",
-            "ssin": "55161800024",
-            "qualificationCode": null
-          }
-        }
-      ],
+      "healthcareVisaList": [],
       "address": {
         "street": {
-          "nl": "Rue de l'est",
-          "fr": "Rue de l'est",
-          "de": "Rue de l'est",
-          "en": "Rue de l'est"
+          "nl": "Stationsstraat",
+          "fr": "Rue de la Gare",
+          "de": "Bahnhofstraße",
+          "en": "Station Street"
         },
-        "houseNumber": "159",
-        "box": "B2",
-        "zipCode": "4000",
+        "houseNumber": "45",
+        "box": "A1",
+        "zipCode": "1050",
         "municipality": {
-          "nl": "Luik",
-          "fr": "Liège",
-          "de": "Lüttich",
-          "en": "Liège"
+          "nl": "Elsene",
+          "fr": "Ixelles",
+          "de": "Ixelles",
+          "en": "Ixelles"
         },
-        "cityCode": 4000,
+        "cityCode": 1050,
         "country": {
           "nl": "België",
           "fr": "Belgique",
@@ -79,32 +64,32 @@
           "en": "Belgium"
         }
       },
-      "nihii8": "",
-      "nihii11": "",
+      "nihii8": "12345678",
+      "nihii11": "10000000029",
       "type": "Professional"
     },
     {
       "id": {
         "profession": "NURSE",
-        "ssin": "77312900073",
-        "qualificationCode": "008"
+        "ssin": "10000000008",
+        "qualificationCode": "B07"
       },
       "phoneNumbers": {
-        "telephoneNumbers": null,
-        "mobileNumber": ""
+        "telephoneNumbers": { "phoneNumber1": "0000000022" },
+        "mobileNumber": "0990000022"
       },
       "licenseToPractice": true,
       "subscriptionEndDate": null,
       "healthcareQualification": {
         "id": {
-          "code": "008",
+          "code": "B07",
           "profession": "NURSE"
         },
         "description": {
-          "nl": "Gebrevetteerde verpleegkundige",
-          "fr": "Infirmier(ère) breveté(e)",
-          "de": "Zertifizierte Pflegefachkraft",
-          "en": "Certified nurse"
+          "nl": "Gekwalificeerde verpleegkundige",
+          "fr": "Infirmier qualifié",
+          "de": "Qualifizierte Krankenschwester",
+          "en": "Qualified NURSE"
         }
       },
       "healthcareStatus": {
@@ -117,44 +102,29 @@
         }
       },
       "healthcarePerson": {
-        "ssin": "77312900073",
-        "firstName": "Shuri",
-        "lastName": "Wakanda",
+        "ssin": "10000000008",
+        "firstName": "Anke",
+        "lastName": "Dubois",
         "deceased": false
       },
-      "healthcareVisaList": [
-        {
-          "id": "111222",
-          "active": true,
-          "definitive": true,
-          "startDate": "2013-10-01",
-          "endDate": null,
-          "withdrawalStartDate": null,
-          "withdrawalEndDate": null,
-          "healthcareProId": {
-            "profession": "NURSE",
-            "ssin": "77312900073",
-            "qualificationCode": null
-          }
-        }
-      ],
+      "healthcareVisaList": [],
       "address": {
         "street": {
-          "nl": "KoninkgsStraat",
-          "fr": "Rue Royale",
-          "de": "Rue Royale",
-          "en": "Rue Royale"
+          "nl": "Bremstraat",
+          "fr": "Rue des Genêts",
+          "de": "Ginsterstraße",
+          "en": "Broom Street"
         },
-        "houseNumber": "12",
-        "box": "",
-        "zipCode": "1000",
+        "houseNumber": "27",
+        "box": "C4",
+        "zipCode": "3500",
         "municipality": {
-          "nl": "Brussel",
-          "fr": "Bruxelles",
-          "de": "Brüssel",
-          "en": "Brussels"
+          "nl": "Hasselt",
+          "fr": "Hasselt",
+          "de": "Hasselt",
+          "en": "Hasselt"
         },
-        "cityCode": 1000,
+        "cityCode": 3500,
         "country": {
           "nl": "België",
           "fr": "Belgique",
@@ -162,32 +132,32 @@
           "en": "Belgium"
         }
       },
-      "nihii8": "000001",
-      "nihii11": "00000000011",
+      "nihii8": "12345679",
+      "nihii11": "10000000028",
       "type": "Professional"
     },
     {
       "id": {
         "profession": "NURSE",
-        "ssin": "18170400008",
-        "qualificationCode": "408"
+        "ssin": "10000000011",
+        "qualificationCode": "C15"
       },
       "phoneNumbers": {
-        "telephoneNumbers": null,
-        "mobileNumber": ""
+        "telephoneNumbers": { "phoneNumber1": "0000000033" },
+        "mobileNumber": "0990000033"
       },
       "licenseToPractice": true,
       "subscriptionEndDate": null,
       "healthcareQualification": {
         "id": {
-          "code": "408",
+          "code": "C15",
           "profession": "NURSE"
         },
         "description": {
-          "nl": "Gebrevetteerde verpleegkundige",
-          "fr": "Infirmier(ère) breveté(e)",
-          "de": "Zertifizierte Pflegefachkraft",
-          "en": "Certified nurse"
+          "nl": "Ervaren verpleegkundige",
+          "fr": "Infirmier expérimenté",
+          "de": "Erfahrene Krankenschwester",
+          "en": "Experienced NURSE"
         }
       },
       "healthcareStatus": {
@@ -200,44 +170,29 @@
         }
       },
       "healthcarePerson": {
-        "ssin": "18170400008",
-        "firstName": "Hermione",
-        "lastName": "Granger",
+        "ssin": "10000000011",
+        "firstName": "Milan",
+        "lastName": "Verstraete",
         "deceased": false
       },
-      "healthcareVisaList": [
-        {
-          "id": "011111",
-          "active": true,
-          "definitive": true,
-          "startDate": "2016-07-13",
-          "endDate": null,
-          "withdrawalStartDate": null,
-          "withdrawalEndDate": null,
-          "healthcareProId": {
-            "profession": "NURSE",
-            "ssin": "18170400008",
-            "qualificationCode": null
-          }
-        }
-      ],
+      "healthcareVisaList": [],
       "address": {
         "street": {
-          "nl": "KoninkgsStraat",
-          "fr": "Rue Royale",
-          "de": "Rue Royale",
-          "en": "Rue Royale"
+          "nl": "Maretaklaan",
+          "fr": "Avenue du Gui",
+          "de": "Mistelausallee",
+          "en": "Mistletoe Avenue"
         },
-        "houseNumber": "12",
-        "box": "2C",
-        "zipCode": "1000",
+        "houseNumber": "88",
+        "box": "D1",
+        "zipCode": "5100",
         "municipality": {
-          "nl": "Brussel",
-          "fr": "Bruxelles",
-          "de": "Brüssel",
-          "en": "Brussels"
+          "nl": "Jurbeke",
+          "fr": "Jurbeke",
+          "de": "Jurbeke",
+          "en": "Jurbeke"
         },
-        "cityCode": 1000,
+        "cityCode": 5100,
         "country": {
           "nl": "België",
           "fr": "Belgique",
@@ -245,8 +200,8 @@
           "en": "Belgium"
         }
       },
-      "nihii8": "00000008",
-      "nihii11": "00000000002",
+      "nihii8": "12345670",
+      "nihii11": "10000000027",
       "type": "Professional"
     }
   ],
@@ -302,8 +257,8 @@
           "en": "Belgium"
         }
       },
-      "nihii8": "98766789",
-      "nihii11": "98765456789"
+      "nihii8": "00000009",
+      "nihii11": "00000009940"
     },
     {
       "id": {
@@ -312,17 +267,17 @@
       },
       "cbe": "",
       "organizationName": {
-        "nl": "Group of nurses",
-        "fr": "Group of nurses",
-        "de": "Group of nurses",
-        "en": "Group of nurses"
+        "nl": "Group of NURSEs",
+        "fr": "Group of NURSEs",
+        "de": "Group of NURSEs",
+        "en": "Group of NURSEs"
       },
       "typeCode": "940",
       "typeDescription": {
         "nl": "Team van vrolijke verpleegkundigen met een groot hart",
         "fr": "Équipe d’infirmiers et d’infirmières au grand cœur",
         "de": "Team fröhlicher Pflegekräfte mit großem Herzen",
-        "en": "Team of cheerful nurses with a big heart"
+        "en": "Team of cheerful NURSEs with a big heart"
       },
       "qualificationCode": "001",
       "situationCode": "1",
@@ -356,9 +311,9 @@
           "en": "Belgium"
         }
       },
-      "nihii8": "94044468",
-      "nihii11": "94044468001"
+      "nihii8": "00000011",
+      "nihii11": "00000011940"
     }
   ],
-  "total": 4
+  "total": 5
 }

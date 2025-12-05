@@ -1,15 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
-import {
-  HttpClient,
-  provideHttpClient,
-  withInterceptors,
-  HttpErrorResponse,
-} from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { HttpClientTestingModule, HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient, withInterceptors, HttpErrorResponse } from '@angular/common/http';
 import { demoHttpInterceptor } from './demo-http.interceptor';
 import { WcConfigurationService } from '@reuse/code/services/config/wc-configuration.service';
 
@@ -21,6 +13,7 @@ describe('DemoHttpInterceptor', () => {
     (window as any).referralPrescriptionEnv = environment;
 
     TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       providers: [
         WcConfigurationService,
         provideHttpClient(withInterceptors([demoHttpInterceptor])),
@@ -57,7 +50,7 @@ describe('DemoHttpInterceptor', () => {
       expect(err).toBeInstanceOf(HttpErrorResponse);
       const httpError = err as HttpErrorResponse;
       expect(httpError.status).toBe(501);
-      expect(httpError.statusText).toBe('Mock not found');
+      expect(httpError.statusText).toBe('Demo mock not found');
       httpMock.expectNone('/api/unknown-endpoint');
     }
   });

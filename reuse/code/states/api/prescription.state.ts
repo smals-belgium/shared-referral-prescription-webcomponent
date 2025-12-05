@@ -44,7 +44,11 @@ export class PrescriptionState extends BaseState<ReadRequestResource> {
           },
           generatedUUID
         )
-        .pipe(tap(() => this.loadPrescription(prescriptionId)));
+        .pipe(
+          tap(() => {
+            return this.loadPrescription(prescriptionId);
+          })
+        );
     } else {
       const ho = healthcareProvider as HealthcareOrganizationResource;
       const nihdi = this.getNihdi(ho);

@@ -39,6 +39,7 @@ export interface IdToken {
 
 export interface AccessToken {
   resource_access: ResourceAccess;
+  iss: string;
 }
 
 export interface Token {

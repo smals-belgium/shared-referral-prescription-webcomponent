@@ -6,7 +6,8 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <script src="keycloak.js"></script>
+  <script src="../../keycloak/keycloak.js"></script>
+  <script src="http://localhost:3000/web-components/prescription-list/wc-prescription-list.js" type="module"></script>
 </head>
 <body>
 <script>
@@ -34,22 +35,8 @@
   }
 
   if (env === 'demo') {
-
-    const fakeHeader = btoa(JSON.stringify({ alg: 'none', typ: 'JWT' }));
-    const fakePayload = btoa(JSON.stringify({
-      sub: 'demo',
-      name: 'Jean Doe',
-      preferred_username: 'Jean Doe',
-      realm_access: { roles: ['user', 'admin'] },
-      resource_access: {
-        'nihdi-uhmep-api': { roles: ['admin', 'demo'] },
-      },
-      exp: Math.floor(Date.now() / 1000) + 3600,
-      iat: Math.floor(Date.now() / 1000),
-    }));
-    const demoJwt = `${fakeHeader}.${fakePayload}.`;
-    createListComponent('demo', {
-      getAccessToken: (audience) => Promise.resolve(demoJwt),
+    createListComponent({
+      getAccessToken: (audience) => Promise.reject('uhmep-demo-patient'),
     });
   } else {
     var keycloak = new Keycloak({

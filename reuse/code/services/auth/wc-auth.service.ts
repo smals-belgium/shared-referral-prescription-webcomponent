@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, filter, first, Observable, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, filter, first, Observable, of, switchMap } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Buffer } from 'buffer';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
@@ -44,15 +44,16 @@ export class WcAuthService extends AuthService {
   getResourceAccess() {
     return this.getAccessToken().pipe(
       filter(token => token !== null),
-      map(token => JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString()) as AccessToken)
+      map(token => JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString()) as AccessToken),
+      catchError(() => of(null))
     );
   }
 
   override isProfessional(): Observable<boolean> {
     return combineLatest([this.getClaims(), this.getResourceAccess()]).pipe(
-      map(([claims, accessToken]) => {
-        return this.userProfileHasProfessionalKey(claims?.['userProfile'], accessToken?.['resource_access']);
-      })
+      map(([claims, accessToken]) =>
+        this.userProfileHasProfessionalKey(claims?.['userProfile'], accessToken?.['resource_access'])
+      )
     );
   }
 

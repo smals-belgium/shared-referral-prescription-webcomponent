@@ -7,7 +7,8 @@
 
   <meta content="width=device-width, initial-scale=1" name="viewport"/>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <script src="assets/keycloak.js"></script>
+  <script src="../../keycloak/keycloak.js"></script>
+  <script src="http://localhost:3000/web-components/prescription-details/wc-prescription-details.js" type="module"></script>
 </head>
 <body>
 <script>
@@ -20,7 +21,7 @@
     create.lang = navigator.language.includes('nl') || navigator.language.includes('fr')
       ? navigator.language
       : 'nl-BE';
-    create.prescriptionId = '17f0c1ab-5879-409d-a62c-5da3c857eba3';
+    create.prescriptionId = 'DEAD0000-0000-4000-A000-000000000002';
     // create.patientSsin = '90122712173';
     create.intent = 'order';
     create.services = services;
@@ -30,28 +31,15 @@
 
   if (env === 'demo') {
 
-    const fakeHeader = btoa(JSON.stringify({ alg: 'none', typ: 'JWT' }));
-    const fakePayload = btoa(JSON.stringify({
-      sub: 'demo',
-      name: 'Jean Doe',
-      preferred_username: 'Jean Doe',
-      realm_access: { roles: ['user', 'admin'] },
-      resource_access: {
-        'nihdi-uhmep-api': { roles: ['admin', 'demo'] },
-      },
-      exp: Math.floor(Date.now() / 1000) + 3600,
-      iat: Math.floor(Date.now() / 1000),
-    }));
-    const demoJwt = `${fakeHeader}.${fakePayload}.`;
     createDetailsComponent( {
-      getAccessToken: (audience) => Promise.resolve(demoJwt),
+      getAccessToken: (audience) => Promise.reject('uhmep-demo-patient'),
       getIdToken: () => {
         return {
           userProfile: {
             ssin: '90122712173',
             firstName: 'Jean',
             lastName: 'Dupont',
-            gender: 'male',
+            gender: 'M',
             role: 'Patient'
           }
         };
@@ -79,7 +67,5 @@
       });
   }
 </script>
-
-<script src="/assets/evf-form-details/evf-form-details.js" type="module"></script>
 </body>
 </html>

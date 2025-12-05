@@ -2,9 +2,8 @@ import { Injectable } from '@angular/core';
 import { from, Observable, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EncryptionService {
   private readonly IvLength = 12;
@@ -14,7 +13,7 @@ export class EncryptionService {
     return window.crypto.subtle.generateKey(
       {
         name: 'AES-GCM',
-        length: 256
+        length: 256,
       },
       true,
       ['encrypt', 'decrypt']
@@ -22,8 +21,7 @@ export class EncryptionService {
   }
 
   async exportKey(key: CryptoKey) {
-    return crypto.subtle
-      .exportKey('raw', key);
+    return crypto.subtle.exportKey('raw', key);
   }
 
   importKey(key: Uint8Array) {
@@ -31,14 +29,7 @@ export class EncryptionService {
       throw new Error('Invalid key length: Expected 32 bytes for AES-256');
     }
 
-    return from(window.crypto.subtle.importKey(
-        'raw',
-        key,
-        'AES-GCM',
-        false,
-        ['encrypt', 'decrypt']
-      )
-    );
+    return from(window.crypto.subtle.importKey('raw', key, 'AES-GCM', false, ['encrypt', 'decrypt']));
   }
 
   encrypt(key: CryptoKey, value: ArrayBuffer) {
@@ -46,7 +37,7 @@ export class EncryptionService {
       window.crypto.subtle.encrypt(
         {
           name: 'AES-GCM',
-          iv: this.iv
+          iv: this.iv,
         },
         key,
         value
@@ -59,7 +50,7 @@ export class EncryptionService {
       window.crypto.subtle.decrypt(
         {
           name: 'AES-GCM',
-          iv: iv
+          iv: iv,
         },
         cryptoKey,
         ciphertext
@@ -73,19 +64,16 @@ export class EncryptionService {
 
     const unit8Array = this.iv;
 
+    return this.encrypt(key, data).pipe(
+      map(encrypted => {
+        const encryptedDataArray = new Uint8Array(encrypted);
+        const combinedData = new Uint8Array(this.IvLength + encryptedDataArray.length);
+        combinedData.set(unit8Array);
+        combinedData.set(encryptedDataArray, unit8Array.length);
 
-    return this.encrypt(key, data)
-      .pipe(
-        map((encrypted) => {
-          const encryptedDataArray = new Uint8Array(encrypted);
-          const combinedData = new Uint8Array(this.IvLength + encryptedDataArray.length);
-          combinedData.set(unit8Array);
-          combinedData.set(encryptedDataArray, unit8Array.length);
-
-          return this.arrayBufferToBase64(combinedData.buffer);
-        })
-      );
-
+        return this.arrayBufferToBase64(combinedData.buffer);
+      })
+    );
   }
 
   decryptText(encryptedText: string, cryptoKey: CryptoKey): Observable<string> {
@@ -98,9 +86,8 @@ export class EncryptionService {
     const iv = ciphertextArray.slice(0, this.IvLength); // First 12 bytes are IV
     const ciphertext = ciphertextArray.slice(this.IvLength); // Remaining bytes are ciphertext
 
-
     return this.decrypt(cryptoKey, ciphertext, iv).pipe(
-      map((decrypted) => {
+      map(decrypted => {
         const decoder = new TextDecoder();
         return decoder.decode(decrypted);
       })
@@ -110,7 +97,7 @@ export class EncryptionService {
   arrayBufferToBase64(buffer: ArrayBuffer): string {
     const uint8Array = new Uint8Array(buffer);
     let binary = '';
-    uint8Array.forEach((byte) => {
+    uint8Array.forEach(byte => {
       binary += String.fromCharCode(byte);
     });
     return window.btoa(binary);
