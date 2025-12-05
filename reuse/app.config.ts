@@ -26,7 +26,7 @@ interface AppConfigVariables {
 export const APP_CONFIG: AppConfig = {
   environments: [],
   variables: {
-    mock: {
+    demo: {
       env: 'demo',
       fhirGatewayUrl: 'http://demo-mode:8080',
       apiUrl: 'http://demo-mode:8080/frontend/api',

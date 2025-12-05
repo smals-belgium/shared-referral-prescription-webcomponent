@@ -17,23 +17,15 @@ export class ShadowDomOverlayContainer extends OverlayContainer implements OnDes
     super.ngOnDestroy();
   }
 
-  getRootElements(): Element[] {
-    let roots: (Document | ShadowRoot | Element)[] = [this._document];
-
+  getRootElement(): Element | null {
+    let root: Document | ShadowRoot | Element | null = this._document;
     for (const selector of this.selectors) {
-      const nextRoots: (ShadowRoot | Element)[] = [];
-
-      for (const root of roots) {
-        const matches = Array.from(root.querySelectorAll(selector));
-        for (const el of matches) {
-          nextRoots.push(el.shadowRoot ?? el);
-        }
-      }
-
-      roots = nextRoots;
+      if (!root) return null;
+      const next: Element | null = root.querySelector(selector);
+      root = next?.shadowRoot ?? next;
     }
 
-    return roots as Element[];
+    return root as Element | null;
   }
 
   createContainer(): void {
@@ -57,14 +49,8 @@ export class ShadowDomOverlayContainer extends OverlayContainer implements OnDes
     if (!this._containerElement) {
       return;
     }
-    const roots = this.getRootElements();
-    const parents = roots.length ? roots : [this._document.body];
-
-    for (const parent of parents) {
-      if (!parent.contains(this._containerElement)) {
-        // Clone node because we need multiple instances
-        parent.appendChild(this._containerElement.cloneNode(true));
-      }
-    }
+    const rootElement = this.getRootElement();
+    const parent = rootElement || this._document.body;
+    parent.appendChild(this._containerElement);
   }
 }

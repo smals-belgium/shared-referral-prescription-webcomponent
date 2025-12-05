@@ -18,6 +18,15 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { DateAdapter, MatNativeDateModule, NativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { PrescriptionDetailsBeneficiaryComponent } from './prescription-details-beneficiary/prescription-details-beneficiary.component';
+import { Component } from '@angular/core';
+import { EvfFormDetailsWebComponent } from '../evf-details/evf-form-details.component';
+
+@Component({
+  selector: 'evf-form-details',
+  template: '',
+  standalone: true,
+})
+class MockEvfFormDetailsComponent {}
 
 describe('PrescriptionDetailsMainComponent', () => {
   let component: PrescriptionDetailsMainComponent;
@@ -44,7 +53,12 @@ describe('PrescriptionDetailsMainComponent', () => {
         provideHttpClientTesting(),
         { provide: PrescriptionDetailsSecondaryService, useValue: prescriptionDetailsSecondaryMockService },
       ],
-    }).compileComponents();
+    })
+      .overrideComponent(PrescriptionDetailsMainComponent, {
+        remove: { imports: [EvfFormDetailsWebComponent] },
+        add: { imports: [MockEvfFormDetailsComponent] },
+      })
+      .compileComponents();
 
     fixture = TestBed.createComponent(PrescriptionDetailsMainComponent);
     component = fixture.componentInstance;

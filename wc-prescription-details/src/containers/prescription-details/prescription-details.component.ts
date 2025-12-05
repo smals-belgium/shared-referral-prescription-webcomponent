@@ -216,8 +216,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       this.currentLang.set(this._translate.currentLang);
     }
 
-    this.loadWebComponents();
-
     // Register a new effect based on prescription state changes
     effect(() => {
       const prescription = isProposal(this.intent)
@@ -532,26 +530,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       Object.keys(error).length === 1 &&
       Object.prototype.hasOwnProperty.call(error, 'decryptedResponses')
     );
-  }
-
-  private loadWebComponents(): void {
-    if (customElements.get('nihdi-referral-prescription-form-details') != undefined) {
-      return;
-    }
-    const htmlCollection = document.getElementsByTagName('script');
-    const script = Array.from(htmlCollection).find(e => e.src.includes('wc-prescription-details.js'));
-
-    if (!script) return;
-    const url = script.src.replace('wc-prescription-details.js', '');
-
-    const scripts = ['assets/evf-form-details/evf-form-details.js'];
-    scripts.forEach(src => {
-      const script = this._renderer.createElement('script') as HTMLScriptElement;
-      script.type = `text/javascript`;
-      script.src = url + src;
-      script.type = 'module';
-      this._renderer.appendChild(this._document.body, script);
-    });
   }
 
   private getPatientIdentifier(identifier: string): Promise<string> {

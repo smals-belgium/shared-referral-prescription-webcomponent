@@ -37,6 +37,7 @@ import {
 import { isOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
 import { FormDataType, FormElement, TemplateVersion } from '@reuse/code/openapi';
 import TypeEnum = FormDataType.TypeEnum;
+import { EvfFormWebComponent } from '../evf-form/evf-form.component';
 
 
 @Component({
@@ -60,6 +61,7 @@ import TypeEnum = FormDataType.TypeEnum;
     IfStatusErrorDirective,
     IfStatusLoadingDirective,
     MatError,
+    EvfFormWebComponent,
   ],
 })
 export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {

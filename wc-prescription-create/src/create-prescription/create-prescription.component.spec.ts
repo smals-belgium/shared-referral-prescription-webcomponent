@@ -11,7 +11,7 @@ import { signal, SimpleChange, SimpleChanges } from '@angular/core';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { Observable, of, throwError } from 'rxjs';
-import { ElementGroup } from '@smals/vas-evaluation-form-ui-core';
+import { ElementGroup, EvfTranslateService } from '@smals/vas-evaluation-form-ui-core';
 import {
   CreatePrescriptionForm,
   CreatePrescriptionInitialValues,
@@ -191,6 +191,7 @@ describe('CreatePrescriptionWebComponent', () => {
             observe: jest.fn().mockReturnValue(of({ matches: true })),
           },
         },
+        EvfTranslateService,
       ],
     }).compileComponents();
 
@@ -1467,8 +1468,8 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should not call use() or setLocale() with initial language only once', () => {
       translate.use('nl-BE');
 
-      const translateUseSpy = jest.spyOn(translate,'use');
-      const dateAdapterSpy = jest.spyOn(dateAdapter,'setLocale');
+      const translateUseSpy = jest.spyOn(translate, 'use');
+      const dateAdapterSpy = jest.spyOn(dateAdapter, 'setLocale');
 
       createFixture('mockPseudomizedKey');
 
@@ -1479,8 +1480,8 @@ describe('CreatePrescriptionWebComponent', () => {
     });
 
     it('should update language by emitting a new lang with _languageChange()', () => {
-      const translateUseSpy = jest.spyOn(translate,'use');
-      const dateAdapterSpy = jest.spyOn(dateAdapter,'setLocale');
+      const translateUseSpy = jest.spyOn(translate, 'use');
+      const dateAdapterSpy = jest.spyOn(dateAdapter, 'setLocale');
 
       createFixture('mockPseudomizedKey');
 
@@ -1499,10 +1500,9 @@ describe('CreatePrescriptionWebComponent', () => {
       component['_languageChange'].next('fr-FR');
 
       expect(component.langAlertData()).toBeNull();
-
     });
 
-    it('should execute catchError operator and call handleMissingTranslationFile on error', (() => {
+    it('should execute catchError operator and call handleMissingTranslationFile on error', () => {
       createFixture('mockPseudomizedKey');
       jest.spyOn(translate, 'use').mockReturnValue(throwError(() => new Error('Translation error')));
 
@@ -1513,9 +1513,9 @@ describe('CreatePrescriptionWebComponent', () => {
       const alertData = component.langAlertData();
       expect(alertData).not.toBeNull();
       expect(alertData?.title).toBe('English translation coming soon.');
-    }));
+    });
 
-    it('should handle missing translation for DE language', (() => {
+    it('should handle missing translation for DE language', () => {
       createFixture('mockPseudomizedKey');
       jest.spyOn(translate, 'use').mockReturnValue(throwError(() => new Error('Missing translation')));
 
@@ -1523,9 +1523,9 @@ describe('CreatePrescriptionWebComponent', () => {
       component.ngOnInit();
 
       expect(component.langAlertData()?.title).toBe('Deutsche Übersetzung folgt in Kürze.');
-    }));
+    });
 
-    it('should handle missing translation for FR language', (() => {
+    it('should handle missing translation for FR language', () => {
       createFixture('mockPseudomizedKey');
       jest.spyOn(translate, 'use').mockReturnValue(throwError(() => new Error('Missing translation')));
 
@@ -1533,9 +1533,9 @@ describe('CreatePrescriptionWebComponent', () => {
       component.ngOnInit();
 
       expect(component.langAlertData()?.title).toBe('Traduction en français à venir.');
-    }));
+    });
 
-    it('should handle missing translation for NL language', (() => {
+    it('should handle missing translation for NL language', () => {
       createFixture('mockPseudomizedKey');
       jest.spyOn(translate, 'use').mockReturnValue(throwError(() => new Error('Missing translation')));
 
@@ -1543,7 +1543,7 @@ describe('CreatePrescriptionWebComponent', () => {
       component.ngOnInit();
 
       expect(component.langAlertData()?.title).toBe('De Nederlandse vertaling ontbreekt.');
-    }));
+    });
 
     it('should handle missing translation for EN language', () => {
       createFixture('mockPseudomizedKey');
@@ -1569,7 +1569,6 @@ describe('CreatePrescriptionWebComponent', () => {
       expect(alertData?.title).toBe('Unknown lang');
       expect(alertData?.body).toContain(unknownLang);
     }));
-
   });
 
   describe('ngOnInit tests', () => {
@@ -1584,7 +1583,7 @@ describe('CreatePrescriptionWebComponent', () => {
       expect(translateUseSpy).toHaveBeenCalled();
     });
 
-    it('should set langAlertData to null on successful translation in ngOnInit',() => {
+    it('should set langAlertData to null on successful translation in ngOnInit', () => {
       createFixture('mockPseudomizedKey');
 
       component.langAlertData.set({ title: 'Test', body: 'Test body' });
@@ -1645,7 +1644,7 @@ describe('CreatePrescriptionWebComponent', () => {
       expect(setLocaleSpy).toHaveBeenCalledWith('nl-BE');
       expect(translateUseSpy).toHaveBeenCalledWith('nl-BE');
     });
-  })
+  });
 
   const createFixture = (pseudonymizedKey?: string) => {
     fixture = TestBed.createComponent(CreatePrescriptionExtendedWebComponent);

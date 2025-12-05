@@ -13,17 +13,18 @@ import {
 import {
   PrescriptionDetailsBeneficiaryComponent
 } from './prescription-details-beneficiary/prescription-details-beneficiary.component';
+import { EvfFormDetailsWebComponent } from '../evf-details/evf-form-details.component';
+import { FormTemplate } from '@smals/vas-evaluation-form-ui-core';
 
 @Component({
   selector: 'app-prescription-details-main',
-  imports: [DatePipe, ProfessionalDisplayComponent, TranslatePipe, PrescriptionDetailsBeneficiaryComponent],
+  imports: [DatePipe, ProfessionalDisplayComponent, TranslatePipe, PrescriptionDetailsBeneficiaryComponent, EvfFormDetailsWebComponent],
   templateUrl: './prescription-details-main.component.html',
   styleUrl: './prescription-details-main.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   standalone: true,
 })
 export class PrescriptionDetailsMainComponent {
-
   private readonly _service = inject(PrescriptionDetailsSecondaryService);
 
   readonly services: DetailsServices = this._service.services;
@@ -31,12 +32,13 @@ export class PrescriptionDetailsMainComponent {
   readonly prescription: ReadRequestResource | undefined = this._service.getPrescription().data;
   // Needs to be computed because the data might return a success but without the data in it
   // The computed allows dynamic fetch of that data when available
-  readonly decryptedResponses: Signal<DataState<Record<string, unknown> | undefined>> = computed(() => this._service.getDecryptedResponses());
-  readonly templateVersion: TemplateVersion | undefined = this._service.getTemplateVersion().data;
+  readonly decryptedResponses: Signal<DataState<Record<string, unknown> | undefined>> = computed(() =>
+    this._service.getDecryptedResponses()
+  );
+  readonly templateVersion: FormTemplate | undefined = this._service.getTemplateVersion().data as FormTemplate;
   readonly patient: PersonResource | undefined = this._service.getPatient().data;
   readonly currentUser: Partial<UserInfo> | undefined = this._service.getCurrentUser().data;
   readonly status: Signal<boolean> = this._service.pssStatus;
   readonly isProfessional$: Signal<boolean | undefined> = this._service.isProfessional$;
   readonly currentLang: Signal<string> = this._service.currentLang;
-
 }

@@ -1,3 +1,4 @@
+import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
@@ -14,7 +15,14 @@ import { By } from '@angular/platform-browser';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TemplateVersion } from '@reuse/code/openapi';
 import { QueryList } from '@angular/core';
+import { EvfFormWebComponent } from '../evf-form/evf-form.component';
 
+@Component({
+  selector: 'evf-form',
+  template: '',
+  standalone: true,
+})
+class MockEvfFormComponent {}
 describe('CreateMultiplePrescriptionsComponent', () => {
   let component: CreateMultiplePrescriptionsComponent;
   let fixture: ComponentFixture<CreateMultiplePrescriptionsComponent>;
@@ -49,7 +57,12 @@ describe('CreateMultiplePrescriptionsComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
       ],
-    }).compileComponents();
+    })
+      .overrideComponent(CreateMultiplePrescriptionsComponent, {
+        remove: { imports: [EvfFormWebComponent] },
+        add: { imports: [MockEvfFormComponent] },
+      })
+      .compileComponents();
 
     translate = TestBed.inject(TranslateService);
     translate.setDefaultLang('nl-BE');

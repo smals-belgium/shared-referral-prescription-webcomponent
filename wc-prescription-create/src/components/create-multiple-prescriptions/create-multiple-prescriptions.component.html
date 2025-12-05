@@ -74,7 +74,7 @@
           <ng-container>
             <app-overlay-spinner *ifStatusLoading="formTemplateState" mode="inline"></app-overlay-spinner>
             <div *ifStatusError="formTemplateState">Failed to load prescription form template.</div>
-            <nihdi-referral-prescription-form
+            <evf-form
               *ifStatusSuccess="formTemplateState"
               [lang]="lang"
               [readonly]="prescriptionForm.status === LoadingStatus.SUCCESS"
@@ -83,8 +83,7 @@
               (changeElementGroup)="setElementGroup(prescriptionForm, $any($event)?.detail)"
               [status]="status"
               [patient]="patient"
-              [services]="services"
-            ></nihdi-referral-prescription-form>
+            ></evf-form>
 
             @if(isPrescriptionValue){
               <button

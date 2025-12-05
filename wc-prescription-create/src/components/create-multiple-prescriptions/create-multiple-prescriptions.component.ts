@@ -32,6 +32,7 @@ import { isPrescription, isProposal } from '@reuse/code/utils/utils';
 import { PersonResource, TemplateVersion } from '@reuse/code/openapi';
 import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
 import { PatientInfoBarComponent } from '../patient-info-bar/patient-info-bar.component';
+import { EvfFormWebComponent } from '../evf-form/evf-form.component';
 
 @Component({
   selector: 'app-create-multiple-prescriptions',
@@ -51,6 +52,7 @@ import { PatientInfoBarComponent } from '../patient-info-bar/patient-info-bar.co
     TemplateNamePipe,
     FormatSsinPipe,
     AlertComponent,
+    EvfFormWebComponent,
     PatientInfoBarComponent,
   ],
 })
