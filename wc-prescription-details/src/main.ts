@@ -25,6 +25,7 @@ import {
 import { provideEvfForm } from '@reuse/code/evf/evf-form.provider';
 import { provideMarkdown } from '@reuse/code/providers/markdown.provider';
 import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
+import { provideEvfFormDetails } from '@reuse/code/evf/evf-form-details.provider';
 
 (async () => {
   const app = createApplication({
@@ -34,6 +35,7 @@ import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
       provideHttpClient(withInterceptors([demoHttpInterceptor, apiUrlInterceptor])),
       providePseudonymisation(),
       provideEvfForm(),
+      provideEvfFormDetails(),
       provideMarkdown(),
       {
         provide: ConfigurationService,
@@ -57,7 +59,6 @@ import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
         useClass: ShadowDomOverlayContainer,
       },
       provideOpenApi(),
-      provideEvfForm(),
       provideMarkdown(),
       importProvidersFrom(
         MatDialogModule,
