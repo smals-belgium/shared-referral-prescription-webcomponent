@@ -5,7 +5,7 @@ import {
 } from '@reuse/code/components/professional-display/professional-display.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DataState, UserInfo } from '@reuse/code/interfaces';
-import { PersonResource, ReadRequestResource, TemplateVersion } from '@reuse/code/openapi';
+import { PersonResource, ReadRequestResource } from '@reuse/code/openapi';
 import {
   DetailsServices,
   PrescriptionDetailsSecondaryService,
