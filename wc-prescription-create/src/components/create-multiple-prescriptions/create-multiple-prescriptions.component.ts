@@ -6,13 +6,14 @@ import {
   Input,
   OnChanges,
   OnDestroy,
-  Output, QueryList,
+  Output,
+  QueryList,
   SimpleChanges,
-  ViewChild, ViewChildren,
+  ViewChild,
+  ViewChildren,
 } from '@angular/core';
 import { ElementGroup, isObject, removeNulls } from '@smals/vas-evaluation-form-ui-core';
 import { MatAccordion, MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
-import { FormatSsinPipe } from '@reuse/code/pipes/format-ssin.pipe';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
 import { IfStatusErrorDirective } from '@reuse/code/directives/if-status-error.directive';
@@ -50,7 +51,6 @@ import { EvfFormWebComponent } from '../evf-form/evf-form.component';
     IfStatusErrorDirective,
     IfStatusSuccessDirective,
     TemplateNamePipe,
-    FormatSsinPipe,
     AlertComponent,
     EvfFormWebComponent,
     PatientInfoBarComponent,
@@ -97,7 +97,7 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['createPrescriptionForms'] && this.createPrescriptionForms?.length === 1) {
-      setTimeout(() =>  this.panels?.first?.open(), 1);
+      setTimeout(() => this.panels?.first?.open(), 1);
     }
     this.isPrescriptionValue = isPrescription(this.intent);
   }

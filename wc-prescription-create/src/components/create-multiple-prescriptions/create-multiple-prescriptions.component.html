@@ -80,13 +80,14 @@
               [readonly]="prescriptionForm.status === LoadingStatus.SUCCESS"
               [submitted]="!!prescriptionForm.submitted"
               [template]="formTemplateState.data!"
-              (changeElementGroup)="setElementGroup(prescriptionForm, $any($event)?.detail)"
+              (changeElementGroup)="setElementGroup(prescriptionForm, $any($event))"
               [status]="status"
               [patient]="patient"
             ></evf-form>
 
             @if(isPrescriptionValue){
               <button
+                type="button"
                 mat-raised-button
                 color="accent"
                 (click)="handleClick(prescriptionForm, formTemplateState.data)"

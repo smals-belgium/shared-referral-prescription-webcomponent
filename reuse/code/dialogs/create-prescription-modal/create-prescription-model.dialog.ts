@@ -34,7 +34,6 @@ import { HttpErrorResponse } from '@angular/common/http';
     MatDialogActions,
     MatInput,
     MatButton,
-    MatLabel,
     MatError,
   ],
   providers: [TemplateNamePipe],
