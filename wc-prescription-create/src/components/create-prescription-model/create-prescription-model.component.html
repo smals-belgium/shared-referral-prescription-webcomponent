@@ -59,7 +59,7 @@
                 [readonly]="prescriptionForm.status === LoadingStatus.SUCCESS"
                 [submitted]="!!prescriptionForm.submitted"
                 [template]="getTemplateData(formTemplateState)!"
-                (changeElementGroup)="setElementGroup(prescriptionForm, $any($event)?.detail)"
+                (changeElementGroup)="setElementGroup(prescriptionForm, $any($event))"
                 [status]="false"
               ></evf-form>
 
