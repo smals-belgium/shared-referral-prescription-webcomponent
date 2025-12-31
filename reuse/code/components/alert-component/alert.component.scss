@@ -1,0 +1,11 @@
+:host ::ng-deep {
+    mh-alert {
+      .material-icons {
+        font-family: 'Material Symbols Rounded', 'Material Icons', sans-serif;
+      }
+
+      .flex-grow{
+        justify-content: center;
+      }
+    }
+}
