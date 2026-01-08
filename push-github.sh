@@ -11,7 +11,7 @@ git checkout -B ${TEMP_BRANCH}
 # Copy the actual openapi.yaml content (from submodule) to a temp location
 cp api-contract/openapi.yaml /tmp/openapi.yaml
 
-# Remove the submodule from index (not from disk)
+# Remove the submodule from index only
 git rm --cached api-contract
 rm -rf api-contract
 
@@ -26,8 +26,11 @@ git commit --amend --no-edit
 # Push to github
 git push github HEAD:${CURRENT_BRANCH} --force
 
-# Return to original branch (discarding temp branch changes)
+# Return to original branch
 git checkout ${CURRENT_BRANCH}
 git branch -D ${TEMP_BRANCH}
+
+# Restore the submodule
+git submodule update --init --recursive
 
 echo "Pushed to github with openapi.yaml as regular file"

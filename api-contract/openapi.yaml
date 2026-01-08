@@ -1,0 +1,2639 @@
+openapi: "3.0.3"
+info:
+  title: "backend API"
+  description: "backend API"
+  version: "1.0.0"
+servers:
+  - url: "/" # this acts as the “base path”
+    description: |
+      this acts as the “base path” for generator tools.
+      => primary server => only this url is being used by the generator and will add /frontend/api in requestmapping in the generated controllers
+      => servers[0].url is used by code generators (like openapi-generator) as the base URL for @RequestMapping in Spring.
+  - url: "http://localhost:8080/frontend/api"
+    description: "LOCAL env"
+  # Additional servers are mainly for documentation or client SDKs.
+  - url: "https://referral-prescription.test.ext.vascloud.be/frontend/api"
+    description: "TEST env"
+  - url: "https://referral-prescription.int.ext.vascloud.be/frontend/api"
+  - url: "https://referral-prescription.int.pub.vascloud.be/frontend/api"
+  - url: "https://wwwacc.referral-prescription.ehealth.fgov.be/frontend/api"
+  - url: "https://wwwacc.referral-prescription.in.ehealth.fgov.be/frontend/api"
+  - url: "https://wwwacc.referral-prescription.up.ehealth.fgov.be/frontend/api"
+  - url: "https://www.referral-prescription.ehealth.fgov.be/frontend/api"
+  - url: "https://www.referral-prescription.in.ehealth.fgov.be/frontend/api"
+  - url: "https://www.referral-prescription.up.ehealth.fgov.be/frontend/api"
+
+tags:
+  - name: Prescription
+    description: Prescription related operations
+  - name: Model
+    description: Prescription model related operations
+  - name: Proposal
+    description: Proposal related operations
+  - name: Professional
+    description: Professional related operations
+  - name: Person
+    description: Person related operations
+  - name: Geography
+    description: Geography related operations
+  - name: AccessMatrix
+    description: Access matrix related operations
+  - name: HealthCareProvider
+    description: Health care provider related operations
+  - name: Medication
+    description: Mediation related operations
+  - name: Organization
+    description: Organization related operations
+  - name: Template
+    description: Template related operations
+  - name: User
+    description: User related operations
+  - name: Pss
+    description: Pss related operations
+paths:
+  /prescriptions:
+    get:
+      summary: "GET prescriptions"
+      tags:
+        - Prescription
+      operationId: "getPrescriptionList"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "patient"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "requester"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "performer"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "historical"
+          in: "query"
+          required: false
+          schema:
+            type: "boolean"
+            default: false
+        - name: "page"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+            default: 1
+        - name: "pageSize"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+            default: 10
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/ReadRequestListResource"
+    post:
+      summary: "POST prescriptions"
+      tags:
+        - Prescription
+      operationId: "createPrescription"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRequestResource"
+        required: true
+      responses:
+        "201":
+          description: "Prescription created successfully"
+          headers:
+            Content-Location:
+              description: "URI of the newly created prescription"
+              schema:
+                type: "string"
+                format: "uri"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadRequestIdResource"
+  /prescriptions/{id}:
+    get:
+      summary: "GET prescriptions/{id}"
+      tags:
+        - Prescription
+      operationId: "getPrescription"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/ReadRequestResource"
+  /prescriptions/{prescriptionId}/assign/{referralTaskId}:
+    post:
+      summary: "POST prescriptions/{prescriptionId}/assign/{referralTaskId}"
+      tags:
+        - Prescription
+      operationId: "assignCareGiverToPrescription"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "prescriptionId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "referralTaskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignCareGiverResource"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformerTaskIdResource"
+  /prescriptions/{prescriptionId}/assignOrganization/{referralTaskId}:
+    post:
+      summary: "POST prescriptions/{prescriptionId}/assignOrganization/{referralTaskId}"
+      tags:
+        - Prescription
+      operationId: "assignOrganizationToPrescription"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "prescriptionId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "referralTaskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignOrganizationResource"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformerTaskIdResource"
+  /prescriptions/{prescriptionId}/{referralTaskId}/transfer/{performerTaskId}:
+    post:
+      summary: "POST prescriptions/{prescriptionId}/{referralTaskId}/transfer/{performerTaskId}"
+      tags:
+        - Prescription
+      operationId: "transferAssignationToPrescription"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "prescriptionId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "referralTaskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "performerTaskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignCareGiverResource"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /prescriptions/{prescriptionId}/rejections/{performerTaskId}:
+    post:
+      summary: "POST prescriptions/{prescriptionId}/rejections/{performerTaskId}"
+      tags:
+        - Prescription
+      operationId: "rejectAssignationToPrescription"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "prescriptionId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "performerTaskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+  /prescriptions/{prescriptionId}/cancel:
+    post:
+      summary: "POST prescriptions/{prescriptionId}/cancel"
+      tags:
+        - Prescription
+      operationId: "cancelPrescription"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "prescriptionId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+  /prescriptions/{performerTaskId}/start:
+    patch:
+      summary: "PATCH prescriptions/{performerTaskId}/start"
+      tags:
+        - Prescription
+      operationId: "startExecution"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "performerTaskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PeriodResource"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /prescriptions/{performerTaskId}/finish:
+    patch:
+      summary: "PATCH prescriptions/{performerTaskId}/finish"
+      tags:
+        - Prescription
+      operationId: "finishExecution"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "performerTaskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PeriodResource"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /prescriptions/{performerTaskId}/restart:
+    patch:
+      summary: "PATCH prescriptions/{performerTaskId}/restart"
+      tags:
+        - Prescription
+      operationId: "restartExecution"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "performerTaskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+  /prescriptions/{performerTaskId}/cancel:
+    patch:
+      summary: "PATCH prescriptions/{performerTaskId}/cancel"
+      tags:
+        - Prescription
+      operationId: "cancelExecution"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "performerTaskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+  /prescriptions/{performerTaskId}/interrupt:
+    patch:
+      summary: "PATCH prescriptions/{performerTaskId}/interrupt"
+      tags:
+        - Prescription
+      operationId: "interruptExecution"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "performerTaskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+  /prescriptionModels:
+    get:
+      summary: "GET prescriptionModels"
+      tags:
+        - Model
+      operationId: "getAllPrescriptionModels"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "label"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "page"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+            default: 0
+        - name: "pageSize"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+            default: 10
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/PageModelEntityDto"
+    post:
+      summary: "POST prescriptionModels"
+      tags:
+        - Model
+      operationId: "createPrescriptionModel"
+      security:
+        - OAuth2: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateModelResource"
+        required: true
+      responses:
+        "201":
+          description: "PrescriptionModel created successfully"
+  /prescriptionModels/{prescriptionModelId}:
+    get:
+      summary: "GET prescriptionModels/{prescriptionModelId}"
+      tags:
+        - Model
+      operationId: "getPrescriptionModel"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "prescriptionModelId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/ModelEntityDto"
+    patch:
+      summary: "PATCH prescriptionModels/{prescriptionModelId}"
+      tags:
+        - Model
+      operationId: "updatePrescriptionModel"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "prescriptionModelId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchModelResource"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+    delete:
+      summary: "DELETE prescriptionModels/{prescriptionModelId}"
+      tags:
+        - Model
+      operationId: "deletePrescriptionModel"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "prescriptionModelId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
+  /prescriptions/summary:
+    get:
+      summary: "GET prescriptions/summary"
+      tags:
+        - Prescription
+      operationId: "getAllPrescriptions"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "patient"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "requester"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "performer"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: historical
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: "page"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+            default: 1
+        - name: "pageSize"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+            default: 10
+        - name: "includeAssignee"
+          in: "query"
+          required: false
+          schema:
+            type: "boolean"
+            default: false
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/RequestSummaryListResource"
+  /proposals:
+    get:
+      summary: "GET proposals"
+      tags:
+        - Proposal
+      operationId: "getProposalList"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "patient"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "requester"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "performer"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "historical"
+          in: "query"
+          required: false
+          schema:
+            default: false
+            type: "boolean"
+        - name: "page"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+            default: 1
+        - name: "pageSize"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+            default: 10
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/ReadRequestListResource"
+    post:
+      summary: "POST proposals"
+      tags:
+        - Proposal
+      operationId: "createProposal"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRequestResource"
+        required: true
+      responses:
+        "201":
+          description: "Proposal created successfully"
+          headers:
+            Content-Location:
+              description: "URI of the newly created proposal"
+              schema:
+                type: "string"
+                format: "uri"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadRequestIdResource"
+  /proposals/{id}:
+    get:
+      summary: "GET proposals/{id}"
+      tags:
+        - Proposal
+      operationId: "getProposal"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/ReadRequestResource"
+  /proposals/{proposalId}/assign/{referralTaskId}:
+    post:
+      summary: "POST proposals/{proposalId}/assign/{referralTaskId}"
+      tags:
+        - Proposal
+      operationId: "assignCareGiverToProposal"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "proposalId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "referralTaskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignCareGiverResource"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformerTaskIdResource"
+  /proposals/{proposalId}/assignOrganization/{referralTaskId}:
+    post:
+      summary: "POST proposals/{proposalId}/assignOrganization/{referralTaskId}"
+      tags:
+        - Proposal
+      operationId: "assignOrganizationToProposal"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "proposalId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "referralTaskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignOrganizationResource"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformerTaskIdResource"
+  /proposals/{proposalId}/{referralTaskId}/transfer/{performerTaskId}:
+    post:
+      summary: "POST proposals/{proposalId}/{referralTaskId}/transfer/{performerTaskId}"
+      tags:
+        - Proposal
+      operationId: "transferAssignationToProposal"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "proposalId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "referralTaskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "performerTaskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignCareGiverResource"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /proposals/{proposalId}/approve:
+    post:
+      summary: "POST proposals/{proposalId}/approve"
+      tags:
+        - Proposal
+      operationId: "approveProposal"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "proposalId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReasonResource"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrescriptionResource"
+  /proposals/{proposalId}/reject:
+    post:
+      summary: "POST proposals/{proposalId}/reject"
+      tags:
+        - Proposal
+      operationId: "rejectProposal"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "proposalId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReasonResource"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /proposals/{proposalId}/cancel:
+    post:
+      summary: "POST proposals/{proposalId}/cancel"
+      tags:
+        - Proposal
+      operationId: "cancelProposal"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: proposalId
+          in: path
+          required: true
+          schema:
+            type: "string"
+        - name: X-If-None-Match
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "OK"
+  /proposals/{proposalId}/rejections/{performerTaskId}:
+    post:
+      summary: "POST proposals/{proposalId}/rejections/{performerTaskId}"
+      tags:
+        - Proposal
+      operationId: "rejectAssignationToProposal"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "proposalId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "performerTaskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+  /proposals/{performerTaskId}/rejections:
+    patch:
+      summary: "PATCH proposals/{performerTaskId}/rejections"
+      tags:
+        - Proposal
+      operationId: "rejectProposalTask"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "performerTaskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReasonResource"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /proposals/summary:
+    get:
+      summary: "GET proposals/summary"
+      tags:
+        - Proposal
+      operationId: "getAllProposals"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "patient"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "requester"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "performer"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: historical
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: "page"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+            default: 1
+        - name: "pageSize"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+            default: 10
+        - name: "includeAssignee"
+          in: "query"
+          required: false
+          schema:
+            type: "boolean"
+            default: false
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/RequestSummaryListResource"
+  /prescription:
+    get:
+      summary: "GET prescription"
+      tags:
+        - Prescription
+      operationId: "getPrescriptionByShortCode"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "ssin"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+        - name: "shortCode"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/ReadRequestResource"
+  /persons:
+    get:
+      summary: "GET persons"
+      tags:
+        - Person
+      operationId: "findPersons"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - in: query
+          name: criteria
+          schema:
+            $ref: '#/components/schemas/PersonSearchCriteria'
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/PersonResource"
+  /persons/{ssin}:
+    get:
+      summary: "GET persons/{ssin}"
+      tags:
+        - Person
+      operationId: "findPerson"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "ssin"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/PersonResource"
+  /geography/cities:
+    get:
+      summary: "GET geography/cities"
+      tags:
+        - Geography
+      operationId: "findCities"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "query"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/CitiesResource"
+  /accessMatrix:
+    get:
+      summary: "GET accessMatrix"
+      tags:
+        - AccessMatrix
+      operationId: "getMatrix"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/AccessMatrix"
+  /healthCareProviders:
+    get:
+      summary: "GET healthCareProviders"
+      tags:
+        - HealthCareProvider
+      operationId: "findHealthCareProviders"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "id"
+          in: "query"
+          required: false
+          schema:
+            type: "array"
+            items:
+              type: "string"
+        - name: "query"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "zipCode"
+          in: "query"
+          required: false
+          schema:
+            type: "array"
+            items:
+              type: "string"
+        - name: "providerType"
+          in: "query"
+          required: false
+          schema:
+            $ref: '#/components/schemas/ProviderType'
+        - name: "discipline"
+          in: "query"
+          required: false
+          schema:
+            type: "array"
+            items:
+              type: "string"
+        - name: "institutionType"
+          in: "query"
+          required: false
+          schema:
+            type: "array"
+            items:
+              type: "string"
+        - name: "page"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+        - name: "pageSize"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/HealthCareProviderRequestResource"
+  /medications:
+    get:
+      summary: "GET medications"
+      tags:
+        - Medication
+      operationId: "getMedications"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "cnkCode"
+          in: "query"
+          required: false
+          schema:
+            type: "array"
+            items:
+              type: "string"
+        - name: "name"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/MedicationResults"
+  /organizations:
+    get:
+      summary: "GET organizations"
+      tags:
+        - Organization
+      operationId: "findOrganizations"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "cbe"
+          in: "query"
+          required: false
+          schema:
+            type: "array"
+            items:
+              type: "string"
+        - name: "query"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "zipCode"
+          in: "query"
+          required: false
+          schema:
+            type: "array"
+            items:
+              type: "string"
+        - name: "institutionType"
+          in: "query"
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/InstitutionTypeResource"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/HealthcareOrganizationResource"
+  /organizations/{cbeOrNihii}:
+    get:
+      summary: "GET organizations/{cbeOrNihii}"
+      tags:
+        - Organization
+      operationId: "findOrganization"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "cbeOrNihii"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/HealthcareOrganizationResource"
+  /templates:
+    get:
+      summary: "GET templates"
+      tags:
+        - Template
+      operationId: "findTemplates"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Template"
+  /templates/{code}/versions/{version}:
+    get:
+      summary: "GET templates/{code}/versions/{version}"
+      tags:
+        - Template
+      operationId: "findTemplateVersion"
+      parameters:
+        - name: "code"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "version"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/TemplateVersion"
+  /templates/versions/{version}:
+    get:
+      summary: "GET templates/versions/{version}"
+      tags:
+        - Template
+      operationId: "findTemplateVersionBySnomedCode"
+      parameters:
+        - name: "version"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "snomed"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+        - name: "orderDetail"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/TemplateVersion"
+  /pss/radiology/control:
+    post:
+      tags:
+        - Pss
+      summary: POST PSS control
+      operationId: control
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ControlRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SupportResponseRadiology"
+  /pss/status:
+    get:
+      tags:
+        - Pss
+      summary: GET checkStatusRadiology
+      operationId: checkStatusRadiology
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: boolean
+  /pss/radiology/procedures:
+    get:
+      tags:
+        - Pss
+      summary: GET findAllProcedures
+      operationId: findAllProcedures
+      parameters:
+        - name: intention
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Intentions"
+  /pss/radiology/indications:
+    get:
+      tags:
+        - Pss
+      summary: GET findAllIndicationsRadiology
+      operationId: findAllIndicationsRadiology
+      parameters:
+        - name: indications
+          in: query
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Indications"
+  /pss/radiology/control/{exchangeId}:
+    get:
+      tags:
+        - Pss
+      summary: GET controlByPssExchangeId
+      operationId: controlByPssExchangeId
+      parameters:
+        - name: exchangeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SupportResponseRadiology"
+  /users/connected:
+    get:
+      summary: "GET users/connected"
+      tags:
+        - User
+      operationId: "getConnected"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                $ref: "#/components/schemas/ConnectedUserResource"
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.example.com/oauth/authorize
+          tokenUrl: https://api-acpt.ehealth.fgov.be/auth/realms/healthcare/protocol/openid-connect/token
+          scopes: { }
+  schemas:
+    PrescriptionResource:
+      type: "object"
+      properties:
+        prescriptionId:
+          type: "string"
+    AddressResource:
+      type: "object"
+      properties:
+        street:
+          $ref: "#/components/schemas/Translation"
+        houseNumber:
+          type: "string"
+        box:
+          type: "string"
+        zipCode:
+          type: "string"
+        municipality:
+          $ref: "#/components/schemas/Translation"
+        cityCode:
+          type: "integer"
+          format: "int32"
+        country:
+          $ref: "#/components/schemas/Translation"
+    PeriodResource:
+      type: "object"
+      properties:
+        start:
+          type: "string"
+          format: "date"
+        end:
+          type: "string"
+          format: "date"
+    ReadRequestIdResource:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+    ReadRequestResource:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        shortCode:
+          type: "string"
+        patientIdentifier:
+          type: "string"
+        referralTask:
+          $ref: "#/components/schemas/ReferralTaskResource"
+        performerTasks:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/PerformerTaskResource"
+        organizationTasks:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/OrganizationTaskResource"
+        templateCode:
+          type: string
+        authoredOn:
+          type: string
+          format: date-time
+        requester:
+          $ref: "#/components/schemas/HealthcareProResource"
+        status:
+          $ref: "#/components/schemas/RequestStatus"
+        category:
+          type: string
+        period:
+          $ref: "#/components/schemas/PeriodResource"
+        responses:
+          type: "object"
+          additionalProperties: true # → keys can be any string, and values can be any type (any)
+        intent:
+          type: "string"
+        pseudonymizedKey:
+          type: "string"
+        kid:
+          type: string
+        note:
+          type: string
+        extendedShortId:
+          type: string
+    ReadRequestListResource:
+      type: "object"
+      properties:
+        total:
+          type: "integer"
+          format: "int32"
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ReadRequestResource"
+    PerformerTaskIdResource:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+    PerformerTaskResource:
+      type: "object"
+      properties:
+        careGiverSsin:
+          type: "string"
+        careGiver:
+          $ref: "#/components/schemas/HealthcareProResource"
+        status:
+          $ref: "#/components/schemas/FhirR4TaskStatus"
+        id:
+          type: "string"
+        executionPeriod:
+          $ref: "#/components/schemas/PeriodResource"
+    OrganizationTaskResource:
+      type: "object"
+      properties:
+        organizationNihii:
+          type: "string"
+        organization:
+          $ref: "#/components/schemas/HealthcareOrganizationResource"
+        performerTasks:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/PerformerTaskResource"
+        status:
+          $ref: "#/components/schemas/FhirR4TaskStatus"
+        id:
+          type: "string"
+        executionPeriod:
+          $ref: "#/components/schemas/PeriodResource"
+        lastModified:
+          type: "string"
+          format: "date-time"
+    CreateRequestResource:
+      type: object
+      required:
+        - subject
+        - templateCode
+      properties:
+        subject:
+          type: string
+        templateCode:
+          type: string
+        responses:
+          type: object
+          additionalProperties: true # → keys can be any string, and values can be any type (any)
+        pseudonymizedKey:
+          type: string
+    AssignCareGiverResource:
+      type: "object"
+      required:
+        - ssin
+        - role
+      properties:
+        ssin:
+          type: "string"
+        role:
+          type: "string"
+        executionStartDate:
+          type: "string"
+          format: "date"
+    AssignOrganizationResource:
+      type: "object"
+      required:
+        - nihii
+        - institutionTypeCode
+      properties:
+        nihii:
+          type: "string"
+        institutionTypeCode:
+          type: "string"
+        executionStartDate:
+          type: "string"
+          format: "date"
+    ReferralTaskResource:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/FhirR4TaskStatus"
+        id:
+          type: string
+        executionPeriod:
+          $ref: "#/components/schemas/PeriodResource"
+    RequestSummaryResource:
+      type: "object"
+      properties:
+        id:
+          type: string
+        templateCode:
+          type: string
+        authoredOn:
+          type: string
+          format: date-time
+        requester:
+          $ref: "#/components/schemas/HealthcareProResource"
+        careGivers:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/HealthcareProResource"
+        organizations:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/HealthcareOrganizationResource"
+        status:
+          $ref: "#/components/schemas/RequestStatus"
+        period:
+          $ref: "#/components/schemas/PeriodResource"
+        assigned:
+          type: boolean
+    RequestSummaryListResource:
+      type: "object"
+      properties:
+        total:
+          type: "integer"
+          format: "int32"
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/RequestSummaryResource"
+    Gender:
+      type: string
+      enum:
+        - M
+        - F
+        - U
+    PersonSearchCriteria:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        birthYear:
+          type: integer
+        gender:
+          $ref: '#/components/schemas/Gender'
+    PersonResource:
+      type: "object"
+      properties:
+        ssin:
+          type: "string"
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        gender:
+          $ref: "#/components/schemas/Gender"
+        birthDate:
+          type: string
+          format: date
+    InstitutionTypeResource:
+      type: string
+      enum:
+        - THIRD_PARTY_PAYING_GROUP
+        - GROUP_OF_DOCTORS
+        - GUARD_POST
+        - MEDICAL_HOUSE
+        - HOME_SERVICES
+    CityResource:
+      type: "object"
+      properties:
+        zipCode:
+          type: "integer"
+          format: "int32"
+        cityName:
+          $ref: "#/components/schemas/Translation"
+        cityNisCode:
+          type: "string"
+        validityEndDate:
+          type: "string"
+          format: "date"
+    CitiesResource:
+      type: "object"
+      properties:
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/CityResource"
+    AccessMatrix:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        discipline:
+          $ref: "#/components/schemas/Discipline"
+        templateName:
+          type: "string"
+        assignPrescription:
+          type: "boolean"
+        assignProposal:
+          type: "boolean"
+        evaluateProposal:
+          type: "boolean"
+        cancelProposal:
+          type: "boolean"
+        createPrescription:
+          type: "boolean"
+        consultPrescription:
+          type: "boolean"
+        createProposal:
+          type: "boolean"
+        consultProposal:
+          type: "boolean"
+        executeTreatment:
+          type: "boolean"
+        cancelPrescription:
+          type: "boolean"
+        revokeTreatment:
+          type: "boolean"
+        interruptTreatment:
+          type: "boolean"
+        removeAssignationPrescription:
+          type: "boolean"
+        removeAssignationProposal:
+          type: "boolean"
+    Discipline:
+      type: "string"
+      enum:
+        - "PHYSICIAN"
+        - "PHARMACIST"
+        - "DENTIST"
+        - "NURSE"
+        - "MIDWIFE"
+        - "HEAD"
+        - "ADMINISTRATIVE"
+        - "PATIENT"
+        - "PHYSIOTHERAPIST"
+    HealthcareOrganizationResource:
+      type: "object"
+      properties:
+        id:
+          $ref: "#/components/schemas/HealthcareOrganizationId"
+        cbe:
+          type: "string"
+        organizationName:
+          $ref: "#/components/schemas/Translation"
+        typeCode:
+          type: "string"
+        typeDescription:
+          $ref: "#/components/schemas/Translation"
+        qualificationCode:
+          type: "string"
+        situationCode:
+          type: "string"
+        situationCodeStartDate:
+          type: "string"
+          format: "date"
+        cot:
+          type: "string"
+        cotStartDate:
+          type: "string"
+          format: "date"
+        cotEndDate:
+          type: "string"
+          format: "date"
+        addressType:
+          type: "string"
+        type:
+          type: "string"
+          default: "Organization"
+          readOnly: true
+        address:
+          $ref: "#/components/schemas/AddressResource"
+        nihii8:
+          type: "string"
+        nihii11:
+          type: "string"
+    HealthcareOrganizationId:
+      type: "object"
+      properties:
+        organizationId:
+          type: "string"
+        authenticSource:
+          type: "string"
+    HealthcareProResource:
+      type: "object"
+      properties:
+        id:
+          $ref: "#/components/schemas/HealthcareProId"
+        phoneNumbers:
+          $ref: "#/components/schemas/PhoneNumbers"
+        licenseToPractice:
+          type: "boolean"
+        subscriptionEndDate:
+          type: "string"
+          format: "date"
+        healthcareQualification:
+          $ref: "#/components/schemas/HealthcareQualificationResource"
+        healthcareStatus:
+          $ref: "#/components/schemas/HealthcareStatusResource"
+        healthcarePerson:
+          $ref: "#/components/schemas/HealthcarePersonResource"
+        healthcareVisaList:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/HealthcareVisaResource"
+        address:
+          $ref: "#/components/schemas/AddressResource"
+        nihii8:
+          type: "string"
+        nihii11:
+          type: "string"
+        type:
+          type: "string"
+          default: "Professional"
+          readOnly: true
+    ProviderType:
+      type: string
+      enum:
+        - PROFESSIONAL
+        - ORGANIZATION
+        - ALL
+      default: ALL
+      description: |
+        Filter the type of healthCare providers to return.
+        - PROFESSIONAL: only individual professionals
+        - ORGANIZATION: only organizations
+        - ALL: both
+    PhoneNumbers:
+      type: "object"
+      properties:
+        telephoneNumbers:
+          $ref: "#/components/schemas/TelephoneNumbers"
+        mobileNumber:
+          type: "string"
+    RequestStatus:
+      type: string
+      enum:
+        - DRAFT
+        - BLACKLISTED
+        - PENDING
+        - OPEN
+        - CANCELLED
+        - EXPIRED
+        - IN_PROGRESS
+        - APPROVED
+        - REJECTED
+        - DONE
+    TelephoneNumbers:
+      type: "object"
+      properties:
+        phoneNumber1:
+          type: "string"
+        phoneNumber2:
+          type: "string"
+        phoneNumber3:
+          type: "string"
+    HealthcareQualificationId:
+      type: "object"
+      properties:
+        code:
+          type: "string"
+        profession:
+          type: "string"
+    HealthcareQualificationResource:
+      type: "object"
+      properties:
+        id:
+          $ref: "#/components/schemas/HealthcareQualificationId"
+        description:
+          $ref: "#/components/schemas/Translation"
+    HealthcareStatusResource:
+      type: "object"
+      properties:
+        code:
+          type: "string"
+        description:
+          $ref: "#/components/schemas/Translation"
+    HealthcarePersonResource:
+      type: "object"
+      properties:
+        ssin:
+          type: "string"
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        deceased:
+          type: "boolean"
+    HealthcareVisaResource:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        active:
+          type: "boolean"
+        definitive:
+          type: "boolean"
+        startDate:
+          type: "string"
+          format: "date"
+        endDate:
+          type: "string"
+          format: "date"
+        withdrawalStartDate:
+          type: "string"
+          format: "date"
+        withdrawalEndDate:
+          type: "string"
+          format: "date"
+        healthcareProId:
+          $ref: "#/components/schemas/HealthcareProId"
+    HealthcareProId:
+      type: "object"
+      properties:
+        profession:
+          type: "string"
+        ssin:
+          type: "string"
+        qualificationCode:
+          type: "string"
+    HealthCareProviderRequestResource:
+      type: "object"
+      properties:
+        healthcareProfessionals:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/HealthcareProResource"
+        healthcareOrganizations:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/HealthcareOrganizationResource"
+        total:
+          type: "integer"
+          format: "int64"
+    MedicationResults:
+      type: "object"
+      properties:
+        result:
+          type: object
+          additionalProperties: true # → keys can be any string, and values can be any type (any)
+    ReasonResource:
+      type: "object"
+      properties:
+        reason:
+          type: "string"
+        kid:
+          type: string
+        pseudonymizedKey:
+          type: string
+    Translation:
+      type: "object"
+      required:
+        - nl
+        - fr
+        - de
+      properties:
+        nl:
+          type: "string"
+        fr:
+          type: "string"
+        de:
+          type: "string"
+        en:
+          type: "string"
+    TemplateVersion:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        version:
+          type: "string"
+        templateId:
+          type: "integer"
+          format: "int32"
+        commonTranslationsId:
+          type: "integer"
+          format: "int32"
+        metadata:
+          type: "object"
+          additionalProperties: true # → keys can be any string, and values can be any type (any)
+          description: Arbitrary metadata (LinkedHashMap in Java)
+        creationTimestamp:
+          type: "string"
+          format: "date-time"
+          description: OffsetDateTime formatted as ISO-8601 string
+      allOf:
+        - $ref: '#/components/schemas/TemplateData'
+          description: |
+            data will be unwrapped into parent object because of @JsonUnwrapped
+            -> model it as a composed schema with allOf
+      required:
+        - version
+        - templateId
+        - data
+    Template:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        code:
+          type: "string"
+        label:
+          type: "string"
+        shortLabel:
+          type: "string"
+        labelTranslations:
+          $ref: "#/components/schemas/Translation"
+        shortLabelTranslations:
+          $ref: "#/components/schemas/Translation"
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+    ConnectedUserResource:
+      type: "object"
+      required:
+        - professional
+      properties:
+        ssin:
+          type: "string"
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        professional:
+          type: "boolean"
+        nihii11:
+          type: "string"
+        discipline:
+          $ref: "#/components/schemas/Discipline"
+        role:
+          $ref: "#/components/schemas/Role"
+        organizations:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/HealthcareOrganizationResource"
+    Role:
+      type: string
+      enum:
+        - patient
+        - prescriber
+        - caregiver
+        - pharmacist
+        - dentist
+        - midwife
+        - administrative
+        - head
+    PageModelEntityDto:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/ModelEntityDto"
+        number:
+          type: integer
+          format: int32
+        sort:
+          type: object   # optional
+        first:
+          type: boolean
+        last:
+          type: boolean
+        pageable:
+          type: object   # optional if you want Spring-style "pageable"
+        empty:
+          type: boolean
+    ModelEntityDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        creationDate:
+          type: string
+          format: date-time
+        label:
+          type: string
+        nihii11:
+          type: string
+        modelData:
+          type: object
+          additionalProperties: true # → keys can be any string, and values can be any type (any)
+        templateVersionId:
+          type: integer
+          format: int32
+        templateId:
+          type: integer
+          format: int32
+        templateCode:
+          type: string
+    CreateModelResource:
+      type: "object"
+      required:
+        - name
+        - templateCode
+      properties:
+        name:
+          type: "string"
+        templateCode:
+          type: "string"
+        responses:
+          type: "object"
+          additionalProperties: true # → keys can be any string, and values can be any type (any)
+    PatchModelResource:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        responses:
+          type: "object"
+          additionalProperties: true # → keys can be any string, and values can be any type (any)
+    # all PSS
+    AutocompleteOption:
+      type: object
+      required:
+        - value
+        - label
+      properties:
+        value:
+          type: string
+        label:
+          $ref: "#/components/schemas/Translation"
+    ControlRequest:
+      required:
+        - age
+        - gender
+        - indications
+      type: object
+      properties:
+        age:
+          type: integer
+          format: int32
+        gender:
+          $ref: "#/components/schemas/Gender"
+        intention:
+          $ref: "#/components/schemas/AutocompleteOption"
+        indications:
+          type: array
+          items:
+            $ref: "#/components/schemas/AutocompleteOption"
+    CodedValueItem:
+      type: object
+      properties:
+        id:
+          type: string
+        system:
+          type: string
+        code:
+          type: string
+        translations:
+          type: array
+          items:
+            $ref: "#/components/schemas/TranslatedFieldItem"
+        version:
+          type: string
+    IndicationRadiology:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    MedicationItem:
+      type: object
+      properties:
+        id:
+          type: string
+        code:
+          $ref: "#/components/schemas/CodedValueItem"
+        vmpGroup:
+          type: string
+    SupportOption:
+      type: object
+      properties:
+        id:
+          type: string
+        score:
+          type: integer
+          format: int32
+        instruction:
+          $ref: "#/components/schemas/CodedValueItem"
+        evidenceSummary:
+          $ref: "#/components/schemas/CodedValueItem"
+        medications:
+          type: array
+          items:
+            $ref: "#/components/schemas/MedicationItem"
+        supportOptionMetadata:
+          type: object
+          additionalProperties: true # → keys can be any string, and values can be any type (any)
+    SupportOptionConclusion:
+      type: object
+      properties:
+        supportOptionId:
+          type: string
+        reasonOfDeviation:
+          type: string
+        reasonOfDeviationText:
+          type: string
+    SupportRequestRadiology:
+      type: object
+      properties:
+        exchangeId:
+          type: string
+        indications:
+          type: array
+          items:
+            $ref: "#/components/schemas/IndicationRadiology"
+    SupportResponseRadiology:
+      type: object
+      properties:
+        exchangeId:
+          type: string
+        request:
+          $ref: "#/components/schemas/SupportRequestRadiology"
+        supportOptions:
+          type: array
+          items:
+            $ref: "#/components/schemas/SupportOption"
+        conclusions:
+          type: array
+          items:
+            $ref: "#/components/schemas/SupportOptionConclusion"
+        evidenceUrl:
+          $ref: "#/components/schemas/CodedValueItem"
+    TranslatedFieldItem:
+      type: object
+      properties:
+        language:
+          type: string
+        value:
+          type: string
+    Intentions:
+      type: object
+      properties:
+        intentions:
+          type: array
+          items:
+            $ref: "#/components/schemas/AutocompleteOption"
+    Indications:
+      type: object
+      properties:
+        indications:
+          type: array
+          items:
+            $ref: "#/components/schemas/AutocompleteOption"
+    # EVF all
+    CommonTranslations:
+      type: "object"
+      properties:
+        version:
+          type: "integer"
+          format: "int32"
+        translations:
+          type: "object"
+          additionalProperties:
+            $ref: "#/components/schemas/Translation"
+    Object:
+      type: "object"
+      properties: { }
+    Condition:
+      type: "object"
+      properties:
+        leftValue:
+          $ref: "#/components/schemas/Object"
+        operator:
+          type: "string"
+        rightValue:
+          $ref: "#/components/schemas/Object"
+        invert:
+          type: "boolean"
+        conditions:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Condition"
+    ViewModeWithCondition:
+      type: "object"
+      properties:
+        value:
+          type: "string"
+        condition:
+          $ref: "#/components/schemas/Condition"
+    ViewMode:
+      type: "object"
+      properties:
+        viewModesWithConditions:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ViewModeWithCondition"
+    Response:
+      type: "object"
+      properties:
+        labelTranslationId:
+          type: "string"
+        bodyTranslationId:
+          type: "string"
+        helpTranslationId:
+          type: "string"
+        tooltipTranslationId:
+          type: "string"
+        skipIf:
+          $ref: "#/components/schemas/Condition"
+        showIf:
+          $ref: "#/components/schemas/Condition"
+        value:
+          $ref: "#/components/schemas/Object"
+    ValueWithCondition:
+      type: "object"
+      properties:
+        value:
+          $ref: "#/components/schemas/Object"
+        condition:
+          $ref: "#/components/schemas/Condition"
+    ValueIfSkipped:
+      type: "object"
+      properties:
+        valuesWithConditions:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ValueWithCondition"
+    SideEffect:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        condition:
+          $ref: "#/components/schemas/Condition"
+    ExternalSource:
+      type: "object"
+      properties:
+        dataUrl:
+          type: "string"
+        validationUrl:
+          type: "string"
+        strict:
+          type: "boolean"
+    QuestionFHIR:
+      type: "object"
+      properties:
+        mapping:
+          type: "array"
+          items:
+            type: "object"
+            properties: { }
+    Validation:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          enum:
+            - "required"
+            - "minValue"
+            - "maxValue"
+            - "maxDecimals"
+            - "minLength"
+            - "maxLength"
+            - "pattern"
+            - "checksum"
+            - "existingResponse"
+            - "existingResponses"
+            - "existingAttachments"
+            - "dateFilter"
+            - "unique"
+            - "compare"
+            - "attachments"
+        condition:
+          $ref: "#/components/schemas/Condition"
+    SnippetCodeVersion:
+      type: "object"
+      properties:
+        code:
+          type: "string"
+        version:
+          type: "string"
+    FormElement:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        shortLabelTranslationId:
+          type: "string"
+        labelTranslationId:
+          type: "string"
+        bodyTranslationId:
+          type: "string"
+        helpTranslationId:
+          type: "string"
+        placeholderTranslationId:
+          type: "string"
+        tooltipTranslationId:
+          type: "string"
+        subFormElements:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/FormElement"
+        dataType:
+          $ref: "#/components/schemas/FormDataType"
+        viewType:
+          type: "string"
+        viewMode:
+          $ref: "#/components/schemas/ViewMode"
+        responses:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Response"
+        skipIf:
+          $ref: "#/components/schemas/Condition"
+        showIf:
+          $ref: "#/components/schemas/Condition"
+        showIfParentResponse:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Object"
+        valueIfSkipped:
+          $ref: "#/components/schemas/ValueIfSkipped"
+        sideEffects:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/SideEffect"
+        externalSource:
+          $ref: "#/components/schemas/ExternalSource"
+        securityLog:
+          type: "string"
+        defaultValue:
+          $ref: "#/components/schemas/Object"
+        tags:
+          type: "array"
+          items:
+            type: "string"
+        custom:
+          type: "string"
+        fhir:
+          $ref: "#/components/schemas/QuestionFHIR"
+        validations:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Validation"
+        snippets:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/SnippetCodeVersion"
+    ScoreDefinition:
+      type: "object"
+      properties:
+        code:
+          type: "string"
+        labelTranslationId:
+          type: "string"
+        descriptionTranslationId:
+          type: "string"
+        valueTranslationIds:
+          type: "array"
+          items:
+            type: "string"
+    TemplateData:
+      type: "object"
+      properties:
+        prePersistScripts:
+          type: "object"
+          additionalProperties:
+            $ref: "#/components/schemas/Script"
+        extraData:
+          type: "object"
+          additionalProperties: true # → keys can be any string, and values can be any type (any)
+        elements:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/FormElement"
+        scores:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ScoreDefinition"
+        translations:
+          type: "object"
+          additionalProperties:
+            $ref: "#/components/schemas/Translation"
+        requiredCommonTranslationIds:
+          type: "array"
+          items:
+            type: "string"
+        commonTranslations:
+          type: "object"
+          additionalProperties:
+            $ref: "#/components/schemas/Translation"
+    Metadata:
+      type: object
+      properties:
+        code:
+          $ref: "#/components/schemas/SystemCodes"
+        mode:
+          type: string
+          enum:
+            - read
+            - create
+        category:
+          $ref: "#/components/schemas/SystemCodes"
+        orderDetails:
+          $ref: "#/components/schemas/SystemCodes"
+      required:
+        - code
+        - category
+    SystemCodes:
+      type: "object"
+      properties:
+        code:
+          type: "array"
+          items:
+            type: "string"
+        system:
+          type: "string"
+    Script:
+      type: "object"
+      properties:
+        script:
+          type: "string"
+        engineName:
+          type: "string"
+    FormDataType:
+      type: "object"
+      description: "Represents a data type for form elements, including complex types, arrays, and formats."
+      properties:
+        type:
+          type: "string"
+          enum:
+            - "NUMBER"
+            - "STRING"
+            - "BOOLEAN"
+            - "DATE"
+            - "OBJECT"
+            - "AUTOCOMPLETE"
+            - "ARRAY"
+            - "REPEATABLE"
+            - "ATTACHMENTS"
+        items:
+          $ref: "#/components/schemas/FormDataType"
+          description: "Optional, defines the item type for arrays or repeatable elements"
+        format:
+          type: "string"
+          enum:
+            - "ISO8601"
+            - "YEAR_MONTH_DAY"
+            - "YEAR_MONTH"
+        properties:
+          type: "object"
+          additionalProperties:
+            $ref: '#/components/schemas/FormDataType'
+            description: "Optional, nested object properties if type is OBJECT"
+        anyOf:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/FormDataType"
+            description: "Optional, supports multiple allowed types"
+    FhirR4TaskStatus:
+      type: "string"
+      enum:
+        - "DRAFT"
+        - "REQUESTED"
+        - "RECEIVED"
+        - "ACCEPTED"
+        - "REJECTED"
+        - "READY"
+        - "CANCELLED"
+        - "INPROGRESS"
+        - "ONHOLD"
+        - "FAILED"
+        - "COMPLETED"
+        - "ENTEREDINERROR"
+        - "NULL"
