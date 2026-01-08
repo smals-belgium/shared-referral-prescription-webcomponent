@@ -1,0 +1,319 @@
+{
+  "healthcareProfessionals": [
+    {
+      "id": {
+        "profession": "NURSE",
+        "ssin": "10000000009",
+        "qualificationCode": "A12"
+      },
+      "phoneNumbers": {
+        "telephoneNumbers": { "phoneNumber1": "0000000011" },
+        "mobileNumber": "0990000011"
+      },
+      "licenseToPractice": true,
+      "subscriptionEndDate": null,
+      "healthcareQualification": {
+        "id": {
+          "code": "A12",
+          "profession": "NURSE"
+        },
+        "description": {
+          "nl": "Gekwalificeerde verpleegkundige",
+          "fr": "Infirmier qualifié",
+          "de": "Qualifizierte Krankenschwester",
+          "en": "Qualified NURSE"
+        }
+      },
+      "healthcareStatus": {
+        "code": "01",
+        "description": {
+          "nl": "Actief",
+          "fr": "Actif",
+          "de": "Aktiv",
+          "en": "Active"
+        }
+      },
+      "healthcarePerson": {
+        "ssin": "10000000009",
+        "firstName": "Robin",
+        "lastName": "Dupont",
+        "deceased": false
+      },
+      "healthcareVisaList": [],
+      "address": {
+        "street": {
+          "nl": "Stationsstraat",
+          "fr": "Rue de la Gare",
+          "de": "Bahnhofstraße",
+          "en": "Station Street"
+        },
+        "houseNumber": "45",
+        "box": "A1",
+        "zipCode": "1050",
+        "municipality": {
+          "nl": "Elsene",
+          "fr": "Ixelles",
+          "de": "Ixelles",
+          "en": "Ixelles"
+        },
+        "cityCode": 1050,
+        "country": {
+          "nl": "België",
+          "fr": "Belgique",
+          "de": "Belgien",
+          "en": "Belgium"
+        }
+      },
+      "nihii8": "12345678",
+      "nihii11": "10000000029",
+      "type": "Professional"
+    },
+    {
+      "id": {
+        "profession": "NURSE",
+        "ssin": "10000000008",
+        "qualificationCode": "B07"
+      },
+      "phoneNumbers": {
+        "telephoneNumbers": { "phoneNumber1": "0000000022" },
+        "mobileNumber": "0990000022"
+      },
+      "licenseToPractice": true,
+      "subscriptionEndDate": null,
+      "healthcareQualification": {
+        "id": {
+          "code": "B07",
+          "profession": "NURSE"
+        },
+        "description": {
+          "nl": "Gekwalificeerde verpleegkundige",
+          "fr": "Infirmier qualifié",
+          "de": "Qualifizierte Krankenschwester",
+          "en": "Qualified NURSE"
+        }
+      },
+      "healthcareStatus": {
+        "code": "01",
+        "description": {
+          "nl": "Actief",
+          "fr": "Actif",
+          "de": "Aktiv",
+          "en": "Active"
+        }
+      },
+      "healthcarePerson": {
+        "ssin": "10000000008",
+        "firstName": "Anke",
+        "lastName": "Dubois",
+        "deceased": false
+      },
+      "healthcareVisaList": [],
+      "address": {
+        "street": {
+          "nl": "Bremstraat",
+          "fr": "Rue des Genêts",
+          "de": "Ginsterstraße",
+          "en": "Broom Street"
+        },
+        "houseNumber": "27",
+        "box": "C4",
+        "zipCode": "3500",
+        "municipality": {
+          "nl": "Hasselt",
+          "fr": "Hasselt",
+          "de": "Hasselt",
+          "en": "Hasselt"
+        },
+        "cityCode": 3500,
+        "country": {
+          "nl": "België",
+          "fr": "Belgique",
+          "de": "Belgien",
+          "en": "Belgium"
+        }
+      },
+      "nihii8": "12345679",
+      "nihii11": "10000000028",
+      "type": "Professional"
+    },
+    {
+      "id": {
+        "profession": "NURSE",
+        "ssin": "10000000011",
+        "qualificationCode": "C15"
+      },
+      "phoneNumbers": {
+        "telephoneNumbers": { "phoneNumber1": "0000000033" },
+        "mobileNumber": "0990000033"
+      },
+      "licenseToPractice": true,
+      "subscriptionEndDate": null,
+      "healthcareQualification": {
+        "id": {
+          "code": "C15",
+          "profession": "NURSE"
+        },
+        "description": {
+          "nl": "Ervaren verpleegkundige",
+          "fr": "Infirmier expérimenté",
+          "de": "Erfahrene Krankenschwester",
+          "en": "Experienced NURSE"
+        }
+      },
+      "healthcareStatus": {
+        "code": "01",
+        "description": {
+          "nl": "Actief",
+          "fr": "Actif",
+          "de": "Aktiv",
+          "en": "Active"
+        }
+      },
+      "healthcarePerson": {
+        "ssin": "10000000011",
+        "firstName": "Milan",
+        "lastName": "Verstraete",
+        "deceased": false
+      },
+      "healthcareVisaList": [],
+      "address": {
+        "street": {
+          "nl": "Maretaklaan",
+          "fr": "Avenue du Gui",
+          "de": "Mistelausallee",
+          "en": "Mistletoe Avenue"
+        },
+        "houseNumber": "88",
+        "box": "D1",
+        "zipCode": "5100",
+        "municipality": {
+          "nl": "Jurbeke",
+          "fr": "Jurbeke",
+          "de": "Jurbeke",
+          "en": "Jurbeke"
+        },
+        "cityCode": 5100,
+        "country": {
+          "nl": "België",
+          "fr": "Belgique",
+          "de": "Belgien",
+          "en": "Belgium"
+        }
+      },
+      "nihii8": "12345670",
+      "nihii11": "10000000027",
+      "type": "Professional"
+    }
+  ],
+  "healthcareOrganizations": [
+    {
+      "id": {
+        "organizationId": "0000007",
+        "authenticSource": "NIHII"
+      },
+      "cbe": "",
+      "organizationName": {
+        "nl": "Group of doctors",
+        "fr": "Group of doctors",
+        "de": "Group of doctors",
+        "en": "Group of doctors"
+      },
+      "typeCode": "940",
+      "typeDescription": {
+        "nl": "Medische organisatie voor samenwerking tussen zorgverleners",
+        "fr": "Organisation médicale regroupant plusieurs praticiens",
+        "de": "Medizinische Organisation, die mehrere Praktiker zusammenbringt",
+        "en": "Medical organization bringing together several practitioners"
+      },
+      "qualificationCode": "001",
+      "situationCode": "1",
+      "situationCodeStartDate": null,
+      "cot": "1",
+      "cotStartDate": null,
+      "cotEndDate": null,
+      "addressType": "contact",
+      "type": "Organization",
+      "address": {
+        "street": {
+          "nl": "Koningsstraat",
+          "fr": "Rue Royale",
+          "de": "Rue Royale",
+          "en": "Rue Royale"
+        },
+        "houseNumber": "12",
+        "box": "A",
+        "zipCode": "1000",
+        "municipality": {
+          "nl": "Brussel",
+          "fr": "Bruxelles",
+          "de": "Brüssel",
+          "en": "Brussels"
+        },
+        "cityCode": 1000,
+        "country": {
+          "nl": "België",
+          "fr": "Belgique",
+          "de": "Belgien",
+          "en": "Belgium"
+        }
+      },
+      "nihii8": "00000009",
+      "nihii11": "00000009940"
+    },
+    {
+      "id": {
+        "organizationId": "111111111",
+        "authenticSource": "NIHII"
+      },
+      "cbe": "",
+      "organizationName": {
+        "nl": "Group of NURSEs",
+        "fr": "Group of NURSEs",
+        "de": "Group of NURSEs",
+        "en": "Group of NURSEs"
+      },
+      "typeCode": "940",
+      "typeDescription": {
+        "nl": "Team van vrolijke verpleegkundigen met een groot hart",
+        "fr": "Équipe d’infirmiers et d’infirmières au grand cœur",
+        "de": "Team fröhlicher Pflegekräfte mit großem Herzen",
+        "en": "Team of cheerful NURSEs with a big heart"
+      },
+      "qualificationCode": "001",
+      "situationCode": "1",
+      "situationCodeStartDate": null,
+      "cot": "1",
+      "cotStartDate": null,
+      "cotEndDate": null,
+      "addressType": "contact",
+      "type": "Organization",
+      "address": {
+        "street": {
+          "nl": "Koningsstraat",
+          "fr": "Rue Royale",
+          "de": "Rue Royale",
+          "en": "Rue Royale"
+        },
+        "houseNumber": "12",
+        "box": "A",
+        "zipCode": "1000",
+        "municipality": {
+          "nl": "Brussel",
+          "fr": "Bruxelles",
+          "de": "Brüssel",
+          "en": "Brussels"
+        },
+        "cityCode": 1000,
+        "country": {
+          "nl": "België",
+          "fr": "Belgique",
+          "de": "Belgien",
+          "en": "Belgium"
+        }
+      },
+      "nihii8": "00000011",
+      "nihii11": "00000011940"
+    }
+  ],
+  "total": 5
+}

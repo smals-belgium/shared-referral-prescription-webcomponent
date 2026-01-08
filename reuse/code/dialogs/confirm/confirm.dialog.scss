@@ -1,0 +1,28 @@
+:host {
+  display: block;
+
+  mat-dialog-content {
+    white-space: pre-line;
+    --mdc-dialog-supporting-text-color: black;
+  }
+
+  mat-dialog-actions {
+    padding: 24px 24px 16px 24px;
+  }
+
+  @media (max-width: 700px) {
+    mat-dialog-actions {
+      display: flex;
+      flex-direction: column;
+
+      button {
+        width: 100%;
+        margin: 0 0 5px 0;
+
+        &:last-of-type {
+          margin: 0;
+        }
+      }
+    }
+  }
+}

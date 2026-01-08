@@ -1,0 +1,83 @@
+<div #scrollframe>
+  @if (itemsLength > 0) {
+    <div class="grid-container mh-margin-top-bottom">
+      @for (model of modelData(); track trackById(model)) {
+        <mat-card class="label-example-card" appearance="raised">
+          <mat-card-content>
+            <div class="row" align="end">
+              <button type="button" mat-icon-button [matMenuTriggerFor]="menu" [attr.aria-label]="'prescription.model.actions' | translate">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="onActionButtonClick($event, model)">
+                  <mat-icon>delete</mat-icon>
+                  <span> {{ 'prescription.model.delete.title' | translate }}</span>
+                </button>
+              </mat-menu>
+            </div>
+            <div class="row">
+              <p class="template-title">
+                {{model.label}}
+              </p>
+            </div>
+
+            <div class="row">
+              <p class="label">{{'prescription.model.creationDate' | translate}}</p>
+              <p>
+                {{model.creationDate | date:'D'}}
+              </p>
+            </div>
+
+            <div class="row">
+              <p class="label">{{'prescription.model.template' | translate}}</p>
+              <p>
+                {{model.templateCode | templateName}}
+              </p>
+            </div>
+
+            <div class="row" align="right">
+              <button mat-button type="button"
+                      (click)="openPrescriptionModel.emit(model)">{{ 'prescription.model.details.link' | translate }}
+                <mat-icon fontIcon="keyboard_arrow_right" aria-hidden="true" iconPositionEnd></mat-icon>
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  } @else if (itemsLength === 0) {
+    <div class="mh-margin-top-bottom">
+      <app-alert
+        [alert]="AlertType.Info"
+        [message]="'prescription.model.noModels' | translate"
+        [showRetry]="false"
+      ></app-alert>
+    </div>
+  }
+
+  @if (!canLoadMore()) {
+    <div class="mh-margin-bottom">
+    <app-alert
+      [alert]="AlertType.Info"
+      [message]="'prescription.model.allModelsFetched' | translate"
+      [showRetry]="false"
+    ></app-alert>
+    </div>
+  }
+
+  @if (loading || isLoading()) {
+    <div class="mh-margin-top-bottom">
+      <app-skeleton [items]="3" [format]="FormatEnum.CARD"></app-skeleton>
+    </div>
+  } @else if (error) {
+    <div class="mh-margin-top-bottom">
+      <app-alert
+        [alert]="AlertType.Error"
+        [message]="errorMsg"
+        [error]="errorResponse"
+        (clickRetry)="onErrorRetryClick()"
+      ></app-alert>
+    </div>
+  }
+  <div #anchor></div>
+</div>

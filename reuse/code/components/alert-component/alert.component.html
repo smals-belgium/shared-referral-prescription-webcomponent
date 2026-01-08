@@ -1,0 +1,21 @@
+<mh-alert
+  [usage]="alert"
+  [backgroundColor]="'color'"
+  [alertTitle]="title | translate"
+  [dismissMode]="'pinned'"
+  [actionButton]="showRetry"
+  [buttonLabel]="'common.tryAgain' | translate"
+  [buttonDisabled]="false"
+  (actionButtonClicked)="clickRetry.emit()"
+>
+  <div alert-details>
+    @if(genericErrorMsgKey) {
+      {{ genericErrorMsgKey | translate }}
+    }
+    @else if(message) {
+      {{ message }}
+    } @else {
+      {{ 'somethingWentWrong' | translate }}
+    }
+  </div>
+</mh-alert>

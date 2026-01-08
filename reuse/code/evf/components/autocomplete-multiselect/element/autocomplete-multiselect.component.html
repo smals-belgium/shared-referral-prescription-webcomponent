@@ -1,0 +1,108 @@
+<evf-form-element-layout [elementLayout]="elementLayout" [elementControl]="elementControl" [metadata]="metadata">
+  @if (!useMatLabel) {
+    <evf-element-label
+      [elementControl]="elementControl"
+      [invalid]="invalid"
+      [for]="id"
+    ></evf-element-label>
+  }
+
+  @if (element.bodyTranslationId) {
+    <evf-element-body
+      [elementControl]="elementControl"
+    ></evf-element-body>
+  }
+
+  @if (element.helpTranslationId) {
+    <evf-element-help
+      [elementControl]="elementControl"
+    ></evf-element-help>
+  }
+
+  <mat-form-field [appearance]="appearance || 'outline'">
+    @if (useMatLabel) {
+      <mat-label>{{ element.labelTranslationId | evfLabel:elementControl.elementGroup }}</mat-label>
+    }
+
+    <input
+      matInput
+      type="text"
+      [formControl]="searchControl"
+      [placeholder]="element.placeholderTranslationId && (element.placeholderTranslationId | evfLabel) || ''"
+      #itemInput
+      [matAutocomplete]="auto"
+      [id]="id"
+      (keyup)="updateQuery($event)"
+      (paste)="updateQueryOnPaste($event)"
+    />
+
+    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayWith"
+                      (optionSelected)="selected($event); itemInput.value = ''">
+      @if (options$ | async; as options) {
+        <ng-container>
+          @if (options.hasOwnProperty('translate')) {
+            <mat-option [value]="null">
+                      <span class="invalid"
+                      ><mat-icon>warning</mat-icon>
+                        {{ toErrorObject(options).translate | evfLabel }}</span
+                      >
+            </mat-option>
+          }
+          @if (!options.hasOwnProperty('translate')) {
+            <ng-container>
+              @for (option of toAutocompleteOptionList(options); track option) {
+                <mat-option [value]="option">
+                  {{ option.label[currentLang] }}
+                </mat-option>
+              }
+              @if (toAutocompleteOptionList(options).length === 0) {
+                <mat-option [value]="null">
+                  {{ "NO_OPTION_FOUND" | evfLabel }}
+                </mat-option>
+              }
+            </ng-container>
+          }
+        </ng-container>
+      }
+    </mat-autocomplete>
+
+    @if (control.errors) {
+      <mat-error>
+        @if (control.errors | commonErrors; as error) {
+          <span>{{
+              error.label | evfLabel: error.values
+            }}</span>
+        }
+
+        @if (control.hasError('pattern')) {
+          <span>{{
+              control.getError('pattern').errorTranslationId
+                ? (control.getError('pattern').errorTranslationId | evfLabel)
+                : ("WRONG_FORMAT" | evfLabel)
+            }}</span>
+        }
+
+        @if (control.hasError('noAutocompleteResponse')) {
+          <span>
+              {{ "SELECT_FROM_DROPDOWN" | evfLabel }}
+          </span>
+        }
+      </mat-error>
+    }
+  </mat-form-field>
+
+  <!-- Chips representing the actual form control value -->
+  <div [class]="selectedItems().length > 0 ? 'mh-chips mh-margin-bottom' : 'mh-chips'">
+    @for (item of selectedItems(); track item) {
+      <mat-chip (removed)="remove(item)" [removable]="true">
+        {{ item.label[currentLang] }}
+        <button matChipRemove [attr.aria-label]="'remove ' + item.label[currentLang]">
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </mat-chip>
+    }
+  </div>
+
+  <!-- Hidden input that holds the actual form control value -->
+  <input type="hidden" [formControl]="control" />
+</evf-form-element-layout>

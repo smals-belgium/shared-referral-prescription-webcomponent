@@ -1,0 +1,46 @@
+name: Publish NPM Packages
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node and npm auth
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org/'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build all packages
+        run: npm run build
+
+      - name: Publish all packages to NPM
+        run: |
+          DIST_PACKAGES=(
+            "dist/wc-prescription-create"
+            "dist/wc-prescription-details"
+            "dist/wc-prescription-list"
+            "dist/mags-prescription-details"
+            "dist/mags-prescription-list"
+          )
+          for pkg in "${DIST_PACKAGES[@]}"; do
+            VERSION=$(node -p "require('./$pkg/package.json').version")
+            echo "Publishing $pkg (version $VERSION)..."
+            npm publish "$pkg" --access public
+          done
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

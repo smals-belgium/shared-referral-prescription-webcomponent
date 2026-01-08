@@ -1,0 +1,57 @@
+<div class="main_details_container">
+  <app-prescription-details-beneficiary
+  [patient]="patient"
+  [prescription]="prescription"
+  ></app-prescription-details-beneficiary>
+
+  @if (decryptedResponses().data && templateVersion) {
+    <div class="evf_form_detail_container">
+      <evf-form-details
+              [lang]="currentLang()"
+              [template]="templateVersion"
+              [responses]="decryptedResponses().data!"
+              [status]="status()"
+              [isProfessional]="isProfessional$()"
+      ></evf-form-details>
+    </div>
+  }
+  <div class="row">
+    <div class="info-item">
+      <div data-cy="prescription-validity-period-label">{{ 'prescription.validityPeriod' | translate }}
+      </div>
+      <div data-cy="prescription-validity-period">
+        @if (prescription?.period; as period) {
+          {{ period.start | date }} - {{ period.end | date }}
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="info-item">
+      <div data-cy="prescription-date-label">{{ 'prescription.prescriptionDate' | translate }}</div>
+      <div data-cy="prescription-date">{{ $any(prescription?.authoredOn) | date: 'D' }}</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="info-item">
+      <div data-cy="prescription-author-label">{{ 'prescription.author' | translate }}</div>
+      <div data-cy="prescription-author">
+        <app-professional-display
+          [professional]="prescription?.requester"
+          [currentUser]="currentUser"
+        ></app-professional-display>
+
+        @if (prescription?.requester?.nihii8 ?? prescription?.requester?.nihii11 ; as nihii) {
+          <span class="nihii">({{ nihii }})</span>
+        }
+        <div>
+          @if (prescription?.requester?.healthcareQualification?.id?.profession) {
+            {{ 'common.professions.' + prescription?.requester?.healthcareQualification?.id?.profession | translate }}
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

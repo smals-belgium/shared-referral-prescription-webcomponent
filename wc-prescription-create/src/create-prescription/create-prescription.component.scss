@@ -1,0 +1,280 @@
+@use '@myhealth-belgium/design-kit' as mh;
+@use '@angular/material' as mat;
+@use '@smals/vas-evaluation-form-ui-material/index' as evf;
+
+@include mh.use-font-material-symbols(
+    true,
+    url('@reuse/assets/fonts/MatSymbols-Rounded.ttf'),
+    'Material Symbols Rounded',
+      (
+        'material-icons',
+        'material-symbols',
+      ));
+@include mh.use-globals();
+@include mh.use-classes();
+@include mh.use-all-components();
+@include mh.override-mat-dialog();
+@include mh.override-mat-form-field();
+@include mh.override-all-mat-components();
+@include mh.override-mat-button-toggle();
+@include mh.override-mat-autocomplete();
+@include mh.override-mat-select();
+@include mh.override-mat-datepicker();
+@include mh.override-mat-button();
+@include mh.override-mat-button-icon(false);
+
+$app-primary-palette: (
+  50: mh.$primary-90,
+  100: mh.$primary-80,
+  200: mh.$primary-70,
+  300: mh.$primary-60,
+  400: mh.$primary-50,
+  500: mh.$primary-40,
+  600: mh.$primary-35,
+  700: mh.$primary-30,
+  800: mh.$primary-20,
+  900: mh.$primary-10,
+  A100: mh.$primary-95,
+  A200: mh.$primary-98,
+  A400: mh.$primary-99,
+  A700: mh.$primary-100,
+  contrast: ()
+);
+
+$app-primary: mat.m2-define-palette($app-primary-palette, 800);
+@include evf.evf-theme($app-primary, 800, 600, 700, mh.$color-white, transparent);
+
+:host {
+  /* Body Large */
+  --mat-sys-body-large: #{mh.$font-weight-regular} #{mh.$font-size-m} / #{mh.calculateRem(22px)} var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-body-large-font: var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-body-large-line-height: #{mh.calculateRem(22px)};
+  --mat-sys-body-large-size: #{mh.$font-size-m};
+  --mat-sys-body-large-tracking: 0.016rem;
+  --mat-sys-body-large-weight: #{mh.$font-weight-regular};
+
+  /* Label Large */
+  --mat-sys-label-large: #{mh.$font-weight-medium} #{mh.$font-size-s} / #{mh.calculateRem(28px)} var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-label-large-font: var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-label-large-line-height: #{mh.calculateRem(28px)};
+  --mat-sys-label-large-size: #{mh.$font-size-m};
+  --mat-sys-label-large-tracking: #{mh.calculateRem(0.04px)};
+  --mat-sys-label-large-weight: #{mh.$font-weight-semibold};
+  --mat-sys-label-large-weight-prominent: #{mh.$font-weight-bold};
+
+  /* Heading Small */
+  --mat-sys-headline-small: #{mh.$font-weight-regular} #{mh.$font-size-2xl} / 2rem var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-headline-small-font: var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-headline-small-line-height: 2rem;
+  --mat-sys-headline-small-size: #{mh.$font-size-2xl};
+  --mat-sys-headline-small-tracking: 0;
+  --mat-sys-headline-small-weight: #{mh.$font-weight-regular};
+
+  /* Buttons */
+  --mat-sys-primary: #{mh.$primary-40};
+  --mat-sys-on-primary: #{mh.$primary-100};
+  --mat-standard-button-toggle-text-color:#{mh.$mat-primary-700};
+  --mat-standard-button-toggle-divider-color:#{mh.$mat-primary-700};
+  --mat-sys-corner-full: #{mh.$border-radius-round};
+  --mat-text-button-horizontal-padding: #{mh.$spacing-l};
+
+  /* Dialog */
+  --mdc-dialog-subhead-color: #{mh.$mat-primary-900};
+  --mdc-dialog-subhead-size: #{mh.$font-size-m};
+  --mdc-dialog-subhead-weight: #{mh.$font-weight-semibold};
+
+  /* Form Fields */
+  --mdc-outlined-text-field-error-outline-color: #{mh.$error-30};
+  --mdc-outlined-text-field-outline-width: #{mh.calculateRem(1px)};
+  --mdc-outlined-text-field-error-focus-outline-color: #{mh.$error-30};
+  --mdc-outlined-text-field-error-hover-outline-color: #{mh.$error-30};
+  --mdc-outlined-text-field-container-shape: #{mh.$border-radius-s};
+  --mat-form-field-error-text-color: #{mh.$error-30};
+  --mat-standard-button-toggle-selected-state-text-color: #{mh.$primary-30};
+  --mat-sys-body-small-size: #{mh.$font-size-xs};
+  --mat-standard-button-toggle-height: 44px;
+  --mdc-outlined-text-field-outline-color: #{mh.$neutral-50};
+  --mdc-outlined-text-field-input-text-color: #{mh.$typography-brand-neutral-dark};
+  --mat-datepicker-calendar-container-shape: #{mh.$border-radius-m};
+  --mat-sys-body-medium-font: #{mh.$font-stack};
+  --mat-sys-body-medium-size: #{mh.$font-size-s};
+  --mat-sys-surface-container-high: #{mh.$primary-100};
+  --mat-sys-on-surface-variant: #414753;
+  --mdc-text-button-label-text-color: var(--mat-datepicker-calendar-period-button-text-color, var(--mat-sys-on-surface-variant));
+  --mat-datepicker-calendar-container-elevation-shadow: rgba(0, 0, 0, 0.12) 0px 1px 9px 0px;
+  --mat-datepicker-calendar-period-button-icon-color: #{mh.$primary-40};
+  --mat-sys-hover-state-layer-opacity: 0.08;
+  --mat-datepicker-calendar-date-hover-state-background-color: #{mh.$primary-95};
+  --mat-sys-on-surface: #{mh.$neutral-10};
+  --mat-sys-pressed-state-layer-opacity: 0.12;
+  --mat-icon-button-focus-state-layer-opacity: 0;
+  --mat-form-field-container-vertical-padding: 12px;
+  --mat-form-field-container-height: 46px;
+  --mat-sys-surface-container: #{mh.$primary-100};
+
+  /* expansion panel */
+  --mat-expansion-header-expanded-state-height: #{mh.calculateRem(70px)};
+  --mat-expansion-container-shape: 0;
+}
+
+.cdk-overlay-container evf-tooltip {
+  background-color: var(--mat-tooltip-container-color, mh.$surface-brand-neutral-darker);
+  border-radius: var(--mat-tooltip-container-shape, mh.$border-radius-s);
+  font-family: var(--mat-tooltip-supporting-text-font, var(--mh-default-font-family, mh.$font-stack));
+  font-size: var(--mat-tooltip-supporting-text-size, var(--mat-sys-body-small-size, mh.$font-size-m));
+  p{
+    color: var(--mat-tooltip-supporting-text-color, mh.$surface-brand-neutral-lighter);
+  }
+}
+
+
+evf-element-body .infoblock {
+  display: flex;
+  padding: mh.$spacing-s;
+  gap: mh.$spacing-s;
+  border-radius: var(--evf-infoblock-radius-small, 6px);
+  box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.13);
+  background: var(--evf-infoblock-background-color, mh.$surface-brand-primary-lighter);
+  margin: mh.$spacing-m 0;
+
+  & > span > ul {
+    margin: 0;
+  }
+
+  h2 {
+    @include mh.font-default-semibold;
+
+    & {
+      color: var(--evf-infoblock-heading-color, mh.$typography-brand-primary-dark);
+      margin: 0;
+    }
+  }
+
+  p, ul, ol, span {
+    @include mh.font-small-regular;
+
+    & {
+      color: var(--evf-infoblock-body-color, mh.$typography-brand-primary-dark);
+      margin: 0;
+    }
+  }
+
+  .material-icons {
+    font-family: 'Material Icons';
+    color: var(--evf-infoblock-matrial-icon-color, mh.$typography-brand-primary-dark);
+  }
+}
+
+.evf-element-wrapper mat-select .mat-mdc-select-arrow:after {
+  font-family: 'Material Icons';
+}
+
+evf-row {
+  .evf-element-wrapper {
+    evf-element-label {
+      label {
+        span {
+          &.required, .asterisk {
+            color: var(--mdc-outlined-text-field-error-outline-color, mh.$error-30);
+          }
+        }
+      }
+    }
+  }
+
+  .evf-element-wrapper:has(.invalid) > div > evf-element-label {
+    color: var(--mdc-outlined-text-field-error-outline-color, mh.$error-30);
+  }
+
+  evf-form-element-group {
+    column-gap: var(--evf-row-column-gap, mh.$spacing-m);
+  }
+  &.column-gap-large{
+    evf-form-element-group {
+      column-gap: var(--evf-row-column-gap-l, mh.$spacing-xl);
+    }
+  }
+}
+
+.has-evf-required-wrapper {
+  evf-element-label {
+    @include mh.font-extra-small-regular;
+
+    & {
+      color: var(--evf-typography-body2-color, mh.$typography-brand-neutral-dark);
+      line-height: 1.2;
+
+      label {
+        .asterisk {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+.has-evf-required-wrapper-with-labels {
+  evf-element-label {
+    &:empty {
+      display: block;
+      height: var(--evf-typography-label-empty-height, calc(1.2 * var(--mat-sys-body-small-size)));
+    }
+  }
+}
+
+.has-evf-required-wrapper .mat-mdc-form-field-infix {
+  width: unset;
+}
+
+evf-radio, evf-checkbox-list {
+  .mat-button-toggle-animations-enabled .mat-button-toggle-button{
+    padding: var(--evf-button-toggle-animations-enabled-padding, 0 15px);
+    .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
+      width: var(--evf-button-toggle-mat-pseudo-checkbox-width, 10px);
+      height: var(--evf-button-toggle-mat-pseudo-checkbox-height, 4px);
+    }
+    &:has(.mat-button-toggle-checkbox-wrapper) {
+      padding-left: var(--evf-button-toggle-checked-padding-left, 15px);
+    }
+  }
+  .mat-pseudo-checkbox{
+    right: 2px;
+  }
+  &.invalid{
+    mat-button-toggle-group.mat-button-toggle-group {
+      border-color: var(--mat-form-field-error-text-color, mh.$error-30);
+      color: var(--mat-form-field-error-text-color, mh.$error-30);
+
+      .mat-button-toggle-button {
+        border-color: var(--mat-form-field-error-text-color, mh.$error-30);
+      }
+
+      .mat-button-toggle-appearance-standard {
+        color: var(--mat-form-field-error-text-color, mh.$error-30);
+      }
+
+      mat-button-toggle.mat-button-toggle:hover:not(.mat-button-toggle-checked) {
+        background-color: var(--mat-form-field-error-background-color, mh.$error-99);
+        color: var(--mat-form-field-error-text-color, mh.$error-30);
+      }
+
+      mat-button-toggle.mat-button-toggle + mat-button-toggle.mat-button-toggle, mat-button-toggle.mat-button-toggle + mat-button-toggle.mat-button-toggle:hover{
+        border-color:var(--mat-form-field-error-text-color, mh.$error-30);
+      }
+    }
+  }
+}
+
+evf-dynamic-form mat-form-field .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix,
+.evf-dialog mat-form-field .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
+  min-height: var(--mat-form-field-container-height, 46px);
+  padding-top: var(--mat-form-field-filled-with-label-container-padding-top, 12px);
+  padding-bottom: var(--mat-form-field-filled-with-label-container-padding-bottom, 12px);
+}
+
+evf-input-number{
+  max-width: var(--evf-input-number-field-max-width, 140px);
+}
+evf-input-date{
+  max-width: var(--evf-input-date-field-max-width, 240px);
+}

@@ -1,0 +1,40 @@
+<form (ngSubmit)="rejectProposal()" [formGroup]="formGroup">
+  <h1 mat-dialog-title>{{ 'proposal.reject.dialog.title' | translate }}</h1>
+  <div mat-dialog-content>
+    @if(errorCard.show){
+      <app-alert
+        [alert]="AlertType.Error"
+        [message]="errorCard.message | translate : errorCard.translationOptions"
+        [error]="errorCard.errorResponse"
+        [showRetry]="false"
+      ></app-alert>
+    }
+    <div class="mh-form-field">
+      <label for="proposal-reject-reason-textarea">{{ 'proposal.reject.dialog.reason' | translate }}</label>
+      <mat-form-field appearance="outline">
+        <textarea
+          id="proposal-reject-reason-textarea"
+          [formControlName]="'reason'"
+          matInput
+          rows="5"
+          data-cy="proposal-reject-reason-textarea"
+        ></textarea>
+        @if (formGroup.get('reason')?.hasError('required')){
+          <mat-error>{{ 'common.mandatory' | translate }}
+          </mat-error>
+        }
+
+      </mat-form-field>
+    </div>
+
+  </div>
+  <mat-dialog-actions align="end">
+    <button type="submit" mat-raised-button [disabled]="formGroup.get('reason')?.invalid"
+            data-cy="dialog-confirm-button">{{'common.confirm' | translate}}</button>
+    <button type="button" mat-flat-button [mat-dialog-close]="undefined" data-cy="dialog-cancel-button"
+            >{{'common.cancel' | translate}}</button>
+  </mat-dialog-actions>
+  @if (loading){
+    <app-overlay-spinner mode="dialog"></app-overlay-spinner>
+  }
+</form>

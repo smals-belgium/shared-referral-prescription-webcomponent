@@ -1,0 +1,240 @@
+@if (errorCard.show) {
+  <app-alert
+    [alert]="AlertType.Error"
+    [message]="errorCard.message | translate : errorCard.translationOptions"
+    [error]="errorCard.errorResponse"
+    [showRetry]="false"
+    data-cy="failed-prescription-list-default-error-message"
+  ></app-alert>
+} @else if (langAlertData()){
+
+  @let langValue = langAlertData()!;
+  <app-alert
+    [title]="langValue.title"
+    [message]="langValue.body"
+    [alert]="AlertType.Info"
+    [showRetry]="false"
+  >
+  </app-alert>
+
+}@else {
+  @if (isPrescriptionValue) {
+    @if (viewStatePrescriptions$(); as prescriptionState) {
+      <div class="container">
+        <div class="flex-container align-right">
+          @if (canCreatePrescription()) {
+            <button
+              type="button"
+              mat-flat-button
+              data-cy="create-prescription-button"
+              (click)="openNewPrescriptionDialog()"
+            >
+              <mat-icon>add</mat-icon>
+              {{ 'prescription.create.prescription' | translate }}
+            </button>
+          }
+          <div *featureFlag="'filters'">
+            @if (prescriptionState.data?.templates) {
+              <app-responsive-wrapper>
+                <ng-template #desktopTemplate>
+              <app-prescription-filter intent="order" [templates]="prescriptionState.data!.templates!"
+                                       [accessMatrix]="prescriptionState.data!.accessMatrix!"
+                                       [initialFilter]="searchCriteria$()"
+                                       (filterChange)="onFilterUpdate($event)"></app-prescription-filter>
+                </ng-template>
+              </app-responsive-wrapper>
+            }
+          </div>
+
+          <app-toggle-historic-prescriptions (toggleChanged)="handleHistoricPrescriptions($event)"
+                                             [isChecked]="searchCriteria$().historical"></app-toggle-historic-prescriptions>
+        </div>
+
+        <app-responsive-wrapper>
+          <ng-template #desktopTemplate>
+            <app-prescriptions-table
+              [loading]="prescriptionState.status === LoadingStatus.LOADING || prescriptionState.status === LoadingStatus.UPDATING"
+              [prescriptions]="prescriptionState.status === LoadingStatus.SUCCESS ? prescriptionState.data?.prescriptions : {items: []}"
+              (clickPrescription)="clickOpenDetail.emit($event)"
+              [error]="prescriptionState.status === LoadingStatus.ERROR"
+              [errorMsg]="'prescription.errors.failedToLoadPrescriptions' | translate"
+              [errorResponse]="getHttpErrorFromState(prescriptionState)"
+              (retryOnError)="retryFailedCalls(prescriptionState.error)"
+            ></app-prescriptions-table>
+          </ng-template>
+
+          <ng-template #mobileTemplate>
+            <app-prescriptions-card
+              mobile
+              [intent]="intent"
+              [requestSummaryListResource]="prescriptionState.status === LoadingStatus.SUCCESS ? prescriptionState.data?.prescriptions : {items: []}"
+              [loading]="prescriptionState.status === LoadingStatus.LOADING || prescriptionState.status === LoadingStatus.UPDATING"
+              [historical]="searchCriteria$().historical"
+              [patientSsin]="patientSsin"
+              [requesterSsin]="requesterSsin"
+              [performerSsin]="performerSsin"
+              [error]="prescriptionState.status === LoadingStatus.ERROR"
+              [errorMsg]="'prescription.errors.failedToLoadPrescriptions' | translate"
+              [errorResponse]="getHttpErrorFromState(prescriptionState)"
+              (clickPrescription)="clickOpenDetail.emit($event)"
+              (retryOnError)="retryFailedCalls(prescriptionState.error)"
+            ></app-prescriptions-card>
+          </ng-template>
+        </app-responsive-wrapper>
+
+        <app-responsive-wrapper>
+          <ng-template #desktopTemplate>
+            <app-paginator
+              [total]="prescriptionState.data?.prescriptions?.total || 0"
+              [page]="prescriptionState.params?.['prescriptions']?.['page'] || 1"
+              [pageSize]="prescriptionState.params?.['prescriptions']?.['pageSize'] || 10"
+              (changePage)="loadData($event)"
+            ></app-paginator>
+          </ng-template>
+        </app-responsive-wrapper>
+      </div>
+    }
+
+  } @else if (isProposalValue) {
+    @if (viewStateProposals$(); as proposalState) {
+      <div class="container">
+        <div class="flex-container align-right">
+          @if (canCreateProposal()) {
+            <button
+              type="button"
+              mat-flat-button
+              data-cy="create-proposal-button"
+              (click)="isNurse()? openAnnex81ProposalForm() : openNewProposalDialog()"
+            >
+              <mat-icon>add</mat-icon>
+              {{ 'proposal.create.proposal' | translate }}
+            </button>
+          }
+          <div *featureFlag="'filters'">
+            @if (proposalState.data?.templates) {
+              <app-responsive-wrapper>
+                <ng-template #desktopTemplate>
+                  <app-prescription-filter intent="proposal" [templates]="proposalState.data!.templates!"
+                                           [accessMatrix]="proposalState.data!.accessMatrix!"
+                                           [initialFilter]="searchCriteria$()"
+                                           (filterChange)="onFilterUpdate($event)"></app-prescription-filter>
+                </ng-template>
+              </app-responsive-wrapper>
+            }
+          </div>
+          <app-toggle-historic-prescriptions (toggleChanged)="handleHistoricPrescriptions($event)"
+                                             [isChecked]="searchCriteria$().historical"></app-toggle-historic-prescriptions>
+        </div>
+
+        <app-responsive-wrapper>
+          <ng-template #desktopTemplate>
+            <app-prescriptions-table
+              [loading]="proposalState.status === LoadingStatus.LOADING || proposalState.status === LoadingStatus.UPDATING"
+              [prescriptions]="proposalState.status === LoadingStatus.SUCCESS ? proposalState.data?.proposals : {items: []}"
+              (clickPrescription)="clickOpenDetail.emit($event)"
+              [error]="proposalState.status === LoadingStatus.ERROR"
+              [errorMsg]="'proposal.errors.failedToLoadProposals' | translate"
+              [errorResponse]="getHttpErrorFromState(proposalState)"
+              (retryOnError)="retryFailedCalls(proposalState.error)"
+            ></app-prescriptions-table>
+          </ng-template>
+
+          <ng-template #mobileTemplate>
+            <app-prescriptions-card
+              mobile
+              [intent]="intent"
+              [requestSummaryListResource]="proposalState.status === LoadingStatus.SUCCESS ? proposalState.data?.proposals : {items: []}"
+              [loading]="proposalState.status === LoadingStatus.LOADING || proposalState.status === LoadingStatus.UPDATING"
+              [historical]="searchCriteria$().historical"
+              [patientSsin]="patientSsin"
+              [requesterSsin]="requesterSsin"
+              [performerSsin]="performerSsin"
+              [error]="proposalState.status === LoadingStatus.ERROR"
+              [errorMsg]="'proposal.errors.failedToLoadProposals' | translate"
+              [errorResponse]="getHttpErrorFromState(proposalState)"
+              (clickPrescription)="clickOpenDetail.emit($event)"
+              (retryOnError)="retryFailedCalls(proposalState.error)"
+            ></app-prescriptions-card>
+          </ng-template>
+        </app-responsive-wrapper>
+
+        <app-responsive-wrapper>
+          <ng-template #desktopTemplate>
+            <app-paginator
+              desktop
+              [total]="proposalState.data?.proposals?.total || 0"
+              [page]="proposalState.params?.['proposals']?.['page'] || 1"
+              [pageSize]="proposalState.params?.['proposals']?.['pageSize'] || 10"
+              (changePage)="loadData($event)"
+            ></app-paginator>
+          </ng-template>
+        </app-responsive-wrapper>
+      </div>
+    }
+  } @else if (isModelValue) {
+    @if (viewStateModels$(); as modelState) {
+      <div class="container">
+        <div class="flex-container">
+          @if (canCreatePrescription()) {
+            <button
+              type="button"
+              mat-flat-button
+              data-cy="create-model-button"
+              (click)="openNewModelDialog()"
+            >
+              <mat-icon>add</mat-icon>
+              {{ 'prescription.model.create.model' | translate }}
+            </button>
+          }
+        </div>
+
+        <app-responsive-wrapper>
+          <ng-template #desktopTemplate>
+            <app-prescription-models-table
+              [loading]="modelState.status === LoadingStatus.LOADING || modelState.status === LoadingStatus.UPDATING"
+              [prescriptionModels]="modelState.status === LoadingStatus.SUCCESS ? modelState.data?.models?.content : []"
+              (openPrescriptionModel)="clickOpenDetail.emit($event)"
+              (deletePrescriptionModel)="openDeleteModelDialog($event)"
+              [page]="modelState.data?.models?.number || 0"
+              [pageSize]="modelState.data?.models?.size || 10"
+              [error]="modelState.status === LoadingStatus.ERROR"
+              [errorMsg]="'models.errors.failedToLoadModels' | translate"
+              [errorResponse]="getHttpErrorFromState(modelState)"
+              (retryOnError)="retryFailedCalls(modelState.error)"
+            ></app-prescription-models-table>
+          </ng-template>
+
+          <ng-template #mobileTemplate>
+            <app-prescriptions-models-card
+              [intent]="intent"
+              [modelEntityPage]="modelState.data?.models"
+              [loading]="modelState.status === LoadingStatus.LOADING || modelState.status === LoadingStatus.UPDATING"
+              [error]="modelState.status === LoadingStatus.ERROR"
+              [errorMsg]="'models.errors.failedToLoadPrescriptions' | translate"
+              [errorResponse]="getHttpErrorFromState(modelState)"
+              (openPrescriptionModel)="clickOpenDetail.emit($event)"
+              (deletePrescriptionModel)="openDeleteModelDialog($event)"
+              (retryOnError)="retryFailedCalls(modelState.error)"
+            ></app-prescriptions-models-card>
+          </ng-template>
+        </app-responsive-wrapper>
+
+        <app-responsive-wrapper>
+          <ng-template #desktopTemplate>
+            <app-paginator
+              desktop
+              [total]="modelState.data?.models?.totalElements || 0"
+              [page]="(modelState.data?.models?.number || 0) + 1"
+              [pageSize]="modelState.data?.models?.size || 10"
+              (changePage)="loadData($event)"
+            ></app-paginator>
+          </ng-template>
+        </app-responsive-wrapper>
+
+      </div>
+    }
+  }
+}
+
+
+

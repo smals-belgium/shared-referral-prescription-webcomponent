@@ -1,0 +1,13 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+label {
+ @include mh.font-label();
+  font-family: var(--mh-default-font-family, mh.$font-stack);
+  &.invalid{
+    color: var(--mdc-outlined-text-field-error-outline-color, --mh-label-field-error-color);
+  }
+}
+
+.button-close-icon {
+  margin-right: 4px;
+}

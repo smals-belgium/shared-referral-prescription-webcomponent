@@ -1,0 +1,38 @@
+<form (ngSubmit)="createPrescriptionModel()" [formGroup]="formGroup">
+  <h1 mat-dialog-title>{{ 'prescription.model.create.dialog.title' | translate }}</h1>
+  <div mat-dialog-content>
+    <div class="mh-form-field">
+      <label for="prescription-modal-dialog-input">{{ 'prescription.model.create.dialog.label' | translate }}</label>
+      <mat-form-field appearance="outline">
+        <input
+          id="prescription-modal-dialog-input"
+          [formControlName]="'name'"
+          matInput
+          data-cy="prescription-modal-dialog-input"
+          minlength="1"
+          maxlength="100"
+        />
+        @if (formGroup.get('name')?.hasError('required')) {
+          <mat-error>{{ 'common.mandatory' | translate }}</mat-error>
+        }
+        @if (formGroup.get('name')?.hasError('uniqueName')) {
+          <mat-error>{{ 'prescription.model.create.dialog.labelNotUnique' | translate }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+  </div>
+  <mat-dialog-actions align="end">
+    <button type="submit" mat-raised-button [disabled]="formGroup.get('name')?.invalid" data-cy="dialog-confirm-button"
+            >{{ 'common.confirm' | translate }}
+    </button>
+    <button type="button" mat-flat-button [mat-dialog-close]="undefined" data-cy="dialog-cancel-button"
+            >{{ 'common.cancel' | translate }}
+    </button>
+  </mat-dialog-actions>
+
+  @if (modalState === LoadingStatus.LOADING) {
+    <app-overlay-spinner mode="dialog"></app-overlay-spinner>
+  }
+</form>
+

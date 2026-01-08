@@ -1,0 +1,11 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+.organization_row {
+  padding-bottom: mh.$spacing-rem-s;
+  padding-top: mh.$spacing-rem-s;
+  border-bottom: var(--mh-caregiver-row-border-bottom, 1px solid mh.$border-brand-primary-light);
+}
+
+.text_bold {
+  font-weight: bold;
+}

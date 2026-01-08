@@ -1,0 +1,644 @@
+{
+  "total": 13,
+  "items": [
+    {
+      "id": "DEAD0000-0000-4000-A000-000000000001",
+      "templateCode": "ASSISTING_WITH_PERSONAL_HYGIENE",
+      "authoredOn": "2025-10-09T22:00:00.000+00:00",
+      "requesterIndex": 0,
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": { "start": "2025-10-09T22:00:00.000+00:00", "end": "2026-10-09T22:00:00.000+00:00" },
+      "assigned": false,
+      "shortCode": "1FAKE0",
+      "intent": "order",
+      "patientIdentifier": "00000000097",
+      "category": "nursing",
+      "referralTask": {
+        "status": "READY",
+        "id": "DEAD0000-0000-4000-0001-000000000001",
+        "executionPeriod": null
+      },
+      "performerTasks": [
+        {
+          "careGiverSsin": "67120919457",
+          "careGiverIndex": 2,
+          "status": "READY",
+          "id": "DEAD0000-0000-4001-0000-000000000001",
+          "executionPeriod": {
+            "start": null,
+            "end": null
+          }
+        }
+      ],
+      "organizationTasks": null,
+      "responses": {
+        "occurrences": {
+          "frequency": 4,
+          "period": 1,
+          "periodUnit": "d"
+        },
+        "boundsDuration": {
+          "value": 4,
+          "system": "system",
+          "code": "d"
+        },
+        "feedback": false,
+        "diagnosis": "Diagnose",
+        "nbSessions": 16,
+        "occurrenceTiming": {}
+      },
+      "pseudonymizedKey": "TEST-pseudonymizedKey",
+      "kid": null,
+      "note": null,
+      "extendedShortId": null
+    },
+    {
+      "id": "DEAD0000-0000-4000-A000-000000000002",
+      "templateCode": "ASSISTING_WITH_PERSONAL_HYGIENE",
+      "authoredOn": "2025-10-05T22:00:00.000+00:00",
+      "requesterIndex": 0,
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": { "start": "2025-10-05T22:00:00.000+00:00", "end": "2026-10-05T22:00:00.000+00:00" },
+      "assigned": false,
+      "shortCode": "2FAKE0",
+      "intent": "order",
+      "patientIdentifier": "00000000097",
+      "category": "nursing",
+      "referralTask": {
+        "status": "READY",
+        "id": "DEAD0000-0000-4000-0001-000000000002",
+        "executionPeriod": null
+      },
+      "performerTasks": [
+        {
+          "careGiverSsin": "67120919457",
+          "careGiverIndex": 3,
+          "status": "READY",
+          "id": "DEAD0000-0000-4001-0000-000000000001",
+          "executionPeriod": {
+            "start": null,
+            "end": null
+          }
+        }
+      ],
+      "organizationTasks": null,
+      "responses": {
+        "occurrences": {
+          "frequency": 2,
+          "period": 2,
+          "periodUnit": "d"
+        },
+        "boundsDuration": {
+          "value": 3,
+          "system": "system",
+          "code": "wk"
+        },
+        "feedback": false,
+        "diagnosis": "Diagnose provided in log-system",
+        "nbSessions": 12,
+        "occurrenceTiming": {}
+      },
+      "pseudonymizedKey": "TEST-pseudonymizedKey",
+      "kid": null,
+      "note": null,
+      "extendedShortId": null
+    },
+    {
+      "id": "DEAD0000-0000-4000-A000-000000000003",
+      "templateCode": "SAMPLING",
+      "authoredOn": "2025-09-28T22:00:00.000+00:00",
+      "requesterIndex": 1,
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": { "start": "2025-09-28T22:00:00.000+00:00", "end": "2026-09-28T22:00:00.000+00:00" },
+      "assigned": false,
+      "shortCode": "3FAKE0",
+      "intent": "order",
+      "patientIdentifier": "00000000097",
+      "category": "nursing",
+      "referralTask": {
+        "status": "READY",
+        "id": "DEAD0000-0000-4000-0001-000000000003",
+        "executionPeriod": null
+      },
+      "performerTasks": [
+        {
+          "careGiverSsin": "67120919457",
+          "careGiverIndex": 2,
+          "status": "READY",
+          "id": "DEAD0000-0000-4001-0000-000000000003",
+          "executionPeriod": {
+            "start": null,
+            "end": null
+          }
+        }
+      ],
+      "organizationTasks": null,
+      "responses": {
+        "occurrences": {
+          "frequency": 2,
+          "period": 1,
+          "periodUnit": "d"
+        },
+        "boundsDuration": {
+          "value": 3,
+          "system": "system",
+          "code": "wk"
+        },
+        "feedback": false,
+        "nbSessions": 23,
+        "occurrenceTiming": {},
+        "sampleType": "87612001",
+        "contraindications": "Use of lFluid is not advised in individuals with a history of reactive airway spasms, synthetic saline intolerance, or recent cranial decompression procedures (within the last 14 days).",
+        "diagnosis": "Patient exhibits symptoms of Transient Nasal Flow Reduction (TNFR), a mild and reversible condition caused by reduced mucosal hydration and airflow irregularities in controlled-environment habitats.",
+        "generalRemarks": "lFluid is intended for short-term restoration of nasal humidity in low-pressure or recycled-air environments. Monitor for unusual vertigo or metallic aftertaste. Discontinue immediately if the patient reports orbital pressure or micro-vibration sensations.",
+        "medicalReason": "Administered to counteract habitat-induced mucosal dehydration and to stabilize nasal airflow patterns during extended periods in regulated atmospheric chambers."
+      },
+      "pseudonymizedKey": "TEST-pseudonymizedKey",
+      "kid": null,
+      "note": null,
+      "extendedShortId": null
+    },
+    {
+      "id": "DEAD0000-0000-4000-A000-000000000004",
+      "templateCode": "SAMPLING",
+      "authoredOn": "2025-09-20T22:00:00.000+00:00",
+      "requesterIndex": 1,
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": { "start": "2025-09-20T22:00:00.000+00:00", "end": "2026-09-20T22:00:00.000+00:00" },
+      "assigned": false,
+      "shortCode": "4FAKE0",
+      "intent": "order",
+      "patientIdentifier": "00000000097",
+      "category": "nursing",
+      "referralTask": {
+        "status": "READY",
+        "id": "DEAD0000-0000-4000-0001-000000000004",
+        "executionPeriod": null
+      },
+      "performerTasks": [],
+      "organizationTasks": null,
+      "responses":  {
+        "occurrences": {
+          "frequency": 3,
+          "period": 1,
+          "periodUnit": "wk"
+        },
+        "boundsDuration": {
+          "value": 2,
+          "system": "system",
+          "code": "wk"
+        },
+        "feedback": false,
+        "nbSessions": 6,
+        "occurrenceTiming": {},
+        "medicalReason": "medical reason",
+        "sampleType": "410582009",
+        "contraindications": "Not recommended for individuals with hypersensitivity to synthetic aerosols or for users experiencing severe sinus obstruction in the past 48 hours.",
+        "diagnosis": "Patient presented with temporary atmospheric dryness–induced nasal discomfort consistent with mild hydration imbalance.",
+        "generalRemarks": "Use only as part of the simulated Lunar Hydration Protocol. Ensure the environment is stable and free of micro-dust particles before administration. No adverse reactions recorded during mock trials."
+      },
+      "pseudonymizedKey": "TEST-pseudonymizedKey",
+      "kid": null,
+      "note": null,
+      "extendedShortId": null
+    },
+    {
+      "id": "DEAD0000-0000-4000-A000-000000000005",
+      "templateCode": "ASSISTING_WITH_PERSONAL_HYGIENE",
+      "authoredOn": "2025-09-12T22:00:00.000+00:00",
+      "requesterIndex": 0,
+      "careGivers": null,
+      "organizations": null,
+      "status": "IN_PROGRESS",
+      "period": { "start": "2025-09-12T22:00:00.000+00:00", "end": "2026-09-12T22:00:00.000+00:00" },
+      "assigned": false,
+      "shortCode": "5FAKE0",
+      "intent": "order",
+      "patientIdentifier": "00000000097",
+      "category": "nursing",
+      "referralTask": {
+        "status": "READY",
+        "id": "DEAD0000-0000-4000-0001-000000000005",
+        "executionPeriod": null
+      },
+      "performerTasks": [
+        {
+          "careGiverSsin": "67120919457",
+          "careGiverIndex": 2,
+          "status": "READY",
+          "id": "DEAD0000-0000-4001-0000-000000000005",
+          "executionPeriod": {
+            "start":  "2025-09-14T22:00:00.000+00:00",
+            "end": null
+          }
+        }
+      ],
+      "organizationTasks": null,
+      "responses": {
+        "occurrences": {
+          "frequency": 2,
+          "period": 1,
+          "periodUnit": "wk"
+        },
+        "boundsDuration": {
+          "value": 3,
+          "system": "system",
+          "code": "wk"
+        },
+        "feedback": false,
+        "diagnosis": "Diagnose provided in log-system",
+        "nbSessions": 6,
+        "occurrenceTiming": {}
+      },
+      "pseudonymizedKey": "TEST-pseudonymizedKey",
+      "kid": null,
+      "note": null,
+      "extendedShortId": null
+    },
+    {
+      "id": "DEAD0000-0000-4000-A000-000000000006",
+      "templateCode": "BLEEDING",
+      "authoredOn": "2025-09-01T22:00:00.000+00:00",
+      "requesterIndex": 1,
+      "careGivers": null,
+      "organizations": null,
+      "status": "DONE",
+      "period": { "start": "2025-09-01T22:00:00.000+00:00", "end": "2026-09-01T22:00:00.000+00:00" },
+      "assigned": true,
+      "shortCode": "6FAKE0",
+      "intent": "order",
+      "patientIdentifier": "00000000097",
+      "category": "nursing",
+      "referralTask": {
+        "status": "READY",
+        "id": "DEAD0000-0000-4000-0001-000000000006",
+        "executionPeriod": null
+      },
+      "performerTasks": [
+        {
+          "careGiverSsin": "10000000009",
+          "careGiverIndex": 3,
+          "status": "READY",
+          "id": "DEAD0000-0000-4001-0000-000000000006",
+          "executionPeriod": {
+            "start":  "2025-09-01T22:00:00.000+00:00",
+            "end": "2025-09-13T22:00:00.000+00:00"
+          }
+        }
+      ],
+      "organizationTasks": null,
+      "responses": {
+        "occurrences": {
+          "frequency": 1,
+          "period": 1,
+          "periodUnit": "d"
+        },
+        "boundsDuration": {
+          "value": 1,
+          "system": "system",
+          "code": "d"
+        },
+        "feedback": false,
+        "bloodQuantityUnit": "mL",
+        "diagnosis": "Patient is experiencing Controlled Surface Capillary Rupture (CSCR), a minor and self-limiting bleeding event often triggered by abrupt pressure changes in simulated habitat environments.",
+        "nbSessions": 1,
+        "occurrenceTiming": {},
+        "bloodQuantity": 1
+      },
+      "pseudonymizedKey": "TEST-pseudonymizedKey",
+      "kid": null,
+      "note": null,
+      "extendedShortId": null
+    },
+    {
+      "id": "DEAD0000-0000-4000-A000-000000000007",
+      "templateCode": "GENERIC",
+      "authoredOn": "2025-08-25T22:00:00.000+00:00",
+      "requesterIndex": 0,
+      "careGivers": null,
+      "organizations": null,
+      "status": "IN_PROGRESS",
+      "period": { "start": "2025-08-25T22:00:00.000+00:00", "end": "2026-08-25T22:00:00.000+00:00" },
+      "assigned": true,
+      "shortCode": "6FAKE0",
+      "intent": "order",
+      "patientIdentifier": "00000000097",
+      "category": "nursing",
+      "referralTask": {
+        "status": "READY",
+        "id": "DEAD0000-0000-4000-0001-000000000006",
+        "executionPeriod": null
+      },
+      "performerTasks": [
+        {
+          "careGiverSsin": "10000000009",
+          "careGiverIndex": 3,
+          "status": "READY",
+          "id": "DEAD0000-0000-4001-0000-000000000006",
+          "executionPeriod": {
+            "start":  "2025-09-01T22:00:00.000+00:00",
+            "end": "2025-09-13T22:00:00.000+00:00"
+          }
+        }
+      ],
+      "organizationTasks": null,
+      "responses": {
+        "occurrences": {
+          "frequency": 2,
+          "period": 1,
+          "periodUnit": "d"
+        },
+        "boundsDuration": {
+          "value": 1,
+          "system": "system",
+          "code": "wk"
+        },
+        "feedback": false,
+        "diagnosis": "There is a demonstrated need for a specific technical provision because of reduced autonomous functioning and the required use of assistive equipment not included in the standard care package.",
+        "nbSessions": 14,
+        "occurrenceTiming": {},
+        "careType": "57485005"
+      },
+      "pseudonymizedKey": "TEST-pseudonymizedKey",
+      "kid": null,
+      "note": null,
+      "extendedShortId": null
+    },
+    {
+      "id": "DEAD0000-0000-4000-A000-000000000008",
+      "templateCode": "ASSISTING_WITH_PERSONAL_HYGIENE",
+      "authoredOn": "2025-08-15T22:00:00.000+00:00",
+      "requesterIndex": 0,
+      "careGivers": null,
+      "organizations": null,
+      "status": "IN_PROGRESS",
+      "period": { "start": "2025-08-15T22:00:00.000+00:00", "end": "2026-08-15T22:00:00.000+00:00" },
+      "assigned": true,
+      "shortCode": "8FAKE0",
+      "intent": "order",
+      "patientIdentifier": "00000000097",
+      "category": "nursing",
+      "referralTask": {
+        "status": "READY",
+        "id": "DEAD0000-0000-4000-0001-000000000005",
+        "executionPeriod": null
+      },
+      "performerTasks": [
+        {
+          "careGiverSsin": "10000000009",
+          "careGiverIndex": 3,
+          "status": "READY",
+          "id": "DEAD0000-0000-4001-0000-000000000008",
+          "executionPeriod": {
+            "start":  "2025-08-18T22:00:00.000+00:00",
+            "end": null
+          }
+        },
+        {
+          "careGiverSsin": "10000000009",
+          "careGiverIndex": 3,
+          "status": "READY",
+          "id": "DEAD0000-0000-4001-0000-000000000008",
+          "executionPeriod": {
+            "start":  "2025-08-15T22:00:00.000+00:00",
+            "end": "2025-08-18T22:00:00.000+00:00"
+          }
+        }
+      ],
+      "organizationTasks": null,
+      "responses": {
+        "occurrences": {
+          "frequency": 2,
+          "period": 1,
+          "periodUnit": "wk"
+        },
+        "boundsDuration": {
+          "value": 3,
+          "system": "system",
+          "code": "wk"
+        },
+        "feedback": false,
+        "diagnosis": "The patient requires assistance with personal hygiene due to reduced functional capacity and limited ability to perform daily self-care tasks independently.",
+        "nbSessions": 6,
+        "occurrenceTiming": {}
+      },
+      "pseudonymizedKey": "TEST-pseudonymizedKey",
+      "kid": null,
+      "note": null,
+      "extendedShortId": null
+    },
+    {
+      "id": "DEAD0000-0000-4000-A000-000000000009",
+      "templateCode": "SAMPLING",
+      "authoredOn": "2025-07-28T22:00:00.000+00:00",
+      "requesterIndex": 1,
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": {
+        "start": "2025-07-28T22:00:00.000+00:00",
+        "end": "2026-07-28T22:00:00.000+00:00"
+      },
+      "assigned": false,
+      "shortCode": "9FAKE0",
+      "intent": "order",
+      "patientIdentifier": "00000000097",
+      "category": "nursing",
+      "referralTask": {
+        "status": "READY",
+        "id": "DEAD0000-0000-4000-0001-000000000009",
+        "executionPeriod": null
+      },
+      "performerTasks": [],
+      "organizationTasks": null,
+      "responses": {
+        "occurrences": {
+          "frequency": 4,
+          "period": 1,
+          "periodUnit": "wk"
+        },
+        "boundsDuration": {
+          "value": 2,
+          "system": "system",
+          "code": "wk"
+        },
+        "feedback": false,
+        "nbSessions": 8,
+        "occurrenceTiming": {},
+        "medicalReason": "medical reason",
+        "sampleType": "247450001",
+        "contraindications": "Not recommended for individuals with hypersensitivity to synthetic aerosols or for users experiencing severe sinus obstruction in the past 48 hours.",
+        "diagnosis": "Patient presented with temporary atmospheric dryness–induced nasal discomfort consistent with mild hydration imbalance.",
+        "generalRemarks": "Use only as part of the simulated Lunar Hydration Protocol. Ensure the environment is stable and free of micro-dust particles before administration. No adverse reactions recorded during mock trials."
+      },
+      "pseudonymizedKey": "TEST-pseudonymizedKey",
+      "kid": null,
+      "note": null,
+      "extendedShortId": null
+    },
+    {
+      "id": "DEAD0000-0000-4000-A000-000000000010",
+      "templateCode": "BLEEDING",
+      "authoredOn": "2025-06-10T22:00:00.000+00:00",
+      "requesterIndex": 1,
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": { "start": "2025-06-10T22:00:00.000+00:00", "end": "2026-06-10T22:00:00.000+00:00" },
+      "assigned": false,
+      "shortCode": "1FAKE1",
+      "intent": "order",
+      "patientIdentifier": "00000000097",
+      "category": "nursing",
+      "referralTask": {
+        "status": "READY",
+        "id": "DEAD0000-0000-4000-0001-000000000006",
+        "executionPeriod": null
+      },
+      "performerTasks": [],
+      "organizationTasks": null,
+      "responses": {
+        "occurrences": {
+          "frequency": 1,
+          "period": 1,
+          "periodUnit": "d"
+        },
+        "boundsDuration": {
+          "value": 1,
+          "system": "system",
+          "code": "d"
+        },
+        "feedback": true,
+        "bloodQuantityUnit": "mL",
+        "diagnosis": "Patient is experiencing Controlled Surface Capillary Rupture (CSCR), a minor and self-limiting bleeding event often triggered by abrupt pressure changes in simulated habitat environments.",
+        "nbSessions": 1,
+        "occurrenceTiming": {},
+        "bloodQuantity": 25
+      },
+      "pseudonymizedKey": "TEST-pseudonymizedKey",
+      "kid": null,
+      "note": null,
+      "extendedShortId": null
+    },
+    {
+      "id": "DEAD0000-0000-4000-A000-000000000011",
+      "templateCode": "ASSISTING_WITH_PERSONAL_HYGIENE",
+      "authoredOn": "2025-05-15T22:00:00.000+00:00",
+      "requesterIndex": 0,
+      "careGivers": null,
+      "organizations": null,
+      "status": "DONE",
+      "period": { "start": "2025-05-15T22:00:00.000+00:00", "end": "2026-05-15T22:00:00.000+00:00" },
+      "assigned": true,
+      "responses": {
+        "error": true
+      }
+    },
+    {
+      "id": "DEAD0000-0000-4000-A000-000000000012",
+      "templateCode": "SAMPLING",
+      "authoredOn": "2025-05-15T22:00:00.000+00:00",
+      "requesterIndex": 1,
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": { "start": "2025-05-15T22:00:00.000+00:00", "end": "2026-05-15T22:00:00.000+00:00" },
+      "assigned": true,
+      "shortCode": "9FAKE0",
+      "intent": "order",
+      "patientIdentifier": "00000000097",
+      "category": "nursing",
+      "referralTask": {
+        "status": "READY",
+        "id": "DEAD0000-0000-4000-0001-000000000009",
+        "executionPeriod": null
+      },
+      "performerTasks": [
+        {
+          "careGiverSsin": "67120919457",
+          "careGiverIndex": 2,
+          "status": "READY",
+          "id": "DEAD0000-0000-4001-0000-000000000003",
+          "executionPeriod": {
+            "start": null,
+            "end": null
+          }
+        }
+      ],
+      "organizationTasks": null,
+      "responses": {
+        "occurrences": {
+          "frequency": 2,
+          "period": 1,
+          "periodUnit": "d"
+        },
+        "boundsDuration": {
+          "value": 2,
+          "system": "system",
+          "code": "wk"
+        },
+        "feedback": false,
+        "nbSessions": 14,
+        "occurrenceTiming": {},
+        "sampleType": "78014005",
+        "diagnosis": "The patient requires urine collection for diagnostic monitoring due to suspected fluid imbalance or to assess renal function as part of a controlled health evaluation."
+      },
+      "pseudonymizedKey": "TEST-pseudonymizedKey",
+      "kid": null,
+      "note": null,
+      "extendedShortId": null
+    },
+    {
+      "id": "DEAD0000-0000-4000-A000-000000000013",
+      "templateCode": "BLEEDING",
+      "authoredOn": "2025-07-10T22:00:00.000+00:00",
+      "requesterIndex": 1,
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": { "start": "2025-07-10T22:00:00.000+00:00", "end": "2026-07-10T22:00:00.000+00:00" },
+      "assigned": false,
+      "shortCode": "1FAKE3",
+      "intent": "order",
+      "patientIdentifier": "00000000097",
+      "category": "nursing",
+      "referralTask": {
+        "status": "READY",
+        "id": "DEAD0000-0000-4000-0001-000000000013",
+        "executionPeriod": null
+      },
+      "performerTasks": [],
+      "organizationTasks": null,
+      "responses": {
+        "occurrences": {
+          "frequency": 1,
+          "period": 1,
+          "periodUnit": "d"
+        },
+        "boundsDuration": {
+          "value": 1,
+          "system": "system",
+          "code": "d"
+        },
+        "feedback": true,
+        "bloodQuantityUnit": "mL",
+        "diagnosis": "Diagnosis see log-system",
+        "nbSessions": 1,
+        "occurrenceTiming": {},
+        "bloodQuantity": 34
+      },
+      "pseudonymizedKey": "TEST-pseudonymizedKey",
+      "kid": null,
+      "note": null,
+      "extendedShortId": null
+    }
+  ]
+}

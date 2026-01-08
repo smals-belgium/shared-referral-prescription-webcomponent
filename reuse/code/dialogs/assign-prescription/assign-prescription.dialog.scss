@@ -1,0 +1,27 @@
+@use "@myhealth-belgium/design-kit" as mh;
+
+@include mh.use-font-material-symbols();
+@include mh.use-globals();
+@include mh.use-classes();
+@include mh.use-all-components();
+
+:host{
+  font-family: var(--mh-default-font-family, #{mh.$font-stack});
+}
+
+// Define icons in modal
+:host ::ng-deep {
+  .material-icons, .mat-mdc-dialog-container .material-icons, mat-select .mat-mdc-select-arrow:after {
+    font-family: 'Material Icons', sans-serif;
+  }
+}
+
+.results{
+  table{
+    width: 100%;
+
+    >tr td {
+      cursor: pointer;
+    }
+  }
+}

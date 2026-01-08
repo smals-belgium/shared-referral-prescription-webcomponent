@@ -1,0 +1,30 @@
+import { ChangeDetectorRef, Directive, OnInit, TemplateRef, ViewContainerRef } from '@angular/core';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
+import { first } from 'rxjs';
+
+@Directive({
+  selector: '[hideIfProfessional]',
+  standalone: true,
+})
+export class HideIfProfessionalDirective implements OnInit {
+  constructor(
+    private readonly templateRef: TemplateRef<any>,
+    private readonly viewContainer: ViewContainerRef,
+    private readonly authService: AuthService,
+    private readonly cdRef: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    this.authService
+      .isProfessional()
+      .pipe(first())
+      .subscribe(isProfessional => {
+        if (!isProfessional) {
+          this.viewContainer.createEmbeddedView(this.templateRef);
+        } else {
+          this.viewContainer.clear();
+        }
+        this.cdRef.markForCheck();
+      });
+  }
+}

@@ -1,0 +1,91 @@
+<evf-form-element-layout [elementLayout]="elementLayout" [elementControl]="elementControl" [metadata]="metadata">
+  @if (!useMatLabel) {
+    <evf-element-label
+      [elementControl]="elementControl"
+      [invalid]="invalid"
+      [for]="id"
+    ></evf-element-label>
+  }
+  @if (element.bodyTranslationId) {
+    <evf-element-body
+      [elementControl]="elementControl"
+    ></evf-element-body>
+  }
+  @if (element.helpTranslationId) {
+    <evf-element-help
+      [elementControl]="elementControl"
+    ></evf-element-help>
+  }
+
+  @if (!controlIndications()) {
+    <button
+      [disabled]="isLoading()"
+      (click)="pssControl()"
+      color="accent"
+      mat-raised-button
+      data-cy="prescription-control"
+    >
+      {{ 'prescription.create.control.title' | translate }}
+      @if (isLoading()) {
+        <mat-icon>
+          <mat-spinner diameter="20">
+          </mat-spinner>
+        </mat-icon>
+      }
+    </button>
+  } @else {
+    <mat-form-field appearance="outline">
+      @if (useMatLabel) {
+        <mat-label>{{ element.labelTranslationId | evfLabel:elementControl.elementGroup }}</mat-label>
+      }
+
+      <input
+        [readonly]="true"
+        matInput
+        type="text"
+        [value]="hasValue() ? '' : control.value?.instruction?.code"
+      />
+
+      @if (control.errors) {
+        <mat-error>
+          @if (control.errors | commonErrors; as error) {
+            <span>{{
+                error.label | evfLabel: error.values
+              }}</span>
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+  }
+
+
+
+  <mat-form-field appearance="outline" [hidden]="true" class="invisible">
+    <input
+      [hidden]="hasValue()"
+      matInput
+      type="text"
+      autocomplete="off"
+      [formControl]="control"
+      [placeholder]="element.placeholderTranslationId && (element.placeholderTranslationId | evfLabel) || ''"
+      [id]="id"
+    />
+  </mat-form-field>
+</evf-form-element-layout>
+@if (controlIndications()) {
+  <section class="pss-results">
+    <p>{{ 'prescription.create.control.table.title' | translate }}</p>
+    @if (hasAdditionalRelevantInformation()) {
+
+      <app-alert
+        [alert]="AlertType.Error"
+        [message]=getWarningMessage()
+        [showRetry]="false"
+      ></app-alert>
+    }
+
+    <app-pss-radiology-result-dialog [supportOptions]="controlIndications()"
+                                     [isClickable]="true"
+                                     (selectSupportOption)="selectSupportOption($event)"></app-pss-radiology-result-dialog>
+  </section>
+}

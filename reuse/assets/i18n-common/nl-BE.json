@@ -1,0 +1,517 @@
+{
+  "common": {
+    "yes": "Ja",
+    "no": "Nee",
+    "confirm": "Bevestigen",
+    "cancel": "Annuleren",
+    "close": "Sluiten",
+    "delete": "Verwijderen",
+    "patient": "Patiënt",
+    "category": "Categorie",
+    "typeOfPrescription": "Type voorschrift",
+    "shortCode": "RefID",
+    "chooseFromList": "Kies uit deze lijst",
+    "tryAgain": "Opnieuw proberen",
+    "goBack": "Terug",
+    "filter": "Filteren",
+    "results": "{count, plural, one{resultaat} other{resultaten}}",
+    "search": "Zoeken",
+    "start": "Starten",
+    "professions": {
+      "NURSE": "Verpleegkundige",
+      "PHYSICIAN": "Arts",
+      "DENTIST": "Tandarts",
+      "PHYSIOTHERAPIST": "Kinesitherapeut"
+    },
+    "professional": {
+      "notFound": "Niet gevonden",
+      "tooltip": "Professional niet gevonden."
+    },
+    "organization": {
+      "notFound": "Niet gevonden",
+      "tooltip": "Organizatie niet gevonden."
+    },
+    "organizations": {
+      "THIRD_PARTY_PAYING_GROUP": "Groepering met een RIZIV-nr derdebetaler (verpleegkundigen, vroedvrouwen, e.a.)",
+      "GROUP_OF_DOCTORS": "Groepering van huisartsen op dezelfde installatieplaats",
+      "GUARD_POST": "Wachtpost",
+      "MEDICAL_HOUSE": "Medische huis",
+      "HOME_SERVICES": "Geïntegreerde diensten thuisverzorging"
+    },
+    "lastName": "Naam",
+    "firstName": "Voornaam",
+    "dateOfBirth": "Geboren op",
+    "ssin": "ID",
+    "gender": "Geslacht",
+    "genders": {
+      "M": "M",
+      "F": "V",
+      "null": "Onbekend",
+      "undefined": "Onbekend"
+    },
+    "gendersFull": {
+      "M": "Man",
+      "F": "Vrouw",
+      "null": "Onbekend",
+      "undefined": "Onbekend"
+    },
+    "somethingWentWrong": "Er is iets misgegaan. Gelieve opnieuw te proberen.",
+    "somethingWentWrongWithoutRetry": "Er is iets misgegaan.",
+    "forbiddenAction": "U bent niet bevoegd om deze actie uit te voeren.",
+    "forbiddenResource": "U heeft geen toegang tot deze pagina.",
+    "notFoundResource": "De gevraagde pagina bestaat niet.",
+    "mandatory": "Verplicht veld",
+    "ariaLabel": {
+      "loading": "Laden"
+    },
+    "errors": {
+      "pseudoDisabled": "Het aanmaken van een voorschrift is niet mogelijk."
+    },
+    "prescriptionModel": "Sjabloon"
+  },
+  "pagination": {
+    "ariaLabel": {
+      "firstPage": "Eerste pagina",
+      "lastPage": "Laatste pagina",
+      "nextPage": "Volgende pagina",
+      "previousPage": "Vorige pagina"
+    }
+  },
+  "evf": {
+    "deleteCareGiver": "Zorgverlener verwijderen",
+    "sureDeleteCareGiver": "Bent u zeker dat u deze zorgverlener wil verwijderen?"
+  },
+  "prescription": {
+    "beneficiary": "Begunstigde",
+    "creationDate": "Aangemaakt op",
+    "details": {
+      "link": "Bekijk details"
+    },
+    "selectTemplate": {
+      "prescriptionModel": "Voorschrift model",
+      "pickOptionFromList": "Kies een optie uit de lijst",
+      "noOptions": "Geen voorschriften"
+    },
+    "selectModel": {
+      "prescriptionModel": "Sjabloon",
+      "pickOptionFromList": "Kies een optie uit de lijst",
+      "noOptions": "Geen sjabloon"
+    },
+    "create": {
+      "action": "Nieuw voorschrift",
+      "success": "Voorschrift succesvol aangemaakt.",
+      "allSuccess": "{count} {count, plural, one{voorschrift} other{voorschriften}} successvol aangemaakt.",
+      "allFailed": "Fout tijdens het aanmaken van de voorschriften. Controleer uw invoer en probeer het opnieuw.",
+      "someSuccessSomeFailed": "{successCount} {successCount, plural, one{voorschrift} other{voorschriften}} successvol aangemaakt. {failedCount} {failedCount, plural, one{voorschrift werd} other{voorschriften werden}} niet aangemaakt door een fout. Controleer uw invoer en probeer het opnieuw.",
+      "addPrescription": "Extra voorschrift",
+      "publish": "Publiceren",
+      "control": {
+        "title": "Controleren",
+        "warning": "Aanvullende relevante indicaties zijn niet meegenomen in deze resultaten.",
+        "error": {
+          "required": "Vul alle verplichte velden in voordat u verdergaat."
+        },
+        "table": {
+          "title": "Resultaten PSS",
+          "select": "",
+          "relevance": "Relevantie",
+          "typesOfImagery": "Soorten afbeeldingen",
+          "cost": "Kosten",
+          "radiationRate": "Stralingsgraad",
+          "radiationLevel": "Stralingsgraad {level}/5",
+          "deselectRow": "Rij {row} deselecteren",
+          "selectRow": "Rij {row} selecteren"
+        }
+      },
+      "deletePrescription": {
+        "title": "Voorschrift verwijderen",
+        "message": "Bent u zeker dat u het voorschrift \"{templateName}\" wilt verwijderen?"
+      },
+      "cancelPrescriptionsCreation": {
+        "title": "Annuleer één of meerdere voorschriften",
+        "cancelAll": "Alles annuleren"
+      },
+      "cancelCreation": "Bent u zeker dat u het aanmaken van dit voorschrift wilt annuleren?",
+      "prescription": "Voorschrift aanmaken",
+      "requiredFields": "Verplichte velden"
+    },
+    "allPrescriptionsFetched": "Alle voorschriften opgehaald",
+    "model": {
+      "allModalsFetched": "Alle sjablonen opgehaald",
+      "title": "Sjabloon",
+      "create": {
+        "title": "Opslaan als sjabloon",
+        "success": "Model met naam \"{name}\" succesvol aangemaakt.",
+        "dialog": {
+          "title": "Wilt u het voorschrift opslaan als een sjabloon?",
+          "label": "Sjabloonnaam",
+          "labelNotUnique": "De sjabloonnaam is niet uniek."
+        },
+        "model": "Sjabloon aanmaken"
+      },
+      "update": {
+        "title": "Update sjabloon"
+      },
+      "delete": {
+        "title": "Verwijder sjabloon",
+        "message": "Bent u zeker dat u het sjabloon \"{templateName}\" wilt verwijderen?"
+      },
+      "creationDate": "Aangemaakt op",
+      "label": "Sjabloon naam",
+      "template": "Gebaseerd op",
+      "actions": "Acties",
+      "noModels": "Geen sjablonen beschikbaar.",
+      "pagination": {
+        "models": "{count, plural, one{sjabloon} other{sjablonen}}",
+        "pageSize": "Aantal per pagina"
+      }
+    },
+    "filter": {
+      "historicToggle": "Archief",
+      "prescriptionType": {
+        "label": "Filter op voorschift"
+      },
+      "status": {
+        "label": "Filter op status"
+      },
+      "submit": "Indienen",
+      "clear": "Alles wissen"
+    },
+    "print": {
+      "content-electronic-prescription": "Inhoud van het elektronisch voorschrift",
+      "guideline": "Gelieve dit document voor te leggen aan uw behandelende arts. U kunt de QR-code scannen om toegang te krijgen tot de gegevens in het digitale recept.",
+      "nihdi": "RIZIV-nr.",
+      "niss": "INSZ",
+      "patient": "Rechthebbende",
+      "prescriber": "Voorschrijver",
+      "proof-of-electronic-prescription": "Bewijs van elektronisch voorschrift",
+      "remark": "Opgelet: met manuele toevoegingen op dit document zal geen rekening gehouden worden.",
+      "date": "Afgedrukt op {date}"
+    },
+    "author": "Auteur",
+    "patient": "Patiënt",
+    "note": "Notitie",
+    "shortcode": "RefID",
+    "extendedShortId": "Verlenging van voorschrift",
+    "typeOfCare": "Type zorg",
+    "services": "Beurten",
+    "frequency": "Frequentie",
+    "start": "Start",
+    "end": "Einde",
+    "validityPeriod": "Geldigheidsperiode",
+    "consultDetails": "Toon details",
+    "assign": "Toewijzen",
+    "transfer": "Overmaken",
+    "assignMe": "Neem de leiding",
+    "reject": "Afwijzen",
+    "copy": "Kopiëren",
+    "printAction": "Afdrukken",
+    "duplicate": "Dupliceren",
+    "extend": "Verlengen",
+    "careGivers": "Zorgverlener(s)",
+    "assigned": "Toegewezen",
+    "noPrescriptionsForPatient": "Deze patiënt heeft nog geen voorschriften.",
+    "noPrescriptionsForUser": "U heeft nog geen voorschriften.",
+    "assignPerformer": {
+      "title": "Toewijzen aan een zorgverlener of organisatie",
+      "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
+      "successOrganization": "{name} is toegewezen als organisatie.",
+      "meSuccess": "U bent toegewezen als zorgverlener.",
+      "performer": "Zorgverlener of organisatie",
+      "searchPerformerPlaceHolder": "RIZIV nummer, naam",
+      "select": "Selecteren",
+      "locations": "Locaties",
+      "zipCodeOrCityName": "Postcode of gemeente",
+      "noResults": "Geen gemeente gevonden",
+      "organization": "Organisatie"
+    },
+    "transferAssignation": {
+      "title": "Overdracht opdracht",
+      "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
+      "performer": "Zorgverlener",
+      "searchPerformerPlaceHolder": "RIZIV nummer, naam",
+      "locations": "Locaties",
+      "zipCodeOrCityName": "Postcode of gemeente",
+      "noResults": "Geen gemeente gevonden"
+    },
+    "cancel": {
+      "action": "Annuleren",
+      "title": "Voorschrift annuleren",
+      "message": "Bent u zeker dat u het voorschrift \"{templateName}\" van {firstName} {lastName} wilt annuleren?",
+      "success": "Het voorschrift werd geannuleerd.",
+      "reason": "Reden"
+    },
+    "rejectAssignation": {
+      "action": "Weigeren",
+      "title": "Daagvaarding afwijzen",
+      "message": "Weet u zeker dat u de receptopdracht \"{templateName}\" van {firstName} {lastName} wilt afwijzen?",
+      "success": "Inzending succesvol afgewezen."
+    },
+    "cancelExecution": {
+      "action": "Annuleren",
+      "title": "Uitvoering annuleren",
+      "message": "Bent u zeker dat u de uitvoering van het voorschrift \"{templateName}\" van {firstName} {lastName} wilt annuleren?",
+      "success": "De uitvoering werd geannuleerd.",
+      "reason": "Reden"
+    },
+    "interruptExecution": {
+      "action": "Onderbreken",
+      "title": "Uitvoering onderbreken",
+      "message": "Bent u zeker dat u de uitvoering van het voorschrift \"{templateName}\" van {firstName} {lastName} wilt onderbreken?",
+      "success": "Uitvoering succesvol beëindigd."
+    },
+    "startExecution": {
+      "action": "Uitvoeren",
+      "title": "Voorschrift uitvoeren",
+      "startDate": "Startdatum",
+      "success": "De uitvoering is gestart."
+    },
+    "restartExecution": {
+      "action": "Hervatten",
+      "title": "Uitvoering hervatten",
+      "message": "Bent u zeker dat u de uitvoering van het voorschrift \"{templateName}\" van {firstName} {lastName} wilt hervatten?",
+      "success": "De uitvoering is hervat."
+    },
+    "finishExecution": {
+      "action": "Afsluiten",
+      "title": "Voorschrift afsluiten",
+      "endDate": "Einddatum",
+      "success": "Het voorschrift werd afgesloten."
+    },
+    "frequencyTypes": {
+      "iterative": "Iteratief",
+      "weekly": "Wekelijks"
+    },
+    "status": "Status",
+    "prescriptionDate": "Voorgeschreven op",
+    "pagination": {
+      "prescriptions": "{count, plural, one{voorschrift} other{voorschriften}}",
+      "pageSize": "Aantal per pagina"
+    },
+    "statuses": {
+      "DRAFT": "Concept",
+      "BLACKLISTED": "Op de zwarte lijst",
+      "PENDING": "In afwachting",
+      "OPEN": "Open",
+      "CANCELLED": "Geannuleerd",
+      "EXPIRED": "Niet meer geldig",
+      "IN_PROGRESS": "In uitvoering",
+      "DONE": "Afgesloten",
+      "null": "Niet gekend",
+      "APPROVED": "Goedgekeurd",
+      "REJECTED": "Geweigerd"
+    },
+    "errors": {
+      "failedToLoadPrescription": "Er is iets misgegaan tijdens het laden van het voorschrift.",
+      "failedToLoadPrescriptions": "Er is iets misgegaan tijdens het laden van de voorschriften.",
+      "invalidFhirString": "Ongeldige tekens",
+      "invalidMaxLength": "Maximaal {requiredLength} tekens",
+      "invalidMinLength": "Minimaal {requiredLength} tekens",
+      "invalidNihiiDigitsCount": "RIZIV-nummer moet 8 of 11 cijfers bevatten",
+      "invalidCaregiverNameCharacters": "Ongeldige tekens",
+      "dateMustBeEarlierOrEqualTo": "Datum mag niet na {date} liggen",
+      "dateMustBeLaterOrEqualTo": "Datum mag niet voor {date} liggen",
+      "invalidDateFormat": "Ongeldig formaat: dd/mm/jjjj",
+      "invalidSsinChecksum": "Rijksregisternummer is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
+      "invalidShortCode": "Voorschrift ID is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
+      "decryptionFailed": "Het decoderen van de vrije tekstvelden is mislukt. Probeer het opnieuw.",
+      "failedToCreateModel": "Het model kon niet worden aangemaakt. Probeer het later opnieuw."
+    },
+    "categories": {
+      "bandagisterie": "Bandagisterie",
+      "dentistry": "Tandheelkunde",
+      "physiotherapy": "Kinesitherapie",
+      "orthopedics": "Orthopedie",
+      "otolaryngology": "KNO-heelkunde",
+      "radiology": "Radiologie",
+      "nursingCare": "Verpleegkundige zorg"
+    },
+    "ariaLabel": {
+      "delete": "Verwijderen",
+      "removeCity": "Verwijder de stad",
+      "print": "Afdrukken",
+      "reject": "Het voorschrift afwijzen",
+      "interrupt": "Onderbreek de uitvoering",
+      "restart": "Herneem de uitvoering"
+    }
+  },
+  "proposal": {
+    "creationDate": "Aangemaakt op",
+    "details": {
+      "link": "Bekijk details"
+    },
+    "selectTemplate": {
+      "proposalModel": "Voorstel model",
+      "pickOptionFromList": "Kies een optie uit de lijst",
+      "noOptions": "Geen voorstellen"
+    },
+    "create": {
+      "action": "Nieuw voorstel",
+      "success": "Voorschrift succesvol aangemaakt.",
+      "allSuccess": "{count} {count, plural, one{voorstel} other{voorstellen}} successvol aangemaakt.",
+      "allFailed": "Fout tijdens het aanmaken van de voorstellen. Controleer uw invoer en probeer het opnieuw.",
+      "someSuccessSomeFailed": "{successCount} {successCount, plural, one{voorstel} other{voorstellen}} successvol aangemaakt. {failedCount} {failedCount, plural, one{voorstel werd} other{voorstellen werden}} niet aangemaakt door een fout. Controleer uw invoer en probeer het opnieuw.",
+      "addProposal": "Extra voorstel",
+      "publish": "Publiceren",
+      "deleteProposal": {
+        "title": "Voorstel verwijderen",
+        "message": "Bent u zeker dat u het voorstel \"{templateName}\" wilt verwijderen?"
+      },
+      "cancelProposalsCreation": {
+        "title": "Annuleer één of meerdere voorstellen",
+        "cancelAll": "Alles annuleren"
+      },
+      "cancelCreation": "Bent u zeker dat u het aanmaken van dit voorstel wil annuleren?",
+      "proposal": "Voorstel aanmaken"
+    },
+    "allProposalsFetched": "Alle voorstellen opgehaald",
+    "print": {
+      "content-electronic-prescription": "Inhoud van het elektronisch voorstel",
+      "guideline": "Gelieve dit document voor te leggen aan uw behandelende arts. U kunt de QR-code scannen om toegang te krijgen tot de gegevens in het digitale recept.",
+      "nihdi": "RIZIV-nr.",
+      "niss": "INSZ",
+      "patient": "Rechthebbende",
+      "prescriber": "Voorschrijver",
+      "proof-of-electronic-prescription": "Bewijs van elektronisch voorstel",
+      "remark": "Opgelet: met manuele toevoegingen op dit document zal geen rekening gehouden worden.",
+      "date": "Afgedrukt op {date}"
+    },
+    "author": "Auteur",
+    "patient": "Patiënt",
+    "typeOfCare": "Type zorg",
+    "services": "Beurten",
+    "frequency": "Frequentie",
+    "start": "Start",
+    "end": "Einde",
+    "validityPeriod": "Geldigheidsperiode",
+    "consultDetails": "Toon details",
+    "assign": "Toewijzen",
+    "transfer": "Overmaken",
+    "assignMe": "Neem de leiding",
+    "duplicate": "Dupliceren",
+    "extend": "Verlengen",
+    "careGivers": "Zorgverlener(s)",
+    "assigned": "Toegewezen",
+    "noProposalsForPatient": "Deze patiënt heeft nog geen voorstellen.",
+    "noProposalsForUser": "U heeft nog geen voorstellen.",
+    "assignPerformer": {
+      "title": "Toewijzen aan een zorgverlener of organisatie",
+      "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
+      "successOrganization": "{name} is toegewezen als organisatie.",
+      "meSuccess": "U bent toegewezen als zorgverlener.",
+      "performer": "Zorgverlener",
+      "searchPerformerPlaceHolder": "RIZIV nummer, naam",
+      "locations": "Locaties",
+      "zipCodeOrCityName": "Postcode of gemeente",
+      "noResults": "Geen gemeente gevonden",
+      "organization": "Organisatie"
+    },
+    "transferAssignation": {
+      "title": "Overdracht opdracht",
+      "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
+      "performer": "Zorgverlener",
+      "searchPerformerPlaceHolder": "RIZIV nummer, naam",
+      "locations": "Locaties",
+      "zipCodeOrCityName": "Postcode of gemeente",
+      "noResults": "Geen gemeente gevonden"
+    },
+    "approve": {
+      "action": "Goedkeuren",
+      "success": "Het voorstel werd goedgekeurd.",
+      "dialog": {
+        "title": "Reden van goedkeuring",
+        "reason": "Reden"
+      }
+    },
+    "reject": {
+      "title": "Afwijzen",
+      "action": "Weigeren",
+      "success": "Het voorstel werd geweigerd.",
+      "dialog": {
+        "title": "Reden van afwijzing",
+        "reason": "Reden"
+      }
+    },
+    "rejectAssignation": {
+      "action": "Weigeren",
+      "title": "Toekenning afwijzen",
+      "message": "Weet u zeker dat u het voorstel \"{templateName}\" van {firstName} {lastName} wilt afwijzen?",
+      "success": "Inzending succesvol afgewezen."
+    },
+    "cancel": {
+      "action": "Annuleren",
+      "title": "Voorstel annuleren",
+      "message": "Bent u zeker dat u het voorstel \"{templateName}\" van {firstName} {lastName} wilt annuleren?",
+      "success": "Het voorstel werd geannuleerd.",
+      "reason": "Reden"
+    },
+    "frequencyTypes": {
+      "iterative": "Iteratief",
+      "weekly": "Wekelijks"
+    },
+    "status": "Status",
+    "proposalDate": "Voorgeschreven op",
+    "proposalInfoTitle": "Aangevraagd op {date} door {firstName} {lastName}.",
+    "pagination": {
+      "proposals": "{count, plural, one{voorstel} other{voorstellen}}",
+      "pageSize": "Aantal per pagina"
+    },
+    "statuses": {
+      "DRAFT": "Concept",
+      "BLACKLISTED": "Op de zwarte lijst",
+      "PENDING": "In afwachting",
+      "OPEN": "Open",
+      "CANCELLED": "Geannuleerd",
+      "EXPIRED": "Niet meer geldig",
+      "IN_PROGRESS": "In uitvoering",
+      "DONE": "Afgesloten",
+      "null": "Niet gekend",
+      "APPROVED": "Goedgekeurd",
+      "REJECTED": "Geweigerd"
+    },
+    "errors": {
+      "failedToLoadProposal": "Er is iets misgegaan tijdens het laden van het voorstel.",
+      "failedToLoadProposals": "Er is iets misgegaan tijdens het laden van de voorstellen.",
+      "invalidFhirString": "Ongeldige tekens",
+      "invalidMaxLength": "Maximaal {requiredLength} tekens",
+      "invalidMinLength": "Minimaal {requiredLength} tekens",
+      "invalidNihiiDigitsCount": "RIZIV-nummer moet 8 of 11 cijfers bevatten",
+      "invalidCaregiverNameCharacters": "Ongeldige tekens",
+      "dateMustBeEarlierOrEqualTo": "Datum mag niet na {date} liggen",
+      "dateMustBeLaterOrEqualTo": "Datum mag niet voor {date} liggen",
+      "invalidDateFormat": "Ongeldig formaat: dd/mm/jjjj",
+      "invalidUUID": "Proposal ID is ongeldig. Gelieve dit na te kijken en opnieuw te proberen."
+    },
+    "categories": {
+      "bandagisterie": "Bandagisterie",
+      "dentistry": "Tandheelkunde",
+      "physiotherapy": "Kinesitherapie",
+      "orthopedics": "Orthopedie",
+      "otolaryngology": "KNO-heelkunde",
+      "radiology": "Radiologie",
+      "nursingCare": "Verpleegkundige zorg"
+    }
+  },
+  "performerTask": {
+    "statuses": {
+      "ONHOLD": "Onderbroken",
+      "READY": "Klaar",
+      "CANCELLED": "Geannuleerd",
+      "FAILED": "Mislukt",
+      "INPROGRESS": "In uitvoering",
+      "COMPLETED": "Voltooid",
+      "null": "Niet gekend"
+    }
+  },
+  "models": {
+    "errors": {
+      "failedToLoadModels": "Het laden van de sjablonen is mislukt."
+    }
+  },
+  "pss": {
+    "unavailable":{
+      "title": "Service tijdelijk niet beschikbaar",
+      "message": "Onze excuses, de PSS (Prescription Search Support) service is momenteel niet beschikbaar.\nU kunt de aanbevelingen voor medische beeldvormende onderzoeken op dit moment niet raadplegen.\nProbeer het over een paar minuten opnieuw."
+    }
+  }
+}
