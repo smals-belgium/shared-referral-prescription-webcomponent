@@ -16,6 +16,7 @@
     "build:mags-prescription-details:custom-element": "ng build mags-prescription-details-webcomponent",
     "build:mags-prescription-details": "ng build mags-prescription-details-webcomponent --configuration production --output-hashing none && vite build --mode production -c ./wrappers/components/mags-prescription-details/vite.config.mjs && rollup -c ./wrappers/components/mags-prescription-details/rollup.config.dts.mjs",
     "build:wrappers": "node wrappers/build/build.ts",
+    "build:all-packages": "npm run build:wc:create && npm run build:wc:list && npm run build:wc:details && npm run build:wrappers",
     "watch": "ng build --watch --configuration development",
     "test:wc:reuse": "ng test reuse",
     "test:wc:details": "ng test wc-prescription-details",
@@ -33,7 +34,7 @@
     "version": "npm run generate-api:fromTools && npm run build",
     "postversion": "npm pack .",
     "api:client:init": "git submodule update --init --recursive && npx copyfiles -f ./lib/openapi-generator-cli/7.14.0/openapi-generator-cli-7.14.0.jar ./node_modules/@openapitools/openapi-generator-cli/versions/ && npm run generate-api:local",
-    "release": "git push github master"
+    "push:github": "git push github HEAD"
   },
   "private": true,
   "dependencies": {
