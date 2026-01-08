@@ -34,7 +34,7 @@
     "version": "npm run generate-api:fromTools && npm run build",
     "postversion": "npm pack .",
     "api:client:init": "git submodule update --init --recursive && npx copyfiles -f ./lib/openapi-generator-cli/7.14.0/openapi-generator-cli-7.14.0.jar ./node_modules/@openapitools/openapi-generator-cli/versions/ && npm run generate-api:local",
-    "push:github": "git push github HEAD"
+    "push:github": "bash ./push-github.sh"
   },
   "private": true,
   "dependencies": {

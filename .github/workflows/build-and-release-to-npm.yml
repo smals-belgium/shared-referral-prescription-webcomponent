@@ -22,6 +22,19 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org/'
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Generate OpenAPI Client
+        uses: openapi-generators/openapitools-generator-action@v1
+        with:
+          generator: typescript-angular
+          openapi-file: api-contract/openapi.yaml
+          command-args: -o reuse/code/openapi --additional-properties fileNaming=kebab-case,withInterfaces=true --generate-alias-as-model
+
       - name: Install dependencies
         run: npm ci
 
