@@ -181,5 +181,5 @@ export const DocumentLinks: NavLink<Family>[] = linkGroup([module.uhmepPrescript
 Start the MAGS application, click on the menu item and the component should be displayed :)
 
 # Push to github
-Run npm run push:github in a bash terminal
+Run npm run push:github in a bash terminal.
 
