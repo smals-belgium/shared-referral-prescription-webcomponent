@@ -44,7 +44,7 @@
         ></app-professional-display>
 
         @if (prescription?.requester?.nihii8 ?? prescription?.requester?.nihii11 ; as nihii) {
-          <span class="nihii">({{ nihii }})</span>
+          <span class="nihii">({{ nihii | formatNihdi: prescription?.requester?.healthcareQualification?.id?.code }})</span>
         }
         <div>
           @if (prescription?.requester?.healthcareQualification?.id?.profession) {

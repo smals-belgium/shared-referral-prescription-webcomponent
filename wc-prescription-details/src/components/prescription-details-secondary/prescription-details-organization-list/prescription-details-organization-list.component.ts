@@ -11,6 +11,7 @@ import {
   PrescriptionButtonGroupComponent
 } from '../prescription-button-group/prescription-button-group.component';
 import { TaskButtonGroupComponent } from '../task-button-group/task-button-group.component';
+import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
 
 @Component({
   selector: 'app-prescription-details-organization-list',
@@ -22,13 +23,13 @@ import { TaskButtonGroupComponent } from '../task-button-group/task-button-group
     DatePipe,
     PrescriptionButtonGroupComponent,
     TaskButtonGroupComponent,
+    FormatNihdiPipe,
   ],
   templateUrl: './prescription-details-organization-list.component.html',
   styleUrl: './prescription-details-organization-list.component.scss',
   standalone: true,
 })
 export class PrescriptionDetailsOrganizationListComponent {
-
   protected readonly _service = inject(PrescriptionDetailsSecondaryService);
 
   readonly prescriptionServiceData: ReadRequestResource | undefined = this._service.getPrescription().data;
