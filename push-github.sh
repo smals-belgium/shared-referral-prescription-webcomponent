@@ -19,7 +19,7 @@ rm -rf api-contract
 mkdir -p api-contract
 cp /tmp/openapi.yaml api-contract/openapi.yaml
 
-# Remove package-lock.json for public repo
+# Remove package-lock.json from index and disk
 # 2>/dev/null || true fallback for when there is no package-lock
 git rm --cached package-lock.json 2>/dev/null || true
 
@@ -29,6 +29,9 @@ git commit --amend --no-edit
 
 # Push to github
 git push github HEAD:${CURRENT_BRANCH} --force
+
+# Delete the untracked file before switching back
+rm -f package-lock.json
 
 # Return to original branch
 git checkout ${CURRENT_BRANCH}
