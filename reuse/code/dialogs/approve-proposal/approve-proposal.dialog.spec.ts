@@ -61,12 +61,12 @@ describe('ApproveProposalDialog', () => {
     fixture = TestBed.createComponent(ApproveProposalDialog);
     component = fixture.componentInstance;
 
-    jest.clearAllMocks();
     fixture.detectChanges();
   });
 
   afterEach(() => {
     uuidSpy.mockRestore();
+    jest.clearAllMocks();
   });
 
   it('should create and generate a UUID on initialization', () => {
