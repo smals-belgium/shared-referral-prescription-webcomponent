@@ -19,6 +19,10 @@ rm -rf api-contract
 mkdir -p api-contract
 cp /tmp/openapi.yaml api-contract/openapi.yaml
 
+# Remove package-lock.json for public repo
+# 2>/dev/null || true fallback for when there is no package-lock
+git rm --cached package-lock.json 2>/dev/null || true
+
 # Commit the change
 git add api-contract/openapi.yaml
 git commit --amend --no-edit
@@ -33,4 +37,4 @@ git branch -D ${TEMP_BRANCH}
 # Restore the submodule
 git submodule update --init --recursive
 
-echo "Pushed to github with openapi.yaml as regular file"
+echo "Pushed to github with openapi.yaml as regular file (without package-lock.json)"
