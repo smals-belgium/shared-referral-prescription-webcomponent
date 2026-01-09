@@ -17,11 +17,7 @@ export function getAssignableProfessionalDisciplines(category: string, intent: I
         return ['PHYSIOTHERAPIST'];
       }
     case 'diagnosticImaging':
-      if (isProposal(intent)) {
-        return ['PHYSICIAN', 'DENTIST'];
-      } else {
-        return ['PHYSICIAN', 'DENTIST'];
-      }
+      return ['PHYSICIAN', 'DENTIST'];
     default:
       return [];
   }

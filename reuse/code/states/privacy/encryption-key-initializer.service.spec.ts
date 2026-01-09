@@ -33,6 +33,9 @@ describe('EncryptionKeyInitializerService', () => {
     service = TestBed.inject(EncryptionKeyInitializerService);
 
     jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
     jest.clearAllMocks();
   });
 

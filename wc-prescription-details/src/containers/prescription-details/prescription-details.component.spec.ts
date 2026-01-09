@@ -4,7 +4,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { DateAdapter, MatNativeDateModule } from '@angular/material/core';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
@@ -19,6 +19,7 @@ import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
 import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
 import { EncryptionState } from '@reuse/code/states/privacy/encryption.state';
 import { HttpCacheService } from '@reuse/code/services/cache/http-cache.service';
+import { EncryptionService } from '@reuse/code/services/privacy/encryption.service';
 import {
   MockDateAdapter,
   FakeLoader,
@@ -29,18 +30,19 @@ import {
   prescriptionResponse,
   id,
   BASE_URL,
+  mockTemplate,
   mockUuid,
   organisationTask,
   referralTask,
   mockPerformerTask,
   mockPerson,
-  mockTemplate,
 } from '../../../test.utils';
 import { ReadRequestResource } from '@reuse/code/openapi';
 import { CancelPrescriptionDialog } from '@reuse/code/dialogs/cancel-prescription/cancel-prescription-dialog.component';
-import { Lang } from '@reuse/code/interfaces/lang.enum';
+
 mockUuid();
 jest.mock('uuid');
+import { Lang } from '@reuse/code/interfaces/lang.enum';
 
 describe('PrescriptionDetailsWebComponent', () => {
   let component: PrescriptionDetailsWebComponent;
@@ -94,6 +96,7 @@ describe('PrescriptionDetailsWebComponent', () => {
         MatDialog,
         { provide: PseudonymisationHelper, useValue: MockPseudoHelperFactory() },
         { provide: EncryptionState, useValue: encryptionStateService },
+        EncryptionService,
       ],
     }).compileComponents();
 
@@ -276,6 +279,149 @@ describe('PrescriptionDetailsWebComponent', () => {
 
     expect(openDialogSpy).toHaveBeenCalledTimes(1);
     expect(openDialogSpy).toHaveBeenCalledWith(CancelPrescriptionDialog, paramsCancel);
+  });
+
+  it('should show error toast when patientSsin is invalid for proposal', () => {
+    createFixture();
+    const toasterSpy = jest.spyOn(toaster, 'show');
+
+    component.prescriptionId = 'INVALID';
+    component.patientSsin = '90122712173';
+
+    component.loadProposal();
+
+    expect(toasterSpy).toHaveBeenCalledWith('proposals.errors.invalidUUID');
+  });
+
+  it('should load crypto key when pseudonymizedKey is valid', async () => {
+    createFixture();
+    const uint8Array = new Uint8Array([1, 2, 3, 4]);
+
+    jest.spyOn(pseudoService, 'toPseudonymInTransit').mockReturnValue({ id: 'transit' } as any);
+    jest.spyOn(pseudoService, 'identifyPseudonymInTransit').mockResolvedValue(uint8Array);
+    const loadCryptoKeySpy = jest.spyOn(component['_encryptionStateService'], 'loadCryptoKey');
+
+    await component.getPrescriptionKey('valid-key');
+
+    expect(loadCryptoKeySpy).toHaveBeenCalledWith(uint8Array);
+  });
+
+  it('should set crypto key error when getPrescriptionKey throws error', async () => {
+    createFixture();
+
+    jest.spyOn(pseudoService, 'toPseudonymInTransit').mockImplementation(() => {
+      throw new Error('Invalid key');
+    });
+    const setCryptoKeyErrorSpy = jest.spyOn(component['_encryptionStateService'], 'setCryptoKeyError');
+
+    await component.getPrescriptionKey('invalid-key');
+
+    expect(setCryptoKeyErrorSpy).toHaveBeenCalled();
+  });
+
+  it('should decrypt responses when elements are not encrypted', (done) => {
+    createFixture();
+
+    const responses = { field1: 'value1', field2: 'value2' };
+    const template = {
+      elements: [
+        { id: 'field1', tags: [] },
+        { id: 'field2', tags: [] },
+      ],
+    };
+
+    component['decryptResponses'](responses, template as any).subscribe(result => {
+      expect(result).toEqual({ field1: 'value1', field2: 'value2' });
+      done();
+    });
+  });
+
+  it('should decrypt freeText elements when crypto key is provided', (done) => {
+    createFixture();
+
+    const responses = { note: 'encrypted-value' };
+    const template = {
+      elements: [{ id: 'note', tags: ['freeText'] }],
+    };
+    const cryptoKey = {} as CryptoKey;
+
+    const encryptionService = TestBed.inject(EncryptionService);
+    jest.spyOn(encryptionService, 'decryptText').mockReturnValue(of('decrypted-value'));
+
+    component['decryptResponses'](responses, template as any, cryptoKey).subscribe(result => {
+      expect(result).toEqual({ note: 'decrypted-value' });
+      done();
+    });
+  });
+
+  it('should throw error when freeText element but no crypto key', (done) => {
+    createFixture();
+
+    const responses = { note: 'encrypted-value' };
+    const template = {
+      elements: [{ id: 'note', tags: ['freeText'] }],
+    };
+
+    component['decryptResponses'](responses, template as any, undefined).subscribe(
+      () => {
+        fail('Should have thrown error');
+      },
+      error => {
+        expect(error.message).toContain('Pseudo key is missing');
+        done();
+      }
+    );
+  });
+
+  it('should handle decryption errors gracefully', (done) => {
+    createFixture();
+
+    const responses = { note: 'encrypted-value' };
+    const template = {
+      elements: [{ id: 'note', tags: ['freeText'] }],
+    };
+    const cryptoKey = {} as CryptoKey;
+
+    const encryptionService = TestBed.inject(EncryptionService);
+    jest.spyOn(encryptionService, 'decryptText').mockReturnValue(throwError(() => new Error('Decryption failed')));
+
+    component['decryptResponses'](responses, template as any, cryptoKey).subscribe(
+      () => {
+        fail('Should have thrown error');
+      },
+      error => {
+        expect(error.message).toContain('Decryption failed');
+        done();
+      }
+    );
+  });
+
+  it('should call loadPssStatus for ANNEX_82', () => {
+    createFixture();
+    const mockStatus = true;
+
+    jest.spyOn(component['_pssService'], 'getPssStatus').mockReturnValue(of(mockStatus));
+    const pssStatusSetSpy = jest.spyOn(component['_prescriptionSecondaryService'].pssStatus, 'set');
+
+    component['loadPssStatus']('ANNEX_82');
+
+    expect(pssStatusSetSpy).toHaveBeenCalledWith(mockStatus);
+  });
+
+  it('should call loadPrescriptionByShortCode when conditions are met', async () => {
+    createFixture();
+
+    component.prescriptionId = 'CAF4FE';
+    component.patientSsin = '90122712173';
+
+    jest.spyOn(pseudoService, 'pseudonymize').mockResolvedValue('pseudonymized-identifier');
+    const loadSpy = jest.spyOn(component['_prescriptionStateService'], 'loadPrescriptionByShortCode').mockImplementation(() => {});
+
+    component['loadPrescription']();
+
+    await Promise.resolve();
+
+    expect(loadSpy).toHaveBeenCalledWith('CAF4FE', 'pseudonymized-identifier');
   });
 
   const loadPrescriptionByShortCode = async (

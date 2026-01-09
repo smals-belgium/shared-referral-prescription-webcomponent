@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -314,6 +314,29 @@ describe('CreatePrescriptionWebComponent', () => {
 
       expect(dialog.open).toHaveBeenCalled();
     });
+
+    it('should call findModelById when result has modelId and templateCode', fakeAsync(() => {
+      createFixture('mockPseudomizedKey');
+
+      const mockResult = {
+        templateCode: 'TEMPLATE_001',
+        model: { id: 42 },
+      };
+
+      const openDialogSpy = jest.spyOn(component['dialog'], 'open');
+      const dialogRefMock = {
+        beforeClosed: jest.fn().mockReturnValue(of(mockResult)),
+      };
+      openDialogSpy.mockReturnValue(dialogRefMock as any);
+
+      const findModelByIdSpy = jest.spyOn(component as any, 'findModelById').mockImplementation(() => {});
+
+      (component as any).addPrescription();
+      tick();
+
+      expect(findModelByIdSpy).toHaveBeenCalledWith('TEMPLATE_001', 42);
+      expect(findModelByIdSpy).toHaveBeenCalledTimes(1);
+    }));
 
     it('should NOT open the dialog when addPrescription is called and discipline is Nurse', async () => {
       createFixture('mockPseudomizedKey');
@@ -1643,6 +1666,92 @@ describe('CreatePrescriptionWebComponent', () => {
 
       expect(setLocaleSpy).toHaveBeenCalledWith('nl-BE');
       expect(translateUseSpy).toHaveBeenCalledWith('nl-BE');
+    });
+
+    describe('findModelById', () => {
+
+      it('should call addPrescriptionFormByModel when model is found', fakeAsync(() => {
+        createFixture('mockPseudomizedKey');
+
+        const templateCode = 'TEMPLATE_001';
+        const modelId = 42;
+        const mockModel = { id: 42, name: 'Test Model', code: 'M001' };
+
+        jest.spyOn(component['prescriptionModelService'], 'findById')
+          .mockReturnValue(of(mockModel));
+
+        const addFormSpy = jest.spyOn(component as any, 'addPrescriptionFormByModel')
+          .mockImplementation(() => {});
+        const loadingSpy = jest.spyOn(component['loading'], 'set');
+
+        (component as any).findModelById(templateCode, modelId);
+        tick();
+
+        expect(addFormSpy).toHaveBeenCalledWith(templateCode, mockModel);
+        expect(loadingSpy).toHaveBeenCalledWith(false);
+        expect(loadingSpy).toHaveBeenCalledTimes(1);
+      }));
+
+      it('should show error toast when model is null', fakeAsync(() => {
+        createFixture('mockPseudomizedKey');
+
+        const templateCode = 'TEMPLATE_001';
+        const modelId = 999;
+
+        jest.spyOn(component['prescriptionModelService'], 'findById')
+          .mockReturnValue(of(null)as any);
+
+        const addFormSpy = jest.spyOn(component as any, 'addPrescriptionFormByModel');
+        const toastSpy = jest.spyOn(component['toastService'], 'showSomethingWentWrong');
+        const loadingSpy = jest.spyOn(component['loading'], 'set');
+
+        (component as any).findModelById(templateCode, modelId);
+        tick();
+
+        expect(addFormSpy).not.toHaveBeenCalled();
+        expect(toastSpy).toHaveBeenCalled();
+        expect(loadingSpy).toHaveBeenCalledWith(false);
+        expect(loadingSpy).toHaveBeenCalledTimes(1);
+      }));
+
+      it('should show error toast when service throws error', fakeAsync(() => {
+        createFixture('mockPseudomizedKey');
+
+        const templateCode = 'TEMPLATE_001';
+        const modelId = 42;
+        const serviceError = new Error('Service unavailable');
+
+        jest.spyOn(component['prescriptionModelService'], 'findById')
+          .mockReturnValue(throwError(() => serviceError));
+
+        const addFormSpy = jest.spyOn(component as any, 'addPrescriptionFormByModel');
+        const toastSpy = jest.spyOn(component['toastService'], 'showSomethingWentWrong');
+        const loadingSpy = jest.spyOn(component['loading'], 'set');
+
+        (component as any).findModelById(templateCode, modelId);
+        tick();
+
+        expect(addFormSpy).not.toHaveBeenCalled();
+        expect(toastSpy).toHaveBeenCalled();
+        expect(loadingSpy).toHaveBeenCalledWith(false);
+        expect(loadingSpy).toHaveBeenCalledTimes(1);
+      }));
+
+      it('should call prescriptionModelService.findById with correct modelId', fakeAsync(() => {
+        createFixture('mockPseudomizedKey');
+
+        const modelId = 123;
+        const templateCode = 'TEMPLATE';
+
+        const findByIdSpy = jest.spyOn(component['prescriptionModelService'], 'findById')
+          .mockReturnValue(of(null)as any);
+
+        (component as any).findModelById(templateCode, modelId);
+        tick();
+
+        expect(findByIdSpy).toHaveBeenCalledWith(modelId);
+        expect(findByIdSpy).toHaveBeenCalledTimes(1);
+      }));
     });
   });
 

@@ -104,11 +104,10 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     fixture.detectChanges();
 
     const mockPanel = { open: jest.fn() } as any;
-    const mockQueryList = {
+
+    component.panels = {
       first: mockPanel
     } as any;
-
-    component.panels = mockQueryList;
     component.createPrescriptionForms = [{ status: LoadingStatus.LOADING }] as CreatePrescriptionForm[];
 
     component.ngOnChanges({

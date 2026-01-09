@@ -77,7 +77,6 @@ describe('AutocompleteMultiselectComponent', () => {
 
   beforeEach(async () => {
     pssServiceMock = {
-      // controlIndications: jest.fn().mockReturnValue(of(mockAutocompleteOptions)),
       controlIndications: jest.fn(),
       getPssRecommendations: jest.fn(),
       getPssSessionId: jest.fn().mockReturnValue(1),
@@ -298,7 +297,7 @@ describe('AutocompleteMultiselectComponent', () => {
       recommendationFormDebugElement = fixture.debugElement.query(By.directive(RecommendationsComponent));
 
       elementGroupMock = {
-        get: (field: string) => ({
+        get: () => ({
           value: null,
           markAsTouched: jest.fn(),
         }),
@@ -341,7 +340,7 @@ describe('AutocompleteMultiselectComponent', () => {
 
       const elementGroupMock = {
         get: (field: string) => {
-          if (field === 'age') return {value: 35, markAsTouched: jest.fn()}; // valide
+          if (field === 'age') return {value: 35, markAsTouched: jest.fn()};
           if (field === 'gender') return genderMock;
           if (field === 'clinicalIndications') return {value: [indicationMock], markAsTouched: jest.fn()};
           return {value: null, markAsTouched: jest.fn()};
@@ -367,7 +366,7 @@ describe('AutocompleteMultiselectComponent', () => {
 
       const elementGroupMock = {
         get: (field: string) => {
-          if (field === 'age') return {value: 35, markAsTouched: jest.fn()}; // valide
+          if (field === 'age') return {value: 35, markAsTouched: jest.fn()};
           if (field === 'gender') return {value: 'M', markAsTouched: jest.fn()};
           if (field === 'clinicalIndications') return clinicalIndicationsMock;
           return {value: null, markAsTouched: jest.fn()};

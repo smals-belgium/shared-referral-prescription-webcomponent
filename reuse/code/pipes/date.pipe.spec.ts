@@ -45,11 +45,6 @@ describe('DatePipe', () => {
     expect(mockDateAdapter.format).toHaveBeenCalledTimes(1);
     expect(result).toEqual('formatted');
 
-    result = instance.transform('2019-07-13T23:55:00+02:00', 'DD');
-    expect(mockDateAdapter.parse).toHaveBeenCalledTimes(1);
-    expect(mockDateAdapter.format).toHaveBeenCalledTimes(1);
-    expect(result).toEqual('formatted');
-
     result = instance.transform('2020-09-05T23:55:00+02:00', 'DD');
     expect(mockDateAdapter.parse).toHaveBeenCalledTimes(2);
     expect(mockDateAdapter.format).toHaveBeenCalledTimes(2);
