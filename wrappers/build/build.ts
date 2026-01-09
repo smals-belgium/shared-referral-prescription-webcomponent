@@ -22,10 +22,10 @@ const filesToPack = ['scripts.js', 'main.js'];
         fs.mkdirSync(outputDir);
       }
 
-      console.log(`:::: Installing dependencies :\n`);
-      child_process.execSync(`npm install`, {
-        stdio: [0, 1, 2],
-      });
+      // console.log(`:::: Installing dependencies :\n`);
+      // child_process.execSync(`npm install`, {
+      //   stdio: [0, 1, 2],
+      // });
     }
 
     // let globalDocs = [...documentation];
@@ -64,7 +64,7 @@ const filesToPack = ['scripts.js', 'main.js'];
       fs.writeFileSync(
         path.join(buildDirectory, `package.json`),
         JSON.stringify({
-          name: `@smals-belgium-shared/uhmep-mags-${file.replace('wc-', '')}`,
+          name: `@myhealth-belgium/uhmep-mags-${file.replace('wc-', '')}`,
           version,
           description,
           type,

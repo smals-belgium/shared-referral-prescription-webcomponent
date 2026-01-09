@@ -40,7 +40,14 @@
             "styles": ["wc-prescription-details/src/styles.scss"],
             "scripts": ["node_modules/marked/marked.min.js"],
             "externalDependencies": ["/assets/evf-form-details/evf-form-details.js", "/assets/pdfmake/pdfmake.js"],
-            "allowedCommonJsDependencies": ["localforage", "buffer", "@messageformat/core", "elliptic", "bn.js", "pdfmake/build/pdfmake.js"]
+            "allowedCommonJsDependencies": [
+              "localforage",
+              "buffer",
+              "@messageformat/core",
+              "elliptic",
+              "bn.js",
+              "pdfmake/build/pdfmake.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -374,7 +381,7 @@
             "outputHashing": "all",
             "inlineStyleLanguage": "scss",
             "assets": [],
-            "scripts": ["./node_modules/@uhmep/wc-prescription-list/build/wc-list-prescriptions.js"]
+            "scripts": ["dist/wc-prescription-list/build/wc-list-prescriptions.js"]
           },
           "configurations": {
             "production": {
@@ -453,7 +460,7 @@
             "inlineStyleLanguage": "scss",
             "assets": [],
             "outputHashing": "none",
-            "scripts": ["./node_modules/@uhmep/wc-prescription-list/build/wc-prescription-list.js"]
+            "scripts": ["dist/wc-prescription-list/build/wc-prescription-list.js"]
           },
           "configurations": {
             "production": {
@@ -532,7 +539,7 @@
             "outputHashing": "all",
             "inlineStyleLanguage": "scss",
             "assets": [],
-            "scripts": ["./node_modules/@uhmep/wc-prescription-details/build/wc-prescription-details.js"]
+            "scripts": ["dist/wc-prescription-details/build/wc-prescription-details.js"]
           },
           "configurations": {
             "production": {
@@ -611,7 +618,7 @@
             "inlineStyleLanguage": "scss",
             "assets": [],
             "outputHashing": "none",
-            "scripts": ["./node_modules/@uhmep/wc-prescription-details/build/wc-prescription-details.js"]
+            "scripts": ["dist/wc-prescription-details/build/wc-prescription-details.js"]
           },
           "configurations": {
             "production": {
