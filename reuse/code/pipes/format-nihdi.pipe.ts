@@ -20,6 +20,6 @@ export class FormatNihdiPipe implements PipeTransform {
       formattedParts.push(nihidi.substring(0, endIndex));
       nihidi = nihidi.substring(endIndex);
     }
-    return formattedParts.join('/');
+    return formattedParts.join('-');
   }
 }

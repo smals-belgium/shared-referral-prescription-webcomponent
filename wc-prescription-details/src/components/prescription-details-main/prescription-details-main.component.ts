@@ -15,10 +15,18 @@ import {
 } from './prescription-details-beneficiary/prescription-details-beneficiary.component';
 import { EvfFormDetailsWebComponent } from '../evf-details/evf-form-details.component';
 import { FormTemplate } from '@smals/vas-evaluation-form-ui-core';
+import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
 
 @Component({
   selector: 'app-prescription-details-main',
-  imports: [DatePipe, ProfessionalDisplayComponent, TranslatePipe, PrescriptionDetailsBeneficiaryComponent, EvfFormDetailsWebComponent],
+  imports: [
+    DatePipe,
+    ProfessionalDisplayComponent,
+    TranslatePipe,
+    PrescriptionDetailsBeneficiaryComponent,
+    EvfFormDetailsWebComponent,
+    FormatNihdiPipe,
+  ],
   templateUrl: './prescription-details-main.component.html',
   styleUrl: './prescription-details-main.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

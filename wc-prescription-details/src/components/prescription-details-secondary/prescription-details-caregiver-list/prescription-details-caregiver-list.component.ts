@@ -11,6 +11,7 @@ import { UserInfo } from '@reuse/code/interfaces';
 import { PerformerTaskResource, PersonResource, ReadRequestResource } from '@reuse/code/openapi';
 import { PrescriptionDetailsSecondaryService } from '../prescription-details-secondary.service';
 import { PrescriptionButtonGroupComponent } from '../prescription-button-group/prescription-button-group.component';
+import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
 
 @Component({
   selector: 'app-prescription-details-caregiver-list',
@@ -24,6 +25,7 @@ import { PrescriptionButtonGroupComponent } from '../prescription-button-group/p
     CanInterruptTreatmentPipe,
     CanRestartTreatmentPipe,
     PrescriptionButtonGroupComponent,
+    FormatNihdiPipe,
   ],
   templateUrl: './prescription-details-caregiver-list.component.html',
   styleUrl: './prescription-details-caregiver-list.component.scss',

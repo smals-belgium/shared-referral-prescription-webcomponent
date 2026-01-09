@@ -25,7 +25,7 @@
                 class="caregiver_info_fullName">{{ careGiver.healthcarePerson?.firstName }} {{ careGiver.healthcarePerson?.lastName }} </span>
             }
             @if (careGiver.nihii8 || careGiver.nihii11; as nihii) {
-              <span class="caregiver_info_nihii">({{ nihii }})</span>
+              <span class="caregiver_info_nihii">({{ nihii | formatNihdi: careGiver.healthcareQualification?.id?.code }})</span>
             }
 
             @if (careGiver.healthcareQualification?.id?.profession) {

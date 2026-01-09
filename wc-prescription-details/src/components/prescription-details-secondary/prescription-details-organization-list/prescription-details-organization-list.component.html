@@ -22,7 +22,7 @@
         }
 
         @if (task.organization?.nihii8 ?? task.organization?.nihii11; as nihii) {
-          <span>({{ nihii }})</span>
+          <span>({{ nihii | formatNihdi: task?.organization?.qualificationCode }})</span>
           <br/>
         }
         @if (task.executionPeriod?.start) {
@@ -56,11 +56,9 @@
                   }
 
                   @if (nihii) {
-                    ({{ nihii }})
+                    ({{ nihii  | formatNihdi: caregiver.healthcareQualification?.id?.code }})
                   }
                 }
-
-
                 <br/>
                 @if (performertask.executionPeriod?.start) {
                   <span>{{ performertask.executionPeriod?.start! | date: 'dd/MM/yyyy' }} - </span>
