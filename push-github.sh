@@ -5,7 +5,10 @@ set -e
 CURRENT_BRANCH=$(git branch --show-current)
 TEMP_BRANCH="${CURRENT_BRANCH}-release"
 
-# Create a temporary branch for github push
+# Push actual history to github first
+git push github ${CURRENT_BRANCH}:${CURRENT_BRANCH} --force
+
+# Now create transform commit on top
 git checkout -B ${TEMP_BRANCH}
 
 # Copy the actual openapi.yaml content (from submodule) to a temp location
@@ -25,7 +28,7 @@ git rm --cached package-lock.json 2>/dev/null || true
 
 # Commit the change
 git add api-contract/openapi.yaml
-git commit --amend --no-edit
+git commit -m "chore: prepare for public release"
 
 # Push to github
 git push github HEAD:${CURRENT_BRANCH} --force
@@ -40,4 +43,4 @@ git branch -D ${TEMP_BRANCH}
 # Restore the submodule
 git submodule update --init --recursive
 
-echo "Pushed to github with openapi.yaml as regular file (without package-lock.json)"
+echo "Pushed to github with full history + transformation commit"
