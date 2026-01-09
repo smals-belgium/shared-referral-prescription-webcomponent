@@ -1,0 +1,61 @@
+@if (prescriptionServiceData && currentUserServiceData){
+  @let prescription = prescriptionServiceData;
+  @let currentUser = currentUserServiceData;
+  @let performerTask = performerTaskServiceData;
+
+  <div class="secondary_details_container">
+    <div class="caregiver_actions">
+      @if (!performerTask?.careGiverSsin && prescription.intent?.toLowerCase() !== 'proposal') {
+        @if (prescription | canSelfAssign) {
+          <button
+            (click)="onSelfAssign(prescription, currentUser)"
+            mat-raised-button
+            type="button"
+            data-cy="prescription-self-assign-button"
+          >
+            <mat-icon>add_task</mat-icon>
+            {{ 'prescription.assignMe' | translate }}
+          </button>
+        }
+
+        @if (prescription | canStartTreatment) {
+          <button
+            (click)="prescriptionSecondaryService.openStartExecutionDialog(prescription)"
+            mat-raised-button
+            type="button"
+            data-cy="prescription-start-execution-button"
+          >
+            <mat-icon>play_circle</mat-icon>
+            {{ 'prescription.startExecution.action' | translate }}
+          </button>
+        }
+      }
+    </div>
+
+    <div class="caregiver_title">
+      <h4 data-cy="prescription-assign-to-label">{{ 'prescription.careGivers' | translate }}</h4>
+      @if (prescription | canAssignCaregiver) {
+        <button
+          mat-raised-button
+          type="button"
+          color="accent"
+          (click)="openAssignDialog(prescription)"
+          data-cy="prescription-assign-caregiver-button"
+        >
+          <mat-icon>add</mat-icon>
+          {{ 'prescription.assign' | translate }}
+        </button>
+      }
+    </div>
+
+    @if ((prescription.performerTasks && prescription.performerTasks.length > 0) || (prescription.organizationTasks && prescription.organizationTasks.length > 0)) {
+      <div data-cy="prescription-assign-to-list">
+        <app-prescription-details-organization-list
+        ></app-prescription-details-organization-list>
+
+        <app-prescription-details-caregiver-list
+        ></app-prescription-details-caregiver-list>
+      </div>
+    }
+  </div>
+}

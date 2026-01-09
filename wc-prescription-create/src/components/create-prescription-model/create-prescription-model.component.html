@@ -1,0 +1,90 @@
+@if(prescriptionForm) {
+  <div class="wrapper">
+    <h3
+      [class.invalid]="prescriptionForm.submitted && (!prescriptionForm.elementGroup?.valid || prescriptionForm.status === 'ERROR')"
+      data-cy="template-label">{{ prescriptionForm.templateCode | templateName }}
+    </h3>
+
+    @if (prescriptionForm.status === LoadingStatus.SUCCESS) {
+      <mat-icon color="accent">check_circle</mat-icon>
+    } @else if (prescriptionForm.status === LoadingStatus.ERROR) {
+      <mat-icon color="warn">error</mat-icon>
+    }
+
+
+    @if (modelState().state === LoadingStatus.ERROR) {
+      <app-alert
+        [alert]="AlertType.Error"
+        [message]="'prescription.errors.failedToCreateModel' | translate"
+        [error]="modelState().error"
+      ></app-alert>
+    } @else if (modelState().state === LoadingStatus.SUCCESS) {
+      <app-alert
+        [alert]="AlertType.Success"
+        [message]="'prescription.model.create.success' | translate:{name: modelState().success}"
+      ></app-alert>
+    } @else if (modelState().state === LoadingStatus.LOADING) {
+      <app-overlay-spinner mode="inline"></app-overlay-spinner>
+    }
+
+    @if (prescriptionForm.formTemplateState$(); as formTemplateState) {
+      <ng-container>
+        <app-overlay-spinner *ifStatusLoading="formTemplateState" mode="inline"></app-overlay-spinner>
+        <div *ifStatusError="formTemplateState">Failed to load prescription form template.</div>
+            @if(!!titleControl && prescriptionForm.modelId) {
+              <div class="form-model-group">
+                <mat-label class="referral-prescription-label">{{ ('prescription.model.create.dialog.label' | translate) }} <span class="required">*</span></mat-label>
+                <mat-form-field appearance="outline">
+                  <input
+                    [formControl]="titleControl"
+                    matInput
+                    data-cy="prescription-modal-dialog-input"
+                    minlength="1"
+                    maxlength="100"
+                  />
+                  @if (titleControl.hasError('required')) {
+                    <mat-error>{{ 'common.mandatory' | translate }}</mat-error>
+                  }
+                  @if (titleControl.hasError('uniqueName')) {
+                    <mat-error>{{ 'prescription.model.create.dialog.labelNotUnique' | translate }}</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            }
+
+              <evf-form
+                class="referral-prescription-form"
+                *ifStatusSuccess="formTemplateState"
+                [lang]="lang"
+                [readonly]="prescriptionForm.status === LoadingStatus.SUCCESS"
+                [submitted]="!!prescriptionForm.submitted"
+                [template]="getTemplateData(formTemplateState)!"
+                (changeElementGroup)="setElementGroup(prescriptionForm, $any($event))"
+                [status]="false"
+              ></evf-form>
+
+        @if(this.prescriptionForm.modelId) {
+          <button
+            mat-flat-button
+            (click)="handleUpdate(prescriptionForm, formTemplateState.data)"
+          >
+            <mat-icon>update</mat-icon>
+            {{ 'prescription.model.update.title' | translate }}
+          </button>
+        } @else {
+          <button
+            mat-flat-button
+            (click)="handleClick(prescriptionForm, formTemplateState.data)"
+          >
+            <mat-icon>save</mat-icon>
+            {{ 'prescription.model.create.title' | translate }}
+          </button>
+        }
+
+
+
+      </ng-container>
+    }
+  </div>
+}
+

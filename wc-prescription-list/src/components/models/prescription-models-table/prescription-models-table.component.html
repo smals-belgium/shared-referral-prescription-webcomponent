@@ -1,0 +1,73 @@
+@if(prescriptionModels){
+<table mat-table [dataSource]="prescriptionModels" class="mat-elevation-z8">
+
+  <ng-container matColumnDef="creationDate">
+    <th data-cy="overview-creation-date-title" mat-header-cell *matHeaderCellDef>{{'prescription.model.creationDate' | translate}}</th>
+    <td [attr.data-cy]="'creation-date-cell-' + model.id" [attr.translate]="'no'" mat-cell *matCellDef="let model">
+      @if(model.creationDate){
+        {{model.creationDate | date:'D'}}
+      }
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="label">
+    <th data-cy="overview-label-title" mat-header-cell *matHeaderCellDef>{{'prescription.model.label' | translate}}</th>
+    <td [attr.data-cy]="'label-cell-' + model.id" [attr.translate]="'no'" mat-cell *matCellDef="let model">
+      @if(model.label){
+        {{model.label}}
+      }
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="template">
+    <th data-cy="overview-template" mat-header-cell *matHeaderCellDef>{{'prescription.model.template' | translate}}</th>
+    <td [attr.data-cy]="'template-cell-' + model.id" [attr.translate]="'no'" mat-cell *matCellDef="let model">
+      @if(model.templateCode){
+        {{model.templateCode | templateName}}
+      }
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th data-cy="overview-actions" mat-header-cell *matHeaderCellDef>{{'prescription.model.actions' | translate}}</th>
+    <td [attr.data-cy]="'actions-cell-' + model.id" [attr.translate]="'no'" mat-cell *matCellDef="let model">
+      <button type="button" mat-icon-button [matMenuTriggerFor]="menu" [attr.aria-label]="'prescription.model.actions' | translate" (click)="$event.stopPropagation()">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="onActionButtonClick($event, model)">
+          <mat-icon>delete</mat-icon>
+          <span> {{ 'prescription.model.delete.title' | translate }}</span>
+        </button>
+      </mat-menu>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr [class.inactive]="row.status === RequestStatus.Done || row.status === RequestStatus.Cancelled || row.status === RequestStatus.Expired"
+      [attr.data-cy]="'model-row-' + row.id"
+      (click)="openPrescriptionModel.emit(row)"
+      mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    <ng-container matColumnDef="noRecord">
+      <td mat-footer-cell *matFooterCellDef colspan="4">
+        <span>{{'prescription.model.noModels' | translate}}</span>
+      </td>
+    </ng-container>
+
+  <tr [class]="prescriptionModels.length === 0 ? 'no-models' : 'no-data'" mat-footer-row
+      *matFooterRowDef="prescriptionModels.length === 0 ? ['noRecord'] : []"></tr>
+</table>
+}
+  @if (error) {
+    <app-alert
+      [alert]="AlertType.Error"
+      data-cy="alert"
+      [message]="errorMsg"
+      [error]="errorResponse"
+      (clickRetry)="retryOnError.emit()"
+    ></app-alert>
+  } @else if (loading) {
+    <app-skeleton data-cy="skeleton" [items]="3" [format]="FormatEnum.LINE"></app-skeleton>
+  }
+

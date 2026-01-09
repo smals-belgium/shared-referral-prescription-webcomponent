@@ -1,0 +1,26 @@
+<div class="wrapper">
+  <h1 mat-dialog-title>{{'prescription.cancelExecution.title' | translate}}</h1>
+  <div mat-dialog-content>
+    @if(errorCard.show){
+      <app-alert
+        [alert]="AlertType.Error"
+        [message]="errorCard.message | translate : errorCard.translationOptions"
+        [error]="errorCard.errorResponse"
+        [showRetry]="false"
+      ></app-alert>
+    }
+    <div>{{'prescription.cancelExecution.message' | translate: {
+        firstName: patient?.firstName ?? '',
+        lastName: patient?.lastName ?? '',
+        templateName: prescription.templateCode | templateName}
+      }}</div>
+  </div>
+  <mat-dialog-actions align="end">
+    <button type="submit" mat-flat-button (click)="cancelPrescriptionExecution()" data-cy="dialog-confirm-button">{{'common.confirm' | translate}}</button>
+    <button type="button" mat-stroked-button [mat-dialog-close]="undefined" data-cy="dialog-prescription-cancel-button">{{'common.cancel' | translate}}</button>
+  </mat-dialog-actions>
+
+  @if(loading){
+  <app-overlay-spinner mode="dialog"></app-overlay-spinner>
+  }
+</div>

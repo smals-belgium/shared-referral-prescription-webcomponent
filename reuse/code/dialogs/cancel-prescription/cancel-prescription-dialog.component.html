@@ -1,0 +1,41 @@
+<div class="wrapper">
+  <h1 mat-dialog-title>{{ 'prescription.cancel.title' | translate }}</h1>
+  <div mat-dialog-content>
+    @if (errorCard.show) {
+      <app-alert
+        [alert]="AlertType.Error"
+        [message]="errorCard.message | translate : errorCard.translationOptions"
+        [error]="errorCard.errorResponse"
+        [showRetry]="false"
+      ></app-alert>
+    }
+    @if(prescription.intent) {
+      <div>
+        {{ prescription.intent | translateByIntent:{
+        order: 'prescription.cancel.message',
+        proposal: 'proposal.cancel.message'
+      }:{
+        firstName: patient?.firstName,
+        lastName:  patient?.lastName,
+        templateName: (prescription.templateCode | templateName)
+      }
+        }}
+      </div>
+    }
+  </div>
+
+  <mat-dialog-actions align="end">
+    <button type="submit" data-cy="dialog-confirm-button" mat-raised-button (click)="cancelPrescription()">
+      {{ 'common.confirm' | translate }}
+    </button>
+    <button type="button" data-cy="dialog-cancel-button" mat-flat-button [mat-dialog-close]="undefined">{{
+        'common.cancel' |
+          translate
+      }}
+    </button>
+  </mat-dialog-actions>
+
+@if(loading){
+  <app-overlay-spinner mode="dialog"></app-overlay-spinner>
+}
+</div>

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>HealixWcListPrescriptions</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="../../keycloak/keycloak.js"></script>
+  <script src="http://localhost:3000/web-components/prescription-list/wc-prescription-list.js" type="module"></script>
+</head>
+<body>
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const env = urlParams.get('env') === 'demo' ? 'demo' : 'test';
+  window.referralPrescriptionEnv = env;
+  function createListComponent(services) {
+
+    const listElement = document.createElement('nihdi-referral-prescription-list');
+    listElement.lang = navigator.language.includes('nl') || navigator.language.includes('fr')
+      ? navigator.language
+      : 'nl-BE';
+    listElement.patientSsin = '90122712173';
+    listElement.intent = "order";
+    listElement.services = services;
+
+    listElement.addEventListener('prescriptionsCreated', () => {
+      document.body.removeChild(listElement);
+      setTimeout(() => {
+        alert('Prescription(s) were created. Refresh to start again.');
+      }, 100);
+    });
+
+    document.body.append(listElement);
+  }
+
+  if (env === 'demo') {
+    createListComponent({
+      getAccessToken: (audience) => Promise.reject('uhmep-demo-patient'),
+    });
+  } else {
+    var keycloak = new Keycloak({
+      url: 'https://vasiam.test.ext.vascloud.be/auth',
+      realm: 'MOOSE_UHMEP',
+      clientId: 'nihdi-uhmep-hcp'
+    });
+
+    keycloak.init({onLoad: 'login-required', checkLoginIframe: false})
+      .then(function (authenticated) {
+        createListComponent( {
+          getAccessToken: (audience) => Promise.resolve(keycloak.token)
+        });
+      })
+      .catch(function (error) {
+        alert('Failed to initialize authentication');
+      });
+  }
+</script>
+</body>
+</html>

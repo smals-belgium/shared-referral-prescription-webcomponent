@@ -1,0 +1,31 @@
+evf-card {
+  margin-bottom: 1rem;
+}
+
+.evf-element-wrapper > div:first-of-type {
+  font-weight: bold;
+}
+
+@media (min-width: 768px) {
+  .evf-element-wrapper {
+    display: flex;
+    align-items: flex-start;
+    column-gap: 1rem;
+
+    > div {
+      flex-basis: 0;
+
+      &:first-of-type {
+        display: flex;
+        justify-content: flex-end;
+        flex-grow: 3;
+        text-align: right;
+        padding-top: 15px;
+      }
+
+      &:last-of-type {
+        flex-grow: 7;
+      }
+    }
+  }
+}

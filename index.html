@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Testing the News Web Component</title>
+  <base href="/">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="/dist/wc-prescription-details/build/wc-prescription-details.css">
+  <script src="/dist/wc-prescription-details/build/keycloak.js"></script>
+  <style>
+    body {
+      font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+  </style>
+</head>
+<body>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  <!-- Setting the environment dynamically -->
+  window.referralPrescriptionEnv = getEnvFromHost(window.location.host);
+  const keycloak = getKeycloakConfigurationForEnv(window.referralPrescriptionEnv);
+  console.log(window.referralPrescriptionEnv)
+  console.log(keycloak)
+  keycloak.init({onLoad: 'login-required', checkLoginIframe: false}).then(function (authenticated) {
+    <!-- Initialization of the authentication library -->
+    <!-- Creation of the custom element -->
+    const create = document.createElement('nihdi-referral-prescription-details');
+    create.lang = navigator.language.includes('nl') ?? navigator.language.includes('fr') ? navigator.language : 'nl-BE';
+    create.prescriptionId = '720467cf-f6ee-4a99-a795-6d08ef961167';
+    // create.getToken = () => Promise.resolve(keycloak.token);
+    // document.body.append(create);
+    <!-- Callback method to get a token for the authentication library -->
+    // await this.keycloak.updateToken(30);
+    // const accessToken = await this.keycloak.getToken()
+    // const idToken = this.keycloak.getKeycloakInstance().idTokenParsed
+    // return  {
+    //   accessToken,
+    //   idToken
+    // };
+    create.getToken = async () => {
+      await keycloak.updateToken(30);
+      console.log(keycloak)
+      const accessToken = keycloak.token
+      const idToken = () => Promise.resolve(keycloak.idTokenParsed)
+      return  {
+        accessToken,
+        idToken
+      };
+    }
+    <!-- Listener function to get feedback from the Web Component after the prescription has been successfully created -->
+    create.addEventListener('prescriptionsCreated', () => {
+      document.body.removeChild(create);
+      setTimeout(() => {
+        alert('Prescription(s) were created. Refresh to start again.');
+      }, 100);
+    });
+    <!-- Adding the custom element to the HTML body -->
+    document.body.append(create);
+  }).catch(function () {
+    alert('failed to initialize');
+  });
+
+  function getEnvFromHost(host) {
+    if (host.includes("referral-prescription.test.paas.vasdc.be")) {
+      return 'test';
+    } else if (host.includes("referral-prescription.int.ext.vascloud.be")) {
+      return 'intExt';
+    } else if (host.includes("referral-prescription.int.pub.vascloud.be")) {
+      return 'intPub';
+    } else if (host.includes("wwwacc.referral-prescription.ehealth.fgov.be") ??
+      host.includes("extranet-acpt.referral-prescription.ehealth.fgov.be")) {
+      return 'acc';
+    } else if (host.includes("demo")) {
+      return 'demo';
+    } else if (host.includes("localhost")) {
+      return 'local';
+    }
+  }
+
+  function getKeycloakConfigurationForEnv(env) {
+    console.log(env)
+    if (env === 'test') {
+      return new Keycloak({
+        url: 'http://vasiam.test.paas.vasdc.be/auth',
+        realm: 'MOOSE_UHMEP',
+        clientId: 'uhmep-webapp'
+      });
+    } else if (env === 'intExt' || env === 'intPub') {
+      return new Keycloak({
+        url: 'https://api-acpt.ehealth.fgov.be/auth',
+        realm: 'healthcare',
+        clientId: 'nihdi-uhmep-hcp-dev'
+      });
+    } else if (env === 'acc') {
+      return new Keycloak({
+        url: 'https://api-acpt.ehealth.fgov.be/auth',
+        realm: 'healthcare',
+        clientId: 'nihdi-uhmep-hcp'
+      });
+    } else if (env === 'local') {
+      return new Keycloak({
+        url: 'https://vasiam.test.ext.vascloud.be/auth',
+        realm: 'MOOSE_UHMEP',
+        clientId: 'uhmep-webapp'
+      });
+    }
+  }
+</script>
+
+<!-- Web component script at the end -->
+<script src="dist/wc-prescription-details/build/wc-prescription-details.js" type="module"></script>
+</body>
+</html>

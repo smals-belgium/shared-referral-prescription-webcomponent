@@ -1,0 +1,86 @@
+<table mat-table [dataSource]="items" class="mat-elevation-z8">
+  <ng-container matColumnDef="author">
+    <th data-cy="overview-author-title" mat-header-cell *matHeaderCellDef>{{ 'prescription.author' | translate }}</th>
+    <td [attr.data-cy]="'author-cell-' + prescription.id" [attr.translate]="'no'" mat-cell
+        *matCellDef="let prescription">
+      <app-professional-display
+        [professional]="prescription.requester"
+      ></app-professional-display>
+      @if (prescription.requester) {
+        <span class="info">
+           {{ (prescription.requester.nihii8 || prescription.requester.nihii11) | formatNihdi: prescription.requester.id.qualificationCode }}
+             </span>
+      }
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="creationDate">
+    <th data-cy="overview-patient-title" mat-header-cell
+        *matHeaderCellDef>{{ 'prescription.creationDate' | translate }}
+    </th>
+    <td [attr.data-cy]="'creationDate-cell-' + prescription.id" mat-cell *matCellDef="let prescription">
+      {{ prescription.authoredOn | date:'D' }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="typeOfCare">
+    <th data-cy="overview-typeOfCare-title" mat-header-cell
+        *matHeaderCellDef>{{ 'prescription.typeOfCare' | translate }}
+    </th>
+    <td [attr.data-cy]="'typeOfCare-cell-' + prescription.id" mat-cell *matCellDef="let prescription">
+      {{ prescription.templateCode | templateName }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="start">
+    <th data-cy="overview-startDate-title" mat-header-cell *matHeaderCellDef>{{ 'prescription.start' | translate }}</th>
+    <td [attr.data-cy]="'startDate-cell-' + prescription.id" mat-cell *matCellDef="let prescription">
+      {{ prescription.period.start | date:'D' }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="end">
+    <th data-cy="overview-endDate-title" mat-header-cell *matHeaderCellDef>{{ 'prescription.end' | translate }}</th>
+    <td mat-cell [attr.data-cy]="'endDate-cell-' + prescription.id" *matCellDef="let prescription">
+      {{ prescription.period.end | date:'D' }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="status">
+    <th data-cy="overview-status-title" mat-header-cell *matHeaderCellDef>{{ 'prescription.status' | translate }}</th>
+    <td [attr.data-cy]="'status-cell-' + prescription.id" mat-cell *matCellDef="let prescription">
+      {{ 'prescription.statuses.' + prescription.status | translate }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="noRecord">
+    <td mat-footer-cell *matFooterCellDef colspan="6">
+      <span *hideIfProfessional>{{ 'prescription.noPrescriptionsForUser' | translate }}</span>
+      <span *showIfProfessional>{{ 'prescription.noPrescriptionsForPatient' | translate }}</span>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr [class.inactive]="row.status === 'DONE' || row.status === 'CANCELLED' || row.status === 'EXPIRED'"
+      [attr.data-cy]="'prescription-row-' + row.id"
+      (click)="clickPrescription.emit(row)"
+      mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+  <tr [class]="prescriptions?.total === 0 ? 'no-prescriptions' : 'no-data'" mat-footer-row
+      *matFooterRowDef="prescriptions?.total === 0 ? ['noRecord'] : []"></tr>
+</table>
+
+
+@if (error) {
+  <app-alert
+    data-cy="alert"
+    [alert]="AlertType.Error"
+    [message]="errorMsg"
+    [error]="errorResponse"
+    (clickRetry)="retryOnError.emit()"
+  ></app-alert>
+} @else if (loading) {
+  <app-skeleton data-cy="skeleton" [items]="3" [format]="FormatEnum.LINE"></app-skeleton>
+}
+
+

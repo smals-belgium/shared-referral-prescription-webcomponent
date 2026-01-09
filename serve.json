@@ -1,0 +1,13 @@
+{
+  "rewrites": [
+    { "source": "frontend/app", "destination": "/index.html" }
+  ],
+  "redirects": [
+    { "source": "/web-components/prescription-create/wc-prescription-create.js", "destination": "/dist/wc-prescription-create/build/wc-prescription-create.js" },
+    { "source": "/web-components/prescription-list/wc-prescription-list.js", "destination": "/dist/wc-prescription-list/build/wc-prescription-list.js" },
+    { "source": "/web-components/prescription-details/wc-prescription-details.js", "destination": "/dist/wc-prescription-details/build/wc-prescription-details.js" },
+    { "source": "/web-components/prescription-details/assets/evf-form-details/evf-form-details.js", "destination": "/dist/wc-prescription-details/build/assets/evf-form-details/evf-form-details.js" },
+    { "source": "/web-components/prescription-details/assets/pdfmake/pdfmake.js", "destination": "/dist/wc-prescription-details/build/assets/pdfmake/pdfmake.js" },
+    { "source": "/web-components/prescription-create/assets/evf-form/evf-form.js", "destination": "/dist/wc-prescription-create/build/assets/evf-form/evf-form.js" }
+  ]
+}

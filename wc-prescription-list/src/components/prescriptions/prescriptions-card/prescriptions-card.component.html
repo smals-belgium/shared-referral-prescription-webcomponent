@@ -1,0 +1,88 @@
+<div #scrollframe>
+  @if (itemsLength > 0) {
+    <div class="grid-container mh-margin-top-bottom">
+      @for (prescription of requestData(); track trackById(prescription)) {
+        <mat-card class="label-example-card" appearance="raised">
+          <mat-card-content>
+            <div class="row" align="right">
+              <mat-chip [disableRipple]="true" data-cy="prescription-status"
+                        [class]="getStatusClass(prescription.status)">{{ 'prescription.statuses.' + prescription.status | translate }}
+              </mat-chip>
+            </div>
+            <div class="row">
+              <p class="template-title">{{ prescription.templateCode | templateName }}</p>
+            </div>
+
+            <div class="row">
+              <p class="label">{{ 'prescription.author' | translate }}</p>
+              <p>
+                <app-professional-display
+                  [professional]="prescription.requester"
+                ></app-professional-display>
+              </p>
+              <span class="info">
+               @if (getProfessional(prescription.requester); as professional) {
+                 ({{ (professional.nihii8 || professional.nihii11) | formatNihdi: professional.id.qualificationCode }})
+               }
+            </span>
+            </div>
+
+            <div class="row row-with-columns">
+              <div class="column">
+                <p class="label">{{ 'prescription.start' | translate }}</p>
+                <p> {{ prescription.period?.start | date:'D' }}</p>
+              </div>
+              <div class="column">
+                <p class="label">{{ 'prescription.end' | translate }}</p>
+                <p>{{ prescription.period?.end | date:'D' }}</p>
+              </div>
+
+            </div>
+
+            <div class="row" align="right">
+              <button mat-button type="button"
+                      (click)="clickPrescription.emit(prescription)">{{ 'prescription.details.link' | translate }}
+                <mat-icon fontIcon="keyboard_arrow_right" aria-hidden="true" iconPositionEnd></mat-icon>
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  } @else if (itemsLength === 0) {
+    <div class="mh-margin-top-bottom">
+      <app-alert
+        [alert]="AlertType.Info"
+        [message]="(isProfessional$() ? 'prescription.noPrescriptionsForPatient' : 'prescription.noPrescriptionsForUser') | translate"
+        [showRetry]="false"
+      ></app-alert>
+    </div>
+  }
+
+  @if (!canLoadMore()) {
+    <div class="mh-margin-bottom">
+    <app-alert
+      [alert]="AlertType.Info"
+      [message]="'prescription.allPrescriptionsFetched' | translate"
+      [showRetry]="false"
+    ></app-alert>
+    </div>
+  }
+
+  @if (loading || isLoading()) {
+    <div class="mh-margin-top-bottom">
+      <app-skeleton [items]="3" [format]="FormatEnum.CARD"></app-skeleton>
+    </div>
+  } @else if (error) {
+    <div class="mh-margin-top-bottom">
+      <app-alert
+        [alert]="AlertType.Error"
+        [message]="errorMsg"
+        [error]="errorResponse"
+        (clickRetry)="onErrorRetryClick()"
+      ></app-alert>
+    </div>
+  }
+
+  <div #anchor></div>
+</div>

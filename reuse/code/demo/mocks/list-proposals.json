@@ -1,0 +1,153 @@
+{
+  "total": 3,
+  "items": [
+    {
+      "id": "DEAD0000-0000-4000-A000-000000000021",
+      "templateCode": "ANNEX_81",
+      "intent" : "proposal",
+      "authoredOn": "2025-09-23T09:29:58.000+00:00",
+      "requesterIndex": 2,
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": {
+        "start": "2025-09-22T22:00:00.000+00:00",
+        "end": "2026-09-21T22:00:00.000+00:00"
+      },
+      "assigned": true,
+      "shortCode" : null,
+      "patientIdentifier" : "00000000097",
+      "referralTask" : {
+        "status" : "COMPLETED",
+        "id" : "DEAD0000-0000-4000-A001-000000000021",
+        "executionPeriod" : null
+      },
+      "performerTasks" : [ {
+        "careGiverIndex" : 2,
+        "status" : "OPEN",
+        "id" : "DEAD0000-0000-4001-A000-000000000021",
+        "executionPeriod" : {
+          "start" : "2025-10-22",
+          "end" : null
+        }
+      } ],
+      "organizationTasks" : [ ],
+      "category" : "nursing",
+      "responses" : {
+        "occurrences" : {
+          "frequency" : 1,
+          "period" : 1,
+          "periodUnit" : "wk"
+        },
+        "boundsDuration" : null,
+        "feedback" : false,
+        "nursing-diagnosis" : [ "373930000", "418415002" ],
+        "nbSessions" : null,
+        "occurrenceTiming" : {},
+        "medical-problem" : [ "52448006" ]
+      },
+      "pseudonymizedKey" : null,
+      "kid" : null,
+      "note" : null,
+      "extendedShortId" : null
+    },
+    {
+      "id": "DEAD0000-0000-4000-A000-000000000022",
+      "templateCode": "ANNEX_81",
+      "authoredOn": "2025-09-21T08:01:09.000+00:00",
+      "requesterIndex": 2,
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": {
+        "start": "2025-09-21T22:00:00.000+00:00",
+        "end": "2026-09-20T22:00:00.000+00:00"
+      },
+      "assigned": true,
+      "shortCode" : null,
+      "patientIdentifier" : "00000000097",
+      "referralTask" : {
+        "status" : "COMPLETED",
+        "id" : "DEAD0000-0000-4000-A001-000000000022",
+        "executionPeriod" : null
+      },
+      "performerTasks" : [ ],
+      "organizationTasks" : [ ],
+      "category" : "nursing",
+      "responses" : {
+        "occurrences": {
+          "frequency": 4,
+          "period": 1,
+          "periodUnit": "wk"
+        },
+        "boundsDuration": null,
+        "feedback": false,
+        "nursing-diagnosis": [
+          "372089002"
+        ],
+        "nbSessions": null,
+        "occurrenceTiming": {},
+        "medical-problem": [
+          "52448006"
+        ]
+      },
+      "pseudonymizedKey" : null,
+      "kid" : null,
+      "note" : null,
+      "extendedShortId" : null
+    },
+    {
+      "id": "DEAD0000-0000-4000-A000-000000000023",
+      "templateCode": "ANNEX_81",
+      "authoredOn": "2025-08-20T06:58:43.000+00:00",
+      "requesterIndex": 2,
+      "careGivers": null,
+      "organizations": null,
+      "status": "CLOSED",
+      "period": {
+        "start": "2025-08-19T22:00:00.000+00:00",
+        "end": "2026-08-18T22:00:00.000+00:00"
+      },
+      "assigned": true,
+      "shortCode" : null,
+      "patientIdentifier" : "00000000097",
+      "referralTask" : {
+        "status" : "COMPLETED",
+        "id" : "DEAD0000-0000-4000-A001-000000000023",
+        "executionPeriod" : null
+      },
+      "performerTasks" : [ {
+        "careGiverIndex" : 3,
+        "status" : "COMPLETED",
+        "id" : "DEAD0000-0000-4001-A000-000000000023",
+        "executionPeriod" : {
+          "start" : "2025-10-22",
+          "end" : "2025-10-22"
+        }
+      } ],
+      "organizationTasks" : [ ],
+      "category" : "nursing",
+      "responses" : {
+        "occurrences": {
+          "frequency": 1,
+          "period": 1,
+          "periodUnit": "d"
+        },
+        "boundsDuration": null,
+        "feedback": true,
+        "nursing-diagnosis": [
+          "372089002"
+        ],
+        "nbSessions": null,
+        "occurrenceTiming": {},
+        "medical-problem": [
+          "397540003"
+        ]
+      },
+      "pseudonymizedKey" : null,
+      "kid" : null,
+      "note" : null,
+      "extendedShortId" : null
+    }
+  ]
+}

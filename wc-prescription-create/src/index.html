@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Healix - Web components</title>
+  <base href="/"/>
+
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="../../keycloak/keycloak.js"></script>
+</head>
+<body>
+<script>
+  window.referralPrescriptionEnv = 'test';
+  var keycloak = new Keycloak({
+    url: 'http://vasiam.test.paas.vasdc.be/auth',
+    realm: 'MOOSE_UHMEP',
+    clientId: 'uhmep-webapp'
+  });
+  keycloak.init({onLoad: 'login-required', checkLoginIframe: false}).then(function (authenticated) {
+    console.log(authenticated ? 'authenticated' : 'not authenticated');
+    const create = document.createElement('nihdi-referral-prescription-create');
+    create.lang = navigator.language.includes('nl') ?? navigator.language.includes('fr') ? navigator.language : 'nl-BE';
+    create.patientSsin = '43100101456';
+    create.intent = 'intent';
+    create.getToken = () => Promise.resolve(keycloak.token);
+    create.addEventListener('prescriptionsCreated', () => {
+      document.body.removeChild(create);
+      setTimeout(() => {
+        alert('Prescription(s) were created. Refresh to start again.');
+      }, 100);
+    });
+    document.body.append(create);
+  }).catch(function (error) {
+    console.error(error);
+    alert('failed to initialize');
+  });
+</script>
+<script src="/assets/evf-form/evf-form.js" type="module"></script>
+</body>
+</html>

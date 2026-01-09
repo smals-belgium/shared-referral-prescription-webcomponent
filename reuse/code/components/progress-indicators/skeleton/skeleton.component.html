@@ -1,0 +1,38 @@
+@if (format() === FormatEnum.LINE) {
+  <ngx-skeleton-loader
+    [count]="items()"
+    appearance="line"
+    class="skeleton-line"
+  />
+}
+
+@if (format() === FormatEnum.CARD) {
+  <div class="skeleton-grid-container">
+  @for(_ of skeletons; track $index){
+  <mat-card>
+    <mat-card-content>
+      <ngx-skeleton-loader
+        [theme]="{cardThemeLine1}"
+      ></ngx-skeleton-loader>
+
+      <ngx-skeleton-loader
+        [theme]="cardThemeLine2"
+      ></ngx-skeleton-loader>
+
+      <ngx-skeleton-loader
+        [theme]="cardThemeLine3"
+      ></ngx-skeleton-loader>
+
+      <ngx-skeleton-loader
+        [theme]="cardThemeLine4"
+      ></ngx-skeleton-loader>
+
+      <ngx-skeleton-loader
+        [theme]="cardThemeLine5"
+      ></ngx-skeleton-loader>
+    </mat-card-content>
+  </mat-card>
+  }
+  </div>
+}
+

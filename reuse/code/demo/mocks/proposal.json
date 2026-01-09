@@ -1,0 +1,201 @@
+{
+  "id" : "e075d9e9-e6ef-4be6-816b-1da28e1f028e",
+  "shortCode" : null,
+  "patientIdentifier" : "123456",
+  "referralTask" : {
+    "status" : "COMPLETED",
+    "id" : "e075d9e9-e6ef-4be6-816b-1da28e1f028e",
+    "executionPeriod" : null
+  },
+  "performerTasks" : [ {
+    "careGiverSsin" : "19750500164",
+    "careGiver" : {
+      "id" : {
+        "profession" : "PHYSICIAN",
+        "ssin" : "19750500164",
+        "qualificationCode" : "001"
+      },
+      "phoneNumbers" : {
+        "telephoneNumbers" : null,
+        "mobileNumber" : "0479/01.01.01"
+      },
+      "licenseToPractice" : true,
+      "subscriptionEndDate" : null,
+      "healthcareQualification" : {
+        "id" : {
+          "code" : "001",
+          "profession" : "PHYSICIAN"
+        },
+        "description" : {
+          "nl" : "huisarts op basis van verworven rechten (ingeschreven voor 1/1/1995)",
+          "fr" : "médecin généraliste avec droits acquis (inscrits jusqu’au 31/12/1994)",
+          "de" : "Allgemeinmediziner mit erworbenen Rechten (eingetragen bis zum 31.12.1994)",
+          "en" : "General practitioner with acquired rights (registered until 31/12/1994)"
+        }
+      },
+      "healthcareStatus" : {
+        "code" : "01",
+        "description" : {
+          "nl" : "Actief",
+          "fr" : "Actif",
+          "de" : "Aktiv",
+          "en" : "Active"
+        }
+      },
+      "healthcarePerson" : {
+        "ssin" : "19750500164",
+        "firstName" : "Luke",
+        "lastName" : "Skywalker",
+        "deceased" : false
+      },
+      "healthcareVisaList" : [ ],
+      "address" : {
+        "street" : {
+          "nl" : "Kerkstraat",
+          "fr" : "Rue de l'église",
+          "de" : "Rue de l'église",
+          "en" : "Rue de l'église"
+        },
+        "houseNumber" : "1",
+        "box" : "A",
+        "zipCode" : "1000",
+        "municipality" : {
+          "nl" : "Brussel",
+          "fr" : "Bruxelles",
+          "de" : "Brüssel",
+          "en" : "Brussels"
+        },
+        "cityCode" : 1000,
+        "country" : {
+          "nl" : "België",
+          "fr" : "Belgique",
+          "de" : "Belgien",
+          "en" : "Belgium"
+        }
+      },
+      "nihii8" : "12344321",
+      "nihii11" : "12345654321",
+      "type" : "Professional"
+    },
+    "status" : "COMPLETED",
+    "id" : "0690267f-ec33-43e1-904a-081803e05964",
+    "executionPeriod" : {
+      "start" : "2025-10-22",
+      "end" : "2025-10-22"
+    }
+  } ],
+  "organizationTasks" : [ ],
+  "templateCode" : "ANNEX_81",
+  "authoredOn" : "2025-10-22T14:48:51",
+  "requester" : {
+    "id" : {
+      "profession" : "NURSE",
+      "ssin" : "19750500263",
+      "qualificationCode" : "428"
+    },
+    "phoneNumbers" : {
+      "telephoneNumbers" : null,
+      "mobileNumber" : ""
+    },
+    "licenseToPractice" : true,
+    "subscriptionEndDate" : null,
+    "healthcareQualification" : {
+      "id" : {
+        "code" : "428",
+        "profession" : "NURSE"
+      },
+      "description" : {
+        "nl" : "Gebrevetteerde verpleegkundige + referentieverpleegkundige inzake wondzorg",
+        "fr" : "Infirmier(ère) breveté(e) + infirmier(ère) relais en matière de soins de plaie(s)",
+        "de" : "Diplomierte/r Krankenpfleger/in + Verbindungspflegekraft für Wundversorgung",
+        "en" : "Registered nurse + liaison nurse specialized in wound care"
+      }
+    },
+    "healthcareStatus" : {
+      "code" : "01",
+      "description" : {
+        "nl" : "Actief",
+        "fr" : "Actif",
+        "de" : "Aktiv",
+        "en" : "Active"
+      }
+    },
+    "healthcarePerson" : {
+      "ssin" : "70252900379",
+      "firstName" : "Leia",
+      "lastName" : "Organa",
+      "deceased" : false
+    },
+    "healthcareVisaList" : [ {
+      "id" : "1796149",
+      "active" : true,
+      "definitive" : true,
+      "startDate" : "1988-06-29",
+      "endDate" : null,
+      "withdrawalStartDate" : null,
+      "withdrawalEndDate" : null,
+      "healthcareProId" : {
+        "profession" : "NURSE",
+        "ssin" : "70252900379",
+        "qualificationCode" : null
+      }
+    } ],
+    "address" : {
+      "street" : {
+        "nl" : "",
+        "fr" : "",
+        "de" : "",
+        "en" : ""
+      },
+      "houseNumber" : "2",
+      "box" : "",
+      "zipCode" : "9050",
+      "municipality" : {
+        "nl" : "Gent",
+        "fr" : "Gand",
+        "de" : "Gent",
+        "en" : "Gand"
+      },
+      "cityCode" : 9050,
+      "country" : {
+        "nl" : "België",
+        "fr" : "Belgique",
+        "de" : "Belgien",
+        "en" : "Belgium"
+      }
+    },
+    "nihii8" : "12344321",
+    "nihii11" : "12345654321",
+    "type" : "Professional"
+  },
+  "status" : "APPROVED",
+  "category" : "nursing",
+  "period" : {
+    "start" : "2025-10-22",
+    "end" : "2026-10-21"
+  },
+  "responses" : {
+    "occurrences" : {
+      "frequency" : 1,
+      "period" : 1,
+      "periodUnit" : "wk"
+    },
+    "boundsDuration" : null,
+    "feedback" : false,
+    "nursing-diagnosis" : [ "373930000", "418415002" ],
+    "nbSessions" : null,
+    "occurrenceTiming" : {
+      "repeat" : {
+        "frequency" : 1,
+        "period" : 1,
+        "periodUnit" : "wk"
+      }
+    },
+    "medical-problem" : [ "52448006" ]
+  },
+  "intent" : "proposal",
+  "pseudonymizedKey" : null,
+  "kid" : "8c8ef043-bf4d-4d17-9c43-8c694687b01e",
+  "note" : null,
+  "extendedShortId" : null
+}

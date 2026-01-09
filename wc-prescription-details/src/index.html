@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Healix - Web components - Prescription details</title>
+  <base href="/"/>
+
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="../../keycloak/keycloak.js"></script>
+  <script src="http://localhost:3000/web-components/prescription-details/wc-prescription-details.js" type="module"></script>
+</head>
+<body>
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const env = urlParams.get('env') === 'demo' ? 'demo' : 'local';
+  window.referralPrescriptionEnv = env;
+  function createDetailsComponent(services) {
+
+    const create = document.createElement('nihdi-referral-prescription-details');
+    create.lang = navigator.language.includes('nl') || navigator.language.includes('fr')
+      ? navigator.language
+      : 'nl-BE';
+    create.prescriptionId = 'DEAD0000-0000-4000-A000-000000000002';
+    // create.patientSsin = '90122712173';
+    create.intent = 'order';
+    create.services = services;
+
+    document.body.append(create);
+  }
+
+  if (env === 'demo') {
+
+    createDetailsComponent( {
+      getAccessToken: (audience) => Promise.reject('uhmep-demo-patient'),
+      getIdToken: () => {
+        return {
+          userProfile: {
+            ssin: '90122712173',
+            firstName: 'Jean',
+            lastName: 'Dupont',
+            gender: 'M',
+            role: 'Patient'
+          }
+        };
+      }
+    });
+  }
+
+  else {
+    var keycloak = new Keycloak({
+      url: 'https://vasiam.test.ext.vascloud.be/auth',
+      realm: 'MOOSE_UHMEP',
+      clientId: 'nihdi-uhmep-hcp'
+    });
+
+    keycloak.init({onLoad: 'login-required', checkLoginIframe: false})
+      .then(function (authenticated) {
+
+        createDetailsComponent({
+          getAccessToken: (audience) => Promise.resolve(keycloak.token),
+          getIdToken: () => keycloak.tokenParsed
+        });
+      })
+      .catch(function (error) {
+        alert('Failed to initialize authentication');
+      });
+  }
+</script>
+</body>
+</html>

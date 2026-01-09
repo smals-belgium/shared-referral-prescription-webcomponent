@@ -1,0 +1,19 @@
+[ {
+  "id" : null,
+  "discipline" : "PATIENT",
+  "templateName" : null,
+  "assignPrescription" : true,
+  "assignProposal" : true,
+  "evaluateProposal" : false,
+  "cancelProposal" : true,
+  "createPrescription" : false,
+  "consultPrescription" : true,
+  "createProposal" : false,
+  "consultProposal" : true,
+  "executeTreatment" : false,
+  "cancelPrescription" : true,
+  "revokeTreatment" : false,
+  "interruptTreatment" : false,
+  "removeAssignationPrescription" : true,
+  "removeAssignationProposal" : true
+} ]

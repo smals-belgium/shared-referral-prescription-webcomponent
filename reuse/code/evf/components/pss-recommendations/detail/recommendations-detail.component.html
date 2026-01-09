@@ -1,0 +1,44 @@
+<evf-form-detail-layout [options]="options">
+  @if (element.labelTranslationId && options.showLabel) {
+  <evf-detail-label
+    [labelId]="element.labelTranslationId!"
+    [interpolationData]="interpolationData"
+  ></evf-detail-label>
+  }
+
+
+  @if (!controlRecommendations()) {
+    @if (isLoading()) {
+      <mat-icon>
+        <mat-spinner diameter="20">
+        </mat-spinner>
+      </mat-icon>
+    }
+  }
+</evf-form-detail-layout>
+@if (controlRecommendations()) {
+  <section class="pss-results">
+    <p>{{ 'prescription.create.control.table.title' | translate }}</p>
+    @if (hasAdditionalRelevantInformation()) {
+
+      <app-alert
+        [alert]="AlertType.Error"
+        [message]=getWarningMessage()
+        [showRetry]="false"
+      ></app-alert>
+    }
+
+    <app-pss-radiology-result-dialog [supportOptions]="controlRecommendations()"
+                                     [isClickable]="false"
+                                     [prescribedExam]="getPrescribedExam()">
+    </app-pss-radiology-result-dialog>
+  </section>
+}
+@if (isProfessional() && !isPssActive()) {
+  <app-alert
+    [alert]="AlertType.Error"
+    [title]="'pss.unavailable.title' | translate"
+    [message]="'pss.unavailable.message' | translate"
+    [showRetry]="false"
+  ></app-alert>
+}

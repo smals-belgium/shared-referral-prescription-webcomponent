@@ -1,0 +1,10 @@
+<mat-paginator
+  #paginator
+  (page)="handlePageEvent($event)"
+  [length]="total"
+  [showFirstLastButtons]="true"
+  [pageSizeOptions]="pageSizeOptions"
+  [pageSize]="pageSize"
+  [pageIndex]="pageIndex"
+  aria-label="'pagination.ariaLabel.selectPage' | translate"
+/>

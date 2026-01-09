@@ -653,3 +653,7 @@ If you need support, contact us via integration-support@ehealth.fgov.be
 ## Roadmap
 
 The project is still in a development phase.
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup and guidelines.

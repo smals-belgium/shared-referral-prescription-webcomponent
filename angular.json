@@ -1,0 +1,683 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "wc-prescription-details": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "wc-prescription-details",
+      "sourceRoot": "wc-prescription-details/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/wc-prescription-details",
+            "index": "wc-prescription-details/src/index.html",
+            "browser": "wc-prescription-details/src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "wc-prescription-details/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "ssr": false,
+            "prerender": false,
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "./dist/evf-form-details/build/",
+                "output": "./assets/evf-form-details/"
+              },
+              {
+                "glob": "**/*",
+                "input": "./dist/pdfmake/build/",
+                "output": "./assets/pdfmake/"
+              }
+            ],
+            "styles": ["wc-prescription-details/src/styles.scss"],
+            "scripts": ["node_modules/marked/marked.min.js"],
+            "externalDependencies": ["/assets/evf-form-details/evf-form-details.js", "/assets/pdfmake/pdfmake.js"],
+            "allowedCommonJsDependencies": [
+              "localforage",
+              "buffer",
+              "@messageformat/core",
+              "elliptic",
+              "bn.js",
+              "pdfmake/build/pdfmake.js"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1mb",
+                  "maximumError": "5mb"
+                }
+              ],
+              "outputHashing": "all",
+              "optimization": {
+                "fonts": false
+              }
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "wc-prescription-details:build:production"
+            },
+            "development": {
+              "buildTarget": "wc-prescription-details:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular-builders/jest:run",
+          "options": {
+            "polyfills": ["zone.js", "zone.js/testing"],
+            "configPath": "jest.config.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": ["scss"],
+            "assets": [],
+            "styles": [],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["wc-prescription-details/src/**/*.ts", "wc-prescription-details/src/**/*.html"]
+          }
+        }
+      }
+    },
+    "wc-prescription-list": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "wc-prescription-list",
+      "sourceRoot": "/wc-prescription-list/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/wc-prescription-list",
+            "index": "wc-prescription-list/src/index.html",
+            "browser": "/wc-prescription-list/src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "wc-prescription-list/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "ssr": false,
+            "prerender": false,
+            "assets": [],
+            "styles": ["wc-prescription-list/src/styles.scss"],
+            "allowedCommonJsDependencies": ["buffer", "@messageformat/core", "elliptic", "bn.js"]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1mb",
+                  "maximumError": "2mb"
+                }
+              ],
+              "outputHashing": "all",
+              "optimization": {
+                "fonts": false
+              }
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "wc-prescription-list:build:production"
+            },
+            "development": {
+              "buildTarget": "wc-prescription-list:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular-builders/jest:run",
+          "options": {
+            "polyfills": ["zone.js", "zone.js/testing"],
+            "configPath": "jest.config.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": ["scss"],
+            "assets": [],
+            "styles": [],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["wc-prescription-list/src/**/*.ts", "wc-prescription-list/src/**/*.html"]
+          }
+        }
+      }
+    },
+    "wc-prescription-create": {
+      "projectType": "application",
+      "root": "wc-prescription-create",
+      "sourceRoot": "wc-prescription-create/src",
+      "prefix": "healix",
+      "architect": {
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "wc-prescription-create:build:production"
+            },
+            "development": {
+              "buildTarget": "wc-prescription-create:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/wc-prescription-create",
+            "index": "wc-prescription-create/src/index.html",
+            "browser": "wc-prescription-create/src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "wc-prescription-create/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "ssr": false,
+            "prerender": false,
+            "outputHashing": "all",
+            "optimization": {
+              "fonts": false
+            },
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "./dist/evf-form/build/",
+                "output": "./assets/evf-form/"
+              }
+            ],
+            "styles": ["wc-prescription-create/src/styles.scss"],
+            "scripts": ["node_modules/marked/marked.min.js"],
+            "externalDependencies": ["/assets/evf-form/evf-form.js"],
+            "allowedCommonJsDependencies": ["localforage", "buffer", "@messageformat/core", "elliptic", "bn.js"]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1mb",
+                  "maximumError": "3mb"
+                }
+              ],
+              "outputHashing": "all",
+              "optimization": {
+                "fonts": false
+              }
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-builders/jest:run",
+          "options": {
+            "polyfills": ["zone.js", "zone.js/testing"],
+            "configPath": "jest.config.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": ["scss"],
+            "assets": [],
+            "styles": [],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["wc-prescription-create/src/**/*.ts", "wc-prescription-create/src/**/*.html"]
+          }
+        }
+      }
+    },
+    "wc-pdfmake": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "wc-pdfmake",
+      "sourceRoot": "wc-pdfmake/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/wc-pdfmake",
+            "index": "wc-pdfmake/src/index.html",
+            "browser": "wc-pdfmake/src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "wc-pdfmake/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": ["wc-pdfmake/src/favicon.ico", "wc-pdfmake/src/assets"],
+            "scripts": [],
+            "allowedCommonJsDependencies": ["localforage", "pdfmake/build/pdfmake.js", "@messageformat/core"]
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "ngx-build-plus:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "wc-pdfmake:build:production"
+            },
+            "development": {
+              "browserTarget": "wc-pdfmake:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular-builders/jest:run",
+          "options": {
+            "polyfills": ["zone.js", "zone.js/testing"],
+            "configPath": "jest.config.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": ["scss"],
+            "assets": [],
+            "styles": [],
+            "scripts": []
+          }
+        }
+      }
+    },
+    "reuse": {
+      "architect": {
+        "test": {
+          "builder": "@angular-builders/jest:run",
+          "options": {
+            "polyfills": ["zone.js", "zone.js/testing"],
+            "configPath": "jest.config.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": ["scss"],
+            "assets": [],
+            "styles": [],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["reuse/code/**/*.ts", "reuse/code/**/*.html"]
+          }
+        }
+      },
+      "root": "reuse",
+      "projectType": "library"
+    },
+    "mags-prescription-list": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "wrappers/components/mags-prescription-list",
+      "sourceRoot": "wrappers/components/mags-prescription-list/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/mags-prescription-list/serve",
+            "browser": "wrappers/components/mags-prescription-list/src/main.ts",
+            "index": "wrappers/components/mags-prescription-list/src/index.html",
+            "tsConfig": "wrappers/components/mags-prescription-list/tsconfig.app.json",
+            "outputHashing": "all",
+            "inlineStyleLanguage": "scss",
+            "assets": [],
+            "scripts": ["dist/wc-prescription-list/build/wc-list-prescriptions.js"]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "none"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "mags-prescription-list:build:production"
+            },
+            "development": {
+              "buildTarget": "mags-prescription-list:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "tsConfig": "wrappers/components/mags-prescription-list/tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "wrappers/components/mags-prescription-list/public"
+              }
+            ],
+            "styles": ["wrappers/components/mags-prescription-list/src/styles.scss"]
+          }
+        }
+      }
+    },
+    "mags-prescription-list-webcomponent": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "wrappers/components/mags-prescription-list",
+      "sourceRoot": "wrappers/components/mags-prescription-list/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/mags-prescription-list/custom-element",
+            "browser": "wrappers/components/mags-prescription-list/src/main.custom-element.ts",
+            "index": false,
+            "tsConfig": "wrappers/components/mags-prescription-list/tsconfig.custom-element.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [],
+            "outputHashing": "none",
+            "scripts": ["dist/wc-prescription-list/build/wc-prescription-list.js"]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "4MB",
+                  "maximumError": "6MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "24kB",
+                  "maximumError": "32kB"
+                }
+              ],
+              "outputHashing": "none"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "mags-prescription-list:build:production"
+            },
+            "development": {
+              "buildTarget": "mags-prescription-list:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "tsConfig": "wrappers/components/mags-prescription-list/tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "wrappers/components/mags-prescription-list/public"
+              }
+            ],
+            "styles": ["wrappers/components/mags-prescription-list/src/styles.scss"]
+          }
+        }
+      }
+    },
+    "mags-prescription-details": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "wrappers/components/mags-prescription-details",
+      "sourceRoot": "wrappers/components/mags-prescription-details/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/mags-prescription-details/serve",
+            "browser": "wrappers/components/mags-prescription-details/src/main.ts",
+            "index": "wrappers/components/mags-prescription-details/src/index.html",
+            "tsConfig": "wrappers/components/mags-prescription-details/tsconfig.app.json",
+            "outputHashing": "all",
+            "inlineStyleLanguage": "scss",
+            "assets": [],
+            "scripts": ["dist/wc-prescription-details/build/wc-prescription-details.js"]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "none"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "mags-prescription-details:build:production"
+            },
+            "development": {
+              "buildTarget": "mags-prescription-details:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "tsConfig": "wrappers/components/mags-prescription-details/tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "wrappers/components/mags-prescription-details/public"
+              }
+            ],
+            "styles": ["wrappers/components/mags-prescription-details/src/styles.scss"]
+          }
+        }
+      }
+    },
+    "mags-prescription-details-webcomponent": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "wrappers/components/mags-prescription-details",
+      "sourceRoot": "wrappers/components/mags-prescription-details/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/mags-prescription-details/custom-element",
+            "browser": "wrappers/components/mags-prescription-details/src/main.custom-element.ts",
+            "index": false,
+            "tsConfig": "wrappers/components/mags-prescription-details/tsconfig.custom-element.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [],
+            "outputHashing": "none",
+            "scripts": ["dist/wc-prescription-details/build/wc-prescription-details.js"]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "4MB",
+                  "maximumError": "6MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "24kB",
+                  "maximumError": "32kB"
+                }
+              ],
+              "outputHashing": "none"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "mags-prescription-details:build:production"
+            },
+            "development": {
+              "buildTarget": "mags-prescription-details:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "tsConfig": "wrappers/components/mags-prescription-details/tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "wrappers/components/mags-prescription-details/public"
+              }
+            ],
+            "styles": ["wrappers/components/mags-prescription-details/src/styles.scss"]
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": false
+  }
+}

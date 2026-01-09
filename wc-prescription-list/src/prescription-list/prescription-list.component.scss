@@ -1,0 +1,142 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+@include mh.use-font-material-symbols(
+    true,
+    url('@reuse/assets/fonts/MatSymbols-Rounded.ttf'),
+    'Material Symbols Rounded',
+      (
+        'material-icons',
+        'material-symbols',
+      ));
+@include mh.use-globals();
+@include mh.use-classes();
+@include mh.use-all-components();
+@include mh.override-mat-slide-toggle();
+@include mh.override-mat-table();
+@include mh.override-mat-chips();
+@include mh.override-mat-paginator();
+@include mh.override-mat-form-field();
+@include mh.override-mat-select();
+@include mh.override-mat-autocomplete();
+@include mh.override-mat-button();
+@include mh.override-mat-button-icon(false);
+@include mh.override-mat-card();
+@include mh.override-mat-dialog();
+
+@function line-height($font-size) {
+  @return mh.calculateRem($font-size * 1.25);
+}
+
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-container.align-right > :only-child {
+  margin-left: auto;
+}
+
+.mat-mdc-paginator-outer-container mat-select .mat-mdc-select-arrow:after {
+  content: 'keyboard_arrow_down';
+  font-family: 'Material Symbols Rounded', sans-serif;
+}
+
+:host {
+  /* Body Medium */
+  --mat-sys-body-medium: #{mh.$font-weight-regular} #{mh.$font-size-s} / #{mh.calculateRem(20px)} var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-body-medium-font: var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-body-medium-line-height: #{mh.calculateRem(20px)};
+  --mat-sys-body-medium-size: #{mh.$font-size-s};
+  --mat-sys-body-medium-tracking: 0.016rem;
+  --mat-sys-body-medium-weight: #{mh.$font-weight-regular};
+
+  /* Label Large */
+  --mat-sys-label-large: #{mh.$font-weight-medium} #{mh.$font-size-s} / #{mh.calculateRem(28px)} var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-label-large-font: var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-label-large-line-height: #{mh.calculateRem(28px)};
+  --mat-sys-label-large-size: #{mh.$font-size-m};
+  --mat-sys-label-large-tracking: #{mh.calculateRem(0.04px)};
+  --mat-sys-label-large-weight: #{mh.$font-weight-semibold};
+  --mat-sys-label-large-weight-prominent: #{mh.$font-weight-bold};
+
+  /* Title Small */
+  --mat-sys-title-small-tracking: 0.006rem;
+
+  /* Heading Small */
+  --mat-sys-headline-small: #{mh.$font-weight-regular} #{mh.$font-size-2xl} / 2rem var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-headline-small-font: var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-headline-small-line-height: 2rem;
+  --mat-sys-headline-small-size: #{mh.$font-size-2xl};
+  --mat-sys-headline-small-tracking: 0;
+  --mat-sys-headline-small-weight: #{mh.$font-weight-regular};
+
+  /* Paginator / Corners */
+  --mdc-outlined-text-field-container-shape: #{mh.calculateRem(6px)};
+  --mat-sys-corner-extra-small: #{mh.calculateRem(4px)};
+  --mat-select-enabled-arrow-color: #{mh.$primary-40};
+  --mat-sys-dragged-state-layer-opacity: 0.16;
+  --mat-sys-focus-state-layer-opacity: 0.12;
+  --mat-sys-hover-state-layer-opacity: 0.08;
+  --mat-sys-pressed-state-layer-opacity: 0.12;
+
+  /* Surface Colors */
+  --mat-sys-on-surface-variant: #414753;
+  --mat-sys-surface-container: #{mh.$primary-100};
+  --mat-select-focused-arrow-color: #{mh.$primary-40};
+  --mat-sys-on-secondary-container: #{mh.$secondary-30};
+
+  /* Toggle / Switch */
+  --mat-sys-corner-full: #{mh.$border-radius-round};
+  --mat-switch-label-text-color: #{mh.$color-black};
+  --mat-switch-label-text-size: #{mh.$font-size-m};
+  --mdc-switch-unselected-icon-color: #{mh.$neutral-50};
+  --mat-switch-track-outline-color: #{mh.$neutral-50};
+  --mdc-switch-unselected-track-color: #{mh.$neutral-50};
+  --mdc-switch-unselected-handle-color: #{mh.$primary-100};
+  --mdc-switch-unselected-hover-handle-color: #{mh.$primary-100};
+  --mdc-switch-unselected-hover-track-color: #{mh.$neutral-25};
+  --mdc-switch-unselected-focus-handle-color: #{mh.$primary-100};
+  --mdc-switch-unselected-focus-track-color: #{mh.$neutral-25};
+  --mdc-switch-unselected-pressed-handle-color: #{mh.$primary-100};
+  --mdc-switch-unselected-pressed-track-color: #{mh.$neutral-25};
+  --mdc-switch-selected-icon-color: #{mh.$primary-40};
+  --mdc-switch-selected-track-color: #{mh.$primary-40};
+  --mdc-switch-selected-handle-color: #{mh.$primary-100};
+  --mdc-switch-selected-hover-handle-color: #{mh.$primary-100};
+  --mdc-switch-selected-hover-track-color: #{mh.$primary-35};
+  --mdc-switch-selected-focus-handle-color: #{mh.$primary-100};
+  --mdc-switch-selected-focus-track-color: #{mh.$primary-35};
+  --mdc-switch-selected-pressed-handle-color: #{mh.$primary-100};
+  --mdc-switch-selected-pressed-track-color: #{mh.$primary-35};
+
+  /* Tooltip */
+  --mat-sys-body-small-font: var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-body-small-size: #{mh.$font-size-xs};
+  --mat-sys-body-small-weight: #{mh.$font-weight-regular};
+  --mat-sys-body-small-line-height: #{mh.$font-size-m};
+  --mat-sys-body-small-tracking: 0.025rem;
+  --mat-sys-inverse-surface: #{mh.$neutral-20};
+  --mat-sys-inverse-on-surface: #{mh.$neutral-95};
+
+  /* Card */
+  --mdc-elevated-card-container-color: #{mh.$primary-100};
+  --mat-sys-corner-medium: #{mh.$font-size-xs};
+  --mdc-elevated-card-container-elevation: #{mh.$box-shadow-dropdown};
+  --mat-sys-level1: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+
+  /* Buttons */
+  --mat-sys-primary: #{mh.$primary-40};
+  --mat-sys-on-primary: #{mh.$primary-100};
+
+  /* Dialog */
+  --mdc-dialog-subhead-color: #{mh.$mat-primary-900};
+  --mdc-dialog-subhead-size: #{mh.$font-size-m};
+  --mdc-dialog-subhead-weight: #{mh.$font-weight-semibold};
+
+  /* Form Fields */
+  --mdc-outlined-text-field-error-outline-color: #{mh.$error-30};
+  --mdc-outlined-text-field-outline-width:  #{mh.calculateRem(1px)};
+  --mdc-outlined-text-field-error-focus-outline-color: #{mh.$error-30};
+  --mdc-outlined-text-field-error-hover-outline-color: #{mh.$error-30};
+}

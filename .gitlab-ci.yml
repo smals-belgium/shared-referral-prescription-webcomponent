@@ -1,0 +1,91 @@
+.npm:
+  image: gcloud-docker-internet.repo.gcloud.belgium.be/node:20-alpine
+  tags:
+    - docker
+
+.sonar:
+  image:
+    name: gcloud-docker-internet.repo.gcloud.belgium.be/sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+  tags:
+    - shared
+    - docker
+
+cache:
+  key:
+    files:
+      - package-lock.json
+  paths:
+    - .npm/
+    - node_modules/
+
+stages:
+  - open-api
+  - test
+  - report
+
+generate-api-client:
+  image: gcloud-docker-internet.repo.gcloud.belgium.be/openapitools/openapi-generator-cli:v7.8.0
+  stage: open-api
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  script:
+    - java -jar /opt/openapi-generator/modules/openapi-generator-cli/target/openapi-generator-cli.jar generate -i api-contract/openapi.yaml -g typescript-angular -o reuse/code/openapi --additional-properties fileNaming=kebab-case,withInterfaces=true --generate-alias-as-model
+  artifacts:
+    paths:
+      - reuse/code/openapi/
+  only:
+    - merge_requests
+    - develop
+
+validate-generated-api:
+  extends: .npm
+  stage: test
+  needs:
+    - job: generate-api-client
+      optional: true
+  script:
+    - echo "Validating generated API client files"
+    - ls -la reuse/code/openapi/
+    - echo "Checking if key files exist"
+    - test -f reuse/code/openapi/api.module.ts || (echo "api.module.ts not found" && exit 1)
+    - test -d reuse/code/openapi/api/ || (echo "api directory not found" && exit 1)
+    - test -d reuse/code/openapi/model/ || (echo "model directory not found" && exit 1)
+    - echo "Generated API client validation passed"
+  only:
+    - merge_requests
+    - develop
+
+test:
+  extends: .npm
+  stage: test
+  needs:
+    - job: generate-api-client
+      optional: true
+  script:
+    - echo "Running the install step"
+    - npm install
+    - echo "Running test step"
+    - npm run test:coverage
+  artifacts:
+    paths:
+      - coverage/
+      - .nyc_output/
+    expire_in: 1h
+  only:
+    - merge_requests
+    - develop
+
+sonar-report:
+  extends: .sonar
+  needs:
+    - test
+  stage: report
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+  script:
+    - echo "Starting Sonar Reporting"
+    - sonar-scanner -Dsonar.branch.name=$CI_COMMIT_REF_NAME -Dsonar.host.url=$SONAR_URL -Dsonar.projectKey=referral-prescription-web-components -Dsonar.login=$VAS_SONARQUBE_TOKEN -Dsonar.qualitygate.wait=true -Dsonar.sources=. -Dsonar.inclusions=**/*.ts,**/*.scss,**/*.html -Dsonar.exclusions=**/node_modules/**,**/*.spec.ts -Dsonar.tests=. -Dsonar.test.inclusions=**/*.spec.ts -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+  only:
+    - merge_requests
+    - develop
