@@ -32,7 +32,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { AlertType, Intent } from '@reuse/code/interfaces';
 import { DataLoadConfig, RequestSummaryDataService } from '@reuse/code/services/helpers/request-summary-data.service';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
-import { getStatusClassFromMap } from '@reuse/code/utils/utils';
+import { mapDisplayStatusToColor } from '@reuse/code/utils/request-status-display-map.utils';
 
 @Component({
   selector: 'app-prescriptions-card',
@@ -192,15 +192,15 @@ export class PrescriptionsCardComponent implements OnChanges, AfterViewInit, OnD
     return total > totalItems;
   }
 
-  getStatusClass(status?: RequestStatus): string {
-    return getStatusClassFromMap(status);
+  getStatusColor(status: RequestStatus) {
+    return mapDisplayStatusToColor(status);
   }
 
   getProfessional(requester?: HealthcareProResource) {
     if (!requester) {
       return null;
     }
-    return requester as unknown as any;
+    return requester;
   }
 
   ngOnDestroy(): void {

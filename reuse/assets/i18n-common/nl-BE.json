@@ -289,11 +289,11 @@
       "pageSize": "Aantal per pagina"
     },
     "statuses": {
-      "DRAFT": "Concept",
+      "DRAFT": "In afwachting",
       "BLACKLISTED": "Op de zwarte lijst",
       "PENDING": "In afwachting",
-      "OPEN": "Open",
-      "CANCELLED": "Geannuleerd",
+      "OPEN": "Beschikbaar",
+      "CANCELLED": "Geclassificeerd zonder verdere actie",
       "EXPIRED": "Niet meer geldig",
       "IN_PROGRESS": "In uitvoering",
       "DONE": "Afgesloten",
@@ -456,19 +456,6 @@
       "proposals": "{count, plural, one{voorstel} other{voorstellen}}",
       "pageSize": "Aantal per pagina"
     },
-    "statuses": {
-      "DRAFT": "Concept",
-      "BLACKLISTED": "Op de zwarte lijst",
-      "PENDING": "In afwachting",
-      "OPEN": "Open",
-      "CANCELLED": "Geannuleerd",
-      "EXPIRED": "Niet meer geldig",
-      "IN_PROGRESS": "In uitvoering",
-      "DONE": "Afgesloten",
-      "null": "Niet gekend",
-      "APPROVED": "Goedgekeurd",
-      "REJECTED": "Geweigerd"
-    },
     "errors": {
       "failedToLoadProposal": "Er is iets misgegaan tijdens het laden van het voorstel.",
       "failedToLoadProposals": "Er is iets misgegaan tijdens het laden van de voorstellen.",
@@ -509,7 +496,7 @@
     }
   },
   "pss": {
-    "unavailable":{
+    "unavailable": {
       "title": "Service tijdelijk niet beschikbaar",
       "message": "Onze excuses, de PSS (Prescription Search Support) service is momenteel niet beschikbaar.\nU kunt de aanbevelingen voor medische beeldvormende onderzoeken op dit moment niet raadplegen.\nProbeer het over een paar minuten opnieuw."
     }

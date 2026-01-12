@@ -30,8 +30,9 @@ import { ReadRequestListResource, ReadRequestResource, RequestStatus } from '@re
 import { FormatEnum, SkeletonComponent } from '@reuse/code/components/progress-indicators/skeleton/skeleton.component';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { HttpErrorResponse } from '@angular/common/http';
-import { getStatusClassFromMap } from '@reuse/code/utils/utils';
 import { AlertType } from '@reuse/code/interfaces';
+import { MatChip } from '@angular/material/chips';
+import { mapDisplayStatusToColor } from '@reuse/code/utils/request-status-display-map.utils';
 
 @Component({
   selector: 'app-prescriptions-table',
@@ -66,6 +67,7 @@ import { AlertType } from '@reuse/code/interfaces';
     ProfessionalDisplayComponent,
     SkeletonComponent,
     AlertComponent,
+    MatChip,
   ],
 })
 export class PrescriptionsTableComponent {
@@ -86,7 +88,7 @@ export class PrescriptionsTableComponent {
 
   displayedColumns: string[] = ['creationDate', 'status', 'author', 'typeOfCare', 'start', 'end'];
 
-  getStatusClass(status: RequestStatus): string {
-    return getStatusClassFromMap(status);
+  getStatusColor(status: RequestStatus) {
+    return mapDisplayStatusToColor(status);
   }
 }

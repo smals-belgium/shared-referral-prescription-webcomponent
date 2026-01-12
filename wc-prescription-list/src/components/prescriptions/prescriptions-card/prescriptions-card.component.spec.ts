@@ -339,4 +339,10 @@ describe('PrescriptionsCardComponent', () => {
       expect(component.clickPrescription.emit).toHaveBeenCalledWith(mockRequestSummaryResource);
     });
   });
+
+  describe('getStatusColor', () => {
+    it('should return color for valid status', () => {
+      expect(component.getStatusColor('IN_PROGRESS' as RequestStatus)).toBe('mh-green');
+    });
+  });
 });

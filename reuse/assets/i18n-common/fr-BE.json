@@ -288,11 +288,11 @@
       "pageSize": "Nbr/page"
     },
     "statuses": {
-      "DRAFT": "Brouillon",
+      "DRAFT": "En attente",
       "BLACKLISTED": "Liste noire",
       "PENDING": "En attente",
-      "OPEN": "Ouvert",
-      "CANCELLED": "Annulé",
+      "OPEN": "Disponible",
+      "CANCELLED": "Classé sans suite",
       "EXPIRED": "Expiré",
       "IN_PROGRESS": "En cours",
       "DONE": "Clôturé",
@@ -454,19 +454,6 @@
     "pagination": {
       "proposals": "{count, plural, one{proposition} other{propositions}}",
       "pageSize": "Nbr/page"
-    },
-    "statuses": {
-      "DRAFT": "Brouillon",
-      "BLACKLISTED": "Liste noire",
-      "PENDING": "En attente",
-      "OPEN": "Ouvert",
-      "CANCELLED": "Annulé",
-      "EXPIRED": "Expiré",
-      "IN_PROGRESS": "En cours",
-      "DONE": "Clôturé",
-      "null": "Inconnu",
-      "APPROVED": "Approuvé",
-      "REJECTED": "Refusé"
     },
     "errors": {
       "failedToLoadProposal": "Une erreur s'est produite pendant le chargement de la proposition.",

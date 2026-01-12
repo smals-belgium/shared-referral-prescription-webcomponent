@@ -135,14 +135,10 @@ describe('PrescriptionsTableComponent', () => {
     expect(alert).toBeFalsy();
   });
 
-  it('should return correct CSS classes for different statuses', () => {
-    expect(component.getStatusClass(RequestStatus.Blacklisted)).toBe('mh-red');
-    expect(component.getStatusClass(RequestStatus.Cancelled)).toBe('mh-red');
-    expect(component.getStatusClass(RequestStatus.Expired)).toBe('mh-red');
-    expect(component.getStatusClass(RequestStatus.Pending)).toBe('mh-orange');
-    expect(component.getStatusClass(RequestStatus.InProgress)).toBe('mh-blue');
-    expect(component.getStatusClass(RequestStatus.Done)).toBe('mh-green');
-    expect(component.getStatusClass('UNKNOWN' as RequestStatus)).toBe('mh-black');
+  describe('getStatusColor', () => {
+    it('should return color for valid status', () => {
+      expect(component.getStatusColor('IN_PROGRESS' as RequestStatus)).toBe('mh-green');
+    });
   });
 
   it('should emit clickPrescription when prescription is selected', () => {

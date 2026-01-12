@@ -34,11 +34,14 @@
                   </div>
               </div>
             }
-            <mat-chip [disableRipple]="true"
-                      data-cy="prescription-status"
-                      [class]="getStatusClass(prescription.status)+' status'">
-              {{ 'prescription.statuses.' + prescription.status | translate }}
-            </mat-chip>
+
+            @if(!!prescription.status) {
+              <div class="prescription-status">
+                <mat-chip [disableRipple]="true"
+                          [class]="getStatusColor(prescription.status)">{{ 'prescription.statuses.' + prescription.status | translate }}
+                </mat-chip>
+              </div>
+            }
           </div>
 
           <div class="details_action_container">

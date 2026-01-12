@@ -49,7 +49,11 @@
   <ng-container matColumnDef="status">
     <th data-cy="overview-status-title" mat-header-cell *matHeaderCellDef>{{ 'prescription.status' | translate }}</th>
     <td [attr.data-cy]="'status-cell-' + prescription.id" mat-cell *matCellDef="let prescription">
-      {{ 'prescription.statuses.' + prescription.status | translate }}
+      @if(!!prescription.status) {
+          <mat-chip [disableRipple]="true"
+                    [class]="getStatusColor(prescription.status!)">{{ 'prescription.statuses.' + prescription.status | translate }}
+          </mat-chip>
+      }
     </td>
   </ng-container>
 

@@ -37,7 +37,7 @@ import {
   mockPerformerTask,
   mockPerson,
 } from '../../../test.utils';
-import { ReadRequestResource } from '@reuse/code/openapi';
+import { ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
 import { CancelPrescriptionDialog } from '@reuse/code/dialogs/cancel-prescription/cancel-prescription-dialog.component';
 
 mockUuid();
@@ -256,6 +256,13 @@ describe('PrescriptionDetailsWebComponent', () => {
 
       expect(setLocalesSpy).toHaveBeenCalledTimes(1);
       expect(setLocalesSpy).toHaveBeenCalledWith(Lang.NL);
+    });
+  });
+
+  describe('getStatusColor', () => {
+    it('should return color for valid status', () => {
+      createFixture();
+      expect(component.getStatusColor('IN_PROGRESS' as RequestStatus)).toBe('mh-green');
     });
   });
 
