@@ -1,5 +1,5 @@
 import { Intent, UserInfo } from '@reuse/code/interfaces';
-import { PerformerTaskResource, RequestStatus, Role } from '@reuse/code/openapi';
+import { PerformerTaskResource, Role } from '@reuse/code/openapi';
 
 const UuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SsinRegex = /^\d{11}$/i;
@@ -54,15 +54,15 @@ export function toSearchString(str: string): string {
     : '';
 }
 
-export function isPrescription(intent: String | undefined): boolean {
+export function isPrescription(intent: string | undefined): boolean {
   return intent?.toLowerCase() === Intent.ORDER;
 }
 
-export function isProposal(intent: String | undefined): boolean {
+export function isProposal(intent: string | undefined): boolean {
   return intent?.toLowerCase() === Intent.PROPOSAL;
 }
 
-export function isModel(intent: String | undefined): boolean {
+export function isModel(intent: string | undefined): boolean {
   return intent?.toLowerCase() === Intent.MODEL;
 }
 
@@ -86,28 +86,14 @@ export function isEmptyValue(value: any): boolean {
   return false;
 }
 
-const STATUS_CLASS_MAP: Record<RequestStatus, string> = {
-  DRAFT: 'mh-black',
-  BLACKLISTED: 'mh-red',
-  PENDING: 'mh-orange',
-  OPEN: 'mh-black',
-  CANCELLED: 'mh-red',
-  EXPIRED: 'mh-red',
-  IN_PROGRESS: 'mh-blue',
-  APPROVED: 'mh-black',
-  REJECTED: 'mh-black',
-  DONE: 'mh-green',
-};
-
-export function getStatusClassFromMap(status?: RequestStatus): string {
-  return status ? STATUS_CLASS_MAP[status] || 'mh-black' : 'mh-black';
-}
-
 export function isProfesionalBasedOnRole(role?: Role): boolean {
   if (!role) return false;
   return role !== Role.Patient;
 }
 
-export const checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline = (task: PerformerTaskResource, currentUser: Partial<UserInfo>) => {
+export const checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline = (
+  task: PerformerTaskResource,
+  currentUser: Partial<UserInfo>
+) => {
   return task.careGiverSsin == currentUser.ssin && task.careGiver?.id?.profession == currentUser.discipline;
-}
+};

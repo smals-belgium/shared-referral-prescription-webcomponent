@@ -11,7 +11,8 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  Renderer2, signal,
+  Renderer2,
+  signal,
   Signal,
   SimpleChanges,
   untracked,
@@ -45,7 +46,6 @@ import { CanExtendPrescriptionPipe } from '@reuse/code/pipes/can-extend-prescrip
 import { IdentifyState } from '@reuse/code/states/privacy/identify.state';
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import {
-  getStatusClassFromMap,
   isPrescriptionId,
   isPrescriptionShortCode,
   isProposal,
@@ -57,7 +57,8 @@ import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
 import {
   BehaviorSubject,
   catchError,
-  concatMap, EMPTY,
+  concatMap,
+  EMPTY,
   from,
   map,
   Observable,
@@ -97,6 +98,7 @@ import { CanCancelPrescriptionOrProposalPipe } from '@reuse/code/pipes/can-cance
 import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
 import { Lang } from '@reuse/code/interfaces/lang.enum';
 import { tap } from 'rxjs/operators';
+import { mapDisplayStatusToColor } from '@reuse/code/utils/request-status-display-map.utils';
 
 export interface ViewState {
   prescription: ReadRequestResource;
@@ -311,9 +313,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     this._subscriptions.add(
       this._languageChange
         .pipe(
-          tap((lang) =>
-            this._dateAdapter.setLocale(lang)
-          ),
+          tap(lang => this._dateAdapter.setLocale(lang)),
           switchMap(lang => {
             return this._translate.use(lang).pipe(
               catchError(() => {
@@ -536,8 +536,8 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     return this._pseudoService.pseudonymize(identifier);
   }
 
-  getStatusClass(status?: RequestStatus): string {
-    return getStatusClassFromMap(status);
+  getStatusColor(status: RequestStatus) {
+    return mapDisplayStatusToColor(status);
   }
 
   get templateHasAlert() {
