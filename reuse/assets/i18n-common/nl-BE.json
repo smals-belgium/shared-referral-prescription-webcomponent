@@ -333,6 +333,13 @@
       "reject": "Het voorschrift afwijzen",
       "interrupt": "Onderbreek de uitvoering",
       "restart": "Herneem de uitvoering"
+    },
+    "performerTaskStatus": {
+      "assigned": "Toegewezen",
+      "active": "Actief",
+      "interrupted": "Onderbroken",
+      "canceled": "Geannuleerd",
+      "inactive": "Inactief"
     }
   },
   "proposal": {
