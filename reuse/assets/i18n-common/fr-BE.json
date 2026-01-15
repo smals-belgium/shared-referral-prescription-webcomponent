@@ -332,6 +332,13 @@
       "reject": "Rejeter la prescription",
       "interrupt": "Interrompre l'exécution",
       "restart": "Relancer l'exécution"
+    },
+    "performerTaskStatus": {
+      "assigned": "Assigné",
+      "active": "Actif",
+      "interrupted": "Interrompu",
+      "canceled": "Annulé",
+      "inactive": "Inactif"
     }
   },
   "proposal": {

@@ -33,6 +33,14 @@
                 class="caregiver_info_profession">{{ 'common.professions.' + careGiver?.healthcareQualification?.id?.profession | translate }}
               </div>
             }
+
+            @if(getReadableStatus(performerTask.status)) {
+              <div class="performer_task_status">
+                <mat-chip [disableRipple]="true"
+                          [class]="getStatusColor(performerTask.status!)">{{ 'prescription.performerTaskStatus.' + getReadableStatus(performerTask.status) | translate }}
+                </mat-chip>
+              </div>
+            }
             @if (performerTask.executionPeriod?.start) {
               <span>{{ performerTask.executionPeriod?.start! | date: 'dd/MM/yyyy' }} - </span>
             }
