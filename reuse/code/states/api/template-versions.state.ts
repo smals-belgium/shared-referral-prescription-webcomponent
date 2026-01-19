@@ -8,26 +8,39 @@ export class TemplateVersionsState {
   private prescriptionTemplateService = inject(PrescriptionTemplateService);
   private readonly states: Record<string, WritableSignal<DataState<TemplateVersion>>> = {};
 
-  loadTemplateVersion(templateCode: string) {
-    if (!this.states[templateCode]) {
-      this.states[templateCode] = signal({ status: LoadingStatus.LOADING });
-    } else {
-      this.states[templateCode].set({ status: LoadingStatus.LOADING });
-    }
+  loadTemplateVersionForInstance(instanceId: string, templateCode: string) {
+    const key = `${templateCode}::${instanceId}`;
+    this.states[key] = signal({ status: LoadingStatus.LOADING });
+
     this.prescriptionTemplateService.findOneVersion(templateCode).subscribe({
       next: data => {
-        this.states[templateCode].set({ status: LoadingStatus.SUCCESS, data });
+        this.states[key].set({ status: LoadingStatus.SUCCESS, data });
       },
       error: (error: Record<string, unknown>) => {
-        this.states[templateCode].set({ status: LoadingStatus.ERROR, error });
+        this.states[key].set({ status: LoadingStatus.ERROR, error });
       },
     });
   }
 
-  getState(templateCode: string) {
-    if (!this.states[templateCode]) {
-      this.states[templateCode] = signal({ status: LoadingStatus.INITIAL });
+  getStateForInstance(instanceId: string, templateCode: string) {
+    const key = `${templateCode}::${instanceId}`;
+    if (!this.states[key]) {
+      this.states[key] = signal({ status: LoadingStatus.INITIAL });
     }
-    return this.states[templateCode];
+    return this.states[key];
+  }
+
+  getState(templateCode: string) {
+    const key = Object.keys(this.states).find(k => k.startsWith(`${templateCode}::`)) ?? templateCode;
+    return (this.states[key] ??= signal({ status: LoadingStatus.INITIAL }));
+  }
+
+  cleanupInstance(instanceId: string, templateCode: string) {
+    const key = `${templateCode}::${instanceId}`;
+    delete this.states[key];
+  }
+
+  cleanupAllInstances() {
+    Object.keys(this.states).forEach(key => delete this.states[key]);
   }
 }

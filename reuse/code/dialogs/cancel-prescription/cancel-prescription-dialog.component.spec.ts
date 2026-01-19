@@ -13,6 +13,10 @@ import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import { PersonResource, ReadRequestResource } from '@reuse/code/openapi';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Intent } from '@reuse/code/interfaces';
+import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
+import { TranslateByIntentPipe } from '@reuse/code/pipes/translate-by-intent.pipe';
+import { AlertComponent } from '@myhealth-belgium/myhealth-additional-ui-components';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 
 @Pipe({
   name: 'templateName',
@@ -104,14 +108,11 @@ describe('CancelPrescriptionDialog', () => {
       ],
     })
       .overrideComponent(CancelPrescriptionDialog, {
-        remove: { imports: [] },
+        remove: {
+          imports: [TemplateNamePipe, TranslateByIntentPipe, OverlaySpinnerComponent, AlertComponent],
+        },
         add: {
-          imports: [
-            MockTemplateNamePipe,
-            MockTranslateByIntentPipe,
-            MockOverlaySpinnerComponent,
-            MockAlertComponent,
-          ],
+          imports: [MockTemplateNamePipe, MockTranslateByIntentPipe, MockOverlaySpinnerComponent, MockAlertComponent],
         },
       })
       .compileComponents();
@@ -169,7 +170,9 @@ describe('CancelPrescriptionDialog', () => {
     });
 
     it('should handle error during prescription cancellation', fakeAsync(() => {
-      mockPrescriptionState.cancelPrescription.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500})));
+      mockPrescriptionState.cancelPrescription.mockReturnValue(
+        throwError(() => new HttpErrorResponse({ status: 500 }))
+      );
 
       component.cancelPrescription();
       tick();

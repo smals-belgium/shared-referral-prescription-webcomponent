@@ -60,7 +60,7 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
   protected readonly LoadingStatus = LoadingStatus;
   protected readonly AlertType = AlertType;
 
-  readonly trackByFn = (index: number, item: CreatePrescriptionForm) => item?.trackId || index;
+  readonly trackByFn = (item: CreatePrescriptionForm) => item.trackId;
   modelState = this.prescriptionModelState.modalState;
 
   isPrescriptionValue = false;

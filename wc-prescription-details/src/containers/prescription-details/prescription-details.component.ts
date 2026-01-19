@@ -11,7 +11,6 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  Renderer2,
   signal,
   Signal,
   SimpleChanges,
@@ -23,7 +22,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DateAdapter } from '@angular/material/core';
 import { DateTime } from 'luxon';
-import { DOCUMENT } from '@angular/common';
 import { AlertType, DataState, UserInfo } from '@reuse/code/interfaces';
 import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
@@ -146,7 +144,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   private readonly _dateAdapter = inject(DateAdapter<DateTime>);
   private readonly _dialog = inject(MatDialog);
   private readonly _authService = inject(AuthService);
-  private readonly _renderer = inject(Renderer2);
   private readonly _accessMatrixStateService = inject(AccessMatrixState);
   private readonly _prescriptionStateService = inject(PrescriptionState);
   private readonly _proposalSateService = inject(ProposalState);
@@ -159,7 +156,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   private readonly _pseudoService = inject(PseudoService);
   private readonly _pssService = inject(PssService);
   private readonly _encryptionStateService = inject(EncryptionState);
-  private readonly _document = inject(DOCUMENT);
   private readonly _prescriptionsPdfService = inject(PrescriptionsPdfService);
   private readonly _prescriptionSecondaryService = inject(PrescriptionDetailsSecondaryService);
   protected readonly evfTranslateService = inject(EvfTranslateService);
@@ -234,7 +230,11 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
             void this.getPrescriptionKey(prescription.pseudonymizedKey);
           }
 
-          this._templateVersionsStateService.loadTemplateVersion('READ_' + prescription.templateCode);
+          const instanceId = prescription.id || uuidv4();
+          this._templateVersionsStateService.loadTemplateVersionForInstance(
+            instanceId,
+            'READ_' + prescription.templateCode
+          );
         }
       });
     });

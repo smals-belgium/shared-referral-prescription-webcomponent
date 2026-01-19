@@ -327,14 +327,17 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
   }
 
   private addPrescriptionForm(templateCode: string, initialPrescription?: ReadRequestResource): void {
-    this.templateVersionsStateService.loadTemplateVersion(templateCode);
+    const instanceId = uuidv4();
+
+    this.templateVersionsStateService.loadTemplateVersionForInstance(instanceId, templateCode);
+
     this.prescriptionForms.update(prescriptionForms => [
       ...prescriptionForms,
       {
-        generatedUUID: uuidv4(),
+        generatedUUID: instanceId,
         trackId: this.trackId++,
         templateCode: templateCode,
-        formTemplateState$: this.getPrescriptionTemplateStream(templateCode),
+        formTemplateState$: this.templateVersionsStateService.getStateForInstance(instanceId, templateCode),
         initialPrescription: this.updateResponses(initialPrescription),
       },
     ]);
@@ -343,14 +346,15 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
   }
 
   private addPrescriptionFormByModel(templateCode: string, model: ModelEntityDto) {
-    this.templateVersionsStateService.loadTemplateVersion(templateCode);
+    const instanceId = uuidv4();
+    this.templateVersionsStateService.loadTemplateVersionForInstance(templateCode, instanceId);
     this.prescriptionForms.update(prescriptionForms => [
       ...prescriptionForms,
       {
-        generatedUUID: uuidv4(),
+        generatedUUID: instanceId,
         trackId: this.trackId++,
         templateCode: templateCode,
-        formTemplateState$: this.getPrescriptionTemplateStream(templateCode),
+        formTemplateState$: this.templateVersionsStateService.getStateForInstance(instanceId, templateCode),
         initialPrescription: undefined,
         modelResponses: model.modelData as unknown as Record<string, unknown>,
         modelName: model.label,
@@ -394,6 +398,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
       .subscribe(accepted => {
         if (accepted === true) {
           this.prescriptionForms.update(prescriptionForms => prescriptionForms.filter(f => f !== form));
+          this.templateVersionsStateService.cleanupInstance(form.generatedUUID, form.templateCode);
         }
       });
   }
@@ -747,10 +752,15 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
           if (!result) {
             return;
           } else if (result.formsToDelete.length === this.prescriptionForms().length) {
+            this.templateVersionsStateService.cleanupAllInstances();
             this.clickCancel.emit();
           } else if (result.formsToDelete.length > 0) {
-            this.prescriptionForms.update(prescriptionForms =>
-              prescriptionForms.filter(f => !result.formsToDelete.includes(f.trackId))
+            this.prescriptionForms.update(forms => forms.filter(f => !result.formsToDelete.includes(f.trackId)));
+
+            const formsToDelete = this.prescriptionForms().filter(f => result.formsToDelete.includes(f.trackId));
+
+            formsToDelete.forEach(f =>
+              this.templateVersionsStateService.cleanupInstance(f.generatedUUID, f.templateCode)
             );
           }
         });
@@ -766,7 +776,10 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
         })
         .beforeClosed()
         .pipe(filter(result => result === true))
-        .subscribe(() => this.clickCancel.emit());
+        .subscribe(() => {
+          this.templateVersionsStateService.cleanupAllInstances();
+          this.clickCancel.emit();
+        });
     }
   }
 
