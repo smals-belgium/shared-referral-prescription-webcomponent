@@ -7,6 +7,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 import { CancelCreationDialog, CancelCreationDialogData } from './cancel-creation.dialog';
 import { CreatePrescriptionForm } from '@reuse/code/interfaces';
+import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 
 @Pipe({
   name: 'templateName',
@@ -38,14 +39,20 @@ describe('CancelCreationDialog', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CancelCreationDialog, ReactiveFormsModule, NoopAnimationsModule, TranslateModule.forRoot(), MockTemplateNamePipe],
+      imports: [
+        CancelCreationDialog,
+        ReactiveFormsModule,
+        NoopAnimationsModule,
+        TranslateModule.forRoot(),
+        MockTemplateNamePipe,
+      ],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
       ],
     })
       .overrideComponent(CancelCreationDialog, {
-        remove: { imports: [] },
+        remove: { imports: [TemplateNamePipe] },
         add: { imports: [MockTemplateNamePipe] },
       })
       .compileComponents();
@@ -54,8 +61,6 @@ describe('CancelCreationDialog', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
-
-
 
   describe('cancelPrescriptions', () => {
     it('should close dialog with selected formsToDelete', () => {

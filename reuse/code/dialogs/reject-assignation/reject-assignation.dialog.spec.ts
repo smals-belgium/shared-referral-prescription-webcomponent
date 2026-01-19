@@ -11,11 +11,23 @@ import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import { PerformerTaskResource, PersonResource, ReadRequestResource } from '@reuse/code/openapi';
 import { Intent } from '@reuse/code/interfaces';
+import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
+import { TranslateByIntentPipe } from '@reuse/code/pipes/translate-by-intent.pipe';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 
 @Pipe({ name: 'templateName', standalone: true })
-class MockTemplateNamePipe implements PipeTransform { transform(v: any) { return v; } }
+class MockTemplateNamePipe implements PipeTransform {
+  transform(v: any) {
+    return v;
+  }
+}
 @Pipe({ name: 'translateByIntent', standalone: true })
-class MockTranslateByIntentPipe implements PipeTransform { transform(v: any) { return v; } }
+class MockTranslateByIntentPipe implements PipeTransform {
+  transform(v: any) {
+    return v;
+  }
+}
 @Component({ selector: 'app-overlay-spinner', template: '', standalone: true })
 class MockOverlaySpinnerComponent {}
 @Component({ selector: 'app-alert', template: '', standalone: true })
@@ -37,8 +49,15 @@ describe('RejectAssignationDialog', () => {
   beforeEach(async () => {
     jest.spyOn(uuid, 'v4').mockReturnValue('uuid-123' as any);
     await TestBed.configureTestingModule({
-      imports: [RejectAssignationDialog, NoopAnimationsModule, TranslateModule.forRoot(),
-        MockTemplateNamePipe, MockTranslateByIntentPipe, MockOverlaySpinnerComponent, MockAlertComponent],
+      imports: [
+        RejectAssignationDialog,
+        NoopAnimationsModule,
+        TranslateModule.forRoot(),
+        MockTemplateNamePipe,
+        MockTranslateByIntentPipe,
+        MockOverlaySpinnerComponent,
+        MockAlertComponent,
+      ],
       providers: [
         { provide: ToastService, useValue: mockToastService },
         { provide: PrescriptionState, useValue: mockPrescriptionState },
@@ -46,10 +65,14 @@ describe('RejectAssignationDialog', () => {
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
       ],
-    }).overrideComponent(RejectAssignationDialog, {
-      remove: { imports: [] },
-      add: { imports: [MockTemplateNamePipe, MockTranslateByIntentPipe, MockOverlaySpinnerComponent, MockAlertComponent] },
-    }).compileComponents();
+    })
+      .overrideComponent(RejectAssignationDialog, {
+        remove: { imports: [TemplateNamePipe, TranslateByIntentPipe, OverlaySpinnerComponent, AlertComponent] },
+        add: {
+          imports: [MockTemplateNamePipe, MockTranslateByIntentPipe, MockOverlaySpinnerComponent, MockAlertComponent],
+        },
+      })
+      .compileComponents();
     fixture = TestBed.createComponent(RejectAssignationDialog);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -63,7 +86,11 @@ describe('RejectAssignationDialog', () => {
     mockPrescriptionState.rejectAssignation.mockReturnValue(of(void 0));
     component.onReject();
     tick();
-    expect(mockPrescriptionState.rejectAssignation).toHaveBeenCalledWith('prescriptionId', 'performerTaskId', 'uuid-123');
+    expect(mockPrescriptionState.rejectAssignation).toHaveBeenCalledWith(
+      'prescriptionId',
+      'performerTaskId',
+      'uuid-123'
+    );
     expect(mockToastService.show).toHaveBeenCalledWith('prescription.rejectAssignation.success');
     expect(mockDialogRef.close).toHaveBeenCalledWith(true);
   }));

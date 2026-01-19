@@ -88,7 +88,7 @@ describe('CreateMultiplePrescriptionsComponent', () => {
   it('should return correct value from trackByFn', () => {
     fixture.detectChanges();
     const mockItem = { trackId: 'trackId_01' } as unknown as CreatePrescriptionForm;
-    expect(component.trackByFn(0, mockItem)).toBe('trackId_01');
+    expect(component.trackByFn(mockItem)).toBe('trackId_01');
   });
 
   it('should compute numberOfPrescriptionsToCreate correctly', () => {
@@ -104,10 +104,11 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     fixture.detectChanges();
 
     const mockPanel = { open: jest.fn() } as any;
-
-    component.panels = {
-      first: mockPanel
+    const mockQueryList = {
+      first: mockPanel,
     } as any;
+
+    component.panels = mockQueryList;
     component.createPrescriptionForms = [{ status: LoadingStatus.LOADING }] as CreatePrescriptionForm[];
 
     component.ngOnChanges({
@@ -393,7 +394,7 @@ describe('CreateMultiplePrescriptionsComponent', () => {
 
     const mockPanel = { open: jest.fn() } as any;
     component.panels = {
-      first: mockPanel
+      first: mockPanel,
     } as unknown as QueryList<MatExpansionPanel>;
     component.createPrescriptionForms = [{ status: LoadingStatus.SUCCESS }] as CreatePrescriptionForm[];
 
@@ -427,7 +428,15 @@ describe('CreateMultiplePrescriptionsComponent', () => {
       status: LoadingStatus.INITIAL,
     });
 
-    setForms([{ templateCode: 'A', status: LoadingStatus.INITIAL, formTemplateState$: mockTemplateVersionState }]);
+    setForms([
+      {
+        templateCode: 'A',
+        status: LoadingStatus.INITIAL,
+        formTemplateState$: mockTemplateVersionState,
+        generatedUUID: 'mock-uuid-123',
+        trackId: 0,
+      },
+    ]);
   }
 
   function setTwoTemplates(state1: LoadingStatus, state2: LoadingStatus) {
@@ -448,8 +457,22 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     });
 
     setForms([
-      { templateCode: 'A', status: state1, submitted: true, formTemplateState$: mockTemplateVersionState_A },
-      { templateCode: 'B', status: state2, submitted: true, formTemplateState$: mockTemplateVersionState_B },
+      {
+        templateCode: 'A',
+        status: state1,
+        submitted: true,
+        formTemplateState$: mockTemplateVersionState_A,
+        generatedUUID: 'mock-uuid-123',
+        trackId: 0,
+      },
+      {
+        templateCode: 'B',
+        status: state2,
+        submitted: true,
+        formTemplateState$: mockTemplateVersionState_B,
+        generatedUUID: 'mock-uuid-124',
+        trackId: 1,
+      },
     ]);
   }
 });

@@ -10,6 +10,9 @@ import { CancelExecutionPrescriptionDialog } from './cancel-execution-prescripti
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { PerformerTaskResource, PersonResource, ReadRequestResource } from '@reuse/code/openapi';
+import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 
 @Pipe({
   name: 'templateName',
@@ -85,7 +88,7 @@ describe('CancelExecutionPrescriptionDialog', () => {
       ],
     })
       .overrideComponent(CancelExecutionPrescriptionDialog, {
-        remove: { imports: [] },
+        remove: { imports: [TemplateNamePipe, OverlaySpinnerComponent, AlertComponent] },
         add: { imports: [MockTemplateNamePipe, MockOverlaySpinnerComponent, MockAlertComponent] },
       })
       .compileComponents();
@@ -104,7 +107,6 @@ describe('CancelExecutionPrescriptionDialog', () => {
     uuidSpy.mockRestore();
     jest.clearAllMocks();
   });
-
 
   describe('cancelPrescriptionExecution', () => {
     it('should cancel prescription execution successfully', fakeAsync(() => {

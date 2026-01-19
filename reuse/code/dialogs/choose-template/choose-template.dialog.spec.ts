@@ -1,18 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { signal, Component } from '@angular/core';
+import { signal, Component, input, Input } from '@angular/core';
 import { ChooseTemplateDialog } from './choose-template.dialog';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { TemplatesState } from '@reuse/code/states/api/templates.state';
 import { ModelsState } from '@reuse/code/states/api/models.state';
 import { Intent, DataState, LoadingStatus } from '@reuse/code/interfaces';
 import { AccessMatrix, Template, ModelEntityDto, PageModelEntityDto } from '@reuse/code/openapi';
-import {
-  SelectPrescriptionTypeComponent
-} from '@reuse/code/components/select-prescription-type/select-prescription-type.component';
+import { SelectPrescriptionTypeComponent } from '@reuse/code/components/select-prescription-type/select-prescription-type.component';
 
 /**
  * Mock du composant enfant
@@ -22,7 +20,12 @@ import {
   template: '',
   standalone: true,
 })
-class MockSelectPrescriptionTypeComponent {}
+class MockSelectPrescriptionTypeComponent {
+  @Input() formGroup!: FormGroup;
+  @Input() templates!: Template[];
+  @Input() models?: ModelEntityDto[];
+  @Input() showTitle = true;
+}
 
 describe('ChooseTemplateDialog', () => {
   let component: ChooseTemplateDialog;
@@ -80,9 +83,7 @@ describe('ChooseTemplateDialog', () => {
     })
       .overrideComponent(ChooseTemplateDialog, {
         remove: {
-          imports: [
-            SelectPrescriptionTypeComponent
-          ],
+          imports: [SelectPrescriptionTypeComponent],
         },
         add: {
           imports: [MockSelectPrescriptionTypeComponent],

@@ -9,12 +9,17 @@ import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { PerformerTaskResource, PersonResource, ReadRequestResource } from '@reuse/code/openapi';
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  RestartExecutionPrescriptionDialog
-} from '@reuse/code/dialogs/restart-execution-prescription/restart-execution-prescription.dialog';
+import { RestartExecutionPrescriptionDialog } from '@reuse/code/dialogs/restart-execution-prescription/restart-execution-prescription.dialog';
+import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 
 @Pipe({ name: 'templateName', standalone: true })
-class MockTemplateNamePipe implements PipeTransform { transform(v: any) { return v; } }
+class MockTemplateNamePipe implements PipeTransform {
+  transform(v: any) {
+    return v;
+  }
+}
 @Component({ selector: 'app-overlay-spinner', template: '', standalone: true })
 class MockOverlaySpinnerComponent {}
 @Component({ selector: 'app-alert', template: '', standalone: true })
@@ -35,18 +40,26 @@ describe('RestartExecutionPrescriptionDialog', () => {
   beforeEach(async () => {
     jest.spyOn(uuid, 'v4').mockReturnValue('uuid-123' as any);
     await TestBed.configureTestingModule({
-      imports: [RestartExecutionPrescriptionDialog, NoopAnimationsModule, TranslateModule.forRoot(),
-        MockTemplateNamePipe, MockOverlaySpinnerComponent, MockAlertComponent],
+      imports: [
+        RestartExecutionPrescriptionDialog,
+        NoopAnimationsModule,
+        TranslateModule.forRoot(),
+        MockTemplateNamePipe,
+        MockOverlaySpinnerComponent,
+        MockAlertComponent,
+      ],
       providers: [
         { provide: ToastService, useValue: mockToastService },
         { provide: PrescriptionState, useValue: mockPrescriptionState },
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
       ],
-    }).overrideComponent(RestartExecutionPrescriptionDialog, {
-      remove: { imports: [] },
-      add: { imports: [MockTemplateNamePipe, MockOverlaySpinnerComponent, MockAlertComponent] },
-    }).compileComponents();
+    })
+      .overrideComponent(RestartExecutionPrescriptionDialog, {
+        remove: { imports: [TemplateNamePipe, OverlaySpinnerComponent, AlertComponent] },
+        add: { imports: [MockTemplateNamePipe, MockOverlaySpinnerComponent, MockAlertComponent] },
+      })
+      .compileComponents();
     fixture = TestBed.createComponent(RestartExecutionPrescriptionDialog);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -60,7 +73,11 @@ describe('RestartExecutionPrescriptionDialog', () => {
     mockPrescriptionState.restartExecution.mockReturnValue(of(void 0));
     component.restartExecution();
     tick();
-    expect(mockPrescriptionState.restartExecution).toHaveBeenCalledWith('prescriptionId', 'performerTaskId', 'uuid-123');
+    expect(mockPrescriptionState.restartExecution).toHaveBeenCalledWith(
+      'prescriptionId',
+      'performerTaskId',
+      'uuid-123'
+    );
     expect(mockToastService.show).toHaveBeenCalledWith('prescription.restartExecution.success');
     expect(mockDialogRef.close).toHaveBeenCalledWith(true);
   }));
@@ -88,4 +105,3 @@ describe('RestartExecutionPrescriptionDialog', () => {
     expect(mockToastService.show).not.toHaveBeenCalled();
   }));
 });
-
