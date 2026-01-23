@@ -4,6 +4,8 @@ import { Subject } from 'rxjs';
 import { EvfTranslateService, Language } from '@smals/vas-evaluation-form-ui-core';
 import { PssRadiologyResultComponent } from '@reuse/code/components/pss-radiology-result/pss-radiology-result.component';
 import { SupportOption } from '@reuse/code/openapi';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { By } from '@angular/platform-browser';
 
 describe('PssRadiologyResultComponent', () => {
   let component: PssRadiologyResultComponent;
@@ -169,8 +171,14 @@ describe('PssRadiologyResultComponent', () => {
     component.confirm(mockSupportOptions[0]);
     fixture.detectChanges();
 
-    const firstCheckbox = fixture.nativeElement.querySelector('mat-checkbox');
-    expect(firstCheckbox.getAttribute('ng-reflect-checked')).toBe('true');
+    const checkboxDebug = fixture.debugElement.query(
+      By.directive(MatCheckbox)
+    );
+    expect(checkboxDebug).toBeTruthy();
+
+    const checkbox = checkboxDebug.componentInstance as MatCheckbox;
+
+    expect(checkbox.checked).toBe(true);
   });
 
   it('should display score with error class for score < 4', () => {

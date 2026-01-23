@@ -1,5 +1,5 @@
 .npm:
-  image: gcloud-docker-internet.repo.gcloud.belgium.be/node:20-alpine
+  image: gcloud-docker-internet.repo.gcloud.belgium.be/node:22-alpine
   tags:
     - docker
 

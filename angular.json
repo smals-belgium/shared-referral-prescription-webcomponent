@@ -266,69 +266,6 @@
         }
       }
     },
-    "wc-pdfmake": {
-      "projectType": "application",
-      "schematics": {
-        "@schematics/angular:component": {
-          "style": "scss"
-        }
-      },
-      "root": "wc-pdfmake",
-      "sourceRoot": "wc-pdfmake/src",
-      "prefix": "app",
-      "architect": {
-        "build": {
-          "builder": "@angular/build:application",
-          "options": {
-            "outputPath": "dist/wc-pdfmake",
-            "index": "wc-pdfmake/src/index.html",
-            "browser": "wc-pdfmake/src/main.ts",
-            "polyfills": ["zone.js"],
-            "tsConfig": "wc-pdfmake/tsconfig.app.json",
-            "inlineStyleLanguage": "scss",
-            "assets": ["wc-pdfmake/src/favicon.ico", "wc-pdfmake/src/assets"],
-            "scripts": [],
-            "allowedCommonJsDependencies": ["localforage", "pdfmake/build/pdfmake.js", "@messageformat/core"]
-          },
-          "configurations": {
-            "production": {
-              "outputHashing": "all"
-            },
-            "development": {
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "serve": {
-          "builder": "ngx-build-plus:dev-server",
-          "configurations": {
-            "production": {
-              "browserTarget": "wc-pdfmake:build:production"
-            },
-            "development": {
-              "browserTarget": "wc-pdfmake:build:development"
-            }
-          },
-          "defaultConfiguration": "development"
-        },
-        "test": {
-          "builder": "@angular-builders/jest:run",
-          "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
-            "configPath": "jest.config.ts",
-            "tsConfig": "tsconfig.spec.json",
-            "inlineStyleLanguage": ["scss"],
-            "assets": [],
-            "styles": [],
-            "scripts": []
-          }
-        }
-      }
-    },
     "reuse": {
       "architect": {
         "test": {
@@ -672,5 +609,31 @@
   },
   "cli": {
     "analytics": false
+  },
+  "schematics": {
+    "@schematics/angular:component": {
+      "type": "component"
+    },
+    "@schematics/angular:directive": {
+      "type": "directive"
+    },
+    "@schematics/angular:service": {
+      "type": "service"
+    },
+    "@schematics/angular:guard": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:interceptor": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:module": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:pipe": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:resolver": {
+      "typeSeparator": "."
+    }
   }
 }

@@ -347,7 +347,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
 
   private addPrescriptionFormByModel(templateCode: string, model: ModelEntityDto) {
     const instanceId = uuidv4();
-    this.templateVersionsStateService.loadTemplateVersionForInstance(templateCode, instanceId);
+    this.templateVersionsStateService.loadTemplateVersionForInstance(instanceId, templateCode);
     this.prescriptionForms.update(prescriptionForms => [
       ...prescriptionForms,
       {

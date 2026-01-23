@@ -1,8 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
-import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
+import { NgxSkeletonLoaderComponent, NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { Component } from '@angular/core';
 import { FormatEnum, SkeletonComponent } from './skeleton.component';
+import { By } from '@angular/platform-browser';
 
 @Component({
   template: `<app-skeleton [items]="items" [format]="format"></app-skeleton>`,
@@ -53,13 +54,21 @@ describe('SkeletonComponent', () => {
     hostComponent.items = 2;
     fixture.detectChanges();
 
-    const lineLoader = fixture.nativeElement.querySelector('ngx-skeleton-loader[appearance="line"]');
-    expect(lineLoader).toBeTruthy();
-    expect(lineLoader.getAttribute('ng-reflect-count')).toBe('2');
-    expect(lineLoader.classList.contains('skeleton-line')).toBe(true);
+    // Check ngx-skeleton-loader is present
+    const loaderDebug = fixture.debugElement.query(
+      By.directive(NgxSkeletonLoaderComponent)
+    );
+    expect(loaderDebug).toBeTruthy();
+
+    const loaderInstance = loaderDebug.componentInstance as NgxSkeletonLoaderComponent;
+
+    expect(loaderInstance.appearance()).toBe('line');
+    expect(loaderInstance.count()).toBe(2);
 
     // Should not render card format
-    const cardContainer = fixture.nativeElement.querySelector('.skeleton-grid-container');
+    const cardContainer = fixture.debugElement.query(
+      By.css('.skeleton-grid-container')
+    );
     expect(cardContainer).toBeFalsy();
   });
 
