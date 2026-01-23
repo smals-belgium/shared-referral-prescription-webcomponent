@@ -18,6 +18,7 @@ const config: Config = {
   moduleNameMapper: {
     '@reuse/(.*)': '<rootDir>/reuse/$1',
     '^jose': require.resolve('jose'),
+    '^@smals/vas-evaluation-form-ui-core': '@smals-belgium-shared/vas-evaluation-form-ui-core',
   },
   collectCoverageFrom: ['wc-prescription-list/src/components/**/*.ts'],
   transform: {
