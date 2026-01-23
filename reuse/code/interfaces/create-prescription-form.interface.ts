@@ -1,4 +1,4 @@
-import { ElementGroup } from '@smals/vas-evaluation-form-ui-core';
+import { ElementGroup } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { Signal } from '@angular/core';
 import { DataState, LoadingStatus } from '@reuse/code/interfaces/data-state.interface';
 import { ReadRequestResource, TemplateVersion } from '@reuse/code/openapi';

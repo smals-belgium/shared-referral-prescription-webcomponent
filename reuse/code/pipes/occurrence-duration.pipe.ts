@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, inject, Pipe, PipeTransform } from '@angular/core';
-import { EvfTranslateService } from '@smals/vas-evaluation-form-ui-core';
+import { EvfTranslateService } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { BoundsDuration } from '@reuse/code/interfaces';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { translateBoundsDuration, validateBoundsDuration } from '@reuse/code/utils/occurrence-timing.utils';

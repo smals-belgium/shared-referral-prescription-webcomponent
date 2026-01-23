@@ -6,9 +6,9 @@ import {
   EvfExternalSourceService,
   FormTemplate,
   provideEvfCore,
-} from '@smals/vas-evaluation-form-ui-core';
+} from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { EvfDynamicFormComponent } from '@smals/vas-evaluation-form-ui-material/dynamic-form';
+import { EvfDynamicFormComponent } from '@smals-belgium-shared/vas-evaluation-form-ui-material/dynamic-form';
 import { BrowserModule, By } from '@angular/platform-browser';
 import { MarkdownModule } from 'ngx-markdown';
 import { of } from 'rxjs';

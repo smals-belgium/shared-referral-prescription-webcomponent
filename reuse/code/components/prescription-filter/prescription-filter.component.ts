@@ -14,7 +14,7 @@ import { HighlightFilterPipe } from '../../pipes/highlight-filter.pipe';
 import { MatButton } from '@angular/material/button';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslationPipe } from '../../pipes/translation.pipe';
-import { Language } from '@smals/vas-evaluation-form-ui-core';
+import { Language } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { MultiselectComponent, MultiselectOption } from '../../components/multiselect/multiselect.component';
 import { Subscription } from 'rxjs';
 import { AccessMatrix, RequestStatus, Template } from '@reuse/code/openapi';

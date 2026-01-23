@@ -17,7 +17,7 @@ import {
   EvfElementHelpComponent,
   EvfElementLabelComponent,
   EvfFormElementLayoutComponent,
-} from '@smals/vas-evaluation-form-ui-material/elements/shared';
+} from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/shared';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -37,9 +37,9 @@ import {
   EvfLabelPipe,
   EvfTranslateService,
   Language,
-} from '@smals/vas-evaluation-form-ui-core';
+} from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { debounceTime, filter, merge, Observable, of, Subject, switchMap } from 'rxjs';
-import { EVF_MATERIAL_OPTIONS, EvfMaterialOptions } from '@smals/vas-evaluation-form-ui-material';
+import { EVF_MATERIAL_OPTIONS, EvfMaterialOptions } from '@smals-belgium-shared/vas-evaluation-form-ui-material';
 import { catchError, tap } from 'rxjs/operators';
 import { MatChipsModule } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
@@ -75,7 +75,7 @@ export class AutocompleteMultiselectComponent extends EvfBaseFormElementComponen
   private autoSelectInAutocomplete = false;
 
   readonly id = 'evf-autocomplete-' + AutocompleteMultiselectComponent.counter++;
-  options$: Observable<AutocompleteOption[] | AutocompleteError> | undefined;
+  options$: Observable<AutocompleteOption[] | AutocompleteError | null> | undefined;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
   readonly selectedItems = signal<AutocompleteOption[]>([]);
@@ -154,11 +154,11 @@ export class AutocompleteMultiselectComponent extends EvfBaseFormElementComponen
                   catchError(err =>
                     of({
                       translate: err instanceof Error ? err.message : 'FAILED_TO_GET_AUTOCOMPLETE_OPTIONS',
-                    })
+                    } as AutocompleteError)
                   )
                 )
         )
-      ) as Observable<AutocompleteOption[] | AutocompleteError>;
+      );
     }
   }
 

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
-import { EvfTranslateService, Language } from '@smals/vas-evaluation-form-ui-core';
+import { EvfTranslateService, Language } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { PssRadiologyResultComponent } from '@reuse/code/components/pss-radiology-result/pss-radiology-result.component';
 import { SupportOption } from '@reuse/code/openapi';
 

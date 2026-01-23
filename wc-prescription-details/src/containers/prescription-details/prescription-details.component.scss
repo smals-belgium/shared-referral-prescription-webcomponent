@@ -1,6 +1,6 @@
 @use '@angular/material' as mat;
 @use '@myhealth-belgium/design-kit' as mh;
-@use '../../../../node_modules/@smals/vas-evaluation-form-ui-material/index' as evf;
+@use '../../../../node_modules/@smals-belgium-shared/vas-evaluation-form-ui-material/index' as evf;
 
 @include mh.use-font-material-symbols(
     true,

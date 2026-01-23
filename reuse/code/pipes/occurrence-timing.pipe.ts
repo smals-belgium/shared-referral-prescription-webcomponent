@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Pipe, PipeTransform } from '@angular/core';
 import { translateOccurrenceTiming, validateOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
 import { OccurrenceTiming } from '@reuse/code/interfaces';
-import { EvfTranslateService } from '@smals/vas-evaluation-form-ui-core';
+import { EvfTranslateService } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Pipe({

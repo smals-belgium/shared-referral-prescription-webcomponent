@@ -6,7 +6,7 @@ import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { CreateMultiplePrescriptionsComponent } from './create-multiple-prescriptions.component';
 import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionModel.state';
 import { CreatePrescriptionForm, Intent, LoadingStatus } from '@reuse/code/interfaces';
-import { ElementGroup } from '@smals/vas-evaluation-form-ui-core';
+import { ElementGroup } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
@@ -105,7 +105,7 @@ describe('CreateMultiplePrescriptionsComponent', () => {
 
     const mockPanel = { open: jest.fn() } as any;
     const mockQueryList = {
-      first: mockPanel
+      first: mockPanel,
     } as any;
 
     component.panels = mockQueryList;
@@ -394,7 +394,7 @@ describe('CreateMultiplePrescriptionsComponent', () => {
 
     const mockPanel = { open: jest.fn() } as any;
     component.panels = {
-      first: mockPanel
+      first: mockPanel,
     } as unknown as QueryList<MatExpansionPanel>;
     component.createPrescriptionForms = [{ status: LoadingStatus.SUCCESS }] as CreatePrescriptionForm[];
 

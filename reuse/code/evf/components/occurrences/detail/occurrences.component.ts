@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import {
   EvfBaseFormDetailComponent,
-  EvfDetailLabelComponent, EvfFormDetailLayoutComponent,
-} from '@smals/vas-evaluation-form-ui-material/elements/shared';
+  EvfDetailLabelComponent,
+  EvfFormDetailLayoutComponent,
+} from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/shared';
 import { OccurrenceFrequencyPipe } from '@reuse/code/pipes/occurrence-frequency.pipe';
 
 @Component({
@@ -11,5 +12,4 @@ import { OccurrenceFrequencyPipe } from '@reuse/code/pipes/occurrence-frequency.
   standalone: true,
   templateUrl: './occurrences.component.html',
 })
-export class OccurrencesComponent extends EvfBaseFormDetailComponent {
-}
+export class OccurrencesComponent extends EvfBaseFormDetailComponent {}

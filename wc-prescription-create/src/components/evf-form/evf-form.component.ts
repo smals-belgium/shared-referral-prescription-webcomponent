@@ -16,8 +16,8 @@ import {
   EvfTranslateService,
   FormTemplate,
   SupportedLocales,
-} from '@smals/vas-evaluation-form-ui-core';
-import { EvfDynamicFormComponent } from '@smals/vas-evaluation-form-ui-material/dynamic-form';
+} from '@smals-belgium-shared/vas-evaluation-form-ui-core';
+import { EvfDynamicFormComponent } from '@smals-belgium-shared/vas-evaluation-form-ui-material/dynamic-form';
 import { NgTemplateOutlet } from '@angular/common';
 import { DateAdapter } from '@angular/material/core';
 import { DateTime } from 'luxon';

@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { EvfTranslateService } from '@smals/vas-evaluation-form-ui-core';
+import { EvfTranslateService } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { MatIcon, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatCheckbox } from '@angular/material/checkbox';

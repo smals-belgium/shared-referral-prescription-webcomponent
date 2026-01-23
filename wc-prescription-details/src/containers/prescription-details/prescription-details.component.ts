@@ -11,7 +11,8 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  Renderer2, signal,
+  Renderer2,
+  signal,
   Signal,
   SimpleChanges,
   untracked,
@@ -57,7 +58,8 @@ import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
 import {
   BehaviorSubject,
   catchError,
-  concatMap, EMPTY,
+  concatMap,
+  EMPTY,
   from,
   map,
   Observable,
@@ -81,7 +83,12 @@ import {
 } from '@reuse/code/openapi';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatChip } from '@angular/material/chips';
-import { EvfLabelPipe, EvfTranslateService, FormTemplate, FormTranslations } from '@smals/vas-evaluation-form-ui-core';
+import {
+  EvfLabelPipe,
+  EvfTranslateService,
+  FormTemplate,
+  FormTranslations,
+} from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { PrescriptionsPdfService } from '@reuse/code/services/helpers/prescription-pdf.service';
 import { PrescriptionDetailsMainComponent } from '../../components/prescription-details-main/prescription-details-main.component';
 import { PrescriptionDetailsSecondaryComponent } from '../../components/prescription-details-secondary/prescription-details-secondary.component';
@@ -311,9 +318,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     this._subscriptions.add(
       this._languageChange
         .pipe(
-          tap((lang) =>
-            this._dateAdapter.setLocale(lang)
-          ),
+          tap(lang => this._dateAdapter.setLocale(lang)),
           switchMap(lang => {
             return this._translate.use(lang).pipe(
               catchError(() => {

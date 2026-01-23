@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { AutocompleteOption } from '@smals/vas-evaluation-form-ui-core';
+import { AutocompleteOption } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { ControlRequest, PssService as ApiPssService } from '@reuse/code/openapi';

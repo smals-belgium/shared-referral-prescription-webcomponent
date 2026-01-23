@@ -5,13 +5,13 @@ import {
   EvfElementHelpComponent,
   EvfElementLabelComponent,
   EvfFormElementLayoutComponent,
-} from '@smals/vas-evaluation-form-ui-material/elements/shared';
+} from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/shared';
 import {
   AutocompleteOption,
   EvfCommonErrorsPipe,
   EvfLabelPipe,
   EvfTranslateService,
-} from '@smals/vas-evaluation-form-ui-core';
+} from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { PssRadiologyResultComponent } from '@reuse/code/components/pss-radiology-result/pss-radiology-result.component';
 import { PssService } from '@reuse/code/services/api/pss.service';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
@@ -28,7 +28,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlRequest, SupportOption } from '@reuse/code/openapi';
 import { AlertType } from '@reuse/code/interfaces';
 import { EMPTY_OBJECT } from '@reuse/code/constants/common.constants';
-import {isEmptyValue} from "@reuse/code/utils/utils";
+import { isEmptyValue } from '@reuse/code/utils/utils';
 
 @Component({
   selector: 'recommendations',
@@ -176,5 +176,4 @@ export class RecommendationsComponent extends EvfBaseFormElementComponent {
     });
     return invalidFields;
   }
-
 }

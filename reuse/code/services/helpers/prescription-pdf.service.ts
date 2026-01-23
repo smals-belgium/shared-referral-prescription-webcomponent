@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Alignment, Content, ContentTable } from 'pdfmake/interfaces';
 import { TranslateService } from '@ngx-translate/core';
 import { DateTime } from 'luxon';
-import { FormElement, FormTemplate, FormTranslation } from '@smals/vas-evaluation-form-ui-core';
+import { FormElement, FormTemplate, FormTranslation } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { translateOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
 import * as pdfMake from 'pdfmake/build/pdfmake.js';
 import { HealthcareProResource, PersonResource, ReadRequestResource, Template, Translation } from '@reuse/code/openapi';
@@ -20,120 +20,118 @@ export class PrescriptionsPdfService {
     template: Template,
     templateVersion: FormTemplate,
     language: string
-  ): TCreatedPdf{
-
-    return pdfMake
-      .createPdf(
-        {
-          pageSize: 'A4',
-          pageMargins: [24, 24, 24, 30],
-          info: {
-            title: prescription.id,
-            subject: prescription.id,
-            author: 'RIZIV - INAMI',
+  ): TCreatedPdf {
+    return pdfMake.createPdf(
+      {
+        pageSize: 'A4',
+        pageMargins: [24, 24, 24, 30],
+        info: {
+          title: prescription.id,
+          subject: prescription.id,
+          author: 'RIZIV - INAMI',
+        },
+        defaultStyle: {
+          font: 'OpenSans',
+        },
+        header: [
+          {
+            text: this.translate.instant('prescription.print.date', { date: this.getCurrentDate() }),
+            margin: [26, 6],
           },
-          defaultStyle: {
-            font: 'OpenSans',
-          },
-          header: [
-            {
-              text: this.translate.instant('prescription.print.date', { date: this.getCurrentDate() }),
-              margin: [26, 6],
-            },
-          ],
-          content: [
-            {
-              layout: 'prescriptionTableLayout',
-              table: {
-                // dontBreakRows: true,
-                headerRows: 1,
-                body: [
+        ],
+        content: [
+          {
+            layout: 'prescriptionTableLayout',
+            table: {
+              // dontBreakRows: true,
+              headerRows: 1,
+              body: [
+                [
+                  {
+                    stack: [this.prescriptionPageHeaderInfo(), this.prescriptionPageHeader(prescription, patient)],
+                    margin: [0, 0, 0, 20],
+                  },
+                ],
+                [
                   [
-                    {
-                      stack: [this.prescriptionPageHeaderInfo(), this.prescriptionPageHeader(prescription, patient)],
-                      margin: [0, 0, 0, 20],
-                    },
-                  ],
-                  [
-                    [
-                      this.generatePrescriptionInfoTable(
-                        prescription,
-                        responses,
-                        templateVersion,
-                        template,
-                        language.substring(0, 2) as keyof FormTranslation
-                      ),
-                    ],
+                    this.generatePrescriptionInfoTable(
+                      prescription,
+                      responses,
+                      templateVersion,
+                      template,
+                      language.substring(0, 2) as keyof FormTranslation
+                    ),
                   ],
                 ],
-              },
+              ],
             },
-          ],
-          footer: [
-            {
-              layout: 'footerLine',
-              margin: [24, 0],
-              table: {
-                widths: ['*'],
-                body: [
-                  [
-                    {
-                      text: this.translate.instant('prescription.print.remark'),
-                      alignment: 'center',
-                      fontSize: 12,
-                    },
-                  ],
+          },
+        ],
+        footer: [
+          {
+            layout: 'footerLine',
+            margin: [24, 0],
+            table: {
+              widths: ['*'],
+              body: [
+                [
+                  {
+                    text: this.translate.instant('prescription.print.remark'),
+                    alignment: 'center',
+                    fontSize: 12,
+                  },
                 ],
-              },
+              ],
             },
-          ],
-          pageBreakBefore: (currentNode, followingNodesOnPage, nodesOnNextPage, previousNodesOnPage) => {
-            if (previousNodesOnPage.length <= 0 || nodesOnNextPage.length <= 0) {
-              return false;
-            }
-            return (
-              currentNode.pageNumbers.length === 2 &&
-              currentNode.startPosition.top > currentNode.startPosition.pageInnerHeight / 2
-            );
           },
+        ],
+        pageBreakBefore: (currentNode, followingNodesOnPage, nodesOnNextPage, previousNodesOnPage) => {
+          if (previousNodesOnPage.length <= 0 || nodesOnNextPage.length <= 0) {
+            return false;
+          }
+          return (
+            currentNode.pageNumbers.length === 2 &&
+            currentNode.startPosition.top > currentNode.startPosition.pageInnerHeight / 2
+          );
         },
-        {
-          headerTableLayout: {
-            hLineColor: () => '#e5e5e5',
-            hLineWidth: (rowIndex, node) => (rowIndex === 0 || rowIndex === node.table.body.length ? 0 : 1),
-            vLineWidth: () => 0,
-          },
-          headerBlueTableLayout: {
-            hLineColor: () => '#4873c4',
-            vLineColor: () => '#4873c4',
-            hLineWidth: () => 1,
-            vLineWidth: () => 1,
-          },
-          prescriptionTableLayout: {
-            hLineWidth: () => 0,
-            vLineWidth: () => 0,
-          },
-          medicationTableLayout: {
-            hLineColor: () => '#e5e5e5',
-            hLineWidth: (rowIndex, node) => (rowIndex === 0 || rowIndex === node.table.body.length ? 0 : 1),
-            vLineWidth: () => 0,
-          },
-          footerLine: {
-            hLineColor: () => '#000000',
-            hLineWidth: (rowIndex, _node) => (rowIndex === 0 ? 1 : 0),
-            vLineWidth: () => 0,
-          },
+      },
+      {
+        headerTableLayout: {
+          hLineColor: () => '#e5e5e5',
+          hLineWidth: (rowIndex, node) => (rowIndex === 0 || rowIndex === node.table.body.length ? 0 : 1),
+          vLineWidth: () => 0,
         },
-        {
-          OpenSans: {
-            normal: 'OpenSans-Regular.ttf',
-            bold: 'OpenSans-Bold.ttf',
-            italics: 'OpenSans-Italic.ttf',
-            bolditalics: 'OpenSans-BoldItalic.ttf',
-          },
+        headerBlueTableLayout: {
+          hLineColor: () => '#4873c4',
+          vLineColor: () => '#4873c4',
+          hLineWidth: () => 1,
+          vLineWidth: () => 1,
         },
-        this.getFontVfs()
-      )
+        prescriptionTableLayout: {
+          hLineWidth: () => 0,
+          vLineWidth: () => 0,
+        },
+        medicationTableLayout: {
+          hLineColor: () => '#e5e5e5',
+          hLineWidth: (rowIndex, node) => (rowIndex === 0 || rowIndex === node.table.body.length ? 0 : 1),
+          vLineWidth: () => 0,
+        },
+        footerLine: {
+          hLineColor: () => '#000000',
+          hLineWidth: (rowIndex, _node) => (rowIndex === 0 ? 1 : 0),
+          vLineWidth: () => 0,
+        },
+      },
+      {
+        OpenSans: {
+          normal: 'OpenSans-Regular.ttf',
+          bold: 'OpenSans-Bold.ttf',
+          italics: 'OpenSans-Italic.ttf',
+          bolditalics: 'OpenSans-BoldItalic.ttf',
+        },
+      },
+      this.getFontVfs()
+    );
   }
 
   private getCurrentDate() {
