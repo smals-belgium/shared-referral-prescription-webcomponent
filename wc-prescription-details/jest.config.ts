@@ -3,29 +3,31 @@
  * https://jestjs.io/docs/configuration
  */
 
-import type {Config} from 'jest';
-import {config as jestBaseConfig} from '../jest.base.config' ;
+import type { Config } from 'jest';
+import { config as jestBaseConfig } from '../jest.base.config';
 
 const config: Config = {
   ...jestBaseConfig,
 
   // The directory where Jest should output its coverage files
-  coverageDirectory: "<rootDir>/wc-prescription-details/coverage",
+  coverageDirectory: '<rootDir>/wc-prescription-details/coverage',
 
   setupFilesAfterEnv: ['./setup-jest.ts'],
 
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   moduleNameMapper: {
-    "@reuse/(.*)": "<rootDir>/reuse/$1",
-    "^jose": require.resolve("jose"),
+    '@reuse/(.*)': '<rootDir>/reuse/$1',
+    '^jose': require.resolve('jose'),
+    '^@smals/vas-evaluation-form-ui-core': '@smals-belgium-shared/vas-evaluation-form-ui-core',
   },
-  collectCoverageFrom: [
-    "wc-prescription-details/src/components/**/*.ts"
-  ],
+  collectCoverageFrom: ['wc-prescription-details/src/components/**/*.ts'],
   transform: {
-    '^.+\\.(ts|html)$': ['ts-jest', {
-      tsconfig: '<rootDir>/wc-prescription-details/tsconfig.spec.json',
-    }],
+    '^.+\\.(ts|html)$': [
+      'ts-jest',
+      {
+        tsconfig: '<rootDir>/wc-prescription-details/tsconfig.spec.json',
+      },
+    ],
   },
 };
 
