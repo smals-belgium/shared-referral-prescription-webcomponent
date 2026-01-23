@@ -8,7 +8,7 @@ import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionM
 import { CreatePrescriptionForm, Intent, LoadingStatus } from '@reuse/code/interfaces';
 import { ElementGroup } from '@smals/vas-evaluation-form-ui-core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
+import { MatAccordion, MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { By } from '@angular/platform-browser';
@@ -233,9 +233,17 @@ describe('CreateMultiplePrescriptionsComponent', () => {
 
   it('should set hideToggle true when only one form', () => {
     setOneTemplate();
+    fixture.detectChanges();
 
-    const accordion = fixture.debugElement.query(By.css('mat-accordion'));
-    expect(accordion.attributes['ng-reflect-hide-toggle']).toBe('true');
+    const accordionDebug = fixture.debugElement.query(
+      By.directive(MatAccordion)
+    );
+
+    expect(accordionDebug).toBeTruthy();
+
+    const accordionInstance = accordionDebug.injector.get(MatAccordion);
+
+    expect(accordionInstance.hideToggle).toBe(true);
   });
 
   it('should render one expansion panel per form and expand last', () => {

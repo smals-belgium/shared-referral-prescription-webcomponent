@@ -3,7 +3,6 @@
 @use '../../../../node_modules/@smals/vas-evaluation-form-ui-material/index' as evf;
 
 @include mh.use-font-material-symbols(
-    true,
     url('@reuse/assets/fonts/MatSymbols-Rounded.ttf'),
     'Material Symbols Rounded',
       (
