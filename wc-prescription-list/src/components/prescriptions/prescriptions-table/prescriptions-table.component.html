@@ -57,21 +57,20 @@
     </td>
   </ng-container>
 
-  <ng-container matColumnDef="noRecord">
-    <td mat-footer-cell *matFooterCellDef colspan="6">
-      <span *hideIfProfessional>{{ 'prescription.noPrescriptionsForUser' | translate }}</span>
-      <span *showIfProfessional>{{ 'prescription.noPrescriptionsForPatient' | translate }}</span>
-    </td>
-  </ng-container>
-
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr [class.inactive]="row.status === 'DONE' || row.status === 'CANCELLED' || row.status === 'EXPIRED'"
       [attr.data-cy]="'prescription-row-' + row.id"
       (click)="clickPrescription.emit(row)"
       mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
-  <tr [class]="prescriptions?.total === 0 ? 'no-prescriptions' : 'no-data'" mat-footer-row
-      *matFooterRowDef="prescriptions?.total === 0 ? ['noRecord'] : []"></tr>
+  @if (!loading){
+    <tr [class]="prescriptions?.total === 0 ? 'no-prescriptions' : 'no-data'" class="mat-mdc-row" *matNoDataRow >
+      <td class="mat-mdc-cell" [attr.colspan]="displayedColumns.length">
+        <span *hideIfProfessional>{{ 'prescription.noPrescriptionsForUser' | translate }}</span>
+        <span *showIfProfessional>{{ 'prescription.noPrescriptionsForPatient' | translate }}</span>
+      </td>
+    </tr>
+  }
 </table>
 
 

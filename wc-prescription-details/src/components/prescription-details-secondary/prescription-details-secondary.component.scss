@@ -20,7 +20,8 @@
     align-items: center;
     gap: mh.$spacing-rem-s;
 
-    h4{
+    h3{
+      @include mh.font-heading-4();
       color: var(--mh-secondary-details-container-care-giver-title, mh.$typography-brand-primary-darker);
     }
 
