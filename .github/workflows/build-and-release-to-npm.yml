@@ -56,7 +56,7 @@ jobs:
           for pkg in "${DIST_PACKAGES[@]}"; do
             VERSION=$(node -p "require('./$pkg/package.json').version")
             echo "Publishing $pkg (version $VERSION)..."
-            npm publish "$pkg" --access public
+            npm publish "$pkg" --access public ./dist
           done
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
