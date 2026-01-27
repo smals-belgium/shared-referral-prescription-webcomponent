@@ -22,11 +22,6 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org/'
 
-      - name: Check Node and npm versions
-        run: |
-          node -v
-          npm -v
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -40,14 +35,14 @@ jobs:
           openapi-file: api-contract/openapi.yaml
           command-args: -o reuse/code/openapi --additional-properties fileNaming=kebab-case,withInterfaces=true --generate-alias-as-model
 
-      - name: Clean npm cache (optional but recommended)
+      - name: Clean npm cache
         run: npm cache clean --force
 
       - name: Install dependencies
         run: npm ci
 
       - name: Build all packages
-        run: npm run build
+        run: npm run build:all-packages
 
       - name: Publish all packages to NPM
         run: |
