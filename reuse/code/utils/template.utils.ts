@@ -1,5 +1,5 @@
 import { TemplateId } from '@reuse/code/interfaces';
-import { FormElement } from '@smals/vas-evaluation-form-ui-core';
+import { FormElement } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 
 export function templateIdToString(templateId: TemplateId): string {
   return templateId.orderDetail ? `${templateId.snomed}/${templateId.orderDetail}` : templateId.snomed;

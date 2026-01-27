@@ -25,21 +25,9 @@
             "inlineStyleLanguage": "scss",
             "ssr": false,
             "prerender": false,
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "./dist/evf-form-details/build/",
-                "output": "./assets/evf-form-details/"
-              },
-              {
-                "glob": "**/*",
-                "input": "./dist/pdfmake/build/",
-                "output": "./assets/pdfmake/"
-              }
-            ],
+            "assets": [],
             "styles": ["wc-prescription-details/src/styles.scss"],
             "scripts": ["node_modules/marked/marked.min.js"],
-            "externalDependencies": ["/assets/evf-form-details/evf-form-details.js", "/assets/pdfmake/pdfmake.js"],
             "allowedCommonJsDependencies": [
               "localforage",
               "buffer",
@@ -218,16 +206,9 @@
             "optimization": {
               "fonts": false
             },
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "./dist/evf-form/build/",
-                "output": "./assets/evf-form/"
-              }
-            ],
+            "assets": [],
             "styles": ["wc-prescription-create/src/styles.scss"],
             "scripts": ["node_modules/marked/marked.min.js"],
-            "externalDependencies": ["/assets/evf-form/evf-form.js"],
             "allowedCommonJsDependencies": ["localforage", "buffer", "@messageformat/core", "elliptic", "bn.js"]
           },
           "configurations": {
@@ -269,69 +250,6 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": ["wc-prescription-create/src/**/*.ts", "wc-prescription-create/src/**/*.html"]
-          }
-        }
-      }
-    },
-    "wc-pdfmake": {
-      "projectType": "application",
-      "schematics": {
-        "@schematics/angular:component": {
-          "style": "scss"
-        }
-      },
-      "root": "wc-pdfmake",
-      "sourceRoot": "wc-pdfmake/src",
-      "prefix": "app",
-      "architect": {
-        "build": {
-          "builder": "@angular/build:application",
-          "options": {
-            "outputPath": "dist/wc-pdfmake",
-            "index": "wc-pdfmake/src/index.html",
-            "browser": "wc-pdfmake/src/main.ts",
-            "polyfills": ["zone.js"],
-            "tsConfig": "wc-pdfmake/tsconfig.app.json",
-            "inlineStyleLanguage": "scss",
-            "assets": ["wc-pdfmake/src/favicon.ico", "wc-pdfmake/src/assets"],
-            "scripts": [],
-            "allowedCommonJsDependencies": ["localforage", "pdfmake/build/pdfmake.js", "@messageformat/core"]
-          },
-          "configurations": {
-            "production": {
-              "outputHashing": "all"
-            },
-            "development": {
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "serve": {
-          "builder": "ngx-build-plus:dev-server",
-          "configurations": {
-            "production": {
-              "browserTarget": "wc-pdfmake:build:production"
-            },
-            "development": {
-              "browserTarget": "wc-pdfmake:build:development"
-            }
-          },
-          "defaultConfiguration": "development"
-        },
-        "test": {
-          "builder": "@angular-builders/jest:run",
-          "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
-            "configPath": "jest.config.ts",
-            "tsConfig": "tsconfig.spec.json",
-            "inlineStyleLanguage": ["scss"],
-            "assets": [],
-            "styles": [],
-            "scripts": []
           }
         }
       }

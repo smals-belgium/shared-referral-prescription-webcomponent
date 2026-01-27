@@ -7,7 +7,7 @@ import { combineLatestWith, Observable, startWith } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
-import { Language } from '@smals/vas-evaluation-form-ui-core';
+import { Language } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { toSearchString } from '@reuse/code/utils/utils';

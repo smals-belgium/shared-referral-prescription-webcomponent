@@ -3,10 +3,10 @@ import {
   AutocompleteOption,
   evfElementConfigFeature,
   FormTemplate,
-  provideEvfCore
-} from '@smals/vas-evaluation-form-ui-core';
+  provideEvfCore,
+} from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { EvfDynamicFormComponent } from '@smals/vas-evaluation-form-ui-material/dynamic-form';
+import { EvfDynamicFormComponent } from '@smals-belgium-shared/vas-evaluation-form-ui-material/dynamic-form';
 import { BrowserModule, By } from '@angular/platform-browser';
 import { MarkdownModule } from 'ngx-markdown';
 import { RecommendationsComponent as Wrapper } from './recommendations.component';
@@ -45,28 +45,26 @@ const disableAnimations =
   !('animate' in document.documentElement) || (navigator && /iPhone OS (8|9|10|11|12|13)_/.test(navigator.userAgent));
 
 const indicationMock: AutocompleteOption = {
-  label: {nl: 'Indicatie NL', fr: 'Indication FR', de: 'Indikation DE', en: 'Indication EN'},
+  label: { nl: 'Indicatie NL', fr: 'Indication FR', de: 'Indikation DE', en: 'Indication EN' },
   value: 'indication1',
 };
 
 const procedureMock: AutocompleteOption = {
-  label: {nl: 'Procedure NL', fr: 'Procédure FR', de: 'Prozedur DE', en: 'Procedure EN'},
+  label: { nl: 'Procedure NL', fr: 'Procédure FR', de: 'Prozedur DE', en: 'Procedure EN' },
   value: 'procedure1',
 };
 
 const mockGroup = {
   get: (field: string) => ({
-    value: field === 'age' ? 35 :
-      field === 'gender' ? 'M' :
-        [indicationMock],
-    markAsTouched: jest.fn()
+    value: field === 'age' ? 35 : field === 'gender' ? 'M' : [indicationMock],
+    markAsTouched: jest.fn(),
   }),
   getOutputValue: jest.fn().mockReturnValue({
     age: 35,
     gender: 'M',
     clinicalIndications: [indicationMock],
-    intendedProcedure: procedureMock
-  })
+    intendedProcedure: procedureMock,
+  }),
 };
 
 describe('AutocompleteMultiselectComponent', () => {
@@ -128,7 +126,7 @@ describe('AutocompleteMultiselectComponent', () => {
   });
 
   it('should call API when valid clinical indications provided', fakeAsync(() => {
-   const mockResult: SupportResponseRadiology = {
+    const mockResult: SupportResponseRadiology = {
       exchangeId: '',
       supportOptions: [
         {
@@ -158,7 +156,6 @@ describe('AutocompleteMultiselectComponent', () => {
   }));
 
   it('should handle API error', () => {
-
     const recommendationFormDebugElement = fixture.debugElement.query(By.directive(RecommendationsComponent));
     recommendationFormDebugElement.componentInstance.elementControl.elementGroup = mockGroup as any;
 
@@ -306,23 +303,23 @@ describe('AutocompleteMultiselectComponent', () => {
           age: 35,
           gender: 'M',
           clinicalIndications: [indicationMock],
-          intendedProcedure: procedureMock
+          intendedProcedure: procedureMock,
         }),
       };
 
-      recommendationFormDebugElement.componentInstance.elementControl.elementGroup = elementGroupMock as any;
+      recommendationFormDebugElement.componentInstance.elementControl.elementGroup = elementGroupMock;
     });
 
     it('should show error when required fields are missing', () => {
-      const ageMock = {value: null, markAsTouched: jest.fn()};
-      const genderMock = {value: null, markAsTouched: jest.fn()};
-      const clinicalMock = {value: null, markAsTouched: jest.fn()};
+      const ageMock = { value: null, markAsTouched: jest.fn() };
+      const genderMock = { value: null, markAsTouched: jest.fn() };
+      const clinicalMock = { value: null, markAsTouched: jest.fn() };
 
       elementGroupMock.get = (field: string) => {
         if (field === 'age') return ageMock;
         if (field === 'gender') return genderMock;
         if (field === 'clinicalIndications') return clinicalMock;
-        return {value: null, markAsTouched: jest.fn()};
+        return { value: null, markAsTouched: jest.fn() };
       };
 
       recommendationFormDebugElement.componentInstance.pssControl();
@@ -336,20 +333,19 @@ describe('AutocompleteMultiselectComponent', () => {
     });
 
     it('should show error when gender is an empty string', () => {
-
-      const genderMock = {value: '', markAsTouched: jest.fn()};
+      const genderMock = { value: '', markAsTouched: jest.fn() };
 
       const elementGroupMock = {
         get: (field: string) => {
-          if (field === 'age') return {value: 35, markAsTouched: jest.fn()}; // valide
+          if (field === 'age') return { value: 35, markAsTouched: jest.fn() }; // valide
           if (field === 'gender') return genderMock;
-          if (field === 'clinicalIndications') return {value: [indicationMock], markAsTouched: jest.fn()};
-          return {value: null, markAsTouched: jest.fn()};
+          if (field === 'clinicalIndications') return { value: [indicationMock], markAsTouched: jest.fn() };
+          return { value: null, markAsTouched: jest.fn() };
         },
         getOutputValue: jest.fn().mockReturnValue({
           age: 35,
           gender: '',
-          clinicalIndications: [indicationMock]
+          clinicalIndications: [indicationMock],
         }),
       };
       recommendationFormDebugElement.componentInstance.elementControl.elementGroup = elementGroupMock as any;
@@ -362,20 +358,19 @@ describe('AutocompleteMultiselectComponent', () => {
     });
 
     it('should show error when clinicalIndications is empty', () => {
-
-      const clinicalIndicationsMock = {value: [], markAsTouched: jest.fn()};
+      const clinicalIndicationsMock = { value: [], markAsTouched: jest.fn() };
 
       const elementGroupMock = {
         get: (field: string) => {
-          if (field === 'age') return {value: 35, markAsTouched: jest.fn()}; // valide
-          if (field === 'gender') return {value: 'M', markAsTouched: jest.fn()};
+          if (field === 'age') return { value: 35, markAsTouched: jest.fn() }; // valide
+          if (field === 'gender') return { value: 'M', markAsTouched: jest.fn() };
           if (field === 'clinicalIndications') return clinicalIndicationsMock;
-          return {value: null, markAsTouched: jest.fn()};
+          return { value: null, markAsTouched: jest.fn() };
         },
         getOutputValue: jest.fn().mockReturnValue({
           age: 35,
           gender: '',
-          clinicalIndications: []
+          clinicalIndications: [],
         }),
       };
 
@@ -394,12 +389,14 @@ describe('AutocompleteMultiselectComponent', () => {
         markAsTouched: jest.fn(),
       });
 
-      pssServiceMock.getPssRecommendations.mockReturnValue(of({
-        exchangeId: '',
-        request: undefined,
-        supportOptions: [],
-        conclusions: []
-      }));
+      pssServiceMock.getPssRecommendations.mockReturnValue(
+        of({
+          exchangeId: '',
+          request: undefined,
+          supportOptions: [],
+          conclusions: [],
+        })
+      );
 
       recommendationFormDebugElement.componentInstance.pssControl();
       tick();
@@ -409,6 +406,4 @@ describe('AutocompleteMultiselectComponent', () => {
       expect(pssServiceMock.getPssRecommendations).toHaveBeenCalled();
     }));
   });
-
-
 });

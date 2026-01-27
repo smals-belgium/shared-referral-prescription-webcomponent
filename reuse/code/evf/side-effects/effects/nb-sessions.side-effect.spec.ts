@@ -1,7 +1,7 @@
 import { withNbSessionsSideEffect, NbSessionsSideEffect } from './nb-sessions.side-effect';
-import { ElementGroupLike } from '@smals/vas-evaluation-form-ui-core';
+import { ElementGroupLike } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 
-jest.mock('@smals/vas-evaluation-form-ui-core', () => ({
+jest.mock('@smals-belgium-shared/vas-evaluation-form-ui-core', () => ({
   evfSideEffectFeature: jest.fn(config => config),
 }));
 

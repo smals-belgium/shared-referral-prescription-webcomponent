@@ -16,7 +16,7 @@ import { PrescriptionModelService } from '@reuse/code/services/api/prescriptionM
 import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionModel.state';
 import { MatInput } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
-import { FormTemplate } from '@smals/vas-evaluation-form-ui-core';
+import { FormTemplate } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { UniqueModelNameValidator } from '@reuse/code/directives/unique-model-name.directive';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 import { HttpErrorResponse } from '@angular/common/http';

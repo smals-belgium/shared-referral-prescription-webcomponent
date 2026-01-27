@@ -3,9 +3,9 @@ import {
   provideEvfCore,
   withParseDateExpressionPipe,
   withTransformDateExpressionPipe,
-} from '@smals/vas-evaluation-form-ui-core';
-import { CheckboxDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/checkbox';
-import { DateDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/date';
+} from '@smals-belgium-shared/vas-evaluation-form-ui-core';
+import { CheckboxDetailComponent } from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/checkbox';
+import { DateDetailComponent } from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/date';
 import { OccurrenceTimingDetailComponent } from '@reuse/code/evf/components/occurrence-timing/detail/occurrence-timing-detail.component';
 import { RecommendationsDetailComponent } from '@reuse/code/evf/components/pss-recommendations/detail/recommendations-detail.component';
 import {
@@ -13,15 +13,15 @@ import {
   EvfResponseDetailComponent,
   EvfResponseListDetailComponent,
   EvfValueDetailComponent,
-} from '@smals/vas-evaluation-form-ui-material/elements/shared';
-import { RowDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/row';
-import { RepeatableInlineDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/repeatable-inline';
-import { RepeatableDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/repeatable';
-import { SlideToggleDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/slide-toggle';
-import { AutocompleteDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/autocomplete';
-import { SectionDetailComponent } from '@smals/vas-evaluation-form-ui-material/elements/section';
+} from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/shared';
+import { RowDetailComponent } from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/row';
+import { RepeatableInlineDetailComponent } from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/repeatable-inline';
+import { RepeatableDetailComponent } from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/repeatable';
+import { SlideToggleDetailComponent } from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/slide-toggle';
+import { AutocompleteDetailComponent } from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/autocomplete';
+import { SectionDetailComponent } from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/section';
 
-import { withInfoElement } from '@smals/vas-evaluation-form-ui-material/elements/info';
+import { withInfoElement } from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/info';
 import { OccurrencesComponent } from '@reuse/code/evf/components/occurrences/detail/occurrences.component';
 import { BoundsDurationComponent } from '@reuse/code/evf/components/bounds-duration/detail/bounds-duration.component';
 

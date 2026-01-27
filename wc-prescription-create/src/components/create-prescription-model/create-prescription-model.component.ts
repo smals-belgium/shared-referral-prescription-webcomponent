@@ -10,7 +10,7 @@ import {
   signal,
   SimpleChanges,
 } from '@angular/core';
-import { ElementGroup, removeNulls } from '@smals/vas-evaluation-form-ui-core';
+import { ElementGroup, removeNulls } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
 import { IfStatusErrorDirective } from '@reuse/code/directives/if-status-error.directive';
@@ -32,13 +32,12 @@ import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import {
   nameValidatorWithOriginal,
-  UniqueModelNameValidator
+  UniqueModelNameValidator,
 } from '@reuse/code/directives/unique-model-name.directive';
 import { isOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
 import { FormDataType, FormElement, TemplateVersion } from '@reuse/code/openapi';
 import TypeEnum = FormDataType.TypeEnum;
 import { EvfFormWebComponent } from '../evf-form/evf-form.component';
-
 
 @Component({
   selector: 'app-create-prescription-model',

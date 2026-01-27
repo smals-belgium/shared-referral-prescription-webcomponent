@@ -6,11 +6,10 @@ import {
   EvfTranslateService,
   FormTemplate,
   SupportedLocales,
-} from '@smals/vas-evaluation-form-ui-core';
+} from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { NgTemplateOutlet } from '@angular/common';
 import { DateAdapter } from '@angular/material/core';
 import { DateTime } from 'luxon';
-import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { TranslateService } from '@ngx-translate/core';
 import { PssService } from '@reuse/code/services/api/pss.service';
 
