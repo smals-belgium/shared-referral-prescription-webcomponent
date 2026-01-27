@@ -20,6 +20,19 @@ evf-dynamic-form {
   }
 }
 
+// Needed to override default styling applied by material for icons in evf template
+:host ::ng-deep{
+  mat-form-field {
+    &.ng-invalid button.mat-mdc-icon-button svg {
+      fill: var(--mat-form-field-error-icon-color, mh.$error-30);
+    }
+
+    button.mat-mdc-icon-button svg {
+      fill: var(--mat-form-field-icon-color, mh.$typography-brand-primary-dark);
+    }
+  }
+}
+
 .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-notch-piece {
   background-color: var(--mat-form-field-error-background-color, mh.$error-99);
 }
