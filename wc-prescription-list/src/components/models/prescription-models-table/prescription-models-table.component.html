@@ -49,14 +49,13 @@
       (click)="openPrescriptionModel.emit(row)"
       mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
-    <ng-container matColumnDef="noRecord">
-      <td mat-footer-cell *matFooterCellDef colspan="4">
+  @if (!loading){
+    <tr [class]="prescriptionModels.length === 0 ? 'no-models' : 'no-data'" class="mat-mdc-row" *matNoDataRow >
+      <td class="mat-mdc-cell" [attr.colspan]="displayedColumns.length">
         <span>{{'prescription.model.noModels' | translate}}</span>
       </td>
-    </ng-container>
-
-  <tr [class]="prescriptionModels.length === 0 ? 'no-models' : 'no-data'" mat-footer-row
-      *matFooterRowDef="prescriptionModels.length === 0 ? ['noRecord'] : []"></tr>
+    </tr>
+  }
 </table>
 }
   @if (error) {

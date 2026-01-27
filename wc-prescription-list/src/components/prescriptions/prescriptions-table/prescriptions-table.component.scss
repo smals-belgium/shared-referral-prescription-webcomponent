@@ -3,6 +3,8 @@
 .mat-mdc-row .mat-mdc-cell {
   cursor: pointer;
 }
+
+//Applied when prescriptions are successfully loaded, but there are no prescriptions
 tr.no-prescriptions {
   > td {
     text-align: center;
@@ -11,6 +13,7 @@ tr.no-prescriptions {
   }
 }
 
+//Applied when there is an error in the prescriptions or prescriptions are still loading
 tr.no-data {
   height: var(--mh-table-empty-footer-container-height, 0);
 }
@@ -20,4 +23,3 @@ span.info{
   @include mh.font-extra-small-regular();
   color: mh.$typography-brand-neutral-dark;
 }
-

@@ -10,6 +10,7 @@ import { By } from '@angular/platform-browser';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
 
 const requester: HealthcareProResource = {
   healthcarePerson: {
@@ -42,6 +43,12 @@ const mockPrescriptions: ReadRequestListResource = {
   ],
 };
 
+const mockAuthService = {
+  isProfessional: jest.fn(()=> {
+    return of(true)
+  })
+}
+
 class FakeLoader implements TranslateLoader {
   getTranslation() {
     return of({});
@@ -64,6 +71,9 @@ describe('PrescriptionsTableComponent', () => {
           loader: { provide: TranslateLoader, useClass: FakeLoader },
         }),
       ],
+      providers: [
+        {provide: AuthService, useValue: mockAuthService }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(PrescriptionsTableComponent);
@@ -176,8 +186,8 @@ describe('PrescriptionsTableComponent', () => {
     const rows = fixture.debugElement.queryAll(By.css('tr'));
 
     expect(headerCells.length).toBe(component.displayedColumns.length);
-    //header row + 1 elment row + footer row
-    const rowsLength = 1 + mockPrescriptions.items!.length + 1;
+    //header row + 1 element row
+    const rowsLength = 1 + mockPrescriptions.items!.length;
     expect(rows.length).toBe(rowsLength);
   });
 
