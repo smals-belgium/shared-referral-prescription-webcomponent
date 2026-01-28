@@ -1,0 +1,62 @@
+<evf-form-detail-layout [options]="options">
+  @if (element.labelTranslationId && options.showLabel) {
+    <evf-detail-label
+      [labelId]="element.labelTranslationId"
+      [interpolationData]="interpolationData"
+    ></evf-detail-label>
+  }
+  <div>
+    @if (metadata["intent"] === Intent.PROPOSAL) {
+      @for (response of elementControl.responses$ | async; track response) {
+        <div class="checkbox-item-wrapper" [attr.data-cy]="'response-' + response.value">
+          <div class="checkbox-item">
+            <mat-checkbox
+              [checked]="isChecked(response.value)"
+              [disabled]="true"
+            >
+              @if (response.labelTranslationId | evfLabel; as label) {
+                <span
+                  class="evf-markdown"
+                  markdown
+                  [data]="label"
+                  [inline]="label | inlineMarkdown"
+                ></span>
+              }
+            </mat-checkbox>
+            @if (response.tooltipTranslationId) {
+              <evf-info-icon
+                [tooltipLabel]="response.tooltipTranslationId | evfLabel"
+              ></evf-info-icon>
+            }
+            @if (isChecked(response.value)) {
+              <evf-form-detail-group
+                [elementControls]="getSubElementControls(response.value)"
+                [metadata]="metadata"
+                (events)="events.emit($event)"
+              ></evf-form-detail-group>
+            }
+          </div>
+        </div>
+      }
+    } @else {
+      <ul class="evf-disc-list">
+        @for (selectedResponse of selectedResponses$ | async; track selectedResponse) {
+        <li>
+          <span markdown class="evf-markdown"
+                  [data]="selectedResponse.response?.labelTranslationId | evfLabel"></span>
+          @if (selectedResponse.response?.tooltipTranslationId) {
+            <evf-info-icon [tooltipLabel]="selectedResponse.response.tooltipTranslationId!"></evf-info-icon>
+          }
+        </li>
+          @if (selectedResponse.subElementsControls; as responseElements) {
+            <evf-form-detail-group
+              [elementControls]="responseElements"
+              [metadata]="metadata"
+              (events)="events.emit($event)"
+            ></evf-form-detail-group>
+          }
+        }
+      </ul>
+    }
+  </div>
+</evf-form-detail-layout>
