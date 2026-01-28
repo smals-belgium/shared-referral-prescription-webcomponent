@@ -4,6 +4,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class FormatSsinPipe implements PipeTransform {
 
   transform(value?: string): string {
+    return FormatSsinPipe.format(value);
+  }
+
+  static format(value?: string): string {
     if (!value) {
       return '';
     }
