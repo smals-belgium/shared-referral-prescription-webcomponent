@@ -201,7 +201,6 @@ $app-primary: mat.m2-define-palette($app-primary-palette, 800);
   .material-icons{
     font-family: 'Material Symbols Rounded', 'Material Icons', sans-serif;
   }
-
 }
 
 .details_container{
@@ -225,13 +224,29 @@ $app-primary: mat.m2-define-palette($app-primary-palette, 800);
         margin: 0;
       }
 
-      .prescription_extended_shortcode_label {
-        color: mh.$typography-brand-primary-dark;
-        text-decoration: underline;
+      .prescription_extended_shortcode_link {
+        color: var(--mh-text-button-link-text-color, var(--mat-sys-primary));
+        &.mat-mdc-button {
+          padding: var(--mh-text-button-link-text-padding, mh.$spacing-rem-2xs);
+          min-height: var(--mh-text-button-link-height, auto);
+          border-radius: var(--mh-text-button-link-border-radius, 0);
+          .mat-mdc-button-touch-target{
+            height: var(--mh-text-button-link-height, auto);
+          }
+          .mdc-button__label{
+            font-weight: var(--mh-text-button-link-text-weight, var(--mat-sys-label-medium-weight));
+            text-decoration: var(--mh-text-button-link-text-decoration, underline);
+          }
 
-        .prescription_extended_shortcode {
-          @include mh.font-default-bold();
-          color: mh.$typography-brand-primary-dark;
+          &:focus-visible {
+            outline: -webkit-focus-ring-color auto 1px;
+            outline: 2px solid AccentColor;
+            outline-offset: 2px;
+          }
+        }
+
+        .mat-mdc-button-persistent-ripple::before {
+          background-color: var(--mh-text-button-state-layer-color, transparent);
         }
       }
 

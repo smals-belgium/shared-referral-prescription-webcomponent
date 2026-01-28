@@ -29,11 +29,12 @@ export const demoHttpInterceptor: HttpInterceptorFn = (
   }
 
   const urlWithoutParams = req.url.split('?')[0];
+  const shortCodeUrl = /\/prescription\?ssin=[^&]+&shortCode=[^&]+$/i.test(req.urlWithParams);
 
   // Find matching mock
   const matches = DEMO_MOCKS.filter(m => {
     const methodMatch = m.method.includes(req.method as HttpMethod);
-    const urlMatch = m.url.test(urlWithoutParams);
+    const urlMatch = shortCodeUrl ? m.url.test(req.urlWithParams) : m.url.test(urlWithoutParams);
     return methodMatch && urlMatch;
   });
 
@@ -62,7 +63,7 @@ export const demoHttpInterceptor: HttpInterceptorFn = (
 
   let body = (match.body ?? {}) as BodyOrFunction;
 
-  const matchResult = urlWithoutParams.match(match.url);
+  const matchResult = shortCodeUrl ? req.urlWithParams.match(match.url) : urlWithoutParams.match(match.url);
 
   try {
     if (match.handler) {
