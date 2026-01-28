@@ -1,0 +1,6 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+ul.evf-disc-list {
+  margin: var(--mh-evf-disc-list-margin, 0);
+  padding-inline-start: var(--mh-evf-disc-list-padding-inline-start, mh.$spacing-xl);
+}
