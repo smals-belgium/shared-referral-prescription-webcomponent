@@ -15,27 +15,6 @@
 @include mh.use-classes();
 @include mh.use-all-components();
 
-$app-primary-palette: (
-  50: mh.$primary-90,
-  100: mh.$primary-80,
-  200: mh.$primary-70,
-  300: mh.$primary-60,
-  400: mh.$primary-50,
-  500: mh.$primary-40,
-  600: mh.$primary-35,
-  700: mh.$primary-30,
-  800: mh.$primary-20,
-  900: mh.$primary-10,
-  A100: mh.$primary-95,
-  A200: mh.$primary-98,
-  A400: mh.$primary-99,
-  A700: mh.$primary-100,
-  contrast: ()
-);
-
-$app-primary: mat.m2-define-palette($app-primary-palette, 800);
-@include evf.evf-theme($app-primary, 800, 600, 700, mh.$color-white, transparent);
-
 .mat-mdc-dialog-inner-container .mat-mdc-dialog-surface{
   max-height: 100vh;
 }
