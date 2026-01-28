@@ -32,7 +32,10 @@ export class TemplateVersionsState {
 
   getState(templateCode: string) {
     const key = Object.keys(this.states).find(k => k.startsWith(`${templateCode}::`)) ?? templateCode;
-    return (this.states[key] ??= signal({ status: LoadingStatus.INITIAL }));
+    if (this.states[key] === undefined || this.states[key] === null) {
+      this.states[key] = signal({ status: LoadingStatus.INITIAL });
+    }
+    return this.states[key];
   }
 
   cleanupInstance(instanceId: string, templateCode: string) {

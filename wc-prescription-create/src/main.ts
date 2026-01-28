@@ -13,7 +13,7 @@ import { WcTranslateLoader } from '@reuse/code/services/helpers/translate.loader
 import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-compiler';
 import { CreatePrescriptionWebComponent } from './create-prescription/create-prescription.component';
 import { MatDialogModule } from '@angular/material/dialog';
-import { provideAnimations } from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { WcAuthService } from '@reuse/code/services/auth/wc-auth.service';
@@ -28,7 +28,6 @@ import {
 (async () => {
   const app = createApplication({
     providers: [
-      provideAnimations(),
       provideHttpClient(withInterceptors([apiUrlInterceptor])),
       providePseudonymisation(),
       provideCore(),
@@ -54,6 +53,7 @@ import {
       },
       provideOpenApi(),
       importProvidersFrom(
+        BrowserAnimationsModule,
         MatDialogModule,
         TranslateModule.forRoot({
           loader: {

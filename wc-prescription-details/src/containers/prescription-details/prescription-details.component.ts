@@ -175,6 +175,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   @Output() clickPrint = new EventEmitter<Blob>();
   @Output() proposalApproved = this._prescriptionSecondaryService.proposalApproved;
   @Output() proposalRejected = this._prescriptionSecondaryService.proposalsRejected;
+  @Output() clickOpenExtendedDetail = new EventEmitter<string>();
 
   private readonly templateCode$ = this._prescriptionSecondaryService.templateCode$;
   protected readonly isProfessional$ = this._prescriptionSecondaryService.isProfessional$;
@@ -348,6 +349,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     }
 
     if (changes['prescriptionId'] || changes['patientSsin']) {
+      this._encryptionStateService.resetCryptoKey();
       this.loadPrescriptionOrProposal();
     }
 
