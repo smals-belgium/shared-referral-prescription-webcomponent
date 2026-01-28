@@ -185,8 +185,15 @@
       "patient": "Rechthebbende",
       "prescriber": "Voorschrijver",
       "proof-of-electronic-prescription": "Bewijs van elektronisch voorschrift",
-      "remark": "Opgelet: met manuele toevoegingen op dit document zal geen rekening gehouden worden.",
-      "date": "Afgedrukt op {date}"
+      "remark": "Deze afdruk wordt ter informatie verstrekt. Hij vervangt niet de elektronische versie en er wordt geen rekening gehouden met handgeschreven toevoegingen.",
+      "date": "Afdrukdatum: {date}",
+      "alert": "Dit voorschrift is geklasseerd zonder gevolg en kan daardoor niet meer gebruikt worden",
+      "subsection": {
+        "header": "Identificatiegegevens van het elektronische recept (afgedrukt op {date})",
+        "patient": "Patiënt",
+        "startDate": "Begin",
+        "endDate": "Einde"
+      }
     },
     "author": "Auteur",
     "patient": "Patiënt",

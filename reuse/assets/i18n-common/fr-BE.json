@@ -184,8 +184,15 @@
       "patient": "Bénéficiaire",
       "prescriber": "Prescripteur",
       "proof-of-electronic-prescription": "Preuve de prescription électronique",
-      "remark": "Attention: Aucun ajout manuscrit à ce document ne sera pris en compte. ",
-      "date": "Imprimé le {date}"
+      "remark": "Cette impression est fournie à titre informatif. Elle ne remplace pas la version électronique et les ajouts manuscrits ne sont pas pris en compte.",
+      "date": "Date d'impression: {date}",
+      "alert": "Cette prescription a été classée sans suite et ne peut donc plus être utilisée.",
+      "subsection": {
+        "header": "Données d'identification de l'ordonnance électronique (imprimées sur {date})",
+        "patient": "Patient",
+        "startDate": "Début",
+        "endDate": "Fin"
+      }
     },
     "author": "Auteur",
     "patient": "Patient",
