@@ -1,5 +1,8 @@
-import { checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline, isProfesionalBasedOnRole } from './utils';
-import { Discipline, PerformerTaskResource, RequestStatus, Role } from '../openapi';
+import {
+  checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline,
+  isProfesionalBasedOnRole,
+} from './utils';
+import { Discipline, PerformerTaskResource, Role } from '../openapi';
 import {
   isSsin,
   isPrescriptionId,
@@ -44,6 +47,10 @@ describe('Utils', () => {
   it('should validate SSIN checksum', () => {
     expect(validateSsinChecksum('90122712173')).toBe(true);
     expect(validateSsinChecksum('12345678904')).toBe(false);
+  });
+
+  it('should return true for valid SSIN born in 2000 or later (requires 2-prefix)', () => {
+    expect(validateSsinChecksum('01051500320')).toBe(true);
   });
 
   it('should normalize strings for search', () => {

@@ -26,7 +26,7 @@ export function keepOnlyDigits(value: string): string {
 }
 
 export function validateSsinChecksum(value: string): boolean {
-  return validateCheckDigit(value, 97) ?? validateCheckDigit('2' + value, 97);
+  return validateCheckDigit(value, 97) || validateCheckDigit('2' + value, 97);
 }
 
 function validateCheckDigit(value: any, modValue: number): boolean {
