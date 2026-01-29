@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -8,7 +8,7 @@ import { MatIconButton } from '@angular/material/button';
 import { CanInterruptTreatmentPipe } from '@reuse/code/pipes/can-interrupt-treatment.pipe';
 import { CanRestartTreatmentPipe } from '@reuse/code/pipes/can-restart-treatment.pipe';
 import { UserInfo } from '@reuse/code/interfaces';
-import { FhirR4TaskStatus, PerformerTaskResource, PersonResource, ReadRequestResource } from '@reuse/code/openapi';
+import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
 import { PrescriptionDetailsSecondaryService } from '../prescription-details-secondary.service';
 import { PrescriptionButtonGroupComponent } from '../prescription-button-group/prescription-button-group.component';
 import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
@@ -38,7 +38,7 @@ export class PrescriptionDetailsCaregiverListComponent {
   protected readonly service = inject(PrescriptionDetailsSecondaryService);
 
   readonly prescriptionServiceData: ReadRequestResource | undefined = this.service.getPrescription().data;
-  readonly patientServiceData: PersonResource | undefined = this.service.getPatient().data;
+  readonly patientServiceData = computed(() => this.service.getPatient().data);
   readonly currentUserServiceData: Partial<UserInfo> | undefined = this.service.getCurrentUser().data;
   readonly performerTaskServiceData: PerformerTaskResource | undefined = this.service.getPerformerTask().data;
 

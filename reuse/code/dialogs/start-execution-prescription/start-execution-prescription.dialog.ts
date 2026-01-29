@@ -18,6 +18,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
 import { PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
+import { SSIN_CLAIM_KEY, USER_PROFILE_CLAIM_KEY } from '@reuse/code/services/auth/auth-constants';
 
 interface StartExecutionPrescriptionDialogData {
   prescription: ReadRequestResource;
@@ -148,6 +149,6 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
   }
 
   private getCurrentUserSsin(): Observable<string> {
-    return this.authService.getClaims().pipe(map(claims => claims?.['userProfile']['ssin'] ?? ''));
+    return this.authService.getClaims().pipe(map(claims => claims?.[USER_PROFILE_CLAIM_KEY][SSIN_CLAIM_KEY] ?? ''));
   }
 }
