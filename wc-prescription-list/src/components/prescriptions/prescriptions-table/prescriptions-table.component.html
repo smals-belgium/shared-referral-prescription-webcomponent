@@ -59,8 +59,10 @@
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr [class.inactive]="row.status === 'DONE' || row.status === 'CANCELLED' || row.status === 'EXPIRED'"
+      [tabindex]="0"
       [attr.data-cy]="'prescription-row-' + row.id"
       (click)="clickPrescription.emit(row)"
+      (keydown.enter)="clickPrescription.emit(row)"
       mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
   @if (!loading){

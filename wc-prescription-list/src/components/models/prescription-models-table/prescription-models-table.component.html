@@ -31,11 +31,11 @@
   <ng-container matColumnDef="actions">
     <th data-cy="overview-actions" mat-header-cell *matHeaderCellDef>{{'prescription.model.actions' | translate}}</th>
     <td [attr.data-cy]="'actions-cell-' + model.id" [attr.translate]="'no'" mat-cell *matCellDef="let model">
-      <button type="button" mat-icon-button [matMenuTriggerFor]="menu" [attr.aria-label]="'prescription.model.actions' | translate" (click)="$event.stopPropagation()">
+      <button type="button" mat-icon-button [matMenuTriggerFor]="menu" [attr.aria-label]="'prescription.model.actions' | translate" (click)="$event.stopPropagation()" (keydown.enter)="$event.stopPropagation()">
         <mat-icon>more_vert</mat-icon>
       </button>
       <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="onActionButtonClick($event, model)">
+        <button type="button" mat-menu-item (click)="onActionButtonClick($event, model)">
           <mat-icon>delete</mat-icon>
           <span> {{ 'prescription.model.delete.title' | translate }}</span>
         </button>
@@ -45,7 +45,9 @@
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr [class.inactive]="row.status === RequestStatus.Done || row.status === RequestStatus.Cancelled || row.status === RequestStatus.Expired"
+      [tabindex]="0"
       [attr.data-cy]="'model-row-' + row.id"
+      (keydown.enter)="openPrescriptionModel.emit(row);"
       (click)="openPrescriptionModel.emit(row)"
       mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
