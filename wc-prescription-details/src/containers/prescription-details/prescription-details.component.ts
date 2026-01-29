@@ -21,16 +21,13 @@ import {
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DateAdapter } from '@angular/material/core';
 import { DateTime } from 'luxon';
-import { AlertType, DataState, UserInfo } from '@reuse/code/interfaces';
+import { AlertType, DataState, LoadingStatus, UserInfo } from '@reuse/code/interfaces';
 import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
-import { IfStatusErrorDirective } from '@reuse/code/directives/if-status-error.directive';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
-import { IfStatusLoadingDirective } from '@reuse/code/directives/if-status-loading.directive';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { TemplatesState } from '@reuse/code/states/api/templates.state';
@@ -108,11 +105,8 @@ export interface ViewState {
   encapsulation: ViewEncapsulation.ShadowDom,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
-    IfStatusLoadingDirective,
     OverlaySpinnerComponent,
     AlertComponent,
-    IfStatusErrorDirective,
-    IfStatusSuccessDirective,
     MatButtonModule,
     MatIconModule,
     TranslateModule,
@@ -480,18 +474,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     return mapDisplayStatusToColor(status);
   }
 
-  get templateHasAlert() {
-    const element = this.viewState$()?.data?.templateVersion?.elements;
-    if (!element) return false;
-    return element.some(test => {
-      return test.viewType === 'alert';
-    });
-  }
-
-  get getTemplateAlert() {
-    return this.viewState$()?.data?.templateVersion?.elements?.find(element => element.viewType === 'alert');
-  }
-
   private formatToEvfLangCode(localeCode: string): 'nl' | 'fr' {
     return (localeCode?.substring(0, 2) as 'nl' | 'fr') ?? 'fr';
   }
@@ -504,4 +486,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       this._prescriptionStateService.resetPrescription();
     }
   }
+
+  protected readonly LoadingStatus = LoadingStatus;
 }

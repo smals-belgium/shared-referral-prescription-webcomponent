@@ -1,4 +1,4 @@
-@if(prescriptionForm) {
+@if (prescriptionForm) {
   <div class="wrapper">
     <h3
       [class.invalid]="prescriptionForm.submitted && (!prescriptionForm.elementGroup?.valid || prescriptionForm.status === 'ERROR')"
@@ -29,41 +29,47 @@
 
     @if (prescriptionForm.formTemplateState$(); as formTemplateState) {
       <ng-container>
-        <app-overlay-spinner *ifStatusLoading="formTemplateState" mode="inline"></app-overlay-spinner>
-        <div *ifStatusError="formTemplateState">Failed to load prescription form template.</div>
-            @if(!!titleControl && prescriptionForm.modelId) {
-              <div class="form-model-group">
-                <mat-label class="referral-prescription-label">{{ ('prescription.model.create.dialog.label' | translate) }} <span class="required">*</span></mat-label>
-                <mat-form-field appearance="outline">
-                  <input
-                    [formControl]="titleControl"
-                    matInput
-                    data-cy="prescription-modal-dialog-input"
-                    minlength="1"
-                    maxlength="100"
-                  />
-                  @if (titleControl.hasError('required')) {
-                    <mat-error>{{ 'common.mandatory' | translate }}</mat-error>
-                  }
-                  @if (titleControl.hasError('uniqueName')) {
-                    <mat-error>{{ 'prescription.model.create.dialog.labelNotUnique' | translate }}</mat-error>
-                  }
-                </mat-form-field>
-              </div>
-            }
+        @if (formTemplateState.status === LoadingStatus.LOADING || formTemplateState.status === LoadingStatus.UPDATING) {
+          <app-overlay-spinner mode="inline"></app-overlay-spinner>
+        }
+        @if (formTemplateState.status === LoadingStatus.ERROR) {
+          <div>Failed to load prescription form template.</div>
+        }
 
-              <evf-form
-                class="referral-prescription-form"
-                *ifStatusSuccess="formTemplateState"
-                [lang]="lang"
-                [readonly]="prescriptionForm.status === LoadingStatus.SUCCESS"
-                [submitted]="!!prescriptionForm.submitted"
-                [template]="getTemplateData(formTemplateState)!"
-                (changeElementGroup)="setElementGroup(prescriptionForm, $any($event))"
-                [status]="false"
-              ></evf-form>
+        @if (!!titleControl && prescriptionForm.modelId) {
+          <div class="form-model-group">
+            <mat-label class="referral-prescription-label">{{ ('prescription.model.create.dialog.label' | translate) }}
+              <span class="required">*</span></mat-label>
+            <mat-form-field appearance="outline">
+              <input
+                [formControl]="titleControl"
+                matInput
+                data-cy="prescription-modal-dialog-input"
+                minlength="1"
+                maxlength="100"
+              />
+              @if (titleControl.hasError('required')) {
+                <mat-error>{{ 'common.mandatory' | translate }}</mat-error>
+              }
+              @if (titleControl.hasError('uniqueName')) {
+                <mat-error>{{ 'prescription.model.create.dialog.labelNotUnique' | translate }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        }
+        @if (formTemplateState.status === LoadingStatus.SUCCESS) {
+          <evf-form
+            class="referral-prescription-form"
+            [lang]="lang"
+            [readonly]="prescriptionForm.status === LoadingStatus.SUCCESS"
+            [submitted]="!!prescriptionForm.submitted"
+            [template]="getTemplateData(formTemplateState)!"
+            (changeElementGroup)="setElementGroup(prescriptionForm, $any($event))"
+            [status]="false"
+          ></evf-form>
+        }
 
-        @if(this.prescriptionForm.modelId) {
+        @if (this.prescriptionForm.modelId) {
           <button
             mat-flat-button
             (click)="handleUpdate(prescriptionForm, formTemplateState.data)"
@@ -80,7 +86,6 @@
             {{ 'prescription.model.create.title' | translate }}
           </button>
         }
-
 
 
       </ng-container>

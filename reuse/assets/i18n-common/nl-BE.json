@@ -171,6 +171,7 @@
       "template": "Gebaseerd op",
       "actions": "Acties",
       "noModels": "Geen sjablonen beschikbaar.",
+      "tableHasRecords": "Totaal sjablonen is {total}",
       "pagination": {
         "models": "{count, plural, one{sjabloon} other{sjablonen}}",
         "pageSize": "Aantal per pagina"
@@ -228,6 +229,7 @@
     "assigned": "Toegewezen",
     "noPrescriptionsForPatient": "Deze patiënt heeft nog geen voorschriften.",
     "noPrescriptionsForUser": "U heeft nog geen voorschriften.",
+    "tableHasRecords": "Totaal aantal voorschriften is {total}.",
     "assignPerformer": {
       "title": "Toewijzen aan een zorgverlener of organisatie",
       "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",

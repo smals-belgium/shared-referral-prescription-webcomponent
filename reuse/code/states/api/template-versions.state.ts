@@ -10,7 +10,7 @@ export class TemplateVersionsState {
 
   loadTemplateVersionForInstance(instanceId: string, templateCode: string) {
     const key = `${templateCode}::${instanceId}`;
-    this.states[key] = signal({ status: LoadingStatus.LOADING });
+    this.states[key] = signal({ status: LoadingStatus.INITIAL });
 
     this.prescriptionTemplateService.findOneVersion(templateCode).subscribe({
       next: data => {

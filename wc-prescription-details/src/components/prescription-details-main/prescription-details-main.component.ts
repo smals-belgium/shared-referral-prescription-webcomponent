@@ -1,8 +1,6 @@
 import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core';
 import { DatePipe } from '@reuse/code/pipes/date.pipe';
-import {
-  ProfessionalDisplayComponent
-} from '@reuse/code/components/professional-display/professional-display.component';
+import { ProfessionalDisplayComponent } from '@reuse/code/components/professional-display/professional-display.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DataState, UserInfo } from '@reuse/code/interfaces';
 import { PersonResource, ReadRequestResource } from '@reuse/code/openapi';
@@ -10,9 +8,7 @@ import {
   DetailsServices,
   PrescriptionDetailsSecondaryService,
 } from '../prescription-details-secondary/prescription-details-secondary.service';
-import {
-  PrescriptionDetailsBeneficiaryComponent
-} from './prescription-details-beneficiary/prescription-details-beneficiary.component';
+import { PrescriptionDetailsBeneficiaryComponent } from './prescription-details-beneficiary/prescription-details-beneficiary.component';
 import { EvfFormDetailsWebComponent } from '../evf-details/evf-form-details.component';
 import { FormTemplate } from '@smals/vas-evaluation-form-ui-core';
 import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';

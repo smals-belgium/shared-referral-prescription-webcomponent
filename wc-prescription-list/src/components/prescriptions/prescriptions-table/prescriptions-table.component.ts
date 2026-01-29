@@ -12,6 +12,10 @@ import {
   MatCell,
   MatCellDef,
   MatColumnDef,
+  MatFooterCell,
+  MatFooterCellDef,
+  MatFooterRow,
+  MatFooterRowDef,
   MatHeaderCell,
   MatHeaderCellDef,
   MatHeaderRow,
@@ -60,8 +64,11 @@ import { mapDisplayStatusToColor } from '@reuse/code/utils/request-status-displa
     ProfessionalDisplayComponent,
     SkeletonComponent,
     AlertComponent,
-    MatNoDataRow,
     MatChip,
+    MatFooterCell,
+    MatFooterRow,
+    MatFooterRowDef,
+    MatFooterCellDef,
   ],
 })
 export class PrescriptionsTableComponent {

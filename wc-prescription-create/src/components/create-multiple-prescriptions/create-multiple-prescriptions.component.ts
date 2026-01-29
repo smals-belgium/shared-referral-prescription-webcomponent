@@ -15,10 +15,7 @@ import {
 import { ElementGroup, isObject, removeNulls } from '@smals/vas-evaluation-form-ui-core';
 import { MatAccordion, MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
-import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
-import { IfStatusErrorDirective } from '@reuse/code/directives/if-status-error.directive';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
-import { IfStatusLoadingDirective } from '@reuse/code/directives/if-status-loading.directive';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
@@ -46,10 +43,7 @@ import { EvfFormWebComponent } from '../evf-form/evf-form.component';
     MatExpansionModule,
     MatIconModule,
     MatButtonModule,
-    IfStatusLoadingDirective,
     OverlaySpinnerComponent,
-    IfStatusErrorDirective,
-    IfStatusSuccessDirective,
     TemplateNamePipe,
     AlertComponent,
     EvfFormWebComponent,

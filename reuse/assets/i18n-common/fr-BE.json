@@ -170,6 +170,7 @@
       "template": "Basé sur",
       "actions": "Actions",
       "noModels": "Aucun modèle disponible.",
+      "tableHasRecords": "Le nombre total de modèles est {total}",
       "pagination": {
         "models": "{count, plural, one{modèle} other{modèles}}",
         "pageSize": "Nbr/page"
@@ -226,6 +227,7 @@
     "assigned": "Assignée",
     "noPrescriptionsForPatient": "Ce patient ne possède pas encore de prescription.",
     "noPrescriptionsForUser": "Vous ne possèdez pas encore de prescription.",
+    "tableHasRecords": "Le nombre total d'ordonnances est de {total}.",
     "assignPerformer": {
       "title": "Assigner à un prestataire ou une organisation",
       "success": "{firstName} {lastName} a été assigné comme prestataire.",

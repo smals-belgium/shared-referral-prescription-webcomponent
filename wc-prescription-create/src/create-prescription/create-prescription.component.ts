@@ -52,7 +52,6 @@ import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionService } from '@reuse/code/services/api/prescription.service';
 import { ConfirmDialog, ConfirmDialogData } from '@reuse/code/dialogs/confirm/confirm.dialog';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
-import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
 import { AsyncPipe, DOCUMENT } from '@angular/common';
 import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
@@ -94,7 +93,6 @@ import { Lang } from '@reuse/code/interfaces/lang.enum';
   standalone: true,
   encapsulation: ViewEncapsulation.ShadowDom,
   imports: [
-    IfStatusSuccessDirective,
     CreateMultiplePrescriptionsComponent,
     OverlaySpinnerComponent,
     AsyncPipe,
@@ -104,6 +102,7 @@ import { Lang } from '@reuse/code/interfaces/lang.enum';
   ],
 })
 export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterViewInit {
+  protected readonly LoadingStatus = LoadingStatus;
   protected readonly AlertType = AlertType;
   protected readonly discipline$ = toSignal(this.authService.discipline());
 
