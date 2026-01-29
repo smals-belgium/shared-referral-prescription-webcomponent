@@ -1200,7 +1200,7 @@ describe('CreatePrescriptionWebComponent', () => {
           elements: [
             {
               id: 'section1',
-              subFormElements: [
+              elements: [
                 { id: 'nestedField1', tags: ['freeText'] },
                 { id: 'nestedField2', tags: [] },
               ],

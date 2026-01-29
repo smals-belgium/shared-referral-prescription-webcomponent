@@ -597,7 +597,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
       return this.encryptStringValue(key, value);
     }
 
-    if (this.isObject(value) && Object.hasOwn(formElement, 'subFormElements')) {
+    if (this.isObject(value) && Object.hasOwn(formElement, 'elements')) {
       return this.processNestedObject(key, value, templateCode);
     }
 
@@ -635,8 +635,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
       if (element.id === key) {
         return element;
       }
-      if (element.subFormElements && Array.isArray(element.subFormElements)) {
-        const found = this.findElementById(element.subFormElements, key);
+      if (element.elements && Array.isArray(element.elements)) {
+        const found = this.findElementById(element.elements, key);
         if (found) {
           return found;
         }

@@ -120,9 +120,9 @@ If you have run out of energy or time for your project, put a note at the top of
   The API client in `reuse/code/openapi` is generated from `openapi.yaml`.
 
   Steps to use the api generate
-    <!-- - First step: download the jar file: https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/7.14.0/openapi-generator-cli-7.14.0.jar
+     - First step: download the jar file: https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/7.14.0/openapi-generator-cli-7.14.0.jar
     - Second step: past the jar file in ./node_modules/@openapitools/openapi-generator-cli/versions/
-    - Third step run the following command -->
+    - Third step run the following command
   - After the initial npm install, run the following command :
     ```bash
     npm run api:client:init
