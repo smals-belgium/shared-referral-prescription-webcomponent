@@ -10,23 +10,7 @@
     padding-bottom: mh.$spacing-rem-l;
   }
 
-  .caregiver_actions{
-    display: flex;
-    gap: mh.$spacing-rem-s;
-  }
-  // custom behavior, needs to be defined in design
-  .caregiver_title{
-    display: flex;
-    align-items: center;
-    gap: mh.$spacing-rem-s;
-
-    h3{
-      @include mh.font-heading-4();
-      color: var(--mh-secondary-details-container-care-giver-title, mh.$typography-brand-primary-darker);
-    }
-
-    button{
-      width: min-content;
-    }
+  h4{
+    color: var(--mh-secondary-details-container-care-giver-title, mh.$typography-brand-primary-darker);
   }
 }

@@ -10,10 +10,14 @@
         'material-symbols',
       ));
 
-@include mh.override-all-mat-components();
 @include mh.use-globals();
 @include mh.use-classes();
 @include mh.use-all-components();
+@include mh.override-mat-dialog();
+@include mh.override-mat-form-field();
+@include mh.override-mat-button();
+@include mh.override-mat-button-icon(false);
+@include mh.override-mat-chips();
 
 .mat-mdc-dialog-inner-container .mat-mdc-dialog-surface{
   max-height: 100vh;
@@ -182,6 +186,7 @@
   }
 }
 
+/* Component */
 .details_container{
   font-family: var(--mh-default-font-family), sans-serif;
 
@@ -261,6 +266,7 @@
   }
 }
 
+/* EVF */
 evf-form-detail-group{
   display: flex !important;
   flex-direction: column;
@@ -348,6 +354,35 @@ evf-checkbox-list[data-evf-element-id="previous-relevant-examinations-unknown"] 
       mat-checkbox{
         pointer-events: none;
         opacity: 0.5;
+      }
+    }
+  }
+}
+
+/* Dialogs */
+.mh-action-menu{
+  &.mat-mdc-menu-panel{
+      min-width: 200px;
+      max-width: 250px;
+    div.mat-mdc-menu-content {
+      padding: var(--mh-action-menu-content-padding, mh.$spacing-rem-s 0);
+    }
+
+    div.mat-mdc-menu-content{
+      button.mat-mdc-menu-item{
+        border-radius: var(--mh-action-menu-item-border-radius, 0);
+        &:not([disabled]):hover{
+          background-color: var(--mh-action-menu-item-background-color, mh.$surface-brand-primary-light);
+        }
+        &.destructive-action {
+          color: var(--mh-action-menu-item-destructive-action-color, mh.$typography-semantic-error-medium);
+        }
+        .mat-icon-no-color {
+          color: var(--mh-action-menu-item-icon-color, mh.$typography-semantic-error-medium);
+        }
+        .mat-mdc-menu-item-text {
+          font-weight: var(--mh-action-menu-item-text-font-weight, mh.$font-weight-regular);
+        }
       }
     }
   }

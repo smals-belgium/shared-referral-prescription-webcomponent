@@ -14,7 +14,6 @@
 @include mh.use-all-components();
 @include mh.override-mat-dialog();
 @include mh.override-mat-form-field();
-@include mh.override-all-mat-components();
 @include mh.override-mat-button-toggle();
 @include mh.override-mat-autocomplete();
 @include mh.override-mat-select();

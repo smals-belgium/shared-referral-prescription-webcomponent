@@ -54,126 +54,15 @@
           </div>
 
           <div class="details_action_container">
-            @if (deviceService.isDesktop()){
-              <button
-                mat-stroked-button
-                data-cy="prescription-print-button"
-                type="button"
-                (click)="print()"
-                (keydown.enter)="print()"
-                [attr.aria-label]="'prescription.ariaLabel.print' | translate">
-                <mat-icon>print</mat-icon>
-                {{ 'prescription.printAction' | translate}}
-              </button>
-
-              @if (prescription | canCancelPrescriptionOrProposal: viewState.data?.patient?.ssin: viewState.data?.currentUser) {
-                <button
-                  mat-stroked-button
-                  type="button"
-                  (click)="openCancelPrescriptionDialog(prescription, viewState.data?.patient)"
-                  (keydown.enter)="openCancelPrescriptionDialog(prescription, viewState.data?.patient)"
-                  data-cy="prescription-cancel-treatment-button"
-                  [attr.aria-label]="'prescription.ariaLabel.reject' | translate"
-                >
-                  <mat-icon>cancel</mat-icon>
-                  {{ 'prescription.cancel.action' | translate }}
-                </button>
-              }
-
-              @if (prescription | canDuplicatePrescription: viewState.data?.currentUser) {
-                <button
-                  mat-stroked-button
-                  type="button"
-                  (click)="handleDuplicateClick()"
-                  (keydown.enter)="handleDuplicateClick()"
-                  data-cy="prescription-duplicate-button"
-                >
-                  <mat-icon>content_copy</mat-icon>
-                  {{ 'prescription.copy' | translate }}
-                </button>
-              }
-
-              @if (prescription | canExtendPrescription: viewState.data?.currentUser) {
-                <button
-                  mat-stroked-button
-                  type="button"
-                  (click)="handleExtendClick()"
-                  (keydown.enter)="handleExtendClick()"
-                  data-cy="prescription-extend-button"
-                >
-                  <mat-icon>edit_document</mat-icon>
-                  {{ 'prescription.extend' | translate }}
-                </button>
-              }
-            } @else {
-              <button
-                    type="button"
-                    mat-icon-button
-                    [matMenuTriggerFor]="menu" >
-                <mat-icon>more_vert</mat-icon>
-              </button>
-
-              <mat-menu #menu="matMenu">
-                <button
-                  data-cy="prescription-print-button"
-                  mat-menu-item
-                  type="button"
-                  (click)="print()"
-                  (keydown.enter)="print()"
-                  [attr.aria-label]="'prescription.ariaLabel.print' | translate">
-                  <mat-icon>print</mat-icon>
-                  {{ 'prescription.printAction' | translate}}
-                </button>
-
-                @if (prescription | canCancelPrescriptionOrProposal: viewState.data?.patient?.ssin: viewState.data?.currentUser) {
-                  <mat-divider></mat-divider>
-                  <button
-                    mat-menu-item
-                    type="button"
-                    (click)="openCancelPrescriptionDialog(prescription, viewState.data?.patient)"
-                    (keydown.enter)="openCancelPrescriptionDialog(prescription, viewState.data?.patient)"
-                    data-cy="prescription-cancel-treatment-button"
-                  >
-                    <mat-icon>cancel</mat-icon>
-                    {{ 'prescription.cancel.action' | translate }}
-                  </button>
-                }
-
-
-                @if (prescription | canDuplicatePrescription: viewState.data?.currentUser) {
-
-                  <mat-divider></mat-divider>
-
-                  <button
-                    mat-menu-item
-                    type="button"
-                    (click)="handleDuplicateClick()"
-                    (keydown.enter)="handleDuplicateClick()"
-                    data-cy="prescription-duplicate-button"
-                  >
-                    <mat-icon>content_copy</mat-icon>
-                    {{ 'prescription.copy' | translate }}
-                  </button>
-                }
-
-                @if (prescription | canExtendPrescription: viewState.data?.currentUser) {
-
-                  <mat-divider></mat-divider>
-
-                  <button
-                    mat-menu-item
-                    type="button"
-                    (click)="handleExtendClick()"
-                    (keydown.enter)="handleExtendClick()"
-                    data-cy="prescription-extend-button"
-                  >
-                    <mat-icon>edit_document</mat-icon>
-                    {{ 'prescription.extend' | translate }}
-                  </button>
-                }
-              </mat-menu>
-            }
-
+            <app-prescription-details-actions
+              [data]="this.viewState$().data"
+              [currentLang]="currentLang()"
+              (print)="clickPrint.emit($event)"
+              (download)="clickDownload.emit($event)"
+              (handleDuplicate)="clickDuplicate.emit($event)"
+              (handleExtend)="clickExtend.emit($event)"
+            >
+            </app-prescription-details-actions>
           </div>
         </div>
 

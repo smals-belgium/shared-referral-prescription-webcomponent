@@ -18,14 +18,12 @@ import {
   ViewEncapsulation,
   WritableSignal,
 } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DateAdapter } from '@angular/material/core';
 import { DateTime } from 'luxon';
 import { AlertType, DataState, UserInfo } from '@reuse/code/interfaces';
 import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
-import { CancelPrescriptionDialog } from '@reuse/code/dialogs/cancel-prescription/cancel-prescription-dialog.component';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -40,7 +38,6 @@ import { TemplateVersionsState } from '@reuse/code/states/api/template-versions.
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { PatientState } from '@reuse/code/states/api/patient.state';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
-import { CanExtendPrescriptionPipe } from '@reuse/code/pipes/can-extend-prescription.pipe';
 import { IdentifyState } from '@reuse/code/states/privacy/identify.state';
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import {
@@ -67,7 +64,6 @@ import {
 } from 'rxjs';
 import { EncryptionState } from '@reuse/code/states/privacy/encryption.state';
 import { v4 as uuidv4 } from 'uuid';
-import { CanDuplicatePrescriptionPipe } from '@reuse/code/pipes/can-duplicate-prescription.pipe';
 import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-responses-state.interface';
 import { PssService } from '@reuse/code/services/api/pss.service';
 import {
@@ -80,8 +76,7 @@ import {
 } from '@reuse/code/openapi';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatChip } from '@angular/material/chips';
-import { EvfLabelPipe, EvfTranslateService, FormTemplate, FormTranslations } from '@smals/vas-evaluation-form-ui-core';
-import { PrescriptionsPdfService } from '@reuse/code/services/helpers/prescription-pdf.service';
+import { EvfLabelPipe, EvfTranslateService, FormTranslations } from '@smals/vas-evaluation-form-ui-core';
 import { PrescriptionDetailsMainComponent } from '../../components/prescription-details-main/prescription-details-main.component';
 import { PrescriptionDetailsSecondaryComponent } from '../../components/prescription-details-secondary/prescription-details-secondary.component';
 import {
@@ -90,13 +85,12 @@ import {
 } from '../../components/prescription-details-secondary/prescription-details-secondary.service';
 import { PrescriptionDetailsBottomComponent } from '../../components/prescription-details-bottom/prescription-details-bottom.component';
 import { DeviceService } from '@reuse/code/services/helpers/device.service';
-import { MatMenuItem, MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatDivider } from '@angular/material/divider';
-import { CanCancelPrescriptionOrProposalPipe } from '@reuse/code/pipes/can-cancel-prescription-or-proposal.pipe';
+import { MatMenuModule } from '@angular/material/menu';
 import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
 import { Lang } from '@reuse/code/interfaces/lang.enum';
 import { tap } from 'rxjs/operators';
 import { mapDisplayStatusToColor } from '@reuse/code/utils/request-status-display-map.utils';
+import { PrescriptionDetailsActionsComponent } from '../../components/prescription-details-actions/prescription-details-actions/prescription-details-actions.component';
 
 export interface ViewState {
   prescription: ReadRequestResource;
@@ -123,18 +117,13 @@ export interface ViewState {
     MatIconModule,
     TranslateModule,
     TemplateNamePipe,
-    CanExtendPrescriptionPipe,
-    CanDuplicatePrescriptionPipe,
-    CanCancelPrescriptionOrProposalPipe,
     MatChip,
     EvfLabelPipe,
     PrescriptionDetailsMainComponent,
     PrescriptionDetailsSecondaryComponent,
     PrescriptionDetailsBottomComponent,
     MatMenuModule,
-    MatMenuTrigger,
-    MatMenuItem,
-    MatDivider,
+    PrescriptionDetailsActionsComponent,
   ],
   providers: [EvfTranslateService],
   standalone: true,
@@ -142,7 +131,6 @@ export interface ViewState {
 export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDestroy {
   private readonly _translate = inject(TranslateService);
   private readonly _dateAdapter = inject(DateAdapter<DateTime>);
-  private readonly _dialog = inject(MatDialog);
   private readonly _authService = inject(AuthService);
   private readonly _accessMatrixStateService = inject(AccessMatrixState);
   private readonly _prescriptionStateService = inject(PrescriptionState);
@@ -156,7 +144,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   private readonly _pseudoService = inject(PseudoService);
   private readonly _pssService = inject(PssService);
   private readonly _encryptionStateService = inject(EncryptionState);
-  private readonly _prescriptionsPdfService = inject(PrescriptionsPdfService);
+
   private readonly _prescriptionSecondaryService = inject(PrescriptionDetailsSecondaryService);
   protected readonly evfTranslateService = inject(EvfTranslateService);
   protected readonly deviceService = inject(DeviceService);
@@ -172,7 +160,10 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
   @Output() clickDuplicate = new EventEmitter<ReadRequestResource>();
   @Output() clickExtend = new EventEmitter<ReadRequestResource>();
+
   @Output() clickPrint = new EventEmitter<Blob>();
+  @Output() clickDownload = new EventEmitter<Blob>();
+
   @Output() proposalApproved = this._prescriptionSecondaryService.proposalApproved;
   @Output() proposalRejected = this._prescriptionSecondaryService.proposalsRejected;
   @Output() clickOpenExtendedDetail = new EventEmitter<string>();
@@ -408,41 +399,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     }
   }
 
-  openCancelPrescriptionDialog(prescription: ReadRequestResource, patient?: PersonResource): void {
-    this._dialog.open(CancelPrescriptionDialog, {
-      data: {
-        prescription,
-        patient,
-      },
-      panelClass: 'mh-dialog-container',
-    });
-  }
-
-  print(): void {
-    if (
-      this.viewState$().data &&
-      this.viewState$().data!.decryptedResponses &&
-      this.viewState$().data!.template &&
-      this.viewState$().data!.templateVersion &&
-      this.currentLang
-    ) {
-      this.loading.set(true);
-      this._prescriptionsPdfService
-        .createCommonPdf(
-          this.viewState$().data!.prescription,
-          this.viewState$().data!.decryptedResponses!,
-          this.viewState$().data!.patient,
-          this.viewState$().data!.template!,
-          this.viewState$().data!.templateVersion as FormTemplate,
-          this.currentLang()
-        )
-        .getBlob((blob: Blob) => {
-          this.clickPrint.emit(blob);
-          this.loading.set(false);
-        });
-    }
-  }
-
   private decryptResponses(
     responses: Record<string, unknown>,
     template: TemplateVersion,
@@ -501,24 +457,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     } catch (error) {
       const errorMsg = new Error('Error loading prescription key', { cause: error });
       this._encryptionStateService.setCryptoKeyError(errorMsg);
-    }
-  }
-
-  handleDuplicateClick() {
-    const prescription = this.viewState$().data?.prescription;
-    const responses = this.viewState$().data?.decryptedResponses;
-    if (prescription && responses) {
-      const duplicatedData = { ...prescription, responses: responses };
-      this.clickDuplicate.emit(duplicatedData);
-    }
-  }
-
-  handleExtendClick() {
-    const prescription = this.viewState$().data?.prescription;
-    const responses = this.viewState$().data?.decryptedResponses;
-    if (prescription && responses) {
-      const duplicatedData = { ...prescription, responses: responses };
-      this.clickExtend.emit(duplicatedData);
     }
   }
 

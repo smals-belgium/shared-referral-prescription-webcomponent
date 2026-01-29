@@ -1,0 +1,47 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+$difference: mh.$border-width-m - mh.$border-width-s;
+
+
+.mh-action-select {
+  --mat-text-button-hover-state-layer-opacity: var(--mh-action-select-hover-layer-opacity, 0);
+  --mat-text-button-pressed-state-layer-opacity: var(--mh-action-select-pressed-layer-opacity, 0);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: var(--mh-action-select-min-width, 200px);
+  max-width: var(--mh-action-select-max-width, 250px);
+  padding: var(--mh-action-select-padding, 0 mh.$spacing-rem-m 0 mh.$spacing-rem-m);
+
+  border: var(--mh-action-select-border, mh.$border-width-s solid mh.$border-brand-neutral-medium);
+  border-radius: var(--mh-action-select-border-radius, mh.$border-radius-s);
+  background-color: var(--mh-action-select-background-color, mh.$primary-100);
+
+  font-family: var(--mh-action-select-font-family, var(--mat-sys-body-large-font));
+  line-height: var(--mh-action-select-line-height, var(--mat-sys-body-large-line-height));
+  font-size: var(--mh-action-select-font-size, var(--mat-sys-body-large-size));
+  letter-spacing: var(--mh-action-select-letter-spacing, var(--mat-sys-body-large-tracking));
+  font-weight: var(--mh-action-select-font-weight, var(--mat-sys-body-large-weight));
+  text-transform: var(--mh-action-select-text-transform, unset);
+
+  &:hover {
+   border-color: var(--mh-action-select-hover-border-color, mh.$border-brand-primary-medium);
+    color: var(--mh-action-select-hover-text-color, inherit);
+  }
+
+  &:focus-visible {
+    outline: var(--mh-focus-visible-webkit, -webkit-focus-ring-color auto mh.$border-width-s);
+    outline: var(--mh-focus-visible, mh.$border-width-m solid AccentColor);
+    outline-offset: var(--mh-focus-visible-offset, mh.$border-width-m);
+  }
+
+  &.focus {
+    border-width: var(--mh-action-select-focus-border-width, mh.$border-width-m);
+    border-color: var(--mh-action-select-focus-border-color, mh.$border-brand-primary-medium);
+    padding: var(
+        --mh-action-select-focus-padding,
+        0 calc(#{mh.$spacing-rem-m} - #{$difference}) 0 calc(#{mh.$spacing-rem-m} - #{$difference})
+    );
+  }
+}

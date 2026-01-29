@@ -1,0 +1,126 @@
+@if (prescription) {
+  <div class="details_action_container">
+    @if (_deviceService.isDesktop()){
+      <button
+        type="button"
+        mat-button
+        class="mh-action-select"
+        [matMenuTriggerFor]="prescriptionMenu"
+        #menuTrigger="matMenuTrigger"
+        [class.focus]="menuTrigger.menuOpen"
+        aria-haspopup="menu">
+        <span>{{ 'prescription.actions.button' | translate }}</span>
+        <mat-icon iconPositionEnd>
+          {{ menuTrigger.menuOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+        </mat-icon>
+      </button>
+    } @else {
+      <button
+        type="button"
+        mat-icon-button
+        [attr.aria-label]="'prescription.actions.button' | translate"
+        [matMenuTriggerFor]="prescriptionMenu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+    }
+
+
+    <mat-menu #prescriptionMenu="matMenu" class="mh-action-menu" xPosition="before">
+      @if (!performerTaskServiceData?.careGiverSsin && prescription.intent?.toLowerCase() !== 'proposal') {
+        @if (prescription | canSelfAssign) {
+          <button
+            (click)="onSelfAssign(prescription, currentUser)"
+            mat-menu-item
+            type="button"
+            data-cy="prescription-self-assign-button"
+          >
+            {{ 'prescription.actions.assignMe' | translate }}
+          </button>
+        }
+
+        @if (prescription | canStartTreatment) {
+          <button
+            (click)="prescriptionSecondaryService.openStartExecutionDialog(prescription)"
+            mat-menu-item
+            type="button"
+            data-cy="prescription-start-execution-button"
+          >
+            {{ 'prescription.actions.startExecution' | translate }}
+          </button>
+        }
+      }
+
+        @let performerTask = getPerformerTask(prescription);
+        @if (!!getPerformerTask) {
+          <app-task-button-group
+            [currentPerformerTask]="performerTask!"
+          >
+          </app-task-button-group>
+        }
+
+
+
+
+      @if (prescription | canAssignCaregiver) {
+        <button
+          mat-menu-item
+          type="button"
+          color="accent"
+          (click)="openAssignDialog(prescription)"
+          data-cy="prescription-assign-caregiver-button"
+        >
+          {{ 'prescription.actions.assign' | translate }}
+        </button>
+      }
+
+
+      @if (prescription | canDuplicatePrescription: currentUser) {
+        <button
+          mat-menu-item
+          type="button"
+          (click)="handleDuplicateClick()"
+          data-cy="prescription-duplicate-button"
+        >
+          {{ 'prescription.actions.copy' | translate }}
+        </button>
+      }
+
+      @if (prescription | canExtendPrescription: currentUser) {
+        <button
+          mat-menu-item
+          type="button"
+          (click)="handleExtendClick()"
+          data-cy="prescription-extend-button"
+        >
+          {{ 'prescription.actions.extend' | translate }}
+        </button>
+      }
+
+      <button
+        mat-menu-item
+        data-cy="prescription-print-button"
+        type="button"
+        (click)="createPdf('print')"
+        [attr.aria-label]="'prescription.ariaLabel.print' | translate">
+        {{ 'prescription.actions.print' | translate }}
+      </button>
+
+
+      @if (prescription && (prescription | canCancelPrescriptionOrProposal: patient?.ssin: currentUser)) {
+        <mat-divider></mat-divider>
+        <button
+          mat-menu-item
+          type="button"
+          class="destructive-action"
+          (click)="openCancelPrescriptionDialog(prescription, patient)"
+          data-cy="prescription-cancel-treatment-button"
+          [attr.aria-label]="'prescription.ariaLabel.reject' | translate"
+        >
+          <mat-icon>delete</mat-icon>
+          {{ 'prescription.actions.cancel' | translate }}
+        </button>
+      }
+    </mat-menu>
+
+  </div>
+}
