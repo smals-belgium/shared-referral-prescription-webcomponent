@@ -5,13 +5,11 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { MatIcon } from '@angular/material/icon';
 import { DatePipe } from '@angular/common';
 import { UserInfo } from '@reuse/code/interfaces';
-import { PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
+import { PersonResource, ReadRequestResource } from '@reuse/code/openapi';
 import { PrescriptionDetailsSecondaryService } from '../prescription-details-secondary.service';
-import {
-  PrescriptionButtonGroupComponent
-} from '../prescription-button-group/prescription-button-group.component';
-import { TaskButtonGroupComponent } from '../task-button-group/task-button-group.component';
 import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
+import { CanRejectAssignationPipe } from '@reuse/code/pipes/can-reject-assignation.pipe';
+import { MatIconButton } from '@angular/material/button';
 
 @Component({
   selector: 'app-prescription-details-organization-list',
@@ -21,9 +19,9 @@ import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
     MatTooltip,
     MatIcon,
     DatePipe,
-    PrescriptionButtonGroupComponent,
-    TaskButtonGroupComponent,
     FormatNihdiPipe,
+    CanRejectAssignationPipe,
+    MatIconButton,
   ],
   templateUrl: './prescription-details-organization-list.component.html',
   styleUrl: './prescription-details-organization-list.component.scss',
@@ -34,6 +32,6 @@ export class PrescriptionDetailsOrganizationListComponent {
 
   readonly prescriptionServiceData: ReadRequestResource | undefined = this._service.getPrescription().data;
   readonly currentUserServiceData: Partial<UserInfo> | undefined = this._service.getCurrentUser().data;
-  readonly performerTaskServiceData: PerformerTaskResource | undefined = this._service.getPerformerTask().data;
+  readonly patientData: PersonResource | undefined = this._service.getPatient().data;
   readonly currentLang: Signal<string> = this._service.currentLang;
 }

@@ -96,6 +96,16 @@
       "pickOptionFromList": "Choisissez une option dans la liste",
       "noOptions": "Aucun modèle"
     },
+    "actions": {
+      "assignMe": "Prendre en charge",
+      "startExecution": "Exécuter",
+      "assign": "Assigner",
+      "copy": "Copier",
+      "extend": "Étendre",
+      "print": "Imprimer",
+      "cancel": "Classer sans suite",
+      "button": "Actions"
+    },
     "create": {
       "action": "Nouvelle prescription",
       "success": "Prescription créée avec succès.",
@@ -208,10 +218,8 @@
     "consultDetails": "Voir détails",
     "assign": "Assigner",
     "transfer": "Transférer",
-    "assignMe": "Prendre en charge",
     "reject": "Rejeter",
     "copy": "Copier",
-    "printAction": "Imprimer",
     "duplicate": "Dupliquer",
     "extend": "Étendre",
     "careGivers": "Prestataire(s) de soins",

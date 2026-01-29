@@ -50,8 +50,9 @@
           }
         </div>
 
+        @if(currentUserData.role === "patient"){
         <div class="button-group">
-          @if (patientData?.ssin && (prescriptionData | canRejectAssignation : performerTask : patientData?.ssin: currentUserData)) {
+          @if (patientData?.ssin && (prescriptionServiceData | canRejectAssignation : performerTask : patientData?.ssin : currentUserData)) {
             <button
               type="button"
               (click)="service.openRejectAssignationDialog(prescriptionData, performerTask, patientData)"
@@ -62,36 +63,11 @@
               <mat-icon>cancel</mat-icon>
             </button>
           }
-          @if (prescriptionData | canInterruptTreatment : performerTask : currentUserData) {
-            <button
-              type="button"
-              (click)="service.openInterruptExecutionDialog(prescriptionData, performerTask, patientData)"
-              mat-icon-button
-              data-cy="prescription-interrupt-execution-button"
-              [attr.aria-label]="'prescription.ariaLabel.interrupt' | translate"
-            >
-              <mat-icon>pause_circle</mat-icon>
-            </button>
-          }
-          @if (patientData && (prescriptionData | canRestartTreatment : performerTask : performerTask?.careGiverSsin)) {
-            <button
-              type="button"
-              (click)="service.openRestartExecutionDialog(prescriptionData, performerTask, patientData)"
-              mat-icon-button
-              data-cy="prescription-restart-execution-button"
-              [attr.aria-label]="'prescription.ariaLabel.restart' | translate"
-            >
-              <mat-icon>play_circle</mat-icon>
-            </button>
-          }
         </div>
+        }
       </div>
-      @if (performerTaskServiceData === performerTask) {
-        <app-prescription-button-group
-          [currentPerformerTask]="performerTask"
-        >
-        </app-prescription-button-group>
-      }
+
+
     </div>
   }
 }

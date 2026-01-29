@@ -30,19 +30,14 @@ import {
   prescriptionResponse,
   id,
   BASE_URL,
-  mockTemplate,
   mockUuid,
-  organisationTask,
-  referralTask,
-  mockPerformerTask,
   mockPerson,
+  mockTemplate,
 } from '../../../test.utils';
-import { ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
-import { CancelPrescriptionDialog } from '@reuse/code/dialogs/cancel-prescription/cancel-prescription-dialog.component';
-
+import { RequestStatus } from '@reuse/code/openapi';
+import { Lang } from '@reuse/code/interfaces/lang.enum';
 mockUuid();
 jest.mock('uuid');
-import { Lang } from '@reuse/code/interfaces/lang.enum';
 
 describe('PrescriptionDetailsWebComponent', () => {
   let component: PrescriptionDetailsWebComponent;
@@ -54,7 +49,6 @@ describe('PrescriptionDetailsWebComponent', () => {
   let translate: TranslateService;
   let dateAdapter: MockDateAdapter;
   let cacheHttpService: HttpCacheService;
-  let dialog: MatDialog;
 
   beforeAll(() => {
     Object.defineProperty(window, 'crypto', {
@@ -106,7 +100,6 @@ describe('PrescriptionDetailsWebComponent', () => {
     translate = TestBed.inject(TranslateService);
     dateAdapter = TestBed.inject(DateAdapter) as unknown as MockDateAdapter;
     cacheHttpService = TestBed.inject(HttpCacheService);
-    dialog = TestBed.inject(MatDialog);
   });
 
   afterEach(() => {
@@ -266,28 +259,6 @@ describe('PrescriptionDetailsWebComponent', () => {
     });
   });
 
-  it('should open the cancel prescription dialog when the function is called', () => {
-    createFixture();
-    const openDialogSpy = jest.spyOn(dialog, 'open');
-
-    const mockResponse = prescriptionResponse([organisationTask], referralTask, [
-      mockPerformerTask,
-    ]) as unknown as ReadRequestResource;
-
-    component.openCancelPrescriptionDialog(mockResponse, mockPerson);
-
-    const paramsCancel = {
-      data: {
-        prescription: mockResponse,
-        patient: mockPerson,
-      },
-      panelClass: 'mh-dialog-container',
-    };
-
-    expect(openDialogSpy).toHaveBeenCalledTimes(1);
-    expect(openDialogSpy).toHaveBeenCalledWith(CancelPrescriptionDialog, paramsCancel);
-  });
-
   it('should show error toast when patientSsin is invalid for proposal', () => {
     createFixture();
     const toasterSpy = jest.spyOn(toaster, 'show');
@@ -326,7 +297,7 @@ describe('PrescriptionDetailsWebComponent', () => {
     expect(setCryptoKeyErrorSpy).toHaveBeenCalled();
   });
 
-  it('should decrypt responses when elements are not encrypted', (done) => {
+  it('should decrypt responses when elements are not encrypted', done => {
     createFixture();
 
     const responses = { field1: 'value1', field2: 'value2' };
@@ -343,7 +314,7 @@ describe('PrescriptionDetailsWebComponent', () => {
     });
   });
 
-  it('should decrypt freeText elements when crypto key is provided', (done) => {
+  it('should decrypt freeText elements when crypto key is provided', done => {
     createFixture();
 
     const responses = { note: 'encrypted-value' };
@@ -361,7 +332,7 @@ describe('PrescriptionDetailsWebComponent', () => {
     });
   });
 
-  it('should throw error when freeText element but no crypto key', (done) => {
+  it('should throw error when freeText element but no crypto key', done => {
     createFixture();
 
     const responses = { note: 'encrypted-value' };
@@ -380,7 +351,7 @@ describe('PrescriptionDetailsWebComponent', () => {
     );
   });
 
-  it('should handle decryption errors gracefully', (done) => {
+  it('should handle decryption errors gracefully', done => {
     createFixture();
 
     const responses = { note: 'encrypted-value' };
@@ -422,7 +393,9 @@ describe('PrescriptionDetailsWebComponent', () => {
     component.patientSsin = '90122712173';
 
     jest.spyOn(pseudoService, 'pseudonymize').mockResolvedValue('pseudonymized-identifier');
-    const loadSpy = jest.spyOn(component['_prescriptionStateService'], 'loadPrescriptionByShortCode').mockImplementation(() => {});
+    const loadSpy = jest
+      .spyOn(component['_prescriptionStateService'], 'loadPrescriptionByShortCode')
+      .mockImplementation(() => {});
 
     component['loadPrescription']();
 

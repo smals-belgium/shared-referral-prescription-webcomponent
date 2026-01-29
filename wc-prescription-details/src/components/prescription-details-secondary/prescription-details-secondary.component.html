@@ -1,52 +1,8 @@
-@if (prescriptionServiceData && currentUserServiceData){
+@if (prescriptionServiceData){
   @let prescription = prescriptionServiceData;
-  @let currentUser = currentUserServiceData;
-  @let performerTask = performerTaskServiceData;
 
   <div class="secondary_details_container">
-    <div class="caregiver_actions">
-      @if (!performerTask?.careGiverSsin && prescription.intent?.toLowerCase() !== 'proposal') {
-        @if (prescription | canSelfAssign) {
-          <button
-            (click)="onSelfAssign(prescription, currentUser)"
-            mat-raised-button
-            type="button"
-            data-cy="prescription-self-assign-button"
-          >
-            <mat-icon>add_task</mat-icon>
-            {{ 'prescription.assignMe' | translate }}
-          </button>
-        }
-
-        @if (prescription | canStartTreatment) {
-          <button
-            (click)="prescriptionSecondaryService.openStartExecutionDialog(prescription)"
-            mat-raised-button
-            type="button"
-            data-cy="prescription-start-execution-button"
-          >
-            <mat-icon>play_circle</mat-icon>
-            {{ 'prescription.startExecution.action' | translate }}
-          </button>
-        }
-      }
-    </div>
-
-    <div class="caregiver_title">
-      <h3 data-cy="prescription-assign-to-label">{{ 'prescription.careGivers' | translate }}</h3>
-      @if (prescription | canAssignCaregiver) {
-        <button
-          mat-raised-button
-          type="button"
-          color="accent"
-          (click)="openAssignDialog(prescription)"
-          data-cy="prescription-assign-caregiver-button"
-        >
-          <mat-icon>add</mat-icon>
-          {{ 'prescription.assign' | translate }}
-        </button>
-      }
-    </div>
+    <h4 data-cy="prescription-assign-to-label">{{ 'prescription.careGivers' | translate }}</h4>
 
     @if ((prescription.performerTasks && prescription.performerTasks.length > 0) || (prescription.organizationTasks && prescription.organizationTasks.length > 0)) {
       <div data-cy="prescription-assign-to-list">

@@ -97,6 +97,16 @@
       "pickOptionFromList": "Kies een optie uit de lijst",
       "noOptions": "Geen sjabloon"
     },
+    "actions": {
+      "assignMe": "Neem de leiding",
+      "startExecution": "Uitvoeren",
+      "assign": "Toewijzen",
+      "copy": "Kopiëren",
+      "extend": "Verlengen",
+      "print": "Afdrukken",
+      "cancel": "Klasseren zonder gevolg",
+      "button": "Acties"
+    },
     "create": {
       "action": "Nieuw voorschrift",
       "success": "Voorschrift succesvol aangemaakt.",
@@ -209,10 +219,9 @@
     "consultDetails": "Toon details",
     "assign": "Toewijzen",
     "transfer": "Overmaken",
-    "assignMe": "Neem de leiding",
+
     "reject": "Afwijzen",
     "copy": "Kopiëren",
-    "printAction": "Afdrukken",
     "duplicate": "Dupliceren",
     "extend": "Verlengen",
     "careGivers": "Zorgverlener(s)",
