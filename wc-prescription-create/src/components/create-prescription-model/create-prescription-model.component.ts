@@ -227,9 +227,13 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
   }
 
   private filterElements(elements: FormElement[]): FormElement[] {
-    return elements.reduce((filteredElements, element) => {
-      if (element.subFormElements) {
-        element.subFormElements = this.filterElements(element.subFormElements);
+    return elements.filter((value) =>
+      // Exclude treatmentValidationEndDate and validityPeriod from models evf forms
+      (value.elements?.[0].id?.toLowerCase() !== 'validitystartdate' && value.id?.toLowerCase() !== "treatmentvalidationenddate")
+    ).reduce((filteredElements, element) => {
+
+      if (element.elements) {
+        element.elements = this.filterElements(element.elements);
       }
 
       if (element.validations) {
@@ -239,7 +243,7 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
       const shouldInclude =
         !element.tags?.includes('freeText') &&
         !(element.dataType?.type === TypeEnum.Date) &&
-        !(element.subFormElements && element.subFormElements.length === 0);
+        !(element.elements && element.elements.length === 0);
 
       if (shouldInclude) {
         filteredElements.push(element);
