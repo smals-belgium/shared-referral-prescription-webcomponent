@@ -11,47 +11,48 @@
     </app-alert>
   }
   @else{
-    <app-overlay-spinner *ifStatusLoading="viewState" mode="inline"></app-overlay-spinner>
-    <app-alert
-      *ifStatusError="viewState"
-      [alert]="AlertType.Error"
-      [message]="'prescription.errors.failedToLoadPrescription' | translate"
-      [error]="prescriptionHttpError"
-      [showRetry]="showRetryButton()"
-      (clickRetry)="loadPrescriptionOrProposal()"
-    ></app-alert>
+    @if(viewState.status === LoadingStatus.LOADING || viewState.status === LoadingStatus.UPDATING) {
+      <app-overlay-spinner mode="inline"></app-overlay-spinner>
+    }
+    @if(viewState.status === LoadingStatus.ERROR) {
+      <app-alert
+        [alert]="AlertType.Error"
+        [message]="'prescription.errors.failedToLoadPrescription' | translate"
+        [error]="prescriptionHttpError"
+        [showRetry]="showRetryButton()"
+        (clickRetry)="loadPrescriptionOrProposal()"
+      ></app-alert>
+    }
+    @if(viewState.status === LoadingStatus.SUCCESS) {
+        @if (viewState.data?.prescription; as prescription) {
+          <div class="details_container">
+            <div class="details_header">
+              <div class="details_title_container">
+                <h2 class="details_title" data-cy="prescription-type">{{ prescription.templateCode | templateName }}</h2>
+                @if (prescription.extendedShortId) {
+                  <div class="row">
+                    <button type="button"
+                            mat-button
+                            class="prescription_extended_shortcode_link"
+                            data-cy="prescription-extendedShortId-link"
+                            color="primary"
+                            (click)="clickOpenExtendedDetail.emit(prescription?.extendedShortId)"
+                            (keydown.enter)="clickOpenExtendedDetail.emit(prescription?.extendedShortId)"
+                    >
+                      {{'prescription.extendedShortId' | translate}} {{prescription?.extendedShortId }}
+                      <mat-icon fontIcon="arrow_forward_ios" aria-hidden="true" iconPositionEnd></mat-icon>
+                    </button>
+                  </div>
+                }
 
-    <ng-container *ifStatusSuccess="viewState">
-
-    @if (viewState.data?.prescription; as prescription) {
-      <div class="details_container">
-        <div class="details_header">
-          <div class="details_title_container">
-            <h2 class="details_title" data-cy="prescription-type">{{ prescription.templateCode | templateName }}</h2>
-            @if (prescription.extendedShortId) {
-              <div class="row">
-                <button type="button"
-                        mat-button
-                        class="prescription_extended_shortcode_link"
-                        data-cy="prescription-extendedShortId-link"
-                        color="primary"
-                        (click)="clickOpenExtendedDetail.emit(prescription?.extendedShortId)"
-                        (keydown.enter)="clickOpenExtendedDetail.emit(prescription?.extendedShortId)"
-                        >
-                  {{'prescription.extendedShortId' | translate}} {{prescription?.extendedShortId }}
-                    <mat-icon fontIcon="arrow_forward_ios" aria-hidden="true" iconPositionEnd></mat-icon>
-                </button>
+                @if(!!prescription.status) {
+                  <div class="prescription-status">
+                    <mat-chip [disableRipple]="true"
+                              [class]="getStatusColor(prescription.status)">{{ 'prescription.statuses.' + prescription.status | translate }}
+                    </mat-chip>
+                  </div>
+                }
               </div>
-            }
-
-            @if(!!prescription.status) {
-              <div class="prescription-status">
-                <mat-chip [disableRipple]="true"
-                          [class]="getStatusColor(prescription.status)">{{ 'prescription.statuses.' + prescription.status | translate }}
-                </mat-chip>
-              </div>
-            }
-          </div>
 
           <div class="details_action_container">
             <app-prescription-details-actions
@@ -66,30 +67,23 @@
           </div>
         </div>
 
-        @if (templateHasAlert){
-          <div class="details_alert">
-            <app-alert [alert]="AlertType.Info" [showRetry]="false" [message]="getTemplateAlert?.labelTranslationId | evfLabel">
-            </app-alert>
+            <div class="details_body">
+              <app-prescription-details-main>
+              </app-prescription-details-main>
+
+              <app-prescription-details-secondary>
+              </app-prescription-details-secondary>
+            </div>
           </div>
+
+          @if (isProposalValue) {
+            <hr>
+
+            <app-prescription-details-bottom>
+            </app-prescription-details-bottom>
+          }
         }
-
-        <div class="details_body">
-          <app-prescription-details-main>
-          </app-prescription-details-main>
-
-          <app-prescription-details-secondary>
-          </app-prescription-details-secondary>
-        </div>
-      </div>
-
-      @if (isProposalValue) {
-          <hr>
-
-          <app-prescription-details-bottom>
-          </app-prescription-details-bottom>
-        }
-      }
-    </ng-container>
+    }
   }
 }
 

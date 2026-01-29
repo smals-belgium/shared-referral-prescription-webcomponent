@@ -44,10 +44,10 @@ const mockPrescriptions: ReadRequestListResource = {
 };
 
 const mockAuthService = {
-  isProfessional: jest.fn(()=> {
-    return of(true)
-  })
-}
+  isProfessional: jest.fn(() => {
+    return of(true);
+  }),
+};
 
 class FakeLoader implements TranslateLoader {
   getTranslation() {
@@ -71,9 +71,7 @@ describe('PrescriptionsTableComponent', () => {
           loader: { provide: TranslateLoader, useClass: FakeLoader },
         }),
       ],
-      providers: [
-        {provide: AuthService, useValue: mockAuthService }
-      ]
+      providers: [{ provide: AuthService, useValue: mockAuthService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PrescriptionsTableComponent);
@@ -186,8 +184,8 @@ describe('PrescriptionsTableComponent', () => {
     const rows = fixture.debugElement.queryAll(By.css('tr'));
 
     expect(headerCells.length).toBe(component.displayedColumns.length);
-    //header row + 1 element row
-    const rowsLength = 1 + mockPrescriptions.items!.length;
+    //header row + 1 element row + footer row
+    const rowsLength = 1 + mockPrescriptions.items!.length + 1;
     expect(rows.length).toBe(rowsLength);
   });
 

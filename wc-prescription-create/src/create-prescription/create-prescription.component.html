@@ -18,9 +18,8 @@
             [lang]="lang"
             (modelSaved)="modelSaved()"
           ></app-create-prescription-model>
-        } @else if (patientState$() && initialValues?.intent) {
+        } @else if (patientState$() && initialValues?.intent && patientState$().status === LoadingStatus.SUCCESS){
           <app-create-multiple-prescriptions
-            *ifStatusSuccess="patientState$()"
             [createPrescriptionForms]="prescriptionForms()"
             [intent]="initialValues!.intent"
             [errorCard]="errorCard"

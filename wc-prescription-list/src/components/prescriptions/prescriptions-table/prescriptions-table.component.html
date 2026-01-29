@@ -57,6 +57,24 @@
     </td>
   </ng-container>
 
+  <ng-container matColumnDef="tableStatus">
+    <td mat-footer-cell *matFooterCellDef colspan="6">
+      @if((prescriptions?.total ?? 0) > 0) {
+        <span
+          class="sr-only"
+          role="status"
+          aria-live="polite"
+        >
+      {{ 'prescription.tableHasRecords' | translate:{ total: prescriptions?.total } }}
+    </span>
+      }
+      @if(prescriptions?.total === 0) {
+        <span *hideIfProfessional>{{ 'prescription.noPrescriptionsForUser' | translate }}</span>
+        <span *showIfProfessional>{{ 'prescription.noPrescriptionsForPatient' | translate }}</span>
+      }
+    </td>
+  </ng-container>
+
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr [class.inactive]="row.status === 'DONE' || row.status === 'CANCELLED' || row.status === 'EXPIRED'"
       [tabindex]="0"
@@ -65,14 +83,8 @@
       (keydown.enter)="clickPrescription.emit(row)"
       mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
-  @if (!loading){
-    <tr [class]="prescriptions?.total === 0 ? 'no-prescriptions' : 'no-data'" class="mat-mdc-row" *matNoDataRow >
-      <td class="mat-mdc-cell" [attr.colspan]="displayedColumns.length">
-        <span *hideIfProfessional>{{ 'prescription.noPrescriptionsForUser' | translate }}</span>
-        <span *showIfProfessional>{{ 'prescription.noPrescriptionsForPatient' | translate }}</span>
-      </td>
-    </tr>
-  }
+  <tr [class]="prescriptions?.total === 0 ? 'no-prescriptions' : 'no-data'" mat-footer-row
+      *matFooterRowDef="['tableStatus']"></tr>
 </table>
 
 
