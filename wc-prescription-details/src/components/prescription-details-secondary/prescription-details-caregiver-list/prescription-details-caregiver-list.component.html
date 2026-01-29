@@ -1,8 +1,8 @@
-@if (prescriptionServiceData && currentUserServiceData && patientServiceData) {
+@if (prescriptionServiceData && currentUserServiceData && patientServiceData()) {
 
   @let prescriptionData = prescriptionServiceData;
   @let currentUserData = currentUserServiceData;
-  @let patientData = patientServiceData;
+  @let patientData = patientServiceData();
 
   @for (performerTask of prescriptionData.performerTasks; track performerTask) {
     <div class="caregiver_row">
@@ -51,10 +51,10 @@
         </div>
 
         <div class="button-group">
-          @if (prescriptionServiceData | canRejectAssignation : performerTask : patientServiceData.ssin : currentUserData) {
+          @if (patientData?.ssin && (prescriptionData | canRejectAssignation : performerTask : patientData?.ssin: currentUserData)) {
             <button
               type="button"
-              (click)="service.openRejectAssignationDialog(prescriptionData, performerTask, patientServiceData)"
+              (click)="service.openRejectAssignationDialog(prescriptionData, performerTask, patientData)"
               mat-icon-button
               data-cy="prescription-reject-assignation-button"
               [attr.aria-label]="'prescription.ariaLabel.reject' | translate"
@@ -62,10 +62,10 @@
               <mat-icon>cancel</mat-icon>
             </button>
           }
-          @if (prescriptionServiceData | canInterruptTreatment : performerTask : currentUserServiceData) {
+          @if (prescriptionData | canInterruptTreatment : performerTask : currentUserData) {
             <button
               type="button"
-              (click)="service.openInterruptExecutionDialog(prescriptionData, performerTask, patientServiceData)"
+              (click)="service.openInterruptExecutionDialog(prescriptionData, performerTask, patientData)"
               mat-icon-button
               data-cy="prescription-interrupt-execution-button"
               [attr.aria-label]="'prescription.ariaLabel.interrupt' | translate"
@@ -73,7 +73,7 @@
               <mat-icon>pause_circle</mat-icon>
             </button>
           }
-          @if (prescriptionServiceData | canRestartTreatment : performerTask : performerTask?.careGiverSsin) {
+          @if (patientData && (prescriptionData | canRestartTreatment : performerTask : performerTask?.careGiverSsin)) {
             <button
               type="button"
               (click)="service.openRestartExecutionDialog(prescriptionData, performerTask, patientData)"

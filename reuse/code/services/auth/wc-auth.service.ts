@@ -1,10 +1,22 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, combineLatest, filter, first, Observable, of, switchMap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  combineLatest,
+  filter,
+  first,
+  Observable,
+  of,
+  shareReplay,
+  startWith,
+  switchMap
+} from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Buffer } from 'buffer';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { AccessToken, IdToken, ResourceAccess, UserProfile } from '@reuse/code/interfaces';
 import { Discipline, Role } from '@reuse/code/openapi';
+import { CLIENT_ID, RESOURCE_ACCESS_CLAIM_KEY, USER_PROFILE_CLAIM_KEY } from '@reuse/code/services/auth/auth-constants';
 
 @Injectable({ providedIn: 'root' })
 export class WcAuthService extends AuthService {
@@ -35,32 +47,43 @@ export class WcAuthService extends AuthService {
     return this.getIdToken().pipe(
       map(token =>
         typeof token === 'string'
-          ? (JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString()) as IdToken)
+          ? this.decodeJwt<IdToken>(token)
           : token
-      )
+      ),
+      shareReplay(1)
     );
   }
 
   getResourceAccess() {
     return this.getAccessToken().pipe(
       filter(token => token !== null),
-      map(token => JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString()) as AccessToken),
+      map(token => this.decodeJwt<AccessToken>(token)),
       catchError(() => of(null))
     );
   }
 
+  decodeJwt<T>(token: string): T {
+    return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+  }
+
+  private readonly isProfessional$Internal = combineLatest([
+    this.getClaims(),
+    this.getResourceAccess()
+  ]).pipe(
+    map(([claims, access]) =>
+      this.userProfileHasProfessionalKey(claims?.userProfile, access?.resource_access)
+    ),
+    shareReplay(1)
+  );
+
   override isProfessional(): Observable<boolean> {
-    return combineLatest([this.getClaims(), this.getResourceAccess()]).pipe(
-      map(([claims, accessToken]) =>
-        this.userProfileHasProfessionalKey(claims?.['userProfile'], accessToken?.['resource_access'])
-      )
-    );
+    return this.isProfessional$Internal;
   }
 
   override discipline(): Observable<Discipline> {
     return this.getClaims().pipe(
       map(claims => {
-        const keys = claims?.['userProfile'] ? Object.keys(claims?.['userProfile']).map(k => k.toLowerCase()) : [];
+        const keys = claims?.[USER_PROFILE_CLAIM_KEY] ? Object.keys(claims?.[USER_PROFILE_CLAIM_KEY]).map(k => k.toLowerCase()) : [];
         const match = Object.values(Discipline).find(discipline => keys.includes(discipline.toLowerCase()));
         return match ?? Discipline.Patient;
       })
@@ -70,7 +93,7 @@ export class WcAuthService extends AuthService {
   override role(): Observable<string> {
     return this.getResourceAccess().pipe(
       map(accessToken => {
-        const roles = accessToken?.['resource_access']?.['nihdi-uhmep-api']?.roles ?? [];
+        const roles = accessToken?.[RESOURCE_ACCESS_CLAIM_KEY]?.[CLIENT_ID]?.roles ?? [];
         const match = Object.values(Role).find(role => roles.includes(role.toLowerCase()));
         return match ?? '';
       })
@@ -91,7 +114,7 @@ export class WcAuthService extends AuthService {
       Object.hasOwn(userProfile, discipline.toLowerCase())
     );
 
-    const roles = resourceAccess['nihdi-uhmep-api'].roles;
+    const roles = resourceAccess[CLIENT_ID].roles;
     const isAdmin = Array.isArray(roles) && roles.includes('admin');
 
     return hasProfessionalKey || isAdmin || false;

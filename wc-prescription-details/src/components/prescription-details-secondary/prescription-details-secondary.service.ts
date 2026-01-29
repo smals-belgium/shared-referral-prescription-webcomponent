@@ -30,6 +30,7 @@ import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-respon
 import { TemplatesState } from '@reuse/code/states/api/templates.state';
 import { ApproveProposalDialog } from '@reuse/code/dialogs/approve-proposal/approve-proposal.dialog';
 import { RejectProposalDialog } from '@reuse/code/dialogs/reject-proposal/reject-proposal.dialog';
+import { SSIN_CLAIM_KEY, USER_PROFILE_CLAIM_KEY } from '@reuse/code/services/auth/auth-constants';
 
 export interface DetailsServices {
   getAccessToken: (audience?: string) => Promise<string | null>;
@@ -77,12 +78,12 @@ export class PrescriptionDetailsSecondaryService {
   //Not used for the moment
   proposalsRejected = new EventEmitter<boolean>();
 
-  getPatient(): DataState<PersonResource> {
+  getPatient = computed<DataState<PersonResource>>(() => {
     const patientState = this.patientStateService.state();
     const identifyState = this.identifyState.state();
     const ssin = identifyState.data;
     const professional = this.isProfessional$();
-    const userProfile = this.tokenClaims$()?.['userProfile'] as PersonResource;
+    const userProfile = this.tokenClaims$()?.[USER_PROFILE_CLAIM_KEY] as PersonResource;
 
     if (professional) {
       const person: PersonResource = {
@@ -100,7 +101,7 @@ export class PrescriptionDetailsSecondaryService {
       status: identifyState.status,
       data: person,
     };
-  }
+  });
 
   getCryptoKey() {
     return this.encryptionStateService.state();
@@ -166,7 +167,7 @@ export class PrescriptionDetailsSecondaryService {
 
   getPerformerTask(): DataState<PerformerTaskResource> {
     const state = isProposal(this.intent()) ? this.proposalStateService.state() : this.prescriptionStateService.state();
-    const ssin = (this.tokenClaims$()?.['userProfile'] as PersonResource)?.['ssin'];
+    const ssin = (this.tokenClaims$()?.[USER_PROFILE_CLAIM_KEY] as PersonResource)?.[SSIN_CLAIM_KEY];
     if (!ssin || state.status !== LoadingStatus.SUCCESS) {
       return {
         status: state.status,
@@ -211,7 +212,7 @@ export class PrescriptionDetailsSecondaryService {
   }
 
   getCurrentUser(): DataState<Partial<UserInfo>> {
-    const token = this.tokenClaims$()?.['userProfile'];
+    const token = this.tokenClaims$()?.[USER_PROFILE_CLAIM_KEY];
     const professional = this.isProfessional$();
     const discipline = this.discipline$();
 
