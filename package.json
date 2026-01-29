@@ -32,7 +32,8 @@
     "preversion": "rm -rf ./dist && git submodule update --init --recursive",
     "version": "npm run generate-api:fromTools && npm run build",
     "postversion": "npm pack .",
-    "api:client:init": "git submodule update --init --recursive && npx copyfiles -f ./lib/openapi-generator-cli/7.14.0/openapi-generator-cli-7.14.0.jar ./node_modules/@openapitools/openapi-generator-cli/versions/ && npm run generate-api:local"
+    "api:client:init": "git submodule update --init --recursive && npx copyfiles -f ./lib/openapi-generator-cli/7.14.0/openapi-generator-cli-7.14.0.jar ./node_modules/@openapitools/openapi-generator-cli/versions/ && npm run generate-api:local",
+    "prepare": "husky"
   },
   "private": true,
   "dependencies": {
@@ -96,6 +97,7 @@
     "camel-to-kebab": "^1.1.2",
     "concat": "^1.0.3",
     "eslint": "8.57.0",
+    "husky": "^9.1.7",
     "istanbul": "^0.4.5",
     "istanbul-merge": "^2.0.0",
     "jest": "^29.7.0",
