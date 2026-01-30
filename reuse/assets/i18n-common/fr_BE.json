@@ -336,8 +336,8 @@
         "tableHasRecords": "Le nombre total d'ordonnances est de {total}.",
         "extendedShortId": "Prolongation de la prescription",
         "actions": {
-            "button": "Acties",
-            "assignMe": "Toewijzen",
+            "button": "Actions",
+            "assignMe": "Prendre en charge",
             "startExecution": "Exécuter",
             "assign": "Assigner",
             "copy": "Copier",
