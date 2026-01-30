@@ -334,7 +334,17 @@
             "restart": "Herneem de uitvoering"
         },
         "tableHasRecords": "Totaal aantal voorschriften is {total}.",
-        "extendedShortId": "Uitbreiding van het voorschrift"
+        "extendedShortId": "Uitbreiding van het voorschrift",
+        "actions": {
+            "button": "Acties",
+            "assignMe": "Mezelf toewijzen",
+            "startExecution": "Uitvoeren",
+            "assign": "Toewijzen",
+            "copy": "Kopiëren",
+            "extend": "Verlengen",
+            "print": "Afdrukken",
+            "cancel": "Annuleren"
+        }
     },
     "proposal": {
         "creationDate": "Aangemaakt op",

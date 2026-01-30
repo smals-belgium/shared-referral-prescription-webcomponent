@@ -334,7 +334,17 @@
             "restart": "Relancer l'exécution"
         },
         "tableHasRecords": "Le nombre total d'ordonnances est de {total}.",
-        "extendedShortId": "Prolongation de la prescription"
+        "extendedShortId": "Prolongation de la prescription",
+        "actions": {
+            "button": "Acties",
+            "assignMe": "Toewijzen",
+            "startExecution": "Exécuter",
+            "assign": "Assigner",
+            "copy": "Copier",
+            "extend": "Étendre",
+            "print": "Imprimer",
+            "cancel": "Annuler"
+        }
     },
     "proposal": {
         "creationDate": "Créé le",
