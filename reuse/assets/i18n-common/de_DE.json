@@ -334,7 +334,17 @@
             "restart": ""
         },
         "tableHasRecords": "",
-        "extendedShortId": ""
+        "extendedShortId": "",
+        "actions": {
+            "button": "",
+            "assignMe": "",
+            "startExecution": "",
+            "assign": "",
+            "copy": "",
+            "extend": "",
+            "print": "",
+            "cancel": ""
+        }
     },
     "proposal": {
         "creationDate": "",
