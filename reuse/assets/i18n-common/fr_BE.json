@@ -234,10 +234,10 @@
             "noResults": "Aucune commune trouvée"
         },
         "cancel": {
-            "action": "Annuler",
-            "title": "Annuler la prescription",
-            "message": "Êtes-vous sûr de vouloir annuler la prescription \"{templateName}\" de {firstName} {lastName} ?",
-            "success": "Prescription annulée avec succès.",
+            "action": "Classer sans suite",
+            "title": "Classer la prescription sans suite",
+            "message": "Êtes-vous sûr de vouloir classer la prescription \"{templateName}\" de {firstName} {lastName} sans suite?",
+            "success": "Prescription classée sans suite avec succès.",
             "reason": "Raison"
         },
         "rejectAssignation": {
@@ -292,7 +292,7 @@
             "BLACKLISTED": "Liste noire",
             "PENDING": "En attente",
             "OPEN": "Ouvert",
-            "CANCELLED": "Annulé",
+            "CANCELLED": "Classée sans suite",
             "EXPIRED": "Expiré",
             "IN_PROGRESS": "En cours",
             "DONE": "Clôturé",
@@ -333,7 +333,8 @@
             "interrupt": "Interrompre l'exécution",
             "restart": "Relancer l'exécution"
         },
-        "tableHasRecords": "Le nombre total d'ordonnances est de {total}."
+        "tableHasRecords": "Le nombre total d'ordonnances est de {total}.",
+        "extendedShortId": "Prolongation de la prescription"
     },
     "proposal": {
         "creationDate": "Créé le",
@@ -435,10 +436,10 @@
             }
         },
         "cancel": {
-            "action": "Annuler",
-            "title": "Annuler la proposition",
-            "message": "Êtes-vous sûr de vouloir annuler la proposition \"{templateName}\" de {firstName} {lastName} ?",
-            "success": "Proposition annulée avec succès.",
+            "action": "Classer sans suite",
+            "title": "Classer la proposition sans suite",
+            "message": "Êtes-vous sûr de vouloir classer la proposition \"{templateName}\" de {firstName} {lastName} sans suite?",
+            "success": "Proposition classée sans suite avec succès.",
             "reason": "Raison"
         },
         "rejectAssignation": {
@@ -463,7 +464,7 @@
             "BLACKLISTED": "Liste noire",
             "PENDING": "En attente",
             "OPEN": "Ouvert",
-            "CANCELLED": "Annulé",
+            "CANCELLED": "Classée sans suite ",
             "EXPIRED": "Expiré",
             "IN_PROGRESS": "En cours",
             "DONE": "Clôturé",

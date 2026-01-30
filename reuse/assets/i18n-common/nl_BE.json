@@ -234,10 +234,10 @@
             "noResults": "Geen gemeente gevonden"
         },
         "cancel": {
-            "action": "Annuleren",
-            "title": "Voorschrift annuleren",
-            "message": "Bent u zeker dat u het voorschrift \"{templateName}\" van {firstName} {lastName} wilt annuleren?",
-            "success": "Het voorschrift werd geannuleerd.",
+            "action": "Klasseren zonder gevolg",
+            "title": "Klasseer voorschrift zonder gevolg",
+            "message": "Bent u zeker dat u het voorschrift \"{templateName}\" van {firstName} {lastName} wilt klasseren zonder gevolg?",
+            "success": "Het voorschrift werd met succes geklasseerd zonder gevolg.",
             "reason": "Reden"
         },
         "rejectAssignation": {
@@ -292,7 +292,7 @@
             "BLACKLISTED": "Op de zwarte lijst",
             "PENDING": "In afwachting",
             "OPEN": "Open",
-            "CANCELLED": "Geannuleerd",
+            "CANCELLED": "Geklasseerd zonder gevolg",
             "EXPIRED": "Vervallen",
             "IN_PROGRESS": "In uitvoering",
             "DONE": "Afgesloten",
@@ -333,7 +333,8 @@
             "interrupt": "Onderbreek de uitvoering",
             "restart": "Herneem de uitvoering"
         },
-        "tableHasRecords": "Totaal aantal voorschriften is {total}."
+        "tableHasRecords": "Totaal aantal voorschriften is {total}.",
+        "extendedShortId": "Uitbreiding van het voorschrift"
     },
     "proposal": {
         "creationDate": "Aangemaakt op",
@@ -435,10 +436,10 @@
             }
         },
         "cancel": {
-            "action": "Annuleren",
-            "title": "Voorstel annuleren",
-            "message": "Bent u zeker dat u het voorstel \"{templateName}\" van {firstName} {lastName} wilt annuleren?",
-            "success": "Het voorstel werd geannuleerd.",
+            "action": "Klasseren zonder gevolg",
+            "title": "Klasseer voorstel zonder gevolg",
+            "message": "Bent u zeker dat u het voorstel \"{templateName}\" van {firstName} {lastName} wilt klasseren zonder gevolg?",
+            "success": "Het voorstel werd met succes geklasseerd zonder gevolg.",
             "reason": "Reden"
         },
         "rejectAssignation": {
@@ -463,7 +464,7 @@
             "BLACKLISTED": "Op de zwarte lijst",
             "PENDING": "In afwachting",
             "OPEN": "Open",
-            "CANCELLED": "Geannuleerd",
+            "CANCELLED": "Geklasseerd zonder gevolg",
             "EXPIRED": "Niet meer geldig",
             "IN_PROGRESS": "In uitvoering",
             "DONE": "Afgesloten",
