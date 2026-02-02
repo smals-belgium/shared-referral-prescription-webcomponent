@@ -12,7 +12,7 @@ git checkout -B ${TEMP_BRANCH}
 cp api-contract/openapi.yaml /tmp/openapi.yaml
 
 # Remove the submodule from index only
-git rm --cached api-contract
+git rm -r --cached api-contract
 rm -rf api-contract
 
 # Recreate as regular directory with the file
