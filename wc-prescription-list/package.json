@@ -1,5 +1,5 @@
 {
-  "name": "@myhealth-belgium/uhmep-prescription-list",
+  "name": "@smals-belgium-shared/uhmep-prescription-list",
   "version": "1.0.0",
   "description": "Prescription list web component",
   "main": "build/wc-prescription-list.js",
