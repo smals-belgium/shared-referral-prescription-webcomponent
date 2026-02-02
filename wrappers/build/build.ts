@@ -64,7 +64,7 @@ const filesToPack = ['scripts.js', 'main.js'];
       fs.writeFileSync(
         path.join(buildDirectory, `package.json`),
         JSON.stringify({
-          name: `@myhealth-belgium/uhmep-mags-${file.replace('wc-', '')}`,
+          name: `@smals-belgium-shared/uhmep-mags-${file.replace('wc-', '')}`,
           version,
           description,
           type,
