@@ -2,11 +2,11 @@ import { AfterViewInit, Component, inject, signal, ViewChild, WritableSignal } f
 import {
   EvfBaseFormElementComponent,
   EvfElementLabelComponent,
-} from '@smals/vas-evaluation-form-ui-material/elements/shared';
+} from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/shared';
 import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
-import { TextareaComponent } from '@smals/vas-evaluation-form-ui-material/elements/textarea';
+import { TextareaComponent } from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/textarea';
 import { MatIcon } from '@angular/material/icon';
-import { EvfActiveValidationPipe, Validation } from '@smals/vas-evaluation-form-ui-core';
+import { EvfActiveValidationPipe, Validation } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 
 @Component({
   selector: 'expansion-panel-textarea',
@@ -27,7 +27,6 @@ export class ExpansionPanelTextareaComponent extends EvfBaseFormElementComponent
   readonly id = 'evf-expansion-textarea-' + ExpansionPanelTextareaComponent.counter++;
 
   ngAfterViewInit(): void {
-
     const requiredValidation: Validation = this._activeValidationPipe.transform(this.elementControl, 'required');
 
     if (this.matExpansionPanel && (this.elementControl.value?.length > 0 || !!requiredValidation)) {

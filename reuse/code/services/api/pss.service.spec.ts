@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { PssService } from './pss.service';
 import { PssService as ApiPssService, ControlRequest } from '@reuse/code/openapi';
-import { AutocompleteOption } from '@smals/vas-evaluation-form-ui-core';
+import { AutocompleteOption } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { of, skip } from 'rxjs';
 
 describe('PssService', () => {
@@ -61,7 +61,7 @@ describe('PssService', () => {
       expect(service.getStatus()).toBe(true);
     });
 
-    it('should emit the new status after setStatus(false)', (done) => {
+    it('should emit the new status after setStatus(false)', done => {
       service.status$.pipe(skip(1)).subscribe(value => {
         expect(value).toBe(false);
         done();
@@ -109,7 +109,7 @@ describe('PssService', () => {
   });
 
   describe('geDefault', () => {
-    it('should return observable from geDefault', (done) => {
+    it('should return observable from geDefault', done => {
       const url = 'http://example.com/api';
       const params = new HttpParams();
       const mockResponse: AutocompleteOption[] = [{ label: 'Option 1', value: '1' }] as any;

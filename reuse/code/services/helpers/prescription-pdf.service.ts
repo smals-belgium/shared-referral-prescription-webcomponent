@@ -2,7 +2,12 @@ import { Injectable } from '@angular/core';
 import { Content, ContentSvg, Margins, TableCell } from 'pdfmake/interfaces';
 import { TranslateService } from '@ngx-translate/core';
 import { DateTime } from 'luxon';
-import { FormElement, FormTemplate, FormTranslation, Languag } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
+import {
+  FormElement,
+  FormTemplate,
+  FormTranslation,
+  Language,
+} from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import {
   translateBoundsDuration,
   translateFrequencyAndPeriod,

@@ -29,7 +29,7 @@ import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import { PrescriptionDetailsSecondaryService } from '../../prescription-details-secondary/prescription-details-secondary.service';
 import { ViewState } from '../../../containers/prescription-details/prescription-details.component';
 import { PrescriptionsPdfService } from '@reuse/code/services/helpers/prescription-pdf.service';
-import { FormTemplate } from '@smals/vas-evaluation-form-ui-core';
+import { FormTemplate } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { CancelPrescriptionDialog } from '@reuse/code/dialogs/cancel-prescription/cancel-prescription-dialog.component';
 import { TaskButtonGroupComponent } from '../task-button-group/task-button-group.component';
 
