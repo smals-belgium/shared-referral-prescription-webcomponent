@@ -1,0 +1,12 @@
+@use "@myhealth-belgium/design-kit" as mh;
+
+mat-expansion-panel{
+  border-bottom: 1px solid var(--mh-expansion-text-area-border-bottom, mh.$border-brand-primary-light);
+
+  mat-expansion-panel-header{
+    .mat_expansion_panel_header_container{
+      display: flex;
+      gap: mh.$spacing-rem-s;
+    }
+  }
+}

@@ -1,7 +1,6 @@
 @use '@myhealth-belgium/design-kit' as mh;
 
 @include mh.use-font-material-symbols(
-    true,
     url('@reuse/assets/fonts/MatSymbols-Rounded.ttf'),
     'Material Symbols Rounded',
       (

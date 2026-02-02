@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ToggleHistoricPrescriptionsComponent } from './toggle-historic-prescriptions.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { By } from '@angular/platform-browser';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
 
 describe('ToggleHistoricPrescriptionsComponent', () => {
   let component: ToggleHistoricPrescriptionsComponent;
@@ -26,14 +27,21 @@ describe('ToggleHistoricPrescriptionsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize slide toggle with isChecked value', () => {
+  it('should initialize slide toggle with isChecked value', async () => {
+
     component.isChecked = true;
     fixture.detectChanges();
 
-    const toggle = fixture.debugElement.query(By.css('mat-slide-toggle'))
-      .nativeElement as HTMLInputElement;
+    // Waits all asynchronous cycles (ngModel) to be done
+    await fixture.whenStable();
 
-    expect(toggle.getAttribute('ng-reflect-model')).toBe('true');
+    const toggleDebug = fixture.debugElement.query(By.directive(MatSlideToggle));
+
+    expect(toggleDebug).toBeTruthy();
+
+    const toggleInstance = toggleDebug.injector.get(MatSlideToggle);
+
+    expect(toggleInstance.checked).toBe(true);
   });
 
   it('should emit toggleChanged event when the toggle is clicked', () => {

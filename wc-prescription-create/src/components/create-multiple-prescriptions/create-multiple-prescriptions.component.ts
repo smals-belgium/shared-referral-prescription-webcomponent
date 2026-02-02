@@ -15,10 +15,7 @@ import {
 import { ElementGroup, isObject, removeNulls } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { MatAccordion, MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
-import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
-import { IfStatusErrorDirective } from '@reuse/code/directives/if-status-error.directive';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
-import { IfStatusLoadingDirective } from '@reuse/code/directives/if-status-loading.directive';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
@@ -46,10 +43,7 @@ import { EvfFormWebComponent } from '../evf-form/evf-form.component';
     MatExpansionModule,
     MatIconModule,
     MatButtonModule,
-    IfStatusLoadingDirective,
     OverlaySpinnerComponent,
-    IfStatusErrorDirective,
-    IfStatusSuccessDirective,
     TemplateNamePipe,
     AlertComponent,
     EvfFormWebComponent,
@@ -60,7 +54,7 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
   protected readonly LoadingStatus = LoadingStatus;
   protected readonly AlertType = AlertType;
 
-  readonly trackByFn = (index: number, item: CreatePrescriptionForm) => item?.trackId || index;
+  readonly trackByFn = (item: CreatePrescriptionForm) => item.trackId;
   modelState = this.prescriptionModelState.modalState;
 
   isPrescriptionValue = false;

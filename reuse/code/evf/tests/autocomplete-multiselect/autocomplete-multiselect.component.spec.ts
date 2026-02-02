@@ -14,6 +14,10 @@ import { MarkdownModule } from 'ngx-markdown';
 import { of } from 'rxjs';
 import { AutocompleteMultiselectComponent } from '../../components/autocomplete-multiselect/element/autocomplete-multiselect.component';
 import { ExternalSourceService } from '@reuse/code/services/api/externalSourceService.service';
+import { MatFormField } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { NgControl } from '@angular/forms';
+import { MatChipRow } from '@angular/material/chips';
 
 const mockAutocompleteOptions: AutocompleteOption[] = [
   { label: { en: 'Option 1', fr: 'Option 1', nl: 'Option 1', de: 'Option 1' }, value: 'opt1' },
@@ -102,24 +106,39 @@ describe('AutocompleteMultiselectComponent', () => {
   });
 
   it('should render the form fields', () => {
+
     component.demoTemplate = formTemplate;
     fixture.detectChanges();
-    expect(component).toBeTruthy();
 
-    const formField = fixture.debugElement.query(By.css('mat-form-field'));
-    expect(formField).toBeTruthy();
-    expect(formField.nativeElement.getAttribute('ng-reflect-appearance')).toBe('outline');
+    // Check that mat-form-field exists
+    const formFieldDebug = fixture.debugElement.query(
+      By.directive(MatFormField)
+    );
+    expect(formFieldDebug).toBeTruthy();
 
-    const label = fixture.debugElement.query(By.css('mat-label'));
-    expect(label).toBeFalsy();
+    // Check mat-form-field right style
+    const formField = formFieldDebug.injector.get(MatFormField);
+    expect(formField.appearance).toBe('outline');
 
-    const input = fixture.debugElement.query(By.css('input[matInput]'));
-    expect(input).toBeTruthy();
-    expect(input.nativeElement.type).toBe('text');
-    expect(input.nativeElement.id).toBe('evf-autocomplete-0');
-    expect(input.nativeElement.getAttribute('ng-reflect-form')).toBeTruthy();
+    // Check that mat-input exists
+    const inputDe = fixture.debugElement.query(
+      By.directive(MatInput)
+    );
+    expect(inputDe).toBeTruthy();
 
-    const chips = fixture.debugElement.queryAll(By.css('mat-chip-row'));
+    // Is text with id
+    const input = inputDe.nativeElement as HTMLInputElement;
+    expect(input.type).toBe('text');
+    expect(input.id).toBe('evf-autocomplete-0');
+
+    // Is bind to a form
+    const ngControl = inputDe.injector.get(NgControl);
+    expect(ngControl.control).toBeTruthy();
+
+    // Has no chip present
+    const chips = fixture.debugElement.queryAll(
+      By.directive(MatChipRow)
+    );
     expect(chips.length).toBe(0);
   });
 

@@ -4,7 +4,7 @@ import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource, RequestStatus, Role } from '@reuse/code/openapi';
 import {
   checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline,
-  isProposal
+  isProposal,
 } from '@reuse/code/utils/utils';
 
 /**
@@ -42,25 +42,25 @@ export class CanRejectAssignationPipe implements PipeTransform {
       prescription.status != null &&
       allowedStatuses.includes(prescription.status) &&
       task?.status === FhirR4TaskStatus.Ready &&
-      this.checkIfCurrentUserIsPatientOrAssignedCaregiver(
-        currentUser,
-        patientSsin,
-        task
-      )
+      this.checkIfCurrentUserIsPatientOrAssignedCaregiver(currentUser, patientSsin, task)
     );
   }
+  //this.accessMatrixState.hasAtLeastOnePermission(["executeTreatment"], t.templateCode) && !!r.status && u.includes(r.status)
 
   private checkIfCurrentUserIsPatientOrAssignedCaregiver(
     currentUser: Partial<UserInfo>,
     patientSsin: string,
-    task: PerformerTaskResource): boolean {
-
-    let caregiverSsin = task?.careGiver?.healthcarePerson?.ssin;
+    task: PerformerTaskResource
+  ): boolean {
+    const caregiverSsin = task?.careGiver?.healthcarePerson?.ssin;
 
     if (!caregiverSsin) return false;
 
     const isPatient = currentUser.role === Role.Patient && currentUser.ssin === patientSsin;
-    const isCaregiver = currentUser.role !== Role.Patient && checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline(task, currentUser)
+
+    const isCaregiver =
+      currentUser.role !== Role.Patient &&
+      checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline(task, currentUser);
 
     return isPatient || isCaregiver;
   }

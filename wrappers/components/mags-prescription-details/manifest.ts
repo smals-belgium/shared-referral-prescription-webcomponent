@@ -6,4 +6,9 @@ export const wrapperManifest = {
   tokenExchange: {
     clientId: 'nihdi-uhmep-patient',
   },
+  events: {
+    open: {
+      componentTag: 'uhmep-prescription-details',
+    },
+  },
 };

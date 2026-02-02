@@ -1,7 +1,6 @@
-import { UserInfo } from '../interfaces';
 import { CanInterruptTreatmentPipe } from './can-interrupt-treatment.pipe';
 import { AccessMatrixState } from '../states/api/access-matrix.state';
-import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource, Role } from '../openapi';
+import { FhirR4TaskStatus, ReadRequestResource, Role } from '../openapi';
 
 describe('CanInterruptTreatmentPipe', () => {
   let pipe: CanInterruptTreatmentPipe;
@@ -15,80 +14,91 @@ describe('CanInterruptTreatmentPipe', () => {
     pipe = new CanInterruptTreatmentPipe(mockAccessMatrixState);
   });
 
-  it('should return false if currentUser is undefined', () => {
-    const prescription = {} as ReadRequestResource;
-    const task = {} as PerformerTaskResource;
+  const prescription = { templateCode: 'TEMPLATE_1' } as ReadRequestResource;
 
-    const result = pipe.transform(prescription, task, undefined);
-
-    expect(result).toBe(false);
+  it('should return false when currentUser is undefined', () => {
+    expect(pipe.transform(prescription, {} as any, undefined)).toBe(false);
   });
 
-  it('should return false if currentUser role is not professional', () => {
-    const prescription = {} as ReadRequestResource;
-    const task = { careGiverSsin: '123' } as PerformerTaskResource;
-    const currentUser = { role: Role.Patient, ssin: '123' } as UserInfo;
+  it('should return false when user is not professional', () => {
+    const task = { careGiverSsin: '10022500123' } as any;
+    const user = { role: Role.Patient, ssin: '10022500123' } as any;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
-    const result = pipe.transform(prescription, task, currentUser);
-
-    expect(result).toBe(false);
+    expect(pipe.transform(prescription, task, user)).toBe(false);
   });
 
-  it('should return false if task careGiver does not match currentUser', () => {
-    const prescription = {} as ReadRequestResource;
-    const task = { careGiverSsin: '123' } as PerformerTaskResource;
-    const currentUser = { role: Role.Prescriber, ssin: '456' } as UserInfo;
+  it('should return false when caregiver SSIN does not match currentUser', () => {
+    const task = { careGiverSsin: '10022500123' } as any;
+    const user = { role: Role.Prescriber, ssin: '456', discipline: 'nurse' } as any;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
-    const result = pipe.transform(prescription, task, currentUser);
-
-    expect(result).toBe(false);
+    expect(pipe.transform(prescription, task, user)).toBe(false);
   });
 
-  it('should return false if user lacks required permission to interrupt treatment', () => {
-    const prescription = { templateCode: 'TEMPLATE_1' } as ReadRequestResource;
-    const task = { careGiverSsin: '123', status: FhirR4TaskStatus.Inprogress } as PerformerTaskResource;
-    const currentUser = { role: Role.Prescriber, ssin: '123' } as UserInfo;
+  it('should return false when caregiver discipline does not match currentUser', () => {
+    const task = {
+      careGiverSsin: '10022500123',
+      careGiver: { id: { profession: 'doctor' } }
+    } as any;
 
-    mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(false); // Permission denied
+    const user = { role: Role.Prescriber, ssin: '10022500123', discipline: 'nurse' } as any;
 
-    const result = pipe.transform(prescription, task, currentUser);
+    mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
+
+    expect(pipe.transform(prescription, task, user)).toBe(false);
+  });
+
+  it('should return false when permission interruptTreatment is denied', () => {
+    const task = {
+      careGiverSsin: '10022500123',
+      careGiver: { id: { profession: 'nurse' } },
+      status: FhirR4TaskStatus.Inprogress
+    } as any;
+
+    const user = {
+      role: Role.Prescriber,
+      ssin: '10022500123',
+      discipline: 'nurse'
+    } as any;
+
+    mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(false);
+
+    const result = pipe.transform(prescription, task, user);
 
     expect(result).toBe(false);
     expect(mockAccessMatrixState.hasAtLeastOnePermission).toHaveBeenCalledWith(
       ['interruptTreatment'],
-      prescription.templateCode
+      'TEMPLATE_1'
     );
   });
 
-  it('should return false if task status is not INPROGRESS', () => {
-    const prescription = { templateCode: 'TEMPLATE_1' } as ReadRequestResource;
-    const task = { careGiverSsin: '123', status: FhirR4TaskStatus.Completed } as PerformerTaskResource; // Status not INPROGRESS
-    const currentUser = { role: Role.Prescriber, ssin: '123' } as UserInfo;
+  it('should return false when task status is not INPROGRESS', () => {
+    const task = { careGiverSsin: '10022500123', status: FhirR4TaskStatus.Completed } as any;
+    const user = { role: Role.Prescriber, ssin: '10022500123', discipline: 'nurse' } as any;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
-    const result = pipe.transform(prescription, task, currentUser);
-
-    expect(result).toBe(false);
+    expect(pipe.transform(prescription, task, user)).toBe(false);
   });
 
-  it('should return true if all conditions are satisfied', () => {
-    const prescription = { templateCode: 'TEMPLATE_1' } as ReadRequestResource;
-    const task = { careGiverSsin: '123', status: FhirR4TaskStatus.Inprogress } as PerformerTaskResource;
-    const currentUser = { role: Role.Prescriber, ssin: '123' } as UserInfo;
+  it('should return true when all conditions are met', () => {
+    const task = {
+      careGiverSsin: '10022500123',
+      careGiver: { id: { profession: 'nurse' } },
+      status: FhirR4TaskStatus.Inprogress
+    } as any;
+
+    const user = { role: Role.Prescriber, ssin: '10022500123', discipline: 'nurse' } as any;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
-    const result = pipe.transform(prescription, task, currentUser);
-
-    expect(result).toBe(true);
+    expect(pipe.transform(prescription, task, user)).toBe(true);
     expect(mockAccessMatrixState.hasAtLeastOnePermission).toHaveBeenCalledWith(
       ['interruptTreatment'],
-      prescription.templateCode
+      'TEMPLATE_1'
     );
   });
 });

@@ -11,6 +11,7 @@ import {
 import { PrescriptionDetailsBeneficiaryComponent } from './prescription-details-beneficiary/prescription-details-beneficiary.component';
 import { EvfFormDetailsWebComponent } from '../evf-details/evf-form-details.component';
 import { FormTemplate } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
+import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
 
 @Component({
   selector: 'app-prescription-details-main',
@@ -20,6 +21,7 @@ import { FormTemplate } from '@smals-belgium-shared/vas-evaluation-form-ui-core'
     TranslatePipe,
     PrescriptionDetailsBeneficiaryComponent,
     EvfFormDetailsWebComponent,
+    FormatNihdiPipe,
   ],
   templateUrl: './prescription-details-main.component.html',
   styleUrl: './prescription-details-main.component.scss',

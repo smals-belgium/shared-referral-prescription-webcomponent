@@ -8,7 +8,7 @@ import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionM
 import { CreatePrescriptionForm, Intent, LoadingStatus } from '@reuse/code/interfaces';
 import { ElementGroup } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
+import { MatAccordion, MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { By } from '@angular/platform-browser';
@@ -88,7 +88,7 @@ describe('CreateMultiplePrescriptionsComponent', () => {
   it('should return correct value from trackByFn', () => {
     fixture.detectChanges();
     const mockItem = { trackId: 'trackId_01' } as unknown as CreatePrescriptionForm;
-    expect(component.trackByFn(0, mockItem)).toBe('trackId_01');
+    expect(component.trackByFn(mockItem)).toBe('trackId_01');
   });
 
   it('should compute numberOfPrescriptionsToCreate correctly', () => {
@@ -233,9 +233,17 @@ describe('CreateMultiplePrescriptionsComponent', () => {
 
   it('should set hideToggle true when only one form', () => {
     setOneTemplate();
+    fixture.detectChanges();
 
-    const accordion = fixture.debugElement.query(By.css('mat-accordion'));
-    expect(accordion.attributes['ng-reflect-hide-toggle']).toBe('true');
+    const accordionDebug = fixture.debugElement.query(
+      By.directive(MatAccordion)
+    );
+
+    expect(accordionDebug).toBeTruthy();
+
+    const accordionInstance = accordionDebug.injector.get(MatAccordion);
+
+    expect(accordionInstance.hideToggle).toBe(true);
   });
 
   it('should render one expansion panel per form and expand last', () => {
@@ -428,7 +436,15 @@ describe('CreateMultiplePrescriptionsComponent', () => {
       status: LoadingStatus.INITIAL,
     });
 
-    setForms([{ templateCode: 'A', status: LoadingStatus.INITIAL, formTemplateState$: mockTemplateVersionState }]);
+    setForms([
+      {
+        templateCode: 'A',
+        status: LoadingStatus.INITIAL,
+        formTemplateState$: mockTemplateVersionState,
+        generatedUUID: 'mock-uuid-123',
+        trackId: 0,
+      },
+    ]);
   }
 
   function setTwoTemplates(state1: LoadingStatus, state2: LoadingStatus) {
@@ -449,8 +465,22 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     });
 
     setForms([
-      { templateCode: 'A', status: state1, submitted: true, formTemplateState$: mockTemplateVersionState_A },
-      { templateCode: 'B', status: state2, submitted: true, formTemplateState$: mockTemplateVersionState_B },
+      {
+        templateCode: 'A',
+        status: state1,
+        submitted: true,
+        formTemplateState$: mockTemplateVersionState_A,
+        generatedUUID: 'mock-uuid-123',
+        trackId: 0,
+      },
+      {
+        templateCode: 'B',
+        status: state2,
+        submitted: true,
+        formTemplateState$: mockTemplateVersionState_B,
+        generatedUUID: 'mock-uuid-124',
+        trackId: 1,
+      },
     ]);
   }
 });

@@ -18,7 +18,7 @@ import {
   mockAuthService,
   MockPseudoHelperFactory,
   mockPersonService,
-  FakeLoader,
+  FakeLoader, mockTemplate,
 } from '../../../test.utils';
 import { PrescriptionDetailsSecondaryService } from './prescription-details-secondary.service';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
@@ -28,11 +28,28 @@ import { PersonService } from '@reuse/code/services/api/person.service';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { LoadingStatus } from '@reuse/code/interfaces';
+import { IdentifyState } from '@reuse/code/states/privacy/identify.state';
+import { PatientState } from '@reuse/code/states/api/patient.state';
+import { of } from 'rxjs';
+import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
+import { TemplateVersionsState } from '@reuse/code/states/api/template-versions.state';
+import { TemplatesState } from '@reuse/code/states/api/templates.state';
+import { ApproveProposalDialog } from '@reuse/code/dialogs/approve-proposal/approve-proposal.dialog';
+import { EncryptionState } from '@reuse/code/states/privacy/encryption.state';
 
 describe('PrescriptionDetailsSecondaryService', () => {
   let service: PrescriptionDetailsSecondaryService;
   let dialog: MatDialog;
   let consoleSpy: jest.SpyInstance;
+  let mockIdentifyState: any;
+  let mockPatientState: any;
+  let mockEncryptionState: any;
+  let mockPrescriptionState: any;
+  let mockTemplateVersionsState: any;
+  let mockTemplatesState: any;
+
+  const prescription = prescriptionResponse(null, null, [mockPerformerTask]) as unknown as ReadRequestResource;
 
   beforeAll(() => {
     consoleSpy = jest.spyOn(global.console, 'error').mockImplementation(message => {
@@ -43,6 +60,13 @@ describe('PrescriptionDetailsSecondaryService', () => {
   });
 
   beforeEach(() => {
+    mockPatientState = { state: jest.fn() } as any;
+    mockIdentifyState = { state: jest.fn() } as any;
+    mockEncryptionState = { state: jest.fn() } as any;
+    mockPrescriptionState = { state: jest.fn() } as any;
+    mockTemplateVersionsState = { state: jest.fn(), getState: jest.fn() } as any;
+    mockTemplatesState = { state: jest.fn() } as any;
+
     TestBed.configureTestingModule({
       imports: [
         MatDialogModule,
@@ -60,6 +84,12 @@ describe('PrescriptionDetailsSecondaryService', () => {
         { provide: PseudonymisationHelper, useValue: MockPseudoHelperFactory() },
         { provide: ConfigurationService, useValue: mockConfigService },
         { provide: AuthService, useValue: mockAuthService },
+        { provide: IdentifyState, useValue: mockIdentifyState },
+        { provide: PatientState, useValue: mockPatientState },
+        { provide: EncryptionState, useValue: mockEncryptionState },
+        { provide: PrescriptionState, useValue: mockPrescriptionState },
+        { provide: TemplateVersionsState, useValue: mockTemplateVersionsState },
+        { provide: TemplatesState, useValue: mockTemplatesState },
       ],
     });
 
@@ -192,4 +222,138 @@ describe('PrescriptionDetailsSecondaryService', () => {
     expect(openDialogSpy).toHaveBeenCalledTimes(8);
     expect(openDialogSpy).toHaveBeenCalledWith(RejectAssignationDialog, paramsRejectExecution);
   });
+
+  it('should return patient with SSIN when user is patient', () => {
+    mockPatientState.state.mockReturnValue({
+      data: mockPerson,
+      status: LoadingStatus.SUCCESS,
+    });
+
+    mockIdentifyState.state.mockReturnValue({
+      data: '85011300242',
+      status: LoadingStatus.SUCCESS,
+    });
+
+    const result = service.getPatient();
+
+    expect(mockPatientState.state).toHaveBeenCalled();
+    expect(mockIdentifyState.state).toHaveBeenCalled();
+    expect(result.data?.ssin).toBe('85011300242');
+    expect(result.status).toBe(LoadingStatus.SUCCESS);
+  });
+
+  it('should return LOADING when crypto key is missing', () => {
+
+    mockPrescriptionState.state.mockReturnValue({
+      data: prescription,
+      status: LoadingStatus.SUCCESS,
+    });
+
+    mockEncryptionState.state.mockReturnValue({
+      data: undefined,
+      status: LoadingStatus.SUCCESS,
+    });
+
+    mockTemplateVersionsState.getState.mockReturnValue(() => ({
+      data: { code: 'READ_BLEEDING' },
+      status: LoadingStatus.SUCCESS,
+    }));
+
+    const result = service.getPrescription();
+
+    expect(result.status).toBe(LoadingStatus.LOADING);
+    expect(result.data).toBe(prescription);
+  });
+
+  it('should return SUCCESS when everything is ready', () => {
+
+
+    mockPrescriptionState.state.mockReturnValue({
+      data: prescription,
+      status: LoadingStatus.SUCCESS,
+    });
+
+    mockEncryptionState.state.mockReturnValue({
+      data: { key: 'crypto-key' },
+      status: LoadingStatus.SUCCESS,
+    });
+
+    mockTemplateVersionsState.getState.mockReturnValue(() => ({
+      data: { code: 'BLEEDING' },
+      status: LoadingStatus.SUCCESS,
+    }));
+
+    const result = service.getPrescription();
+
+    expect(result.status).toBe(LoadingStatus.SUCCESS);
+  });
+
+  it('should return ERROR when pseudonymized key is missing', () => {
+    const prescription = {
+      ...prescriptionResponse(null, null, [mockPerformerTask]),
+      pseudonymizedKey : null,
+    } as any;
+
+    const prescriptionState = {
+      data: prescription,
+      status: LoadingStatus.SUCCESS,
+    };
+    mockPrescriptionState.state.mockReturnValue(prescriptionState);
+
+    mockTemplateVersionsState.getState.mockReturnValue(() => ({
+      data: mockTemplate,
+      status: LoadingStatus.SUCCESS,
+    }));
+
+    const result = service.getDecryptedResponses();
+
+    expect(result.status).toBe(LoadingStatus.ERROR);
+    expect(result.error).toEqual({ decryptedResponses: 'Pseudonymized key missing' });
+  });
+
+  it('should find performer task in direct performerTasks', () => {
+    const performerTaskWithMatchingSsin = {
+      ...mockPerformerTask,
+      careGiverSsin: mockPerson.ssin,
+    };
+
+    const prescription = prescriptionResponse(null, null, [performerTaskWithMatchingSsin]);
+
+    mockPrescriptionState.state.mockReturnValue({
+      data: prescription,
+      status: LoadingStatus.SUCCESS,
+    });
+
+    const result = service.getPerformerTask();
+
+    expect(result.status).toBe(LoadingStatus.SUCCESS);
+    expect(result.data).toEqual(performerTaskWithMatchingSsin);
+  });
+
+  it('should emit proposalApproved when dialog is closed with prescriptionId', () => {
+    const proposal = prescriptionResponse(null, null, [mockPerformerTask]) as unknown as ReadRequestResource;
+    const prescriptionId = 'test-prescription-id';
+
+    const dialogRefMock = {
+      beforeClosed: jest.fn().mockReturnValue(
+        of({ prescriptionId: prescriptionId })
+      ),
+    };
+
+    const openSpy = jest.spyOn(dialog!, 'open').mockReturnValue(dialogRefMock as any);
+    const emitSpy = jest.spyOn(service.proposalApproved, 'next');
+
+    service.openApproveProposalDialog(proposal);
+
+    expect(openSpy).toHaveBeenCalledWith(
+      ApproveProposalDialog,
+      {
+        data: { proposal: proposal },
+        panelClass: 'mh-dialog-container',
+      }
+    );
+
+    expect(emitSpy).toHaveBeenCalledWith({ prescriptionId: prescriptionId });
+  });
+
 });

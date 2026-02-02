@@ -35,6 +35,9 @@ import { withSlideToggleElement } from '@smals-belgium-shared/vas-evaluation-for
 import { ToggleResponsiveWrapperComponent } from '@reuse/code/evf/components/toggle-responsive-wrapper/element/toggle-responsive-wrapper.component';
 import { withNbSessionsSideEffect } from '@reuse/code/evf/side-effects/effects/nb-sessions.side-effect';
 import { withElementIdBasedOnValueEffect } from '@reuse/code/evf/side-effects/effects/element-id-based-on-value.side-effect';
+import {
+  ExpansionPanelTextareaComponent
+} from '@reuse/code/evf/components/expansion-panel-textarea/detail/expansion-panel-textarea.component';
 
 export function provideEvfForm() {
   return [
@@ -67,6 +70,10 @@ export function provideEvfForm() {
         {
           name: 'toggleButton',
           element: ToggleResponsiveWrapperComponent,
+        },
+        {
+          name: 'expansionPanelTextarea',
+          element: ExpansionPanelTextareaComponent
         }
       ),
       withAutocompleteElement(),

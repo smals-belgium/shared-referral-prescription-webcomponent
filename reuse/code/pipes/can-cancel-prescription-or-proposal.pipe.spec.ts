@@ -2,6 +2,7 @@ import { CanCancelPrescriptionOrProposalPipe } from './can-cancel-prescription-o
 import { Intent, UserInfo } from '../interfaces';
 import { AccessMatrixState } from '../states/api/access-matrix.state';
 import { Discipline, FhirR4TaskStatus, ReadRequestResource, RequestStatus, Role } from '@reuse/code/openapi';
+import { TestBed } from '@angular/core/testing';
 
 const requester: UserInfo = {
   discipline: Discipline.Nurse,
@@ -37,7 +38,14 @@ describe('CanCancelPrescriptionOrProposal', () => {
       hasAtLeastOnePermission: jest.fn(),
     } as unknown as jest.Mocked<AccessMatrixState>;
 
-    pipe = new CanCancelPrescriptionOrProposalPipe(mockAccessMatrixState);
+    TestBed.configureTestingModule({
+      providers: [
+        CanCancelPrescriptionOrProposalPipe,
+        { provide:AccessMatrixState, useValue: mockAccessMatrixState }
+      ]
+    })
+
+    pipe = TestBed.inject(CanCancelPrescriptionOrProposalPipe);
   });
 
   it('should return false if currentUser is not provided', () => {

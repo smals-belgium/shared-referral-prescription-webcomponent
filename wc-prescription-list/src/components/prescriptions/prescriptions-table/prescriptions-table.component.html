@@ -49,25 +49,42 @@
   <ng-container matColumnDef="status">
     <th data-cy="overview-status-title" mat-header-cell *matHeaderCellDef>{{ 'prescription.status' | translate }}</th>
     <td [attr.data-cy]="'status-cell-' + prescription.id" mat-cell *matCellDef="let prescription">
-      {{ 'prescription.statuses.' + prescription.status | translate }}
+      @if(!!prescription.status) {
+          <mat-chip [disableRipple]="true"
+                    [class]="getStatusColor(prescription.status!)">{{ 'prescription.statuses.' + prescription.status | translate }}
+          </mat-chip>
+      }
     </td>
   </ng-container>
 
-  <ng-container matColumnDef="noRecord">
+  <ng-container matColumnDef="tableStatus">
     <td mat-footer-cell *matFooterCellDef colspan="6">
-      <span *hideIfProfessional>{{ 'prescription.noPrescriptionsForUser' | translate }}</span>
-      <span *showIfProfessional>{{ 'prescription.noPrescriptionsForPatient' | translate }}</span>
+      @if((prescriptions?.total ?? 0) > 0) {
+        <span
+          class="sr-only"
+          role="status"
+          aria-live="polite"
+        >
+      {{ 'prescription.tableHasRecords' | translate:{ total: prescriptions?.total } }}
+    </span>
+      }
+      @if(prescriptions?.total === 0) {
+        <span *hideIfProfessional>{{ 'prescription.noPrescriptionsForUser' | translate }}</span>
+        <span *showIfProfessional>{{ 'prescription.noPrescriptionsForPatient' | translate }}</span>
+      }
     </td>
   </ng-container>
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr [class.inactive]="row.status === 'DONE' || row.status === 'CANCELLED' || row.status === 'EXPIRED'"
+      [tabindex]="0"
       [attr.data-cy]="'prescription-row-' + row.id"
       (click)="clickPrescription.emit(row)"
+      (keydown.enter)="clickPrescription.emit(row)"
       mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
   <tr [class]="prescriptions?.total === 0 ? 'no-prescriptions' : 'no-data'" mat-footer-row
-      *matFooterRowDef="prescriptions?.total === 0 ? ['noRecord'] : []"></tr>
+      *matFooterRowDef="['tableStatus']"></tr>
 </table>
 
 

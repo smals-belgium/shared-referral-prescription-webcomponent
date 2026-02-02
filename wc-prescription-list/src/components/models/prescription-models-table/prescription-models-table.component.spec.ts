@@ -157,7 +157,7 @@ describe('PrescriptionModelsTableComponent', () => {
     const rows = fixture.debugElement.queryAll(By.css('tr'));
 
     expect(headerCells.length).toBe(component.displayedColumns.length);
-    //header row + 1 elment row + footer row
+    //header row + 1 element row + footer row
     const rowsLength = 1 + mockPrescriptionModels.length + 1;
     expect(rows.length).toBe(rowsLength);
   });

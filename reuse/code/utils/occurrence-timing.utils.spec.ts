@@ -1,9 +1,7 @@
 import {
   isOccurrenceTiming,
   setOccurrenceTimingResponses,
-  translateBoundsDuration,
-  translateOccurrenceTiming,
-  validateOccurrenceTiming,
+  translateBoundsDuration, translateOccurrenceTiming, validateOccurrenceTiming,
 } from './occurrence-timing.utils';
 import { BoundsDuration, OccurrenceTiming, UnitsOfTime, Weekday } from '@reuse/code/interfaces';
 import { ReadRequestResource } from '@reuse/code/openapi';
@@ -433,33 +431,33 @@ describe('setOccurrenceTimingResponses', () => {
 });
 
 describe('isOccurrenceTiming', () => {
-  it('returns true for a valid OccurrenceTiming object', () => {
+  it('should return true for a valid OccurrenceTiming object', () => {
     const validValue = { repeat: { frequency: 1 } }; // Mock minimal structure
     expect(isOccurrenceTiming(validValue)).toBe(true);
   });
 
-  it('returns false for an object without repeat', () => {
+  it('should return false for an object without repeat', () => {
     const invalidValue = { somethingElse: true };
     expect(isOccurrenceTiming(invalidValue)).toBe(false);
   });
 
-  it('returns false for null', () => {
+  it('should return false for null', () => {
     expect(isOccurrenceTiming(null)).toBe(false);
   });
 
-  it('returns false for a non-object value (string)', () => {
+  it('should return false for a non-object value (string)', () => {
     expect(isOccurrenceTiming('string')).toBe(false);
   });
 
-  it('returns false for a number', () => {
+  it('should return false for a number', () => {
     expect(isOccurrenceTiming(123)).toBe(false);
   });
 
-  it('returns false for an array', () => {
+  it('should return false for an array', () => {
     expect(isOccurrenceTiming(['repeat'])).toBe(false);
   });
 
-  it('returns false for undefined', () => {
+  it('should return false for undefined', () => {
     expect(isOccurrenceTiming(undefined)).toBe(false);
   });
 });

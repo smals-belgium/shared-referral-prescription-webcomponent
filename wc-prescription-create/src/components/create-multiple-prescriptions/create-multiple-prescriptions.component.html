@@ -15,7 +15,7 @@
   }
 
   <mat-accordion [hideToggle]="createPrescriptionForms.length === 1" togglePosition="after">
-    @for (prescriptionForm of createPrescriptionForms; track trackByFn($index, prescriptionForm); let last = $last) {
+    @for (prescriptionForm of createPrescriptionForms; track trackByFn(prescriptionForm); let last = $last) {
       <mat-expansion-panel
         [expanded]="last"
       >
@@ -72,18 +72,23 @@
 
         @if(prescriptionForm.formTemplateState$(); as formTemplateState) {
           <ng-container>
-            <app-overlay-spinner *ifStatusLoading="formTemplateState" mode="inline"></app-overlay-spinner>
-            <div *ifStatusError="formTemplateState">Failed to load prescription form template.</div>
-            <evf-form
-              *ifStatusSuccess="formTemplateState"
-              [lang]="lang"
-              [readonly]="prescriptionForm.status === LoadingStatus.SUCCESS"
-              [submitted]="!!prescriptionForm.submitted"
-              [template]="formTemplateState.data!"
-              (changeElementGroup)="setElementGroup(prescriptionForm, $any($event))"
-              [status]="status"
-              [patient]="patient"
-            ></evf-form>
+            @if(formTemplateState.status === LoadingStatus.LOADING || formTemplateState.status === LoadingStatus.UPDATING){
+              <app-overlay-spinner mode="inline"></app-overlay-spinner>
+            }
+            @if(formTemplateState.status === LoadingStatus.ERROR){
+              <div>Failed to load prescription form template.</div>
+            }
+            @if(formTemplateState.status === LoadingStatus.SUCCESS){
+              <evf-form
+                [lang]="lang"
+                [readonly]="prescriptionForm.status === LoadingStatus.SUCCESS"
+                [submitted]="!!prescriptionForm.submitted"
+                [template]="formTemplateState.data!"
+                (changeElementGroup)="setElementGroup(prescriptionForm, $any($event))"
+                [status]="status"
+                [patient]="patient"
+              ></evf-form>
+            }
 
             @if(isPrescriptionValue){
               <button

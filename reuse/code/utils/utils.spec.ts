@@ -1,8 +1,8 @@
 import {
   checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline,
-  getStatusClassFromMap, isProfesionalBasedOnRole
+  isProfesionalBasedOnRole,
 } from './utils';
-import { Discipline, PerformerTaskResource, RequestStatus, Role } from '../openapi';
+import { Discipline, PerformerTaskResource, Role } from '../openapi';
 import {
   isSsin,
   isPrescriptionId,
@@ -14,58 +14,9 @@ import {
   isPrescription,
   isProposal,
   isModel,
-  isEmptyValue
+  isEmptyValue,
 } from './utils';
 import { Intent, UserInfo } from '@reuse/code/interfaces';
-
-describe('getStatusClassFromMap', () => {
-  it('should return mh-red for error states', () => {
-    expect(getStatusClassFromMap(RequestStatus.Blacklisted)).toBe('mh-red');
-    expect(getStatusClassFromMap(RequestStatus.Cancelled)).toBe('mh-red');
-    expect(getStatusClassFromMap(RequestStatus.Expired)).toBe('mh-red');
-  });
-
-  it('should return mh-orange for pending status', () => {
-    expect(getStatusClassFromMap(RequestStatus.Pending)).toBe('mh-orange');
-  });
-
-  it('should return mh-blue for in progress status', () => {
-    expect(getStatusClassFromMap(RequestStatus.InProgress)).toBe('mh-blue');
-  });
-
-  it('should return mh-green for done status', () => {
-    expect(getStatusClassFromMap(RequestStatus.Done)).toBe('mh-green');
-  });
-
-  it('should return mh-black for undefined, unknown, null, draft and open status', () => {
-    expect(getStatusClassFromMap(undefined)).toBe('mh-black');
-
-    const unknownStatus = 'UNKNOWN_STATUS' as RequestStatus;
-    expect(getStatusClassFromMap(unknownStatus)).toBe('mh-black');
-
-    expect(getStatusClassFromMap(null as any)).toBe('mh-black');
-
-    expect(getStatusClassFromMap(RequestStatus.Draft)).toBe('mh-black');
-    expect(getStatusClassFromMap(RequestStatus.Open)).toBe('mh-black');
-  });
-
-  it('should return correct class for all defined StatusEnum values', () => {
-    const expectedMappings = {
-      [RequestStatus.Blacklisted]: 'mh-red',
-      [RequestStatus.Cancelled]: 'mh-red',
-      [RequestStatus.Expired]: 'mh-red',
-      [RequestStatus.Pending]: 'mh-orange',
-      [RequestStatus.InProgress]: 'mh-blue',
-      [RequestStatus.Done]: 'mh-green',
-      [RequestStatus.Draft]: 'mh-black',
-      [RequestStatus.Open]: 'mh-black',
-    };
-
-    Object.entries(expectedMappings).forEach(([status, expectedClass]) => {
-      expect(getStatusClassFromMap(status as RequestStatus)).toBe(expectedClass);
-    });
-  });
-});
 
 describe('Utils', () => {
   it('should validate SSIN correctly', () => {
@@ -96,6 +47,10 @@ describe('Utils', () => {
   it('should validate SSIN checksum', () => {
     expect(validateSsinChecksum('90122712173')).toBe(true);
     expect(validateSsinChecksum('12345678904')).toBe(false);
+  });
+
+  it('should return true for valid SSIN born in 2000 or later (requires 2-prefix)', () => {
+    expect(validateSsinChecksum('01051500320')).toBe(true);
   });
 
   it('should normalize strings for search', () => {
@@ -131,7 +86,7 @@ describe('Role and Caregiver Utils', () => {
   it('should validate caregiver SSIN and profession matching', () => {
     const task = {
       careGiverSsin: '12345678901',
-      careGiver: { id: { profession: 'NURSE' } }
+      careGiver: { id: { profession: 'NURSE' } },
     } as PerformerTaskResource;
 
     const user = { ssin: '12345678901', discipline: 'NURSE' } as Partial<UserInfo>;
@@ -142,7 +97,7 @@ describe('Role and Caregiver Utils', () => {
   it('should fail caregiver check if SSIN or profession does not match', () => {
     const task = {
       careGiverSsin: '12345678901',
-      careGiver: { id: { profession: 'NURSE' } }
+      careGiver: { id: { profession: 'NURSE' } },
     } as PerformerTaskResource;
 
     const wrongUser = { ssin: '000', discipline: Discipline.Physician } as Partial<UserInfo>;

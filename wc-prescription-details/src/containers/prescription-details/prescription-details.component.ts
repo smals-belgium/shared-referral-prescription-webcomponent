@@ -11,7 +11,6 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  Renderer2,
   signal,
   Signal,
   SimpleChanges,
@@ -19,22 +18,16 @@ import {
   ViewEncapsulation,
   WritableSignal,
 } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DateAdapter } from '@angular/material/core';
 import { DateTime } from 'luxon';
-import { DOCUMENT } from '@angular/common';
-import { AlertType, DataState, UserInfo } from '@reuse/code/interfaces';
+import { AlertType, DataState, LoadingStatus, UserInfo } from '@reuse/code/interfaces';
 import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
-import { CancelPrescriptionDialog } from '@reuse/code/dialogs/cancel-prescription/cancel-prescription-dialog.component';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
-import { IfStatusErrorDirective } from '@reuse/code/directives/if-status-error.directive';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
-import { IfStatusLoadingDirective } from '@reuse/code/directives/if-status-loading.directive';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { TemplatesState } from '@reuse/code/states/api/templates.state';
@@ -42,11 +35,9 @@ import { TemplateVersionsState } from '@reuse/code/states/api/template-versions.
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { PatientState } from '@reuse/code/states/api/patient.state';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
-import { CanExtendPrescriptionPipe } from '@reuse/code/pipes/can-extend-prescription.pipe';
 import { IdentifyState } from '@reuse/code/states/privacy/identify.state';
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import {
-  getStatusClassFromMap,
   isPrescriptionId,
   isPrescriptionShortCode,
   isProposal,
@@ -70,7 +61,6 @@ import {
 } from 'rxjs';
 import { EncryptionState } from '@reuse/code/states/privacy/encryption.state';
 import { v4 as uuidv4 } from 'uuid';
-import { CanDuplicatePrescriptionPipe } from '@reuse/code/pipes/can-duplicate-prescription.pipe';
 import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-responses-state.interface';
 import { PssService } from '@reuse/code/services/api/pss.service';
 import {
@@ -98,12 +88,12 @@ import {
 } from '../../components/prescription-details-secondary/prescription-details-secondary.service';
 import { PrescriptionDetailsBottomComponent } from '../../components/prescription-details-bottom/prescription-details-bottom.component';
 import { DeviceService } from '@reuse/code/services/helpers/device.service';
-import { MatMenuItem, MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatDivider } from '@angular/material/divider';
-import { CanCancelPrescriptionOrProposalPipe } from '@reuse/code/pipes/can-cancel-prescription-or-proposal.pipe';
+import { MatMenuModule } from '@angular/material/menu';
 import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
 import { Lang } from '@reuse/code/interfaces/lang.enum';
 import { tap } from 'rxjs/operators';
+import { mapDisplayStatusToColor } from '@reuse/code/utils/request-status-display-map.utils';
+import { PrescriptionDetailsActionsComponent } from '../../components/prescription-details-actions/prescription-details-actions/prescription-details-actions.component';
 
 export interface ViewState {
   prescription: ReadRequestResource;
@@ -121,27 +111,19 @@ export interface ViewState {
   encapsulation: ViewEncapsulation.ShadowDom,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
-    IfStatusLoadingDirective,
     OverlaySpinnerComponent,
     AlertComponent,
-    IfStatusErrorDirective,
-    IfStatusSuccessDirective,
     MatButtonModule,
     MatIconModule,
     TranslateModule,
     TemplateNamePipe,
-    CanExtendPrescriptionPipe,
-    CanDuplicatePrescriptionPipe,
-    CanCancelPrescriptionOrProposalPipe,
     MatChip,
     EvfLabelPipe,
     PrescriptionDetailsMainComponent,
     PrescriptionDetailsSecondaryComponent,
     PrescriptionDetailsBottomComponent,
     MatMenuModule,
-    MatMenuTrigger,
-    MatMenuItem,
-    MatDivider,
+    PrescriptionDetailsActionsComponent,
   ],
   providers: [EvfTranslateService],
   standalone: true,
@@ -149,9 +131,7 @@ export interface ViewState {
 export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDestroy {
   private readonly _translate = inject(TranslateService);
   private readonly _dateAdapter = inject(DateAdapter<DateTime>);
-  private readonly _dialog = inject(MatDialog);
   private readonly _authService = inject(AuthService);
-  private readonly _renderer = inject(Renderer2);
   private readonly _accessMatrixStateService = inject(AccessMatrixState);
   private readonly _prescriptionStateService = inject(PrescriptionState);
   private readonly _proposalSateService = inject(ProposalState);
@@ -164,8 +144,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   private readonly _pseudoService = inject(PseudoService);
   private readonly _pssService = inject(PssService);
   private readonly _encryptionStateService = inject(EncryptionState);
-  private readonly _document = inject(DOCUMENT);
-  private readonly _prescriptionsPdfService = inject(PrescriptionsPdfService);
+
   private readonly _prescriptionSecondaryService = inject(PrescriptionDetailsSecondaryService);
   protected readonly evfTranslateService = inject(EvfTranslateService);
   protected readonly deviceService = inject(DeviceService);
@@ -181,9 +160,13 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
   @Output() clickDuplicate = new EventEmitter<ReadRequestResource>();
   @Output() clickExtend = new EventEmitter<ReadRequestResource>();
+
   @Output() clickPrint = new EventEmitter<Blob>();
+  @Output() clickDownload = new EventEmitter<Blob>();
+
   @Output() proposalApproved = this._prescriptionSecondaryService.proposalApproved;
   @Output() proposalRejected = this._prescriptionSecondaryService.proposalsRejected;
+  @Output() clickOpenExtendedDetail = new EventEmitter<string>();
 
   private readonly templateCode$ = this._prescriptionSecondaryService.templateCode$;
   protected readonly isProfessional$ = this._prescriptionSecondaryService.isProfessional$;
@@ -239,7 +222,11 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
             void this.getPrescriptionKey(prescription.pseudonymizedKey);
           }
 
-          this._templateVersionsStateService.loadTemplateVersion('READ_' + prescription.templateCode);
+          const instanceId = prescription.id || uuidv4();
+          this._templateVersionsStateService.loadTemplateVersionForInstance(
+            instanceId,
+            'READ_' + prescription.templateCode
+          );
         }
       });
     });
@@ -353,6 +340,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     }
 
     if (changes['prescriptionId'] || changes['patientSsin']) {
+      this._encryptionStateService.resetCryptoKey();
       this.loadPrescriptionOrProposal();
     }
 
@@ -408,41 +396,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       this.loadProposal();
     } else {
       this.loadPrescription();
-    }
-  }
-
-  openCancelPrescriptionDialog(prescription: ReadRequestResource, patient?: PersonResource): void {
-    this._dialog.open(CancelPrescriptionDialog, {
-      data: {
-        prescription,
-        patient,
-      },
-      panelClass: 'mh-dialog-container',
-    });
-  }
-
-  print(): void {
-    if (
-      this.viewState$().data &&
-      this.viewState$().data!.decryptedResponses &&
-      this.viewState$().data!.template &&
-      this.viewState$().data!.templateVersion &&
-      this.currentLang
-    ) {
-      this.loading.set(true);
-      this._prescriptionsPdfService
-        .createCommonPdf(
-          this.viewState$().data!.prescription,
-          this.viewState$().data!.decryptedResponses!,
-          this.viewState$().data!.patient,
-          this.viewState$().data!.template!,
-          this.viewState$().data!.templateVersion as FormTemplate,
-          this.currentLang()
-        )
-        .getBlob((blob: Blob) => {
-          this.clickPrint.emit(blob);
-          this.loading.set(false);
-        });
     }
   }
 
@@ -507,24 +460,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     }
   }
 
-  handleDuplicateClick() {
-    const prescription = this.viewState$().data?.prescription;
-    const responses = this.viewState$().data?.decryptedResponses;
-    if (prescription && responses) {
-      const duplicatedData = { ...prescription, responses: responses };
-      this.clickDuplicate.emit(duplicatedData);
-    }
-  }
-
-  handleExtendClick() {
-    const prescription = this.viewState$().data?.prescription;
-    const responses = this.viewState$().data?.decryptedResponses;
-    if (prescription && responses) {
-      const duplicatedData = { ...prescription, responses: responses };
-      this.clickExtend.emit(duplicatedData);
-    }
-  }
-
   showRetryButton() {
     const error = this.viewState$().error;
 
@@ -541,20 +476,8 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     return this._pseudoService.pseudonymize(identifier);
   }
 
-  getStatusClass(status?: RequestStatus): string {
-    return getStatusClassFromMap(status);
-  }
-
-  get templateHasAlert() {
-    const element = this.viewState$()?.data?.templateVersion?.elements;
-    if (!element) return false;
-    return element.some(test => {
-      return test.viewType === 'alert';
-    });
-  }
-
-  get getTemplateAlert() {
-    return this.viewState$()?.data?.templateVersion?.elements?.find(element => element.viewType === 'alert');
+  getStatusColor(status: RequestStatus) {
+    return mapDisplayStatusToColor(status);
   }
 
   private formatToEvfLangCode(localeCode: string): 'nl' | 'fr' {
@@ -569,4 +492,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       this._prescriptionStateService.resetPrescription();
     }
   }
+
+  protected readonly LoadingStatus = LoadingStatus;
 }

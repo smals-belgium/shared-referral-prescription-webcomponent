@@ -2,7 +2,7 @@ import { ErrorHandler, importProvidersFrom } from '@angular/core';
 import { createApplication } from '@angular/platform-browser';
 import { createCustomElement } from '@angular/elements';
 import { PrescriptionDetailsWebComponent } from './containers/prescription-details/prescription-details.component';
-import { provideAnimations } from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
 import { WcConfigurationService } from '@reuse/code/services/config/wc-configuration.service';
@@ -30,7 +30,6 @@ import { provideEvfFormDetails } from '@reuse/code/evf/evf-form-details.provider
 (async () => {
   const app = createApplication({
     providers: [
-      provideAnimations(),
       provideCore(),
       provideHttpClient(withInterceptors([demoHttpInterceptor, apiUrlInterceptor])),
       providePseudonymisation(),
@@ -61,6 +60,7 @@ import { provideEvfFormDetails } from '@reuse/code/evf/evf-form-details.provider
       provideOpenApi(),
       provideMarkdown(),
       importProvidersFrom(
+        BrowserAnimationsModule,
         MatDialogModule,
         TranslateModule.forRoot({
           loader: {

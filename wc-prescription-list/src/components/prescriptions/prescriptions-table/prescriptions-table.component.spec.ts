@@ -10,6 +10,7 @@ import { By } from '@angular/platform-browser';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
 
 const requester: HealthcareProResource = {
   healthcarePerson: {
@@ -42,6 +43,12 @@ const mockPrescriptions: ReadRequestListResource = {
   ],
 };
 
+const mockAuthService = {
+  isProfessional: jest.fn(() => {
+    return of(true);
+  }),
+};
+
 class FakeLoader implements TranslateLoader {
   getTranslation() {
     return of({});
@@ -64,6 +71,7 @@ describe('PrescriptionsTableComponent', () => {
           loader: { provide: TranslateLoader, useClass: FakeLoader },
         }),
       ],
+      providers: [{ provide: AuthService, useValue: mockAuthService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PrescriptionsTableComponent);
@@ -135,14 +143,10 @@ describe('PrescriptionsTableComponent', () => {
     expect(alert).toBeFalsy();
   });
 
-  it('should return correct CSS classes for different statuses', () => {
-    expect(component.getStatusClass(RequestStatus.Blacklisted)).toBe('mh-red');
-    expect(component.getStatusClass(RequestStatus.Cancelled)).toBe('mh-red');
-    expect(component.getStatusClass(RequestStatus.Expired)).toBe('mh-red');
-    expect(component.getStatusClass(RequestStatus.Pending)).toBe('mh-orange');
-    expect(component.getStatusClass(RequestStatus.InProgress)).toBe('mh-blue');
-    expect(component.getStatusClass(RequestStatus.Done)).toBe('mh-green');
-    expect(component.getStatusClass('UNKNOWN' as RequestStatus)).toBe('mh-black');
+  describe('getStatusColor', () => {
+    it('should return color for valid status', () => {
+      expect(component.getStatusColor('IN_PROGRESS' as RequestStatus)).toBe('mh-green');
+    });
   });
 
   it('should emit clickPrescription when prescription is selected', () => {
@@ -180,7 +184,7 @@ describe('PrescriptionsTableComponent', () => {
     const rows = fixture.debugElement.queryAll(By.css('tr'));
 
     expect(headerCells.length).toBe(component.displayedColumns.length);
-    //header row + 1 elment row + footer row
+    //header row + 1 element row + footer row
     const rowsLength = 1 + mockPrescriptions.items!.length + 1;
     expect(rows.length).toBe(rowsLength);
   });

@@ -12,10 +12,7 @@ import {
 } from '@angular/core';
 import { ElementGroup, removeNulls } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
-import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
-import { IfStatusErrorDirective } from '@reuse/code/directives/if-status-error.directive';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
-import { IfStatusLoadingDirective } from '@reuse/code/directives/if-status-loading.directive';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
@@ -56,9 +53,6 @@ import { EvfFormWebComponent } from '../evf-form/evf-form.component';
     MatLabel,
     TranslateModule,
     TemplateNamePipe,
-    IfStatusSuccessDirective,
-    IfStatusErrorDirective,
-    IfStatusLoadingDirective,
     MatError,
     EvfFormWebComponent,
   ],
@@ -226,26 +220,33 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
   }
 
   private filterElements(elements: FormElement[]): FormElement[] {
-    return elements.reduce((filteredElements, element) => {
-      if (element.subFormElements) {
-        element.subFormElements = this.filterElements(element.subFormElements);
-      }
+    return elements
+      .filter(
+        value =>
+          // Exclude treatmentValidationEndDate and validityPeriod from models evf forms
+          value.elements?.[0].id?.toLowerCase() !== 'validitystartdate' &&
+          value.id?.toLowerCase() !== 'treatmentvalidationenddate'
+      )
+      .reduce((filteredElements, element) => {
+        if (element.elements) {
+          element.elements = this.filterElements(element.elements);
+        }
 
-      if (element.validations) {
-        element.validations = element.validations.filter(validation => validation.name !== 'required');
-      }
+        if (element.validations) {
+          element.validations = element.validations.filter(validation => validation.name !== 'required');
+        }
 
-      const shouldInclude =
-        !element.tags?.includes('freeText') &&
-        !(element.dataType?.type === TypeEnum.Date) &&
-        !(element.subFormElements && element.subFormElements.length === 0);
+        const shouldInclude =
+          !element.tags?.includes('freeText') &&
+          !(element.dataType?.type === TypeEnum.Date) &&
+          !(element.elements && element.elements.length === 0);
 
-      if (shouldInclude) {
-        filteredElements.push(element);
-      }
+        if (shouldInclude) {
+          filteredElements.push(element);
+        }
 
-      return filteredElements;
-    }, [] as FormElement[]);
+        return filteredElements;
+      }, [] as FormElement[]);
   }
 
   getTemplateData(formTemplateState: DataState<TemplateVersion>) {
