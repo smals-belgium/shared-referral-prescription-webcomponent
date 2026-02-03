@@ -1,4 +1,4 @@
-# UHMEP Prescription Create Web Component
+# UHMEP Prescription Details Web Component
 
 ## Context
 
@@ -18,8 +18,8 @@ Medical software must therefore meet several critical requirements:
 - **Seamless Integration**: Enable interoperability with existing healthcare systems and services.
 - **Accessibility and Usability**: Provide intuitive, user-friendly interfaces tailored to healthcare professionals.
 
-This web component addresses these requirements by offering a standardized solution for creating medical prescriptions that can be easily shared and integrated by various
-healthcare partners.
+This web component addresses these requirements by offering a standardized solution for displaying detailed information about a medical
+prescription that can be easily shared and integrated by various healthcare partners.
 
 ---
 
@@ -34,7 +34,7 @@ documentation:
 
 ## Package
 
-**Name**: `@smals-belgium-shared/uhmep-prescription-create`  
+**Name**: `@smals-belgium-shared/uhmep-prescription-details`  
 **Type**: Web Component  
 **Technology**: Angular  
 **License**: MIT
@@ -46,18 +46,18 @@ documentation:
 Install the package from npm:
 
 ```bash
-npm install @smals-belgium-shared/uhmep-prescription-create
+npm install @smals-belgium-shared/uhmep-prescription-details
 ```
 
 Import the web component in your application entry point:
 ```javascript
-import '@smals-belgium-shared/uhmep-prescription-create';
+import '@smals-belgium-shared/uhmep-prescription-details';
 ```
 
 
 Use the custom element in your HTML:
 ```html
-<nihdi-referral-prescription-create></nihdi-referral-prescription-create>
+<nihdi-referral-prescription-details></nihdi-referral-prescription-details>
 ```
 
 Ensure the bundle is loaded only once in the application lifecycle.
@@ -81,7 +81,7 @@ No framework-specific wrappers are required.
 The packaged web component is exposed via the following entry file:
 
 ```bash
-build/wc-prescription-create.js
+build/wc-prescription-details.js
 ```
 
 This file is responsible for registering the custom element in the browser.
