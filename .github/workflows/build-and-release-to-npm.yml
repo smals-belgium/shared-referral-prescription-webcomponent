@@ -50,8 +50,8 @@ jobs:
             "dist/wc-prescription-create"
             "dist/wc-prescription-details"
             "dist/wc-prescription-list"
-            "dist/mags-prescription-details"
-            "dist/mags-prescription-list"
+            "dist/mags-prescription-details/mags"
+            "dist/mags-prescription-list/mags"
           )
           for pkg in "${DIST_PACKAGES[@]}"; do
             VERSION=$(node -p "require('./$pkg/package.json').version")
