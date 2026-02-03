@@ -30,9 +30,18 @@ git add package-lock.json
 
 # ---------------------------------------
 
-# Commit the change
+# --- Remove translation scripts ---
+git rm -f pull-translations.ps1 2>/dev/null || true
+git rm -f pull-translations.sh 2>/dev/null || true
+# ----------------------------------
+
+# --- Remove husky pre-commit hooks ---
+git rm -rf .husky 2>/dev/null || true
+# -------------------------------------
+
+# Commit the change (skip pre-commit hook)
 git add api-contract/openapi.yaml
-git commit --amend --no-edit
+git commit --amend --no-edit --no-verify
 
 # Push to github
 git push github HEAD:${CURRENT_BRANCH} --force
