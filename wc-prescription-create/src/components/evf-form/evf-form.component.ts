@@ -31,6 +31,7 @@ import { TemplateVersion } from '@reuse/code/openapi';
   styleUrls: ['./evf-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [EvfDynamicFormComponent, NgTemplateOutlet],
+  providers: [EvfTranslateService],
 })
 export class EvfFormWebComponent implements OnChanges, OnInit {
   private readonly evfTranslate = inject(EvfTranslateService);
@@ -95,6 +96,7 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
 
   private initEvfTranslate(): void {
     const formattedLang = this.formatToEvfLangCode(this.lang);
+
     this.dateAdapter.setLocale(SupportedLocales[formattedLang]);
     this.evfTranslate.setDefaultLang('fr');
     this.evfTranslate.setCurrentLang(formattedLang);

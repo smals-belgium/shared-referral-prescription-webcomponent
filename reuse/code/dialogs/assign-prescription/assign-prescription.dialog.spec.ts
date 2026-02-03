@@ -13,13 +13,14 @@ import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { HealthcareProviderService } from '@reuse/code/services/api/healthcareProvider.service';
 import { OrganizationService } from '@reuse/code/services/helpers/organization.service';
 import * as utilsModule from '@reuse/code/utils/utils';
-import { CityResource } from '@reuse/code/openapi';
+import { CityResource, HealthcareOrganizationResource, HealthcareProResource } from '@reuse/code/openapi';
 import { SsinOrOrganizationIdPipe } from '@reuse/code/pipes/ssin-or-cbe.pipe';
+import * as uuid from 'uuid';
 
 describe('AssignPrescriptionDialog', () => {
   let component: AssignPrescriptionDialog;
   let fixture: ComponentFixture<AssignPrescriptionDialog>;
-
+  let uuidSpy: jest.SpyInstance;
   let translate: TranslateService;
 
   const dialogRefMock = {close: jest.fn()};
@@ -55,6 +56,7 @@ describe('AssignPrescriptionDialog', () => {
   };
 
   beforeEach(async () => {
+    uuidSpy = jest.spyOn(uuid, 'v4').mockReturnValue('mock-uuid-12345' as unknown as Uint8Array);
 
     await TestBed.configureTestingModule({
       imports: [AssignPrescriptionDialog, ReactiveFormsModule, NoopAnimationsModule, TranslateModule.forRoot()],
@@ -76,8 +78,12 @@ describe('AssignPrescriptionDialog', () => {
     fixture = TestBed.createComponent(AssignPrescriptionDialog);
     component = fixture.componentInstance;
 
-    jest.clearAllMocks();
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    uuidSpy.mockRestore();
+    jest.clearAllMocks();
   });
 
   describe('Creation & lifecycle', () => {
@@ -304,5 +310,53 @@ describe('AssignPrescriptionDialog', () => {
       const name = component.getGroupName('HOSPITAL');
       expect(name).toBe('hospital');
     });
+  });
+
+  describe('onAssign', () => {
+    it('should assign a caregiver performer', fakeAsync(() => {
+      const providerMock = {
+        id: { ssin: 'ssin-123' },
+        type: 'Professional',
+        healthcarePerson: { name: 'John Doe' }
+      } as HealthcareProResource;
+
+      prescriptionStateMock.assignPrescriptionPerformer.mockReturnValue(of({}));
+
+      component.onAssign(providerMock);
+      tick();
+
+      expect(prescriptionStateMock.assignPrescriptionPerformer).toHaveBeenCalledWith(
+        '123',
+        '456',
+        providerMock,
+        'mock-uuid-12345'
+      );
+
+      expect(toastServiceMock.show).toHaveBeenCalledWith(
+        'prescription.assignPerformer.success',
+        expect.any(Object)
+      );
+
+      expect(dialogRefMock.close).toHaveBeenCalledWith(providerMock);
+    }));
+
+    it('should show success toast for organization assignment', fakeAsync(() => {
+      jest.spyOn(utilsModule, 'isProposal').mockReturnValue(true);
+
+      const organizationMock = {
+        organizationName: { fr: 'Hospital ABC' },
+        type: 'Organization'
+      } as HealthcareOrganizationResource;
+
+      prescriptionStateMock.assignPrescriptionPerformer.mockReturnValue(of({}));
+
+      component.onAssign(organizationMock);
+      tick();
+
+      expect(toastServiceMock.show).toHaveBeenCalledWith(
+        'proposal.assignPerformer.successOrganization',
+        expect.any(Object)
+      );
+    }));
   });
 });

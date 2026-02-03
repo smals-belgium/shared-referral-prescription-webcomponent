@@ -15,4 +15,6 @@ export const config: Config = {
 
   preset: 'jest-preset-angular',
   modulePathIgnorePatterns: ['./dist'],
+
+  maxWorkers: '50%',
 };

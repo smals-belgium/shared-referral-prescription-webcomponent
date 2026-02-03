@@ -1,13 +1,30 @@
 import { Injectable } from '@angular/core';
-import { Alignment, Content, ContentTable } from 'pdfmake/interfaces';
+import { Content, ContentSvg, Margins, TableCell } from 'pdfmake/interfaces';
 import { TranslateService } from '@ngx-translate/core';
 import { DateTime } from 'luxon';
-import { FormElement, FormTemplate, FormTranslation } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
-import { translateOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
+import {
+  FormElement,
+  FormTemplate,
+  FormTranslation,
+  Language,
+} from '@smals-belgium-shared/vas-evaluation-form-ui-core';
+import {
+  translateBoundsDuration,
+  translateFrequencyAndPeriod,
+  translateOccurrenceTiming,
+} from '@reuse/code/utils/occurrence-timing.utils';
 import * as pdfMake from 'pdfmake/build/pdfmake.js';
-import { HealthcareProResource, PersonResource, ReadRequestResource, Template, Translation } from '@reuse/code/openapi';
-import { OccurrenceTiming } from '@reuse/code/interfaces';
+import {
+  HealthcareProResource,
+  PersonResource,
+  ReadRequestResource,
+  RequestStatus,
+  Template,
+} from '@reuse/code/openapi';
+import { BoundsDuration, OccurrenceTiming, Repeat } from '@reuse/code/interfaces';
 import { TCreatedPdf } from 'pdfmake/build/pdfmake.js';
+import { FormatSsinPipe } from '@reuse/code/pipes/format-ssin.pipe';
+import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
 
 @Injectable({ providedIn: 'root' })
 export class PrescriptionsPdfService {
@@ -21,304 +38,402 @@ export class PrescriptionsPdfService {
     templateVersion: FormTemplate,
     language: string
   ): TCreatedPdf {
+    const lang = language.substring(0, 2) as keyof FormTranslation;
+    const cancelled = prescription.status === RequestStatus.Cancelled;
+    const alertBox = this.buildAlertBox(templateVersion, lang, cancelled);
+
     return pdfMake.createPdf(
       {
         pageSize: 'A4',
-        pageMargins: [24, 24, 24, 30],
+        pageMargins: [40, 40, 40, 60],
         info: {
           title: prescription.id,
-          subject: prescription.id,
           author: 'RIZIV - INAMI',
         },
         defaultStyle: {
           font: 'OpenSans',
+          fontSize: 10,
+          color: '#0D0D0D',
         },
-        header: [
-          {
-            text: this.translate.instant('prescription.print.date', { date: this.getCurrentDate() }),
-            margin: [26, 6],
-          },
-        ],
+
+        header: (currentPage: number, pageCount: number) => this.buildTopHeader(currentPage, pageCount),
+
         content: [
-          {
-            layout: 'prescriptionTableLayout',
-            table: {
-              // dontBreakRows: true,
-              headerRows: 1,
-              body: [
-                [
-                  {
-                    stack: [this.prescriptionPageHeaderInfo(), this.prescriptionPageHeader(prescription, patient)],
-                    margin: [0, 0, 0, 20],
-                  },
-                ],
-                [
-                  [
-                    this.generatePrescriptionInfoTable(
-                      prescription,
-                      responses,
-                      templateVersion,
-                      template,
-                      language.substring(0, 2) as keyof FormTranslation
-                    ),
-                  ],
-                ],
-              ],
-            },
-          },
+          this.buildTitleSection(template, lang),
+          ...(alertBox ? [alertBox] : []),
+          this.buildBeneficiaryBox(patient, prescription.shortCode),
+          ...this.buildDefinitionRows(prescription, responses, template, templateVersion, lang),
+          this.buildPrescriberSection(prescription),
+          this.buildDisclaimer(),
+          ...(cancelled
+            ? []
+            : [
+                this.buildDashLine(),
+                this.buildHeaderSubSection(),
+                this.buildTitleSubSection(template, lang, patient, prescription.shortCode),
+                this.buildPatienInfoSubSection(patient),
+                this.buildValidityPeriodSubSection(prescription),
+              ]),
         ],
-        footer: [
-          {
-            layout: 'footerLine',
-            margin: [24, 0],
-            table: {
-              widths: ['*'],
-              body: [
-                [
-                  {
-                    text: this.translate.instant('prescription.print.remark'),
-                    alignment: 'center',
-                    fontSize: 12,
-                  },
-                ],
-              ],
-            },
-          },
-        ],
-        pageBreakBefore: (currentNode, followingNodesOnPage, nodesOnNextPage, previousNodesOnPage) => {
-          if (previousNodesOnPage.length <= 0 || nodesOnNextPage.length <= 0) {
-            return false;
-          }
-          return (
-            currentNode.pageNumbers.length === 2 &&
-            currentNode.startPosition.top > currentNode.startPosition.pageInnerHeight / 2
-          );
-        },
       },
-      {
-        headerTableLayout: {
-          hLineColor: () => '#e5e5e5',
-          hLineWidth: (rowIndex, node) => (rowIndex === 0 || rowIndex === node.table.body.length ? 0 : 1),
-          vLineWidth: () => 0,
-        },
-        headerBlueTableLayout: {
-          hLineColor: () => '#4873c4',
-          vLineColor: () => '#4873c4',
-          hLineWidth: () => 1,
-          vLineWidth: () => 1,
-        },
-        prescriptionTableLayout: {
-          hLineWidth: () => 0,
-          vLineWidth: () => 0,
-        },
-        medicationTableLayout: {
-          hLineColor: () => '#e5e5e5',
-          hLineWidth: (rowIndex, node) => (rowIndex === 0 || rowIndex === node.table.body.length ? 0 : 1),
-          vLineWidth: () => 0,
-        },
-        footerLine: {
-          hLineColor: () => '#000000',
-          hLineWidth: (rowIndex, _node) => (rowIndex === 0 ? 1 : 0),
-          vLineWidth: () => 0,
-        },
-      },
-      {
-        OpenSans: {
-          normal: 'OpenSans-Regular.ttf',
-          bold: 'OpenSans-Bold.ttf',
-          italics: 'OpenSans-Italic.ttf',
-          bolditalics: 'OpenSans-BoldItalic.ttf',
-        },
-      },
+      undefined,
+      this.getFonts(),
       this.getFontVfs()
     );
+  }
+
+  private buildTopHeader(currentPage: number, pageCount: number): Content {
+    return {
+      columns: [
+        {
+          text: this.translate.instant('prescription.print.date', {
+            date: this.getCurrentDate(),
+          }) as string,
+          color: '#5C5C5C',
+        },
+        {
+          text: `p${currentPage}/${pageCount}`,
+          alignment: 'right',
+          color: '#5C5C5C',
+        },
+      ],
+      margin: [40, 20, 40, 10],
+    };
+  }
+
+  private buildTitleSection(template: Template, language: Language): Content {
+    const stack: Content = [
+      {
+        text: template.labelTranslations?.[language] as string,
+        fontSize: 15,
+        bold: true,
+        margin: [0, 0, 0, 8],
+      },
+    ];
+
+    if (template.shortLabelTranslations?.[language]) {
+      stack.push({
+        text: template.shortLabelTranslations[language],
+        margin: [0, 0, 0, 8],
+      });
+    }
+
+    return { stack };
+  }
+
+  private readonly ALERT_STYLES = {
+    cancel: {
+      color: '#8F0C00',
+      fillColor: '#FFF6F5',
+      icon: `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#8F0C00"><path d="M480-79q-16 0-30.5-6T423-102L102-423q-11-12-17-26.5T79-480q0-16 6-31t17-26l321-321q12-12 26.5-17.5T480-881q16 0 31 5.5t26 17.5l321 321q12 11 17.5 26t5.5 31q0 16-5.5 30.5T858-423L537-102q-11 11-26 17t-31 6Zm0-80 321-321-321-321-321 321 321 321Zm-40-281h80v-240h-80v240Zm40 120q17 0 28.5-11.5T520-360q0-17-11.5-28.5T480-400q-17 0-28.5 11.5T440-360q0 17 11.5 28.5T480-320Zm0-160Z"/></svg>`,
+    },
+    info: {
+      color: '#1D5CAF',
+      fillColor: '#F2F7FD',
+      icon: `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1D5CAF"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>`,
+    },
+  } as const;
+
+  private buildAlertBox(templateVersion: FormTemplate, language: Language, cancelled: boolean): Content | null {
+    if (cancelled) {
+      const message = this.translate.instant('prescription.print.alert') as string;
+      return this.createAlertContent('cancel', {
+        text: message,
+        color: this.ALERT_STYLES.cancel.color,
+        margin: [-10, 0, 0, 0] as Margins,
+      });
+    }
+
+    const infoElement = templateVersion.elements?.find(e => e.viewType === 'info');
+    if (!infoElement?.bodyTranslationId) {
+      return null;
+    }
+
+    const listItems = this.parseMarkdownList(
+      this.evfTranslate(templateVersion, infoElement.bodyTranslationId, language)
+    );
+    return this.createAlertContent('info', {
+      ul: listItems,
+      color: this.ALERT_STYLES.info.color,
+      margin: [-10, 0, 0, 0] as Margins,
+    });
+  }
+
+  private parseMarkdownList(markdownText: string): string[] {
+    return markdownText
+      .split('\n')
+      .map(line => line.trim())
+      .filter(Boolean)
+      .map(line => line.replace(/^>\s*-\s*/, ''));
+  }
+
+  private createAlertContent(type: keyof typeof this.ALERT_STYLES, contentCell: TableCell): Content {
+    const style = this.ALERT_STYLES[type];
+    const iconCell: ContentSvg = { svg: style.icon, width: 15, height: 15, margin: [0, 0, 0, 0] };
+
+    return {
+      table: {
+        widths: [18, '*'],
+        body: [[iconCell, contentCell]],
+      },
+      layout: {
+        fillColor: () => style.fillColor,
+        hLineWidth: () => 0,
+        vLineWidth: () => 0,
+        paddingLeft: () => 6,
+        paddingRight: () => 6,
+        paddingTop: () => 6,
+        paddingBottom: () => 6,
+      },
+      margin: [0, 0, 0, 8],
+    };
+  }
+
+  private buildBeneficiaryBox(patient: PersonResource, shortCode?: string): Content {
+    return {
+      table: {
+        widths: [200],
+        body: [
+          [
+            {
+              stack: [
+                { text: this.translate.instant('prescription.print.patient') as string },
+                { text: `${patient.firstName ?? ''} ${patient.lastName ?? ''}`, bold: true },
+                {
+                  text: [
+                    { text: patient.ssin ? FormatSsinPipe.format(patient.ssin) : '' },
+                    { text: ' ' },
+                    { text: shortCode ?? '', bold: true },
+                  ],
+                  margin: [0, 6, 0, 0],
+                },
+              ],
+              margin: [8, 8, 8, 8],
+            },
+          ],
+        ],
+      },
+      layout: {
+        hLineColor: () => '#0d6efd',
+        vLineColor: () => '#0d6efd',
+        hLineWidth: () => 1,
+        vLineWidth: () => 1,
+      },
+      margin: [0, 0, 0, 6],
+    };
+  }
+
+  private buildDefinitionRows(
+    prescription: ReadRequestResource,
+    responses: Record<string, unknown>,
+    template: Template,
+    templateVersion: FormTemplate,
+    language: keyof FormTranslation
+  ): Content[] {
+    const staticRows = [
+      {
+        label: this.translate.instant('common.typeOfPrescription') as string,
+        value: template.labelTranslations?.[language],
+      },
+      {
+        label: this.translate.instant('prescription.prescriptionDate') as string,
+        value: this.formatDate(prescription.authoredOn, 'dd/MM/yyyy'),
+      },
+      {
+        label: this.translate.instant('prescription.validityPeriod') as string,
+        value:
+          this.formatDate(prescription.period?.start, 'dd/MM/yyyy') +
+          ' - ' +
+          this.formatDate(prescription.period?.end, 'dd/MM/yyyy'),
+      },
+    ];
+
+    const dynamicRows = templateVersion.elements
+      .filter(e => responses[e.id!] != null)
+      .map(e => ({
+        label: this.evfTranslate(templateVersion, e.labelTranslationId!, language),
+        value: this.getResponseLabels(responses[e.id!], e, templateVersion, responses, language).join(', '),
+      }));
+
+    return [...staticRows, ...dynamicRows].filter(r => r.value).map(r => this.definitionRow(r.label, r.value ?? ''));
+  }
+
+  private definitionRow(label: string, value: string): Content {
+    return {
+      stack: [{ text: label, bold: true }, { text: value }],
+      margin: [0, 0, 0, 6],
+    };
+  }
+
+  private buildPrescriberSection(prescription: ReadRequestResource): Content {
+    return {
+      stack: [
+        { text: this.translate.instant('prescription.print.prescriber') as string, bold: true },
+        {
+          text:
+            prescription.requester?.healthcarePerson?.firstName +
+            ' ' +
+            prescription.requester?.healthcarePerson?.lastName,
+        },
+        {
+          text: this.getNihii(prescription.requester),
+        },
+        {
+          text: prescription.requester?.healthcareQualification?.id?.profession
+            ? (this.translate.instant(
+                `common.professions.${prescription.requester.healthcareQualification.id.profession}`
+              ) as string)
+            : '',
+        },
+      ],
+      margin: [0, 0, 0, 6],
+    };
+  }
+
+  private buildDisclaimer(): Content {
+    return {
+      table: {
+        widths: ['*'],
+        body: [
+          [
+            {
+              text: this.translate.instant('prescription.print.remark') as string,
+              fillColor: '#f2f2f2',
+              margin: [10, 6],
+            },
+          ],
+        ],
+      },
+      layout: 'noBorders',
+    };
+  }
+
+  private buildDashLine(): Content {
+    return {
+      canvas: [
+        {
+          type: 'line',
+          x1: 0,
+          y1: 0,
+          x2: 595, // page width in points (A4 ~ 595pt)
+          y2: 0,
+          lineWidth: 1,
+          dash: { length: 4, space: 2 },
+          lineColor: '#9C9C9C',
+        },
+      ],
+      margin: [-40, 10, 0, 10],
+    };
+  }
+
+  private buildHeaderSubSection(): Content {
+    return {
+      columns: [
+        {
+          text: this.translate.instant('prescription.print.subsection.header', {
+            date: this.getCurrentDate(),
+          }) as string,
+          color: '#5C5C5C',
+        },
+      ],
+      margin: [0, 0, 0, 10],
+    };
+  }
+
+  private buildTitleSubSection(
+    template: Template,
+    language: Language,
+    patient: PersonResource,
+    shortCode?: string
+  ): Content {
+    return {
+      stack: [
+        {
+          text: template.labelTranslations?.[language] as string,
+          fontSize: 12,
+          bold: true,
+        },
+        {
+          text: [
+            { text: patient.ssin ? FormatSsinPipe.format(patient.ssin) : '' },
+            { text: ' ' },
+            { text: shortCode ?? '' },
+          ],
+          margin: [0, 0, 0, 6],
+        },
+      ],
+    };
+  }
+
+  private buildPatienInfoSubSection(patient: PersonResource): Content {
+    return {
+      stack: [
+        { text: this.translate.instant('prescription.print.subsection.patient') as string, color: '#5C5C5C' },
+        { text: `${patient.firstName ?? ''} ${patient.lastName ?? ''}` },
+      ],
+      margin: [0, 0, 0, 6],
+    };
+  }
+
+  private buildValidityPeriodSubSection(prescription: ReadRequestResource): Content {
+    return {
+      table: {
+        widths: ['auto', 'auto'],
+        body: [
+          [
+            {
+              text: this.translate.instant('prescription.print.subsection.startDate') as string,
+              color: '#5C5C5C',
+              margin: [0, 0, 30, 0],
+            },
+            {
+              text: this.translate.instant('prescription.print.subsection.endDate') as string,
+              color: '#5C5C5C',
+            },
+          ],
+          [
+            {
+              text: this.formatDate(prescription.period?.start, 'dd/MM/yyyy'),
+              margin: [0, 0, 30, 0],
+            },
+            {
+              text: this.formatDate(prescription.period?.end, 'dd/MM/yyyy'),
+            },
+          ],
+        ],
+      },
+      layout: {
+        hLineWidth: () => 0,
+        vLineWidth: () => 0,
+        paddingTop: () => 0,
+        paddingBottom: () => 0,
+        paddingLeft: () => 0,
+        paddingRight: () => 0,
+      },
+    };
+  }
+
+  private getFonts() {
+    return {
+      OpenSans: {
+        normal: 'OpenSans-Regular.ttf',
+        bold: 'OpenSans-Bold.ttf',
+        italics: 'OpenSans-Italic.ttf',
+        bolditalics: 'OpenSans-BoldItalic.ttf',
+      },
+    };
   }
 
   private getCurrentDate() {
     return DateTime.now().toFormat('dd-MM-yyyy');
   }
 
-  private prescriptionPageHeaderInfo(): Content {
-    return {
-      layout: 'headerBlueTableLayout',
-      table: {
-        body: [
-          [
-            {
-              fillColor: '#c8d4ec',
-              fontSize: 10,
-              stack: [
-                {
-                  text: [
-                    '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -',
-                  ],
-                },
-              ],
-            },
-          ],
-        ],
-      },
-    };
-  }
-
-  private prescriptionPageHeader(prescription: ReadRequestResource, patient: PersonResource): Content {
-    return {
-      layout: 'headerTableLayout',
-      table: {
-        body: [
-          [
-            {
-              text: this.translate.instant('prescription.print.proof-of-electronic-prescription').toUpperCase(),
-              margin: [0, 3],
-              alignment: 'center',
-              fontSize: 14,
-              bold: true,
-            },
-          ],
-          [
-            {
-              text: this.translate.instant('prescription.print.guideline') as string,
-              alignment: 'center',
-              fontSize: 12,
-            },
-          ],
-          [
-            {
-              fontSize: 11,
-              stack: [
-                this.boldNotBoldTextElement(
-                  this.translate.instant('prescription.print.prescriber') + ' ',
-                  prescription.requester?.healthcarePerson?.firstName +
-                    ' ' +
-                    prescription.requester?.healthcarePerson?.lastName +
-                    ' ' +
-                    this.translate.instant('prescription.print.nihdi') +
-                    ' ' +
-                    this.getNihii(prescription.requester),
-                  'center'
-                ),
-                this.boldNotBoldTextElement(
-                  this.translate.instant('prescription.print.patient') + ' ',
-                  patient?.firstName +
-                    ' ' +
-                    patient?.lastName +
-                    ' ' +
-                    this.translate.instant('prescription.print.niss') +
-                    ' ' +
-                    patient?.ssin,
-                  'center'
-                ),
-              ],
-            },
-          ],
-          [
-            {
-              fontSize: 11,
-              stack: [
-                this.boldNotBoldTextElement(
-                  this.translate.instant('common.shortCode') + ' ',
-                  prescription.shortCode ?? '',
-                  'center'
-                ),
-              ],
-            },
-          ],
-          [
-            {
-              text: this.translate.instant('prescription.print.content-electronic-prescription') as string,
-              alignment: 'center',
-              fontSize: 12,
-              bold: true,
-            },
-          ],
-        ],
-      },
-    };
-  }
-
   getNihii(requester: HealthcareProResource | undefined) {
     if (!requester) return '';
-    return requester.nihii8 || requester.nihii11;
-  }
 
-  private generatePrescriptionInfoTable(
-    prescription: ReadRequestResource,
-    responses: Record<string, unknown>,
-    templateVersion: FormTemplate,
-    template: Template,
-    language: keyof Translation
-  ): ContentTable {
-    const valueLabels = [
-      {
-        label: this.translate.instant('common.typeOfPrescription') as string,
-        values: [template.labelTranslations?.[language]],
-      },
-      {
-        label: this.translate.instant('prescription.prescriptionDate') as string,
-        values: [this.formatDate(prescription.authoredOn, 'dd/MM/yyyy')],
-      },
-      {
-        label: this.translate.instant('prescription.validityPeriod') as string,
-        values: [
-          this.formatDate(prescription.period?.start, 'dd/MM/yyyy') +
-            ' - ' +
-            this.formatDate(prescription.period?.end, 'dd/MM/yyyy'),
-        ],
-      },
-    ];
-    const dynamicValueLabels = templateVersion.elements
-      .filter(q => responses[q.id!] != null)
-      .map(q => ({
-        label: this.evfTranslate(templateVersion, q.labelTranslationId!, language),
-        values: this.getResponseLabels(responses[q.id!], q, templateVersion, responses, language),
-      }));
-
-    return [...valueLabels, ...dynamicValueLabels].reduce(
-      (acc, cur: { label: string; values: unknown[] }) => {
-        if (acc.table.body.length === 0 || !Array.isArray(acc.table.body[acc.table.body.length - 1][1])) {
-          acc.table.body.push([
-            {
-              stack: [
-                { text: this.wrapLongWords(cur.label), bold: true },
-                ...cur.values.map(text => ({ text })),
-              ] as Content[],
-            },
-            [],
-          ]);
-        } else {
-          acc.table.body[acc.table.body.length - 1][1] = {
-            stack: [
-              { text: this.wrapLongWords(cur.label), bold: true },
-              ...cur.values.map(text => ({ text })),
-            ] as Content[],
-          };
-        }
-        return acc;
-      },
-      {
-        layout: 'prescriptionTableLayout',
-        table: {
-          widths: ['*', '*'],
-          body: [],
-        },
-      } as ContentTable
-    );
-  }
-
-  private wrapLongWords(text: string, maxChars = 30): string {
-    if (!text) return '';
-    const str = text.toString();
-    const regex = new RegExp(`.{1,${maxChars}}`, 'g');
-    const parts = str.match(regex) || [str];
-
-    return parts
-      .map((part, i) => {
-        if (i < parts.length - 1 && part.length >= 5 && parts[i + 1].length >= 5) {
-          return part + '-\n';
-        }
-        return part;
-      })
-      .join('');
+    const nihii = requester.nihii8 ?? requester.nihii11;
+    const qualificationCode = requester.healthcareQualification?.id?.code;
+    return FormatNihdiPipe.format(nihii, qualificationCode);
   }
 
   private getResponseLabels(
@@ -330,6 +445,10 @@ export class PrescriptionsPdfService {
   ) {
     if (element.viewType === 'occurrenceTiming') {
       return [translateOccurrenceTiming(responses['occurrenceTiming'] as OccurrenceTiming, language as 'nl' | 'fr')];
+    } else if (element.viewType === 'occurrences') {
+      return [translateFrequencyAndPeriod(responses['occurrences'] as Repeat, language as 'nl' | 'fr')];
+    } else if (element.viewType === 'boundsDuration') {
+      return [translateBoundsDuration(responses['boundsDuration'] as BoundsDuration, language as 'nl' | 'fr')];
     } else if (element.responses?.length) {
       if (Array.isArray(value)) {
         return value.map(v => {
@@ -350,19 +469,6 @@ export class PrescriptionsPdfService {
   private formatDate(date: string | Date | undefined, format: string): string {
     if (!date) return '';
     return date instanceof Date ? DateTime.fromJSDate(date).toFormat(format) : DateTime.fromISO(date).toFormat(format);
-  }
-
-  private boldNotBoldTextElement(boldLabel: string, regularLabel: string, alignment?: Alignment): Content {
-    return {
-      text: [
-        {
-          text: boldLabel,
-          bold: true,
-        },
-        regularLabel,
-      ],
-      alignment,
-    };
   }
 
   private evfTranslate(template: FormTemplate, labelId: string, language: 'nl' | 'fr' | 'de' | 'en'): string {

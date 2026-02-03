@@ -24,6 +24,7 @@ import { SectionDetailComponent } from '@smals-belgium-shared/vas-evaluation-for
 import { withInfoElement } from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/info';
 import { OccurrencesComponent } from '@reuse/code/evf/components/occurrences/detail/occurrences.component';
 import { BoundsDurationComponent } from '@reuse/code/evf/components/bounds-duration/detail/bounds-duration.component';
+import { ProposalCheckboxListComponent } from '@reuse/code/evf/components/proposal-checkbox-list/detail/proposal-checkbox-list.component';
 
 export function provideEvfFormDetails() {
   return [
@@ -37,6 +38,10 @@ export function provideEvfFormDetails() {
         {
           name: 'checkboxList',
           detail: EvfResponseListDetailComponent,
+        },
+        {
+          name: 'proposalCheckboxList',
+          detail: ProposalCheckboxListComponent,
         },
         {
           name: 'textarea',

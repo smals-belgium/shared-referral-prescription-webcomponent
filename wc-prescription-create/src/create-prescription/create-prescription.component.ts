@@ -52,7 +52,6 @@ import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionService } from '@reuse/code/services/api/prescription.service';
 import { ConfirmDialog, ConfirmDialogData } from '@reuse/code/dialogs/confirm/confirm.dialog';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
-import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
 import { AsyncPipe, DOCUMENT } from '@angular/common';
 import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
@@ -94,7 +93,6 @@ import { Lang } from '@reuse/code/interfaces/lang.enum';
   standalone: true,
   encapsulation: ViewEncapsulation.ShadowDom,
   imports: [
-    IfStatusSuccessDirective,
     CreateMultiplePrescriptionsComponent,
     OverlaySpinnerComponent,
     AsyncPipe,
@@ -104,6 +102,7 @@ import { Lang } from '@reuse/code/interfaces/lang.enum';
   ],
 })
 export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterViewInit {
+  protected readonly LoadingStatus = LoadingStatus;
   protected readonly AlertType = AlertType;
   protected readonly discipline$ = toSignal(this.authService.discipline());
 
@@ -327,14 +326,17 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
   }
 
   private addPrescriptionForm(templateCode: string, initialPrescription?: ReadRequestResource): void {
-    this.templateVersionsStateService.loadTemplateVersion(templateCode);
+    const instanceId = uuidv4();
+
+    this.templateVersionsStateService.loadTemplateVersionForInstance(instanceId, templateCode);
+
     this.prescriptionForms.update(prescriptionForms => [
       ...prescriptionForms,
       {
-        generatedUUID: uuidv4(),
+        generatedUUID: instanceId,
         trackId: this.trackId++,
         templateCode: templateCode,
-        formTemplateState$: this.getPrescriptionTemplateStream(templateCode),
+        formTemplateState$: this.templateVersionsStateService.getStateForInstance(instanceId, templateCode),
         initialPrescription: this.updateResponses(initialPrescription),
       },
     ]);
@@ -343,14 +345,15 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
   }
 
   private addPrescriptionFormByModel(templateCode: string, model: ModelEntityDto) {
-    this.templateVersionsStateService.loadTemplateVersion(templateCode);
+    const instanceId = uuidv4();
+    this.templateVersionsStateService.loadTemplateVersionForInstance(instanceId, templateCode);
     this.prescriptionForms.update(prescriptionForms => [
       ...prescriptionForms,
       {
-        generatedUUID: uuidv4(),
+        generatedUUID: instanceId,
         trackId: this.trackId++,
         templateCode: templateCode,
-        formTemplateState$: this.getPrescriptionTemplateStream(templateCode),
+        formTemplateState$: this.templateVersionsStateService.getStateForInstance(instanceId, templateCode),
         initialPrescription: undefined,
         modelResponses: model.modelData as unknown as Record<string, unknown>,
         modelName: model.label,
@@ -394,6 +397,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
       .subscribe(accepted => {
         if (accepted === true) {
           this.prescriptionForms.update(prescriptionForms => prescriptionForms.filter(f => f !== form));
+          this.templateVersionsStateService.cleanupInstance(form.generatedUUID, form.templateCode);
         }
       });
   }
@@ -592,7 +596,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
       return this.encryptStringValue(key, value);
     }
 
-    if (this.isObject(value) && Object.hasOwn(formElement, 'subFormElements')) {
+    if (this.isObject(value) && Object.hasOwn(formElement, 'elements')) {
       return this.processNestedObject(key, value, templateCode);
     }
 
@@ -630,8 +634,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
       if (element.id === key) {
         return element;
       }
-      if (element.subFormElements && Array.isArray(element.subFormElements)) {
-        const found = this.findElementById(element.subFormElements, key);
+      if (element.elements && Array.isArray(element.elements)) {
+        const found = this.findElementById(element.elements, key);
         if (found) {
           return found;
         }
@@ -747,10 +751,15 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
           if (!result) {
             return;
           } else if (result.formsToDelete.length === this.prescriptionForms().length) {
+            this.templateVersionsStateService.cleanupAllInstances();
             this.clickCancel.emit();
           } else if (result.formsToDelete.length > 0) {
-            this.prescriptionForms.update(prescriptionForms =>
-              prescriptionForms.filter(f => !result.formsToDelete.includes(f.trackId))
+            this.prescriptionForms.update(forms => forms.filter(f => !result.formsToDelete.includes(f.trackId)));
+
+            const formsToDelete = this.prescriptionForms().filter(f => result.formsToDelete.includes(f.trackId));
+
+            formsToDelete.forEach(f =>
+              this.templateVersionsStateService.cleanupInstance(f.generatedUUID, f.templateCode)
             );
           }
         });
@@ -766,7 +775,10 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
         })
         .beforeClosed()
         .pipe(filter(result => result === true))
-        .subscribe(() => this.clickCancel.emit());
+        .subscribe(() => {
+          this.templateVersionsStateService.cleanupAllInstances();
+          this.clickCancel.emit();
+        });
     }
   }
 

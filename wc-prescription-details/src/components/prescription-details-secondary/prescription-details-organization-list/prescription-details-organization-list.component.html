@@ -2,7 +2,6 @@
 
   @let prescription = prescriptionServiceData;
   @let currentUser = currentUserServiceData;
-  @let performerTaskData = performerTaskServiceData;
 
   @for (task of prescription.organizationTasks; track task) {
 
@@ -22,7 +21,7 @@
         }
 
         @if (task.organization?.nihii8 ?? task.organization?.nihii11; as nihii) {
-          <span>({{ nihii }})</span>
+          <span>({{ nihii | formatNihdi: task?.organization?.qualificationCode }})</span>
           <br/>
         }
         @if (task.executionPeriod?.start) {
@@ -56,11 +55,9 @@
                   }
 
                   @if (nihii) {
-                    ({{ nihii }})
+                    ({{ nihii  | formatNihdi: caregiver.healthcareQualification?.id?.code }})
                   }
                 }
-
-
                 <br/>
                 @if (performertask.executionPeriod?.start) {
                   <span>{{ performertask.executionPeriod?.start! | date: 'dd/MM/yyyy' }} - </span>
@@ -69,17 +66,18 @@
                   <span>{{ performertask.executionPeriod?.end! | date: 'dd/MM/yyyy' }}</span>
                 }
               </div>
-
-              <app-task-button-group>
-              </app-task-button-group>
+              @if (patientData && currentUser.role === "patient" && (prescription | canRejectAssignation : performertask : patientData.ssin : currentUser)) {
+                <button
+                  type="button"
+                  (click)="_service.openRejectAssignationDialog(prescription, performertask, patientData)"
+                  mat-icon-button
+                  data-cy="prescription-reject-assignation-button"
+                  [attr.aria-label]="'prescription.ariaLabel.reject' | translate"
+                >
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              }
             </div>
-
-            @if (performerTaskData === performertask) {
-              <app-prescription-button-group
-                [currentPerformerTask]="performertask"
-              >
-              </app-prescription-button-group>
-            }
           </div>
         }
       </div>

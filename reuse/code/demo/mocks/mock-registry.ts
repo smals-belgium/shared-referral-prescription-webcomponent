@@ -132,9 +132,13 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
       const id = req.url.split('/').pop();
 
       if (id) {
+        const demoPrescription = demoStorage.get<ReadRequestResourceExtended>('demoPrescription');
         const newPrescription =
-          demoStorage.get<ReadRequestResourceExtended>('demoPrescription') ||
-          (prescriptions.items.find(prescription => prescription.id === id) as unknown as ReadRequestResourceExtended);
+          demoPrescription?.id === id
+            ? demoPrescription
+            : (prescriptions.items.find(
+                prescription => prescription.id === id
+              ) as unknown as ReadRequestResourceExtended);
 
         demoStorage.set('demoPrescription', newPrescription);
 
@@ -169,9 +173,11 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
       const id = req.url.split('/').pop();
 
       if (id) {
+        const demoProposal = demoStorage.get<ReadRequestResourceExtended>('demoProposal');
         const newProposal =
-          demoStorage.get<ReadRequestResourceExtended>('demoProposal') ||
-          (proposals.items.find(proposal => proposal.id === id) as unknown as ReadRequestResourceExtended);
+          demoProposal?.id === id
+            ? demoProposal
+            : (proposals.items.find(proposal => proposal.id === id) as unknown as ReadRequestResourceExtended);
 
         demoStorage.set('demoProposal', newProposal);
 
@@ -195,6 +201,48 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
         return newProposal;
       } else {
         return new Error('No proposal found');
+      }
+    },
+  },
+  {
+    method: ['GET'],
+    url: /\/prescription\?ssin=[^&]+&shortCode=[^&]+$/i,
+    handler: (req: HttpRequest<unknown>) => {
+      const params = new URLSearchParams(req.urlWithParams.split('?')[1]);
+      const shortCode = params.get('shortCode');
+
+      if (shortCode) {
+        const demoPrescription = demoStorage.get<ReadRequestResourceExtended>('demoPrescription');
+        const newPrescription =
+          demoPrescription?.shortCode === shortCode
+            ? demoPrescription
+            : (prescriptions.items.find(
+                prescription => prescription.shortCode === shortCode
+              ) as unknown as ReadRequestResourceExtended);
+
+        demoStorage.set('demoPrescription', newPrescription);
+
+        newPrescription.performerTasks?.forEach((performerTask: PerformerTaskResourceExtended) => {
+          const index = performerTask.careGiverIndex as number;
+          if (index != null) {
+            const requester = professionals[index];
+            performerTask.careGiver = requester as unknown as HealthcareProResource;
+          }
+        });
+
+        const index = newPrescription.requesterIndex as number;
+
+        if (index != null) {
+          const requester = professionals[index];
+          return {
+            ...newPrescription,
+            requester: requester,
+          };
+        }
+
+        return newPrescription;
+      } else {
+        return new Error('No prescription found');
       }
     },
   },

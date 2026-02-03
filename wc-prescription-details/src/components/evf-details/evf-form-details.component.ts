@@ -12,6 +12,13 @@ import { DateAdapter } from '@angular/material/core';
 import { DateTime } from 'luxon';
 import { TranslateService } from '@ngx-translate/core';
 import { PssService } from '@reuse/code/services/api/pss.service';
+import { Intent } from '@reuse/code/interfaces';
+
+interface metaData {
+  pssActive: boolean;
+  isProfessional: boolean;
+  intent: Intent | undefined;
+}
 
 @Component({
   selector: 'evf-form-details',
@@ -22,9 +29,10 @@ import { PssService } from '@reuse/code/services/api/pss.service';
 export class EvfFormDetailsWebComponent implements OnChanges, OnInit {
   elementGroup!: ElementGroup;
 
-  metaData = {
+  metaData: metaData = {
     pssActive: false,
     isProfessional: false,
+    intent: undefined,
   };
 
   @HostBinding('attr.lang')
@@ -34,6 +42,7 @@ export class EvfFormDetailsWebComponent implements OnChanges, OnInit {
   @Input() responses!: Record<string, unknown>;
   @Input() status: boolean | undefined;
   @Input() isProfessional: boolean | undefined;
+  @Input() intent: string | undefined;
 
   constructor(
     private readonly evfTranslate: EvfTranslateService,
@@ -67,6 +76,12 @@ export class EvfFormDetailsWebComponent implements OnChanges, OnInit {
       if (this.isProfessional !== undefined) {
         this.metaData.isProfessional = this.isProfessional;
       }
+    }
+
+    if (changes['intent']) {
+      const normalized = this.intent?.toLowerCase();
+
+      this.metaData.intent = Object.values(Intent).find(value => value === normalized);
     }
   }
 

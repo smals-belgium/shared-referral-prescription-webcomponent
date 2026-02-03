@@ -4,11 +4,13 @@
       @for (prescription of requestData(); track trackById(prescription)) {
         <mat-card class="label-example-card" appearance="raised">
           <mat-card-content>
-            <div class="row" align="right">
-              <mat-chip [disableRipple]="true" data-cy="prescription-status"
-                        [class]="getStatusClass(prescription.status)">{{ 'prescription.statuses.' + prescription.status | translate }}
-              </mat-chip>
-            </div>
+              @if(!!prescription.status) {
+                <div class="row" align="right">
+                  <mat-chip [disableRipple]="true" data-cy="prescription-status"
+                            [class]="getStatusColor(prescription.status!)">{{ 'prescription.statuses.' + prescription.status | translate }}
+                  </mat-chip>
+                </div>
+              }
             <div class="row">
               <p class="template-title">{{ prescription.templateCode | templateName }}</p>
             </div>
@@ -22,7 +24,7 @@
               </p>
               <span class="info">
                @if (getProfessional(prescription.requester); as professional) {
-                 ({{ (professional.nihii8 || professional.nihii11) | formatNihdi: professional.id.qualificationCode }})
+                 ({{ (professional.nihii8 || professional.nihii11) | formatNihdi: professional.id?.qualificationCode }})
                }
             </span>
             </div>

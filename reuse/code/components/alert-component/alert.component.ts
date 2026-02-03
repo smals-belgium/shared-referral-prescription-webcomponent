@@ -14,6 +14,7 @@ import { AlertType } from '@reuse/code/interfaces';
 
 @Component({
   selector: 'app-alert',
+  styleUrls: ['./alert.component.scss'],
   templateUrl: './alert.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TranslateModule, MhAlertComponent],

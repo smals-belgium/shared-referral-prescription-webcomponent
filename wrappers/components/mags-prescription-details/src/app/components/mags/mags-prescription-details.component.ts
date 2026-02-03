@@ -24,6 +24,7 @@ import { PrintMimeType, PrintOrientation } from '@smals-belgium/myhealth-wc-inte
 export class MagsPrescriptionDetails extends MagsComponent {
   prescriptionId = input<string | undefined>(undefined);
   print = output<unknown>();
+  open = output<unknown>();
 
   blobToBase64 = (blob: Blob): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -78,6 +79,16 @@ export class MagsPrescriptionDetails extends MagsComponent {
         content: content,
         mimeType: PrintMimeType.BASE64,
         orientation: PrintOrientation.PORTRAIT,
+      });
+    });
+
+    webComponent.addEventListener('clickOpenExtendedDetail', (d: Event & { detail?: string }) => {
+      this.open.emit({
+        componentTag: wrapperManifest.events['open'].componentTag,
+        props: {
+          prescriptionId: d?.detail,
+          lang: webComponent.lang,
+        },
       });
     });
 

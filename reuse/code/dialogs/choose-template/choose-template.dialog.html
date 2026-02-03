@@ -3,15 +3,18 @@
 
   @if(viewState$(); as viewState) {
     <mat-dialog-content class="mat-typography">
-      <app-overlay-spinner *ifStatusLoading="viewState" mode="dialog"></app-overlay-spinner>
-      <ng-container *ifStatusSuccess="viewState">
+      @if(viewState.status === LoadingStatus.LOADING || viewState.status === LoadingStatus.UPDATING) {
+        <app-overlay-spinner mode="dialog"></app-overlay-spinner>
+      }
+
+      @if(viewState.status === LoadingStatus.SUCCESS) {
         <app-select-prescription-type
           [formGroup]="formGroup"
           [templates]="viewState.data?.templates || []"
           [models]="viewState.data?.models?.content"
           [showTitle]="false"
         ></app-select-prescription-type>
-      </ng-container>
+      }
     </mat-dialog-content>
   }
 

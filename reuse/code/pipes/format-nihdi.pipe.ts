@@ -6,6 +6,10 @@ export class FormatNihdiPipe implements PipeTransform {
   private static readonly maskParts = FormatNihdiPipe.mask.split('-');
 
   transform(value?: string, qualificationCode?: string): string {
+    return FormatNihdiPipe.format(value, qualificationCode);
+  }
+
+  static format(value?: string, qualificationCode?: string): string {
     let nihidi = value;
     if (!value) {
       return '';
@@ -14,12 +18,12 @@ export class FormatNihdiPipe implements PipeTransform {
       nihidi = value + qualificationCode;
     }
     nihidi = nihidi!.replace(/\D+/g, '');
-    let formattedParts = [];
+    const formattedParts: string[] = [];
     for (const part of FormatNihdiPipe.maskParts) {
       const endIndex = nihidi.length >= part.length ? part.length : nihidi.length;
       formattedParts.push(nihidi.substring(0, endIndex));
       nihidi = nihidi.substring(endIndex);
     }
-    return formattedParts.join('/');
+    return formattedParts.join('-');
   }
 }

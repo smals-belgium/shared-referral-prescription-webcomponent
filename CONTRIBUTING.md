@@ -130,6 +130,23 @@ If you have run out of energy or time for your project, put a note at the top of
 
   To regenerate: `npm run generate-api:local`
 
+## Empty submodules
+If git submodules get's removed from the project. Follow these steps.
+```bash
+# remove the untracked folder
+rm -rf api-contract
+```
+
+```bash
+# remove any stale submodule metadata
+rm -rf .git/modules/api-contract
+```
+
+```bash
+# add the submodule properly
+git submodule add ../api-contract.git api-contract
+```
+
 # MAGS Webcomponents wrappers
 
 To use the UHMEP Web components in MAGS, they need to be wrapped in a special webcomponent that makes the interface between the mags application and the UHMEP web components

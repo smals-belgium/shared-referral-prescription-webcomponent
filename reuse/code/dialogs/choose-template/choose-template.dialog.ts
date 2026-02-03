@@ -6,8 +6,6 @@ import { TranslateModule } from '@ngx-translate/core';
 import { DataState, Intent, LoadingStatus } from '@reuse/code/interfaces';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { SelectPrescriptionTypeComponent } from '@reuse/code/components/select-prescription-type/select-prescription-type.component';
-import { IfStatusLoadingDirective } from '@reuse/code/directives/if-status-loading.directive';
-import { IfStatusSuccessDirective } from '@reuse/code/directives/if-status-success.directive';
 import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { TemplatesState } from '@reuse/code/states/api/templates.state';
@@ -37,8 +35,6 @@ interface ViewState {
     MatButtonModule,
     OverlaySpinnerComponent,
     SelectPrescriptionTypeComponent,
-    IfStatusLoadingDirective,
-    IfStatusSuccessDirective,
   ],
 })
 export class ChooseTemplateDialog implements OnInit, OnDestroy {
@@ -186,4 +182,6 @@ export class ChooseTemplateDialog implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  protected readonly LoadingStatus = LoadingStatus;
 }

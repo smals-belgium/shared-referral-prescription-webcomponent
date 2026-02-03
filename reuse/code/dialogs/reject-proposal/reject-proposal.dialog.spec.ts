@@ -64,11 +64,11 @@ describe('RejectProposalDialog', () => {
 
   beforeEach(() => {
     uuidSpy = jest.spyOn(uuid, 'v4').mockReturnValue('mock-uuid-12345' as unknown as Uint8Array);
-    jest.clearAllMocks();
   });
 
   afterEach(() => {
     uuidSpy.mockRestore();
+    jest.clearAllMocks()
   });
 
   describe('when proposal has no performer tasks', () => {

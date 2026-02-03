@@ -1,4 +1,4 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { inject, Pipe, PipeTransform } from '@angular/core';
 import { UserInfo } from '@reuse/code/interfaces';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { FhirR4TaskStatus, ReadRequestResource, RequestStatus, Role } from '@reuse/code/openapi';
@@ -19,22 +19,15 @@ import { isProposal } from '@reuse/code/utils/utils';
  * @pipe
  * @name canCancelPrescriptionOrProposal
  */
-@Pipe({name: 'canCancelPrescriptionOrProposal', standalone: true})
+@Pipe({ name: 'canCancelPrescriptionOrProposal', standalone: true })
 export class CanCancelPrescriptionOrProposalPipe implements PipeTransform {
-  constructor(private accessMatrixState: AccessMatrixState) {
-  }
+  private readonly _accessMatrixState = inject(AccessMatrixState);
 
   transform(prescription: ReadRequestResource, patientSsin?: string, currentUser?: Partial<UserInfo>): boolean {
     if (!currentUser) return false;
 
-    const allowedStatuses: FhirR4TaskStatus[] = [
-      FhirR4TaskStatus.Inprogress,
-      FhirR4TaskStatus.Completed,
-      FhirR4TaskStatus.Onhold,
-    ];
-
     const checkThatNoOneStartedTheExecution = Array.isArray(prescription?.performerTasks)
-      ? prescription.performerTasks?.some(task => task?.status !== undefined && allowedStatuses.includes(task?.status))
+      ? prescription.performerTasks?.some(task => task?.status !== undefined && task?.status != FhirR4TaskStatus.Ready)
       : false;
 
     const checkStatus = prescription.status === RequestStatus.Open || prescription.status === RequestStatus.Pending;
@@ -46,15 +39,16 @@ export class CanCancelPrescriptionOrProposalPipe implements PipeTransform {
         currentUser,
         patientSsin,
         prescription.requester?.healthcarePerson?.ssin
-      ) && !checkThatNoOneStartedTheExecution
+      ) &&
+      !checkThatNoOneStartedTheExecution
     );
   }
 
   private hasCancelPermissions(prescription: ReadRequestResource) {
     if (isProposal(prescription.intent)) {
-      return this.accessMatrixState.hasAtLeastOnePermission(['cancelProposal'], prescription.templateCode);
+      return this._accessMatrixState.hasAtLeastOnePermission(['cancelProposal'], prescription.templateCode);
     }
-    return this.accessMatrixState.hasAtLeastOnePermission(['cancelPrescription'], prescription.templateCode);
+    return this._accessMatrixState.hasAtLeastOnePermission(['cancelPrescription'], prescription.templateCode);
   }
 
   private checkIfCurrentUserIsPatientOrAssignedCaregiver(

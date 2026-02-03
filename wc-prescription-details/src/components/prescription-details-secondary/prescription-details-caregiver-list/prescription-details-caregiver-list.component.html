@@ -1,8 +1,8 @@
-@if (prescriptionServiceData && currentUserServiceData && patientServiceData) {
+@if (prescriptionServiceData && currentUserServiceData && patientServiceData()) {
 
   @let prescriptionData = prescriptionServiceData;
   @let currentUserData = currentUserServiceData;
-  @let patientData = patientServiceData;
+  @let patientData = patientServiceData();
 
   @for (performerTask of prescriptionData.performerTasks; track performerTask) {
     <div class="caregiver_row">
@@ -25,12 +25,20 @@
                 class="caregiver_info_fullName">{{ careGiver.healthcarePerson?.firstName }} {{ careGiver.healthcarePerson?.lastName }} </span>
             }
             @if (careGiver.nihii8 || careGiver.nihii11; as nihii) {
-              <span class="caregiver_info_nihii">({{ nihii }})</span>
+              <span class="caregiver_info_nihii">({{ nihii | formatNihdi: careGiver.healthcareQualification?.id?.code }})</span>
             }
 
             @if (careGiver.healthcareQualification?.id?.profession) {
               <div
                 class="caregiver_info_profession">{{ 'common.professions.' + careGiver?.healthcareQualification?.id?.profession | translate }}
+              </div>
+            }
+
+            @if(getReadableStatus(performerTask.status)) {
+              <div class="performer_task_status">
+                <mat-chip [disableRipple]="true"
+                          [class]="getStatusColor(performerTask.status!)">{{ 'performerTask.statuses.' + performerTask.status | translate }}
+                </mat-chip>
               </div>
             }
             @if (performerTask.executionPeriod?.start) {
@@ -42,11 +50,12 @@
           }
         </div>
 
+        @if(currentUserData.role === "patient"){
         <div class="button-group">
-          @if (prescriptionServiceData | canRejectAssignation : performerTask : patientServiceData.ssin : currentUserData) {
+          @if (patientData?.ssin && (prescriptionServiceData | canRejectAssignation : performerTask : patientData?.ssin : currentUserData)) {
             <button
               type="button"
-              (click)="service.openRejectAssignationDialog(prescriptionData, performerTask, patientServiceData)"
+              (click)="service.openRejectAssignationDialog(prescriptionData, performerTask, patientData)"
               mat-icon-button
               data-cy="prescription-reject-assignation-button"
               [attr.aria-label]="'prescription.ariaLabel.reject' | translate"
@@ -54,36 +63,11 @@
               <mat-icon>cancel</mat-icon>
             </button>
           }
-          @if (prescriptionServiceData | canInterruptTreatment : performerTask : currentUserServiceData) {
-            <button
-              type="button"
-              (click)="service.openInterruptExecutionDialog(prescriptionData, performerTask, patientServiceData)"
-              mat-icon-button
-              data-cy="prescription-interrupt-execution-button"
-              [attr.aria-label]="'prescription.ariaLabel.interrupt' | translate"
-            >
-              <mat-icon>pause_circle</mat-icon>
-            </button>
-          }
-          @if (prescriptionServiceData | canRestartTreatment : performerTask : performerTask?.careGiverSsin) {
-            <button
-              type="button"
-              (click)="service.openRestartExecutionDialog(prescriptionData, performerTask, patientData)"
-              mat-icon-button
-              data-cy="prescription-restart-execution-button"
-              [attr.aria-label]="'prescription.ariaLabel.restart' | translate"
-            >
-              <mat-icon>play_circle</mat-icon>
-            </button>
-          }
         </div>
+        }
       </div>
-      @if (performerTaskServiceData === performerTask) {
-        <app-prescription-button-group
-          [currentPerformerTask]="performerTask"
-        >
-        </app-prescription-button-group>
-      }
+
+
     </div>
   }
 }

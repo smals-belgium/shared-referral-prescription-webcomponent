@@ -4,6 +4,7 @@
   cursor: pointer;
 }
 
+//Applied when models are successfully loaded, but there are no prescriptions
 tr.no-models {
   > td {
     text-align: center;
@@ -12,7 +13,7 @@ tr.no-models {
   }
 }
 
+//Applied when there is an error in the models or models are still loading
 tr.no-data {
   height: var(--mh-table-empty-footer-container-height, 0);
 }
-

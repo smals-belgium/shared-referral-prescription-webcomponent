@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "../dist/wrappers"
+  },
+  "files": [],
+  "include": [],
+  "references": [
+    { "path": "./components/mags-prescription-details" },
+    { "path": "./components/mags-prescription-list" }
+  ]
+}

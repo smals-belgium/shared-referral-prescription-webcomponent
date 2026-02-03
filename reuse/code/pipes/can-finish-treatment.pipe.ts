@@ -11,7 +11,7 @@ export class CanFinishTreatmentPipe implements PipeTransform {
 
     return (
       this.accessMatrixState.hasAtLeastOnePermission(['executeTreatment'], prescription.templateCode) &&
-      !!task.status &&
+      !!task?.status &&
       allowedStatuses.includes(task.status)
     );
   }
