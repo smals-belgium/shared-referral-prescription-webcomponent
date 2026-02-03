@@ -24,7 +24,7 @@ export class ExpansionPanelTextareaComponent extends EvfBaseFormElementComponent
   protected readonly _activeValidationPipe = inject(EvfActiveValidationPipe);
 
   private static counter = 0;
-  readonly id = 'evf-expansion-textarea-' + ExpansionPanelTextareaComponent.counter++;
+  readonly id = 'evf-textarea-' + ExpansionPanelTextareaComponent.counter++;
 
   ngAfterViewInit(): void {
 
