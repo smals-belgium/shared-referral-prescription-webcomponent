@@ -241,7 +241,7 @@ In the showcase, the library is initialized via the following instruction
     // Initialization of the authentication library
     keycloak.init({onLoad: 'login-required', checkLoginIframe: false})
             .then(function (authenticated) {
-                // User is successfully authenticated
+                // User is successfully authenticated!
             })
 
     /**
