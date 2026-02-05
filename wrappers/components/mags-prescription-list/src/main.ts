@@ -8,7 +8,18 @@ bootstrapApplication(App, {
   ...appConfig,
   providers: [
     ...appConfig.providers,
-    { provide: HOST_SETTINGS, useValue: {} },
-    { provide: HOST_SERVICES, useValue: {} },
+    {
+      provide: HOST_SETTINGS,
+      useValue: {
+        userLanguage: 'nl',
+        configName: 'demo',
+      },
+    },
+    {
+      provide: HOST_SERVICES,
+      useValue: {
+        events: new EventTarget(),
+      },
+    },
   ],
 }).catch(err => console.error(err));
