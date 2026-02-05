@@ -1,0 +1,16 @@
+{
+  "name": "@smals-belgium-shared/uhmep-prescription-list",
+  "version": "1.0.0",
+  "description": "MAGS integration for prescription list web component",
+  "keywords": [
+    "web-component",
+    "prescription",
+    "MAGS"
+  ],
+  "author": "UHMEP team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/smals-belgium/shared-referral-prescription-webcomponent"
+  }
+}
