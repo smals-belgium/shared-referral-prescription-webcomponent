@@ -73,7 +73,7 @@ import {
 } from '@reuse/code/openapi';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatChip } from '@angular/material/chips';
-import { EvfLabelPipe, EvfTranslateService, FormTranslations } from '@smals/vas-evaluation-form-ui-core';
+import { EvfTranslateService, FormTranslations } from '@smals/vas-evaluation-form-ui-core';
 import { PrescriptionDetailsMainComponent } from '../../components/prescription-details-main/prescription-details-main.component';
 import { PrescriptionDetailsSecondaryComponent } from '../../components/prescription-details-secondary/prescription-details-secondary.component';
 import {
@@ -81,7 +81,6 @@ import {
   PrescriptionDetailsSecondaryService,
 } from '../../components/prescription-details-secondary/prescription-details-secondary.service';
 import { PrescriptionDetailsBottomComponent } from '../../components/prescription-details-bottom/prescription-details-bottom.component';
-import { DeviceService } from '@reuse/code/services/helpers/device.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
 import { Lang } from '@reuse/code/interfaces/lang.enum';
@@ -112,7 +111,6 @@ export interface ViewState {
     TranslateModule,
     TemplateNamePipe,
     MatChip,
-    EvfLabelPipe,
     PrescriptionDetailsMainComponent,
     PrescriptionDetailsSecondaryComponent,
     PrescriptionDetailsBottomComponent,
@@ -141,7 +139,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
   private readonly _prescriptionSecondaryService = inject(PrescriptionDetailsSecondaryService);
   protected readonly evfTranslateService = inject(EvfTranslateService);
-  protected readonly deviceService = inject(DeviceService);
 
   @HostBinding('attr.lang')
   @Input()
