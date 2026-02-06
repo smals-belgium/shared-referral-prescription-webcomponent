@@ -182,6 +182,7 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
           error: 'No templateCode found.',
         })
       );
+      return;
     }
 
     if (!this.prescriptionForm.modelId) {
@@ -192,6 +193,7 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
           error: 'No model id found.',
         })
       );
+      return;
     }
 
     this.titleControl.markAllAsTouched();
@@ -223,9 +225,7 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
     return elements
       .filter(
         value =>
-          // Exclude treatmentValidationEndDate and validityPeriod from models evf forms
-          value.elements?.[0].id?.toLowerCase() !== 'validitystartdate' &&
-          value.id?.toLowerCase() !== 'treatmentvalidationenddate'
+          !value.tags?.map((tag) => tag.toLowerCase()).includes('notinmodels')
       )
       .reduce((filteredElements, element) => {
         if (element.elements) {
@@ -237,7 +237,6 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
         }
 
         const shouldInclude =
-          !element.tags?.includes('freeText') &&
           !(element.dataType?.type === TypeEnum.Date) &&
           !(element.elements && element.elements.length === 0);
 
