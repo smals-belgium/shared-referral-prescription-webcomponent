@@ -44,11 +44,7 @@ export class WcAuthService extends AuthService {
 
   override getClaims() {
     return this.getIdToken().pipe(
-      map(token =>
-        typeof token === 'string'
-          ? this.decodeJwt<IdToken>(token)
-          : token
-      ),
+      map(token => (typeof token === 'string' ? this.decodeJwt<IdToken>(token) : token)),
       shareReplay(1)
     );
   }
@@ -65,13 +61,8 @@ export class WcAuthService extends AuthService {
     return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
   }
 
-  private readonly isProfessional$Internal = combineLatest([
-    this.getClaims(),
-    this.getResourceAccess()
-  ]).pipe(
-    map(([claims, access]) =>
-      this.userProfileHasProfessionalKey(claims?.userProfile, access?.resource_access)
-    ),
+  private readonly isProfessional$Internal = combineLatest([this.getClaims(), this.getResourceAccess()]).pipe(
+    map(([claims, access]) => this.userProfileHasProfessionalKey(claims?.userProfile, access?.resource_access)),
     shareReplay(1)
   );
 
@@ -82,7 +73,9 @@ export class WcAuthService extends AuthService {
   override discipline(): Observable<Discipline> {
     return this.getClaims().pipe(
       map(claims => {
-        const keys = claims?.[USER_PROFILE_CLAIM_KEY] ? Object.keys(claims?.[USER_PROFILE_CLAIM_KEY]).map(k => k.toLowerCase()) : [];
+        const keys = claims?.[USER_PROFILE_CLAIM_KEY]
+          ? Object.keys(claims?.[USER_PROFILE_CLAIM_KEY]).map(k => k.toLowerCase())
+          : [];
         const match = Object.values(Discipline).find(discipline => keys.includes(discipline.toLowerCase()));
         return match ?? Discipline.Patient;
       })
@@ -107,15 +100,21 @@ export class WcAuthService extends AuthService {
   }
 
   private userProfileHasProfessionalKey(userProfile?: UserProfile, resourceAccess?: ResourceAccess): boolean {
-    if (!userProfile || !resourceAccess) return false;
+    if (userProfile) {
+      const hasProfessionalKey = Object.values(Discipline).some(discipline =>
+        Object.hasOwn(userProfile, discipline.toLowerCase())
+      );
 
-    const hasProfessionalKey = Object.values(Discipline).some(discipline =>
-      Object.hasOwn(userProfile, discipline.toLowerCase())
-    );
+      return hasProfessionalKey;
+    }
 
-    const roles = resourceAccess[CLIENT_ID].roles;
-    const isAdmin = Array.isArray(roles) && roles.includes('admin');
+    if (resourceAccess) {
+      const roles = resourceAccess[CLIENT_ID].roles;
+      const isAdmin = Array.isArray(roles) && roles.includes('admin');
 
-    return hasProfessionalKey || isAdmin || false;
+      return isAdmin;
+    }
+
+    return false;
   }
 }
