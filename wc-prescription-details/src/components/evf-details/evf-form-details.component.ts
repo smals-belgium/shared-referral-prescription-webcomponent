@@ -14,7 +14,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { PssService } from '@reuse/code/services/api/pss.service';
 import { Intent } from '@reuse/code/interfaces';
 
-interface metaData {
+interface MetaData {
   pssActive: boolean;
   isProfessional: boolean;
   intent: Intent | undefined;
@@ -29,7 +29,7 @@ interface metaData {
 export class EvfFormDetailsWebComponent implements OnChanges, OnInit {
   elementGroup!: ElementGroup;
 
-  metaData: metaData = {
+  metaData: MetaData = {
     pssActive: false,
     isProfessional: false,
     intent: undefined,

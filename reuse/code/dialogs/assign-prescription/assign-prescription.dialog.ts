@@ -126,6 +126,7 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
               criteria.professionalType !== 'ORGANIZATION' ? disciplines : [],
               criteria.professionalType !== 'CAREGIVER' ? institutionTypes : [],
               ProviderType.All,
+              this.data.prescriptionId,
               criteria.page,
               criteria.pageSize
             )
@@ -174,15 +175,6 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
                 }
               }
               return hp;
-            })
-            .filter(hp => {
-              if (isProfessional(hp)) {
-                if (!hp.id?.ssin) return false;
-                return !this.data.assignedCareGivers?.includes(hp.id.ssin);
-              } else {
-                const nihdi = (hp.nihii8 ?? hp.nihii11 ?? '') + hp.qualificationCode;
-                return !this.data.assignedOrganizations?.includes(nihdi);
-              }
             });
           this.isLoading.set(false);
           return {

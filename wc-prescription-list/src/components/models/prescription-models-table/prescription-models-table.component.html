@@ -46,13 +46,9 @@
   <ng-container matColumnDef="tableStatus">
     <td mat-footer-cell *matFooterCellDef colspan="6">
       @if(prescriptionModels.length > 0) {
-        <span
-          class="sr-only"
-          role="status"
-          aria-live="polite"
-        >
-      {{ 'prescription.model.tableHasRecords' | translate:{ total: prescriptionModels.length } }}
-    </span>
+      <span class="sr-only">
+        {{ 'prescription.model.tableHasRecords' | translate:{ total: prescriptionModels.length } }}
+      </span>
       }
       @if(prescriptionModels.length === 0) {
         <span>{{'prescription.model.noModels' | translate}}</span>

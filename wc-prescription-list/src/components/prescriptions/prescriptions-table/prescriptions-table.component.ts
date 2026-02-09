@@ -20,7 +20,6 @@ import {
   MatHeaderCellDef,
   MatHeaderRow,
   MatHeaderRowDef,
-  MatNoDataRow,
   MatRow,
   MatRowDef,
   MatTable,

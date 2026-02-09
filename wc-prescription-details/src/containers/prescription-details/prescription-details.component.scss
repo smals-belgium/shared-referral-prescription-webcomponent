@@ -364,11 +364,10 @@ evf-checkbox-list[data-evf-element-id="previous-relevant-examinations-unknown"] 
   &.mat-mdc-menu-panel{
       min-width: 200px;
       max-width: 250px;
-    div.mat-mdc-menu-content {
-      padding: var(--mh-action-menu-content-padding, mh.$spacing-rem-s 0);
-    }
 
     div.mat-mdc-menu-content{
+      padding: var(--mh-action-menu-content-padding, mh.$spacing-rem-s 0);
+
       button.mat-mdc-menu-item{
         border-radius: var(--mh-action-menu-item-border-radius, 0);
         &:not([disabled]):hover{

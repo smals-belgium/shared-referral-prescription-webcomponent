@@ -43,6 +43,23 @@ describe('TemplateVersionsState', () => {
 
       const result = state.getStateForInstance('instance-1', 'ASSISTING_WITH_PERSONAL_HYGIENE');
       expect(result()).toEqual({ status: LoadingStatus.ERROR, error });
+
+    });
+
+    it("migrates state from old key (templateCode) to new key (templateCode::instanceId)", () => {
+      const oldKeyState = state.getState("TPL001");
+      expect(oldKeyState().status).toBe(LoadingStatus.INITIAL);
+
+      (state as any).states["TPL001"] = (state as any).states["TPL001"] || oldKeyState();
+
+      prescriptionTemplateService.findOneVersion.mockReturnValue(of(mockTemplateVersion));
+      state.loadTemplateVersionForInstance("instance-1", "TPL001");
+
+      expect((state as any).states["TPL001"]).toBeUndefined();
+      expect((state as any).states["TPL001::instance-1"]).toBeDefined();
+
+      const migratedState = state.getStateForInstance("instance-1", "TPL001");
+      expect(migratedState().status).toBe(LoadingStatus.SUCCESS);
     });
   });
 

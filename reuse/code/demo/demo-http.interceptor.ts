@@ -62,8 +62,7 @@ export const demoHttpInterceptor: HttpInterceptorFn = (
   type BodyOrFunction = Body | ((matchResult: RegExpMatchArray | null) => Body);
 
   let body = (match.body ?? {}) as BodyOrFunction;
-
-  const matchResult = shortCodeUrl ? req.urlWithParams.match(match.url) : urlWithoutParams.match(match.url);
+  const matchResult = match.url.exec(shortCodeUrl ? req.urlWithParams : urlWithoutParams);
 
   try {
     if (match.handler) {
