@@ -8,7 +8,6 @@ import {
   Observable,
   of,
   shareReplay,
-  startWith,
   switchMap
 } from 'rxjs';
 import { map } from 'rxjs/operators';

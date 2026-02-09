@@ -60,13 +60,9 @@
   <ng-container matColumnDef="tableStatus">
     <td mat-footer-cell *matFooterCellDef colspan="6">
       @if((prescriptions?.total ?? 0) > 0) {
-        <span
-          class="sr-only"
-          role="status"
-          aria-live="polite"
-        >
-      {{ 'prescription.tableHasRecords' | translate:{ total: prescriptions?.total } }}
-    </span>
+      <span class="sr-only" >
+        {{ 'prescription.tableHasRecords' | translate:{ total: prescriptions?.total } }}
+      </span>
       }
       @if(prescriptions?.total === 0) {
         <span *hideIfProfessional>{{ 'prescription.noPrescriptionsForUser' | translate }}</span>

@@ -18,7 +18,7 @@ import { MarkdownModule } from 'ngx-markdown';
 import { Intent } from '@reuse/code/interfaces';
 import { map, Observable, startWith } from 'rxjs';
 
-interface selectedResponse {
+interface SelectedResponse {
   response: Response;
   subElementsControls: BaseElementControl[];
 }
@@ -56,24 +56,23 @@ export class ProposalCheckboxListComponent extends EvfBaseFormDetailComponent im
     this.selectedResponses$ = this.elementControl.valueChanges.pipe(
       startWith(this.elementControl.value),
       map(values => {
-        if (!this.element.responses) return [] as selectedResponse[];
+        if (!this.element.responses) return [] as SelectedResponse[];
 
         return this.element.responses
           .filter(response => values?.includes(response.value))
           .map(response => ({
             response,
-            subElementsControls: this.elementControl.childElementControls.filter(
-              (q: BaseElementControl) =>
-                q.element?.showIfParentResponse && q.element.showIfParentResponse.includes(response.value)
+            subElementsControls: this.elementControl.childElementControls.filter((q: BaseElementControl) =>
+              q.element?.showIfParentResponse?.includes(response.value)
             ),
-          })) as unknown as selectedResponse[];
+          })) as unknown as SelectedResponse[];
       })
     );
   }
 
   getSubElementControls(value: string | number | boolean): BaseElementControl[] {
-    return this.elementControl.childElementControls.filter(
-      (q: BaseElementControl) => q.element?.showIfParentResponse && q.element.showIfParentResponse.includes(value)
+    return this.elementControl.childElementControls.filter((q: BaseElementControl) =>
+      q.element?.showIfParentResponse?.includes(value)
     );
   }
 

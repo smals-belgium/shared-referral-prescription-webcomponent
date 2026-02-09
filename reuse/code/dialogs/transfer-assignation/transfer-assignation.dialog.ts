@@ -110,6 +110,7 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
             disciplines,
             undefined,
             ProviderType.Professional,
+            this.data.prescriptionId,
             criteria.page,
             criteria.pageSize
           )
@@ -129,15 +130,10 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
         const professionals = response.healthcareProfessionals ?? [];
         const total = response.total ?? professionals.length;
 
-        const filtered = professionals.filter(p => {
-          if (!p?.id?.ssin) return false;
-          return !this.data.assignedCareGivers?.includes(p.id.ssin);
-        });
-
         this.isLoading.set(false);
 
         return {
-          items: filtered,
+          items: professionals,
           total: total,
           page: this.searchCriteria$()?.page ?? 1,
           pageSize: this.searchCriteria$()?.pageSize ?? 10,
