@@ -13,6 +13,10 @@ import { MagsPrescriptionList } from './app/components/mags/mags-prescription-li
 import { appConfig } from './app/app.config';
 import { HOST_SETTINGS } from '@reuse/code/components/wrappers/injection-tokens/host-settings.injection-token';
 import { HOST_SERVICES } from '@reuse/code/components/wrappers/injection-tokens/host-services.injection-token';
+import { importProvidersFrom } from '@angular/core';
+import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { WcTranslateLoader } from '../../../services/translate.loader';
+import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-compiler';
 
 export const manifest: MyHealthModuleManifest = {
   specVersion: { major: 4, minor: 0, patch: 1 },
@@ -21,6 +25,7 @@ export const manifest: MyHealthModuleManifest = {
     {
       tagName: 'uhmep-prescription-list',
       events: ['open'],
+      requiredProperties: ['patientSsin'],
     },
   ],
 };
@@ -32,6 +37,12 @@ export const bootstrap: MyHealthModuleBootstrap = (config: { services: HostServi
       ...appConfig.providers,
       { provide: HOST_SETTINGS, useValue: config.settings },
       { provide: HOST_SERVICES, useValue: config.services },
+      importProvidersFrom(
+        TranslateModule.forRoot({
+          loader: { provide: TranslateLoader, useClass: WcTranslateLoader },
+          compiler: { provide: TranslateCompiler, useClass: TranslateMessageFormatCompiler },
+        })
+      ),
     ],
   }).then(app => {
     customElements.define(

@@ -1,5 +1,17 @@
-import { IConfiguration } from '@smals/ngx-configuration-service';
-
+interface IEnvironmentVariables {
+  readonly [variableName: string]: any;
+}
+interface IEnvironmentConfiguration {
+  readonly [env: string]: IEnvironmentVariables;
+}
+interface IEnvironmentDefinition {
+  readonly env: string;
+  readonly domain: string[];
+}
+interface IConfiguration {
+  environments: IEnvironmentDefinition[];
+  variables: IEnvironmentConfiguration;
+}
 interface AppConfig extends IConfiguration {
   variables: {
     [env: string]: AppConfigVariables;

@@ -9,7 +9,7 @@ import { MagsPrescriptionList } from './components/mags/mags-prescription-list.c
 })
 export class App {
   protected readonly title = signal('mags-prescription-list');
-  ssin = { props: { patientSsin: '80222700163' } };
+  ssin = '80222700163';
 
   open(event: any) {
     console.log('open: ', event);

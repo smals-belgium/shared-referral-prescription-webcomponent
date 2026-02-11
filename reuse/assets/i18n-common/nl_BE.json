@@ -356,6 +356,9 @@
             "extend": "Verlengen",
             "print": "Afdrukken",
             "cancel": "Annuleren"
+        },
+        "assignProfessional": {
+            "undefined": ""
         }
     },
     "proposal": {
@@ -551,6 +554,8 @@
             "tableHasRecords": "",
             "noRecords": "",
             "select": ""
-        }
+        },
+        "noProfessionals": "",
+        "allProfessionalsFetched": ""
     }
 }

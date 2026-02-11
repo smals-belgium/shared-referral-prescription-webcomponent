@@ -356,6 +356,9 @@
             "extend": "",
             "print": "",
             "cancel": ""
+        },
+        "assignProfessional": {
+            "undefined": ""
         }
     },
     "proposal": {
@@ -551,6 +554,8 @@
             "tableHasRecords": "",
             "noRecords": "",
             "select": ""
-        }
+        },
+        "noProfessionals": "",
+        "allProfessionalsFetched": ""
     }
 }

@@ -16,6 +16,7 @@
     "build:wc:mags-details": "ng build mags-prescription-details-webcomponent --configuration production --output-hashing none && vite build --mode production -c ./wrappers/components/mags-prescription-details/vite.config.mjs && rollup -c ./wrappers/components/mags-prescription-details/rollup.config.dts.mjs && cp wrappers/components/mags-prescription-details/package.json dist/mags-prescription-details/mags",
     "serve:wc:mags-details": "ng serve mags-prescription-details",
     "build:wc:mags": "npm run build:wc:mags-list && npm run build:wc:mags-details",
+    "build:all-packages": "npm run build && npm run build:wc:mags",
     "watch": "ng build --watch --configuration development",
     "test:wc:reuse": "ng test reuse",
     "test:wc:details": "ng test wc-prescription-details",
@@ -30,9 +31,9 @@
     "generate-api:local": "openapi-generator-cli generate -i api-contract/openapi.yaml -g typescript-angular -o reuse/code/openapi --additional-properties fileNaming=kebab-case,withInterfaces=true --generate-alias-as-model",
     "generate-api:fromTools": "java -jar tools/openapi-generator-cli.jar generate -i api-contract/openapi.yaml -g typescript-angular -o reuse/code/openapi --additional-properties fileNaming=kebab-case,withInterfaces=true --generate-alias-as-model ",
     "preversion": "rm -rf ./dist && git submodule update --init --recursive",
-    "version": "npm run generate-api:fromTools && npm run build",
+    "version": "npm run generate-api:fromTools && npm run build:all-packages",
     "postversion": "npm pack .",
-    "api:client:init": "git submodule update --init --recursive && npx copyfiles -f ./lib/openapi-generator-cli/7.14.0/openapi-generator-cli-7.14.0.jar ./node_modules/@openapitools/openapi-generator-cli/versions/ && npm run generate-api:local",
+    "api:client:init": "git submodule update --init --recursive && copyfiles -f ./lib/openapi-generator-cli/7.14.0/openapi-generator-cli-7.14.0.jar ./node_modules/@openapitools/openapi-generator-cli/versions/ && npm run generate-api:local",
     "prepare": "husky"
   },
   "private": true,
@@ -57,7 +58,6 @@
     "@sentry/angular": "^9.5.0",
     "@smals-belgium-shared/pseudo-helper": "^1.1.1",
     "@smals-belgium/myhealth-wc-integration": "^5.0.1",
-    "@smals/ngx-configuration-service": "^5.0.0",
     "@smals/vas-evaluation-form-ui-core": "^6.5.0",
     "@smals/vas-evaluation-form-ui-material": "^6.5.0",
     "@types/marked": "^6.0.0",
@@ -124,6 +124,8 @@
   "files": [
     "dist/wc-prescription-create",
     "dist/wc-prescription-list",
-    "dist/wc-prescription-details"
+    "dist/wc-prescription-details",
+    "dist/mags-prescription-list",
+    "dist/mags-prescription-details"
   ]
 }
