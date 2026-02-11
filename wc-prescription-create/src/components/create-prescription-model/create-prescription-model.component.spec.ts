@@ -5,14 +5,19 @@ import { MatDialog } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionModel.state';
-import { CreatePrescriptionForm, LoadingStatus, DataState, PrescriptionModelStatus } from '@reuse/code/interfaces';
+import {
+  CreatePrescriptionForm,
+  DataState,
+  LoadingStatus,
+  PrescriptionModelStatus,
+} from '@reuse/code/interfaces';
 import { ElementGroup } from '@smals/vas-evaluation-form-ui-core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { By } from '@angular/platform-browser';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { TemplateVersion, FormElement, FormDataType } from '@reuse/code/openapi';
+import { FormDataType, FormElement, TemplateVersion } from '@reuse/code/openapi';
 import { PrescriptionModelService } from '@reuse/code/services/api/prescriptionModel.service';
 import { UniqueModelNameValidator } from '@reuse/code/directives/unique-model-name.directive';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -38,7 +43,7 @@ describe('CreatePrescriptionModelComponent', () => {
   beforeEach(async () => {
     mockDialog = {
       open: jest.fn().mockReturnValue({
-        afterClosed: () => of(true)
+        afterClosed: () => of(true),
       }),
     };
 
@@ -46,7 +51,7 @@ describe('CreatePrescriptionModelComponent', () => {
       modalState: signal<PrescriptionModelStatus>({
         state: LoadingStatus.INITIAL,
         error: undefined,
-        success: undefined
+        success: undefined,
       }),
       setInitialState: jest.fn(),
       setModalState: jest.fn(),
@@ -66,7 +71,7 @@ describe('CreatePrescriptionModelComponent', () => {
         TranslateModule.forRoot(),
         MatIconModule,
         NoopAnimationsModule,
-        ReactiveFormsModule,
+        ReactiveFormsModule
       ],
       providers: [
         { provide: MatDialog, useValue: mockDialog },
@@ -155,7 +160,7 @@ describe('CreatePrescriptionModelComponent', () => {
       component.prescriptionForm = createMockPrescriptionForm({
         submitted: true,
         elementGroup: mockElementGroup,
-        status: LoadingStatus.INITIAL
+        status: LoadingStatus.INITIAL,
       });
       fixture.detectChanges();
 
@@ -221,9 +226,10 @@ describe('CreatePrescriptionModelComponent', () => {
 
       const alerts = fixture.debugElement.queryAll(By.css('app-alert'));
       const successAlert = alerts.find(alert =>
-        alert.nativeElement.textContent.includes('prescription.model.create.success')
+        alert.componentInstance.alert === 'success'
       );
       expect(successAlert).toBeTruthy();
+      expect(successAlert?.componentInstance.message).toBe('prescription.model.create.success');
     });
 
     it('should show spinner when modelState is LOADING', () => {
@@ -252,9 +258,11 @@ describe('CreatePrescriptionModelComponent', () => {
   describe('Form Template State', () => {
     it('should show spinner when formTemplateState is LOADING', () => {
       component.prescriptionForm = createMockPrescriptionForm({
-        formTemplateState$: signal(createMockDataState({
-          status: LoadingStatus.LOADING,
-        })),
+        formTemplateState$: signal(
+          createMockDataState({
+            status: LoadingStatus.LOADING,
+          })
+        ),
       });
       fixture.detectChanges();
 
@@ -264,9 +272,11 @@ describe('CreatePrescriptionModelComponent', () => {
 
     it('should show spinner when formTemplateState is UPDATING', () => {
       component.prescriptionForm = createMockPrescriptionForm({
-        formTemplateState$: signal(createMockDataState({
-          status: LoadingStatus.UPDATING,
-        })),
+        formTemplateState$: signal(
+          createMockDataState({
+            status: LoadingStatus.UPDATING,
+          })
+        ),
       });
       fixture.detectChanges();
 
@@ -276,9 +286,11 @@ describe('CreatePrescriptionModelComponent', () => {
 
     it('should show error message when formTemplateState is ERROR', () => {
       component.prescriptionForm = createMockPrescriptionForm({
-        formTemplateState$: signal(createMockDataState({
-          status: LoadingStatus.ERROR,
-        })),
+        formTemplateState$: signal(
+          createMockDataState({
+            status: LoadingStatus.ERROR,
+          })
+        ),
       });
       fixture.detectChanges();
 
@@ -288,10 +300,12 @@ describe('CreatePrescriptionModelComponent', () => {
 
     it('should render evf-form when formTemplateState is SUCCESS', () => {
       component.prescriptionForm = createMockPrescriptionForm({
-        formTemplateState$: signal(createMockDataState({
-          status: LoadingStatus.SUCCESS,
-          data: createMockTemplateVersion(),
-        })),
+        formTemplateState$: signal(
+          createMockDataState({
+            status: LoadingStatus.SUCCESS,
+            data: createMockTemplateVersion(),
+          })
+        ),
       });
       fixture.detectChanges();
 
@@ -305,10 +319,12 @@ describe('CreatePrescriptionModelComponent', () => {
       component.prescriptionForm = createMockPrescriptionForm({
         modelId: 123,
         modelName: 'Test Model',
-        formTemplateState$: signal(createMockDataState({
-          status: LoadingStatus.SUCCESS,
-          data: createMockTemplateVersion(),
-        })),
+        formTemplateState$: signal(
+          createMockDataState({
+            status: LoadingStatus.SUCCESS,
+            data: createMockTemplateVersion(),
+          })
+        ),
       });
 
       component.ngOnChanges({
@@ -329,10 +345,12 @@ describe('CreatePrescriptionModelComponent', () => {
     it('should not display model name input when modelId is undefined', () => {
       component.prescriptionForm = createMockPrescriptionForm({
         modelId: undefined,
-        formTemplateState$: signal(createMockDataState({
-          status: LoadingStatus.SUCCESS,
-          data: createMockTemplateVersion(),
-        })),
+        formTemplateState$: signal(
+          createMockDataState({
+            status: LoadingStatus.SUCCESS,
+            data: createMockTemplateVersion(),
+          })
+        ),
       });
       fixture.detectChanges();
 
@@ -343,10 +361,12 @@ describe('CreatePrescriptionModelComponent', () => {
     it('should show required error when title is empty', () => {
       component.prescriptionForm = createMockPrescriptionForm({
         modelId: 123,
-        formTemplateState$: signal(createMockDataState({
-          status: LoadingStatus.SUCCESS,
-          data: createMockTemplateVersion(),
-        })),
+        formTemplateState$: signal(
+          createMockDataState({
+            status: LoadingStatus.SUCCESS,
+            data: createMockTemplateVersion(),
+          })
+        ),
       });
 
       component.ngOnChanges({
@@ -372,10 +392,12 @@ describe('CreatePrescriptionModelComponent', () => {
 
       component.prescriptionForm = createMockPrescriptionForm({
         modelId: 123,
-        formTemplateState$: signal(createMockDataState({
-          status: LoadingStatus.SUCCESS,
-          data: createMockTemplateVersion(),
-        })),
+        formTemplateState$: signal(
+          createMockDataState({
+            status: LoadingStatus.SUCCESS,
+            data: createMockTemplateVersion(),
+          })
+        ),
       });
 
       component.ngOnChanges({
@@ -456,54 +478,52 @@ describe('CreatePrescriptionModelComponent', () => {
     it('should show create button when modelId does not exist', () => {
       component.prescriptionForm = createMockPrescriptionForm({
         modelId: undefined,
-        formTemplateState$: signal(createMockDataState({
-          status: LoadingStatus.SUCCESS,
-          data: createMockTemplateVersion(),
-        })),
+        formTemplateState$: signal(
+          createMockDataState({
+            status: LoadingStatus.SUCCESS,
+            data: createMockTemplateVersion(),
+          })
+        ),
       });
       fixture.detectChanges();
 
       const buttons = fixture.debugElement.queryAll(By.css('button'));
-      const createButton = buttons.find(btn =>
-        btn.nativeElement.textContent.includes('save')
-      );
+      const createButton = buttons.find(btn => btn.nativeElement.textContent.includes('save'));
       expect(createButton).toBeTruthy();
     });
 
     it('should show update button when modelId exists', () => {
       component.prescriptionForm = createMockPrescriptionForm({
         modelId: 123,
-        formTemplateState$: signal(createMockDataState({
-          status: LoadingStatus.SUCCESS,
-          data: createMockTemplateVersion(),
-        })),
+        formTemplateState$: signal(
+          createMockDataState({
+            status: LoadingStatus.SUCCESS,
+            data: createMockTemplateVersion(),
+          })
+        ),
       });
       fixture.detectChanges();
 
       const buttons = fixture.debugElement.queryAll(By.css('button'));
-      const updateButton = buttons.find(btn =>
-        btn.nativeElement.textContent.includes('update')
-      );
+      const updateButton = buttons.find(btn => btn.nativeElement.textContent.includes('update'));
       expect(updateButton).toBeTruthy();
     });
 
     it('should not show both create and update buttons simultaneously', () => {
       component.prescriptionForm = createMockPrescriptionForm({
         modelId: 123,
-        formTemplateState$: signal(createMockDataState({
-          status: LoadingStatus.SUCCESS,
-          data: createMockTemplateVersion(),
-        })),
+        formTemplateState$: signal(
+          createMockDataState({
+            status: LoadingStatus.SUCCESS,
+            data: createMockTemplateVersion(),
+          })
+        ),
       });
       fixture.detectChanges();
 
       const buttons = fixture.debugElement.queryAll(By.css('button'));
-      const createButton = buttons.find(btn =>
-        btn.nativeElement.textContent.includes('save')
-      );
-      const updateButton = buttons.find(btn =>
-        btn.nativeElement.textContent.includes('update')
-      );
+      const createButton = buttons.find(btn => btn.nativeElement.textContent.includes('save'));
+      const updateButton = buttons.find(btn => btn.nativeElement.textContent.includes('update'));
 
       expect(createButton).toBeFalsy();
       expect(updateButton).toBeTruthy();
@@ -630,11 +650,10 @@ describe('CreatePrescriptionModelComponent', () => {
         expect.objectContaining({
           a: 1,
           c: 'test',
-          foo: 'bar'
+          foo: 'bar',
         })
       );
     });
-
 
     it('should apply mapResponsesToRepeatObject transformation', () => {
       const setValue = jest.fn();
@@ -800,7 +819,7 @@ describe('CreatePrescriptionModelComponent', () => {
 
     it('should emit modelSaved when dialog returns true', () => {
       mockDialog.open = jest.fn().mockReturnValue({
-        afterClosed: () => of(true)
+        afterClosed: () => of(true),
       });
 
       const mockElementGroup = createMockElementGroup({
@@ -823,7 +842,7 @@ describe('CreatePrescriptionModelComponent', () => {
 
     it('should not emit modelSaved when dialog returns false', () => {
       mockDialog.open = jest.fn().mockReturnValue({
-        afterClosed: () => of(false)
+        afterClosed: () => of(false),
       });
 
       const mockElementGroup = createMockElementGroup({
@@ -910,13 +929,10 @@ describe('CreatePrescriptionModelComponent', () => {
 
       component.handleUpdate(component.prescriptionForm, template);
 
-      expect(mockPrescriptionModelService.updateModel).toHaveBeenCalledWith(
-        123,
-        {
-          name: 'Updated Name',
-          responses: { field: 'updated value' },
-        }
-      );
+      expect(mockPrescriptionModelService.updateModel).toHaveBeenCalledWith(123, {
+        name: 'Updated Name',
+        responses: { field: 'updated value' },
+      });
     });
 
     it('should emit modelSaved on successful update', () => {
@@ -1002,11 +1018,7 @@ describe('CreatePrescriptionModelComponent', () => {
 
       component.handleUpdate(component.prescriptionForm, createMockTemplateVersion());
 
-      expect(mockModelState.setModalState).toHaveBeenCalledWith(
-        LoadingStatus.ERROR,
-        undefined,
-        error
-      );
+      expect(mockModelState.setModalState).toHaveBeenCalledWith(LoadingStatus.ERROR, undefined, error);
     });
 
     it('should not call service when title is invalid', () => {
@@ -1080,7 +1092,7 @@ describe('CreatePrescriptionModelComponent', () => {
         LoadingStatus.ERROR,
         undefined,
         expect.objectContaining({
-          error: 'No model id found.'
+          error: 'No model id found.',
         })
       );
     });
@@ -1132,11 +1144,7 @@ describe('CreatePrescriptionModelComponent', () => {
       const elements: FormElement[] = [
         {
           id: '1',
-          validations: [
-            { name: 'required' },
-            { name: 'minLength' },
-            { name: 'maxLength' },
-          ],
+          validations: [{ name: 'required' }, { name: 'minLength' }, { name: 'maxLength' }],
         } as FormElement,
       ];
 
@@ -1156,10 +1164,7 @@ describe('CreatePrescriptionModelComponent', () => {
             { id: '1-2', tags: [] } as FormElement,
             {
               id: '1-3',
-              elements: [
-                { id: '1-3-1', tags: ['notInModels'] } as FormElement,
-                { id: '1-3-2' } as FormElement,
-              ],
+              elements: [{ id: '1-3-1', tags: ['notInModels'] } as FormElement, { id: '1-3-2' } as FormElement],
             } as FormElement,
           ],
         } as FormElement,
@@ -1193,10 +1198,7 @@ describe('CreatePrescriptionModelComponent', () => {
     });
 
     it('should handle elements without tags', () => {
-      const elements: FormElement[] = [
-        { id: '1', tags: undefined } as FormElement,
-        { id: '2' } as FormElement,
-      ];
+      const elements: FormElement[] = [{ id: '1', tags: undefined } as FormElement, { id: '2' } as FormElement];
 
       const result = (component as any).filterElements(elements);
 
@@ -1228,10 +1230,7 @@ describe('CreatePrescriptionModelComponent', () => {
         {
           id: '3',
           tags: [],
-          validations: [
-            { name: 'required' },
-            { name: 'minLength' },
-          ],
+          validations: [{ name: 'required' }, { name: 'minLength' }],
         } as FormElement,
       ];
 
@@ -1249,10 +1248,7 @@ describe('CreatePrescriptionModelComponent', () => {
       const formTemplateState = createMockDataState({
         status: LoadingStatus.SUCCESS,
         data: createMockTemplateVersion({
-          elements: [
-            { id: '1', tags: ['notInModels'] } as FormElement,
-            { id: '2', tags: [] } as FormElement,
-          ],
+          elements: [{ id: '1', tags: ['notInModels'] } as FormElement, { id: '2', tags: [] } as FormElement],
         }),
       });
 
@@ -1301,9 +1297,7 @@ describe('CreatePrescriptionModelComponent', () => {
           id: 123,
           version: '1.0',
           templateId: 456,
-          elements: [
-            { id: '1', tags: [] } as FormElement,
-          ],
+          elements: [{ id: '1', tags: [] } as FormElement],
         }),
       });
 
@@ -1324,9 +1318,11 @@ describe('CreatePrescriptionModelComponent', () => {
 
   // Helper functions
   function createMockPrescriptionForm(overrides?: Partial<CreatePrescriptionForm>): CreatePrescriptionForm {
-    const defaultFormTemplateState = signal(createMockDataState({
-      status: LoadingStatus.INITIAL,
-    }));
+    const defaultFormTemplateState = signal(
+      createMockDataState({
+        status: LoadingStatus.INITIAL,
+      })
+    );
 
     return {
       generatedUUID: 'uuid-123',

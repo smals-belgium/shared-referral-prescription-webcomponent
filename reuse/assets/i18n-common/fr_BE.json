@@ -67,7 +67,13 @@
         "errors": {
             "pseudoDisabled": "Il n'est pas possible de créer une prescription."
         },
-        "prescriptionModel": "Modèle"
+        "prescriptionModel": "Modèle",
+        "error": {
+            "default": {
+                "header": "Problème technique",
+                "subheader": "Une erreur s'est produite. Merci de réessayer dans quelques instants."
+            }
+        }
     },
     "pagination": {
         "ariaLabel": {
@@ -216,13 +222,19 @@
             "success": "{firstName} {lastName} a été assigné comme prestataire.",
             "successOrganization": "{name} a été assigné comme organisation.",
             "meSuccess": "Vous avez été assigné comme prestataire.",
-            "performer": "Prestataire ou organisation",
+            "performer": "Prestataire",
             "searchPerformerPlaceHolder": "N° INAMI, nom",
             "select": "Sélectionner",
-            "locations": "Localisation(s)",
+            "locations": "Localisation",
             "zipCodeOrCityName": "Code postal ou commune",
             "noResults": "Aucune commune trouvée",
-            "organization": "Organisation"
+            "organization": "Organisation",
+            "dialog": {
+                "title": "Assigner un prestataire de soins à une prescription",
+                "description": "Si vous ajoutez un prestataire de soins à cette prescription, celui-ci pourra consulter les informations contenues dans cette prescription."
+            },
+            "locationsHint": "Chercher via le code postal ou le nom de la commune",
+            "performerHint": "Chercher via nom ou identifiant"
         },
         "transferAssignation": {
             "title": "Transférer l'assignation",
@@ -527,5 +539,18 @@
             "message": "Nous sommes désolés, le service PSS (Prescription Search Support) est momentanément indisponible.\nVous ne pouvez plus consulter les recommandations d'examens en imagerie médicale pour l'instant.\nMerci de réessayer dans quelques minutes."
         }
     },
-    "prescription-model-tableHasRecords-Le-nombre-total": "Le nombre total de modèles est {total}"
+    "prescription-model-tableHasRecords-Le-nombre-total": "Le nombre total de modèles est {total}",
+    "professional": {
+        "table": {
+            "results": "{results} résultats trouvé",
+            "firstname": "Nom",
+            "lastname": "Prénom",
+            "address": "Adresse",
+            "city": "Commune",
+            "actions": "Action",
+            "tableHasRecords": "{total}  résultats trouvé",
+            "noRecords": "Aucun professionnel correspondant à cette recherche n'a été trouvé.",
+            "select": "Choisir"
+        }
+    }
 }
