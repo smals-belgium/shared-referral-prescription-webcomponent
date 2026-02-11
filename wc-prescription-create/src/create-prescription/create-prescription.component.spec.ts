@@ -1669,7 +1669,6 @@ describe('CreatePrescriptionWebComponent', () => {
     });
 
     describe('findModelById', () => {
-
       it('should call addPrescriptionFormByModel when model is found', fakeAsync(() => {
         createFixture('mockPseudomizedKey');
 
@@ -1677,11 +1676,9 @@ describe('CreatePrescriptionWebComponent', () => {
         const modelId = 42;
         const mockModel = { id: 42, name: 'Test Model', code: 'M001' };
 
-        jest.spyOn(component['prescriptionModelService'], 'findById')
-          .mockReturnValue(of(mockModel));
+        jest.spyOn(component['prescriptionModelService'], 'findById').mockReturnValue(of(mockModel));
 
-        const addFormSpy = jest.spyOn(component as any, 'addPrescriptionFormByModel')
-          .mockImplementation(() => {});
+        const addFormSpy = jest.spyOn(component as any, 'addPrescriptionFormByModel').mockImplementation(() => {});
         const loadingSpy = jest.spyOn(component['loading'], 'set');
 
         (component as any).findModelById(templateCode, modelId);
@@ -1698,8 +1695,7 @@ describe('CreatePrescriptionWebComponent', () => {
         const templateCode = 'TEMPLATE_001';
         const modelId = 999;
 
-        jest.spyOn(component['prescriptionModelService'], 'findById')
-          .mockReturnValue(of(null)as any);
+        jest.spyOn(component['prescriptionModelService'], 'findById').mockReturnValue(of(null) as any);
 
         const addFormSpy = jest.spyOn(component as any, 'addPrescriptionFormByModel');
         const toastSpy = jest.spyOn(component['toastService'], 'showSomethingWentWrong');
@@ -1721,8 +1717,7 @@ describe('CreatePrescriptionWebComponent', () => {
         const modelId = 42;
         const serviceError = new Error('Service unavailable');
 
-        jest.spyOn(component['prescriptionModelService'], 'findById')
-          .mockReturnValue(throwError(() => serviceError));
+        jest.spyOn(component['prescriptionModelService'], 'findById').mockReturnValue(throwError(() => serviceError));
 
         const addFormSpy = jest.spyOn(component as any, 'addPrescriptionFormByModel');
         const toastSpy = jest.spyOn(component['toastService'], 'showSomethingWentWrong');
@@ -1743,8 +1738,9 @@ describe('CreatePrescriptionWebComponent', () => {
         const modelId = 123;
         const templateCode = 'TEMPLATE';
 
-        const findByIdSpy = jest.spyOn(component['prescriptionModelService'], 'findById')
-          .mockReturnValue(of(null)as any);
+        const findByIdSpy = jest
+          .spyOn(component['prescriptionModelService'], 'findById')
+          .mockReturnValue(of(null) as any);
 
         (component as any).findModelById(templateCode, modelId);
         tick();

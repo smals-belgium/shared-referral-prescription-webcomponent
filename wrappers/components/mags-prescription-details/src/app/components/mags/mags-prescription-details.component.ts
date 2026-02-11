@@ -9,7 +9,13 @@ import {
 import { CommonModule } from '@angular/common';
 import { MagsComponent } from '@reuse/code/components/wrappers/directives/mags.wrapper.directive';
 import { wrapperManifest } from 'wrappers/components/mags-prescription-details/manifest';
-import { PrintMimeType, PrintOrientation } from '@smals-belgium/myhealth-wc-integration';
+import {
+  PrintMimeType,
+  PrintOrientation,
+  SettingsChangeEvent,
+  UserLanguage,
+} from '@smals-belgium/myhealth-wc-integration';
+import { mapLanguageToTranslations } from '@reuse/code/components/wrappers/utils/mags.utils';
 
 @Component({
   standalone: true,
@@ -23,6 +29,7 @@ import { PrintMimeType, PrintOrientation } from '@smals-belgium/myhealth-wc-inte
 })
 export class MagsPrescriptionDetails extends MagsComponent {
   prescriptionId = input<string | undefined>(undefined);
+  intent = input<string | undefined>(undefined);
   print = output<unknown>();
   open = output<unknown>();
 
@@ -49,7 +56,6 @@ export class MagsPrescriptionDetails extends MagsComponent {
   override initWebComponent() {
     const webComponent = this.createElement(wrapperManifest.customElement.tag);
 
-    //@todo change getIdToken after decision from MAGS by how to implement
     webComponent.services = {
       getAccessToken: (audience: string) => this.getAccessToken(audience),
       getIdToken: () =>
@@ -63,9 +69,9 @@ export class MagsPrescriptionDetails extends MagsComponent {
         }),
     };
 
-    webComponent.setAttribute('lang', `${this.userLanguage()}-BE`);
+    webComponent.setAttribute('lang', mapLanguageToTranslations(this.userLanguage()));
     webComponent.setAttribute('prescription-id', this.prescriptionId() || '');
-    webComponent.setAttribute('intent', 'order');
+    webComponent.setAttribute('intent', this.intent() || 'order');
 
     webComponent.addEventListener('clickPrint', async (event: Event) => {
       const customEvent = event as CustomEvent<Blob>;
@@ -94,4 +100,11 @@ export class MagsPrescriptionDetails extends MagsComponent {
 
     this.appendWebComponent(webComponent);
   }
+
+  override onSettingsChanged = (s: SettingsChangeEvent): void => {
+    if (s.detail.setting === 'userLanguage') {
+      const w = this.componentView.nativeElement.getElementsByTagName(wrapperManifest.customElement.tag);
+      w[0].setAttribute('lang', mapLanguageToTranslations(s.detail.value as unknown as UserLanguage));
+    }
+  };
 }

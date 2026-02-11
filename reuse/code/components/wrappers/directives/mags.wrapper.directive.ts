@@ -68,11 +68,7 @@ export abstract class MagsComponent implements OnInit {
     };
   }
 
-  protected onSettingsChanged = (s: SettingsChangeEvent): void => {
-    // console.log('settings-changed', s);
-  };
+  protected onSettingsChanged = (s: SettingsChangeEvent): void => {};
 
-  protected onVersionMissmatch = (s: VersionMismatchEvent): void => {
-    // console.log('version-mismatch', s);
-  };
+  protected onVersionMissmatch = (s: VersionMismatchEvent): void => {};
 }

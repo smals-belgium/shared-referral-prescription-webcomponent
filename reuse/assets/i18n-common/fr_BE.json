@@ -356,6 +356,9 @@
             "extend": "Étendre",
             "print": "Imprimer",
             "cancel": "Annuler"
+        },
+        "assignProfessional": {
+            "undefined": "Choisir d'abord un professionnel"
         }
     },
     "proposal": {
@@ -551,6 +554,8 @@
             "tableHasRecords": "{total}  résultats trouvé",
             "noRecords": "Aucun professionnel correspondant à cette recherche n'a été trouvé.",
             "select": "Choisir"
-        }
+        },
+        "noProfessionals": "Aucun professionnel correspondant à cette recherche n'a été trouvé.",
+        "allProfessionalsFetched": "Tous les professionnels sont recrutés"
     }
 }
