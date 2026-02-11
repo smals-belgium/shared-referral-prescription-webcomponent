@@ -67,7 +67,13 @@
         "errors": {
             "pseudoDisabled": ""
         },
-        "prescriptionModel": ""
+        "prescriptionModel": "",
+        "error": {
+            "default": {
+                "header": "Technical issue",
+                "subheader": "An error occurred. Please try again in a few moments."
+            }
+        }
     },
     "pagination": {
         "ariaLabel": {
@@ -222,7 +228,13 @@
             "locations": "",
             "zipCodeOrCityName": "",
             "noResults": "",
-            "organization": ""
+            "organization": "",
+            "dialog": {
+                "title": "",
+                "description": ""
+            },
+            "locationsHint": "",
+            "performerHint": ""
         },
         "transferAssignation": {
             "title": "",
@@ -527,5 +539,18 @@
             "message": ""
         }
     },
-    "prescription-model-tableHasRecords-Le-nombre-total": ""
+    "prescription-model-tableHasRecords-Le-nombre-total": "",
+    "professional": {
+        "table": {
+            "results": "",
+            "firstname": "",
+            "lastname": "",
+            "address": "",
+            "city": "",
+            "actions": "",
+            "tableHasRecords": "",
+            "noRecords": "",
+            "select": ""
+        }
+    }
 }

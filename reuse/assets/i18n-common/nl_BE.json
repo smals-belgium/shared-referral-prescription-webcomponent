@@ -67,7 +67,13 @@
         "errors": {
             "pseudoDisabled": "Het aanmaken van een voorschrift is niet mogelijk."
         },
-        "prescriptionModel": "Sjabloon"
+        "prescriptionModel": "Sjabloon",
+        "error": {
+            "default": {
+                "header": "Technisch probleem",
+                "subheader": "Er is een fout opgetreden. Probeer het over enkele ogenblikken opnieuw."
+            }
+        }
     },
     "pagination": {
         "ariaLabel": {
@@ -222,7 +228,13 @@
             "locations": "Locaties",
             "zipCodeOrCityName": "Postcode of gemeente",
             "noResults": "Geen gemeente gevonden",
-            "organization": "Organisatie"
+            "organization": "Organisatie",
+            "dialog": {
+                "title": "",
+                "description": ""
+            },
+            "locationsHint": "",
+            "performerHint": ""
         },
         "transferAssignation": {
             "title": "Toewijzing transfereren",
@@ -527,5 +539,18 @@
             "message": "Onze excuses, de PSS (Prescription Search Support) service is momenteel niet beschikbaar.\nU kunt de aanbevelingen voor medische beeldvormende onderzoeken op dit moment niet raadplegen.\nProbeer het over een paar minuten opnieuw."
         }
     },
-    "prescription-model-tableHasRecords-Le-nombre-total": "Totaal aantal sjablonen is {total}"
+    "prescription-model-tableHasRecords-Le-nombre-total": "Totaal aantal sjablonen is {total}",
+    "professional": {
+        "table": {
+            "results": "",
+            "firstname": "",
+            "lastname": "",
+            "address": "",
+            "city": "",
+            "actions": "",
+            "tableHasRecords": "",
+            "noRecords": "",
+            "select": ""
+        }
+    }
 }
