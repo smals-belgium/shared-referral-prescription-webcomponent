@@ -361,17 +361,15 @@
           "builder": "@angular/build:extract-i18n"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular-builders/jest:run",
           "options": {
-            "tsConfig": "wrappers/components/mags-prescription-list/tsconfig.spec.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "wrappers/components/mags-prescription-list/public"
-              }
-            ],
-            "styles": ["wrappers/components/mags-prescription-list/src/styles.scss"]
+            "polyfills": ["zone.js", "zone.js/testing"],
+            "configPath": "jest.config.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": ["scss"],
+            "scripts": [],
+            "assets": [],
+            "styles": ["src/styles.scss"]
           }
         }
       }
@@ -440,16 +438,14 @@
           "builder": "@angular/build:extract-i18n"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular-builders/jest:run",
           "options": {
-            "tsConfig": "wrappers/components/mags-prescription-list/tsconfig.spec.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "wrappers/components/mags-prescription-list/public"
-              }
-            ],
+            "polyfills": ["zone.js", "zone.js/testing"],
+            "configPath": "jest.config.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": ["scss"],
+            "scripts": [],
+            "assets": [],
             "styles": ["wrappers/components/mags-prescription-list/src/styles.scss"]
           }
         }
@@ -519,17 +515,15 @@
           "builder": "@angular/build:extract-i18n"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular-builders/jest:run",
           "options": {
-            "tsConfig": "wrappers/components/mags-prescription-details/tsconfig.spec.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "wrappers/components/mags-prescription-details/public"
-              }
-            ],
-            "styles": ["wrappers/components/mags-prescription-details/src/styles.scss"]
+            "polyfills": ["zone.js", "zone.js/testing"],
+            "configPath": "jest.config.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": ["scss"],
+            "scripts": [],
+            "assets": [],
+            "styles": ["src/styles.scss"]
           }
         }
       }
@@ -598,16 +592,14 @@
           "builder": "@angular/build:extract-i18n"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular-builders/jest:run",
           "options": {
-            "tsConfig": "wrappers/components/mags-prescription-details/tsconfig.spec.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "wrappers/components/mags-prescription-details/public"
-              }
-            ],
+            "polyfills": ["zone.js", "zone.js/testing"],
+            "configPath": "jest.config.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": ["scss"],
+            "scripts": [],
+            "assets": [],
             "styles": ["wrappers/components/mags-prescription-details/src/styles.scss"]
           }
         }

@@ -12,10 +12,11 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MagsComponent, Services } from '@reuse/code/components/wrappers/directives/mags.wrapper.directive';
-import { wrapperManifest } from 'wrappers/components/mags-prescription-list/manifest';
+import { wrapperManifest } from '../../../../manifest';
 import { SettingsChangeEvent } from '@smals-belgium/myhealth-wc-integration';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatTabsModule } from '@angular/material/tabs';
+import { hasUserProfile } from '@reuse/code/utils/mags-utils';
 
 @Component({
   standalone: true,
@@ -29,13 +30,13 @@ import { MatTabsModule } from '@angular/material/tabs';
 })
 export class MagsPrescriptionList extends MagsComponent implements AfterViewInit {
   private readonly _translate = inject(TranslateService);
-  patientSsin = input<string | undefined>(undefined);
+  patientSsin?: string;
   open = output<unknown>();
 
   @ViewChild('orderHost', { read: ElementRef }) orderHost!: ElementRef<HTMLElement>;
   @ViewChild('proposalHost', { read: ElementRef }) proposalHost!: ElementRef<HTMLElement>;
 
-  private instances = new Map<'order' | 'proposal', HTMLElement>();
+  private readonly instances = new Map<'order' | 'proposal', HTMLElement>();
   private activeIntent: 'order' | 'proposal' = 'order';
 
   ngAfterViewInit() {
@@ -53,7 +54,15 @@ export class MagsPrescriptionList extends MagsComponent implements AfterViewInit
     this.activeIntent = intent;
   }
 
-  private createWebcomponent(intent: 'order' | 'proposal') {
+  private async createWebcomponent(intent: 'order' | 'proposal') {
+    let ssin;
+    if (this.patientSsin) {
+      ssin = this.patientSsin;
+    } else {
+      ssin = await this.resolvePatientSsin();
+      if (!ssin) return;
+    }
+
     const el = document.createElement(wrapperManifest.customElement.tag) as HTMLElement & {
       services: Services;
     };
@@ -63,7 +72,7 @@ export class MagsPrescriptionList extends MagsComponent implements AfterViewInit
     };
 
     el.setAttribute('lang', `${this.userLanguage()}-BE`);
-    el.setAttribute('patient-ssin', this.patientSsin()!);
+    el.setAttribute('patient-ssin', ssin);
     el.setAttribute('intent', intent);
 
     el.addEventListener('clickOpenDetail', this.onOpenDetail);
@@ -74,7 +83,19 @@ export class MagsPrescriptionList extends MagsComponent implements AfterViewInit
     this.instances.set(intent, el);
   }
 
-  private onOpenDetail = (d: Event & { detail?: any }) => {
+  private async resolvePatientSsin(): Promise<string | undefined> {
+    const token = await this.getIdToken();
+
+    if (!token || !hasUserProfile(token)) {
+      console.error('token with userProfile.ssin is required');
+      return;
+    }
+
+    this.patientSsin = token.userProfile.ssin;
+    return this.patientSsin;
+  }
+
+  private readonly onOpenDetail = (d: Event & { detail?: any }) => {
     this.open.emit({
       componentTag: wrapperManifest.events['open'].componentTag,
       props: {
@@ -85,12 +106,7 @@ export class MagsPrescriptionList extends MagsComponent implements AfterViewInit
     });
   };
 
-  override initWebComponent() {
-    if (!this.patientSsin()) {
-      console.error('patient ssin is required');
-      return;
-    }
-
+  override async initWebComponent() {
     this._translate.use(`${this.userLanguage()}-BE`);
   }
 
