@@ -119,7 +119,7 @@
                 },
                 "table": {
                     "title": "Resultaten PSS",
-                    "select": "",
+                    "select": "Selecteer de rij {row}",
                     "relevance": "Relevantie",
                     "typesOfImagery": "Type medische beeldvorming",
                     "cost": "Kost",
@@ -192,7 +192,14 @@
             "prescriber": "Voorschrijver",
             "proof-of-electronic-prescription": "Bewijs van elektronisch voorschrift",
             "remark": "Opgelet: met manuele toevoegingen op dit document zal geen rekening gehouden worden.",
-            "date": "Afgedrukt op {date}"
+            "date": "Afgedrukt op {date}",
+            "subsection": {
+                "patient": "Patient",
+                "startDate": "Start",
+                "endDate": "Einde",
+                "header": "Elektronische identificatiegegevens van het voorschrift (afgedrukt op {date})."
+            },
+            "alert": "Dit voorschrift is afgewezen en kan daarom niet meer worden gebruikt."
         },
         "author": "Auteur",
         "patient": "Patiënt",
@@ -230,10 +237,10 @@
             "noResults": "Geen gemeente gevonden",
             "organization": "Organisatie",
             "dialog": {
-                "title": "",
-                "description": ""
+                "title": "Een zorgverlener toewijzen aan een voorschrift.",
+                "description": "Als u een zorgverlener aan dit voorschrift toevoegt, kan deze de informatie in dit voorschrift inzien."
             },
-            "locationsHint": "",
+            "locationsHint": "Zoeken op postcode of plaatsnaam",
             "performerHint": "Zoeken op naam of ID"
         },
         "transferAssignation": {
@@ -552,14 +559,14 @@
     "prescription-model-tableHasRecords-Le-nombre-total": "Totaal aantal sjablonen is {total}",
     "professional": {
         "table": {
-            "results": "",
-            "firstname": "",
-            "lastname": "",
-            "address": "",
-            "city": "",
-            "actions": "",
+            "results": "{results} gevonden resultaten",
+            "firstname": "Voornaam",
+            "lastname": "Achternaam",
+            "address": "Adres",
+            "city": "Gemeente",
+            "actions": "Acties",
             "tableHasRecords": "{total}  gevonden resultaten",
-            "noRecords": "",
+            "noRecords": "Er zijn geen professionals gevonden die aan deze zoekopdracht voldoen.",
             "select": "Kiezen"
         },
         "noProfessionals": "Er is geen zorgverlener gevonden die aan deze zoekopdracht voldoet.",
