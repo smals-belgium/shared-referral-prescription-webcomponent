@@ -1,10 +1,9 @@
-import { ErrorHandler, importProvidersFrom } from '@angular/core';
+import { importProvidersFrom } from '@angular/core';
 import { createApplication } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideCore } from '@reuse/code/providers/core.provider';
 import { provideEvfForm } from '@reuse/code/evf/evf-form.provider';
 import { provideMarkdown } from '@reuse/code/providers/markdown.provider';
-import { getErrorHandlerFromConfiguration } from '@reuse/code/services/helpers/sentry-error-handler.service';
 import { createCustomElement } from '@angular/elements';
 import { WcConfigurationService } from '@reuse/code/services/config/wc-configuration.service';
 import { apiUrlInterceptor } from '@reuse/code/interceptors/api-url.interceptor';
@@ -40,11 +39,6 @@ import {
       {
         provide: AuthService,
         useClass: WcAuthService,
-      },
-      {
-        provide: ErrorHandler,
-        useFactory: getErrorHandlerFromConfiguration,
-        deps: [ConfigurationService],
       },
       { provide: OVERLAY_QUERY_SELECTOR, useValue: ['nihdi-referral-prescription-create'] },
       {

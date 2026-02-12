@@ -55,7 +55,6 @@
     "@myhealth-belgium/myhealth-additional-ui-components": "^2.1.0",
     "@ngx-translate/core": "^16.0.4",
     "@openapitools/openapi-generator-cli": "^2.28.0",
-    "@sentry/angular": "^9.5.0",
     "@smals-belgium-shared/pseudo-helper": "^1.1.1",
     "@smals-belgium/myhealth-wc-integration": "^5.0.1",
     "@smals/vas-evaluation-form-ui-core": "^6.5.0",

@@ -31,7 +31,6 @@ interface AppConfigVariables {
   apiUrl: string;
   pseudoApiUrl?: string;
   enablePseudo?: boolean;
-  enableSentry?: boolean;
   enabledFeatures?: EnabledFeatures;
 }
 
