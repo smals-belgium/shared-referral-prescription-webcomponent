@@ -199,7 +199,7 @@
                 "endDate": "Einde",
                 "header": "Elektronische identificatiegegevens van het voorschrift (afgedrukt op {date})."
             },
-            "alert": "Dit voorschrift is afgewezen en kan daarom niet meer worden gebruikt."
+            "alert": "Dit voorschrift is geklasseerd zonder gevolg en kan daarom niet meer worden gebruikt."
         },
         "author": "Auteur",
         "patient": "Patiënt",
