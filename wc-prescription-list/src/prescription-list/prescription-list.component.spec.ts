@@ -14,7 +14,14 @@ import { PrescriptionListWebComponent } from './prescription-list.component';
 import { BehaviorSubject, of } from 'rxjs';
 import { Intent, LoadingStatus } from '@reuse/code/interfaces';
 import { By } from '@angular/platform-browser';
-import { AccessMatrix, Discipline, PageModelEntityDto, ReadRequestListResource, Template } from '@reuse/code/openapi';
+import {
+  AccessMatrix,
+  Discipline,
+  PageModelEntityDto,
+  ReadRequestListResource,
+  SystemCodes,
+  Template
+} from '@reuse/code/openapi';
 import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatDialog } from '@angular/material/dialog';
@@ -349,7 +356,7 @@ describe('ListPrescriptionsWebComponent', () => {
         labelTranslations: {} as Translation,
         metadata: {
           code: {},
-          category: {},
+          category: [] as SystemCodes[],
         },
       };
       const accessMatrix = { view: true, edit: false } as unknown as AccessMatrix;
@@ -396,13 +403,13 @@ describe('ListPrescriptionsWebComponent', () => {
 
     it('should emit onFilterChange', () => {
       createFixture();
-      const template = {
+      const template: Template = {
         code: 'template1',
         id: 1,
         labelTranslations: {} as Translation,
         metadata: {
           code: {},
-          category: {},
+          category: [{}] as SystemCodes[],
         },
       };
 

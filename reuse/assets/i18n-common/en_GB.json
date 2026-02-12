@@ -192,7 +192,14 @@
             "prescriber": "",
             "proof-of-electronic-prescription": "",
             "remark": "",
-            "date": ""
+            "date": "",
+            "subsection": {
+                "patient": "",
+                "startDate": "",
+                "endDate": "",
+                "header": ""
+            },
+            "alert": ""
         },
         "author": "",
         "patient": "",
