@@ -3,37 +3,35 @@
     <div class="title"><b>{{ 'prescription.selectTemplate.prescriptionModel' | translate }}</b></div>
   }
 
-  @if (categoryOptions$ | async; as categoryOptions) {
-    @if (categoryOptions.length > 1) {
-      <label for="category" data-cy="prescriptionCategory-label">{{ 'common.category' | translate }}</label>
-      @if (formGroup.get('category'); as control) {
-        <mat-form-field appearance="outline">
-          <input
-            type="text"
-            matInput
-            id="category"
-            formControlName="category"
-            data-cy="prescription-create-category"
-            [placeholder]="'-- ' + ('common.chooseFromList' | translate)+ ' --'"
-            [matAutocomplete]="catAuto"
-          >
-          @if (control?.value) {
-            <button matSuffix mat-icon-button (click)="control?.setValue('')" class="button-close-icon">
-              <mat-icon>close</mat-icon>
-            </button>
+  @if (categories.length > 1) {
+    <label for="category" data-cy="prescriptionCategory-label">{{ 'common.category' | translate }}</label>
+    @if (formGroup.get('category'); as control) {
+      <mat-form-field appearance="outline">
+        <input
+          type="text"
+          matInput
+          id="category"
+          formControlName="category"
+          data-cy="prescription-create-category"
+          [placeholder]="'-- ' + ('common.chooseFromList' | translate)+ ' --'"
+          [matAutocomplete]="catAuto"
+        >
+        @if (control?.value) {
+          <button matSuffix mat-icon-button (click)="control?.setValue('')" class="button-close-icon">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+        <mat-autocomplete autoActiveFirstOption #catAuto="matAutocomplete" [displayWith]="displayCategoryWith">
+          @for (option of categoryOptions$ |async; track option) {
+            <mat-option [value]="option">
+              <div class="option-with-highlight" [innerHTML]="option.label | highlightFilter:control.value"></div>
+            </mat-option>
           }
-          <mat-autocomplete autoActiveFirstOption #catAuto="matAutocomplete" [displayWith]="displayCategoryWith">
-            @for (option of categoryOptions; track option) {
-              <mat-option [value]="option">
-                <div class="option-with-highlight" [innerHTML]="option.label | highlightFilter:control.value"></div>
-              </mat-option>
-            }
-          </mat-autocomplete>
-          @if (control?.hasError('pickOptionFromList')) {
-            <mat-error>{{ 'prescription.selectTemplate.pickOptionFromList' | translate }}</mat-error>
-          }
-        </mat-form-field>
-      }
+        </mat-autocomplete>
+        @if (control?.hasError('pickOptionFromList')) {
+          <mat-error>{{ 'prescription.selectTemplate.pickOptionFromList' | translate }}</mat-error>
+        }
+      </mat-form-field>
     }
   }
 

@@ -32,7 +32,7 @@ import { NURSING_CODES, PHYSIOTHERAPY_CODES, RADIOLOGY_CODES, TemplateCategory }
   ],
 })
 export class SelectPrescriptionTypeComponent implements OnChanges, OnInit {
-  private categories: TemplateCategory[] = [];
+  categories: TemplateCategory[] = [];
 
   private readonly categories$ = this.translate.onLangChange.pipe(
     map(() => this.translate.currentLang),
