@@ -9,7 +9,7 @@
         "patient": "Patiënt",
         "category": "Categorie",
         "typeOfPrescription": "Type voorschrift",
-        "shortCode": "RefID",
+        "shortCode": "Short code",
         "chooseFromList": "Kies uit deze lijst",
         "tryAgain": "Opnieuw proberen",
         "goBack": "Terug",
@@ -206,7 +206,7 @@
         "validityPeriod": "Geldigheidsperiode",
         "consultDetails": "Toon details",
         "assign": "Toewijzen",
-        "transfer": "Transfereren",
+        "transfer": "Overdragen",
         "assignMe": "Mezelf toewijzen",
         "reject": "Afwijzen",
         "copy": "Kopiëren",
@@ -234,7 +234,7 @@
                 "description": ""
             },
             "locationsHint": "",
-            "performerHint": ""
+            "performerHint": "Zoeken op naam of ID"
         },
         "transferAssignation": {
             "title": "Toewijzing transfereren",
@@ -243,7 +243,11 @@
             "searchPerformerPlaceHolder": "RIZIV nummer, naam",
             "locations": "Locaties",
             "zipCodeOrCityName": "Postcode of gemeente",
-            "noResults": "Geen gemeente gevonden"
+            "noResults": "Geen gemeente gevonden",
+            "dialog": {
+                "title": "Een zorgverlener overdragen naar een voorschrift",
+                "description": "Als u dit voorschrift overdraagt naar een andere zorgverlener, kan deze de informatie in dit voorschrift raadplegen."
+            }
         },
         "cancel": {
             "action": "Klasseren zonder gevolg",
@@ -323,7 +327,7 @@
             "dateMustBeEarlierOrEqualTo": "Datum mag niet na {date} liggen",
             "dateMustBeLaterOrEqualTo": "Datum mag niet voor {date} liggen",
             "invalidDateFormat": "Ongeldig formaat: dd/mm/jjjj",
-            "invalidSsinChecksum": "Rijksregisternummer is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
+            "invalidSsinChecksum": "Het INSZ-nummer is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
             "invalidShortCode": "Voorschrift ID is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
             "decryptionFailed": "Het decoderen van de vrije tekstvelden is mislukt. Probeer het opnieuw.",
             "failedToCreateModel": "Het sjabloon kon niet worden aangemaakt. Probeer het later opnieuw."
@@ -346,7 +350,7 @@
             "restart": "Herneem de uitvoering"
         },
         "tableHasRecords": "Totaal aantal voorschriften is {total}.",
-        "extendedShortId": "Uitbreiding van het voorschrift",
+        "extendedShortId": "Verlenging van het voorschrift",
         "actions": {
             "button": "Acties",
             "assignMe": "Mezelf toewijzen",
@@ -358,7 +362,10 @@
             "cancel": "Annuleren"
         },
         "assignProfessional": {
-            "undefined": ""
+            "undefined": "Kies eerst een zorgverlener"
+        },
+        "transferProfessional": {
+            "undefined": "Kies eerst een zorgverlener"
         }
     },
     "proposal": {
@@ -539,7 +546,7 @@
     "pss": {
         "unavailable": {
             "title": "Service tijdelijk niet beschikbaar",
-            "message": "Onze excuses, de PSS (Prescription Search Support) service is momenteel niet beschikbaar.\nU kunt de aanbevelingen voor medische beeldvormende onderzoeken op dit moment niet raadplegen.\nProbeer het over een paar minuten opnieuw."
+            "message": "De PSS (Prescription Search Support) service is momenteel niet beschikbaar.\nU kunt de aanbevelingen voor medische beeldvorming onderzoeken op dit moment niet raadplegen.\nProbeer het later opnieuw."
         }
     },
     "prescription-model-tableHasRecords-Le-nombre-total": "Totaal aantal sjablonen is {total}",
@@ -551,11 +558,11 @@
             "address": "",
             "city": "",
             "actions": "",
-            "tableHasRecords": "",
+            "tableHasRecords": "{total}  gevonden resultaten",
             "noRecords": "",
-            "select": ""
+            "select": "Kiezen"
         },
-        "noProfessionals": "",
-        "allProfessionalsFetched": ""
+        "noProfessionals": "Er is geen zorgverlener gevonden die aan deze zoekopdracht voldoet.",
+        "allProfessionalsFetched": "Alle zorgverleners zijn opgehaald"
     }
 }

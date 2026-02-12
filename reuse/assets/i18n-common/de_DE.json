@@ -243,7 +243,11 @@
             "searchPerformerPlaceHolder": "",
             "locations": "",
             "zipCodeOrCityName": "",
-            "noResults": ""
+            "noResults": "",
+            "dialog": {
+                "title": "",
+                "description": ""
+            }
         },
         "cancel": {
             "action": "",
@@ -358,6 +362,9 @@
             "cancel": ""
         },
         "assignProfessional": {
+            "undefined": ""
+        },
+        "transferProfessional": {
             "undefined": ""
         }
     },
