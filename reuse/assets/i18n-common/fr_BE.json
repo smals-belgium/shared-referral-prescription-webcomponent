@@ -243,7 +243,11 @@
             "searchPerformerPlaceHolder": "N° INAMI, nom",
             "locations": "Localisation(s)",
             "zipCodeOrCityName": "Code postal ou commune",
-            "noResults": "Aucune commune trouvée"
+            "noResults": "Aucune commune trouvée",
+            "dialog": {
+                "title": "Transférer un prestataire de soins à une prescription",
+                "description": "Si vous transférez un prestataire de soins à cette prescription, celui-ci pourra consulter les informations contenues dans cette prescription."
+            }
         },
         "cancel": {
             "action": "Classer sans suite",
@@ -358,6 +362,9 @@
             "cancel": "Annuler"
         },
         "assignProfessional": {
+            "undefined": "Choisir d'abord un professionnel"
+        },
+        "transferProfessional": {
             "undefined": "Choisir d'abord un professionnel"
         }
     },
@@ -539,7 +546,7 @@
     "pss": {
         "unavailable": {
             "title": "Service temporairement indisponible",
-            "message": "Nous sommes désolés, le service PSS (Prescription Search Support) est momentanément indisponible.\nVous ne pouvez plus consulter les recommandations d'examens en imagerie médicale pour l'instant.\nMerci de réessayer dans quelques minutes."
+            "message": "Le service PSS (Prescription Search Support) est momentanément indisponible.\nVous ne pouvez plus consulter les recommandations d'examens en imagerie médicale pour l'instant.\nMerci de réessayer dans quelques minutes."
         }
     },
     "prescription-model-tableHasRecords-Le-nombre-total": "Le nombre total de modèles est {total}",
