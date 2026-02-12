@@ -1,4 +1,4 @@
-import { ErrorHandler, importProvidersFrom } from '@angular/core';
+import { importProvidersFrom } from '@angular/core';
 import { createApplication } from '@angular/platform-browser';
 import { createCustomElement } from '@angular/elements';
 import { PrescriptionDetailsWebComponent } from './containers/prescription-details/prescription-details.component';
@@ -10,7 +10,6 @@ import { provideCore } from '@reuse/code/providers/core.provider';
 import { apiUrlInterceptor } from '@reuse/code/interceptors/api-url.interceptor';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { WcAuthService } from '@reuse/code/services/auth/wc-auth.service';
-import { getErrorHandlerFromConfiguration } from '@reuse/code/services/helpers/sentry-error-handler.service';
 import { WcTranslateLoader } from '@reuse/code/services/helpers/translate.loader';
 import { MatDialogModule } from '@angular/material/dialog';
 import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
@@ -43,11 +42,6 @@ import { provideEvfFormDetails } from '@reuse/code/evf/evf-form-details.provider
       {
         provide: AuthService,
         useClass: WcAuthService,
-      },
-      {
-        provide: ErrorHandler,
-        useFactory: getErrorHandlerFromConfiguration,
-        deps: [ConfigurationService],
       },
       {
         provide: OVERLAY_QUERY_SELECTOR,
