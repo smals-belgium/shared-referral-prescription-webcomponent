@@ -145,7 +145,7 @@ describe('PrescriptionsTableComponent', () => {
 
   describe('getStatusColor', () => {
     it('should return color for valid status', () => {
-      expect(component.getStatusColor('IN_PROGRESS' as RequestStatus)).toBe('mh-green');
+      expect(component.getStatusColor('IN_PROGRESS' as RequestStatus)).toBe('mh-green mh-no-overlay');
     });
   });
 

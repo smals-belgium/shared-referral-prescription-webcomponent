@@ -18,6 +18,7 @@
 @include mh.override-mat-button();
 @include mh.override-mat-button-icon(false);
 @include mh.override-mat-chips();
+@include mh.override-mat-table();
 
 .mat-mdc-dialog-inner-container .mat-mdc-dialog-surface{
   max-height: 100vh;
@@ -384,5 +385,10 @@ evf-checkbox-list[data-evf-element-id="previous-relevant-examinations-unknown"] 
         }
       }
     }
+  }
+}
+.no-dialog-scroll{
+  .mat-mdc-dialog-surface {
+    overflow: hidden;
   }
 }

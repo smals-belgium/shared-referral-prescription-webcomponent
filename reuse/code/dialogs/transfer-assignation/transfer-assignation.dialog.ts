@@ -1,8 +1,8 @@
-import { Component, Inject, OnInit, signal } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, inject, Inject, OnInit, signal } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { debounceTime, Observable, of, switchMap } from 'rxjs';
-import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { Observable, of, switchMap } from 'rxjs';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { catchError, map } from 'rxjs/operators';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,14 +12,9 @@ import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
 import { TranslationPipe } from '@reuse/code/pipes/translation.pipe';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatChipsModule } from '@angular/material/chips';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { MatInputModule } from '@angular/material/input';
-import {
-  OverlaySpinnerComponent
-} from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
-import { CaregiverNamePatternValidator } from '@reuse/code/utils/validators';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { AlertType, Intent } from '@reuse/code/interfaces';
-import { GeographyService } from '@reuse/code/services/api/geography.service';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -29,16 +24,23 @@ import { v4 as uuidv4 } from 'uuid';
 import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
-import { getAssignableProfessionalDisciplines } from '@reuse/code/utils/assignment-disciplines.utils';
+import { getAssignableProfessionalDisciplines, isProfessional } from '@reuse/code/utils/assignment-disciplines.utils';
 import { isProposal } from '@reuse/code/utils/utils';
-import {
-  CityResource,
-  HealthcareProResource,
-  HealthCareProviderRequestResource,
-  ProviderType
-} from '@reuse/code/openapi';
+import { HealthcareOrganizationResource, HealthcareProResource, ProviderType } from '@reuse/code/openapi';
 import { PaginatorComponent } from '@reuse/code/components/paginator/paginator.component';
 import { HealthcareProviderService } from '@reuse/code/services/api/healthcareProvider.service';
+import { ProfessionalCardsComponent } from '@reuse/code/components/professional-form/professional-cards/professional-cards.component';
+import {
+  ProfessionalSearchFormComponent,
+  ProfessionalType,
+  SearchCriteria,
+} from '@reuse/code/components/professional-form/search-form/professional-search-form.component';
+import {
+  ProfessionalTableComponent,
+  TranslationType,
+} from '@reuse/code/components/professional-form/table/professional-table.component';
+import { ResponsiveWrapperComponent } from '@reuse/code/components/responsive-wrapper/responsive-wrapper.component';
+import { DeviceService } from '@reuse/code/services/helpers/device.service';
 
 interface TransferAssignation {
   prescriptionId?: string;
@@ -57,7 +59,6 @@ interface TransferAssignation {
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    NgxMaskDirective,
     MatDialogModule,
     MatButtonModule,
     MatChipsModule,
@@ -71,180 +72,123 @@ interface TransferAssignation {
     FormatMultilingualObjectPipe,
     AlertComponent,
     PaginatorComponent,
+    ProfessionalCardsComponent,
+    ProfessionalSearchFormComponent,
+    ProfessionalTableComponent,
+    ResponsiveWrapperComponent,
   ],
-  providers: [provideNgxMask()],
 })
 export class TransferAssignationDialog extends BaseDialog implements OnInit {
-  protected readonly AlertType = AlertType;
-  private readonly nameValidators = [Validators.minLength(2), CaregiverNamePatternValidator];
-  private readonly searchCriteria$ = signal<{
-    query: string;
-    zipCodes: number[];
-    page?: number;
-    pageSize?: number;
-  } | null>(null);
-  readonly isLoading = signal(false);
+  private readonly deviceService = inject(DeviceService);
+  protected readonly isDesktop = this.deviceService.isDesktop;
 
-  readonly professionalsState$ = toSignal(
+  protected readonly AlertType = AlertType;
+  readonly searchCriteria$ = signal<SearchCriteria | null>(null);
+  readonly isLoading = signal(false);
+  readonly selectedProfessional = signal<HealthcareProResource | HealthcareOrganizationResource | undefined>(undefined);
+
+  filterProfessionalType: ProfessionalType[] = ['CAREGIVER', 'ORGANIZATION'];
+  selectedFilter: ProfessionalType = 'CAREGIVER';
+  private readonly pageable = this.isDesktop()
+    ? {
+        page: undefined,
+        pageSize: undefined,
+      }
+    : {
+        page: 1,
+        pageSize: 10,
+      };
+
+  readonly healthcareProvidersState$ = toSignal(
     toObservable(this.searchCriteria$).pipe(
       switchMap(criteria => {
         this.isLoading.set(true);
+        const disciplines: string[] = getAssignableProfessionalDisciplines(this.data.category, this.data.intent);
+        return criteria
+          ? this.healthcareProviderService
+              .findAll(
+                criteria.query,
+                criteria.zipCodes,
+                disciplines,
+                [],
+                ProviderType.Professional,
+                this.data.prescriptionId,
+                this.pageable.page,
+                this.pageable.pageSize
+              )
+              .pipe(
+                catchError(error => {
+                  console.error('Error fetching healthcare providers:', error);
+                  return of([]);
+                })
+              )
+          : of([]);
+      }),
+      map(healthcareProvider => {
+        if (healthcareProvider && 'healthcareProfessionals' in healthcareProvider) {
+          const allItems: HealthcareProResource[] = healthcareProvider.healthcareProfessionals ?? [];
 
-        const disciplines: string[] = getAssignableProfessionalDisciplines(
-          this.data.category,
-          this.data.intent
-        );
-
-        if (!criteria || (criteria.query.length === 0 && criteria.zipCodes.length === 0)) {
-          return of({
+          this.isLoading.set(false);
+          return {
+            items: allItems,
+            total: healthcareProvider.total || allItems.length,
+          };
+        } else {
+          const list = {
             items: [],
             total: 0,
-            page: criteria?.page ?? 1,
-            pageSize: criteria?.pageSize ?? 10,
-          });
+          };
+          this.isLoading.set(false);
+          return list;
         }
-        return this.healthcareProviderService
-          .findAll(
-            criteria.query,
-            criteria.zipCodes,
-            disciplines,
-            undefined,
-            ProviderType.Professional,
-            this.data.prescriptionId,
-            criteria.page,
-            criteria.pageSize
-          )
-          .pipe(
-            catchError(error => {
-              console.error('Error fetching professionals:', error);
-              return of({
-                items: [],
-                total: 0,
-                page: criteria.page,
-                pageSize: criteria.pageSize,
-              });
-            })
-          );
-      }),
-      map((response: HealthCareProviderRequestResource) => {
-        const professionals = response.healthcareProfessionals ?? [];
-        const total = response.total ?? professionals.length;
-
-        this.isLoading.set(false);
-
-        return {
-          items: professionals,
-          total: total,
-          page: this.searchCriteria$()?.page ?? 1,
-          pageSize: this.searchCriteria$()?.pageSize ?? 10,
-        };
       }),
       toDataState()
     )
   );
-  readonly formGroup = new FormGroup({
-    query: new FormControl<string>(''),
-    cities: new FormControl<CityResource[]>([]),
-    searchCity: new FormControl<string>(''),
-  });
-  readonly cityOptions$ = this.formGroup.get('searchCity')!.valueChanges.pipe(
-    debounceTime(400),
-    switchMap((query: string | null) =>
-      query && query.length > 1 ? this.geographyService.findAll(query).pipe(catchError(() => of([]))) : of(null)
-    )
-  );
-  readonly caregiverNameMaxLength = 50;
+
   queryIsNumeric = false;
   loading = false;
-  currentLang?: string;
   generatedUUID = '';
+  visibleDetailsOfHealthcareProvider: string[] = [];
+  currentLang?: TranslationType;
 
   constructor(
-    private readonly prescriptionStateService: PrescriptionState,
-    private readonly proposalStateService: ProposalState,
-    private readonly healthcareProviderService: HealthcareProviderService,
-    private readonly toastService: ToastService,
-    private readonly geographyService: GeographyService,
+    private prescriptionStateService: PrescriptionState,
+    private proposalStateService: ProposalState,
+    private healthcareProviderService: HealthcareProviderService,
+    private toastService: ToastService,
     dialogRef: MatDialogRef<TransferAssignationDialog>,
-    @Inject(MAT_DIALOG_DATA) private readonly data: TransferAssignation,
-    private readonly translate: TranslateService
+    @Inject(MAT_DIALOG_DATA) protected readonly data: TransferAssignation,
+    private translate: TranslateService
   ) {
     super(dialogRef);
-    this.currentLang = this.translate.currentLang;
-    this.setValidators();
+    this.currentLang = this.translate.currentLang as TranslationType;
+  }
+
+  onSearch(criteria: SearchCriteria): void {
+    this.searchCriteria$.set(criteria);
   }
 
   ngOnInit() {
     this.generatedUUID = uuidv4();
   }
 
-  loadData(pageValues?: { pageIndex?: number; pageSize?: number }) {
-    const values = this.formGroup.value;
-    const cities = values.cities as CityResource[];
-    const zipCodes = cities?.map(c => c.zipCode).filter((z): z is number => z !== undefined) || [];
-
-    this.searchCriteria$.set({
-      query: values.query!,
-      zipCodes,
-      page: pageValues?.pageIndex,
-      pageSize: pageValues?.pageSize,
-    });
+  selectProfessional(healthcareProvider?: HealthcareProResource | HealthcareOrganizationResource) {
+    this.selectedProfessional.set(healthcareProvider);
   }
 
-  private setValidators(): void {
-    this.formGroup
-      .get('query')!
-      .setValidators([
-        (control: AbstractControl) =>
-          this.formGroup.get('cities')!.value!.length === 0 ? Validators.required(control) : null,
-      ]);
-    this.formGroup.get('query')!.addValidators(this.nameValidators);
+  onTransferSelectedValue() {
+    const professional = this.selectedProfessional();
 
-    this.formGroup
-      .get('cities')!
-      .setValidators((control: AbstractControl) =>
-        Validators.required(this.formGroup.get('query')!) != null
-          ? Validators.required(control) || Validators.minLength(1)(control)
-          : null
-      );
-  }
-
-  search(): void {
-    this.formGroup.markAllAsTouched();
-    if (this.formGroup.valid) {
-      const values = this.formGroup.value;
-      const cities = values.cities as CityResource[];
-      const zipCodes = cities?.map(c => c.zipCode).filter((z): z is number => z !== undefined) || [];
-      this.searchCriteria$.set({
-        query: values.query!,
-        zipCodes,
-        page: 1,
-        pageSize: this.professionalsState$()?.data?.pageSize || 10,
-      });
+    if (professional) {
+      this.onTransfer(professional);
+    } else {
+      this.toastService.show('prescription.transferProfessional.undefined');
     }
   }
 
-  onKeyUp(event: KeyboardEvent) {
-    this.formGroup.get('cities')!.updateValueAndValidity();
-    this.updateQueryTypeAndValidators(event);
-  }
-
-  private updateQueryTypeAndValidators(event: KeyboardEvent) {
-    const oldQueryIsNumeric = this.queryIsNumeric;
-    const inputValue = (event.target as HTMLInputElement).value;
-    this.queryIsNumeric = !!inputValue && !Number.isNaN(Number(inputValue?.substring(0, 1)));
-    if (this.queryIsNumeric !== oldQueryIsNumeric) {
-      const control = this.formGroup.get('query')!;
-      if (this.queryIsNumeric) {
-        control.removeValidators(this.nameValidators);
-      } else {
-        control.addValidators(this.nameValidators);
-      }
-    }
-  }
-
-  onTransfer(professional: HealthcareProResource): void {
-    if (!this.data?.prescriptionId) {
+  onTransfer(professional: HealthcareProResource | HealthcareOrganizationResource): void {
+    if (!this.data?.prescriptionId || !isProfessional(professional)) {
       this.closeDialog(professional);
     } else {
       const ssinObject = {
@@ -283,9 +227,9 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
 
   private executeTransferAssignment(
     professional: HealthcareProResource,
-    serviceCall: () => Observable<void>,
+    serviceCall: () => Observable<any>,
     successPrefix: string
-  ) {
+  ): void {
     this.loading = true;
     serviceCall().subscribe({
       next: () => {
@@ -300,25 +244,5 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
         this.showErrorCard('common.somethingWentWrong', err);
       },
     });
-  }
-
-  removeCity(city: unknown) {
-    const control = this.formGroup.get('cities')!;
-    const updated = control.value?.filter(c => c !== city) || [];
-    control.setValue(updated);
-    this.formGroup.get('query')!.updateValueAndValidity();
-  }
-
-  addCity(event: MatAutocompleteSelectedEvent, searchInput: HTMLInputElement) {
-    if (!event.option.value) {
-      return;
-    }
-    const control = this.formGroup.get('cities')!;
-    const currentCity = event.option.value as CityResource;
-    const value = [...(control.value || [])].filter(v => v.zipCode !== currentCity.zipCode);
-    value.push(currentCity);
-    control.setValue(value);
-    searchInput.value = '';
-    this.formGroup.get('query')!.updateValueAndValidity();
   }
 }

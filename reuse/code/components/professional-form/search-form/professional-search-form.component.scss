@@ -1,0 +1,29 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+.button-group{
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.form-group{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  .mh-form-field{
+    flex: 1;
+
+    label{
+      @include mh.font-label();
+    }
+    .sublabel {
+      display: block;
+      @include mh.font-label-small();
+    }
+  }
+
+  @media (max-width: mh.$media-breakpoint-s) {
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+}
