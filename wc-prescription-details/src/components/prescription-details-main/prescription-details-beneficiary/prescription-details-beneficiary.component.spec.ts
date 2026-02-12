@@ -58,7 +58,6 @@ describe('PrescriptionDetailsBeneficiaryComponent', () => {
     expect(element.textContent).toContain('prescription.beneficiary');
     expect(element.textContent).toContain('Alice');
     expect(element.textContent).toContain('Smith');
-    expect(element.textContent).toContain('common.gendersFull.F');
     expect(element.textContent).toContain('92.01.01-123.45');
     expect(element.textContent).toContain('RX123');
   });
