@@ -40,7 +40,7 @@ export class PrescriptionDetailsMainComponent {
     this._service.getDecryptedResponses()
   );
   readonly templateVersion: FormTemplate | undefined = this._service.getTemplateVersion().data as FormTemplate;
-  readonly patient: PersonResource | undefined = this._service.getPatient().data;
+  readonly patient: Signal<PersonResource | undefined> = computed(() => this._service.getPatient().data);
   readonly currentUser: Partial<UserInfo> | undefined = this._service.getCurrentUser().data;
   readonly status: Signal<boolean> = this._service.pssStatus;
   readonly isProfessional$: Signal<boolean | undefined> = this._service.isProfessional$;
