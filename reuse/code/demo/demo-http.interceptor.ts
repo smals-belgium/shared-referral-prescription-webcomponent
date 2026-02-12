@@ -1,4 +1,3 @@
-import { inject } from '@angular/core';
 import {
   HttpErrorResponse,
   HttpEvent,
@@ -9,7 +8,6 @@ import {
 } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { DEMO_MOCKS, HttpMethod } from '@reuse/code/demo/mocks/mock-registry';
-import { WcConfigurationService } from '@reuse/code/services/config/wc-configuration.service';
 
 interface Body {
   patientIdentifier?: string;
@@ -21,10 +19,7 @@ export const demoHttpInterceptor: HttpInterceptorFn = (
   req: HttpRequest<unknown>,
   next: HttpHandlerFn
 ): Observable<HttpEvent<unknown>> => {
-  const config = inject(WcConfigurationService);
-
-  const isDemoMode = config.getEnvironment() === 'demo';
-  if (!isDemoMode || req.url.includes('assets/i18n/')) {
+  if (req.url.includes('assets/i18n/')) {
     return next(req);
   }
 

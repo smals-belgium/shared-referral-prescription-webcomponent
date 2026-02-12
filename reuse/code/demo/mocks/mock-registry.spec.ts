@@ -2,7 +2,6 @@ import { HttpRequest } from '@angular/common/http';
 import { DEMO_MOCKS, DemoMockEntry, ReadRequestResourceExtended } from '@reuse/code/demo/mocks/mock-registry';
 import {
   CitiesResource,
-  CityResource,
   HealthcarePersonResource,
   RequestSummaryListResource,
   TemplateVersion,
