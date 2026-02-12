@@ -4,7 +4,13 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "../../out-tsc/spec",
-    "types": ["jasmine"]
+    "types": ["jest", "node"],
+    "emitDecoratorMetadata": true,
+    "typeRoots": ["../../../node_modules/@types", "../../../node_modules/@types/node"],
+    "baseUrl": ".",
+    "paths": {
+      "@reuse/*": ["../../../reuse/*"]
+    }
   },
   "include": ["src/**/*.ts", "../../../reuse/code/constants/global.d.ts"]
 }

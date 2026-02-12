@@ -1,6 +1,7 @@
 import { Directive, ElementRef, inject, input, OnInit } from '@angular/core';
 import {
   ConfigName,
+  IdToken,
   SettingsChangeEvent,
   UserLanguage,
   VersionMismatchEvent,
@@ -8,6 +9,7 @@ import {
 import { HOST_SERVICES } from '../injection-tokens/host-services.injection-token';
 import { HOST_SETTINGS } from '../injection-tokens/host-settings.injection-token';
 import { ReferralEnv } from '@reuse/code/interfaces/environment.interface';
+import { jwtDecode } from 'jwt-decode';
 
 export interface Services {
   getAccessToken: (audience: string) => Promise<string>;
@@ -59,6 +61,31 @@ export abstract class MagsComponent implements OnInit {
       return Promise.resolve('demo');
     } else {
       return this.hostServices.getAccessToken(audience);
+    }
+  }
+
+  protected async getIdToken() {
+    if (this.hostSettings.configName === 'demo') {
+      return Promise.resolve({
+        userProfile: {
+          ssin: '80222700153',
+          firstName: 'John',
+          lastName: 'Doe',
+          gender: 'M',
+        },
+      });
+    } else {
+      const idToken = await this.hostServices.getIdToken();
+      return this.getDecodedIdToken(idToken);
+    }
+  }
+
+  private getDecodedIdToken(idToken: IdToken) {
+    if (!idToken) return null;
+    try {
+      return jwtDecode(idToken);
+    } catch {
+      return null;
     }
   }
 

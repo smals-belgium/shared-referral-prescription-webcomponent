@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MagsComponent } from '@reuse/code/components/wrappers/directives/mags.wrapper.directive';
-import { wrapperManifest } from 'wrappers/components/mags-prescription-details/manifest';
+import { wrapperManifest } from '../../../../manifest';
 import {
   PrintMimeType,
   PrintOrientation,
@@ -16,12 +16,12 @@ import {
   UserLanguage,
 } from '@smals-belgium/myhealth-wc-integration';
 import { mapLanguageToTranslations } from '@reuse/code/components/wrappers/utils/mags.utils';
+import { hasUserProfile } from '@reuse/code/utils/mags-utils';
 
 @Component({
   standalone: true,
   selector: wrapperManifest.selector,
   templateUrl: 'mags-prescription-details.component.html',
-  styleUrls: ['mags-prescription-details.component.scss'],
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
@@ -58,15 +58,7 @@ export class MagsPrescriptionDetails extends MagsComponent {
 
     webComponent.services = {
       getAccessToken: (audience: string) => this.getAccessToken(audience),
-      getIdToken: () =>
-        Promise.resolve({
-          userProfile: {
-            ssin: '80222700163',
-            firstName: 'John',
-            lastName: 'Doe',
-            gender: 'M',
-          },
-        }),
+      getIdToken: () => this.getIdToken(),
     };
 
     webComponent.setAttribute('lang', mapLanguageToTranslations(this.userLanguage()));
@@ -88,14 +80,10 @@ export class MagsPrescriptionDetails extends MagsComponent {
       });
     });
 
-    webComponent.addEventListener('clickOpenExtendedDetail', (d: Event & { detail?: string }) => {
-      this.open.emit({
-        componentTag: wrapperManifest.events['open'].componentTag,
-        props: {
-          prescriptionId: d?.detail,
-          lang: webComponent.lang,
-        },
-      });
+    webComponent.addEventListener('clickOpenExtendedDetail', async (d: Event & { detail?: string }) => {
+      const ssin = await this.resolvePatientSsin();
+      this.updateAttribute('patient-ssin', ssin || '');
+      this.updateAttribute('prescription-id', d?.detail || '');
     });
 
     this.appendWebComponent(webComponent);
@@ -107,4 +95,20 @@ export class MagsPrescriptionDetails extends MagsComponent {
       w[0].setAttribute('lang', mapLanguageToTranslations(s.detail.value as unknown as UserLanguage));
     }
   };
+
+  updateAttribute(key: string, param: string) {
+    const webComponent = this.componentView.nativeElement.getElementsByTagName(wrapperManifest.customElement.tag);
+    webComponent[0].setAttribute(key, param);
+  }
+
+  private async resolvePatientSsin(): Promise<string | undefined> {
+    const token = await this.getIdToken();
+
+    if (!token || !hasUserProfile(token)) {
+      console.error('token with userProfile.ssin is required');
+      return;
+    }
+
+    return token.userProfile.ssin;
+  }
 }
