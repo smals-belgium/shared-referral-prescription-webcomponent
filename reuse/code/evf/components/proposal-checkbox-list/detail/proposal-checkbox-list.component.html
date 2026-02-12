@@ -43,8 +43,8 @@
         @for (selectedResponse of selectedResponses$ | async; track selectedResponse) {
         <li>
           <span markdown class="evf-markdown"
-                  [data]="selectedResponse.response?.labelTranslationId | evfLabel"></span>
-          @if (selectedResponse.response?.tooltipTranslationId) {
+                  [data]="selectedResponse.response.labelTranslationId | evfLabel"></span>
+          @if (selectedResponse.response.tooltipTranslationId) {
             <evf-info-icon [tooltipLabel]="selectedResponse.response.tooltipTranslationId!"></evf-info-icon>
           }
         </li>

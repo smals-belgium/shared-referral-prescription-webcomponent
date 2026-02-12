@@ -150,8 +150,10 @@ export class PrescriptionDetailsActionsComponent {
         category: prescription.category,
         intent: prescription.intent,
       },
-      panelClass: 'mh-dialog-container',
-      maxHeight: '90vh',
+      panelClass: ['mh-dialog-container', 'no-dialog-scroll'],
+      height: '90vh',
+      width: '90vw',
+      maxWidth: '1300px',
     });
   }
 

@@ -1,177 +1,92 @@
-<form [formGroup]="formGroup" (ngSubmit)="search()">
-  <h1 mat-dialog-title>{{ 'prescription.transferAssignation.title' | translate }}</h1>
+<h1 mat-dialog-title
+    data-cy="prescription-transfer-performer-title">{{ 'prescription.transferAssignation.title' | translate }}</h1>
 
-  <div mat-dialog-content>
-    @if(errorCard.show){
+<div mat-dialog-content class="dialog-content">
+  @if (data.prescriptionId) {
+    <div class="search-form">
       <app-alert
-        [alert]="AlertType.Error"
-        [message]="errorCard.message | translate : errorCard.translationOptions"
-        [error]="errorCard.errorResponse"
+        [alert]="AlertType.Info"
+        [title]="'prescription.transferAssignation.dialog.title' | translate"
+        [message]="'prescription.transferAssignation.dialog.description' | translate"
         [showRetry]="false"
       ></app-alert>
-    }
-    <div>
-      @if (formGroup.get('query')!; as control) {
-        <div class="mh-form-field">
-          <label for="prescription-assign-performer">{{ 'prescription.transferAssignation.performer' | translate }}</label>
-          <mat-form-field appearance="outline">
-            <input
-              id="prescription-assign-performer"
-              type="text"
-              matInput
-              formControlName="query"
-              [dropSpecialCharacters]="queryIsNumeric"
-              data-cy="prescription-assign-performer"
-              [mask]="queryIsNumeric ? '0-00000-00-000||0-00000-00' : ''"
-              [placeholder]="'prescription.transferAssignation.searchPerformerPlaceHolder' | translate"
-              [validation]="queryIsNumeric"
-              maxlength="50"
-              (keyup)="onKeyUp($event)">
-            @if (!queryIsNumeric) {
-              <mat-hint align="end">
-                {{ control.value?.length }}/ {{ caregiverNameMaxLength }}
-              </mat-hint>
-            }
-            @if (control.hasError('required')) {
-              <mat-error>
-                {{ 'common.mandatory' | translate }}
-              </mat-error>
-            }
-            @if (queryIsNumeric && control.hasError('mask')) {
-              <mat-error>
-                {{ 'prescription.errors.invalidNihiiDigitsCount' | translate }}
-              </mat-error>
-            }
-            @if (!queryIsNumeric && control.hasError('pattern')) {
-              <mat-error>
-                {{ 'prescription.errors.invalidCaregiverNameCharacters' | translate }}
-              </mat-error>
-            }
-            @if (!queryIsNumeric && !control.hasError('pattern') && control.hasError('maxlength')) {
-              <mat-error>
-                {{ 'prescription.errors.invalidMaxLength' | translate:control.errors?.['maxlength'] }}
-              </mat-error>
-            }
-            @if (!queryIsNumeric && !control.hasError('pattern') && control.hasError('minlength')) {
-              <mat-error>
-                {{ 'prescription.errors.invalidMinLength' | translate:control.errors?.['minlength'] }}
-              </mat-error>
-            }
-          </mat-form-field>
+
+
+      @if (errorCard.show) {
+        <app-alert
+          [alert]="AlertType.Error"
+          [message]="errorCard.message | translate : errorCard.translationOptions"
+          [error]="errorCard.errorResponse"
+          [showRetry]="false"
+        ></app-alert>
+      }
+
+      <professional-search-form (searchCriteria)="onSearch($event)"></professional-search-form>
+    </div>
+    <div class="search-results">
+      @if (healthcareProvidersState$(); as healthcareProviderState; ) {
+        <div class="results">
+          <h2>{{ 'professional.table.results' | translate:{ results: healthcareProviderState.data?.total ?? 0 } }}</h2>
+
+          <app-responsive-wrapper>
+            <ng-template #desktopTemplate>
+              <professional-table
+                [professionals]="isLoading() ? [] : healthcareProvidersState$()?.data?.items ?? []"
+                [total]="isLoading() ? undefined : healthcareProvidersState$()?.data?.total ?? 0"
+                [loading]="isLoading()"
+                [currentLang]="currentLang"
+                (selectProfessional)="onTransfer($event)"
+              ></professional-table>
+            </ng-template>
+
+            <ng-template #mobileTemplate>
+              <professional-cards
+                [professionals]="isLoading() ? [] : healthcareProvidersState$()?.data?.items ?? []"
+                [total]="healthcareProvidersState$()?.data?.total || null"
+                [initialDataLoading]="isLoading()"
+                [currentLang]="currentLang"
+                [prescriptionId]="data.prescriptionId"
+                [category]="data.category"
+                [intent]="data.intent"
+                [query]="searchCriteria$()?.query ?? ''"
+                [zipCodes]="searchCriteria$()?.zipCodes ?? []"
+                [error]="errorCard.show"
+                (selectProfessional)="selectProfessional($event)"
+              ></professional-cards>
+            </ng-template>
+          </app-responsive-wrapper>
         </div>
       }
 
-    </div>
-    <div>
-      @if (formGroup.get('cities')!; as control) {
-        <div class="mh-form-field">
-          <label for="prescription-assign-search-city">{{ 'prescription.transferAssignation.locations' | translate }}</label>
-          <mat-form-field appearance="outline">
-            <mat-chip-grid #chipList formControlName="cities">
-              @for (city of formGroup.get('cities')!.value; track city) {
-                <mat-chip-row data-cy="prescription-selected-city"
-                              [value]="city" (removed)="removeCity(city)">
-                  {{ city.zipCode }} - {{ city.cityName | translation }}
-                  <button type="button" data-cy="prescription-selected-city-remove" matChipRemove [attr.aria-label]="'prescription.ariaLabel.removeCity' | translate">
-                    <mat-icon>cancel</mat-icon>
-                  </button>
-                </mat-chip-row>
-              }
-              @if ((formGroup.get('cities')!.value?.length || 0) < 5) {
-                <input
-                  id="prescription-assign-search-city"
-                  #searchInput
-                  formControlName="searchCity"
-                  [placeholder]="'prescription.transferAssignation.zipCodeOrCityName' | translate"
-                  [matChipInputFor]="chipList"
-                  [matChipInputAddOnBlur]="false"
-                  [matAutocomplete]="auto"
-                  (blur)="searchInput.value = ''; formGroup.get('searchCity')!.reset()"
-                  data-cy="prescription-assign-search-city"
-                >
-                <mat-autocomplete
-                  #auto="matAutocomplete"
-                  [autoActiveFirstOption]="true"
-                  (optionSelected)="addCity($event, searchInput)"
-                >
-                  @if (cityOptions$ | async; as cityOptions) {
-                    @if (!cityOptions?.length){
-                      <mat-option data-cy="no-locality-found-message" [value]="null"
-                                  class="warning">
-                        <mat-icon>warning</mat-icon>
-                        {{ 'prescription.transferAssignation.noResults' | translate }}
-                      </mat-option>
-                    }
-                    @for (option of cityOptions; track $index){
-                      <mat-option [value]="option">
-                        {{ option.zipCode }} - {{ option.cityName | translation }}
-                      </mat-option>
-                    }
-
-                  }
-                </mat-autocomplete>
-              }
-            </mat-chip-grid>
-            @if (control.hasError('required') || control.hasError('minlength')){
-              <mat-error>{{ 'common.mandatory' | translate }}</mat-error>
-            }
-
-          </mat-form-field>
-        </div>
+      @if (loading) {
+        <app-overlay-spinner mode="dialog"></app-overlay-spinner>
       }
     </div>
-  </div>
-  <mat-dialog-actions align="end">
-    <button type="submit" mat-raised-button data-cy="prescription-assign-search-button"
-            >{{ 'common.search' | translate }}
-    </button>
-    <button type="button" mat-flat-button
-            [mat-dialog-close]="undefined" data-cy="prescription-assign-cancel-button">{{ 'common.cancel' | translate }}
-    </button>
-  </mat-dialog-actions>
-</form>
+  } @else {
+    <app-alert
+      [alert]="AlertType.Warning"
+      [message]="'common.somethingWentWrong' | translate"
+      [showRetry]="true"
+      (clickRetry)="dialogRef.close()"
+    ></app-alert>
+  }
 
-@if (professionalsState$(); as professionalsState) {
-  <ng-container>
-    @if (isLoading()) {
-      <app-overlay-spinner mode="inline"></app-overlay-spinner>
-    } @else {
-      <div class="results">
-      <table>
-        @for(professional of professionalsState?.data?.items; track professional) {
-        <tr class="result-item"
-             [attr.data-cy]="'result-professional-' + (professional.nihii8 || professional.nihii11) + (professional.id?.qualificationCode ?? '')"
-             (click)="onTransfer(professional)"
-             (keydown.enter)="onTransfer(professional)"
-             tabindex="0"
-        >
-          <td data-cy="professional-name">
-            @if(professional.healthcarePerson; as person){
-            <b>{{ (person.firstName || '') + ' ' + (person.lastName || '') }}</b>
-            }</td>
-          <td data-cy="professional-nihdi">{{professional.nihii8 ?? professional.nihii11 | formatNihdi: professional.healthcareQualification?.id?.code}}</td>
-
-          @if(professional.address) {
-            <td data-cy="professional-address-street">{{ professional.address.street | formatMultilingualObject: currentLang }} {{professional.address.houseNumber || ''}} {{professional.address.box || ''}}</td>
-            <td data-cy="professional-address-postalCode">{{professional.address.zipCode || ''}}</td>
-            <td data-cy="professional-address-city">{{ professional.address.municipality | formatMultilingualObject: currentLang}}</td>
-          }
-      </tr>
-        }
-      </table>
-    </div>
-      <div class="pagination">
-        <app-paginator
-          [total]="professionalsState.data?.total ?? 0"
-          [page]="professionalsState.data?.page ?? 1"
-          [pageSize]="professionalsState.data?.pageSize ?? 10"
-          (changePage)="loadData($event)"
-        ></app-paginator>
+  @if (loading) {
+    <app-overlay-spinner mode="dialog"></app-overlay-spinner>
+  }
+</div>
+<div mat-dialog-actions class="dialog-actions">
+  <app-responsive-wrapper class="responsive-wrapper">
+    <ng-template #mobileTemplate>
+      <div class="action-buttons-group">
+        <button type="button" mat-flat-button (click)="onTransferSelectedValue()" [disabled]="!selectedProfessional()"
+                data-cy="prescription-transfer-search-button">{{ 'professional.table.select' | translate }}
+        </button>
+        <button type="button" mat-stroked-button
+                [mat-dialog-close]="undefined"
+                data-cy="prescription-transfer-cancel-button">{{ 'common.cancel' | translate }}
+        </button>
       </div>
-    }
-  </ng-container>
-}
-
-@if (loading) {
-  <app-overlay-spinner mode="dialog"></app-overlay-spinner>
-}
+    </ng-template>
+  </app-responsive-wrapper>
+</div>

@@ -468,7 +468,8 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   }
 
   getStatusColor(status: RequestStatus) {
-    return mapDisplayStatusToColor(status);
+    const mhColor = mapDisplayStatusToColor(status);
+    return mhColor + ' mh-no-overlay';
   }
 
   private formatToEvfLangCode(localeCode: string): 'nl' | 'fr' {

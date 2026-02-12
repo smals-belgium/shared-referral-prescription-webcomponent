@@ -1,0 +1,68 @@
+<div #scrollframe>
+  @if (itemsLength > 0) {
+    <div class="grid-container mh-margin-top-bottom">
+      @for (professional of requestData(); track trackById(professional)) {
+        <mat-card appearance="raised" class="mh-mat-card">
+          <mat-card-content>
+            <div class="row">
+              <mat-radio-button [value]="professional" class="no-padding" [aria-label]="'professional.table.select' | translate" (change)="changeValue($event)"></mat-radio-button>
+            </div>
+            @if(isProfessional(professional)){
+            <div class="row">
+              <p class="professional-name">
+                @if (professional.healthcarePerson; as person) {
+                  {{ (person.lastName || '') }} {{ (person.firstName || '') }}
+                }
+              </p>
+            </div>
+
+            <div class="row">
+              <span class="info">
+               {{ professional.nihii8 ?? professional.nihii11 | formatNihdi: professional.healthcareQualification?.id?.code }}
+              </span>
+            </div>
+
+            <div class="row">
+              @if(professional.address) {
+              {{ professional.address.street | formatMultilingualObject: currentLang() }} {{ professional.address.houseNumber || '' }} {{ professional.address.box || '' }}
+              }
+            </div>
+
+            <div class="row">
+              @if(professional.address) {
+              {{ professional.address.zipCode + ' ' || '' }} {{ professional.address.municipality | formatMultilingualObject:  currentLang() }}
+              }
+            </div>
+            }
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  } @else if (itemsLength === 0) {
+    <div class="mh-margin-top-bottom">
+      <app-alert
+        [alert]="AlertType.Info"
+        [message]="'professional.noProfessionals' | translate"
+        [showRetry]="false"
+      ></app-alert>
+    </div>
+  }
+
+  @if (!canLoadMore()) {
+    <div class="mh-margin-bottom">
+      <app-alert
+        [alert]="AlertType.Info"
+        [message]="'professional.allProfessionalsFetched' | translate"
+        [showRetry]="false"
+      ></app-alert>
+    </div>
+  }
+
+  @if (initialDataLoading() || isLoading()) {
+    <div class="mh-margin-top-bottom">
+      <app-skeleton [items]="3" [format]="FormatEnum.CARD"></app-skeleton>
+    </div>
+  }
+
+  <div #anchor></div>
+</div>

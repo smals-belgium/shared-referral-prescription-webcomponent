@@ -193,7 +193,8 @@ export class PrescriptionsCardComponent implements OnChanges, AfterViewInit, OnD
   }
 
   getStatusColor(status: RequestStatus) {
-    return mapDisplayStatusToColor(status);
+    const mhColor = mapDisplayStatusToColor(status);
+    return mhColor + ' mh-no-overlay';
   }
 
   getProfessional(requester?: HealthcareProResource) {
