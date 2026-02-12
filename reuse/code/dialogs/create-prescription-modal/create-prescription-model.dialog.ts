@@ -9,7 +9,7 @@ import {
   MatDialogTitle,
 } from '@angular/material/dialog';
 import { LoadingStatus } from '@reuse/code/interfaces';
-import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatError, MatFormField } from '@angular/material/form-field';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { PrescriptionModelService } from '@reuse/code/services/api/prescriptionModel.service';

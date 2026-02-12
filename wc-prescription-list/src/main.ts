@@ -20,12 +20,21 @@ import {
 } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
+import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
+import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
+import { DemoPseudoService } from '@reuse/code/services/privacy/demo-pseudo.service';
 
-(async () => {
+void (async () => {
+  const configurationService = new WcConfigurationService();
+
+  await configurationService.waitUntilReady();
+
+  const env = configurationService.getEnvironment();
+
   const app = createApplication({
     providers: [
       provideCore(),
-      provideHttpClient(withInterceptors([demoHttpInterceptor, apiUrlInterceptor])),
+      provideHttpClient(withInterceptors([env === 'demo' ? demoHttpInterceptor : apiUrlInterceptor])),
       providePseudonymisation(),
       {
         provide: ConfigurationService,
@@ -34,6 +43,16 @@ import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
       {
         provide: AuthService,
         useClass: WcAuthService,
+      },
+      {
+        provide: PseudoService,
+        useFactory: (config: ConfigurationService, pseudoHelper: PseudonymisationHelper) => {
+          if (env === 'demo') {
+            return new DemoPseudoService();
+          }
+          return new PseudoService(config, pseudoHelper);
+        },
+        deps: [ConfigurationService, PseudonymisationHelper],
       },
       { provide: OVERLAY_QUERY_SELECTOR, useValue: ['nihdi-referral-prescription-list'] },
       {

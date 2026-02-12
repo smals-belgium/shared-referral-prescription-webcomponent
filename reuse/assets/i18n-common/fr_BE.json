@@ -119,7 +119,7 @@
                 },
                 "table": {
                     "title": "Résultat PSS",
-                    "select": "",
+                    "select": "Sélectionner la ligne {row}",
                     "relevance": "Pertinence",
                     "typesOfImagery": "Types d'imagerie",
                     "cost": "Coût",
@@ -192,7 +192,14 @@
             "prescriber": "Prescripteur",
             "proof-of-electronic-prescription": "Preuve de prescription électronique",
             "remark": "Attention: Aucun ajout manuscrit à ce document ne sera pris en compte. ",
-            "date": "Imprimé le {date}"
+            "date": "Imprimé le {date}",
+            "subsection": {
+                "patient": "Patient",
+                "startDate": "Début",
+                "endDate": "Fin",
+                "header": "Données d'identification de la prescription électronique (imprimé le {date})."
+            },
+            "alert": "Cette prescription a été classée sans suite et ne peut donc plus être utilisée"
         },
         "author": "Auteur",
         "patient": "Patient",

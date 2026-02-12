@@ -12,12 +12,11 @@ export const apiUrlInterceptor: HttpInterceptorFn = (
 ): Observable<HttpEvent<unknown>> => {
   const configService = inject(ConfigurationService);
   const authService = inject(AuthService);
-  const currentEnv = configService.getEnvironment();
 
   const exchangeToClientId = configService.getEnvironmentVariable('fhirGatewayClientId') as string;
   const fhirGatewayUrl = configService.getEnvironmentVariable('fhirGatewayUrl') as string;
 
-  if (req.url.includes('assets/') || currentEnv === 'demo') {
+  if (req.url.includes('assets/')) {
     return next(req);
   }
   if (req.url.includes('pseudo/')) {
