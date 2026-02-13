@@ -225,14 +225,14 @@
         "noPrescriptionsForPatient": "Deze patiënt heeft nog geen voorschriften.",
         "noPrescriptionsForUser": "U heeft nog geen voorschriften.",
         "assignPerformer": {
-            "title": "Toewijzen aan een zorgverlener of organisatie",
+            "title": "Zoek een zorgverlener",
             "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
             "successOrganization": "{name} is toegewezen als organisatie.",
             "meSuccess": "U bent toegewezen als zorgverlener.",
             "performer": "Zorgverlener of organisatie",
             "searchPerformerPlaceHolder": "RIZIV nummer, naam",
             "select": "Selecteren",
-            "locations": "Locaties",
+            "locations": "Locatie(s)",
             "zipCodeOrCityName": "Postcode of gemeente",
             "noResults": "Geen gemeente gevonden",
             "organization": "Organisatie",
@@ -248,7 +248,7 @@
             "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
             "performer": "Zorgverlener",
             "searchPerformerPlaceHolder": "RIZIV nummer, naam",
-            "locations": "Locaties",
+            "locations": "Locatie(s)",
             "zipCodeOrCityName": "Postcode of gemeente",
             "noResults": "Geen gemeente gevonden",
             "dialog": {
@@ -334,7 +334,7 @@
             "dateMustBeEarlierOrEqualTo": "Datum mag niet na {date} liggen",
             "dateMustBeLaterOrEqualTo": "Datum mag niet voor {date} liggen",
             "invalidDateFormat": "Ongeldig formaat: dd/mm/jjjj",
-            "invalidSsinChecksum": "Het INSZ-nummer is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
+            "invalidSsinChecksum": "Het rijksregisternummer / BIS-nummer is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
             "invalidShortCode": "Voorschrift ID is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
             "decryptionFailed": "Het decoderen van de vrije tekstvelden is mislukt. Probeer het opnieuw.",
             "failedToCreateModel": "Het sjabloon kon niet worden aangemaakt. Probeer het later opnieuw."
@@ -443,7 +443,7 @@
             "meSuccess": "U bent toegewezen als zorgverlener.",
             "performer": "Zorgverlener",
             "searchPerformerPlaceHolder": "RIZIV nummer, naam",
-            "locations": "Locaties",
+            "locations": "Locatie(s)",
             "zipCodeOrCityName": "Postcode of gemeente",
             "noResults": "Geen gemeente gevonden",
             "organization": "Organisatie"
@@ -453,7 +453,7 @@
             "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
             "performer": "Zorgverlener",
             "searchPerformerPlaceHolder": "RIZIV nummer, naam",
-            "locations": "Locaties",
+            "locations": "Locatie(s)",
             "zipCodeOrCityName": "Postcode of gemeente",
             "noResults": "Geen gemeente gevonden"
         },
