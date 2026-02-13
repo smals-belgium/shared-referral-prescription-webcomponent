@@ -37,24 +37,19 @@ export class AlertComponent implements OnChanges {
   showBody: WritableSignal<boolean> = signal(false);
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['error']) {
+    if (changes['error'] || changes['message']) {
       this.setGenericErrorMsgKey();
     }
   }
 
   private setGenericErrorMsgKey(): void {
-    if (
-      this.error &&
-      !this.message &&
-      !(this.error.status.toString() in this.genericErrors)
-    ){
-      this.title = "common.error.default.header";
-      this.subTitle = "common.error.default.subheader";
+    if (this.error && !this.message && !(this.error.status.toString() in this.genericErrors)) {
+      this.title = 'common.error.default.header';
+      this.subTitle = 'common.error.default.subheader';
       this.alert = AlertType.Warning;
       this.showRetry = false;
       this.showBody.set(false);
-
-    }else{
+    } else {
       this.genericErrorMsgKey = this.error ? this.genericErrors[this.error.status] : undefined;
       this.showBody.set(true);
     }
