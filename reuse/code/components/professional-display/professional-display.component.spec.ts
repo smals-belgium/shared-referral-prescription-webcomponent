@@ -28,17 +28,8 @@ describe('ProfessionalDisplayComponent', () => {
   it('should display currentUser name if professional has no lastName and ssin matches', () => {
     component.professional = {
       healthcareQualification: {} as any,
-      healthcareStatus: {} as any,
       address: {} as any,
-      licenseToPractice: true,
       type: 'Professional',
-      healthcareVisaList: [
-        {
-          active: false,
-          endDate: '',
-        },
-      ],
-      subscriptionEndDate: '',
       id: {
         profession: 'NURSE',
         qualificationCode: '789',
@@ -65,17 +56,8 @@ describe('ProfessionalDisplayComponent', () => {
   it('should show "not found" and icon if professional has no lastName and ssin does not match', () => {
     component.professional = {
       healthcareQualification: {} as any,
-      healthcareStatus: {} as any,
       address: {} as any,
-      licenseToPractice: true,
       type: 'Professional',
-      healthcareVisaList: [
-        {
-          active: false,
-          endDate: '',
-        },
-      ],
-      subscriptionEndDate: '',
       id: {
         profession: 'NURSE',
         qualificationCode: '789',
@@ -103,17 +85,8 @@ describe('ProfessionalDisplayComponent', () => {
   it('should display professional firstName and lastName if available', () => {
     component.professional = {
       healthcareQualification: {} as any,
-      healthcareStatus: {} as any,
       address: {} as any,
-      licenseToPractice: true,
       type: 'Professional',
-      healthcareVisaList: [
-        {
-          active: false,
-          endDate: '',
-        },
-      ],
-      subscriptionEndDate: '',
       id: {
         profession: 'NURSE',
         qualificationCode: '123',
