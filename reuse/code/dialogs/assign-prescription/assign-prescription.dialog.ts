@@ -115,6 +115,7 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
                 [],
                 ProviderType.Professional,
                 this.data.prescriptionId,
+                this.data.intent,
                 this.pageable.page,
                 this.pageable.pageSize
               )

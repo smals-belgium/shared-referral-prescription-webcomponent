@@ -129,6 +129,7 @@ export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, 
       institutionTypes: [],
       providerType: ProviderType.Professional,
       prescriptionId: this.prescriptionId(),
+      intent: this.intent()
     };
 
     this.dataService.initializeDataStream(initialData, config);

@@ -12,6 +12,7 @@ export class HealthcareProviderService {
     institutionTypes?: string[],
     providerType: ProviderType = ProviderType.All,
     prescriptionId?: string,
+    intent?: string,
     page?: number,
     pageSize?: number
   ) {
@@ -23,6 +24,7 @@ export class HealthcareProviderService {
       disciplines ?? undefined,
       institutionTypes ?? undefined,
       prescriptionId,
+      intent,
       page,
       pageSize
     );
