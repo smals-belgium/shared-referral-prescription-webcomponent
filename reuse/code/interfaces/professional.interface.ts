@@ -7,4 +7,5 @@ export interface SearchProfessionalCriteria {
   institutionTypes?: string[];
   providerType: ProviderType;
   prescriptionId: string;
+  intent: string;
 }

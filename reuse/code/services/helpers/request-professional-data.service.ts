@@ -3,7 +3,6 @@ import {
   HealthcareOrganizationResource,
   HealthcareProResource,
   HealthCareProviderRequestResource,
-  ModelEntityDto,
   ProviderType,
 } from '@reuse/code/openapi';
 import { BehaviorSubject, catchError, map, mergeScan, Observable, of, scan, startWith, Subject, tap } from 'rxjs';
@@ -130,6 +129,7 @@ export class RequestProfessionalDataService {
       [],
       ProviderType.Professional,
       criteria.prescriptionId,
+      criteria.intent,
       page + 1,
       RequestProfessionalDataService.PAGE_SIZE
     );
