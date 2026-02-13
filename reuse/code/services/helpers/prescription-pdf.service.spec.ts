@@ -156,7 +156,7 @@ describe('PrescriptionsPdfService', () => {
 
       const result = service['parseMarkdownList'](markdown);
 
-      expect(result).toEqual(['First item', 'Second item', 'Third item']);
+      expect(result).toEqual([{ text: 'First item' }, { text: 'Second item' }, { text: 'Third item' }]);
     });
 
     it('should filter empty lines and trim whitespace', () => {
@@ -164,7 +164,30 @@ describe('PrescriptionsPdfService', () => {
 
       const result = service['parseMarkdownList'](markdown);
 
-      expect(result).toEqual(['Item one', 'Item two']);
+      expect(result).toEqual([{ text: 'Item one' }, { text: 'Item two' }]);
+    });
+
+    it('should parse bold markdown into pdfmake rich text', () => {
+      const markdown =
+        "> - il n'est donc **pas obligatoire**\n" +
+        '> - en cas de **désorientation du patient** dans le temps, un **certificat médical** est requis';
+
+      const result = service['parseMarkdownList'](markdown);
+
+      expect(result).toEqual([
+        {
+          text: [{ text: "il n'est donc " }, { text: 'pas obligatoire', bold: true }],
+        },
+        {
+          text: [
+            { text: 'en cas de ' },
+            { text: 'désorientation du patient', bold: true },
+            { text: ' dans le temps, un ' },
+            { text: 'certificat médical', bold: true },
+            { text: ' est requis' },
+          ],
+        },
+      ]);
     });
   });
 
