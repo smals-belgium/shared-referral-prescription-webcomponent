@@ -54,7 +54,7 @@ export type TranslationType = keyof Translation;
   styleUrl: './professional-table.component.scss',
 })
 export class ProfessionalTableComponent {
-  protected readonly displayedColumns: string[] = ['icon', 'firstname', 'lastname', 'address', 'city', 'actions'];
+  protected readonly displayedColumns: string[] = ['icon', 'lastname', 'firstname', 'address', 'city', 'actions'];
   protected readonly AlertType = AlertType;
   protected readonly FormatEnum = FormatEnum;
 

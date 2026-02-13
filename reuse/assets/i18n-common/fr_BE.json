@@ -225,14 +225,14 @@
         "noPrescriptionsForPatient": "Ce patient ne possède pas encore de prescription.",
         "noPrescriptionsForUser": "Vous ne possèdez pas encore de prescription.",
         "assignPerformer": {
-            "title": "Assigner à un prestataire ou une organisation",
+            "title": "Chercher un infirmier",
             "success": "{firstName} {lastName} a été assigné comme prestataire.",
             "successOrganization": "{name} a été assigné comme organisation.",
             "meSuccess": "Vous avez été assigné comme prestataire.",
             "performer": "Prestataire",
             "searchPerformerPlaceHolder": "N° INAMI, nom",
             "select": "Sélectionner",
-            "locations": "Localisation",
+            "locations": "Localisation(s)",
             "zipCodeOrCityName": "Code postal ou commune",
             "noResults": "Aucune commune trouvée",
             "organization": "Organisation",
@@ -560,8 +560,8 @@
     "professional": {
         "table": {
             "results": "{results} résultats trouvé",
-            "firstname": "Nom",
-            "lastname": "Prénom",
+            "firstname": "Prénom",
+            "lastname": "Nom",
             "address": "Adresse",
             "city": "Commune",
             "actions": "Action",

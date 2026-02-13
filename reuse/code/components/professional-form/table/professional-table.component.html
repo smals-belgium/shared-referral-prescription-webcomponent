@@ -6,6 +6,17 @@
     </td>
   </ng-container>
 
+  <ng-container matColumnDef="lastname">
+    <th data-cy="professional-lastname" mat-header-cell
+        *matHeaderCellDef>{{ 'professional.table.lastname' | translate }}
+    </th>
+    <td data-cy="professional-lastname-cell" mat-cell *matCellDef="let healthcareProvider">
+      @if (healthcareProvider.healthcarePerson; as person) {
+        <b>{{ (person.lastName || '') }}</b>
+      }
+    </td>
+  </ng-container>
+
   <ng-container matColumnDef="firstname">
     <th data-cy="professional-firstname" mat-header-cell
         *matHeaderCellDef>{{ 'professional.table.firstname' | translate }}
@@ -19,17 +30,6 @@
       <div>
         {{ healthcareProvider.nihii8 ?? healthcareProvider.nihii11 | formatNihdi: healthcareProvider.healthcareQualification?.id?.code }}
       </div>
-    </td>
-  </ng-container>
-
-  <ng-container matColumnDef="lastname">
-    <th data-cy="professional-lastname" mat-header-cell
-        *matHeaderCellDef>{{ 'professional.table.lastname' | translate }}
-    </th>
-    <td data-cy="professional-lastname-cell" mat-cell *matCellDef="let healthcareProvider">
-      @if (healthcareProvider.healthcarePerson; as person) {
-        <b>{{ (person.lastname || '') }}</b>
-      }
     </td>
   </ng-container>
 
