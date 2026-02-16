@@ -213,7 +213,7 @@
         "validityPeriod": "Geldigheidsperiode",
         "consultDetails": "Toon details",
         "assign": "Toewijzen",
-        "transfer": "Overdragen",
+        "transfer": "Transfereren",
         "assignMe": "Mezelf toewijzen",
         "reject": "Afwijzen",
         "copy": "Kopiëren",
@@ -252,7 +252,7 @@
             "zipCodeOrCityName": "Postcode of gemeente",
             "noResults": "Geen gemeente gevonden",
             "dialog": {
-                "title": "Een zorgverlener overdragen naar een voorschrift",
+                "title": "Een zorgverlener transfereren naar een voorschrift",
                 "description": "Als u dit voorschrift overdraagt naar een andere zorgverlener, kan deze de informatie in dit voorschrift raadplegen."
             }
         },
@@ -352,7 +352,7 @@
             "delete": "Verwijderen",
             "removeCity": "Verwijder de gemeente",
             "print": "Afdrukken",
-            "reject": "Het voorschrift afwijzen",
+            "reject": "Toewijzing afwijzen",
             "interrupt": "Onderbreek de uitvoering",
             "restart": "Herneem de uitvoering"
         },
@@ -428,7 +428,7 @@
         "validityPeriod": "Geldigheidsperiode",
         "consultDetails": "Toon details",
         "assign": "Toewijzen",
-        "transfer": "Overmaken",
+        "transfer": "Transfereren",
         "assignMe": "Mezelf toewijzen",
         "duplicate": "Dupliceren",
         "extend": "Verlengen",

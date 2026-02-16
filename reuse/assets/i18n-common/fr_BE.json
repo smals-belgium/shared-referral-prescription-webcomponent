@@ -352,7 +352,7 @@
             "delete": "Supprimer",
             "removeCity": "Supprimer la commune",
             "print": "Imprimer",
-            "reject": "Rejeter la prescription",
+            "reject": "Rejeter l'assignation",
             "interrupt": "Interrompre l'exécution",
             "restart": "Relancer l'exécution"
         },
