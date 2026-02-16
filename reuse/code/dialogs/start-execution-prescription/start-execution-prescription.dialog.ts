@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { DateTime } from 'luxon';
@@ -43,6 +43,11 @@ interface StartExecutionPrescriptionDialogData {
   ],
 })
 export class StartExecutionPrescriptionDialog extends BaseDialog implements OnInit {
+
+  private readonly _prescriptionStateService = inject(PrescriptionState);
+  private readonly _authService = inject(AuthService);
+  private readonly _toastService = inject(ToastService);
+
   protected readonly AlertType = AlertType;
   readonly prescription: ReadRequestResource;
   readonly performerTask: PerformerTaskResource;
@@ -51,25 +56,19 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
     startDate: new FormControl<DateTime>(DateTime.now()),
   });
   loading = false;
-  readonly minDate;
+  minDate: string = "";
   readonly maxDate = DateTime.now().toISO();
   generatedUUID = '';
 
   constructor(
-    private prescriptionStateService: PrescriptionState,
-    private authService: AuthService,
-    private toastService: ToastService,
     dialogRef: MatDialogRef<StartExecutionPrescriptionDialog>,
     @Inject(MAT_DIALOG_DATA) private readonly data: StartExecutionPrescriptionDialogData
   ) {
     super(dialogRef);
     this.prescription = data.prescription;
     this.performerTask = data.performerTask;
-    const minDate = new Date();
-    const day = minDate.getDate() - 5;
-    minDate.setDate(day);
 
-    this.minDate = data.startTreatmentDate || minDate.toISOString();
+    this.computeMinDate(data)
   }
 
   ngOnInit() {
@@ -98,12 +97,12 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
       return;
     }
 
-    this.prescriptionStateService
+    this._prescriptionStateService
       .startPrescriptionExecution(this.prescription.id, task.id, executionStart, this.generatedUUID)
       .subscribe({
         next: () => {
           this.closeErrorCard();
-          this.toastService.show('prescription.startExecution.success');
+          this._toastService.show('prescription.startExecution.success');
           this.closeDialog(true);
         },
         error: err => {
@@ -120,13 +119,13 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
     }
 
     let discipline: string;
-    this.authService.discipline().subscribe(disc => {
+    this._authService.discipline().subscribe(disc => {
       discipline = disc;
     });
     this.getCurrentUserSsin()
       .pipe(
         switchMap(ssin =>
-          this.prescriptionStateService.assignAndStartPrescriptionExecution(
+          this._prescriptionStateService.assignAndStartPrescriptionExecution(
             this.prescription.id!,
             this.prescription.referralTask!.id!,
             { ssin, discipline },
@@ -138,7 +137,7 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
       .subscribe({
         next: () => {
           this.closeErrorCard();
-          this.toastService.show('prescription.startExecution.success');
+          this._toastService.show('prescription.startExecution.success');
           this.closeDialog(true);
         },
         error: err => {
@@ -149,6 +148,22 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
   }
 
   private getCurrentUserSsin(): Observable<string> {
-    return this.authService.getClaims().pipe(map(claims => claims?.[USER_PROFILE_CLAIM_KEY][SSIN_CLAIM_KEY] ?? ''));
+    return this._authService.getClaims().pipe(map(claims => claims?.[USER_PROFILE_CLAIM_KEY]?.[SSIN_CLAIM_KEY] ?? ''));
+  }
+
+  private computeMinDate(data: StartExecutionPrescriptionDialogData){
+
+    const authoredOn = data?.prescription?.authoredOn;
+    const validityStartDate = data.prescription?.period?.start;
+
+    if (validityStartDate && authoredOn){
+      if(validityStartDate < authoredOn){
+        this.minDate = validityStartDate
+      }else if(
+        (validityStartDate >= authoredOn)
+      ){
+        this.minDate = authoredOn
+      }
+    }
   }
 }
