@@ -366,7 +366,7 @@
             "copy": "Kopiëren",
             "extend": "Verlengen",
             "print": "Afdrukken",
-            "cancel": "Annuleren"
+            "cancel": "Klasseren zonder gevolg"
         },
         "assignProfessional": {
             "undefined": "Kies eerst een zorgverlener"
@@ -387,7 +387,7 @@
         },
         "create": {
             "action": "Nieuw voorstel",
-            "success": "Voorschrift succesvol aangemaakt.",
+            "success": "Voorstel succesvol aangemaakt.",
             "allSuccess": "{count} {count, plural, one{voorstel} other{voorstellen}} successvol aangemaakt.",
             "allFailed": "Fout tijdens het aanmaken van de voorstellen. Controleer uw invoer en probeer het opnieuw.",
             "someSuccessSomeFailed": "{successCount} {successCount, plural, one{voorstel} other{voorstellen}} successvol aangemaakt. {failedCount} {failedCount, plural, one{voorstel werd} other{voorstellen werden}} niet aangemaakt door een fout. Controleer uw invoer en probeer het opnieuw.",
