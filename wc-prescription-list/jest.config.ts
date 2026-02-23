@@ -19,7 +19,10 @@ const config: Config = {
     '@reuse/(.*)': '<rootDir>/reuse/$1',
     '^jose': require.resolve('jose'),
   },
-  collectCoverageFrom: ['wc-prescription-list/src/components/**/*.ts'],
+  collectCoverageFrom: [
+    'wc-prescription-list/src/components/**/*.ts',
+    'wc-prescription-list/src/prescription-list/**/*.ts'
+  ],
   transform: {
     '^.+\\.(ts|html)$': [
       'ts-jest',

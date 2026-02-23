@@ -64,9 +64,14 @@
         {{ 'prescription.tableHasRecords' | translate:{ total: prescriptions?.total } }}
       </span>
       }
-      @if(prescriptions?.total === 0) {
-        <span *hideIfProfessional>{{ 'prescription.noPrescriptionsForUser' | translate }}</span>
-        <span *showIfProfessional>{{ 'prescription.noPrescriptionsForPatient' | translate }}</span>
+      @if (prescriptions?.total === 0) {
+        @if (isPrescriptionIntent) {
+          <span *hideIfProfessional>{{ 'prescription.noPrescriptionsForUser' | translate }}</span>
+          <span *showIfProfessional>{{ 'prescription.noPrescriptionsForPatient' | translate }}</span>
+        } @else if(isProposalIntent) {
+          <span *hideIfProfessional>{{ 'proposal.noProposalsForUser' | translate }}</span>
+          <span *showIfProfessional>{{ 'proposal.noProposalsForPatient' | translate }}</span>
+        }
       }
     </td>
   </ng-container>

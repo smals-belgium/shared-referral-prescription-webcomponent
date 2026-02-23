@@ -5,7 +5,7 @@ const config: Config = {
   ...jestBaseConfig,
 
   // The directory where Jest should output its coverage files
-  coverageDirectory: '<rootDir>/wc-prescription-createcoverage',
+  coverageDirectory: '<rootDir>/wc-prescription-create/coverage',
 
   setupFilesAfterEnv: ['./setup-jest.ts'],
 
@@ -14,7 +14,10 @@ const config: Config = {
     '@reuse/(.*)': '<rootDir>/reuse/$1',
     '^jose': require.resolve('jose'),
   },
-  collectCoverageFrom: ['wc-prescription-create/src/components/**/*.ts'],
+  collectCoverageFrom: [
+    'wc-prescription-create/src/components/**/*.ts',
+    'wc-prescription-create/src/create-prescription/**/*.ts',
+  ],
   transform: {
     '^.+\\.(ts|html)$': [
       'ts-jest',

@@ -53,6 +53,7 @@
         <app-responsive-wrapper>
           <ng-template #desktopTemplate>
             <app-prescriptions-table
+              [intent]="intent"
               [loading]="prescriptionState.status === LoadingStatus.LOADING || prescriptionState.status === LoadingStatus.UPDATING"
               [prescriptions]="prescriptionState.status === LoadingStatus.SUCCESS ? prescriptionState.data?.prescriptions : {items: []}"
               (clickPrescription)="clickOpenDetail.emit($event)"
@@ -129,6 +130,7 @@
         <app-responsive-wrapper>
           <ng-template #desktopTemplate>
             <app-prescriptions-table
+              [intent]="intent"
               [loading]="proposalState.status === LoadingStatus.LOADING || proposalState.status === LoadingStatus.UPDATING"
               [prescriptions]="proposalState.status === LoadingStatus.SUCCESS ? proposalState.data?.proposals : {items: []}"
               (clickPrescription)="clickOpenDetail.emit($event)"
