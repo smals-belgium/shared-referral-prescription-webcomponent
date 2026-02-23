@@ -53,11 +53,19 @@
     </div>
   } @else if (itemsLength === 0) {
     <div class="mh-margin-top-bottom">
-      <app-alert
-        [alert]="AlertType.Info"
-        [message]="(isProfessional$() ? 'prescription.noPrescriptionsForPatient' : 'prescription.noPrescriptionsForUser') | translate"
-        [showRetry]="false"
-      ></app-alert>
+      @if (isPrescriptionIntent) {
+        <app-alert
+          [alert]="AlertType.Info"
+          [message]="(isProfessional$() ? 'prescription.noPrescriptionsForPatient' : 'prescription.noPrescriptionsForUser') | translate"
+          [showRetry]="false"
+        ></app-alert>
+      } @else if(isProposalIntent) {
+        <app-alert
+          [alert]="AlertType.Info"
+          [message]="(isProfessional$() ? 'proposal.noProposalsForPatient' : 'proposal.noProposalsForUser') | translate"
+          [showRetry]="false"
+        ></app-alert>
+      }
     </div>
   }
 

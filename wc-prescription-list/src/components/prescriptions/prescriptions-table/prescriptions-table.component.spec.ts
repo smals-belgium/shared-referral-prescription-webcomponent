@@ -208,4 +208,58 @@ describe('PrescriptionsTableComponent', () => {
     expect(fixture.debugElement.query(By.css('[data-cy="alert"]'))).toBeFalsy();
     expect(fixture.debugElement.query(By.css('table'))).toBeTruthy();
   });
+
+  describe('Table footer messages', () => {
+    beforeEach(() => {
+      component.prescriptions = { total: 0, items: [] };
+    });
+
+    it('should show prescription messages when isPrescriptionIntent is true', () => {
+
+      component.intent = Intent.ORDER;
+      component.ngOnChanges({
+        intent: { currentValue: Intent.ORDER, previousValue: undefined, firstChange: true, isFirstChange: () => true },
+      });
+      fixture.detectChanges();
+
+      const footer = fixture.debugElement.query(By.css('td[mat-footer-cell]'));
+      const footerText = footer.nativeElement.textContent;
+
+      expect(component.isPrescriptionIntent).toBe(true);
+      expect(component.isProposalIntent).toBe(false);
+      expect(footerText).toContain('prescription.noPrescriptionsForPatient');
+    });
+
+    it('should show proposal messages when isProposalIntent is true', () => {
+
+      component.intent = Intent.PROPOSAL;
+      component.ngOnChanges({
+        intent: { currentValue: Intent.PROPOSAL, previousValue: undefined, firstChange: true, isFirstChange: () => true },
+      });
+      fixture.detectChanges();
+
+      const footer = fixture.debugElement.query(By.css('td[mat-footer-cell]'));
+      const footerText = footer.nativeElement.textContent;
+
+      expect(component.isPrescriptionIntent).toBe(false);
+      expect(component.isProposalIntent).toBe(true);
+      expect(footerText).toContain('proposal.noProposalsForPatient');
+    });
+
+    it('should render nothing for unknown intent', () => {
+
+      component.intent = 'MODEL' as Intent;
+      component.ngOnChanges({
+        intent: { currentValue: 'MODEL', previousValue: undefined, firstChange: true, isFirstChange: () => true },
+      });
+      fixture.detectChanges();
+
+      const footer = fixture.debugElement.query(By.css('td[mat-footer-cell]'));
+      const footerText = footer.nativeElement.textContent.trim();
+
+      expect(component.isPrescriptionIntent).toBe(false);
+      expect(component.isProposalIntent).toBe(false);
+      expect(footerText).toBe('');
+    });
+  });
 });

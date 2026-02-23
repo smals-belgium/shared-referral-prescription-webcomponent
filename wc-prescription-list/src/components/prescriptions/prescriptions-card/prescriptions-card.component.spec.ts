@@ -12,6 +12,8 @@ import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
 import { BehaviorSubject, of } from 'rxjs';
 import { Discipline, RequestStatus, RequestSummaryListResource, RequestSummaryResource } from '@reuse/code/openapi';
 import { RequestSummaryDataService } from '@reuse/code/services/helpers/request-summary-data.service';
+import { Intent } from "@reuse/code/interfaces";
+import { By } from '@angular/platform-browser';
 
 const mockPseudoClient = {
   getDomain: jest.fn(),
@@ -304,15 +306,6 @@ describe('PrescriptionsCardComponent', () => {
       expect(statusChip).toBeTruthy();
     });
 
-    it('should display no prescriptions, but an alert when no items available', () => {
-      component.requestSummaryListResource = { items: [], total: 0 };
-      mockDataService.requestSummaryData$.next([]);
-      fixture.detectChanges();
-
-      const alertElement = fixture.debugElement.nativeElement.querySelector('app-alert');
-      expect(alertElement).toBeTruthy();
-    });
-
     it('should display skeleton loader when loading', () => {
       component.loading = true;
       fixture.detectChanges();
@@ -343,6 +336,69 @@ describe('PrescriptionsCardComponent', () => {
   describe('getStatusColor', () => {
     it('should return color for valid status', () => {
       expect(component.getStatusColor('IN_PROGRESS' as RequestStatus)).toBe('mh-green mh-no-overlay');
+    });
+  });
+
+  describe('Intent Flags', () => {
+    it('should set isPrescriptionIntent to true when intent is ORDER', () => {
+      component.intent = Intent.ORDER;
+      component.ngOnChanges({ intent: new SimpleChange(null, Intent.ORDER, true) });
+      expect(component.isPrescriptionIntent).toBe(true);
+      expect(component.isProposalIntent).toBe(false);
+    });
+
+    it('should set isProposalIntent to true when intent is PROPOSAL', () => {
+      component.intent = Intent.PROPOSAL;
+      component.ngOnChanges({ intent: new SimpleChange(null, Intent.PROPOSAL, true) });
+      expect(component.isPrescriptionIntent).toBe(false);
+      expect(component.isProposalIntent).toBe(true);
+    });
+
+    it('should set both flags to false when intent is neither ORDER nor PROPOSAL', () => {
+      component.intent = Intent.MODEL;
+      component.ngOnChanges({ intent: new SimpleChange(null, Intent.MODEL, true) });
+      expect(component.isPrescriptionIntent).toBe(false);
+      expect(component.isProposalIntent).toBe(false);
+    });
+  });
+
+  // --- Empty state alert tests ---
+  describe('Empty State Alerts based on Intent', () => {
+    beforeEach(() => {
+      component.requestSummaryListResource = { items: [], total: 0 };
+      mockDataService.requestSummaryData$.next([]);
+    });
+
+    it('should display prescription alert with patient message when user is professional', () => {
+      mockAuthService.isProfessional.mockReturnValue(of(true));
+      component.isPrescriptionIntent = true;
+      component.isProposalIntent = false;
+      fixture.detectChanges();
+      const alertElement = fixture.debugElement.nativeElement.querySelector('app-alert');
+
+      const footer = fixture.debugElement.query(By.css('div[alert-details]'));
+      const footerText = footer.nativeElement.textContent;
+
+      expect(footerText).toContain('prescription.noPrescriptionsForPatient');
+    });
+
+    it('should display proposal alert with patient message when user is professional', () => {
+      mockAuthService.isProfessional.mockReturnValue(of(true));
+      component.isPrescriptionIntent = false;
+      component.isProposalIntent = true;
+      fixture.detectChanges();
+      const alertElement = fixture.debugElement.nativeElement.querySelector('app-alert');
+      const footer = fixture.debugElement.query(By.css('div[alert-details]'));
+      const footerText = footer.nativeElement.textContent;
+
+      expect(footerText).toContain('proposal.noProposalsForPatient');
+    });
+
+    it('should not display any alert if both flags are false', () => {
+      component.isPrescriptionIntent = false;
+      component.isProposalIntent = false;
+      fixture.detectChanges();
+      expect(fixture.debugElement.nativeElement.querySelector('app-alert')).toBeNull();
     });
   });
 });
