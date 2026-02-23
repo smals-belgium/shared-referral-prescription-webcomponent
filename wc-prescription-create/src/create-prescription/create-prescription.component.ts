@@ -79,7 +79,7 @@ import {
   TemplateVersion,
 } from '@reuse/code/openapi';
 import { ChooseTemplateDialog, SelectedTemplate } from '@reuse/code/dialogs/choose-template/choose-template.dialog';
-import { isModel, isPrescription } from '@reuse/code/utils/utils';
+import { getTranslationKeyPrefixForPrescriptionOrProposal, isModel, isPrescription } from '@reuse/code/utils/utils';
 import { EncryptionKeyInitializerService } from '@reuse/code/states/privacy/encryption-key-initializer.service';
 import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -740,6 +740,9 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
   }
 
   cancelCreation(): void {
+
+    const translationKeyPrefixIntent = getTranslationKeyPrefixForPrescriptionOrProposal(this.initialValues?.intent);
+
     if (this.prescriptionForms().length > 1) {
       this.dialog
         .open<CancelCreationDialog, CancelCreationDialogData, CancelCreationDialogResult>(CancelCreationDialog, {
@@ -767,7 +770,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
       this.dialog
         .open<ConfirmDialog, ConfirmDialogData, boolean>(ConfirmDialog, {
           data: {
-            messageLabel: 'prescription.create.cancelCreation',
+            messageLabel: `${translationKeyPrefixIntent}.create.cancelCreation`,
             cancelLabel: 'common.close',
             okLabel: 'common.confirm',
           },

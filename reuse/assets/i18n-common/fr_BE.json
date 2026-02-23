@@ -18,7 +18,7 @@
         "search": "Rechercher",
         "start": "Commencer",
         "professions": {
-            "NURSE": "Infirmière",
+            "NURSE": "Infirmier·ère",
             "PHYSICIAN": "Médecin",
             "PHYSIOTHERAPIST": "Kinésithérapeute",
             "DENTIST": "Dentiste"
@@ -225,7 +225,7 @@
         "noPrescriptionsForPatient": "Ce patient ne possède pas encore de prescription.",
         "noPrescriptionsForUser": "Vous ne possèdez pas encore de prescription.",
         "assignPerformer": {
-            "title": "Chercher un infirmier",
+            "title": "Chercher un·e infirmier·ère",
             "success": "{firstName} {lastName} a été assigné comme prestataire.",
             "successOrganization": "{name} a été assigné comme organisation.",
             "meSuccess": "Vous avez été assigné comme prestataire.",
@@ -366,7 +366,7 @@
             "copy": "Copier",
             "extend": "Étendre",
             "print": "Imprimer",
-            "cancel": "Annuler"
+            "cancel": "Classer sans suite"
         },
         "assignProfessional": {
             "undefined": "Choisir d'abord un professionnel"
