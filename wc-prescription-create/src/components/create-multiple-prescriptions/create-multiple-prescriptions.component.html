@@ -55,18 +55,20 @@
           </mat-panel-description>
         </mat-expansion-panel-header>
 
-        @if(modelState().state === LoadingStatus.ERROR) {
+        @let modelState = getModelState(prescriptionForm.trackId);
+        @if(modelState?.state === LoadingStatus.ERROR) {
           <app-alert
             [alert]="AlertType.Error"
             [message]="'prescription.errors.failedToCreateModel' | translate"
-            [error]="modelState().error"
+            [error]="modelState?.error"
           ></app-alert>
-        } @else if(modelState().state === LoadingStatus.SUCCESS) {
+        } @else if(modelState?.state === LoadingStatus.SUCCESS) {
           <app-alert
             [alert]="AlertType.Success"
-            [message]="'prescription.model.create.success' | translate:{name: modelState().success}"
+            [message]="'prescription.model.create.success' | translate:{name: modelState?.success}"
+            [showRetry]="false"
           ></app-alert>
-        }  @else if(modelState().state === LoadingStatus.LOADING) {
+        }  @else if(modelState?.state === LoadingStatus.LOADING) {
           <app-overlay-spinner mode="inline"></app-overlay-spinner>
         }
 
@@ -90,16 +92,17 @@
               ></evf-form>
             }
 
-            @if(isPrescriptionValue){
-              <button
-                type="button"
-                mat-raised-button
-                color="accent"
-                (click)="handleClick(prescriptionForm, formTemplateState.data)"
+            @if(isPrescriptionValue && formTemplateState.data){
+              <mat-checkbox
+                [checked]="modelState?.state === LoadingStatus.SUCCESS"
+                [disabled]="modelState?.state === LoadingStatus.SUCCESS"
+                (change)="toggleCheckbox(prescriptionForm.trackId, $event.checked)"
               >
-                <mat-icon>save</mat-icon>
-                {{'prescription.model.create.title' | translate}}
-              </button>
+              {{'prescription.model.create.title' | translate}}
+              </mat-checkbox>
+              @if (isChecked(prescriptionForm.trackId) || modelState?.state === LoadingStatus.SUCCESS) {
+                <create-prescription-model [disabled]="modelState?.state === LoadingStatus.SUCCESS" [prescriptionTrackById]="prescriptionForm.trackId" [template]="formTemplateState.data" [templateCode]="prescriptionForm.templateCode" [responses]="getResponses(prescriptionForm)" (modelSaved)="handleModelSaved($event)"></create-prescription-model>
+              }
             }
 
           </ng-container>
@@ -125,6 +128,7 @@
       <div class="spacer">&nbsp;</div>
       <div>
         <button
+          type="button"
           (click)="clickPublish.emit()"
           [disabled]="createPrescriptionForms.length === 0"
           mat-flat-button
@@ -135,6 +139,7 @@
           }
         </button>
         <button
+          type="button"
           (click)="clickCancel.emit()"
           mat-button
           color="error"

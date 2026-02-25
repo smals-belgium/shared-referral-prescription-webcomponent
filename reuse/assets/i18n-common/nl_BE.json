@@ -437,7 +437,7 @@
         "noProposalsForPatient": "Deze patiënt heeft nog geen voorstellen.",
         "noProposalsForUser": "U heeft nog geen voorstellen.",
         "assignPerformer": {
-            "title": "Toewijzen aan een zorgverlener of organisatie",
+            "title": "Zoek een arts",
             "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
             "successOrganization": "{name} is toegewezen als organisatie.",
             "meSuccess": "U bent toegewezen als zorgverlener.",
@@ -446,7 +446,11 @@
             "locations": "Locatie(s)",
             "zipCodeOrCityName": "Postcode of gemeente",
             "noResults": "Geen gemeente gevonden",
-            "organization": "Organisatie"
+            "organization": "Organisatie",
+            "dialog": {
+                "title": "Een zorgverlener toewijzen aan een voorstel.",
+                "description": "Als u een zorgverlener aan dit voorstel toevoegt, kan deze de informatie in dit voorstel inzien."
+            }
         },
         "transferAssignation": {
             "title": "Transfereren",

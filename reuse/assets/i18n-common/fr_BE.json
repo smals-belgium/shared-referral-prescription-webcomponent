@@ -437,7 +437,7 @@
         "noProposalsForPatient": "Ce patient ne possède pas encore de proposition.",
         "noProposalsForUser": "Vous ne possèdez pas encore de proposition.",
         "assignPerformer": {
-            "title": "Assigner à un prestataire ou une organisation",
+            "title": "Chercher un médecin",
             "success": "{firstName} {lastName} a été assigné comme prestataire.",
             "successOrganization": "{name} a été assigné comme organisation.",
             "meSuccess": "Vous avez été assigné comme prestataire.",
@@ -446,7 +446,11 @@
             "locations": "Localisation(s)",
             "zipCodeOrCityName": "Code postal ou commune",
             "noResults": "Aucune commune trouvée",
-            "organization": "Organisation"
+            "organization": "Organisation",
+            "dialog": {
+                "title": "Assigner un prestataire de soins à une proposition.",
+                "description": "Si vous ajoutez un prestataire de soins à cette proposition, celui-ci pourra consulter les informations contenues dans celle-ci."
+            }
         },
         "transferAssignation": {
             "title": "Transférer l'assignation",

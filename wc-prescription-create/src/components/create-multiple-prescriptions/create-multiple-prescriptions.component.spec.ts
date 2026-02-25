@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
-import { of } from 'rxjs';
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { CreateMultiplePrescriptionsComponent } from './create-multiple-prescriptions.component';
 import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionModel.state';
@@ -13,7 +11,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { By } from '@angular/platform-browser';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { TemplateVersion } from '@reuse/code/openapi';
 import { QueryList } from '@angular/core';
 import { EvfFormWebComponent } from '../evf-form/evf-form.component';
 
@@ -26,21 +23,18 @@ class MockEvfFormComponent {}
 describe('CreateMultiplePrescriptionsComponent', () => {
   let component: CreateMultiplePrescriptionsComponent;
   let fixture: ComponentFixture<CreateMultiplePrescriptionsComponent>;
-  let mockDialog: Partial<MatDialog>;
   let mockModelState: any;
   let translate: TranslateService;
 
   beforeEach(async () => {
     jest.useFakeTimers(); // to control setTimeout
 
-    mockDialog = {
-      open: jest.fn().mockReturnValue({ afterClosed: () => of(true) }),
-    };
-
     mockModelState = {
       modalState: {},
       setInitialState: jest.fn(),
       setModalState: jest.fn(),
+      getModalState: jest.fn(),
+      resetAll: jest.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -52,7 +46,6 @@ describe('CreateMultiplePrescriptionsComponent', () => {
         NoopAnimationsModule,
       ],
       providers: [
-        { provide: MatDialog, useValue: mockDialog },
         { provide: PrescriptionModelState, useValue: mockModelState },
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -160,43 +153,19 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     expect(setValue).toHaveBeenCalledWith(expect.objectContaining({ a: 1 }));
   });
 
-  it('should call dialog.open in handleClick', () => {
+  it('should call window scroll to on modelSaved', () => {
     fixture.detectChanges();
     const scrollTo = jest.spyOn(window, 'scrollTo').mockImplementation(() => {});
-    const form = {
-      templateCode: 'template_01',
-      initialPrescription: { responses: {} },
-      elementGroup: { getOutputValue: () => ({}) },
-    } as CreatePrescriptionForm;
 
-    const template = {} as TemplateVersion;
+    component.handleModelSaved('123');
 
-    component.handleClick(form, template);
-
-    expect(mockDialog.open).toHaveBeenCalled();
     expect(scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' });
-  });
-
-  it('should set modal state to error if template is missing', () => {
-    fixture.detectChanges();
-    const form = {
-      templateCode: 'template_01',
-      initialPrescription: { responses: {} },
-      elementGroup: { getOutputValue: () => ({}) },
-    } as CreatePrescriptionForm;
-
-    component.handleClick(form);
-    expect(mockModelState.setModalState).toHaveBeenCalledWith(
-      LoadingStatus.ERROR,
-      undefined,
-      expect.any(HttpErrorResponse)
-    );
   });
 
   it('should reset model state on destroy', () => {
     fixture.detectChanges();
     component.ngOnDestroy();
-    expect(mockModelState.setInitialState).toHaveBeenCalled();
+    expect(mockModelState.resetAll).toHaveBeenCalled();
   });
 
   it('should display patient info when patient is set', () => {
@@ -235,9 +204,7 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     setOneTemplate();
     fixture.detectChanges();
 
-    const accordionDebug = fixture.debugElement.query(
-      By.directive(MatAccordion)
-    );
+    const accordionDebug = fixture.debugElement.query(By.directive(MatAccordion));
 
     expect(accordionDebug).toBeTruthy();
 
@@ -418,6 +385,32 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     jest.runAllTimers();
 
     expect(mockPanel.open).toHaveBeenCalled();
+  });
+
+  it('should delegate getModelState to prescriptionModelState', () => {
+    component.getModelState(42);
+
+    expect(mockModelState.getModalState).toHaveBeenCalledWith(42);
+  });
+
+  it('should add id to checked set when toggled on', () => {
+    component.toggleCheckbox(1, true);
+
+    expect(component.isChecked(1)).toBe(true);
+  });
+
+  it('should remove id from checked set when toggled off', () => {
+    component.toggleCheckbox(5, true);
+    component.toggleCheckbox(5, false);
+
+    expect(component.isChecked(5)).toBe(false);
+  });
+
+  it('should return false for unchecked ids', () => {
+    component.toggleCheckbox(1, true);
+
+    expect(component.isChecked(1)).toBe(true);
+    expect(component.isChecked(99)).toBe(false);
   });
 
   function setForms(forms: any[]) {

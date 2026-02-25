@@ -1,4 +1,6 @@
 @if (prescriptionForm) {
+  @let modelState = getModelState(prescriptionForm.trackId);
+
   <div class="wrapper">
     <h3
       [class.invalid]="prescriptionForm.submitted && (!prescriptionForm.elementGroup?.valid || prescriptionForm.status === 'ERROR')"
@@ -12,18 +14,19 @@
     }
 
 
-    @if (modelState().state === LoadingStatus.ERROR) {
+    @if (modelState?.state === LoadingStatus.ERROR) {
       <app-alert
         [alert]="AlertType.Error"
         [message]="'prescription.errors.failedToCreateModel' | translate"
-        [error]="modelState().error"
+        [error]="modelState?.error"
       ></app-alert>
-    } @else if (modelState().state === LoadingStatus.SUCCESS) {
+    } @else if (modelState?.state === LoadingStatus.SUCCESS) {
       <app-alert
         [alert]="AlertType.Success"
-        [message]="'prescription.model.create.success' | translate:{name: modelState().success}"
+        [message]="'prescription.model.create.success' | translate:{name: modelState?.success}"
+        [showRetry]="false"
       ></app-alert>
-    } @else if (modelState().state === LoadingStatus.LOADING) {
+    } @else if (modelState?.state === LoadingStatus.LOADING) {
       <app-overlay-spinner mode="inline"></app-overlay-spinner>
     }
 
@@ -36,7 +39,7 @@
           <div>Failed to load prescription form template.</div>
         }
 
-        @if (!!titleControl && prescriptionForm.modelId) {
+        @if (!!titleControl) {
           <div class="form-model-group">
             <mat-label class="referral-prescription-label">{{ ('prescription.model.create.dialog.label' | translate) }}
               <span class="required">*</span></mat-label>
@@ -71,6 +74,7 @@
 
         @if (this.prescriptionForm.modelId) {
           <button
+            type="button"
             mat-flat-button
             (click)="handleUpdate(prescriptionForm, formTemplateState.data)"
           >
@@ -79,6 +83,7 @@
           </button>
         } @else {
           <button
+            type="button"
             mat-flat-button
             (click)="handleClick(prescriptionForm, formTemplateState.data)"
           >
