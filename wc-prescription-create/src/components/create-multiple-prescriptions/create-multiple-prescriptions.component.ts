@@ -83,7 +83,7 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
 
   @ViewChild(MatAccordion, { static: true }) accordion!: MatAccordion;
   @ViewChildren(MatExpansionPanel) panels!: QueryList<MatExpansionPanel>;
-  constructor(private prescriptionModelState: PrescriptionModelState) {}
+  constructor(private readonly prescriptionModelState: PrescriptionModelState) {}
 
   get numberOfPrescriptionsToCreate(): number {
     return this.createPrescriptionForms.filter(f => f.status !== LoadingStatus.SUCCESS).length;

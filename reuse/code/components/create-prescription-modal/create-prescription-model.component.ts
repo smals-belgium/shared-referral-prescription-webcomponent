@@ -34,11 +34,11 @@ export class CreatePrescriptionModelComponent implements OnInit, OnChanges {
   modelSaved = output<string | undefined>();
 
   constructor(
-    private fb: FormBuilder,
-    private nameValidator: UniqueModelNameValidator,
-    private prescriptionModelState: PrescriptionModelState,
-    private prescriptionModalService: PrescriptionModelService,
-    private templateNamePipe: TemplateNamePipe
+    private readonly fb: FormBuilder,
+    private readonly nameValidator: UniqueModelNameValidator,
+    private readonly prescriptionModelState: PrescriptionModelState,
+    private readonly prescriptionModalService: PrescriptionModelService,
+    private readonly templateNamePipe: TemplateNamePipe
   ) {
     effect(() => {
       const defaultName = this.templateNamePipe.transform(this.templateCode());
