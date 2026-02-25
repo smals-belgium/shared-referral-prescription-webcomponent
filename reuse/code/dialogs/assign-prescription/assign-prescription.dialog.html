@@ -1,13 +1,13 @@
 <h1 mat-dialog-title
-    data-cy="prescription-assign-performer-title">{{ 'prescription.assignPerformer.title' | translate }}</h1>
+    data-cy="prescription-assign-performer-title">{{ translationKeyPrefixIntent + '.assignPerformer.title' | translate }}</h1>
 
 <div mat-dialog-content class="dialog-content">
   @if (data.prescriptionId) {
     <div class="search-form">
       <app-alert
         [alert]="AlertType.Info"
-        [title]="'prescription.assignPerformer.dialog.title' | translate"
-        [message]="'prescription.assignPerformer.dialog.description' | translate"
+        [title]="translationKeyPrefixIntent + '.assignPerformer.dialog.title' | translate"
+        [message]="translationKeyPrefixIntent + '.assignPerformer.dialog.description' | translate"
         [showRetry]="false"
       ></app-alert>
 
