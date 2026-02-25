@@ -446,7 +446,11 @@
             "locations": "",
             "zipCodeOrCityName": "",
             "noResults": "",
-            "organization": ""
+            "organization": "",
+            "dialog": {
+                "title": "",
+                "description": ""
+            }
         },
         "transferAssignation": {
             "title": "",
