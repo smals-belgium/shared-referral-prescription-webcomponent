@@ -148,20 +148,42 @@ export class PrescriptionsPdfService {
       this.evfTranslate(templateVersion, infoElement.bodyTranslationId, language)
     );
     return this.createAlertContent('info', {
-      ul: listItems,
+      stack: listItems,
       color: this.ALERT_STYLES.info.color,
       margin: [-10, 0, 0, 0] as Margins,
     });
   }
 
   private parseMarkdownList(markdownText: string): Content[] {
-    return markdownText
-      .split('\n')
-      .map(line => line.trim())
-      .filter(Boolean)
-      .map(line => line.replace(/^>\s*-?\s*/, ''))
-      .filter(Boolean)
-      .map(line => this.parseInlineMarkdown(line));
+    const result: Content[] = [];
+    let currentItems: Content[] = [];
+
+    const flushItems = (): void => {
+      if (currentItems.length > 0) {
+        result.push({ ul: currentItems, margin: [10, 0, 0, 0] as Margins });
+        currentItems = [];
+      }
+    };
+
+    const lines = markdownText.split('\n').map(l => l.trim()).filter(Boolean);
+
+    for (const line of lines) {
+      if (/^>\s*-/.test(line)) {
+        const text = line.replace(/^>\s*-\s*/, '');
+        if (text) {
+          currentItems.push(this.parseInlineMarkdown(text));
+        }
+      } else if (/^>/.test(line)) {
+        flushItems();
+        const text = line.replace(/^>\s*/, '');
+        if (text) {
+          result.push(this.parseInlineMarkdown(text));
+        }
+      }
+    }
+
+    flushItems();
+    return result;
   }
 
   private parseInlineMarkdown(text: string): Content {
