@@ -26,10 +26,6 @@ evf-dynamic-form {
     &.ng-invalid button.mat-mdc-icon-button svg {
       fill: var(--mat-form-field-error-icon-color, mh.$error-30);
     }
-
-    button.mat-mdc-icon-button svg {
-      fill: var(--mat-form-field-icon-color, mh.$typography-brand-primary-dark);
-    }
   }
 }
 
