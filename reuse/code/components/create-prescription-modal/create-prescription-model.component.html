@@ -1,5 +1,5 @@
-<form (ngSubmit)="createPrescriptionModel()" [formGroup]="formGroup">
-    <div class="mh-form-field">
+<form (ngSubmit)="createPrescriptionModel()" [formGroup]="formGroup"  data-cy="form-create-prescritpion-model">
+    <div class="mh-form-field mh-create-model">
       <label for="prescription-modal-dialog-input">{{ 'prescription.model.create.dialog.label' | translate }}</label>
       <mat-form-field appearance="outline">
         <input
