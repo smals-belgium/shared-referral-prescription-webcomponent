@@ -5,13 +5,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionModel.state';
-import {
-  CreatePrescriptionForm,
-  DataState,
-  LoadingStatus,
-  PrescriptionModelStatus,
-} from '@reuse/code/interfaces';
-import { ElementGroup } from '@smals/vas-evaluation-form-ui-core';
+import { CreatePrescriptionForm, DataState, LoadingStatus, PrescriptionModelStatus } from '@reuse/code/interfaces';
+import { ElementGroup } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -71,7 +66,7 @@ describe('CreatePrescriptionModelComponent', () => {
         TranslateModule.forRoot(),
         MatIconModule,
         NoopAnimationsModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
       ],
       providers: [
         { provide: MatDialog, useValue: mockDialog },
@@ -198,7 +193,6 @@ describe('CreatePrescriptionModelComponent', () => {
 
   describe('Model State Alerts', () => {
     it('should show error alert when modelState is ERROR', () => {
-
       mockModelState.modalState.set({
         state: LoadingStatus.ERROR,
         error: new HttpErrorResponse({ error: 'Test error', status: 500 }),
@@ -225,9 +219,7 @@ describe('CreatePrescriptionModelComponent', () => {
       fixture.detectChanges();
 
       const alerts = fixture.debugElement.queryAll(By.css('app-alert'));
-      const successAlert = alerts.find(alert =>
-        alert.componentInstance.alert === 'success'
-      );
+      const successAlert = alerts.find(alert => alert.componentInstance.alert === 'success');
       expect(successAlert).toBeTruthy();
       expect(successAlert?.componentInstance.message).toBe('prescription.model.create.success');
     });
