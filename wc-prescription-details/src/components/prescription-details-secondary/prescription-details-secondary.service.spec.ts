@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { ProposalService, ReadRequestResource } from '@reuse/code/openapi';
+import { PerformerTaskResource, PersonResource, ProposalService, ReadRequestResource } from '@reuse/code/openapi';
 import { TransferAssignationDialog } from '@reuse/code/dialogs/transfer-assignation/transfer-assignation.dialog';
 import { StartExecutionPrescriptionDialog } from '@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog';
 import { RestartExecutionPrescriptionDialog } from '@reuse/code/dialogs/restart-execution-prescription/restart-execution-prescription.dialog';
@@ -18,7 +18,8 @@ import {
   mockAuthService,
   MockPseudoHelperFactory,
   mockPersonService,
-  FakeLoader, mockTemplate,
+  FakeLoader,
+  mockTemplate,
 } from '../../../test.utils';
 import { PrescriptionDetailsSecondaryService } from './prescription-details-secondary.service';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
@@ -48,6 +49,8 @@ describe('PrescriptionDetailsSecondaryService', () => {
   let mockPrescriptionState: any;
   let mockTemplateVersionsState: any;
   let mockTemplatesState: any;
+  let mockDialogRef: { beforeClosed: jest.Mock };
+  let mockDialog: jest.Mocked<MatDialog>;
 
   const prescription = prescriptionResponse(null, null, [mockPerformerTask]) as unknown as ReadRequestResource;
 
@@ -67,6 +70,14 @@ describe('PrescriptionDetailsSecondaryService', () => {
     mockTemplateVersionsState = { state: jest.fn(), getState: jest.fn() } as any;
     mockTemplatesState = { state: jest.fn() } as any;
 
+    mockDialogRef = {
+      beforeClosed: jest.fn(),
+    };
+
+    mockDialog = {
+      open: jest.fn().mockReturnValue(mockDialogRef),
+    } as any;
+
     TestBed.configureTestingModule({
       imports: [
         MatDialogModule,
@@ -80,7 +91,7 @@ describe('PrescriptionDetailsSecondaryService', () => {
         provideHttpClientTesting(),
         { provide: PersonService, useValue: mockPersonService },
         ProposalService,
-        MatDialog,
+        { provide: MatDialog, useValue: mockDialog },
         { provide: PseudonymisationHelper, useValue: MockPseudoHelperFactory() },
         { provide: ConfigurationService, useValue: mockConfigService },
         { provide: AuthService, useValue: mockAuthService },
@@ -210,17 +221,46 @@ describe('PrescriptionDetailsSecondaryService', () => {
 
     expect(openDialogSpy).toHaveBeenCalledTimes(7);
     expect(openDialogSpy).toHaveBeenCalledWith(InterruptExecutionPrescriptionDialog, paramsInterruptExecution);
+  });
+  describe('openRejectAssignationDialog', () => {
+    const task = {} as PerformerTaskResource;
+    const patient = {} as PersonResource;
 
-    // openRejectAssignationDialog
-    service.openRejectAssignationDialog(mockResponse, mockPerformerTask, mockPerson);
+    it('should open the dialog with correct config', () => {
+      mockDialogRef.beforeClosed.mockReturnValue(of(undefined));
 
-    const paramsRejectExecution = {
-      data: prescriptionTaskPatient,
-      panelClass: 'mh-dialog-container',
-    };
+      service.openRejectAssignationDialog(prescription, task, patient);
 
-    expect(openDialogSpy).toHaveBeenCalledTimes(8);
-    expect(openDialogSpy).toHaveBeenCalledWith(RejectAssignationDialog, paramsRejectExecution);
+      expect(mockDialog.open).toHaveBeenCalledWith(RejectAssignationDialog, {
+        data: {
+          prescription,
+          performerTask: task,
+          patient,
+        },
+        panelClass: 'mh-dialog-container',
+      });
+    });
+
+    it('should generate a new UUID when beforeClosed emits true', () => {
+      mockDialogRef.beforeClosed.mockReturnValue(of(true));
+      const setSpy = jest.fn();
+      (service as any).generatedUUID = { set: setSpy } as any;
+
+      service.openRejectAssignationDialog(prescription, task, patient);
+
+      expect(setSpy).toHaveBeenCalledWith(expect.any(String));
+      expect(setSpy.mock.calls[0][0]).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+    });
+
+    it('should NOT generate a new UUID when beforeClosed emits undefined', () => {
+      mockDialogRef.beforeClosed.mockReturnValue(of(undefined));
+      const setSpy = jest.fn();
+      (service as any).generatedUUID = { set: setSpy } as any;
+
+      service.openRejectAssignationDialog(prescription, task, patient);
+
+      expect(setSpy).not.toHaveBeenCalled();
+    });
   });
 
   it('should return patient with SSIN when user is patient', () => {
@@ -243,7 +283,6 @@ describe('PrescriptionDetailsSecondaryService', () => {
   });
 
   it('should return LOADING when crypto key is missing', () => {
-
     mockPrescriptionState.state.mockReturnValue({
       data: prescription,
       status: LoadingStatus.SUCCESS,
@@ -266,8 +305,6 @@ describe('PrescriptionDetailsSecondaryService', () => {
   });
 
   it('should return SUCCESS when everything is ready', () => {
-
-
     mockPrescriptionState.state.mockReturnValue({
       data: prescription,
       status: LoadingStatus.SUCCESS,
@@ -291,7 +328,7 @@ describe('PrescriptionDetailsSecondaryService', () => {
   it('should return ERROR when pseudonymized key is missing', () => {
     const prescription = {
       ...prescriptionResponse(null, null, [mockPerformerTask]),
-      pseudonymizedKey : null,
+      pseudonymizedKey: null,
     } as any;
 
     const prescriptionState = {
@@ -335,9 +372,7 @@ describe('PrescriptionDetailsSecondaryService', () => {
     const prescriptionId = 'test-prescription-id';
 
     const dialogRefMock = {
-      beforeClosed: jest.fn().mockReturnValue(
-        of({ prescriptionId: prescriptionId })
-      ),
+      beforeClosed: jest.fn().mockReturnValue(of({ prescriptionId: prescriptionId })),
     };
 
     const openSpy = jest.spyOn(dialog!, 'open').mockReturnValue(dialogRefMock as any);
@@ -345,15 +380,11 @@ describe('PrescriptionDetailsSecondaryService', () => {
 
     service.openApproveProposalDialog(proposal);
 
-    expect(openSpy).toHaveBeenCalledWith(
-      ApproveProposalDialog,
-      {
-        data: { proposal: proposal },
-        panelClass: 'mh-dialog-container',
-      }
-    );
+    expect(openSpy).toHaveBeenCalledWith(ApproveProposalDialog, {
+      data: { proposal: proposal },
+      panelClass: 'mh-dialog-container',
+    });
 
     expect(emitSpy).toHaveBeenCalledWith({ prescriptionId: prescriptionId });
   });
-
 });
