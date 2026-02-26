@@ -31,6 +31,7 @@ import { TemplatesState } from '@reuse/code/states/api/templates.state';
 import { ApproveProposalDialog } from '@reuse/code/dialogs/approve-proposal/approve-proposal.dialog';
 import { RejectProposalDialog } from '@reuse/code/dialogs/reject-proposal/reject-proposal.dialog';
 import { SSIN_CLAIM_KEY, USER_PROFILE_CLAIM_KEY } from '@reuse/code/services/auth/auth-constants';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface DetailsServices {
   getAccessToken: (audience?: string) => Promise<string | null>;
@@ -233,14 +234,21 @@ export class PrescriptionDetailsSecondaryService {
     task: PerformerTaskResource,
     patient?: PersonResource
   ): void {
-    this._dialog.open(RejectAssignationDialog, {
-      data: {
-        prescription: prescription,
-        performerTask: task,
-        patient: patient,
-      },
-      panelClass: 'mh-dialog-container',
-    });
+    this._dialog
+      .open(RejectAssignationDialog, {
+        data: {
+          prescription: prescription,
+          performerTask: task,
+          patient: patient,
+        },
+        panelClass: 'mh-dialog-container',
+      })
+      .beforeClosed()
+      .subscribe((data?: boolean) => {
+        if (data) {
+          this.generatedUUID.set(uuidv4());
+        }
+      });
   }
 
   openInterruptExecutionDialog(
