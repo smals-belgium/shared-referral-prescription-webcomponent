@@ -17,7 +17,6 @@ import { FormatEnum, SkeletonComponent } from '@reuse/code/components/progress-i
 import { TranslatePipe } from '@ngx-translate/core';
 import { HealthcareOrganizationResource, HealthcareProResource, ProviderType } from '@reuse/code/openapi';
 import { MatIconModule } from '@angular/material/icon';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { RequestProfessionalDataService } from '@reuse/code/services/helpers/request-professional-data.service';
 import { getAssignableProfessionalDisciplines, isProfessional } from '@reuse/code/utils/assignment-disciplines.utils';
 import { AlertType, Intent, SearchProfessionalCriteria } from '@reuse/code/interfaces';
@@ -43,10 +42,13 @@ import { v4 as uuidv4 } from 'uuid';
   styleUrl: './professional-cards.component.scss',
 })
 export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, OnDestroy {
+
+  private readonly dataService = inject(RequestProfessionalDataService);
+
   protected readonly AlertType = AlertType;
   protected readonly FormatEnum = FormatEnum;
   protected readonly isProfessional = isProfessional;
-  private readonly dataService = inject(RequestProfessionalDataService);
+
   readonly professionals = input<(HealthcareProResource | HealthcareOrganizationResource)[]>([]);
   readonly total = input<number | null>(null);
   readonly prescriptionId = input.required<string>();
@@ -66,10 +68,8 @@ export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, 
   }
 
   // Public signals from service
-  readonly requestData = toSignal(this.dataService.data$, {
-    initialValue: [],
-  });
-  readonly isLoading = toSignal(this.dataService.loading$, { initialValue: false });
+  readonly requestData = this.dataService.data;
+  readonly isLoading = this.dataService.loading;
   private observer?: IntersectionObserver;
   private destroyed = false;
   observerInitialized = false;
@@ -90,6 +90,7 @@ export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, 
     }
   }
 
+  // When user scrolls close from the bottom of the results container (60px), it can load more data
   private setupObserver(): void {
     const root = this.getScrollContainer(this.scrollframe.nativeElement);
 
@@ -132,7 +133,7 @@ export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, 
       intent: this.intent()
     };
 
-    this.dataService.initializeDataStream(initialData, config);
+    this.dataService.initializeCardsDataStream(initialData, config);
   }
 
   private getScrollContainer(el: HTMLElement): HTMLElement | null {

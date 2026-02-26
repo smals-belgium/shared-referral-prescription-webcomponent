@@ -36,6 +36,9 @@
                 [loading]="isLoading()"
                 [currentLang]="currentLang"
                 (selectProfessional)="onTransfer($event)"
+                [category]="data.category"
+                [intent]="data.intent"
+                [prescriptionId]="data.prescriptionId"
               ></professional-table>
             </ng-template>
 

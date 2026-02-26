@@ -47,8 +47,6 @@ import {
 } from '@reuse/code/components/professional-form/professional-cards/professional-cards.component';
 import { DeviceService } from '@reuse/code/services/helpers/device.service';
 
-type ProfessionalType = 'CAREGIVER' | 'ORGANIZATION' | 'ALL';
-
 interface AssignPrescriptionDialogData {
   prescriptionId?: string;
   referralTaskId?: string;
@@ -82,11 +80,16 @@ interface AssignPrescriptionDialogData {
   ],
 })
 export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
+  private readonly _deviceService = inject(DeviceService);
+  private readonly _prescriptionStateService = inject(PrescriptionState);
+  private readonly _proposalStateService = inject(ProposalState);
+  private readonly _healthcareProviderService = inject(HealthcareProviderService);
+  private readonly _toastService = inject(ToastService);
+  private readonly _translate = inject(TranslateService);
+
+  protected readonly isDesktop = this._deviceService.isDesktop;
 
   protected translationKeyPrefixIntent = "prescription";
-
-  private readonly deviceService = inject(DeviceService);
-  protected readonly isDesktop = this.deviceService.isDesktop;
 
   protected readonly isProfessional = isProfessional;
   protected readonly AlertType = AlertType;
@@ -96,12 +99,10 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
   readonly isLoading = signal(false);
   readonly selectedProfessional = signal<HealthcareProResource | HealthcareOrganizationResource | undefined>(undefined);
 
-  filterProfessionalType: ProfessionalType[] = ['CAREGIVER', 'ORGANIZATION'];
-  selectedFilter: ProfessionalType = 'CAREGIVER';
   private readonly pageable = this.isDesktop()
     ? {
-        page: undefined,
-        pageSize: undefined,
+        page: 1,
+        pageSize: 20,
       }
     : {
         page: 1,
@@ -114,7 +115,7 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
         this.isLoading.set(true);
         const disciplines: string[] = getAssignableProfessionalDisciplines(this.data.category, this.data.intent);
         return criteria
-          ? this.healthcareProviderService
+          ? this._healthcareProviderService
               .findAll(
                 criteria.query,
                 criteria.zipCodes,
@@ -162,24 +163,16 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
     )
   );
 
-  queryIsNumeric = false;
   loading = false;
   generatedUUID = '';
-  visibleDetailsOfHealthcareProvider: string[] = [];
   currentLang?: TranslationType;
 
   constructor(
-    private prescriptionStateService: PrescriptionState,
-    private proposalStateService: ProposalState,
-    private healthcareProviderService: HealthcareProviderService,
-    private toastService: ToastService,
-
     dialogRef: MatDialogRef<AssignPrescriptionDialog>,
-    @Inject(MAT_DIALOG_DATA) protected data: AssignPrescriptionDialogData,
-    private translate: TranslateService
+    @Inject(MAT_DIALOG_DATA) protected data: AssignPrescriptionDialogData
   ) {
     super(dialogRef);
-    this.currentLang = this.translate.currentLang as TranslationType;
+    this.currentLang = this._translate.currentLang as TranslationType;
   }
 
   onSearch(criteria: SearchCriteria): void {
@@ -202,39 +195,37 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
     if (professional) {
       this.onAssign(professional);
     } else {
-      this.toastService.show('prescription.assignProfessional.undefined');
+      this._toastService.show('prescription.assignProfessional.undefined');
     }
   }
 
   onAssign(healthcareProvider: HealthcareProResource | HealthcareOrganizationResource): void {
     if (!this.data?.prescriptionId) {
       this.closeDialog(healthcareProvider);
+    } else if (isProposal(this.data?.intent)) {
+      this.executeAssignment(
+        healthcareProvider,
+        () =>
+          this._proposalStateService.assignProposalPerformer(
+            this.data.prescriptionId!,
+            this.data.referralTaskId!,
+            healthcareProvider,
+            this.generatedUUID
+          ),
+        'proposal'
+      );
     } else {
-      if (isProposal(this.data?.intent)) {
-        this.executeAssignment(
-          healthcareProvider,
-          () =>
-            this.proposalStateService.assignProposalPerformer(
-              this.data.prescriptionId!,
-              this.data.referralTaskId!,
-              healthcareProvider,
-              this.generatedUUID
-            ),
-          'proposal'
-        );
-      } else {
-        this.executeAssignment(
-          healthcareProvider,
-          () =>
-            this.prescriptionStateService.assignPrescriptionPerformer(
-              this.data.prescriptionId!,
-              this.data.referralTaskId!,
-              healthcareProvider,
-              this.generatedUUID
-            ),
-          'prescription'
-        );
-      }
+      this.executeAssignment(
+        healthcareProvider,
+        () =>
+          this._prescriptionStateService.assignPrescriptionPerformer(
+            this.data.prescriptionId!,
+            this.data.referralTaskId!,
+            healthcareProvider,
+            this.generatedUUID
+          ),
+        'prescription'
+      );
     }
   }
 
@@ -254,9 +245,9 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
 
         this.closeErrorCard();
         if (healthcareProvider.type === 'Professional') {
-          this.toastService.show(successPrefix + '.assignPerformer.success', { interpolation: name });
+          this._toastService.show(successPrefix + '.assignPerformer.success', { interpolation: name });
         } else {
-          this.toastService.show(successPrefix + '.assignPerformer.successOrganization', { interpolation: name });
+          this._toastService.show(successPrefix + '.assignPerformer.successOrganization', { interpolation: name });
         }
         this.closeDialog(healthcareProvider);
       },
