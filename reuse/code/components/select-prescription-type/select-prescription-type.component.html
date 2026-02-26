@@ -3,7 +3,8 @@
     <div class="title"><b>{{ 'prescription.selectTemplate.prescriptionModel' | translate }}</b></div>
   }
 
-  <label for="category" data-cy="prescriptionCategory-label">{{'common.category' | translate}}</label>
+  @if (categories.length > 1) {
+    <label for="category" data-cy="prescriptionCategory-label">{{ 'common.category' | translate }}</label>
     @if (formGroup.get('category'); as control) {
       <mat-form-field appearance="outline">
         <input
@@ -21,7 +22,7 @@
           </button>
         }
         <mat-autocomplete autoActiveFirstOption #catAuto="matAutocomplete" [displayWith]="displayCategoryWith">
-          @for (option of categoryOptions$ | async; track option) {
+          @for (option of categoryOptions$ |async; track option) {
             <mat-option [value]="option">
               <div class="option-with-highlight" [innerHTML]="option.label | highlightFilter:control.value"></div>
             </mat-option>
@@ -32,6 +33,7 @@
         }
       </mat-form-field>
     }
+  }
 
   <label for="template"
     data-cy="prescriptionType-label"

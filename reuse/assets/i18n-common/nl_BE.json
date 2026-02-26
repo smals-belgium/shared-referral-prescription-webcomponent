@@ -9,7 +9,7 @@
         "patient": "Patiënt",
         "category": "Categorie",
         "typeOfPrescription": "Type voorschrift",
-        "shortCode": "RefID",
+        "shortCode": "Short code",
         "chooseFromList": "Kies uit deze lijst",
         "tryAgain": "Opnieuw proberen",
         "goBack": "Terug",
@@ -67,7 +67,13 @@
         "errors": {
             "pseudoDisabled": "Het aanmaken van een voorschrift is niet mogelijk."
         },
-        "prescriptionModel": "Sjabloon"
+        "prescriptionModel": "Sjabloon",
+        "error": {
+            "default": {
+                "header": "Technisch probleem",
+                "subheader": "Er is een fout opgetreden. Probeer het over enkele ogenblikken opnieuw."
+            }
+        }
     },
     "pagination": {
         "ariaLabel": {
@@ -113,7 +119,7 @@
                 },
                 "table": {
                     "title": "Resultaten PSS",
-                    "select": "",
+                    "select": "Selecteer de rij {row}",
                     "relevance": "Relevantie",
                     "typesOfImagery": "Type medische beeldvorming",
                     "cost": "Kost",
@@ -186,7 +192,14 @@
             "prescriber": "Voorschrijver",
             "proof-of-electronic-prescription": "Bewijs van elektronisch voorschrift",
             "remark": "Opgelet: met manuele toevoegingen op dit document zal geen rekening gehouden worden.",
-            "date": "Afgedrukt op {date}"
+            "date": "Afgedrukt op {date}",
+            "subsection": {
+                "patient": "Patient",
+                "startDate": "Start",
+                "endDate": "Einde",
+                "header": "Elektronische identificatiegegevens van het voorschrift (afgedrukt op {date})."
+            },
+            "alert": "Dit voorschrift is geklasseerd zonder gevolg en kan daarom niet meer worden gebruikt."
         },
         "author": "Auteur",
         "patient": "Patiënt",
@@ -212,26 +225,36 @@
         "noPrescriptionsForPatient": "Deze patiënt heeft nog geen voorschriften.",
         "noPrescriptionsForUser": "U heeft nog geen voorschriften.",
         "assignPerformer": {
-            "title": "Toewijzen aan een zorgverlener of organisatie",
+            "title": "Zoek een zorgverlener",
             "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
             "successOrganization": "{name} is toegewezen als organisatie.",
             "meSuccess": "U bent toegewezen als zorgverlener.",
             "performer": "Zorgverlener of organisatie",
             "searchPerformerPlaceHolder": "RIZIV nummer, naam",
             "select": "Selecteren",
-            "locations": "Locaties",
+            "locations": "Locatie(s)",
             "zipCodeOrCityName": "Postcode of gemeente",
             "noResults": "Geen gemeente gevonden",
-            "organization": "Organisatie"
+            "organization": "Organisatie",
+            "dialog": {
+                "title": "Een zorgverlener toewijzen aan een voorschrift.",
+                "description": "Als u een zorgverlener aan dit voorschrift toevoegt, kan deze de informatie in dit voorschrift inzien."
+            },
+            "locationsHint": "Zoeken op postcode of plaatsnaam",
+            "performerHint": "Zoeken op naam of ID"
         },
         "transferAssignation": {
             "title": "Toewijzing transfereren",
             "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
             "performer": "Zorgverlener",
             "searchPerformerPlaceHolder": "RIZIV nummer, naam",
-            "locations": "Locaties",
+            "locations": "Locatie(s)",
             "zipCodeOrCityName": "Postcode of gemeente",
-            "noResults": "Geen gemeente gevonden"
+            "noResults": "Geen gemeente gevonden",
+            "dialog": {
+                "title": "Een zorgverlener transfereren naar een voorschrift",
+                "description": "Als u dit voorschrift overdraagt naar een andere zorgverlener, kan deze de informatie in dit voorschrift raadplegen."
+            }
         },
         "cancel": {
             "action": "Klasseren zonder gevolg",
@@ -311,7 +334,7 @@
             "dateMustBeEarlierOrEqualTo": "Datum mag niet na {date} liggen",
             "dateMustBeLaterOrEqualTo": "Datum mag niet voor {date} liggen",
             "invalidDateFormat": "Ongeldig formaat: dd/mm/jjjj",
-            "invalidSsinChecksum": "Rijksregisternummer is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
+            "invalidSsinChecksum": "Het rijksregisternummer / BIS-nummer is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
             "invalidShortCode": "Voorschrift ID is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
             "decryptionFailed": "Het decoderen van de vrije tekstvelden is mislukt. Probeer het opnieuw.",
             "failedToCreateModel": "Het sjabloon kon niet worden aangemaakt. Probeer het later opnieuw."
@@ -329,12 +352,12 @@
             "delete": "Verwijderen",
             "removeCity": "Verwijder de gemeente",
             "print": "Afdrukken",
-            "reject": "Het voorschrift afwijzen",
+            "reject": "Toewijzing afwijzen",
             "interrupt": "Onderbreek de uitvoering",
             "restart": "Herneem de uitvoering"
         },
         "tableHasRecords": "Totaal aantal voorschriften is {total}.",
-        "extendedShortId": "Uitbreiding van het voorschrift",
+        "extendedShortId": "Verlenging van het voorschrift",
         "actions": {
             "button": "Acties",
             "assignMe": "Mezelf toewijzen",
@@ -343,7 +366,13 @@
             "copy": "Kopiëren",
             "extend": "Verlengen",
             "print": "Afdrukken",
-            "cancel": "Annuleren"
+            "cancel": "Klasseren zonder gevolg"
+        },
+        "assignProfessional": {
+            "undefined": "Kies eerst een zorgverlener"
+        },
+        "transferProfessional": {
+            "undefined": "Kies eerst een zorgverlener"
         }
     },
     "proposal": {
@@ -358,7 +387,7 @@
         },
         "create": {
             "action": "Nieuw voorstel",
-            "success": "Voorschrift succesvol aangemaakt.",
+            "success": "Voorstel succesvol aangemaakt.",
             "allSuccess": "{count} {count, plural, one{voorstel} other{voorstellen}} successvol aangemaakt.",
             "allFailed": "Fout tijdens het aanmaken van de voorstellen. Controleer uw invoer en probeer het opnieuw.",
             "someSuccessSomeFailed": "{successCount} {successCount, plural, one{voorstel} other{voorstellen}} successvol aangemaakt. {failedCount} {failedCount, plural, one{voorstel werd} other{voorstellen werden}} niet aangemaakt door een fout. Controleer uw invoer en probeer het opnieuw.",
@@ -399,7 +428,7 @@
         "validityPeriod": "Geldigheidsperiode",
         "consultDetails": "Toon details",
         "assign": "Toewijzen",
-        "transfer": "Overmaken",
+        "transfer": "Transfereren",
         "assignMe": "Mezelf toewijzen",
         "duplicate": "Dupliceren",
         "extend": "Verlengen",
@@ -408,23 +437,27 @@
         "noProposalsForPatient": "Deze patiënt heeft nog geen voorstellen.",
         "noProposalsForUser": "U heeft nog geen voorstellen.",
         "assignPerformer": {
-            "title": "Toewijzen aan een zorgverlener of organisatie",
+            "title": "Zoek een arts",
             "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
             "successOrganization": "{name} is toegewezen als organisatie.",
             "meSuccess": "U bent toegewezen als zorgverlener.",
             "performer": "Zorgverlener",
             "searchPerformerPlaceHolder": "RIZIV nummer, naam",
-            "locations": "Locaties",
+            "locations": "Locatie(s)",
             "zipCodeOrCityName": "Postcode of gemeente",
             "noResults": "Geen gemeente gevonden",
-            "organization": "Organisatie"
+            "organization": "Organisatie",
+            "dialog": {
+                "title": "Een zorgverlener toewijzen aan een voorstel.",
+                "description": "Als u een zorgverlener aan dit voorstel toevoegt, kan deze de informatie in dit voorstel inzien."
+            }
         },
         "transferAssignation": {
             "title": "Transfereren",
             "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
             "performer": "Zorgverlener",
             "searchPerformerPlaceHolder": "RIZIV nummer, naam",
-            "locations": "Locaties",
+            "locations": "Locatie(s)",
             "zipCodeOrCityName": "Postcode of gemeente",
             "noResults": "Geen gemeente gevonden"
         },
@@ -524,8 +557,23 @@
     "pss": {
         "unavailable": {
             "title": "Service tijdelijk niet beschikbaar",
-            "message": "Onze excuses, de PSS (Prescription Search Support) service is momenteel niet beschikbaar.\nU kunt de aanbevelingen voor medische beeldvormende onderzoeken op dit moment niet raadplegen.\nProbeer het over een paar minuten opnieuw."
+            "message": "De PSS (Prescription Search Support) service is momenteel niet beschikbaar.\nU kunt de aanbevelingen voor medische beeldvorming onderzoeken op dit moment niet raadplegen.\nProbeer het later opnieuw."
         }
     },
-    "prescription-model-tableHasRecords-Le-nombre-total": "Totaal aantal sjablonen is {total}"
+    "prescription-model-tableHasRecords-Le-nombre-total": "Totaal aantal sjablonen is {total}",
+    "professional": {
+        "table": {
+            "results": "{results} gevonden resultaten",
+            "firstname": "Voornaam",
+            "lastname": "Achternaam",
+            "address": "Adres",
+            "city": "Gemeente",
+            "actions": "Acties",
+            "tableHasRecords": "{total}  gevonden resultaten",
+            "noRecords": "Er zijn geen professionals gevonden die aan deze zoekopdracht voldoen.",
+            "select": "Kiezen"
+        },
+        "noProfessionals": "Er is geen zorgverlener gevonden die aan deze zoekopdracht voldoet.",
+        "allProfessionalsFetched": "Alle zorgverleners zijn opgehaald"
+    }
 }

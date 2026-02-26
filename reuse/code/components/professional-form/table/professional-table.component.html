@@ -1,0 +1,95 @@
+<table mat-table [dataSource]="professionals()" class="mat-elevation-z8">
+  <ng-container matColumnDef="icon">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let row" class="icon-cell">
+      <mat-icon>person</mat-icon>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="lastname">
+    <th data-cy="professional-lastname" mat-header-cell
+        *matHeaderCellDef>{{ 'professional.table.lastname' | translate }}
+    </th>
+    <td data-cy="professional-lastname-cell" mat-cell *matCellDef="let healthcareProvider">
+      @if (healthcareProvider.healthcarePerson; as person) {
+        <b>{{ (person.lastName || '') }}</b>
+      }
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="firstname">
+    <th data-cy="professional-firstname" mat-header-cell
+        *matHeaderCellDef>{{ 'professional.table.firstname' | translate }}
+    </th>
+    <td data-cy="professional-firstname-cell" mat-cell *matCellDef="let healthcareProvider">
+      <div>
+        @if (healthcareProvider.healthcarePerson; as person) {
+          <b>{{ (person.firstName || '') }}</b>
+        }
+      </div>
+      <div>
+        {{ healthcareProvider.nihii8 ?? healthcareProvider.nihii11 | formatNihdi: healthcareProvider.healthcareQualification?.id?.code }}
+      </div>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="address">
+    <th data-cy="professional-address" mat-header-cell
+        *matHeaderCellDef>{{ 'professional.table.address' | translate }}
+    </th>
+    <td data-cy="professional-address-cell" mat-cell *matCellDef="let healthcareProvider">
+      {{ healthcareProvider.address.street | formatMultilingualObject: currentLang() }} {{ healthcareProvider.address.houseNumber || '' }} {{ healthcareProvider.address.box || '' }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="city">
+    <th data-cy="professional-city" mat-header-cell
+        *matHeaderCellDef>{{ 'professional.table.city' | translate }}
+    </th>
+    <td data-cy="professional-city-cell" mat-cell *matCellDef="let healthcareProvider">
+      {{ healthcareProvider.address.zipCode + ' ' || '' }} {{ healthcareProvider.address.municipality | formatMultilingualObject:  currentLang() }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th data-cy="professional-actions" mat-header-cell
+        *matHeaderCellDef>{{ 'professional.table.actions' | translate }}
+    </th>
+    <td data-cy="professional-actions-cell" mat-cell *matCellDef="let healthcareProvider">
+      <button type="button" matButton (click)="selectProfessional.emit(healthcareProvider)"
+              class="icon-end">{{ 'professional.table.select' | translate }}
+        <mat-icon>arrow_forward_ios</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="tableStatus">
+    <td mat-footer-cell *matFooterCellDef colspan="6">
+      @if (total() === undefined) {
+        <span class="sr-only">
+        {{ 'professional.table.tableHasRecords' | translate:{ total: 0 } }}
+      </span>
+      } @else if (total() === 0) {
+        <span>{{ 'professional.table.noRecords' | translate }}</span>
+      } @else {
+        <span class="sr-only">
+        {{ 'professional.table.tableHasRecords' | translate:{ total: total() } }}
+      </span>
+      }
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+  <tr [attr.data-cy]="'professional-row-' + row.id"
+      mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+  <tr [class]="total() === undefined ? 'no-data' : 'no-professionals'" mat-footer-row
+      *matFooterRowDef="['tableStatus']"></tr>
+</table>
+
+
+@if (loading()) {
+  <app-skeleton data-cy="skeleton" [items]="3" [format]="FormatEnum.LINE"></app-skeleton>
+}
+
+

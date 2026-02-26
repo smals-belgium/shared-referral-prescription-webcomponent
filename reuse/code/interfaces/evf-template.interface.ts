@@ -25,3 +25,8 @@ export const PHYSIOTHERAPY_CODES = [
   'PHYSIOTHERAPY_PERINATAL',
   'PHYSIOTHERAPY_TEMPOROMANDIBULAR_DYSFUNCTION'
 ];
+
+export interface TemplateCategory {
+  code: string;
+  fhirCode: string;
+}

@@ -18,7 +18,7 @@
         "search": "Rechercher",
         "start": "Commencer",
         "professions": {
-            "NURSE": "Infirmière",
+            "NURSE": "Infirmier·ère",
             "PHYSICIAN": "Médecin",
             "PHYSIOTHERAPIST": "Kinésithérapeute",
             "DENTIST": "Dentiste"
@@ -67,7 +67,13 @@
         "errors": {
             "pseudoDisabled": "Il n'est pas possible de créer une prescription."
         },
-        "prescriptionModel": "Modèle"
+        "prescriptionModel": "Modèle",
+        "error": {
+            "default": {
+                "header": "Problème technique",
+                "subheader": "Une erreur s'est produite. Merci de réessayer dans quelques instants."
+            }
+        }
     },
     "pagination": {
         "ariaLabel": {
@@ -113,7 +119,7 @@
                 },
                 "table": {
                     "title": "Résultat PSS",
-                    "select": "",
+                    "select": "Sélectionner la ligne {row}",
                     "relevance": "Pertinence",
                     "typesOfImagery": "Types d'imagerie",
                     "cost": "Coût",
@@ -186,7 +192,14 @@
             "prescriber": "Prescripteur",
             "proof-of-electronic-prescription": "Preuve de prescription électronique",
             "remark": "Attention: Aucun ajout manuscrit à ce document ne sera pris en compte. ",
-            "date": "Imprimé le {date}"
+            "date": "Imprimé le {date}",
+            "subsection": {
+                "patient": "Patient",
+                "startDate": "Début",
+                "endDate": "Fin",
+                "header": "Données d'identification de la prescription électronique (imprimé le {date})."
+            },
+            "alert": "Cette prescription a été classée sans suite et ne peut donc plus être utilisée"
         },
         "author": "Auteur",
         "patient": "Patient",
@@ -212,17 +225,23 @@
         "noPrescriptionsForPatient": "Ce patient ne possède pas encore de prescription.",
         "noPrescriptionsForUser": "Vous ne possèdez pas encore de prescription.",
         "assignPerformer": {
-            "title": "Assigner à un prestataire ou une organisation",
+            "title": "Chercher un·e infirmier·ère",
             "success": "{firstName} {lastName} a été assigné comme prestataire.",
             "successOrganization": "{name} a été assigné comme organisation.",
             "meSuccess": "Vous avez été assigné comme prestataire.",
-            "performer": "Prestataire ou organisation",
+            "performer": "Prestataire",
             "searchPerformerPlaceHolder": "N° INAMI, nom",
             "select": "Sélectionner",
             "locations": "Localisation(s)",
             "zipCodeOrCityName": "Code postal ou commune",
             "noResults": "Aucune commune trouvée",
-            "organization": "Organisation"
+            "organization": "Organisation",
+            "dialog": {
+                "title": "Assigner un prestataire de soins à une prescription",
+                "description": "Si vous ajoutez un prestataire de soins à cette prescription, celui-ci pourra consulter les informations contenues dans cette prescription."
+            },
+            "locationsHint": "Chercher via le code postal ou le nom de la commune",
+            "performerHint": "Chercher via nom ou identifiant"
         },
         "transferAssignation": {
             "title": "Transférer l'assignation",
@@ -231,7 +250,11 @@
             "searchPerformerPlaceHolder": "N° INAMI, nom",
             "locations": "Localisation(s)",
             "zipCodeOrCityName": "Code postal ou commune",
-            "noResults": "Aucune commune trouvée"
+            "noResults": "Aucune commune trouvée",
+            "dialog": {
+                "title": "Transférer un prestataire de soins à une prescription",
+                "description": "Si vous transférez un prestataire de soins à cette prescription, celui-ci pourra consulter les informations contenues dans cette prescription."
+            }
         },
         "cancel": {
             "action": "Classer sans suite",
@@ -311,7 +334,7 @@
             "dateMustBeEarlierOrEqualTo": "La date ne peut pas être après le {date}",
             "dateMustBeLaterOrEqualTo": "La date ne peut pas être avant le {date}",
             "invalidDateFormat": "Format invalide: jj/mm/aaaa",
-            "invalidSsinChecksum": "Le numéro de registre national n'est pas valide. Veuillez vérifier et essayer à nouveau.",
+            "invalidSsinChecksum": "Le numéro de registre national / BIS n'est pas valide. Veuillez vérifier et essayer à nouveau.",
             "invalidShortCode": "L'ID de la prescription n'est pas valide. Veuillez vérifier et essayer à nouveau.",
             "decryptionFailed": "Le décodage des champs de texte libre a échoué. Ré-essayer.",
             "failedToCreateModel": "Le modèle n'a pas pu être créé. Veuillez réessayer plus tard."
@@ -329,7 +352,7 @@
             "delete": "Supprimer",
             "removeCity": "Supprimer la commune",
             "print": "Imprimer",
-            "reject": "Rejeter la prescription",
+            "reject": "Rejeter l'assignation",
             "interrupt": "Interrompre l'exécution",
             "restart": "Relancer l'exécution"
         },
@@ -343,7 +366,13 @@
             "copy": "Copier",
             "extend": "Étendre",
             "print": "Imprimer",
-            "cancel": "Annuler"
+            "cancel": "Classer sans suite"
+        },
+        "assignProfessional": {
+            "undefined": "Choisir d'abord un professionnel"
+        },
+        "transferProfessional": {
+            "undefined": "Choisir d'abord un professionnel"
         }
     },
     "proposal": {
@@ -408,7 +437,7 @@
         "noProposalsForPatient": "Ce patient ne possède pas encore de proposition.",
         "noProposalsForUser": "Vous ne possèdez pas encore de proposition.",
         "assignPerformer": {
-            "title": "Assigner à un prestataire ou une organisation",
+            "title": "Chercher un médecin",
             "success": "{firstName} {lastName} a été assigné comme prestataire.",
             "successOrganization": "{name} a été assigné comme organisation.",
             "meSuccess": "Vous avez été assigné comme prestataire.",
@@ -417,7 +446,11 @@
             "locations": "Localisation(s)",
             "zipCodeOrCityName": "Code postal ou commune",
             "noResults": "Aucune commune trouvée",
-            "organization": "Organisation"
+            "organization": "Organisation",
+            "dialog": {
+                "title": "Assigner un prestataire de soins à une proposition.",
+                "description": "Si vous ajoutez un prestataire de soins à cette proposition, celui-ci pourra consulter les informations contenues dans celle-ci."
+            }
         },
         "transferAssignation": {
             "title": "Transférer l'assignation",
@@ -524,8 +557,23 @@
     "pss": {
         "unavailable": {
             "title": "Service temporairement indisponible",
-            "message": "Nous sommes désolés, le service PSS (Prescription Search Support) est momentanément indisponible.\nVous ne pouvez plus consulter les recommandations d'examens en imagerie médicale pour l'instant.\nMerci de réessayer dans quelques minutes."
+            "message": "Le service PSS (Prescription Search Support) est momentanément indisponible.\nVous ne pouvez plus consulter les recommandations d'examens en imagerie médicale pour l'instant.\nMerci de réessayer dans quelques minutes."
         }
     },
-    "prescription-model-tableHasRecords-Le-nombre-total": "Le nombre total de modèles est {total}"
+    "prescription-model-tableHasRecords-Le-nombre-total": "Le nombre total de modèles est {total}",
+    "professional": {
+        "table": {
+            "results": "{results} résultats trouvé",
+            "firstname": "Prénom",
+            "lastname": "Nom",
+            "address": "Adresse",
+            "city": "Commune",
+            "actions": "Action",
+            "tableHasRecords": "{total}  résultats trouvé",
+            "noRecords": "Aucun professionnel correspondant à cette recherche n'a été trouvé.",
+            "select": "Choisir"
+        },
+        "noProfessionals": "Aucun professionnel correspondant à cette recherche n'a été trouvé.",
+        "allProfessionalsFetched": "Tous les professionnels sont recrutés"
+    }
 }

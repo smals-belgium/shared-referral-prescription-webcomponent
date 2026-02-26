@@ -9,4 +9,8 @@ import { MagsPrescriptionDetails } from './components/mags/mags-prescription-det
 })
 export class App {
   protected readonly title = signal('mags-prescription-details');
+
+  print(event: any) {
+    console.log('print: ', event);
+  }
 }

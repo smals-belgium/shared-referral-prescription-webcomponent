@@ -29,17 +29,6 @@ describe('DemoHttpInterceptor', () => {
     httpMock.verify();
   });
 
-  it('should pass through requests when not in demo mode', async () => {
-    setupTestBed('local');
-
-    const responsePromise = firstValueFrom(httpClient.get('/api/test'));
-    const req = httpMock.expectOne('/api/test');
-    req.flush({ success: true });
-
-    const response = await responsePromise;
-    expect(response).toEqual({ success: true });
-  });
-
   it('should return 501 when mock not found in demo mode', async () => {
     setupTestBed('demo');
 

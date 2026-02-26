@@ -2,7 +2,7 @@
   @if (itemsLength > 0) {
     <div class="grid-container mh-margin-top-bottom">
       @for (prescription of requestData(); track trackById(prescription)) {
-        <mat-card class="label-example-card" appearance="raised">
+        <mat-card appearance="raised">
           <mat-card-content>
               @if(!!prescription.status) {
                 <div class="row" align="right">

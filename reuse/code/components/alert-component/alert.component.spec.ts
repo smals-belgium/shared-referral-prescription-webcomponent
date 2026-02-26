@@ -106,4 +106,15 @@ describe('AlertComponent', () => {
     expect(mhAlert.componentInstance.backgroundColor()).toBe('color');
     expect(mhAlert.componentInstance.actionButton()).toBe(false);
   });
+
+  it('should set default error message when not defined in generic errors mapping', () => {
+    component.error = new HttpErrorResponse({ status: 499 });
+
+    (component as any).setGenericErrorMsgKey();
+
+    expect(component.showBody()).toBe(false);
+    expect(component.title).toBe("common.error.default.header");
+    expect(component.subTitle).toBe("common.error.default.subheader");
+    expect(component.alert).toBe("warning");
+  })
 });

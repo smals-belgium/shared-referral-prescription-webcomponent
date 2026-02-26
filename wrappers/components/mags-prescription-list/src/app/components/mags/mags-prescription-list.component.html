@@ -1,0 +1,13 @@
+<mat-tab-group
+  mat-stretch-tabs="false"
+  mat-align-tabs="start"
+  preserveContent
+  (selectedIndexChange)="onTabChange($event)">
+  <mat-tab label="{{'referralLists.prescription.tabLabel' | translate}}" data-cy="prescriptions-list-tab">
+    <div #orderHost></div>
+  </mat-tab>
+
+  <mat-tab label="{{'referralLists.proposal.tabLabel' | translate}}" data-cy="proposals-list-tab">
+    <div #proposalHost></div>
+  </mat-tab>
+</mat-tab-group>

@@ -8,14 +8,20 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MagsComponent } from '@reuse/code/components/wrappers/directives/mags.wrapper.directive';
-import { wrapperManifest } from 'wrappers/components/mags-prescription-details/manifest';
-import { PrintMimeType, PrintOrientation } from '@smals-belgium/myhealth-wc-integration';
+import { wrapperManifest } from '../../../../manifest';
+import {
+  PrintMimeType,
+  PrintOrientation,
+  SettingsChangeEvent,
+  UserLanguage,
+} from '@smals-belgium/myhealth-wc-integration';
+import { mapLanguageToTranslations } from '@reuse/code/components/wrappers/utils/mags.utils';
+import { hasUserProfile } from '@reuse/code/utils/mags-utils';
 
 @Component({
   standalone: true,
   selector: wrapperManifest.selector,
   templateUrl: 'mags-prescription-details.component.html',
-  styleUrls: ['mags-prescription-details.component.scss'],
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
@@ -23,6 +29,7 @@ import { PrintMimeType, PrintOrientation } from '@smals-belgium/myhealth-wc-inte
 })
 export class MagsPrescriptionDetails extends MagsComponent {
   prescriptionId = input<string | undefined>(undefined);
+  intent = input<string | undefined>(undefined);
   print = output<unknown>();
   open = output<unknown>();
 
@@ -49,23 +56,14 @@ export class MagsPrescriptionDetails extends MagsComponent {
   override initWebComponent() {
     const webComponent = this.createElement(wrapperManifest.customElement.tag);
 
-    //@todo change getIdToken after decision from MAGS by how to implement
     webComponent.services = {
       getAccessToken: (audience: string) => this.getAccessToken(audience),
-      getIdToken: () =>
-        Promise.resolve({
-          userProfile: {
-            ssin: '80222700163',
-            firstName: 'John',
-            lastName: 'Doe',
-            gender: 'M',
-          },
-        }),
+      getIdToken: () => this.getIdToken(),
     };
 
-    webComponent.setAttribute('lang', `${this.userLanguage()}-BE`);
+    webComponent.setAttribute('lang', mapLanguageToTranslations(this.userLanguage()));
     webComponent.setAttribute('prescription-id', this.prescriptionId() || '');
-    webComponent.setAttribute('intent', 'order');
+    webComponent.setAttribute('intent', this.intent() || 'order');
 
     webComponent.addEventListener('clickPrint', async (event: Event) => {
       const customEvent = event as CustomEvent<Blob>;
@@ -82,16 +80,35 @@ export class MagsPrescriptionDetails extends MagsComponent {
       });
     });
 
-    webComponent.addEventListener('clickOpenExtendedDetail', (d: Event & { detail?: string }) => {
-      this.open.emit({
-        componentTag: wrapperManifest.events['open'].componentTag,
-        props: {
-          prescriptionId: d?.detail,
-          lang: webComponent.lang,
-        },
-      });
+    webComponent.addEventListener('clickOpenExtendedDetail', async (d: Event & { detail?: string }) => {
+      const ssin = await this.resolvePatientSsin();
+      this.updateAttribute('patient-ssin', ssin || '');
+      this.updateAttribute('prescription-id', d?.detail || '');
     });
 
     this.appendWebComponent(webComponent);
+  }
+
+  override onSettingsChanged = (s: SettingsChangeEvent): void => {
+    if (s.detail.setting === 'userLanguage') {
+      const w = this.componentView.nativeElement.getElementsByTagName(wrapperManifest.customElement.tag);
+      w[0].setAttribute('lang', mapLanguageToTranslations(s.detail.value as unknown as UserLanguage));
+    }
+  };
+
+  updateAttribute(key: string, param: string) {
+    const webComponent = this.componentView.nativeElement.getElementsByTagName(wrapperManifest.customElement.tag);
+    webComponent[0].setAttribute(key, param);
+  }
+
+  private async resolvePatientSsin(): Promise<string | undefined> {
+    const token = await this.getIdToken();
+
+    if (!token || !hasUserProfile(token)) {
+      console.error('token with userProfile.ssin is required');
+      return;
+    }
+
+    return token.userProfile.ssin;
   }
 }

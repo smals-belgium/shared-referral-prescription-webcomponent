@@ -2,7 +2,7 @@
   @let prescription = prescriptionServiceData;
 
   <div class="secondary_details_container">
-    <h4 data-cy="prescription-assign-to-label">{{ 'prescription.careGivers' | translate }}</h4>
+    <h3 data-cy="prescription-assign-to-label">{{ 'prescription.careGivers' | translate }}</h3>
 
     @if ((prescription.performerTasks && prescription.performerTasks.length > 0) || (prescription.organizationTasks && prescription.organizationTasks.length > 0)) {
       <div data-cy="prescription-assign-to-list">

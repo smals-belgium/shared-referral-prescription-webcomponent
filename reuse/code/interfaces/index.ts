@@ -7,3 +7,4 @@ export * from './prescription-modal.inteface';
 export * from './create-prescription-form.interface';
 export * from './evf-template.interface';
 export * from './alert.interface';
+export * from './professional.interface';
