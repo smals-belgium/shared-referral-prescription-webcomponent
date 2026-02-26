@@ -36,6 +36,10 @@
                 [loading]="isLoading()"
                 [currentLang]="currentLang"
                 (selectProfessional)="onAssign($event)"
+                [category]="data.category"
+                [intent]="data.intent"
+                [prescriptionId]="data.prescriptionId"
+                [zipCodes]="searchCriteria$()?.zipCodes ?? []"
               ></professional-table>
             </ng-template>
 

@@ -6,10 +6,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { catchError, map } from 'rxjs/operators';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { AsyncPipe } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
-import { TranslationPipe } from '@reuse/code/pipes/translation.pipe';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatInputModule } from '@angular/material/input';
@@ -19,7 +16,6 @@ import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { toDataState } from '@reuse/code/utils/rxjs.utils';
-import { FormatMultilingualObjectPipe } from '@reuse/code/pipes/format-multilingual-object.pipe';
 import { v4 as uuidv4 } from 'uuid';
 import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
@@ -27,12 +23,10 @@ import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import { getAssignableProfessionalDisciplines, isProfessional } from '@reuse/code/utils/assignment-disciplines.utils';
 import { isProposal } from '@reuse/code/utils/utils';
 import { HealthcareOrganizationResource, HealthcareProResource, ProviderType } from '@reuse/code/openapi';
-import { PaginatorComponent } from '@reuse/code/components/paginator/paginator.component';
 import { HealthcareProviderService } from '@reuse/code/services/api/healthcareProvider.service';
 import { ProfessionalCardsComponent } from '@reuse/code/components/professional-form/professional-cards/professional-cards.component';
 import {
   ProfessionalSearchFormComponent,
-  ProfessionalType,
   SearchCriteria,
 } from '@reuse/code/components/professional-form/search-form/professional-search-form.component';
 import {
@@ -66,12 +60,7 @@ interface TransferAssignation {
     MatAutocompleteModule,
     MatIconModule,
     OverlaySpinnerComponent,
-    TranslationPipe,
-    FormatNihdiPipe,
-    AsyncPipe,
-    FormatMultilingualObjectPipe,
     AlertComponent,
-    PaginatorComponent,
     ProfessionalCardsComponent,
     ProfessionalSearchFormComponent,
     ProfessionalTableComponent,
@@ -80,6 +69,12 @@ interface TransferAssignation {
 })
 export class TransferAssignationDialog extends BaseDialog implements OnInit {
   private readonly deviceService = inject(DeviceService);
+  private readonly _prescriptionStateService = inject(PrescriptionState);
+  private readonly _proposalStateService = inject(ProposalState);
+  private readonly _healthcareProviderService = inject(HealthcareProviderService);
+  private readonly _toastService = inject(ToastService);
+  private readonly _translate = inject(TranslateService);
+
   protected readonly isDesktop = this.deviceService.isDesktop;
 
   protected readonly AlertType = AlertType;
@@ -87,12 +82,10 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
   readonly isLoading = signal(false);
   readonly selectedProfessional = signal<HealthcareProResource | HealthcareOrganizationResource | undefined>(undefined);
 
-  filterProfessionalType: ProfessionalType[] = ['CAREGIVER', 'ORGANIZATION'];
-  selectedFilter: ProfessionalType = 'CAREGIVER';
   private readonly pageable = this.isDesktop()
     ? {
-        page: undefined,
-        pageSize: undefined,
+        page: 1,
+        pageSize: 20,
       }
     : {
         page: 1,
@@ -105,7 +98,7 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
         this.isLoading.set(true);
         const disciplines: string[] = getAssignableProfessionalDisciplines(this.data.category, this.data.intent);
         return criteria
-          ? this.healthcareProviderService
+          ? this._healthcareProviderService
               .findAll(
                 criteria.query,
                 criteria.zipCodes,
@@ -147,23 +140,16 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
     )
   );
 
-  queryIsNumeric = false;
   loading = false;
   generatedUUID = '';
-  visibleDetailsOfHealthcareProvider: string[] = [];
   currentLang?: TranslationType;
 
   constructor(
-    private prescriptionStateService: PrescriptionState,
-    private proposalStateService: ProposalState,
-    private healthcareProviderService: HealthcareProviderService,
-    private toastService: ToastService,
     dialogRef: MatDialogRef<TransferAssignationDialog>,
-    @Inject(MAT_DIALOG_DATA) protected readonly data: TransferAssignation,
-    private translate: TranslateService
+    @Inject(MAT_DIALOG_DATA) protected readonly data: TransferAssignation
   ) {
     super(dialogRef);
-    this.currentLang = this.translate.currentLang as TranslationType;
+    this.currentLang = this._translate.currentLang as TranslationType;
   }
 
   onSearch(criteria: SearchCriteria): void {
@@ -184,7 +170,7 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
     if (professional) {
       this.onTransfer(professional);
     } else {
-      this.toastService.show('prescription.transferProfessional.undefined');
+      this._toastService.show('prescription.transferProfessional.undefined');
     }
   }
 
@@ -200,7 +186,7 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
         this.executeTransferAssignment(
           professional,
           () =>
-            this.proposalStateService.transferAssignation(
+            this._proposalStateService.transferAssignation(
               this.data.prescriptionId!,
               this.data.referralTaskId!,
               this.data.performerTaskId!,
@@ -213,7 +199,7 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
         this.executeTransferAssignment(
           professional,
           () =>
-            this.prescriptionStateService.transferAssignation(
+            this._prescriptionStateService.transferAssignation(
               this.data.prescriptionId!,
               this.data.referralTaskId!,
               this.data.performerTaskId!,
@@ -235,7 +221,7 @@ export class TransferAssignationDialog extends BaseDialog implements OnInit {
     serviceCall().subscribe({
       next: () => {
         this.closeErrorCard();
-        this.toastService.show(successPrefix + '.transferAssignation.success', {
+        this._toastService.show(successPrefix + '.transferAssignation.success', {
           interpolation: professional.healthcarePerson,
         });
         this.closeDialog(professional);
