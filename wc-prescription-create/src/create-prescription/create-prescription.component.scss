@@ -109,6 +109,12 @@ $app-primary: mat.m2-define-palette($app-primary-palette, 800);
   --mat-form-field-container-vertical-padding: 12px;
   --mat-form-field-container-height: 46px;
   --mat-sys-surface-container: #{mh.$primary-100};
+  --mat-form-field-outlined-error-outline-color: var(--evf-input-error-border-color, #{mh.$error-30});
+  --mat-form-field-outlined-outline-color: var(--mdc-outlined-text-field-outline-color, #{mh.$neutral-50});
+  --mat-button-toggle-divider-color: var(--evf-input-border-color, #{mh.$primary-40});
+  --mat-form-field-outlined-container-shape: var(--evf-input-border-radius, 4px);
+  --mdc-outlined-text-field-container-shape: mh.$spacing-2xs;
+
 
   /* expansion panel */
   --mat-expansion-header-expanded-state-height: #{mh.calculateRem(70px)};
