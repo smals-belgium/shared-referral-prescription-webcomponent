@@ -4,7 +4,6 @@ import {
   Component,
   ViewEncapsulation,
   output,
-  input,
   AfterViewInit,
   ViewChild,
   ElementRef,

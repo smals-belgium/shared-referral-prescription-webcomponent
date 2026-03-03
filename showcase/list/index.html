@@ -8,11 +8,6 @@
     <base href="/">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
     <script src="../lib/keycloak.js"></script>
-    <style>
-        body {
-            font-family: Roboto, "Helvetica Neue", sans-serif;
-        }
-    </style>
 </head>
 <body>
 <script>
@@ -127,8 +122,7 @@
     }
 </script>
 
-<!-- Web component script at the end -->
-<script src="https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/prescription-list/wc-list-prescriptions.js"
-        type="module"></script>
+<!-- Web component script -->
+<script type="module" src="@smals-belgium-shared/uhmep-prescription-list/build/uhmep-prescription-list.js"></script>
 </body>
 </html>
