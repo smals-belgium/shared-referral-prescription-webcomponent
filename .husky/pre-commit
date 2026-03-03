@@ -1,9 +1,0 @@
-#!/bin/bash
-
-if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" || "$OSTYPE" == "cygwin" ]]; then
-  # Windows (Git Bash, MSYS, Cygwin)
-  powershell.exe -ExecutionPolicy Bypass -File ./pull-translations.ps1
-else
-  # Mac/Linux
-  ./pull-translations.sh
-fi
