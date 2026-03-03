@@ -97,7 +97,7 @@
     "angular-eslint": "^19.4.0",
     "camel-to-kebab": "^1.1.2",
     "concat": "^1.0.3",
-    "eslint": "8.57.0",
+    "eslint": "9.26.0",
     "husky": "^9.1.7",
     "istanbul": "^0.4.5",
     "istanbul-merge": "^2.0.0",
@@ -108,6 +108,11 @@
     "prettier": "^3.6.2",
     "rollup-plugin-dts": "^6.2.3",
     "typescript": "~5.8.2"
+  },
+  "lint-staged": {
+    "*.{ts,js,html,css,scss,json,md}": [
+      "prettier --write"
+    ]
   },
   "overrides": {
     "@myhealth-belgium/design-kit": {

@@ -7,9 +7,9 @@ import { signal, SimpleChange, SimpleChanges } from '@angular/core';
 import { RequestProfessionalDataService } from '@reuse/code/services/helpers/request-professional-data.service';
 import { HealthcareProResource } from '@reuse/code/openapi';
 
-const mockProfessionals : HealthcareProResource[] = [
-  { id: { ssin: '123', qualificationCode: 'Q1' }, address:{ street:'', zipCode:''}},
-  { id: { ssin: '456', qualificationCode: 'Q2' }, address:{ street:'', zipCode:''}},
+const mockProfessionals: HealthcareProResource[] = [
+  { id: { ssin: '123', qualificationCode: 'Q1' }, address: { street: '', zipCode: '' } },
+  { id: { ssin: '456', qualificationCode: 'Q2' }, address: { street: '', zipCode: '' } },
 ] as any[];
 
 describe('ProfessionalTableComponent', () => {
@@ -28,7 +28,7 @@ describe('ProfessionalTableComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [ProfessionalTableComponent, TranslateModule.forRoot()],
-      providers: [{ provide: RequestProfessionalDataService, useValue: dataServiceMock }]
+      providers: [{ provide: RequestProfessionalDataService, useValue: dataServiceMock }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProfessionalTableComponent);
@@ -59,7 +59,6 @@ describe('ProfessionalTableComponent', () => {
     });
 
     it('should not call initializeTableDataStream when professionals change to empty', () => {
-
       fixture.componentRef.setInput('professionals', []);
 
       const changes: SimpleChanges = {
@@ -84,16 +83,14 @@ describe('ProfessionalTableComponent', () => {
     it('should render a row for each professional', () => {
       dataServiceMock.initializeTableDataStream.mockClear();
 
-      (component as any).requestData.set(mockProfessionals)
+      (component as any).requestData.set(mockProfessionals);
 
       fixture.detectChanges();
 
       const rows = fixture.debugElement.queryAll(By.css('tbody tr, mat-row'));
       expect(rows.length).toBe(2);
-
     });
   });
-
 
   it('should display the correct column headers', () => {
     fixture.componentRef.setInput('professionals', mockProfessionals);
@@ -103,8 +100,6 @@ describe('ProfessionalTableComponent', () => {
 
     expect(headerTexts.length).toBe(component['displayedColumns'].length);
   });
-
-
 
   it('should show no rows when professionals list is empty', () => {
     fixture.componentRef.setInput('professionals', []);
@@ -126,17 +121,15 @@ describe('ProfessionalTableComponent', () => {
   });
 
   it('should emit selectProfessional when a row action is triggered', () => {
-
     const emitSpy = jest.spyOn(component.selectProfessional, 'emit');
 
-    (component as any).requestData.set(mockProfessionals)
+    (component as any).requestData.set(mockProfessionals);
 
-    fixture.detectChanges()
+    fixture.detectChanges();
 
     const actionButton = fixture.debugElement.query(By.css('[data-cy="professional-actions-cell"] button'));
     actionButton.nativeElement.click();
 
     expect(emitSpy).toHaveBeenCalledWith(mockProfessionals[0]);
   });
-
 });

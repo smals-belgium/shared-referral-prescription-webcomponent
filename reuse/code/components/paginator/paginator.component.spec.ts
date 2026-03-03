@@ -14,16 +14,16 @@ describe('PaginatorComponent', () => {
   beforeEach(async () => {
     // Create a minimal TranslateService mock
     translateMock = {
-      instant: jest.fn().mockImplementation((key) => key),
-      onLangChange: new Subject()
+      instant: jest.fn().mockImplementation(key => key),
+      onLangChange: new Subject(),
     };
 
     await TestBed.configureTestingModule({
       imports: [PaginatorComponent, MatPaginatorModule, NoopAnimationsModule],
       providers: [
         { provide: TranslateService, useValue: translateMock },
-        { provide: MatPaginatorIntl, useClass: MatPaginatorIntlService }
-      ]
+        { provide: MatPaginatorIntl, useClass: MatPaginatorIntlService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PaginatorComponent);

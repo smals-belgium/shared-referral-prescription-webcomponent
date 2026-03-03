@@ -5,15 +5,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable()
 export class MatPaginatorIntlService extends MatPaginatorIntl {
-
   private readonly translate = inject(TranslateService);
 
   constructor() {
     super();
 
-    this.translate.onLangChange
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => {
+    this.translate.onLangChange.pipe(takeUntilDestroyed()).subscribe(() => {
       this.translateLabels();
     });
 
@@ -35,20 +32,17 @@ export class MatPaginatorIntlService extends MatPaginatorIntl {
       return this.translate.instant('pagination.rangePage', {
         startIndex: 0,
         endIndex: 0,
-        length
+        length,
       });
     }
 
     const startIndex = page * pageSize;
-    const endIndex =
-      startIndex < length
-        ? Math.min(startIndex + pageSize, length)
-        : startIndex + pageSize;
+    const endIndex = startIndex < length ? Math.min(startIndex + pageSize, length) : startIndex + pageSize;
 
     return this.translate.instant('pagination.rangePage', {
       startIndex: startIndex + 1,
       endIndex,
-      length
+      length,
     });
   };
 }
