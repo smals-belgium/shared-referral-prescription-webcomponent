@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { PssService } from './pss.service';
-import { ExternalSource } from '@smals/vas-evaluation-form-ui-core';
+import { ExternalSource } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { ExternalSourceService } from './externalSourceService.service';
 import DoneCallback = jest.DoneCallback;
 
@@ -14,14 +14,11 @@ describe('ExternalSourceService', () => {
       setPssSessionId: jest.fn(),
       getIndications: jest.fn(),
       getIntentions: jest.fn(),
-      geDefault: jest.fn()
+      geDefault: jest.fn(),
     };
 
     TestBed.configureTestingModule({
-      providers: [
-        ExternalSourceService,
-        { provide: PssService, useValue: pssServiceMock }
-      ]
+      providers: [ExternalSourceService, { provide: PssService, useValue: pssServiceMock }],
     });
 
     service = TestBed.inject(ExternalSourceService);
@@ -31,10 +28,10 @@ describe('ExternalSourceService', () => {
     const externalSource: ExternalSource = { dataUrl: 'test-url' };
 
     service.handleAutocomplete(externalSource, 'FAILED').subscribe({
-      error: (error) => {
+      error: error => {
         expect(error).toBe('FAILED');
         done();
-      }
+      },
     });
   });
 
@@ -42,10 +39,10 @@ describe('ExternalSourceService', () => {
     const externalSource: ExternalSource = { dataUrl: 'test-url' };
 
     service.handleValidation(externalSource, 'test-value').subscribe({
-      next: (result) => {
+      next: result => {
         expect(result).toEqual({ valid: true });
         done();
-      }
+      },
     });
   });
 

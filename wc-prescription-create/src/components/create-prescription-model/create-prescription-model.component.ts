@@ -10,7 +10,7 @@ import {
   signal,
   SimpleChanges,
 } from '@angular/core';
-import { ElementGroup, removeNulls } from '@smals/vas-evaluation-form-ui-core';
+import { ElementGroup, removeNulls } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { MatButton } from '@angular/material/button';

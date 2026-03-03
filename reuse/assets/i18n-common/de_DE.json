@@ -465,7 +465,11 @@
       "searchPerformerPlaceHolder": "",
       "locations": "",
       "zipCodeOrCityName": "",
-      "noResults": ""
+      "noResults": "",
+      "dialog": {
+        "title": "",
+        "description": ""
+      }
     },
     "approve": {
       "action": "",

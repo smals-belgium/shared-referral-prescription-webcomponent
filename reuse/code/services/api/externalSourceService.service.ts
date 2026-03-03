@@ -4,7 +4,7 @@ import {
   EvfExternalSourceServiceInterface,
   ExternalSource,
   ExternalValidationResult,
-} from '@smals/vas-evaluation-form-ui-core';
+} from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { Observable, of, throwError } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';

@@ -250,16 +250,16 @@
       "performerHint": ""
     },
     "transferAssignation": {
-      "title": "",
-      "success": "",
-      "performer": "",
-      "searchPerformerPlaceHolder": "",
-      "locations": "",
-      "zipCodeOrCityName": "",
-      "noResults": "",
+      "title": "Transfer assignment",
+      "success": "{firstName} {lastName} has been assigned as provider.",
+      "performer": "Provider",
+      "searchPerformerPlaceHolder": "INAMI number, name",
+      "locations": "Location(s)",
+      "zipCodeOrCityName": "Postal code or city",
+      "noResults": "No city found",
       "dialog": {
-        "title": "",
-        "description": ""
+        "title": "Transfer a healthcare provider to a prescription",
+        "description": "If you transfer a healthcare provider to this prescription, they will be able to view the information contained in this prescription."
       }
     },
     "cancel": {
@@ -459,13 +459,17 @@
       }
     },
     "transferAssignation": {
-      "title": "",
-      "success": "",
-      "performer": "",
-      "searchPerformerPlaceHolder": "",
-      "locations": "",
-      "zipCodeOrCityName": "",
-      "noResults": ""
+      "title": "Transfer assignment",
+      "success": "{firstName} {lastName} has been assigned as provider.",
+      "performer": "Provider",
+      "searchPerformerPlaceHolder": "INAMI number, name",
+      "locations": "Location(s)",
+      "zipCodeOrCityName": "Postal code or city",
+      "noResults": "No city found",
+      "dialog": {
+        "title": "Transfer a healthcare provider to a proposal",
+        "description": "If you transfer a healthcare provider to this proposal, they will be able to view the information contained in this proposal."
+      }
     },
     "approve": {
       "action": "",

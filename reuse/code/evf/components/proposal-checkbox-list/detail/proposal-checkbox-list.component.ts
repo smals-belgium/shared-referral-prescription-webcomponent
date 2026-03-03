@@ -4,14 +4,14 @@ import {
   EvfFormDetailGroupComponent,
   EvfLabelPipe,
   Response,
-} from '@smals/vas-evaluation-form-ui-core';
+} from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import {
   EvfBaseFormDetailComponent,
   EvfDetailLabelComponent,
   EvfFormDetailLayoutComponent,
   EvfInfoIconComponent,
   InlineMarkdownPipe,
-} from '@smals/vas-evaluation-form-ui-material/elements/shared';
+} from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/shared';
 import { AsyncPipe } from '@angular/common';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MarkdownModule } from 'ngx-markdown';

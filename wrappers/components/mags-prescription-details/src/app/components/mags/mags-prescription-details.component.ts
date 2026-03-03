@@ -31,7 +31,6 @@ export class MagsPrescriptionDetails extends MagsComponent {
   prescriptionId = input<string | undefined>(undefined);
   intent = input<string | undefined>(undefined);
   print = output<unknown>();
-  open = output<unknown>();
 
   blobToBase64 = (blob: Blob): Promise<string> => {
     return new Promise((resolve, reject) => {

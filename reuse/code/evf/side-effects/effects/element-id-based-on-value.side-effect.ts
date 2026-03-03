@@ -1,4 +1,8 @@
-import { BaseSideEffect, ElementGroupLike, evfSideEffectFeature } from '@smals/vas-evaluation-form-ui-core';
+import {
+  BaseSideEffect,
+  ElementGroupLike,
+  evfSideEffectFeature,
+} from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 
 export interface ElementIdBasedOnValueSideEffect extends BaseSideEffect {
   target: string;
