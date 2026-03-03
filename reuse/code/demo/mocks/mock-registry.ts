@@ -323,8 +323,8 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
 
         const query = params.get('query');
 
-        if (query) {
-          const q = query.toLowerCase();
+        if (query?.trim()) {
+          const q = decodeURIComponent(query).toLowerCase().trim();
 
           profs = profs.filter(p => {
             const hp = p.healthcarePerson;
@@ -340,13 +340,10 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
           });
         }
 
-        const zipCode = params.get('zipCode');
-        if (zipCode) {
-          const z = zipCode.toLowerCase();
+        const zipCodes = params.getAll('zipCode');
 
-          profs = profs.filter(p => {
-            return p.address.zipCode.includes(z);
-          });
+        if (zipCodes?.length) {
+          profs = profs.filter(p => zipCodes.some(z => z && p.address.zipCode.toLowerCase().includes(z.toLowerCase())));
         }
 
         const start = (page - 1) * pageSize;

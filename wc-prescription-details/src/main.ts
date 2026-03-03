@@ -24,22 +24,13 @@ import {
 import { provideEvfForm } from '@reuse/code/evf/evf-form.provider';
 import { provideMarkdown } from '@reuse/code/providers/markdown.provider';
 import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
-import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
-import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
-import { DemoPseudoService } from '@reuse/code/services/privacy/demo-pseudo.service';
 import { provideEvfFormDetails } from '@reuse/code/evf/evf-form-details.provider';
 
 void (async () => {
-  const configurationService = new WcConfigurationService();
-
-  await configurationService.waitUntilReady();
-
-  const env = configurationService.getEnvironment();
-
   const app = createApplication({
     providers: [
       provideCore(),
-      provideHttpClient(withInterceptors([env === 'demo' ? demoHttpInterceptor : apiUrlInterceptor])),
+      provideHttpClient(withInterceptors([demoHttpInterceptor, apiUrlInterceptor])),
       providePseudonymisation(),
       provideEvfForm(),
       provideEvfFormDetails(),
@@ -51,16 +42,6 @@ void (async () => {
       {
         provide: AuthService,
         useClass: WcAuthService,
-      },
-      {
-        provide: PseudoService,
-        useFactory: (config: ConfigurationService, pseudoHelper: PseudonymisationHelper) => {
-          if (env === 'demo') {
-            return new DemoPseudoService();
-          }
-          return new PseudoService(config, pseudoHelper);
-        },
-        deps: [ConfigurationService, PseudonymisationHelper],
       },
       {
         provide: OVERLAY_QUERY_SELECTOR,
