@@ -198,6 +198,7 @@ export const DocumentLinks: NavLink<Family>[] = linkGroup([module.uhmepPrescript
 Start the MAGS application, click on the menu item and the component should be displayed :)
 
 # Push to github
-Run npm i an past the content to package-lock.github.json
-Run npm run push:github in a bash terminal.
+- Remove the package-lock file and run run npm i WITHOUT vpn
+- Run npm run push:github in a bash terminal.
+- After push succeeds remove the package-lock file and run run npm i WITH vpn 
 
