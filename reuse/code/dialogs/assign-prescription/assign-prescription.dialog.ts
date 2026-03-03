@@ -10,9 +10,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatInputModule } from '@angular/material/input';
-import {
-  OverlaySpinnerComponent
-} from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { AlertType, Intent, LoadingStatus } from '@reuse/code/interfaces';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
@@ -42,9 +40,7 @@ import {
   TranslationType,
 } from '@reuse/code/components/professional-form/table/professional-table.component';
 import { ResponsiveWrapperComponent } from '@reuse/code/components/responsive-wrapper/responsive-wrapper.component';
-import {
-  ProfessionalCardsComponent
-} from '@reuse/code/components/professional-form/professional-cards/professional-cards.component';
+import { ProfessionalCardsComponent } from '@reuse/code/components/professional-form/professional-cards/professional-cards.component';
 import { DeviceService } from '@reuse/code/services/helpers/device.service';
 
 interface AssignPrescriptionDialogData {
@@ -89,7 +85,7 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
 
   protected readonly isDesktop = this._deviceService.isDesktop;
 
-  protected translationKeyPrefixIntent = "prescription";
+  protected translationKeyPrefixIntent = 'prescription';
 
   protected readonly isProfessional = isProfessional;
   protected readonly AlertType = AlertType;
@@ -182,7 +178,6 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
   ngOnInit() {
     this.generatedUUID = uuidv4();
     this.translationKeyPrefixIntent = getTranslationKeyPrefixForPrescriptionOrProposal(this.data?.intent);
-
   }
 
   selectProfessional(healthcareProvider?: HealthcareProResource | HealthcareOrganizationResource) {

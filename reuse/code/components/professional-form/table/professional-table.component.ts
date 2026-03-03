@@ -55,7 +55,7 @@ export type TranslationType = keyof Translation;
   templateUrl: './professional-table.component.html',
   styleUrl: './professional-table.component.scss',
 })
-export class ProfessionalTableComponent implements OnChanges,OnDestroy{
+export class ProfessionalTableComponent implements OnChanges, OnDestroy {
   protected readonly displayedColumns: string[] = ['icon', 'lastname', 'firstname', 'address', 'city', 'actions'];
   protected readonly AlertType = AlertType;
   protected readonly FormatEnum = FormatEnum;
@@ -74,12 +74,15 @@ export class ProfessionalTableComponent implements OnChanges,OnDestroy{
   // Public signals from service
   readonly requestData = this._dataService.data;
 
-
   readonly selectProfessional = output<HealthcareProResource | HealthcareOrganizationResource>();
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['professionals'] && this.professionals()?.length) {
+    if (!changes['professionals']) return;
+
+    if (this.professionals()?.length) {
       this.initializeDataStream();
+    } else {
+      this._dataService.reset();
     }
   }
 
@@ -93,14 +96,13 @@ export class ProfessionalTableComponent implements OnChanges,OnDestroy{
       institutionTypes: [],
       providerType: ProviderType.Professional,
       prescriptionId: this.prescriptionId(),
-      intent: this.intent()
+      intent: this.intent(),
     };
 
-    this._dataService.initializeTableDataStream(initialData, config);
+    this._dataService.initializeTableDataStream({ data: initialData, total: this.total() ?? -1 }, config);
   }
 
   ngOnDestroy() {
     this._dataService.reset();
   }
-
 }
