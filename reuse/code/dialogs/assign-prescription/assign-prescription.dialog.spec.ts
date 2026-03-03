@@ -13,9 +13,10 @@ import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { HealthcareProviderService } from '@reuse/code/services/api/healthcareProvider.service';
 import { OrganizationService } from '@reuse/code/services/helpers/organization.service';
 import * as utilsModule from '@reuse/code/utils/utils';
-import { CityResource, HealthcareOrganizationResource, HealthcareProResource } from '@reuse/code/openapi';
-import { SsinOrOrganizationIdPipe } from '@reuse/code/pipes/ssin-or-cbe.pipe';
+import { HealthcareOrganizationResource, HealthcareProResource } from '@reuse/code/openapi';
 import * as uuid from 'uuid';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('AssignPrescriptionDialog', () => {
   let component: AssignPrescriptionDialog;
@@ -23,8 +24,8 @@ describe('AssignPrescriptionDialog', () => {
   let uuidSpy: jest.SpyInstance;
   let translate: TranslateService;
 
-  const dialogRefMock = {close: jest.fn()};
-  const toastServiceMock = {show: jest.fn()};
+  const dialogRefMock = { close: jest.fn() };
+  const toastServiceMock = { show: jest.fn() };
 
   const prescriptionStateMock = {
     assignPrescriptionPerformer: jest.fn(),
@@ -61,14 +62,16 @@ describe('AssignPrescriptionDialog', () => {
     await TestBed.configureTestingModule({
       imports: [AssignPrescriptionDialog, ReactiveFormsModule, NoopAnimationsModule, TranslateModule.forRoot()],
       providers: [
-        {provide: MatDialogRef, useValue: dialogRefMock},
-        {provide: MAT_DIALOG_DATA, useValue: dialogDataMock},
-        {provide: PrescriptionState, useValue: prescriptionStateMock},
-        {provide: ProposalState, useValue: proposalStateMock},
-        {provide: HealthcareProviderService, useValue: healthcareProviderServiceMock},
-        {provide: GeographyService, useValue: geographyServiceMock},
-        {provide: ToastService, useValue: toastServiceMock},
-        {provide: OrganizationService, useValue: organizationServiceMock},
+        { provide: MatDialogRef, useValue: dialogRefMock },
+        { provide: MAT_DIALOG_DATA, useValue: dialogDataMock },
+        { provide: PrescriptionState, useValue: prescriptionStateMock },
+        { provide: ProposalState, useValue: proposalStateMock },
+        { provide: HealthcareProviderService, useValue: healthcareProviderServiceMock },
+        { provide: GeographyService, useValue: geographyServiceMock },
+        { provide: ToastService, useValue: toastServiceMock },
+        { provide: OrganizationService, useValue: organizationServiceMock },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     }).compileComponents();
 
@@ -97,94 +100,6 @@ describe('AssignPrescriptionDialog', () => {
     });
   });
 
-  describe('Form validation', () => {
-    it('should be invalid when query and cities are empty', () => {
-      component.formGroup.setValue({
-        query: '',
-        cities: [],
-        searchCity: '',
-      });
-
-      component.formGroup.updateValueAndValidity();
-      expect(component.formGroup.valid).toBe(false);
-    });
-
-    it('should be valid with query only', () => {
-      component.formGroup.setValue({
-        query: 'John',
-        cities: [],
-        searchCity: '',
-      });
-
-      component.formGroup.updateValueAndValidity();
-      expect(component.formGroup.valid).toBe(true);
-    });
-
-    it('should be valid with cities only', () => {
-      component.formGroup.setValue({
-        query: '',
-        cities: [{zipCode: 1000, cityName: 'Brussels'} as any],
-        searchCity: '',
-      });
-
-      // force cross-control validators to re-evaluate
-      component.formGroup.updateValueAndValidity();                     // re-evaluate whole group
-      component.formGroup.get('query')!.updateValueAndValidity();      // ensure query validator runs
-      component.formGroup.get('cities')!.updateValueAndValidity();     // ensure cities validator runs
-
-      // component.formGroup.updateValueAndValidity();
-      expect(component.formGroup.valid).toBe(true);
-    });
-  });
-
-  describe('Search & API pipeline', () => {
-    it('should set searchCriteria$ on valid search()', fakeAsync(() => {
-      component.formGroup.setValue({
-        query: 'John',
-        cities: [],
-        searchCity: '',
-      });
-
-      component.search();
-      tick();
-
-      const criteria = component.searchCriteria$();
-      expect(criteria?.query).toBe('John');
-      expect(criteria?.professionalType).toBe('CAREGIVER');
-    }));
-
-  });
-
-  describe('Filters & pagination', () => {
-    it('should update filter and trigger search on filterValues()', fakeAsync(() => {
-      component.formGroup.setValue({
-        query: 'John',
-        cities: [],
-        searchCity: '',
-      });
-
-      component.filterValues('ORGANIZATION');
-      tick();
-
-      expect(component.selectedFilter).toBe('ORGANIZATION');
-      expect(component.searchCriteria$()?.professionalType).toBe('ORGANIZATION');
-    }));
-
-    it('should update page on loadData()', () => {
-      component.formGroup.setValue({
-        query: 'John',
-        cities: [],
-        searchCity: '',
-      });
-
-      component.loadData({pageIndex: 2, pageSize: 20});
-
-      const criteria = component.searchCriteria$();
-      expect(criteria?.page).toBe(2);
-      expect(criteria?.pageSize).toBe(20);
-    });
-  });
-
   describe('Assignment logic', () => {
     it('should assign prescription when intent is prescription', fakeAsync(() => {
       jest.spyOn(utilsModule, 'isProposal').mockReturnValue(false);
@@ -193,7 +108,7 @@ describe('AssignPrescriptionDialog', () => {
 
       const professional = {
         type: 'Professional',
-        healthcarePerson: {firstName: 'John', lastName: 'Doe'},
+        healthcarePerson: { firstName: 'John', lastName: 'Doe' },
       } as any;
 
       component.ngOnInit();
@@ -212,7 +127,7 @@ describe('AssignPrescriptionDialog', () => {
 
       const professional = {
         type: 'Professional',
-        healthcarePerson: {firstName: 'Jane'},
+        healthcarePerson: { firstName: 'Jane' },
       } as any;
 
       component.ngOnInit();
@@ -226,90 +141,14 @@ describe('AssignPrescriptionDialog', () => {
     it('should handle assignment error', fakeAsync(() => {
       jest.spyOn(utilsModule, 'isProposal').mockReturnValue(false);
 
-      prescriptionStateMock.assignPrescriptionPerformer.mockReturnValue(
-        throwError(() => new Error('FAIL'))
-      );
+      prescriptionStateMock.assignPrescriptionPerformer.mockReturnValue(throwError(() => new Error('FAIL')));
 
       component.ngOnInit();
-      component.onAssign({type: 'Professional'} as any);
+      component.onAssign({ type: 'Professional' } as any);
       tick();
 
       expect(component.loading).toBe(false);
     }));
-  });
-
-  describe('City management', () => {
-    it('should add city', () => {
-      const city = {zipCode: 1000, cityName: 'Brussels'};
-      const event = {option: {value: city}} as any;
-      const input = {value: 'test'} as HTMLInputElement;
-
-      component.formGroup.get('cities')!.setValue([]);
-
-
-      component.addCity(event, input);
-
-      expect(component.formGroup.get('cities')!.value).toEqual([city]);
-
-      // expect(component.formGroup.get('cities')!.value.length).toBe(1);
-      expect(input.value).toBe('');
-    });
-
-    it('should remove city', () => {
-      // const city: CityResource = { zipCode: 1000, cityName: 'Brussels' };
-      const city: CityResource = {zipCode: 1000};
-
-      component.formGroup.get('cities')!.setValue([city]);
-
-      component.removeCity(city);
-
-      // expect(component.formGroup.get('cities')!.value.length).toBe(0);
-      expect(component.formGroup.get('cities')!.value).toEqual([]);
-
-    });
-  });
-
-  describe('UI helper methods', () => {
-    it('should toggle healthcare provider details visibility', () => {
-
-      const pipeSpy = jest
-        .spyOn(SsinOrOrganizationIdPipe.prototype, 'transform')
-        .mockReturnValue('ssin-123');
-
-      const hp = {id: {ssin: '123'}} as any;
-      const event = {stopPropagation: jest.fn()} as any;
-
-      component.showDetailsOfHealthcareProvider(event, hp);
-      expect(component.visibleDetailsOfHealthcareProvider.length).toBe(1);
-
-      component.showDetailsOfHealthcareProvider(event, hp);
-      expect(component.visibleDetailsOfHealthcareProvider.length).toBe(0);
-
-      pipeSpy.mockRestore();
-    });
-
-    it('should detect street presence', () => {
-      expect(component.hasStreet({fr: '', nl: '', de: ''} as any)).toBe(false);
-      expect(component.hasStreet({fr: 'Rue', nl: '', de: ''} as any)).toBe(true);
-    });
-
-    it('should detect phone numbers', () => {
-      const prof = {phoneNumbers: {mobileNumber: '123'}, type: 'Professional'} as any;
-      expect(component.hasPhoneNumbers(prof)).toBe(true);
-    });
-
-    it('should compute colspan correctly', () => {
-      const prof = {type: 'Professional', phoneNumbers: {}} as any;
-      expect(component.getColSpan(prof)).toBe(5);
-
-      const org = {type: 'Organization'} as any;
-      expect(component.getColSpan(org)).toBe(5);
-    });
-
-    it('should resolve group name', () => {
-      const name = component.getGroupName('HOSPITAL');
-      expect(name).toBe('hospital');
-    });
   });
 
   describe('onAssign', () => {
@@ -317,7 +156,7 @@ describe('AssignPrescriptionDialog', () => {
       const providerMock = {
         id: { ssin: 'ssin-123' },
         type: 'Professional',
-        healthcarePerson: { name: 'John Doe' }
+        healthcarePerson: { name: 'John Doe' },
       } as HealthcareProResource;
 
       prescriptionStateMock.assignPrescriptionPerformer.mockReturnValue(of({}));
@@ -332,10 +171,7 @@ describe('AssignPrescriptionDialog', () => {
         'mock-uuid-12345'
       );
 
-      expect(toastServiceMock.show).toHaveBeenCalledWith(
-        'prescription.assignPerformer.success',
-        expect.any(Object)
-      );
+      expect(toastServiceMock.show).toHaveBeenCalledWith('prescription.assignPerformer.success', expect.any(Object));
 
       expect(dialogRefMock.close).toHaveBeenCalledWith(providerMock);
     }));
@@ -345,7 +181,7 @@ describe('AssignPrescriptionDialog', () => {
 
       const organizationMock = {
         organizationName: { fr: 'Hospital ABC' },
-        type: 'Organization'
+        type: 'Organization',
       } as HealthcareOrganizationResource;
 
       prescriptionStateMock.assignPrescriptionPerformer.mockReturnValue(of({}));
@@ -357,6 +193,19 @@ describe('AssignPrescriptionDialog', () => {
         'proposal.assignPerformer.successOrganization',
         expect.any(Object)
       );
+    }));
+  });
+
+  describe('Search & API pipeline', () => {
+    it('should set searchCriteria$ on valid search()', fakeAsync(() => {
+      component.onSearch({
+        query: 'John',
+        zipCodes: [],
+      });
+      tick();
+
+      const criteria = component.searchCriteria$();
+      expect(criteria?.query).toBe('John');
     }));
   });
 });

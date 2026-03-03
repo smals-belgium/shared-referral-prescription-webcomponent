@@ -1,6 +1,6 @@
 {
   "name": "@smals-belgium-shared/uhmep-prescription-details",
-  "version": "1.14.1",
+  "version": "1.15.0",
   "description": "Prescription details web component",
   "main": "build/wc-prescription-details.js",
   "files": [
@@ -11,8 +11,8 @@
     "angular",
     "prescription"
   ],
-  "author": "UHMEP team",
-  "license": "MIT",
+  "author": "SMALS - UHMEP team",
+  "license": "SWCL License",
   "repository": {
     "type": "git",
     "url": "https://github.com/smals-belgium/shared-referral-prescription-webcomponent.git"

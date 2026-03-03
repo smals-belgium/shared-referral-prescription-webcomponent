@@ -1,4 +1,3 @@
-import { inject } from '@angular/core';
 import {
   HttpErrorResponse,
   HttpEvent,
@@ -9,7 +8,8 @@ import {
 } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { DEMO_MOCKS, HttpMethod } from '@reuse/code/demo/mocks/mock-registry';
-import { WcConfigurationService } from '@reuse/code/services/config/wc-configuration.service';
+import { inject } from '@angular/core';
+import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
 
 interface Body {
   patientIdentifier?: string;
@@ -21,7 +21,7 @@ export const demoHttpInterceptor: HttpInterceptorFn = (
   req: HttpRequest<unknown>,
   next: HttpHandlerFn
 ): Observable<HttpEvent<unknown>> => {
-  const config = inject(WcConfigurationService);
+  const config = inject(ConfigurationService);
 
   const isDemoMode = config.getEnvironment() === 'demo';
   if (!isDemoMode || req.url.includes('assets/i18n/')) {
@@ -62,8 +62,7 @@ export const demoHttpInterceptor: HttpInterceptorFn = (
   type BodyOrFunction = Body | ((matchResult: RegExpMatchArray | null) => Body);
 
   let body = (match.body ?? {}) as BodyOrFunction;
-
-  const matchResult = shortCodeUrl ? req.urlWithParams.match(match.url) : urlWithoutParams.match(match.url);
+  const matchResult = match.url.exec(shortCodeUrl ? req.urlWithParams : urlWithoutParams);
 
   try {
     if (match.handler) {

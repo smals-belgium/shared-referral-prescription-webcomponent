@@ -2,7 +2,7 @@
   @if (itemsLength > 0) {
     <div class="grid-container mh-margin-top-bottom">
       @for (model of modelData(); track trackById(model)) {
-        <mat-card class="label-example-card" appearance="raised">
+        <mat-card appearance="raised">
           <mat-card-content>
             <div class="row" align="end">
               <button type="button" mat-icon-button [matMenuTriggerFor]="menu" [attr.aria-label]="'prescription.model.actions' | translate">

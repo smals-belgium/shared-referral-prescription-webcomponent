@@ -108,7 +108,7 @@ describe('PrescriptionDetailsCaregiverListComponent', () => {
     it('should return color for valid status', () => {
       setupServiceMock();
       createComponent();
-      expect(component.getStatusColor('INPROGRESS' as FhirR4TaskStatus)).toBe('mh-green');
+      expect(component.getStatusColor('INPROGRESS' as FhirR4TaskStatus)).toBe('mh-green mh-no-overlay');
     });
   });
 

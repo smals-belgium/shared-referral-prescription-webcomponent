@@ -5,7 +5,9 @@ import {
   Input,
   OnChanges,
   Output,
+  signal,
   SimpleChanges,
+  WritableSignal,
 } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
@@ -25,19 +27,31 @@ export class AlertComponent implements OnChanges {
 
   @Input() alert: AlertType = AlertType.Error;
   @Input() title: string = '';
+  @Input() subTitle = '';
   @Input() message?: string;
   @Input() showRetry = true;
   @Input() error?: HttpErrorResponse;
 
   @Output() clickRetry = new EventEmitter<void>();
 
+  showBody: WritableSignal<boolean> = signal(false);
+
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['error']) {
+    if (changes['error'] || changes['message']) {
       this.setGenericErrorMsgKey();
     }
   }
 
   private setGenericErrorMsgKey(): void {
-    this.genericErrorMsgKey = this.error ? this.genericErrors[this.error.status] : undefined;
+    if (this.error && !this.message && !(this.error.status.toString() in this.genericErrors)) {
+      this.title = 'common.error.default.header';
+      this.subTitle = 'common.error.default.subheader';
+      this.alert = AlertType.Warning;
+      this.showRetry = false;
+      this.showBody.set(false);
+    } else {
+      this.genericErrorMsgKey = this.error ? this.genericErrors[this.error.status] : undefined;
+      this.showBody.set(true);
+    }
   }
 }

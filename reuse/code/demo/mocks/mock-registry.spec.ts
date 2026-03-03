@@ -2,7 +2,6 @@ import { HttpRequest } from '@angular/common/http';
 import { DEMO_MOCKS, DemoMockEntry, ReadRequestResourceExtended } from '@reuse/code/demo/mocks/mock-registry';
 import {
   CitiesResource,
-  CityResource,
   HealthcarePersonResource,
   RequestSummaryListResource,
   TemplateVersion,
@@ -169,7 +168,6 @@ describe('Demo mode', () => {
         expect(healthcarePerson.ssin).toBe('10000000007');
         expect(healthcarePerson.firstName).toBe('Thomas');
         expect(healthcarePerson.lastName).toBe('Verhofstadt');
-        expect(healthcarePerson.deceased).toBeFalsy();
       }
     });
 
@@ -190,7 +188,6 @@ describe('Demo mode', () => {
             expect(healthcarePerson.ssin).toBe('10000000009');
             expect(healthcarePerson.firstName).toBe('Robin');
             expect(healthcarePerson.lastName).toBe('Dupont');
-            expect(healthcarePerson.deceased).toBeFalsy();
           }
         });
       }
@@ -225,7 +222,6 @@ describe('Demo mode', () => {
         expect(healthcarePerson.ssin).toBe('10000000008');
         expect(healthcarePerson.firstName).toBe('Anke');
         expect(healthcarePerson.lastName).toBe('Dubois');
-        expect(healthcarePerson.deceased).toBeFalsy();
       }
     });
   });

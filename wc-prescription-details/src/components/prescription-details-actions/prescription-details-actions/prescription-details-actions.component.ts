@@ -9,7 +9,6 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { DeviceService } from '@reuse/code/services/helpers/device.service';
 import { MatIconModule } from '@angular/material/icon';
 import {
-  FhirR4TaskStatus,
   PerformerTaskIdResource,
   PerformerTaskResource,
   PersonResource,
@@ -151,13 +150,15 @@ export class PrescriptionDetailsActionsComponent {
         category: prescription.category,
         intent: prescription.intent,
       },
-      panelClass: 'mh-dialog-container',
-      maxHeight: '90vh',
+      panelClass: ['mh-dialog-container', 'no-dialog-scroll'],
+      height: '90vh',
+      width: '90vw',
+      maxWidth: '1300px',
     });
   }
 
   onSelfAssign(prescription: ReadRequestResource, currentUser?: Partial<UserInfo>): void {
-    if (!prescription.id || !prescription.referralTask?.id || !currentUser || !currentUser.ssin) {
+    if (!prescription.id || !prescription.referralTask?.id || !currentUser?.ssin) {
       this._toastService.showSomethingWentWrong();
       return;
     }

@@ -41,6 +41,7 @@ export class PrescriptionDetailsCaregiverListComponent {
   }
 
   getStatusColor(status: FhirR4TaskStatus) {
-    return mapDisplayStatusToColor(status);
+    const mhColor = mapDisplayStatusToColor(status);
+    return mhColor + ' mh-no-overlay';
   }
 }

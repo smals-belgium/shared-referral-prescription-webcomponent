@@ -159,12 +159,35 @@ export class PrescriptionsPdfService {
     });
   }
 
-  private parseMarkdownList(markdownText: string): string[] {
+  private parseMarkdownList(markdownText: string): Content[] {
     return markdownText
       .split('\n')
       .map(line => line.trim())
       .filter(Boolean)
-      .map(line => line.replace(/^>\s*-\s*/, ''));
+      .map(line => line.replace(/^>\s*-?\s*/, ''))
+      .filter(Boolean)
+      .map(line => this.parseInlineMarkdown(line));
+  }
+
+  private parseInlineMarkdown(text: string): Content {
+    const parts: Content[] = [];
+    const regex = /\*\*(.+?)\*\*/g;
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = regex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push({ text: text.slice(lastIndex, match.index) });
+      }
+      parts.push({ text: match[1], bold: true });
+      lastIndex = regex.lastIndex;
+    }
+
+    if (lastIndex < text.length) {
+      parts.push({ text: text.slice(lastIndex) });
+    }
+
+    return parts.length === 1 ? parts[0] : { text: parts };
   }
 
   private createAlertContent(type: keyof typeof this.ALERT_STYLES, contentCell: TableCell): Content {

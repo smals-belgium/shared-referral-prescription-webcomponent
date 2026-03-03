@@ -1,0 +1,16 @@
+{
+  "name": "@smals-belgium-shared/uhmep-prescription-detail",
+  "version": "1.15.0",
+  "description": "MAGS integration for prescription details web component",
+  "keywords": [
+    "web-component",
+    "prescription",
+    "MAGS"
+  ],
+  "author": "SMALS - UHMEP team",
+  "license": "SWCL License",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/smals-belgium/shared-referral-prescription-webcomponent"
+  }
+}

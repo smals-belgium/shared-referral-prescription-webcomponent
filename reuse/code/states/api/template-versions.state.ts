@@ -1,5 +1,5 @@
 import { DataState, LoadingStatus } from '@reuse/code/interfaces';
-import { inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
+import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { PrescriptionTemplateService } from '@reuse/code/services/api/prescriptionTemplate.service';
 import { TemplateVersion } from '@reuse/code/openapi';
 import { Observable, ReplaySubject } from 'rxjs';
@@ -7,7 +7,7 @@ import { toDataState } from '@reuse/code/utils/rxjs.utils';
 
 @Injectable({ providedIn: 'root' })
 export class TemplateVersionsState {
-  private prescriptionTemplateService = inject(PrescriptionTemplateService);
+  private readonly prescriptionTemplateService = inject(PrescriptionTemplateService);
   private readonly states: Record<string, WritableSignal<DataState<TemplateVersion>>> = {};
 
   loadTemplateVersionForInstance(instanceId: string, templateCode: string): Observable<TemplateVersion> {
@@ -27,8 +27,8 @@ export class TemplateVersionsState {
       .subscribe({
         next: result => {
           this.states[key].set(result);
-          if (result.status === LoadingStatus.SUCCESS) {
-            subject.next(result.data!);
+          if (result.status === LoadingStatus.SUCCESS && result.data) {
+            subject.next(result.data);
             subject.complete();
           } else if (result.status === LoadingStatus.ERROR) {
             subject.error(result.error);

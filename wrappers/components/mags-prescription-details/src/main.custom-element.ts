@@ -17,7 +17,9 @@ import { HOST_SERVICES } from '@reuse/code/components/wrappers/injection-tokens/
 export const manifest: MyHealthModuleManifest = {
   specVersion: { major: 4, minor: 0, patch: 1 },
   family: family('uhmep-prescription'),
-  components: [{ tagName: 'uhmep-prescription-details', events: ['print', 'open'] }],
+  components: [
+    { tagName: 'uhmep-prescription-details', events: ['print', 'open'], requiredProperties: ['prescriptionId', 'intent'] }
+  ],
 };
 
 export const bootstrap: MyHealthModuleBootstrap = (config: { services: HostServices; settings: HostSettings }) => {

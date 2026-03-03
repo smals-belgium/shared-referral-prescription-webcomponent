@@ -2,7 +2,7 @@ openapi: "3.0.3"
 info:
   title: "backend API"
   description: "backend API"
-  version: "1.0.0"
+  version: "1.100.0"
 servers:
   - url: "/" # this acts as the “base path”
     description: |
@@ -1181,6 +1181,16 @@ paths:
             type: "array"
             items:
               type: "string"
+        - name: "prescriptionId"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "intent"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
         - name: "page"
           in: "query"
           required: false
@@ -1857,21 +1867,10 @@ components:
           $ref: "#/components/schemas/HealthcareProId"
         phoneNumbers:
           $ref: "#/components/schemas/PhoneNumbers"
-        licenseToPractice:
-          type: "boolean"
-        subscriptionEndDate:
-          type: "string"
-          format: "date"
         healthcareQualification:
           $ref: "#/components/schemas/HealthcareQualificationResource"
-        healthcareStatus:
-          $ref: "#/components/schemas/HealthcareStatusResource"
         healthcarePerson:
           $ref: "#/components/schemas/HealthcarePersonResource"
-        healthcareVisaList:
-          type: "array"
-          items:
-            $ref: "#/components/schemas/HealthcareVisaResource"
         address:
           $ref: "#/components/schemas/AddressResource"
         nihii8:
@@ -1953,8 +1952,6 @@ components:
           type: "string"
         lastName:
           type: "string"
-        deceased:
-          type: "boolean"
     HealthcareVisaResource:
       type: "object"
       properties:
@@ -2575,7 +2572,9 @@ components:
             - read
             - create
         category:
-          $ref: "#/components/schemas/SystemCodes"
+          type: array
+          items:
+            $ref: "#/components/schemas/SystemCodes"
         orderDetails:
           $ref: "#/components/schemas/SystemCodes"
       required:

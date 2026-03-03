@@ -20,7 +20,6 @@ import {
   MatHeaderCellDef,
   MatHeaderRow,
   MatHeaderRowDef,
-  MatNoDataRow,
   MatRow,
   MatRowDef,
   MatTable,
@@ -90,6 +89,7 @@ export class PrescriptionsTableComponent {
   displayedColumns: string[] = ['creationDate', 'status', 'author', 'typeOfCare', 'start', 'end'];
 
   getStatusColor(status: RequestStatus) {
-    return mapDisplayStatusToColor(status);
+    const mhColor = mapDisplayStatusToColor(status);
+    return mhColor + ' mh-no-overlay';
   }
 }

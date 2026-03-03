@@ -1,45 +1,66 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { Subject } from 'rxjs';
+import { Subject, of } from 'rxjs';
 import { SelectPrescriptionTypeComponent } from './select-prescription-type.component';
 import { ModelEntityDto, Template } from '@reuse/code/openapi';
+import { By } from '@angular/platform-browser';
 
-const mockTemplates: Template[] = [
-  {
-    id: 1,
-    code: 'ASSISTING_WITH_PERSONAL_HYGIENE',
-    labelTranslations: {
-      en: 'Nursing Template 1',
-      fr: 'Modèle Soins 1',
-      nl: 'Nursing Template 1',
-      de: 'Nursing Template 1',
-    },
-    label: 'Nursing Template 1',
+const nursingTemplate: Template = {
+  id: 1,
+  code: 'ASSISTING_WITH_PERSONAL_HYGIENE',
+  labelTranslations: {
+    en: 'Nursing Template 1',
+    fr: 'Modèle Soins 1',
+    nl: 'Nursing Template 1',
+    de: 'Nursing Template 1',
   },
-  {
-    id: 2,
-    code: 'ANNEX_82',
-    labelTranslations: {
-      en: 'Radiology Template 1',
-      fr: 'Modèle Radio 1',
-      nl: 'Radiology Template 1',
-      de: 'Radiology Template 1',
-    },
-    label: 'Radiology Template 1',
+  label: 'Nursing Template 1',
+  metadata: {
+    code: {},
+    category: [
+      {code: ["9632001"]},
+    ],
   },
-  {
-    id: 3,
-    code: 'PHYSIOTHERAPY_CONSULTATIVE',
-    labelTranslations: {
-      en: 'Physio Template 1',
-      fr: 'Modèle Physio 1',
-      nl: 'Physio Template 1',
-      de: 'Physio Template 1',
-    },
-    label: 'Physio Template 1',
+};
+
+const radiologyTemplate: Template = {
+  id: 2,
+  code: 'ANNEX_82',
+  labelTranslations: {
+    en: 'Radiology Template 1',
+    fr: 'Modèle Radio 1',
+    nl: 'Radiology Template 1',
+    de: 'Radiology Template 1',
   },
-];
+  label: 'Radiology Template 1',
+  metadata: {
+    code: {},
+    category: [
+      {code: ["363679005"]},
+    ],
+  },
+};
+
+const physiotherapyTemplate: Template = {
+  id: 3,
+  code: 'PHYSIOTHERAPY_CONSULTATIVE',
+  labelTranslations: {
+    en: 'Physio Template 1',
+    fr: 'Modèle Physio 1',
+    nl: 'Physio Template 1',
+    de: 'Physio Template 1',
+  },
+  label: 'Physio Template 1',
+  metadata: {
+    code: {},
+    category: [
+      {code: ["722138006"]},
+    ],
+  },
+}
+
+const allTemplates: Template[] = [nursingTemplate, radiologyTemplate, physiotherapyTemplate];
 
 const mockModels: ModelEntityDto[] = [
   { id: 12, label: 'Model 1', templateId: 1 },
@@ -65,6 +86,9 @@ describe('SelectPrescriptionTypeComponent', () => {
         };
         return translations[key] || key;
       }),
+      get: () => of(''),
+      onTranslationChange: new Subject(),
+      onDefaultLangChange: new Subject(),
     } as any;
 
     await TestBed.configureTestingModule({
@@ -74,6 +98,10 @@ describe('SelectPrescriptionTypeComponent', () => {
 
     fixture = TestBed.createComponent(SelectPrescriptionTypeComponent);
     component = fixture.componentInstance;
+
+    component.templates = allTemplates;
+    component.formGroup = new FormGroup({});
+    fixture.detectChanges();
   });
 
   it('should create component successfully', () => {
@@ -81,7 +109,6 @@ describe('SelectPrescriptionTypeComponent', () => {
   });
 
   it('should initialize category options with translations', done => {
-    component.templates = mockTemplates;
     createFormAndTriggerOnChange();
 
     component.categoryOptions$.subscribe(categories => {
@@ -89,6 +116,33 @@ describe('SelectPrescriptionTypeComponent', () => {
       expect(categories[0]).toEqual({ code: 'nursingCare', label: 'Nursing Care' });
       expect(categories[1]).toEqual({ code: 'radiology', label: 'Radiology' });
       expect(categories[2]).toEqual({ code: 'physiotherapy', label: 'Physiotherapy' });
+      fixture.detectChanges();
+      expect(fixture.debugElement.query(By.css('[data-cy="prescriptionCategory-label"]'))).toBeTruthy();
+      done();
+    });
+  });
+
+  it('should hide radiology category if no templates for radiology', done=>  {
+    component.templates = [nursingTemplate, physiotherapyTemplate];
+    component.ngOnInit();
+
+    createFormAndTriggerOnChange();
+
+    component.categoryOptions$.subscribe(categories => {
+      expect(categories).toHaveLength(2);
+      expect(categories[0]).toEqual({ code: 'nursingCare', label: 'Nursing Care' });
+      expect(categories[1]).toEqual({ code: 'physiotherapy', label: 'Physiotherapy' });
+      done();
+    });
+  });
+
+  it('should hide category selection if only 1 category available', done =>  {
+    component.templates = [nursingTemplate];
+    createFormAndTriggerOnChange();
+
+    component.categoryOptions$.subscribe(() => {
+      fixture.detectChanges();
+      expect(fixture.debugElement.query(By.css('[data-cy="prescriptionCategory-label"]'))).toBeFalsy();
       done();
     });
   });
@@ -103,7 +157,7 @@ describe('SelectPrescriptionTypeComponent', () => {
     const templateValidatorSpy = jest.spyOn(formGroup.get('template')!, 'addValidators');
 
     component.formGroup = formGroup;
-    component.templates = mockTemplates;
+    component.templates = allTemplates;
 
     component.ngOnChanges({
       formGroup: { currentValue: formGroup, previousValue: undefined, firstChange: true, isFirstChange: () => true },
@@ -114,7 +168,6 @@ describe('SelectPrescriptionTypeComponent', () => {
   });
 
   it('should filter templates by nursing care category', done => {
-    component.templates = mockTemplates;
     createFormAndTriggerOnChange();
 
     let emissionCount = 0;
@@ -135,7 +188,6 @@ describe('SelectPrescriptionTypeComponent', () => {
   });
 
   it('should filter templates by radiology category', done => {
-    component.templates = mockTemplates;
     createFormAndTriggerOnChange();
 
     let emissionCount = 0;
@@ -154,7 +206,6 @@ describe('SelectPrescriptionTypeComponent', () => {
   });
 
   it('should setup model options when models are provided', done => {
-    component.templates = mockTemplates;
     component.models = mockModels;
     createFormAndTriggerOnChange();
 
@@ -170,7 +221,7 @@ describe('SelectPrescriptionTypeComponent', () => {
 
       if (emissionCount === 2) {
         // Then set the template
-        component.formGroup.get('template')!.setValue(mockTemplates[0]);
+        component.formGroup.get('template')!.setValue(allTemplates[0]);
         return;
       }
 
@@ -237,7 +288,6 @@ describe('SelectPrescriptionTypeComponent', () => {
   });
 
   it('should update translations when language changes', done => {
-    component.templates = mockTemplates;
     createFormAndTriggerOnChange();
 
     // Change language
@@ -261,6 +311,8 @@ describe('SelectPrescriptionTypeComponent', () => {
   });
 
   const createFormAndTriggerOnChange = () => {
+    component.ngOnInit();
+
     component.formGroup = new FormGroup({
       category: new FormControl(null),
       template: new FormControl(null),
@@ -275,7 +327,7 @@ describe('SelectPrescriptionTypeComponent', () => {
         isFirstChange: () => true,
       },
       templates: {
-        currentValue: mockTemplates,
+        currentValue: allTemplates,
         previousValue: undefined,
         firstChange: true,
         isFirstChange: () => true,

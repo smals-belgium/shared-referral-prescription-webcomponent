@@ -18,6 +18,7 @@
 @include mh.override-mat-button();
 @include mh.override-mat-button-icon(false);
 @include mh.override-mat-chips();
+@include mh.override-mat-table();
 
 .mat-mdc-dialog-inner-container .mat-mdc-dialog-surface{
   max-height: 100vh;
@@ -364,11 +365,10 @@ evf-checkbox-list[data-evf-element-id="previous-relevant-examinations-unknown"] 
   &.mat-mdc-menu-panel{
       min-width: 200px;
       max-width: 250px;
-    div.mat-mdc-menu-content {
-      padding: var(--mh-action-menu-content-padding, mh.$spacing-rem-s 0);
-    }
 
     div.mat-mdc-menu-content{
+      padding: var(--mh-action-menu-content-padding, mh.$spacing-rem-s 0);
+
       button.mat-mdc-menu-item{
         border-radius: var(--mh-action-menu-item-border-radius, 0);
         &:not([disabled]):hover{
@@ -385,5 +385,10 @@ evf-checkbox-list[data-evf-element-id="previous-relevant-examinations-unknown"] 
         }
       }
     }
+  }
+}
+.no-dialog-scroll{
+  .mat-mdc-dialog-surface {
+    overflow: hidden;
   }
 }

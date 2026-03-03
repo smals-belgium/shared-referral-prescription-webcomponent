@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import * as uuid from 'uuid';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -12,6 +12,9 @@ import { GeographyService } from '@reuse/code/services/api/geography.service';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { HealthcareProviderService } from '@reuse/code/services/api/healthcareProvider.service';
+import { OrganizationService } from '@reuse/code/services/helpers/organization.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 const dialogDataMock = {
   prescriptionId: '123',
@@ -68,19 +71,23 @@ describe('TransferAssignationDialog', () => {
       close: jest.fn(),
     } as any;
 
+    const organizationServiceMock = {
+      getGroupNameByCode: jest.fn().mockReturnValue('hospital'),
+    };
+
     await TestBed.configureTestingModule({
       imports: [TransferAssignationDialog, ReactiveFormsModule, NoopAnimationsModule, TranslateModule.forRoot()],
       providers: [
-        {provide: PrescriptionState, useValue: prescriptionStateMock},
-        {provide: ProposalState, useValue: proposalStateMock},
-        {provide: HealthcareProviderService, useValue: healthcareProviderServiceMock},
-        {provide: ToastService, useValue: toastServiceMock},
-        {provide: GeographyService, useValue: geographyServiceMock},
-        {provide: MatDialogRef, useValue: dialogRefMock},
-        {
-          provide: MAT_DIALOG_DATA,
-          useValue: dialogDataMock,
-        },
+        { provide: MatDialogRef, useValue: dialogRefMock },
+        { provide: MAT_DIALOG_DATA, useValue: dialogDataMock },
+        { provide: PrescriptionState, useValue: prescriptionStateMock },
+        { provide: ProposalState, useValue: proposalStateMock },
+        { provide: HealthcareProviderService, useValue: healthcareProviderServiceMock },
+        { provide: GeographyService, useValue: geographyServiceMock },
+        { provide: ToastService, useValue: toastServiceMock },
+        { provide: OrganizationService, useValue: organizationServiceMock },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     }).compileComponents();
 
@@ -102,156 +109,142 @@ describe('TransferAssignationDialog', () => {
     it('should create', () => {
       expect(component).toBeTruthy();
     });
-  })
+  });
 
-  describe('NGONINIT', () => {
-    it('should generate UUID on init', () => {
-      component.ngOnInit();
-      expect(component.generatedUUID).toBeTruthy();
-    });
-  })
+  describe('ON SEARCH', () => {
+    it('should set searchCriteria signal when onSearch is called', () => {
+      const criteria = { query: 'John', zipCodes: [1000], page: 1, pageSize: 10 };
 
-  describe('FORM VALIDATION', () => {
-    it('should be invalid when both query and cities are empty', () => {
-      component.formGroup.setValue({
-        query: '',
-        cities: [],
-        searchCity: '',
-      });
+      component.onSearch(criteria);
 
-      component.search();
-
-      expect(component.formGroup.invalid).toBe(true);
+      expect(component.searchCriteria$()).toEqual(criteria);
     });
 
-    it('should be valid with query only', () => {
-      component.formGroup.setValue({
-        query: 'John',
-        cities: [],
-        searchCity: '',
-      });
+    it('should start with null search criteria', () => {
+      expect(component.searchCriteria$()).toBeNull();
+    });
+  });
 
-      expect(component.formGroup.valid).toBe(true);
+  describe('SELECT PROFESSIONAL', () => {
+    it('should set selected professional', () => {
+      const professional = { id: { ssin: '123', profession: 'NURSE' }, healthcarePerson: { firstName: 'John' } } as any;
+
+      component.selectProfessional(professional);
+
+      expect(component.selectedProfessional()).toEqual(professional);
     });
 
-    it('should be valid with cities only', () => {
-      component.formGroup.setValue({
-        query: '',
-        cities: [{zipCode: 1000, cityName: 'Brussels'} as any],
-        searchCity: '',
-      });
+    it('should clear selected professional when called with undefined', () => {
+      const professional = { id: { ssin: '123' } } as any;
+      component.selectProfessional(professional);
 
-      // force cross-control validators to re-evaluate
-      component.formGroup.updateValueAndValidity();                     // re-evaluate whole group
-      component.formGroup.get('query')!.updateValueAndValidity();      // ensure query validator runs
-      component.formGroup.get('cities')!.updateValueAndValidity();     // ensure cities validator runs
+      component.selectProfessional(undefined);
 
-      expect(component.formGroup.valid).toBe(true);
+      expect(component.selectedProfessional()).toBeUndefined();
     });
-  })
+  });
 
-  describe('SEARCH()', () => {
-    it('should set searchCriteria when form is valid', () => {
-      component.formGroup.setValue({
-        query: 'John',
-        cities: [{zipCode: 1000} as any],
-        searchCity: '',
-      });
+  describe('ON TRANSFER SELECTED VALUE', () => {
+    it('should show toast when no professional is selected', () => {
+      component.selectProfessional(undefined);
 
-      const spy = jest.spyOn((component as any).searchCriteria$, 'set');
+      component.onTransferSelectedValue();
 
-      component.search();
-
-      expect(spy).toHaveBeenCalledWith({
-        query: 'John',
-        zipCodes: [1000],
-        page: 1,
-        pageSize: 10,
-      });
-    });
-  })
-
-  describe('LOAD DATA', () => {
-    it('should call loadData and update search criteria', () => {
-      const spy = jest.spyOn((component as any).searchCriteria$, 'set');
-
-      component.formGroup.setValue({
-        query: 'test',
-        cities: [{zipCode: 2000} as any],
-        searchCity: '',
-      });
-
-      component.loadData({pageIndex: 2, pageSize: 20});
-
-      expect(spy).toHaveBeenCalledWith({
-        query: 'test',
-        zipCodes: [2000],
-        page: 2,
-        pageSize: 20,
-      });
-    });
-  })
-
-  describe('QUERY TYPE SWITCHING', () => {
-    it('should switch to numeric mode on numeric input', () => {
-      const event = {
-        target: {value: '1'},
-      } as any;
-
-      component.onKeyUp(event);
-
-      expect(component.queryIsNumeric).toBe(true);
+      expect(toastServiceMock.show).toHaveBeenCalledWith('prescription.transferProfessional.undefined');
     });
 
-    it('should switch to text mode on text input', () => {
-      const event = {
-        target: {value: 'John'},
-      } as any;
+    it('should call onTransfer when a professional is selected', () => {
+      const professional = { id: { ssin: '123', profession: 'NURSE' }, healthcarePerson: { firstName: 'John' } } as any;
+      component.selectProfessional(professional);
 
-      component.onKeyUp(event);
+      const spy = jest.spyOn(component, 'onTransfer');
 
-      expect(component.queryIsNumeric).toBe(false);
+      component.onTransferSelectedValue();
+
+      expect(spy).toHaveBeenCalledWith(professional);
     });
-  })
+  });
 
-  describe('CITY MANAGEMENT', () => {
-    it('should add city', () => {
-      const city = {zipCode: 1000} as any;
-      const event = {
-        option: {value: city},
-      } as any;
-
-      const input = {value: ''} as HTMLInputElement;
-
-      component.formGroup.get('cities')!.setValue([]);
-
-      component.addCity(event, input);
-
-      expect(component.formGroup.get('cities')!.value).toEqual([city]);
-    });
-
-    it('should remove city', () => {
-      const city = {zipCode: 3000} as any;
-
-      component.formGroup.get('cities')!.setValue([city]);
-
-      component.removeCity(city);
-
-      expect(component.formGroup.get('cities')!.value).toEqual([]);
-    });
-  })
-
-
-  describe('TRANSFER WITHOUT PRESCRIPTION', () => {
+  describe('ON TRANSFER', () => {
     it('should directly close dialog if no prescriptionId', () => {
-      (component as any).data.prescriptionId = undefined;
+      (component as any).data = { ...dialogDataMock, prescriptionId: undefined };
 
-      const professional = {id: {ssin: '123'}} as any;
+      const professional = { id: { ssin: '123' } } as any;
 
       component.onTransfer(professional);
 
       expect(dialogRefMock.close).toHaveBeenCalledWith(professional);
     });
-  })
 
+    it('should call prescriptionState.transferAssignation for PRESCRIPTION intent', () => {
+      (component as any).data = { ...dialogDataMock, intent: 'Order' };
+      component.ngOnInit();
+
+      const professional = {
+        id: { ssin: '999', profession: 'NURSE' },
+        type: 'Professional',
+        healthcarePerson: { firstName: 'Jane' },
+      } as any;
+
+      component.onTransfer(professional);
+
+      expect(prescriptionStateMock.transferAssignation).toHaveBeenCalledWith(
+        '123',
+        '456',
+        '789',
+        { ssin: '999', discipline: 'NURSE' },
+        'mock-uuid-12345'
+      );
+    });
+
+    it('should call proposalState.transferAssignation for PROPOSAL intent', () => {
+      (component as any).data = { ...dialogDataMock, intent: 'PROPOSAL' };
+      component.ngOnInit();
+
+      const professional = {
+        id: { ssin: '999', profession: 'NURSE' },
+        type: 'Professional',
+        healthcarePerson: { firstName: 'Jane' },
+      } as any;
+
+      component.onTransfer(professional);
+
+      expect(proposalStateMock.transferAssignation).toHaveBeenCalledWith(
+        '123',
+        '456',
+        '789',
+        { ssin: '999', discipline: 'NURSE' },
+        'mock-uuid-12345'
+      );
+    });
+
+    it('should show success toast and close dialog on successful transfer', () => {
+      const professional = {
+        id: { ssin: '999', profession: 'NURSE' },
+        type: 'Professional',
+        healthcarePerson: { firstName: 'Jane' },
+      } as any;
+
+      component.onTransfer(professional);
+
+      expect(toastServiceMock.show).toHaveBeenCalledWith('prescription.transferAssignation.success', {
+        interpolation: professional.healthcarePerson,
+      });
+      expect(dialogRefMock.close).toHaveBeenCalledWith(professional);
+    });
+
+    it('should set loading to false on transfer error', () => {
+      prescriptionStateMock.transferAssignation.mockReturnValue(throwError(() => new Error('fail')));
+
+      const professional = {
+        id: { ssin: '999', profession: 'NURSE' },
+        type: 'Professional',
+        healthcarePerson: { firstName: 'Jane' },
+      } as any;
+
+      component.onTransfer(professional);
+
+      expect(component.loading).toBe(false);
+    });
+  });
 });

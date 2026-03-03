@@ -47,7 +47,7 @@ import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { isEmptyValue } from '@reuse/code/utils/utils';
 
 @Component({
-  selector: 'autocomplete-multiselect',
+  selector: 'evf-autocomplete-multiselect',
   imports: [
     MatFormFieldModule,
     MatInputModule,

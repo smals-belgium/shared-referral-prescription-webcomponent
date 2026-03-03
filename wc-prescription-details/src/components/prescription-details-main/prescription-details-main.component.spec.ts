@@ -18,7 +18,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { DateAdapter, MatNativeDateModule, NativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { PrescriptionDetailsBeneficiaryComponent } from './prescription-details-beneficiary/prescription-details-beneficiary.component';
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { EvfFormDetailsWebComponent } from '../evf-details/evf-form-details.component';
 
 @Component({
@@ -69,8 +69,9 @@ describe('PrescriptionDetailsMainComponent', () => {
   it('should show a prescription based on shortCode and SSIN', () => {
     jest.spyOn(cacheHttpService, 'loadFromCache').mockReturnValue(of(null));
     const mockResponse = prescriptionResponse();
+    const service = TestBed.inject(PrescriptionDetailsSecondaryService) as any;
     (component as any).prescription = mockResponse;
-    (component as any).patient = mockPerson;
+    jest.spyOn(service, 'getPatient').mockReturnValue({ data: mockPerson });
 
     fixture.detectChanges();
 
@@ -82,5 +83,26 @@ describe('PrescriptionDetailsMainComponent', () => {
 
     const divWithClassId = debugElement.query(By.css('.prescription_shortcode')).nativeElement;
     expect(divWithClassId.textContent).toContain(mockResponse.shortCode);
+  });
+
+  it('should propagate patient changes from service to view', () => {
+    const service = TestBed.inject(PrescriptionDetailsSecondaryService) as any;
+    const patientSignal = signal({ data: mockPerson });
+    jest.spyOn(service, 'getPatient').mockImplementation(() => patientSignal());
+
+    fixture.detectChanges();
+
+    const { debugElement } = fixture;
+    let ssinElement = debugElement.query(By.css('.ssin')).nativeElement;
+    expect(ssinElement.textContent).toContain('10.00.00-000.03');
+
+    // Update patient in service
+    const updatedPatient = { ...mockPerson, ssin: '20000000001' };
+    patientSignal.set({ data: updatedPatient });
+
+    fixture.detectChanges();
+
+    ssinElement = debugElement.query(By.css('.ssin')).nativeElement;
+    expect(ssinElement.textContent).toContain('20.00.00-000.01');
   });
 });

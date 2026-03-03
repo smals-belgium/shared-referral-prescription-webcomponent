@@ -1,28 +1,41 @@
 @use "@myhealth-belgium/design-kit" as mh;
 
-@include mh.use-font-material-symbols();
-@include mh.use-globals();
-@include mh.use-classes();
-@include mh.use-all-components();
-
 :host{
   font-family: var(--mh-default-font-family, #{mh.$font-stack});
 }
 
-// Define icons in modal
-:host ::ng-deep {
-  .material-icons, .mat-mdc-dialog-container .material-icons, mat-select .mat-mdc-select-arrow:after {
-    font-family: 'Material Icons', sans-serif;
+.dialog-content {
+  display: flex;
+  flex-direction: column;
+  max-height: 70vh;
+  overflow: auto;
+}
+
+.search-form {
+  flex: 0 0 auto;
+  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.search-results {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  min-height: 200px;
+  @media (max-width:  mh.$media-breakpoint-s) {
+    min-height: 80%;
+    margin-bottom: 16px;
   }
 }
 
-.results{
-  table{
-    width: 100%;
-
-    >tr td {
-      cursor: pointer;
-    }
+.responsive-wrapper{
+  display: block;
+  width: 100%;
+  .action-buttons-group{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
   }
 }
 

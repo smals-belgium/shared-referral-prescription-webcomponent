@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { AbstractControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AsyncPipe } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -13,7 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { toSearchString } from '@reuse/code/utils/utils';
 import { HighlightFilterPipe } from '@reuse/code/pipes/highlight-filter.pipe';
 import { ModelEntityDto, Template } from '@reuse/code/openapi';
-import { NURSING_CODES, PHYSIOTHERAPY_CODES, RADIOLOGY_CODES } from '@reuse/code/interfaces';
+import { NURSING_CODES, PHYSIOTHERAPY_CODES, RADIOLOGY_CODES, TemplateCategory } from '@reuse/code/interfaces';
 
 @Component({
   selector: 'app-select-prescription-type',
@@ -31,15 +31,15 @@ import { NURSING_CODES, PHYSIOTHERAPY_CODES, RADIOLOGY_CODES } from '@reuse/code
     AsyncPipe,
   ],
 })
-export class SelectPrescriptionTypeComponent implements OnChanges {
-  private readonly categories = [{ code: 'nursingCare' }, { code: 'radiology' }, { code: 'physiotherapy' }];
+export class SelectPrescriptionTypeComponent implements OnChanges, OnInit {
+  categories: TemplateCategory[] = [];
 
   private readonly categories$ = this.translate.onLangChange.pipe(
     map(() => this.translate.currentLang),
     startWith(this.translate.currentLang),
     map(() =>
       this.categories.map(category => ({
-        ...category,
+        code: category.code,
         label: this.translate.instant('prescription.categories.' + category.code) as string,
       }))
     )
@@ -65,6 +65,21 @@ export class SelectPrescriptionTypeComponent implements OnChanges {
 
   private get evfCurrentLang(): Language {
     return this.translate.currentLang.substring(0, 2) as Language;
+  }
+
+  ngOnInit(): void {
+    const templateCategoryCodes = new Set(
+      this.templates
+        .flatMap(template => template.metadata?.category || [])
+        .flatMap(category => category.code)
+        .filter(code => code !== undefined)
+    );
+
+    this.categories = [
+      { code: 'nursingCare', fhirCode: '9632001' },
+      { code: 'radiology', fhirCode: '363679005' },
+      { code: 'physiotherapy', fhirCode: '722138006' },
+    ].filter(category => templateCategoryCodes.has(category.fhirCode));
   }
 
   ngOnChanges(changes: SimpleChanges): void {

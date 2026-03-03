@@ -1,0 +1,28 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+//Applied when prescriptions are successfully loaded, but there are no prescriptions
+tr.no-professionals {
+  > td {
+    text-align: center;
+    cursor: none;
+    border-radius: mh.$border-radius-m;
+  }
+}
+
+//Applied when there is an error in the prescriptions or prescriptions are still loading
+tr.no-data {
+  height: var(--mh-table-empty-footer-container-height, 0);
+}
+
+.icon-end {
+  display: inline-flex;
+  align-items: center;
+  & mat-icon {
+    order: 2;
+    margin-inline-start: 8px;
+  }
+}
+
+.icon-cell{
+  color: mh.$typography-brand-primary-medium;
+}

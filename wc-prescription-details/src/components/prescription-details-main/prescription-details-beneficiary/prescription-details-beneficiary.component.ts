@@ -6,16 +6,11 @@ import { PersonResource, ReadRequestResource } from '@reuse/code/openapi';
 @Component({
   selector: 'app-prescription-details-beneficiary',
   standalone: true,
-  imports: [
-    TranslatePipe,
-    FormatSsinPipe
-  ],
+  imports: [TranslatePipe, FormatSsinPipe],
   templateUrl: './prescription-details-beneficiary.component.html',
-  styleUrl: './prescription-details-beneficiary.component.scss'
+  styleUrl: './prescription-details-beneficiary.component.scss',
 })
 export class PrescriptionDetailsBeneficiaryComponent {
-
   @Input() patient?: PersonResource;
   @Input() prescription?: ReadRequestResource;
-
 }

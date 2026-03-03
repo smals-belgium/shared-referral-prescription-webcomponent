@@ -67,15 +67,27 @@
         "errors": {
             "pseudoDisabled": ""
         },
-        "prescriptionModel": ""
+        "prescriptionModel": "",
+        "error": {
+            "default": {
+                "header": "Technical issue",
+                "subheader": "An error occurred. Please try again in a few moments."
+            }
+        }
     },
     "pagination": {
         "ariaLabel": {
-            "firstPage": "",
-            "lastPage": "",
-            "nextPage": "",
-            "previousPage": ""
-        }
+            "firstPage": "First page",
+            "lastPage": "Last page",
+            "nextPage": "Next page",
+            "previousPage": "Previous page"
+        },
+        "itemsPerPage": "Items per page",
+        "firstPage": "First page",
+        "lastPage": "Last page",
+        "nextPage": "Next page",
+        "previousPage": "Previous page",
+        "rangePage": "{startIndex} - {endIndex} of {length}"
     },
     "evf": {
         "deleteCareGiver": "",
@@ -186,7 +198,14 @@
             "prescriber": "",
             "proof-of-electronic-prescription": "",
             "remark": "",
-            "date": ""
+            "date": "",
+            "subsection": {
+                "patient": "",
+                "startDate": "",
+                "endDate": "",
+                "header": ""
+            },
+            "alert": ""
         },
         "author": "",
         "patient": "",
@@ -222,7 +241,13 @@
             "locations": "",
             "zipCodeOrCityName": "",
             "noResults": "",
-            "organization": ""
+            "organization": "",
+            "dialog": {
+                "title": "",
+                "description": ""
+            },
+            "locationsHint": "",
+            "performerHint": ""
         },
         "transferAssignation": {
             "title": "",
@@ -231,7 +256,11 @@
             "searchPerformerPlaceHolder": "",
             "locations": "",
             "zipCodeOrCityName": "",
-            "noResults": ""
+            "noResults": "",
+            "dialog": {
+                "title": "",
+                "description": ""
+            }
         },
         "cancel": {
             "action": "",
@@ -344,6 +373,12 @@
             "extend": "",
             "print": "",
             "cancel": ""
+        },
+        "assignProfessional": {
+            "undefined": ""
+        },
+        "transferProfessional": {
+            "undefined": ""
         }
     },
     "proposal": {
@@ -417,7 +452,11 @@
             "locations": "",
             "zipCodeOrCityName": "",
             "noResults": "",
-            "organization": ""
+            "organization": "",
+            "dialog": {
+                "title": "",
+                "description": ""
+            }
         },
         "transferAssignation": {
             "title": "",
@@ -527,5 +566,20 @@
             "message": ""
         }
     },
-    "prescription-model-tableHasRecords-Le-nombre-total": ""
+    "prescription-model-tableHasRecords-Le-nombre-total": "",
+    "professional": {
+        "table": {
+            "results": "",
+            "firstname": "",
+            "lastname": "",
+            "address": "",
+            "city": "",
+            "actions": "",
+            "tableHasRecords": "",
+            "noRecords": "",
+            "select": ""
+        },
+        "noProfessionals": "",
+        "allProfessionalsFetched": ""
+    }
 }
