@@ -81,7 +81,13 @@
             "lastPage": "Laatste pagina",
             "nextPage": "Volgende pagina",
             "previousPage": "Vorige pagina"
-        }
+        },
+        "itemsPerPage": "Items per pagina",
+        "firstPage": "Eerste pagina",
+        "lastPage": "Laatste pagina",
+        "nextPage": "Volgende pagina",
+        "previousPage": "Vorige pagina",
+        "rangePage": "{startIndex} - {endIndex} van {length}"
     },
     "evf": {
         "deleteCareGiver": "Zorgverlener verwijderen",
@@ -173,7 +179,7 @@
             }
         },
         "filter": {
-            "historicToggle": "Archief",
+            "historicToggle": "Historiek",
             "prescriptionType": {
                 "label": "Filter op voorschift"
             },

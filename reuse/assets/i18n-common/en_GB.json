@@ -77,11 +77,17 @@
     },
     "pagination": {
         "ariaLabel": {
-            "firstPage": "",
-            "lastPage": "",
-            "nextPage": "",
-            "previousPage": ""
-        }
+            "firstPage": "First page",
+            "lastPage": "Last page",
+            "nextPage": "Next page",
+            "previousPage": "Previous page"
+        },
+        "itemsPerPage": "Items per page",
+        "firstPage": "First page",
+        "lastPage": "Last page",
+        "nextPage": "Next page",
+        "previousPage": "Previous page",
+        "rangePage": "{startIndex} - {endIndex} of {length}"
     },
     "evf": {
         "deleteCareGiver": "",
