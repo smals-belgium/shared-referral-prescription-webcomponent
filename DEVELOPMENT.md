@@ -102,6 +102,7 @@ git submodule add ../api-contract.git api-contract
 ```
 
 # Push to github
-Run npm i without vpn an past the content to package-lock.github.json
-Run npm run push:github in a bash terminal.
+- Remove the package-lock file and run run npm i WITHOUT vpn
+- Run npm run push:github in a bash terminal.
+- After push succeeds remove the package-lock file and run run npm i WITH vpn 
 
