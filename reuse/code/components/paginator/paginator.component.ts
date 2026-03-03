@@ -1,12 +1,16 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
+import { MatPaginatorIntlService } from './mat-paginator-intl.service';
 
 @Component({
   selector: 'app-paginator',
   templateUrl: './paginator.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatPaginator, TranslateModule],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: MatPaginatorIntlService }
+  ]
 })
 export class PaginatorComponent {
   readonly pageSizeOptions = [10, 15, 20, 25];
