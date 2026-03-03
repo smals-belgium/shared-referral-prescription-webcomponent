@@ -103,7 +103,22 @@ git submodule add ../api-contract.git api-contract
 
 # Push to github
 - Update the versions in package.json
-- Remove the package-lock file and run run npm i WITHOUT vpn
+- Remove the package-lock file
+- If you have an .npmrc file update it to use the normal npm registry
+  - registry=https://registry.npmjs.org/
+- Clear npm
+  - npm cache clean --force
+  - npm cache verify
+  - rm -rf node_modules/
+- git add package-lock
+- and run run npm i WITHOUT vpn
 - Run npm run push:github in a bash terminal.
-- After push succeeds remove the package-lock file and run run npm i WITH vpn 
+- After push succeeds remove the package-lock file
+- Revert your .npmrc.
+- Clear npm
+  - npm cache clean --force
+  - npm cache verify
+  - rm -rf node_modules/
+- git add package-lock
+- and run run npm i WITHOUT vpn
 
