@@ -465,7 +465,11 @@
       "searchPerformerPlaceHolder": "N° INAMI, nom",
       "locations": "Localisation(s)",
       "zipCodeOrCityName": "Code postal ou commune",
-      "noResults": "Aucune commune trouvée"
+      "noResults": "Aucune commune trouvée",
+      "dialog": {
+        "title": "Transférer un prestataire de soins à une proposition",
+        "description": "Si vous transférez un prestataire de soins à cette proposition, celui-ci pourra consulter les informations contenues dans cette proposition."
+      }
     },
     "approve": {
       "action": "Valider",

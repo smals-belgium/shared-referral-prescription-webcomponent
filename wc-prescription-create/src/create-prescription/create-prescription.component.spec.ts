@@ -11,7 +11,7 @@ import { signal, SimpleChange, SimpleChanges } from '@angular/core';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { Observable, of, throwError } from 'rxjs';
-import { ElementGroup, EvfTranslateService } from '@smals/vas-evaluation-form-ui-core';
+import { ElementGroup, EvfTranslateService } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import {
   CreatePrescriptionForm,
   CreatePrescriptionInitialValues,

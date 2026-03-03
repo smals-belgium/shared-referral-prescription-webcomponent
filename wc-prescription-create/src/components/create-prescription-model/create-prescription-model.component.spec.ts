@@ -5,7 +5,7 @@ import { of, throwError } from 'rxjs';
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionModel.state';
 import { CreatePrescriptionForm, DataState, LoadingStatus, PrescriptionModelStatus } from '@reuse/code/interfaces';
-import { ElementGroup } from '@smals/vas-evaluation-form-ui-core';
+import { ElementGroup } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';

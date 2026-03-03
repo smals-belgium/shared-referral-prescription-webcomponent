@@ -17,6 +17,7 @@ const config: Config = {
   moduleNameMapper: {
     '^jose': require.resolve('jose'),
     '^@reuse/(.*)$': '<rootDir>/reuse/$1',
+    '^@smals/vas-evaluation-form-ui-core': '@smals-belgium-shared/vas-evaluation-form-ui-core',
   },
 };
 

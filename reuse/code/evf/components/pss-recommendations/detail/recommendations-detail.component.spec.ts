@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ChangeDetectorRef, SimpleChanges } from '@angular/core';
 import { RecommendationsDetailComponent } from '@reuse/code/evf/components/pss-recommendations/detail/recommendations-detail.component';
-import { EvfTranslateService } from '@smals/vas-evaluation-form-ui-core';
+import { EvfTranslateService } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { generateWarningMessage } from '@reuse/code/utils/pss-relevant-info-message.utils';
 import { PssService } from '@reuse/code/services/api/pss.service';
 

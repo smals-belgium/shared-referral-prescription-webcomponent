@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { ChangeDetectorRef } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { OccurrenceFrequencyPipe } from './occurrence-frequency.pipe';
-import { EvfTranslateService } from '@smals/vas-evaluation-form-ui-core';
+import { EvfTranslateService } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { Repeat } from '@reuse/code/interfaces';
 
 jest.mock('@reuse/code/utils/occurrence-timing.utils', () => ({
@@ -68,5 +68,4 @@ describe('OccurrenceFrequencyPipe', () => {
     expect(translateFrequencyAndPeriod).toHaveBeenCalledWith(occurrences, 'fr');
     expect(result).toBe('2 fois par jour');
   });
-
 });

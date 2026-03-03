@@ -1,4 +1,4 @@
-import { AutocompleteOption as EVFAutocompleteOption } from '@smals/vas-evaluation-form-ui-core';
+import { AutocompleteOption as EVFAutocompleteOption } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { AutocompleteOption } from '@reuse/code/openapi';
 
 export function mapAutocompleteOption(option: AutocompleteOption): EVFAutocompleteOption {

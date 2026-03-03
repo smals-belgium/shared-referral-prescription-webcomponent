@@ -3,7 +3,7 @@ import {
   EvfBaseFormDetailComponent,
   EvfDetailLabelComponent,
   EvfFormDetailLayoutComponent,
-} from '@smals/vas-evaluation-form-ui-material/elements/shared';
+} from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/shared';
 import { OccurrenceTimingPipe } from '@reuse/code/pipes/occurrence-timing.pipe';
 
 @Component({

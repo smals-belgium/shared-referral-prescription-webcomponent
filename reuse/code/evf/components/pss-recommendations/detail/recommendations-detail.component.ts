@@ -3,7 +3,7 @@ import {
   EvfBaseFormDetailComponent,
   EvfDetailLabelComponent,
   EvfFormDetailLayoutComponent,
-} from '@smals/vas-evaluation-form-ui-material/elements/shared';
+} from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/shared';
 import { PssRadiologyResultComponent } from '@reuse/code/components/pss-radiology-result/pss-radiology-result.component';
 import { PssService } from '@reuse/code/services/api/pss.service';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
@@ -12,7 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { EvfTranslateService } from '@smals/vas-evaluation-form-ui-core';
+import { EvfTranslateService } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { generateWarningMessage } from '@reuse/code/utils/pss-relevant-info-message.utils';
 import { SupportOption } from '@reuse/code/openapi';

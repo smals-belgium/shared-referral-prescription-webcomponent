@@ -73,7 +73,8 @@ import {
 } from '@reuse/code/openapi';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatChip } from '@angular/material/chips';
-import { EvfTranslateService, FormTranslations } from '@smals/vas-evaluation-form-ui-core';
+import { EvfTranslateService, FormTranslations } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
+import { PrescriptionsPdfService } from '@reuse/code/services/helpers/prescription-pdf.service';
 import { PrescriptionDetailsMainComponent } from '../../components/prescription-details-main/prescription-details-main.component';
 import { PrescriptionDetailsSecondaryComponent } from '../../components/prescription-details-secondary/prescription-details-secondary.component';
 import {

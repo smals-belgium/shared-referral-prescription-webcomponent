@@ -6,15 +6,12 @@ import {
   evfElementConfigFeature,
   FormTemplate,
   provideEvfCore,
-
-} from '@smals/vas-evaluation-form-ui-core';
-import {
-  ExpansionPanelTextareaComponent
-} from '@reuse/code/evf/components/expansion-panel-textarea/detail/expansion-panel-textarea.component';
+} from '@smals-belgium-shared/vas-evaluation-form-ui-core';
+import { ExpansionPanelTextareaComponent } from '@reuse/code/evf/components/expansion-panel-textarea/detail/expansion-panel-textarea.component';
 import { By } from '@angular/platform-browser';
 import { MarkdownModule } from 'ngx-markdown';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { EvfDynamicFormComponent } from '@smals/vas-evaluation-form-ui-material/dynamic-form';
+import { EvfDynamicFormComponent } from '@smals-belgium-shared/vas-evaluation-form-ui-material/dynamic-form';
 
 const formTemplate: FormTemplate = {
   elements: [
@@ -22,24 +19,24 @@ const formTemplate: FormTemplate = {
       id: 'diagnostic-request',
       viewType: 'expansionPanelTextarea',
       dataType: {
-        type:'string'
+        type: 'string',
       },
       labelTranslationId: 'diagnostic-request',
       validations: [
         {
-          name: 'required'
-        }
+          name: 'required',
+        },
       ],
-      tags: ['freeText']
-    }
+      tags: ['freeText'],
+    },
   ],
   translations: {
-    'diagnostic-request':{
-      fr:"diagnostic-request FR",
-      nl:"diagnostic-request NL"
-    }
-  }
-}
+    'diagnostic-request': {
+      fr: 'diagnostic-request FR',
+      nl: 'diagnostic-request NL',
+    },
+  },
+};
 
 const formTemplateWithoutValidation: FormTemplate = {
   elements: [
@@ -47,34 +44,27 @@ const formTemplateWithoutValidation: FormTemplate = {
       id: 'diagnostic-request',
       viewType: 'expansionPanelTextarea',
       dataType: {
-        type:'string'
+        type: 'string',
       },
       labelTranslationId: 'diagnostic-request',
-      tags: ['freeText']
-    }
+      tags: ['freeText'],
+    },
   ],
   translations: {
-    'diagnostic-request':{
-      fr:"diagnostic-request FR",
-      nl:"diagnostic-request NL"
-    }
-  }
-}
+    'diagnostic-request': {
+      fr: 'diagnostic-request FR',
+      nl: 'diagnostic-request NL',
+    },
+  },
+};
 
 describe('ExpansionPanelTextareaComponent', () => {
   let component: Wrapper;
   let fixture: ComponentFixture<Wrapper>;
 
   beforeEach(async () => {
-
     await TestBed.configureTestingModule({
-      imports: [
-        Wrapper,
-        MarkdownModule.forRoot(),
-        NoopAnimationsModule,
-        EvfDynamicFormComponent,
-
-      ],
+      imports: [Wrapper, MarkdownModule.forRoot(), NoopAnimationsModule, EvfDynamicFormComponent],
       providers: [
         provideEvfCore(
           evfElementConfigFeature({
@@ -82,10 +72,9 @@ describe('ExpansionPanelTextareaComponent', () => {
             element: ExpansionPanelTextareaComponent,
           })
         ),
-        EvfActiveValidationPipe
-      ]
-    })
-    .compileComponents();
+        EvfActiveValidationPipe,
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(Wrapper);
     component = fixture.componentInstance;
@@ -117,28 +106,23 @@ describe('ExpansionPanelTextareaComponent', () => {
 
   describe('ngAfterViewInit', () => {
     it('should call activeValidationPipe.transform with correct parameters', () => {
-
       component.demoTemplate = formTemplate;
       fixture.detectChanges();
 
       const componentInstance = getComponentInstance();
-      const spyPipe = jest.spyOn(componentInstance._activeValidationPipe,'transform')
+      const spyPipe = jest.spyOn(componentInstance._activeValidationPipe, 'transform');
 
       componentInstance.ngAfterViewInit();
 
-      expect(spyPipe).toHaveBeenCalledWith(
-        componentInstance.elementControl,
-        'required'
-      );
+      expect(spyPipe).toHaveBeenCalledWith(componentInstance.elementControl, 'required');
     });
 
     it('should open panel when elementControl has value', () => {
-
       component.demoTemplate = formTemplate;
       fixture.detectChanges();
 
       const componentInstance = getComponentInstance();
-      componentInstance.elementControl.setValue('Some text content')
+      componentInstance.elementControl.setValue('Some text content');
 
       const openSpy = jest.spyOn(componentInstance.matExpansionPanel, 'open');
 
@@ -153,7 +137,7 @@ describe('ExpansionPanelTextareaComponent', () => {
 
       const componentInstance = getComponentInstance();
 
-      componentInstance.elementControl.setValue('')
+      componentInstance.elementControl.setValue('');
 
       const openSpy = jest.spyOn(componentInstance.matExpansionPanel, 'open');
 
@@ -163,13 +147,12 @@ describe('ExpansionPanelTextareaComponent', () => {
     });
 
     it('should not open panel when elementControl.value is null and no required validation', () => {
-
       component.demoTemplate = formTemplateWithoutValidation;
       fixture.detectChanges();
 
       const componentInstance = getComponentInstance();
 
-      componentInstance.elementControl.setValue(null)
+      componentInstance.elementControl.setValue(null);
 
       const openSpy = jest.spyOn(componentInstance.matExpansionPanel, 'open');
 
@@ -184,7 +167,7 @@ describe('ExpansionPanelTextareaComponent', () => {
 
       const componentInstance = getComponentInstance();
 
-      componentInstance.elementControl.setValue(undefined)
+      componentInstance.elementControl.setValue(undefined);
 
       const openSpy = jest.spyOn(componentInstance.matExpansionPanel, 'open');
 
@@ -199,7 +182,7 @@ describe('ExpansionPanelTextareaComponent', () => {
 
       const componentInstance = getComponentInstance();
 
-      componentInstance.elementControl.setValue('')
+      componentInstance.elementControl.setValue('');
 
       const openSpy = jest.spyOn(componentInstance.matExpansionPanel, 'open');
 
@@ -209,9 +192,10 @@ describe('ExpansionPanelTextareaComponent', () => {
     });
   });
 
-  function getComponentInstance(){
-
-    const expansionPanelTextareaDebugElement = fixture.debugElement.query(By.directive(ExpansionPanelTextareaComponent))
+  function getComponentInstance() {
+    const expansionPanelTextareaDebugElement = fixture.debugElement.query(
+      By.directive(ExpansionPanelTextareaComponent)
+    );
     return expansionPanelTextareaDebugElement.componentInstance;
   }
 });

@@ -465,7 +465,11 @@
       "searchPerformerPlaceHolder": "RIZIV nummer, naam",
       "locations": "Locatie(s)",
       "zipCodeOrCityName": "Postcode of gemeente",
-      "noResults": "Geen gemeente gevonden"
+      "noResults": "Geen gemeente gevonden",
+      "dialog": {
+        "title": "Een zorgverlener transfereren naar een voorstel",
+        "description": "Als u dit voorstel overdraagt naar een andere zorgverlener, kan deze de informatie in dit voorstel raadplegen."
+      }
     },
     "approve": {
       "action": "Goedkeuren",
