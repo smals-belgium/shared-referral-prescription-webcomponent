@@ -7,8 +7,8 @@
     "prescription",
     "MAGS"
   ],
-  "author": "UHMEP team",
-  "license": "MIT",
+  "author": "SMALS - UHMEP team",
+  "license": "SWCL License",
   "repository": {
     "type": "git",
     "url": "https://github.com/smals-belgium/shared-referral-prescription-webcomponent"
