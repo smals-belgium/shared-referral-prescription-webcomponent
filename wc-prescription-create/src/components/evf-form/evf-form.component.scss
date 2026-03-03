@@ -5,7 +5,8 @@ evf-dynamic-form {
   --mdc-typography-body2-line-height: var(--mat-sys-body-large-size);
   color: var(--evf-typography-body-color, mh.$typography-brand-neutral-darker);
 
-  .mdc-text-field__input, .mat-mdc-form-field-input-control {
+  .mdc-text-field__input,
+  .mat-mdc-form-field-input-control {
     &::placeholder {
       color: var(--evf-typography-body-color, mh.$typography-brand-neutral-darker);
     }
@@ -21,7 +22,7 @@ evf-dynamic-form {
 }
 
 // Needed to override default styling applied by material for icons in evf template
-:host ::ng-deep{
+:host ::ng-deep {
   mat-form-field {
     &.ng-invalid button.mat-mdc-icon-button svg {
       fill: var(--mat-form-field-error-icon-color, mh.$error-30);
@@ -34,14 +35,11 @@ evf-dynamic-form {
 }
 
 @media (hover: hover) {
-  .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover>.mat-calendar-body-cell-content:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical) {
-    background-color: var(--mat-datepicker-calendar-date-hover-state-background-color,
-      color-mix(in srgb, var(--mat-sys-on-surface) calc(var(--mat-sys-hover-state-layer-opacity) * 100%), transparent));
+  .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover
+    > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical) {
+    background-color: var(
+      --mat-datepicker-calendar-date-hover-state-background-color,
+      color-mix(in srgb, var(--mat-sys-on-surface) calc(var(--mat-sys-hover-state-layer-opacity) * 100%), transparent)
+    );
   }
 }
-
-
-
-
-
-

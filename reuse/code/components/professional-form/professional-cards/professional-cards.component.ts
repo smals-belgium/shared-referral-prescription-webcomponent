@@ -42,7 +42,6 @@ import { v4 as uuidv4 } from 'uuid';
   styleUrl: './professional-cards.component.scss',
 })
 export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, OnDestroy {
-
   private readonly dataService = inject(RequestProfessionalDataService);
 
   protected readonly AlertType = AlertType;
@@ -130,7 +129,7 @@ export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, 
       institutionTypes: [],
       providerType: ProviderType.Professional,
       prescriptionId: this.prescriptionId(),
-      intent: this.intent()
+      intent: this.intent(),
     };
 
     this.dataService.initializeCardsDataStream(initialData, config);

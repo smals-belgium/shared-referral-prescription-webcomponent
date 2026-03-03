@@ -250,8 +250,7 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
         }
 
         const shouldInclude =
-          element.dataType?.type !== TypeEnum.Date &&
-          !(element.elements && element.elements.length === 0);
+          element.dataType?.type !== TypeEnum.Date && !(element.elements && element.elements.length === 0);
 
         if (shouldInclude) {
           filteredElements.push(element);

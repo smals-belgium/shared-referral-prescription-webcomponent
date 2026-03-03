@@ -8,9 +8,7 @@ import { MatPaginatorIntlService } from './mat-paginator-intl.service';
   templateUrl: './paginator.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatPaginator, TranslateModule],
-  providers: [
-    { provide: MatPaginatorIntl, useClass: MatPaginatorIntlService }
-  ]
+  providers: [{ provide: MatPaginatorIntl, useClass: MatPaginatorIntlService }],
 })
 export class PaginatorComponent {
   readonly pageSizeOptions = [10, 15, 20, 25];

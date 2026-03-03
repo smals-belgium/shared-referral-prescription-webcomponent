@@ -7,3 +7,7 @@ else
   # Mac/Linux
   ./pull-translations.sh
 fi
+
+echo "Formatting code in progress (prettier)..."
+
+npx lint-staged

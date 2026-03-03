@@ -13,14 +13,11 @@ describe('MatPaginatorIntlService', () => {
   beforeEach(() => {
     translateMock = {
       instant: jest.fn(),
-      onLangChange: new Subject()
+      onLangChange: new Subject(),
     };
 
     TestBed.configureTestingModule({
-      providers: [
-        MatPaginatorIntlService,
-        { provide: TranslateService, useValue: translateMock }
-      ]
+      providers: [MatPaginatorIntlService, { provide: TranslateService, useValue: translateMock }],
     });
 
     service = TestBed.inject(MatPaginatorIntlService);
@@ -67,14 +64,11 @@ describe('MatPaginatorIntlService', () => {
     const result = service.getRangeLabel(0, 10, 100);
 
     expect(result).toBe('1 - 10 of 100');
-    expect(translateMock.instant).toHaveBeenCalledWith(
-      'pagination.rangePage',
-      {
-        startIndex: 1,
-        endIndex: 10,
-        length: 100
-      }
-    );
+    expect(translateMock.instant).toHaveBeenCalledWith('pagination.rangePage', {
+      startIndex: 1,
+      endIndex: 10,
+      length: 100,
+    });
   });
 
   it('should return correct range label when length is 0', () => {
@@ -85,13 +79,10 @@ describe('MatPaginatorIntlService', () => {
     const result = service.getRangeLabel(0, 10, 0);
 
     expect(result).toBe('0 - 0 of 0');
-    expect(translateMock.instant).toHaveBeenCalledWith(
-      'pagination.rangePage',
-      {
-        startIndex: 0,
-        endIndex: 0,
-        length: 0
-      }
-    );
+    expect(translateMock.instant).toHaveBeenCalledWith('pagination.rangePage', {
+      startIndex: 0,
+      endIndex: 0,
+      length: 0,
+    });
   });
 });
