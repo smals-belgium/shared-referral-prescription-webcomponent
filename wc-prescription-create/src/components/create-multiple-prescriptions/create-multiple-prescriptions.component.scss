@@ -26,7 +26,7 @@
 mat-expansion-panel-header {
   padding: 0;
   &.mat-expansion-panel-header {
-    padding: 0;
+    padding: 0 8px 0 0;
   }
   &.no-toggle {
     pointer-events: none;
