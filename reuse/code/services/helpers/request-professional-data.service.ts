@@ -11,6 +11,11 @@ import { HealthcareProviderService } from '@reuse/code/services/api/healthcarePr
 import { DeviceService } from '@reuse/code/services/helpers/device.service';
 
 type HealthcareResource = HealthcareProResource | HealthcareOrganizationResource;
+
+interface InitialTableData {
+  data: HealthcareResource[];
+  total: number;
+}
 /**
  * Service that handles healthcare professional/organization data loading and aggregation for cards (mobile) and table (desktop)
  *
@@ -40,8 +45,8 @@ export class RequestProfessionalDataService {
     });
   }
 
-  initializeTableDataStream(initialData: HealthcareResource[], loadConfig: SearchProfessionalCriteria): void {
-    this._data.set(initialData);
+  initializeTableDataStream(initialData: InitialTableData, loadConfig: SearchProfessionalCriteria): void {
+    this._data.set(initialData.data);
     this.createTableDataStream(initialData, loadConfig).subscribe({
       next: data => this._data.set(data),
       error: error => this.handleStreamError(error),
@@ -87,11 +92,15 @@ export class RequestProfessionalDataService {
    * Loads all professionals sequentially as soon as each one completes until all professional are being fetched
    */
   private createTableDataStream(
-    initialData: HealthcareResource[],
+    initialData: InitialTableData,
     params: SearchProfessionalCriteria
   ): Observable<HealthcareResource[]> {
+    if (initialData.total === 0) {
+      return of([]);
+    }
+
     // Emit initial data with the already loaded one
-    return of({ accumulated: initialData, pageIndex: 0, total: 999 }).pipe(
+    return of({ accumulated: initialData.data, pageIndex: 0, total: initialData.total }).pipe(
       expand(({ accumulated, pageIndex, total }) => {
         const nextIndex = pageIndex + 1;
 

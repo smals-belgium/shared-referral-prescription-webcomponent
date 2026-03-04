@@ -13,7 +13,7 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
-import { ElementGroup, isObject, removeNulls } from '@smals/vas-evaluation-form-ui-core';
+import { ElementGroup, isObject, removeNulls } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { MatAccordion, MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';

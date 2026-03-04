@@ -3,19 +3,23 @@ import { firstValueFrom } from 'rxjs';
 import { HttpClientTestingModule, HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { HttpClient, provideHttpClient, withInterceptors, HttpErrorResponse } from '@angular/common/http';
 import { demoHttpInterceptor } from './demo-http.interceptor';
-import { WcConfigurationService } from '@reuse/code/services/config/wc-configuration.service';
+import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
 
 describe('DemoHttpInterceptor', () => {
   let httpClient: HttpClient;
   let httpMock: HttpTestingController;
+  let mockConfigService: ConfigurationService;
 
   function setupTestBed(environment: string) {
-    (window as any).referralPrescriptionEnv = environment;
+    mockConfigService = {
+      getEnvironment: () => environment,
+      getEnvironmentVariable: jest.fn(),
+    };
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
-        WcConfigurationService,
+        { provide: ConfigurationService, useValue: mockConfigService },
         provideHttpClient(withInterceptors([demoHttpInterceptor])),
         provideHttpClientTesting(),
       ],
@@ -27,6 +31,17 @@ describe('DemoHttpInterceptor', () => {
 
   afterEach(() => {
     httpMock.verify();
+  });
+
+  it('should pass through requests when not in demo mode', async () => {
+    setupTestBed('local');
+
+    const responsePromise = firstValueFrom(httpClient.get('/api/test'));
+    const req = httpMock.expectOne('/api/test');
+    req.flush({ success: true });
+
+    const response = await responsePromise;
+    expect(response).toEqual({ success: true });
   });
 
   it('should return 501 when mock not found in demo mode', async () => {

@@ -1,15 +1,29 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { PaginatorComponent } from './paginator.component';
+import { Subject } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
+import { MatPaginatorIntlService } from './mat-paginator-intl.service';
 
 describe('PaginatorComponent', () => {
   let component: PaginatorComponent;
   let fixture: ComponentFixture<PaginatorComponent>;
+  let translateMock: any;
 
   beforeEach(async () => {
+    // Create a minimal TranslateService mock
+    translateMock = {
+      instant: jest.fn().mockImplementation(key => key),
+      onLangChange: new Subject(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [PaginatorComponent, MatPaginatorModule, NoopAnimationsModule],
+      providers: [
+        { provide: TranslateService, useValue: translateMock },
+        { provide: MatPaginatorIntl, useClass: MatPaginatorIntlService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PaginatorComponent);

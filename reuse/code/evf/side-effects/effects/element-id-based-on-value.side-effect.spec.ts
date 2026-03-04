@@ -2,9 +2,9 @@ import {
   withElementIdBasedOnValueEffect,
   ElementIdBasedOnValueSideEffect,
 } from './element-id-based-on-value.side-effect';
-import { BaseElementControl, ElementGroupLike } from '@smals/vas-evaluation-form-ui-core';
+import { BaseElementControl, ElementGroupLike } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 
-jest.mock('@smals/vas-evaluation-form-ui-core', () => ({
+jest.mock('@smals-belgium-shared/vas-evaluation-form-ui-core', () => ({
   evfSideEffectFeature: jest.fn(config => config),
 }));
 

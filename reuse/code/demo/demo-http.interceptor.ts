@@ -8,6 +8,8 @@ import {
 } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { DEMO_MOCKS, HttpMethod } from '@reuse/code/demo/mocks/mock-registry';
+import { inject } from '@angular/core';
+import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
 
 interface Body {
   patientIdentifier?: string;
@@ -19,7 +21,10 @@ export const demoHttpInterceptor: HttpInterceptorFn = (
   req: HttpRequest<unknown>,
   next: HttpHandlerFn
 ): Observable<HttpEvent<unknown>> => {
-  if (req.url.includes('assets/i18n/')) {
+  const config = inject(ConfigurationService);
+
+  const isDemoMode = config.getEnvironment() === 'demo';
+  if (!isDemoMode || req.url.includes('assets/i18n/')) {
     return next(req);
   }
 

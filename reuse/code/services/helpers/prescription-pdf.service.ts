@@ -2,7 +2,12 @@ import { Injectable } from '@angular/core';
 import { Content, ContentSvg, Margins, TableCell } from 'pdfmake/interfaces';
 import { TranslateService } from '@ngx-translate/core';
 import { DateTime } from 'luxon';
-import { FormElement, FormTemplate, FormTranslation, Language } from '@smals/vas-evaluation-form-ui-core';
+import {
+  FormElement,
+  FormTemplate,
+  FormTranslation,
+  Language,
+} from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import {
   translateBoundsDuration,
   translateFrequencyAndPeriod,
@@ -269,14 +274,11 @@ export class PrescriptionsPdfService {
     const dynamicRows = templateVersion.elements
       .filter(e => responses[e.id!] != null)
       .map(e => {
-
         const labels = this.getResponseLabels(responses[e.id!], e, templateVersion, responses, language) as string[];
 
         return {
           label: this.evfTranslate(templateVersion, e.labelTranslationId!, language),
-          value: Array.isArray(responses[e.id!])
-            ? { ul: labels.map(l => this.parseInlineMarkdown(l)) }
-            : labels[0],
+          value: Array.isArray(responses[e.id!]) ? { ul: labels.map(l => this.parseInlineMarkdown(l)) } : labels[0],
         };
       });
 

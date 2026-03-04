@@ -10,7 +10,7 @@ import {
 } from '../prescription-details-secondary/prescription-details-secondary.service';
 import { PrescriptionDetailsBeneficiaryComponent } from './prescription-details-beneficiary/prescription-details-beneficiary.component';
 import { EvfFormDetailsWebComponent } from '../evf-details/evf-form-details.component';
-import { FormTemplate } from '@smals/vas-evaluation-form-ui-core';
+import { FormTemplate } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
 
 @Component({

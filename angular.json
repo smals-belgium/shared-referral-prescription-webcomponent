@@ -25,21 +25,9 @@
             "inlineStyleLanguage": "scss",
             "ssr": false,
             "prerender": false,
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "./dist/evf-form-details/build/",
-                "output": "./assets/evf-form-details/"
-              },
-              {
-                "glob": "**/*",
-                "input": "./dist/pdfmake/build/",
-                "output": "./assets/pdfmake/"
-              }
-            ],
+            "assets": [],
             "styles": ["wc-prescription-details/src/styles.scss"],
             "scripts": ["node_modules/marked/marked.min.js"],
-            "externalDependencies": ["/assets/evf-form-details/evf-form-details.js", "/assets/pdfmake/pdfmake.js"],
             "allowedCommonJsDependencies": [
               "localforage",
               "buffer",
@@ -218,16 +206,9 @@
             "optimization": {
               "fonts": false
             },
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "./dist/evf-form/build/",
-                "output": "./assets/evf-form/"
-              }
-            ],
+            "assets": [],
             "styles": ["wc-prescription-create/src/styles.scss"],
             "scripts": ["node_modules/marked/marked.min.js"],
-            "externalDependencies": ["/assets/evf-form/evf-form.js"],
             "allowedCommonJsDependencies": ["localforage", "buffer", "@messageformat/core", "elliptic", "bn.js"]
           },
           "configurations": {
