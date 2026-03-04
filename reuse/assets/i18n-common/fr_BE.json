@@ -81,7 +81,13 @@
             "lastPage": "Dernière page",
             "nextPage": "Page suivante",
             "previousPage": "Page précédente"
-        }
+        },
+        "itemsPerPage": "Éléments par page",
+        "firstPage": "Première page",
+        "lastPage": "Dernière page",
+        "nextPage": "Page suivante",
+        "previousPage": "Page précédente",
+        "rangePage": "{startIndex} - {endIndex} sur {length}"
     },
     "evf": {
         "deleteCareGiver": "Supprimer prestataire",
