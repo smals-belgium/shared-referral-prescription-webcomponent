@@ -268,17 +268,24 @@ export class PrescriptionsPdfService {
 
     const dynamicRows = templateVersion.elements
       .filter(e => responses[e.id!] != null)
-      .map(e => ({
-        label: this.evfTranslate(templateVersion, e.labelTranslationId!, language),
-        value: this.getResponseLabels(responses[e.id!], e, templateVersion, responses, language).join(', '),
-      }));
+      .map(e => {
+
+        const labels = this.getResponseLabels(responses[e.id!], e, templateVersion, responses, language) as string[];
+
+        return {
+          label: this.evfTranslate(templateVersion, e.labelTranslationId!, language),
+          value: Array.isArray(responses[e.id!])
+            ? { ul: labels.map(l => this.parseInlineMarkdown(l)) }
+            : labels[0],
+        };
+      });
 
     return [...staticRows, ...dynamicRows].filter(r => r.value).map(r => this.definitionRow(r.label, r.value ?? ''));
   }
 
-  private definitionRow(label: string, value: string): Content {
+  private definitionRow(label: string, value: string | Content): Content {
     return {
-      stack: [{ text: label, bold: true }, { text: value }],
+      stack: [{ text: label, bold: true }, typeof value === 'string' ? { text: value } : value],
       margin: [0, 0, 0, 6],
     };
   }
@@ -471,7 +478,7 @@ export class PrescriptionsPdfService {
       if (Array.isArray(value)) {
         return value.map(v => {
           const label = element.responses!.find(r => r.value === v)?.labelTranslationId;
-          return label ? [this.evfTranslate(templateVersion, label, language)] : ['((LABEL NOT FOUND: ' + label + '))'];
+          return label ? this.evfTranslate(templateVersion, label, language) : '((LABEL NOT FOUND: ' + label + '))';
         });
       } else {
         const label = element.responses.find(r => r.value === value)?.labelTranslationId;
