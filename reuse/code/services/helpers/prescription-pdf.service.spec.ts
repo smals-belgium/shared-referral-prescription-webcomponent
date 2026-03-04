@@ -114,7 +114,7 @@ describe('PrescriptionsPdfService', () => {
 
     const result = getResponseLabels(['option1', 'option2'], elementWithResponses, mockTemplateVersion, {}, 'nl');
     expect(result).toHaveLength(2);
-    expect(result[0]).toEqual(['Dutch Translation']);
+    expect(result[0]).toBe('Dutch Translation');
   });
 
   it('should handle date string values in getResponseLabels', () => {
@@ -382,6 +382,59 @@ describe('PrescriptionsPdfService', () => {
       expect(result).toHaveLength(4); // 3 static + 1 dynamic
       expect(service['evfTranslate']).toHaveBeenCalledWith(templateVersion, 'label1', 'nl');
       expect(service['getResponseLabels']).toHaveBeenCalledTimes(1);
+    });
+
+    it('should render multi-value responses as a bullet list with inline bold markdown', () => {
+      service['getResponseLabels'] = jest.fn(() => ['Label A', 'Déficience motrice **temporaire**']);
+      const prescription = {
+        authoredOn: '2024-01-15',
+        period: { start: '2024-01-15', end: '2024-02-15' },
+      };
+      const template = { labelTranslations: { nl: 'Template Name' } };
+      const templateVersion = {
+        elements: [{ id: 'elem1', labelTranslationId: 'label1' }],
+      };
+      const responses = { elem1: ['answer1', 'answer2'] };
+
+      const result = service['buildDefinitionRows'](
+        prescription as any,
+        responses,
+        template as any,
+        templateVersion as any,
+        'nl'
+      );
+
+      const dynamicRow = (result as any[])[3];
+      expect(dynamicRow.stack[1]).toEqual({
+        ul: [
+          { text: 'Label A' },
+          { text: [{ text: 'Déficience motrice ' }, { text: 'temporaire', bold: true }] },
+        ],
+      });
+    });
+
+    it('should render single-value responses as plain text', () => {
+      service['getResponseLabels'] = jest.fn(() => ['Label A']);
+      const prescription = {
+        authoredOn: '2024-01-15',
+        period: { start: '2024-01-15', end: '2024-02-15' },
+      };
+      const template = { labelTranslations: { nl: 'Template Name' } };
+      const templateVersion = {
+        elements: [{ id: 'elem1', labelTranslationId: 'label1' }],
+      };
+      const responses = { elem1: 'answer1' };
+
+      const result = service['buildDefinitionRows'](
+        prescription as any,
+        responses,
+        template as any,
+        templateVersion as any,
+        'nl'
+      );
+
+      const dynamicRow = (result as any[])[3];
+      expect(dynamicRow.stack[1]).toEqual({ text: 'Label A' });
     });
 
     it('should filter out rows with empty values but still display validityPeriod with empty values', () => {
