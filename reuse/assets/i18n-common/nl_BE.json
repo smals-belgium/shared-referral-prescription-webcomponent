@@ -173,7 +173,7 @@
             }
         },
         "filter": {
-            "historicToggle": "Archief",
+            "historicToggle": "Historiek",
             "prescriptionType": {
                 "label": "Filter op voorschift"
             },
