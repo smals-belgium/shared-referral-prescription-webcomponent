@@ -81,7 +81,13 @@
             "lastPage": "",
             "nextPage": "",
             "previousPage": ""
-        }
+        },
+        "itemsPerPage": "",
+        "firstPage": "",
+        "lastPage": "",
+        "nextPage": "",
+        "previousPage": "",
+        "rangePage": ""
     },
     "evf": {
         "deleteCareGiver": "",
@@ -459,7 +465,11 @@
             "searchPerformerPlaceHolder": "",
             "locations": "",
             "zipCodeOrCityName": "",
-            "noResults": ""
+            "noResults": "",
+            "dialog": {
+                "title": "",
+                "description": ""
+            }
         },
         "approve": {
             "action": "",

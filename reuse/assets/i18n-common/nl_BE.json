@@ -81,7 +81,13 @@
             "lastPage": "Laatste pagina",
             "nextPage": "Volgende pagina",
             "previousPage": "Vorige pagina"
-        }
+        },
+        "itemsPerPage": "Items per pagina",
+        "firstPage": "Eerste pagina",
+        "lastPage": "Laatste pagina",
+        "nextPage": "Volgende pagina",
+        "previousPage": "Vorige pagina",
+        "rangePage": "{startIndex} - {endIndex} van {length}"
     },
     "evf": {
         "deleteCareGiver": "Zorgverlener verwijderen",
@@ -173,7 +179,7 @@
             }
         },
         "filter": {
-            "historicToggle": "Archief",
+            "historicToggle": "Historiek",
             "prescriptionType": {
                 "label": "Filter op voorschift"
             },
@@ -459,7 +465,11 @@
             "searchPerformerPlaceHolder": "RIZIV nummer, naam",
             "locations": "Locatie(s)",
             "zipCodeOrCityName": "Postcode of gemeente",
-            "noResults": "Geen gemeente gevonden"
+            "noResults": "Geen gemeente gevonden",
+            "dialog": {
+                "title": "Een zorgverlener transfereren naar een voorstel",
+                "description": "Als u dit voorstel overdraagt naar een andere zorgverlener, kan deze de informatie in dit voorstel raadplegen."
+            }
         },
         "approve": {
             "action": "Goedkeuren",
