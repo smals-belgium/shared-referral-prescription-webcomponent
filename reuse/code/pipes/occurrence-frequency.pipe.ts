@@ -9,6 +9,7 @@ type TranslationType = keyof Translation;
 @Pipe({
   standalone: true,
   name: 'occurrenceFrequency',
+  pure: false,
 })
 export class OccurrenceFrequencyPipe implements PipeTransform {
   private readonly _evfTranslate = inject(EvfTranslateService);

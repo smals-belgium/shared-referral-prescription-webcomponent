@@ -379,6 +379,19 @@
     },
     "transferProfessional": {
       "undefined": "Kies eerst een zorgverlener"
+    },
+    "transferPerformer": {
+      "dialog": {
+        "description": "Als u dit voorschrift overdraagt naar een andere zorgverlener, kan deze de informatie in dit voorschrift raadplegen.",
+        "title": "Een zorgverlener transfereren naar een voorschrift"
+      },
+      "locations": "Locatie(s)",
+      "noResults": "Geen gemeente gevonden",
+      "performer": "Zorgverlener",
+      "searchPerformerPlaceHolder": "RIZIV nummer, naam",
+      "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
+      "title": "Toewijzing transfereren",
+      "zipCodeOrCityName": "Postcode of gemeente"
     }
   },
   "proposal": {
@@ -546,6 +559,19 @@
       "otolaryngology": "Otorinolaryngologie",
       "radiology": "Radiologie",
       "nursingCare": "Verpleegkundige zorg"
+    },
+    "transferPerformer": {
+      "dialog": {
+        "description": "Als u dit voorstel overdraagt naar een andere zorgverlener, kan deze de informatie in dit voorstel raadplegen.",
+        "title": "Een zorgverlener transfereren naar een voorstel"
+      },
+      "locations": "Locatie(s)",
+      "noResults": "Geen gemeente gevonden",
+      "performer": "Zorgverlener",
+      "searchPerformerPlaceHolder": "RIZIV nummer, naam",
+      "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
+      "title": "Transfereren",
+      "zipCodeOrCityName": "Postcode of gemeente"
     }
   },
   "performerTask": {

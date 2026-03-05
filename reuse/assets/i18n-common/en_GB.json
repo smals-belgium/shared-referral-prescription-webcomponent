@@ -379,6 +379,19 @@
     },
     "transferProfessional": {
       "undefined": ""
+    },
+    "transferPerformer": {
+      "dialog": {
+        "description": "If you transfer a healthcare provider to this prescription, they will be able to view the information contained in this prescription.",
+        "title": "Transfer a healthcare provider to a prescription"
+      },
+      "locations": "Location(s)",
+      "noResults": "No city found",
+      "performer": "Provider",
+      "searchPerformerPlaceHolder": "INAMI number, name",
+      "success": "{firstName} {lastName} has been assigned as provider.",
+      "title": "Transfer assignment",
+      "zipCodeOrCityName": "Postal code or city"
     }
   },
   "proposal": {
@@ -546,6 +559,19 @@
       "otolaryngology": "",
       "radiology": "",
       "nursingCare": ""
+    },
+    "transferPerformer": {
+      "dialog": {
+        "description": "If you transfer a healthcare provider to this proposal, they will be able to view the information contained in this proposal.",
+        "title": "Transfer a healthcare provider to a proposal"
+      },
+      "locations": "Location(s)",
+      "noResults": "No city found",
+      "performer": "Provider",
+      "searchPerformerPlaceHolder": "INAMI number, name",
+      "success": "{firstName} {lastName} has been assigned as provider.",
+      "title": "Transfer assignment",
+      "zipCodeOrCityName": "Postal code or city"
     }
   },
   "performerTask": {

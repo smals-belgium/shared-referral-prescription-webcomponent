@@ -379,6 +379,19 @@
     },
     "transferProfessional": {
       "undefined": "Choisir d'abord un professionnel"
+    },
+    "transferPerformer": {
+      "dialog": {
+        "description": "Si vous transférez un prestataire de soins à cette prescription, celui-ci pourra consulter les informations contenues dans cette prescription.",
+        "title": "Transférer un prestataire de soins à une prescription"
+      },
+      "locations": "Localisation(s)",
+      "noResults": "Aucune commune trouvée",
+      "performer": "Prestataire",
+      "searchPerformerPlaceHolder": "N° INAMI, nom",
+      "success": "{firstName} {lastName} a été assigné comme prestataire.",
+      "title": "Transférer l'assignation",
+      "zipCodeOrCityName": "Code postal ou commune"
     }
   },
   "proposal": {
@@ -546,6 +559,19 @@
       "otolaryngology": "Oto-rhino-laryngologie",
       "radiology": "Radiologie",
       "nursingCare": "Soins infirmiers"
+    },
+    "transferPerformer": {
+      "dialog": {
+        "description": "Si vous transférez un prestataire de soins à cette proposition, celui-ci pourra consulter les informations contenues dans cette proposition.",
+        "title": "Transférer un prestataire de soins à une proposition"
+      },
+      "locations": "Localisation(s)",
+      "noResults": "Aucune commune trouvée",
+      "performer": "Prestataire",
+      "searchPerformerPlaceHolder": "N° INAMI, nom",
+      "success": "{firstName} {lastName} a été assigné comme prestataire.",
+      "title": "Transférer l'assignation",
+      "zipCodeOrCityName": "Code postal ou commune"
     }
   },
   "performerTask": {

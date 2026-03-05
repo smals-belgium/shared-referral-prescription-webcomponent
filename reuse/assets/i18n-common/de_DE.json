@@ -379,6 +379,19 @@
     },
     "transferProfessional": {
       "undefined": ""
+    },
+    "transferPerformer": {
+      "dialog": {
+        "description": "",
+        "title": ""
+      },
+      "locations": "",
+      "noResults": "",
+      "performer": "",
+      "searchPerformerPlaceHolder": "",
+      "success": "",
+      "title": "",
+      "zipCodeOrCityName": ""
     }
   },
   "proposal": {
@@ -546,6 +559,19 @@
       "otolaryngology": "",
       "radiology": "",
       "nursingCare": ""
+    },
+    "transferPerformer": {
+      "dialog": {
+        "description": "",
+        "title": ""
+      },
+      "locations": "",
+      "noResults": "",
+      "performer": "",
+      "searchPerformerPlaceHolder": "",
+      "success": "",
+      "title": "",
+      "zipCodeOrCityName": ""
     }
   },
   "performerTask": {
