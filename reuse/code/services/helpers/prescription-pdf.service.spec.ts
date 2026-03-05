@@ -152,11 +152,28 @@ describe('PrescriptionsPdfService', () => {
 
   describe('parseMarkdownList', () => {
     it('should parse markdown list items and strip prefixes', () => {
-      const markdown = '> - First item\n> - Second item\n> - Third item';
+      const markdown = '>This form certifies\n> - First item\n> - Second item\n> - Third item';
 
       const result = service['parseMarkdownList'](markdown);
 
-      expect(result).toEqual([{ text: 'First item' }, { text: 'Second item' }, { text: 'Third item' }]);
+      expect(result).toEqual([
+        { text: 'This form certifies' },
+        { ul: [{ text: 'First item' }, { text: 'Second item' }, { text: 'Third item' }], margin: [10, 0, 0, 0] },
+      ]);
+    });
+
+    it('should parse multiple sections each with title and list', () => {
+      const markdown =
+        '> This form certifies\n>- First item\n>- Second item\n> This form 2 certifies\n>- Third item\n>- fourth item';
+
+      const result = service['parseMarkdownList'](markdown);
+
+      expect(result).toEqual([
+        { text: 'This form certifies' },
+        { ul: [{ text: 'First item' }, { text: 'Second item' }], margin: [10, 0, 0, 0] },
+        { text: 'This form 2 certifies' },
+        { ul: [{ text: 'Third item' }, { text: 'fourth item' }], margin: [10, 0, 0, 0] },
+      ]);
     });
 
     it('should filter empty lines and trim whitespace', () => {
@@ -164,7 +181,9 @@ describe('PrescriptionsPdfService', () => {
 
       const result = service['parseMarkdownList'](markdown);
 
-      expect(result).toEqual([{ text: 'Item one' }, { text: 'Item two' }]);
+      expect(result).toEqual([
+        { ul: [{ text: 'Item one' }, { text: 'Item two' }], margin: [10, 0, 0, 0] },
+      ]);
     });
 
     it('should parse bold markdown into pdfmake rich text', () => {
@@ -176,16 +195,21 @@ describe('PrescriptionsPdfService', () => {
 
       expect(result).toEqual([
         {
-          text: [{ text: "il n'est donc " }, { text: 'pas obligatoire', bold: true }],
-        },
-        {
-          text: [
-            { text: 'en cas de ' },
-            { text: 'désorientation du patient', bold: true },
-            { text: ' dans le temps, un ' },
-            { text: 'certificat médical', bold: true },
-            { text: ' est requis' },
+          ul: [
+            {
+              text: [{ text: "il n'est donc " }, { text: 'pas obligatoire', bold: true }],
+            },
+            {
+              text: [
+                { text: 'en cas de ' },
+                { text: 'désorientation du patient', bold: true },
+                { text: ' dans le temps, un ' },
+                { text: 'certificat médical', bold: true },
+                { text: ' est requis' },
+              ],
+            },
           ],
+          margin: [10, 0, 0, 0],
         },
       ]);
     });
