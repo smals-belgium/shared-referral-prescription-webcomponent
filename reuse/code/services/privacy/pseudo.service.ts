@@ -12,13 +12,13 @@ import { pseudonymInTransitMock } from '@reuse/code/demo/mocks/pseudonymInTransi
 
 @Injectable({ providedIn: 'root' })
 export class PseudoService {
-  private pseudonymizationDomain: Domain | undefined;
+  private readonly pseudonymizationDomain: Domain | undefined;
   private readonly pseudoApiUrl = this.configService.getEnvironmentVariable('pseudoApiUrl') as string;
   private readonly env = this.configService.getEnvironment();
 
   constructor(
-    private configService: ConfigurationService,
-    private pseudonymizationHelper: PseudonymisationHelper
+    private readonly configService: ConfigurationService,
+    private readonly pseudonymizationHelper: PseudonymisationHelper
   ) {
     if (this.configService.getEnvironmentVariable('enablePseudo')) {
       this.pseudonymizationDomain = this.pseudonymizationHelper.createDomain(

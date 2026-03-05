@@ -3,7 +3,7 @@ import { InstitutionTypeResource } from '@reuse/code/openapi';
 
 @Injectable({ providedIn: 'root' })
 export class OrganizationService {
-  private groups = [
+  private readonly groups = [
     { name: InstitutionTypeResource.ThirdPartyPayingGroup, code: '940' },
     { name: InstitutionTypeResource.GroupOfDoctors, code: '212' },
     { name: InstitutionTypeResource.GuardPost, code: '115' },

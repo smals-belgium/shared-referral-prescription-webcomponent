@@ -10,7 +10,7 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class ProposalService {
-  private api = inject(ApiProposalService);
+  private readonly api = inject(ApiProposalService);
 
   create(createRequestResource: CreateRequestResource, generatedUUID: string) {
     return this.api.createProposal(generatedUUID, createRequestResource);

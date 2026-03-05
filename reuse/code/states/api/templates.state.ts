@@ -5,7 +5,7 @@ import { Template } from '@reuse/code/openapi';
 
 @Injectable({ providedIn: 'root' })
 export class TemplatesState extends BaseState<Template[]> {
-  private prescriptionTemplateService = inject(PrescriptionTemplateService);
+  private readonly prescriptionTemplateService = inject(PrescriptionTemplateService);
 
   loadTemplates() {
     this.load(this.prescriptionTemplateService.findAllTemplates());

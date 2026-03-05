@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatCheckbox, MatCheckboxModule } from '@angular/material/checkbox';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
@@ -17,7 +17,7 @@ export interface CancelCreationDialogResult {
 @Component({
   templateUrl: './cancel-creation.dialog.html',
   styleUrls: ['./cancel-creation.dialog.scss'],
-  imports: [TranslateModule, MatDialogModule, MatButtonModule, MatCheckboxModule, TemplateNamePipe],
+  imports: [TranslateModule, MatDialogModule, MatButtonModule, MatCheckboxModule, TemplateNamePipe, MatCheckbox],
 })
 export class CancelCreationDialog {
   readonly prescriptionForms = this.data.prescriptionForms;
@@ -36,12 +36,12 @@ export class CancelCreationDialog {
     }
   }
 
-  toggleDeleteAll(checked: boolean): void {
-    if (checked) {
-      this.formsToDelete = this.prescriptionForms.map(f => f.trackId);
-    } else {
-      this.formsToDelete = [];
-    }
+  selectAll(): void {
+    this.formsToDelete = this.prescriptionForms.map(f => f.trackId);
+  }
+
+  deselectAll(): void {
+    this.formsToDelete = [];
   }
 
   cancelPrescriptions(): void {

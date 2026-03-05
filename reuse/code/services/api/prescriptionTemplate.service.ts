@@ -5,9 +5,9 @@ import { Template, TemplateService as ApiTemplateService, TemplateVersion } from
 
 @Injectable({ providedIn: 'root' })
 export class PrescriptionTemplateService {
-  private api = inject(ApiTemplateService);
+  private readonly api = inject(ApiTemplateService);
 
-  constructor(private cacheHttpService: HttpCacheService) {}
+  constructor(private readonly cacheHttpService: HttpCacheService) {}
 
   findAllTemplates() {
     const url = '/templates';

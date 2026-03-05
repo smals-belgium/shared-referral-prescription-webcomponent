@@ -4,7 +4,7 @@ import { Intent } from '@reuse/code/interfaces';
 
 @Pipe({ name: 'translateByIntent' })
 export class TranslateByIntentPipe implements PipeTransform {
-  constructor(private translate: TranslateService) {}
+  constructor(private readonly translate: TranslateService) {}
 
   transform(
     intent: string,

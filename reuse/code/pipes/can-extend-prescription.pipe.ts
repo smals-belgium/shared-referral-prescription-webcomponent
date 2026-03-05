@@ -23,7 +23,7 @@ import { isProfesionalBasedOnRole, isProposal } from '@reuse/code/utils/utils';
  */
 @Pipe({ name: 'canExtendPrescription', standalone: true })
 export class CanExtendPrescriptionPipe implements PipeTransform {
-  constructor(private accessMatrixState: AccessMatrixState) {}
+  constructor(private readonly accessMatrixState: AccessMatrixState) {}
 
   transform(prescription: ReadRequestResource, currentUser?: Partial<UserInfo>): boolean {
     if (currentUser == undefined || isProposal(prescription.intent)) return false;

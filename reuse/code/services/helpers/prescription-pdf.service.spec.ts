@@ -406,10 +406,7 @@ describe('PrescriptionsPdfService', () => {
 
       const dynamicRow = (result as any[])[3];
       expect(dynamicRow.stack[1]).toEqual({
-        ul: [
-          { text: 'Label A' },
-          { text: [{ text: 'Déficience motrice ' }, { text: 'temporaire', bold: true }] },
-        ],
+        ul: [{ text: 'Label A' }, { text: [{ text: 'Déficience motrice ' }, { text: 'temporaire', bold: true }] }],
       });
     });
 

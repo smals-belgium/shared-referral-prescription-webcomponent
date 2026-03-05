@@ -15,8 +15,8 @@ export class TranslationPipe implements PipeTransform, OnDestroy {
   private translated?: string;
 
   constructor(
-    private translateService: TranslateService,
-    private cd: ChangeDetectorRef
+    private readonly translateService: TranslateService,
+    private readonly cd: ChangeDetectorRef
   ) {
     this.listenForLangChanges();
   }

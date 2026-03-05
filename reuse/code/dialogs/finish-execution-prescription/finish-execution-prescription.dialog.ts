@@ -42,11 +42,11 @@ export class FinishExecutionPrescriptionDialog extends BaseDialog implements OnI
   generatedUUID = '';
 
   constructor(
-    private prescriptionStateService: PrescriptionState,
-    private toastService: ToastService,
+    private readonly prescriptionStateService: PrescriptionState,
+    private readonly toastService: ToastService,
     dialogRef: MatDialogRef<FinishExecutionPrescriptionDialog>,
     @Inject(MAT_DIALOG_DATA)
-    private data: {
+    private readonly data: {
       prescription: ReadRequestResource;
       performerTask: PerformerTaskResource;
       startExecutionDate: string;

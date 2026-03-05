@@ -61,7 +61,7 @@ export class SelectPrescriptionTypeComponent implements OnChanges, OnInit {
   @Input() models?: ModelEntityDto[];
   @Input() showTitle = true;
 
-  constructor(private translate: TranslateService) {}
+  constructor(private readonly translate: TranslateService) {}
 
   private get evfCurrentLang(): Language {
     return this.translate.currentLang.substring(0, 2) as Language;

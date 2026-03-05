@@ -6,7 +6,7 @@ import { from } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class IdentifyState extends BaseState<string> {
-  constructor(private pseudoService: PseudoService) {
+  constructor(private readonly pseudoService: PseudoService) {
     super();
   }
 
