@@ -4,7 +4,7 @@
   <mat-checkbox
     [checked]="formsToDelete.length === prescriptionForms.length"
     [indeterminate]="formsToDelete.length > 0 && formsToDelete.length !== prescriptionForms.length"
-    (change)="toggleDeleteAll($event.checked)"
+    (change)="$event.checked ? selectAll() : deselectAll()"
   >
     {{'prescription.create.cancelPrescriptionsCreation.cancelAll' | translate}}
   </mat-checkbox>

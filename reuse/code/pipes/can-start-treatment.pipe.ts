@@ -5,7 +5,7 @@ import { isProposal } from '@reuse/code/utils/utils';
 
 @Pipe({ name: 'canStartTreatment', standalone: true })
 export class CanStartTreatmentPipe implements PipeTransform {
-  constructor(private accessMatrixState: AccessMatrixState) {}
+  constructor(private readonly accessMatrixState: AccessMatrixState) {}
 
   transform(prescription: ReadRequestResource, task?: PerformerTaskResource): boolean {
     const allowedStatuses: RequestStatus[] = [

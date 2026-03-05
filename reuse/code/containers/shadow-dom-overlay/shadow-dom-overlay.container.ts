@@ -8,7 +8,7 @@ export const OVERLAY_QUERY_SELECTOR = new InjectionToken<string[]>('Overlay quer
 export class ShadowDomOverlayContainer extends OverlayContainer implements OnDestroy {
   constructor(
     @Inject(DOCUMENT) _document: Document,
-    @Inject(OVERLAY_QUERY_SELECTOR) private selectors: string[]
+    @Inject(OVERLAY_QUERY_SELECTOR) private readonly selectors: string[]
   ) {
     super(_document);
   }
@@ -33,11 +33,11 @@ export class ShadowDomOverlayContainer extends OverlayContainer implements OnDes
   }
 
   public override getContainerElement(): HTMLElement {
-    if (!this._containerElement || !this._containerElement.isConnected) {
+    if (!this._containerElement?.isConnected) {
       this._createContainer();
     }
 
-    return this._containerElement;
+    return this._containerElement!;
   }
 
   protected override _createContainer(): void {

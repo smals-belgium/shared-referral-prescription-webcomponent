@@ -5,7 +5,7 @@
 @include mh.override-mat-expansion();
 
 //current component and all its descendants
-:host ::ng-deep{
+:host ::ng-deep {
   .mat-expansion-panel-body {
     padding: 0 0 mh.$spacing-m;
   }
@@ -18,7 +18,7 @@
   gap: mh.$spacing-l;
 }
 
-.mat-accordion>.mat-expansion-panel {
+.mat-accordion > .mat-expansion-panel {
   box-shadow: var(--mh-accordion-box-shadow, unset);
   border-bottom: var(--mh-accordion-border-bottom, 1px solid var(--mdc-outlined-text-field-outline-color));
 }
@@ -35,19 +35,19 @@ mat-expansion-panel-header {
 
 .mat-expansion-panel-header-title {
   flex-grow: 4;
-  h2{
+  h2 {
     @include mh.font-heading-2();
     & {
       margin-bottom: 0;
     }
   }
-  p{
+  p {
     @include mh.font-body-1();
     & {
       margin-top: 0;
       margin-bottom: 0;
     }
-    .invalid{
+    .invalid {
       color: var(--mh-label-invalid-color, mh.$typography-semantic-error-medium);
     }
   }
@@ -62,19 +62,21 @@ button + button {
   margin-left: mh.$spacing-l;
 }
 
-.mat-mdc-button.mat-error{
-  &:not(:disabled){
+.mat-mdc-button.mat-error {
+  &:not(:disabled) {
     color: var(--mh-mat-button-error-color, mh.$error-30);
-    --mat-text-button-state-layer-color: var(--mh-mat-button-error-color,#{mh.$error-30});
+    --mat-text-button-state-layer-color: var(--mh-mat-button-error-color, #{mh.$error-30});
   }
   text-decoration: var(--mh-mat-button-error-decoration, underline);
 }
 
-.actions{
+.actions {
   margin-top: mh.$spacing-m;
 }
 
-mat-accordion.mat-accordion mat-expansion-panel.mat-expansion-panel, mat-accordion.mat-accordion mat-expansion-panel.mat-expansion-panel:not(.mat-expanded), mat-accordion.mat-accordion mat-expansion-panel.mat-expansion-panel:first-of-type{
+mat-accordion.mat-accordion mat-expansion-panel.mat-expansion-panel,
+mat-accordion.mat-accordion mat-expansion-panel.mat-expansion-panel:not(.mat-expanded),
+mat-accordion.mat-accordion mat-expansion-panel.mat-expansion-panel:first-of-type {
   border-radius: var(--mh-mat-expansion-container-not-expanded-shape, 0);
 }
 

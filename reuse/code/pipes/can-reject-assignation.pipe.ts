@@ -25,7 +25,7 @@ import {
  */
 @Pipe({ name: 'canRejectAssignation', standalone: true })
 export class CanRejectAssignationPipe implements PipeTransform {
-  constructor(private accessMatrixState: AccessMatrixState) {}
+  constructor(private readonly accessMatrixState: AccessMatrixState) {}
 
   transform(
     prescription: ReadRequestResource,

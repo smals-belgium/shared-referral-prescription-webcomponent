@@ -7,7 +7,7 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class PrescriptionModelService {
-  private api = inject(ApiModelService);
+  private readonly api = inject(ApiModelService);
 
   createModel(createModelResource: CreateModelResource) {
     return this.api.createPrescriptionModel(createModelResource);

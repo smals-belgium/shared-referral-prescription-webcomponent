@@ -74,7 +74,6 @@ import {
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatChip } from '@angular/material/chips';
 import { EvfTranslateService, FormTranslations } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
-import { PrescriptionsPdfService } from '@reuse/code/services/helpers/prescription-pdf.service';
 import { PrescriptionDetailsMainComponent } from '../../components/prescription-details-main/prescription-details-main.component';
 import { PrescriptionDetailsSecondaryComponent } from '../../components/prescription-details-secondary/prescription-details-secondary.component';
 import {
@@ -406,23 +405,26 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
           concatMap(([key, value]) => {
             const formElement = template.elements?.find(e => e.id === key);
 
-            if (formElement?.tags?.includes('freeText')) {
-              if (!cryptoKey) {
-                return throwError(() => new Error(`Pseudo key is missing for key "${key}"`));
-              }
-              return this._encryptionService.decryptText(value as string, cryptoKey).pipe(
-                map(decrypted => {
-                  decryptedResponses[key] = decrypted;
-                  return decryptedResponses;
-                }),
-                catchError((error: HttpErrorResponse) => {
-                  return throwError(() => new Error(`Decryption failed for key "${key}": ${error.message}`));
-                })
-              );
-            } else {
+            const isFreeText = formElement?.tags?.includes('freeText');
+
+            if (!isFreeText) {
               decryptedResponses[key] = value;
               return of(decryptedResponses);
             }
+
+            if (!cryptoKey) {
+              return throwError(() => new Error(`Pseudo key is missing for key "${key}"`));
+            }
+
+            return this._encryptionService.decryptText(value as string, cryptoKey).pipe(
+              map(decrypted => {
+                decryptedResponses[key] = decrypted;
+                return decryptedResponses;
+              }),
+              catchError((error: HttpErrorResponse) => {
+                return throwError(() => new Error(`Decryption failed for key "${key}": ${error.message}`));
+              })
+            );
           })
         )
         .subscribe({

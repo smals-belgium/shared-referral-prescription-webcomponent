@@ -25,7 +25,7 @@ import {
  */
 @Pipe({ name: 'canInterruptTreatment', standalone: true })
 export class CanInterruptTreatmentPipe implements PipeTransform {
-  constructor(private accessMatrixState: AccessMatrixState) {}
+  constructor(private readonly accessMatrixState: AccessMatrixState) {}
 
   transform(prescription: ReadRequestResource, task: PerformerTaskResource, currentUser?: Partial<UserInfo>): boolean {
     if (currentUser == undefined) return false;

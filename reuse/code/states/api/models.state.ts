@@ -5,7 +5,7 @@ import { PageModelEntityDto } from '@reuse/code/openapi';
 
 @Injectable({ providedIn: 'root' })
 export class ModelsState extends BaseState<PageModelEntityDto> {
-  private prescriptionModelService = inject(PrescriptionModelService);
+  private readonly prescriptionModelService = inject(PrescriptionModelService);
 
   loadModels(page: number, pageSize: number) {
     this.load(this.prescriptionModelService.findAll(page, pageSize));

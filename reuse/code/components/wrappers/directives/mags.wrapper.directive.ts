@@ -43,7 +43,7 @@ export abstract class MagsComponent implements OnInit {
     this.hostServices.events.addEventListener('version-mismatch', this.onVersionMissmatch);
   }
 
-  protected initWebComponent() {}
+  protected abstract initWebComponent(): void;
   protected appendWebComponent(webComponent: HTMLElement) {
     this.componentView.nativeElement.append(webComponent);
   }
