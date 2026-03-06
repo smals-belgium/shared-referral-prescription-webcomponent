@@ -82,7 +82,7 @@ export class ProfessionalTableComponent implements OnChanges, OnDestroy {
     if (this.professionals()?.length) {
       this.initializeDataStream();
     } else {
-      this._dataService.reset();
+      this._dataService.tableReset();
     }
   }
 
@@ -103,6 +103,6 @@ export class ProfessionalTableComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
-    this._dataService.reset();
+    this._dataService.tableReset();
   }
 }
