@@ -23,7 +23,7 @@ describe('ProfessionalTableComponent', () => {
       loading: signal(false),
       initializeTableDataStream: jest.fn(),
       triggerLoad: jest.fn(),
-      reset: jest.fn(),
+      tableReset: jest.fn(),
     } as any;
 
     await TestBed.configureTestingModule({

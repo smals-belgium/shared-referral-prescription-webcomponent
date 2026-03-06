@@ -9,6 +9,7 @@ import { catchError, EMPTY, expand, map, mergeScan, Observable, of, scan, startW
 import { SearchProfessionalCriteria } from '@reuse/code/interfaces';
 import { HealthcareProviderService } from '@reuse/code/services/api/healthcareProvider.service';
 import { DeviceService } from '@reuse/code/services/helpers/device.service';
+import { takeUntil } from 'rxjs/operators';
 
 type HealthcareResource = HealthcareProResource | HealthcareOrganizationResource;
 
@@ -34,6 +35,7 @@ export class RequestProfessionalDataService {
 
   readonly data = this._data.asReadonly();
   readonly loading = this._loading.asReadonly();
+  private _tableDestroyed = new Subject<void>();
 
   private readonly loadTrigger = new Subject<void>();
 
@@ -69,6 +71,13 @@ export class RequestProfessionalDataService {
   reset(): void {
     this._data.set([]);
     this._loading.set(false);
+  }
+
+  tableReset() {
+    this._tableDestroyed.next();
+    this._tableDestroyed.complete();
+    this._tableDestroyed = new Subject<void>();
+    this.reset();
   }
 
   /**
@@ -114,6 +123,7 @@ export class RequestProfessionalDataService {
           }))
         );
       }),
+      takeUntil(this._tableDestroyed),
       map(state => state.accumulated)
     );
   }
