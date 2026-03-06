@@ -112,11 +112,7 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
 
     let dayPeriod = {};
     if (repeat.when) {
-      if (Array.isArray(repeat.when)) {
-        dayPeriod = { dayPeriod: repeat.when[0] };
-      } else {
-        dayPeriod = { dayPeriod: repeat.when };
-      }
+      dayPeriod = { dayPeriod: repeat.when };
     }
 
     const maxSessions = { nbSessions: repeat.count };

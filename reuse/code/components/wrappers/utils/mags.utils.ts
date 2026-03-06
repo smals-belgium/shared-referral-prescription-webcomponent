@@ -15,3 +15,4 @@ export function mapLanguageToTranslations(language?: UserLanguage): Lang {
       return Lang.FR;
   }
 }
+

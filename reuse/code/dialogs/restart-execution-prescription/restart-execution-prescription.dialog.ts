@@ -39,8 +39,8 @@ export class RestartExecutionPrescriptionDialog extends BaseDialog implements On
   generatedUUID = '';
 
   constructor(
-    private prescriptionStateService: PrescriptionState,
-    private toastService: ToastService,
+    private readonly prescriptionStateService: PrescriptionState,
+    private readonly toastService: ToastService,
     dialogRef: MatDialogRef<RestartExecutionPrescriptionDialog>,
     @Inject(MAT_DIALOG_DATA) private readonly data: RejectAssignationDialogData
   ) {

@@ -3,7 +3,7 @@ import { AccessMatrixService as ApiAccessMatrixService } from '@reuse/code/opena
 
 @Injectable({ providedIn: 'root' })
 export class AccessMatrixService {
-  private api = inject(ApiAccessMatrixService);
+  private readonly api = inject(ApiAccessMatrixService);
 
   getMatrix() {
     return this.api.getMatrix();

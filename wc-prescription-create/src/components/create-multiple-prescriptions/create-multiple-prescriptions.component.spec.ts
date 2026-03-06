@@ -133,7 +133,7 @@ describe('CreateMultiplePrescriptionsComponent', () => {
 
     const result = component.mapResponsesToRepeatObject(responses);
     expect(result['nbSessions']).toBe(3);
-    expect(result['dayPeriod']).toBe('AM');
+    expect(result['dayPeriod']).toEqual(['AM']);
   });
 
   it('should set elementGroup value in setElementGroup', () => {

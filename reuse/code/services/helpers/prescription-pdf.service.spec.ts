@@ -114,7 +114,7 @@ describe('PrescriptionsPdfService', () => {
 
     const result = getResponseLabels(['option1', 'option2'], elementWithResponses, mockTemplateVersion, {}, 'nl');
     expect(result).toHaveLength(2);
-    expect(result[0]).toEqual(['Dutch Translation']);
+    expect(result[0]).toBe('Dutch Translation');
   });
 
   it('should handle date string values in getResponseLabels', () => {
@@ -152,11 +152,28 @@ describe('PrescriptionsPdfService', () => {
 
   describe('parseMarkdownList', () => {
     it('should parse markdown list items and strip prefixes', () => {
-      const markdown = '> - First item\n> - Second item\n> - Third item';
+      const markdown = '>This form certifies\n> - First item\n> - Second item\n> - Third item';
 
       const result = service['parseMarkdownList'](markdown);
 
-      expect(result).toEqual([{ text: 'First item' }, { text: 'Second item' }, { text: 'Third item' }]);
+      expect(result).toEqual([
+        { text: 'This form certifies' },
+        { ul: [{ text: 'First item' }, { text: 'Second item' }, { text: 'Third item' }], margin: [10, 0, 0, 0] },
+      ]);
+    });
+
+    it('should parse multiple sections each with title and list', () => {
+      const markdown =
+        '> This form certifies\n>- First item\n>- Second item\n> This form 2 certifies\n>- Third item\n>- fourth item';
+
+      const result = service['parseMarkdownList'](markdown);
+
+      expect(result).toEqual([
+        { text: 'This form certifies' },
+        { ul: [{ text: 'First item' }, { text: 'Second item' }], margin: [10, 0, 0, 0] },
+        { text: 'This form 2 certifies' },
+        { ul: [{ text: 'Third item' }, { text: 'fourth item' }], margin: [10, 0, 0, 0] },
+      ]);
     });
 
     it('should filter empty lines and trim whitespace', () => {
@@ -164,7 +181,9 @@ describe('PrescriptionsPdfService', () => {
 
       const result = service['parseMarkdownList'](markdown);
 
-      expect(result).toEqual([{ text: 'Item one' }, { text: 'Item two' }]);
+      expect(result).toEqual([
+        { ul: [{ text: 'Item one' }, { text: 'Item two' }], margin: [10, 0, 0, 0] },
+      ]);
     });
 
     it('should parse bold markdown into pdfmake rich text', () => {
@@ -176,16 +195,21 @@ describe('PrescriptionsPdfService', () => {
 
       expect(result).toEqual([
         {
-          text: [{ text: "il n'est donc " }, { text: 'pas obligatoire', bold: true }],
-        },
-        {
-          text: [
-            { text: 'en cas de ' },
-            { text: 'désorientation du patient', bold: true },
-            { text: ' dans le temps, un ' },
-            { text: 'certificat médical', bold: true },
-            { text: ' est requis' },
+          ul: [
+            {
+              text: [{ text: "il n'est donc " }, { text: 'pas obligatoire', bold: true }],
+            },
+            {
+              text: [
+                { text: 'en cas de ' },
+                { text: 'désorientation du patient', bold: true },
+                { text: ' dans le temps, un ' },
+                { text: 'certificat médical', bold: true },
+                { text: ' est requis' },
+              ],
+            },
           ],
+          margin: [10, 0, 0, 0],
         },
       ]);
     });
@@ -382,6 +406,56 @@ describe('PrescriptionsPdfService', () => {
       expect(result).toHaveLength(4); // 3 static + 1 dynamic
       expect(service['evfTranslate']).toHaveBeenCalledWith(templateVersion, 'label1', 'nl');
       expect(service['getResponseLabels']).toHaveBeenCalledTimes(1);
+    });
+
+    it('should render multi-value responses as a bullet list with inline bold markdown', () => {
+      service['getResponseLabels'] = jest.fn(() => ['Label A', 'Déficience motrice **temporaire**']);
+      const prescription = {
+        authoredOn: '2024-01-15',
+        period: { start: '2024-01-15', end: '2024-02-15' },
+      };
+      const template = { labelTranslations: { nl: 'Template Name' } };
+      const templateVersion = {
+        elements: [{ id: 'elem1', labelTranslationId: 'label1' }],
+      };
+      const responses = { elem1: ['answer1', 'answer2'] };
+
+      const result = service['buildDefinitionRows'](
+        prescription as any,
+        responses,
+        template as any,
+        templateVersion as any,
+        'nl'
+      );
+
+      const dynamicRow = (result as any[])[3];
+      expect(dynamicRow.stack[1]).toEqual({
+        ul: [{ text: 'Label A' }, { text: [{ text: 'Déficience motrice ' }, { text: 'temporaire', bold: true }] }],
+      });
+    });
+
+    it('should render single-value responses as plain text', () => {
+      service['getResponseLabels'] = jest.fn(() => ['Label A']);
+      const prescription = {
+        authoredOn: '2024-01-15',
+        period: { start: '2024-01-15', end: '2024-02-15' },
+      };
+      const template = { labelTranslations: { nl: 'Template Name' } };
+      const templateVersion = {
+        elements: [{ id: 'elem1', labelTranslationId: 'label1' }],
+      };
+      const responses = { elem1: 'answer1' };
+
+      const result = service['buildDefinitionRows'](
+        prescription as any,
+        responses,
+        template as any,
+        templateVersion as any,
+        'nl'
+      );
+
+      const dynamicRow = (result as any[])[3];
+      expect(dynamicRow.stack[1]).toEqual({ text: 'Label A' });
     });
 
     it('should filter out rows with empty values but still display validityPeriod with empty values', () => {

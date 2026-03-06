@@ -142,7 +142,16 @@ export class RequestSummaryDataService {
 
     return serviceCall$.pipe(
       map(response => {
-        const newItems = 'items' in response ? response.items : 'content' in response ? response.content : [];
+        let newItems: (RequestSummaryResource | ModelEntityDto)[] | undefined;
+
+        if ('items' in response) {
+          newItems = response.items;
+        } else if ('content' in response) {
+          newItems = response.content;
+        } else {
+          newItems = [];
+        }
+
         if (!newItems) return accumulatedData;
         return newItems.length > 0 ? [...accumulatedData, ...newItems] : accumulatedData;
       })
