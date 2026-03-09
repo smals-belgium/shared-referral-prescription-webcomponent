@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { App } from './app';
 import { HOST_SERVICES } from '@reuse/code/components/wrappers/injection-tokens/host-services.injection-token';
 import { HOST_SETTINGS } from '@reuse/code/components/wrappers/injection-tokens/host-settings.injection-token';
+import { TranslateModule } from '@ngx-translate/core';
 
 describe('App', () => {
   const mockHostServices = {
@@ -15,7 +16,7 @@ describe('App', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [App],
+      imports: [App, TranslateModule.forRoot()],
       providers: [
         { provide: HOST_SERVICES, useValue: mockHostServices },
         { provide: HOST_SETTINGS, useValue: mockHostSettings },

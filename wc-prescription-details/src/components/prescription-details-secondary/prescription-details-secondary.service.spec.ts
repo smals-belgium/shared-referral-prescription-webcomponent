@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PerformerTaskResource, PersonResource, ProposalService, ReadRequestResource } from '@reuse/code/openapi';
-import { TransferAssignationDialog } from '@reuse/code/dialogs/transfer-assignation/transfer-assignation.dialog';
 import { StartExecutionPrescriptionDialog } from '@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog';
 import { RestartExecutionPrescriptionDialog } from '@reuse/code/dialogs/restart-execution-prescription/restart-execution-prescription.dialog';
 import { FinishExecutionPrescriptionDialog } from '@reuse/code/dialogs/finish-execution-prescription/finish-execution-prescription.dialog';
@@ -38,6 +37,7 @@ import { TemplateVersionsState } from '@reuse/code/states/api/template-versions.
 import { TemplatesState } from '@reuse/code/states/api/templates.state';
 import { ApproveProposalDialog } from '@reuse/code/dialogs/approve-proposal/approve-proposal.dialog';
 import { EncryptionState } from '@reuse/code/states/privacy/encryption.state';
+import { AssignOrTransferDialog } from '@reuse/code/dialogs/assign-or-transfer-dialog/assign-or-transfer-dialog';
 
 describe('PrescriptionDetailsSecondaryService', () => {
   let service: PrescriptionDetailsSecondaryService;
@@ -144,13 +144,14 @@ describe('PrescriptionDetailsSecondaryService', () => {
         performerTaskId: mockPerformerTask.id,
         intent: mockResponse.intent,
         category: mockResponse.category,
+        mode: 'transfer',
       },
       panelClass: 'mh-dialog-container',
       maxHeight: '90vh',
     };
 
     expect(openDialogSpy).toHaveBeenCalledTimes(1);
-    expect(openDialogSpy).toHaveBeenCalledWith(TransferAssignationDialog, paramsTransfer);
+    expect(openDialogSpy).toHaveBeenCalledWith(AssignOrTransferDialog, paramsTransfer);
 
     //openStartExecutionDialog
     service.openStartExecutionDialog(mockResponse);

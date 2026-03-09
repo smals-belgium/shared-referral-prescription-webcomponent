@@ -18,8 +18,8 @@ import { DeviceService } from '@reuse/code/services/helpers/device.service';
 import { PrescriptionDetailsSecondaryService } from '../../prescription-details-secondary/prescription-details-secondary.service';
 import { ViewState } from '../../../containers/prescription-details/prescription-details.component';
 import { CancelPrescriptionDialog } from '@reuse/code/dialogs/cancel-prescription/cancel-prescription-dialog.component';
-import { AssignPrescriptionDialog } from '@reuse/code/dialogs/assign-prescription/assign-prescription.dialog';
-import { UserInfo } from '@reuse/code/interfaces';
+import { Intent, UserInfo } from '@reuse/code/interfaces';
+import { AssignOrTransferDialog } from '@reuse/code/dialogs/assign-or-transfer-dialog/assign-or-transfer-dialog';
 
 const UserNurse: Partial<UserInfo> = { ssin: 'user-ssin', discipline: Discipline.Nurse };
 const createPerformerTask = (overrides: Partial<PerformerTaskResource> = {}): PerformerTaskResource => ({
@@ -220,14 +220,15 @@ describe('PrescriptionDetailsActionsComponent', () => {
 
     component.openAssignDialog(prescription);
 
-    expect(mockDialog.open).toHaveBeenCalledWith(AssignPrescriptionDialog, {
+    expect(mockDialog.open).toHaveBeenCalledWith(AssignOrTransferDialog, {
       data: {
         prescriptionId: 'prescription-123',
         referralTaskId: 'referral-456',
         assignedCareGivers: ['ssin-1', 'ssin-2'],
         assignedOrganizations: ['nihii-1'],
         category: 'physiotherapy',
-        intent: 'order',
+        intent: Intent.ORDER,
+        mode: 'assign',
       },
       panelClass: ['mh-dialog-container', 'no-dialog-scroll'],
       height: '90vh',

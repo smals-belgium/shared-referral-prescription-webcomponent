@@ -1,5 +1,5 @@
-<h1 mat-dialog-title data-cy="prescription-transfer-performer-title">
-  {{ 'prescription.transferAssignation.title' | translate }}
+<h1 mat-dialog-title [attr.data-cy]="'prescription-' + mode + '-performer-title'">
+  {{ translationKeyPrefixIntent + '.' + modeKey + '.title' | translate }}
 </h1>
 
 <div mat-dialog-content class="dialog-content">
@@ -7,8 +7,8 @@
   <div class="search-form">
     <app-alert
       [alert]="AlertType.Info"
-      [title]="'prescription.transferAssignation.dialog.title' | translate"
-      [message]="'prescription.transferAssignation.dialog.description' | translate"
+      [title]="translationKeyPrefixIntent + '.' + modeKey + '.dialog.title' | translate"
+      [message]="translationKeyPrefixIntent + '.' + modeKey + '.dialog.description' | translate"
       [showRetry]="false"></app-alert>
 
     @if (errorCard.show) {
@@ -21,6 +21,7 @@
 
     <professional-search-form (searchCriteria)="onSearch($event)"></professional-search-form>
   </div>
+
   <div class="search-results">
     @if (healthcareProvidersState$(); as healthcareProviderState; ) {
     <div class="results">
@@ -33,10 +34,11 @@
             [total]="isLoading() ? undefined : healthcareProvidersState$()?.data?.total ?? 0"
             [loading]="isLoading()"
             [currentLang]="currentLang"
-            (selectProfessional)="onTransfer($event)"
+            (selectProfessional)="executeAction($event)"
             [category]="data.category"
             [intent]="data.intent"
-            [prescriptionId]="data.prescriptionId"></professional-table>
+            [prescriptionId]="data.prescriptionId"
+            [zipCodes]="searchCriteria$()?.zipCodes ?? []"></professional-table>
         </ng-template>
 
         <ng-template #mobileTemplate>
@@ -69,6 +71,7 @@
   <app-overlay-spinner mode="dialog"></app-overlay-spinner>
   }
 </div>
+
 <div mat-dialog-actions class="dialog-actions">
   <app-responsive-wrapper class="responsive-wrapper">
     <ng-template #mobileTemplate>
@@ -76,16 +79,16 @@
         <button
           type="button"
           mat-flat-button
-          (click)="onTransferSelectedValue()"
+          (click)="onSubmitSelectedValue()"
           [disabled]="!selectedProfessional()"
-          data-cy="prescription-transfer-search-button">
+          [attr.data-cy]="'prescription-' + mode + '-search-button'">
           {{ 'professional.table.select' | translate }}
         </button>
         <button
           type="button"
           mat-stroked-button
           [mat-dialog-close]="undefined"
-          data-cy="prescription-transfer-cancel-button">
+          [attr.data-cy]="'prescription-' + mode + '-cancel-button'">
           {{ 'common.cancel' | translate }}
         </button>
       </div>
