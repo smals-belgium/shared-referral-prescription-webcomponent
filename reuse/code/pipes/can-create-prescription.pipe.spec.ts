@@ -18,10 +18,7 @@ describe('CanCreatePrescriptionPipe', () => {
 
     pipe.transform('TEMPLATE_1');
 
-    expect(accessMatrixState.hasAtLeastOnePermission).toHaveBeenCalledWith(
-      ['createPrescription'],
-      'TEMPLATE_1'
-    );
+    expect(accessMatrixState.hasAtLeastOnePermission).toHaveBeenCalledWith(['createPrescription'], 'TEMPLATE_1');
   });
 
   it('should return true when permission exists', () => {

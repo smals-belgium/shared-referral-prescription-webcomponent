@@ -24,7 +24,7 @@ describe('ActivePageComponent', () => {
     component.ngOnChanges();
 
     expect(component.rangeStart).toBe(11); // (2-1)*10 +1
-    expect(component.rangeEnd).toBe(20);   // min(11+10-1, 50)
+    expect(component.rangeEnd).toBe(20); // min(11+10-1, 50)
   });
 
   it('should handle last page with less than pageSize items', () => {
@@ -46,7 +46,7 @@ describe('ActivePageComponent', () => {
     component.ngOnChanges();
 
     expect(component.rangeStart).toBe(-9); // (0-1)*10 +1 = -9
-    expect(component.rangeEnd).toBe(0);    // min(-9+10, 50) = 0
+    expect(component.rangeEnd).toBe(0); // min(-9+10, 50) = 0
   });
 
   it('should render correct template text', () => {

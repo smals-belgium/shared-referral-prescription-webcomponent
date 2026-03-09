@@ -304,8 +304,8 @@ export function translateTimeUnit(unit = 1, unitOfTime?: UnitsOfTime, language: 
 export function validateOccurrenceTiming(input: any): input is OccurrenceTiming {
   if (!isRecord(input)) return false;
 
-  if (!isRecord(input["repeat"])) return false;
-  const repeat = input["repeat"] as Repeat;
+  if (!isRecord(input['repeat'])) return false;
+  const repeat = input['repeat'] as Repeat;
 
   if (!isOptionalNumber(repeat.frequency)) return false;
   if (!isOptionalNumber(repeat.period)) return false;
@@ -349,10 +349,7 @@ function isOptionalUnit(value: unknown): boolean {
 }
 
 function isOptionalWeekdays(value: unknown): boolean {
-  return (
-    value === undefined ||
-    (Array.isArray(value) && value.every(isValidWeekday))
-  );
+  return value === undefined || (Array.isArray(value) && value.every(isValidWeekday));
 }
 
 /**
@@ -362,7 +359,7 @@ function isOptionalWeekdays(value: unknown): boolean {
 export function validateOccurences(repeat?: Repeat) {
   if (!repeat) return false;
 
-  const {frequency, period, periodUnit} = repeat;
+  const { frequency, period, periodUnit } = repeat;
 
   if (frequency !== undefined && typeof frequency !== 'number') return false;
   if (period !== undefined && typeof period !== 'number') return false;

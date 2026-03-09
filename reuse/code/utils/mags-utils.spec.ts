@@ -4,7 +4,6 @@ import { hasUserProfile } from './mags-utils';
 import { Discipline, Role } from '@reuse/code/openapi';
 
 describe('hasUserProfile', () => {
-
   const validUserProfile = {
     discipline: Discipline.Nurse,
     nihii11: '',
@@ -33,7 +32,6 @@ describe('hasUserProfile', () => {
   });
 
   describe('should return false for invalid tokens', () => {
-
     it.each([
       ['null', null],
       ['undefined', undefined],
@@ -41,14 +39,12 @@ describe('hasUserProfile', () => {
       ['string', 'token'],
       ['boolean', true],
       ['empty object', {}],
-      ['object without userProfile', {foo: 'bar'}],
-      ['userProfile without ssin', {userProfile: {firstName: 'John'}}],
-      ['userProfile with non-string ssin', {userProfile: {ssin: 123}}],
-      ['userProfile with undefined ssin', {userProfile: {ssin: undefined}}],
+      ['object without userProfile', { foo: 'bar' }],
+      ['userProfile without ssin', { userProfile: { firstName: 'John' } }],
+      ['userProfile with non-string ssin', { userProfile: { ssin: 123 } }],
+      ['userProfile with undefined ssin', { userProfile: { ssin: undefined } }],
     ])('should return false for %s', (_, value) => {
       expect(hasUserProfile(value as JwtPayload)).toBe(false);
     });
-
   });
-
 });
