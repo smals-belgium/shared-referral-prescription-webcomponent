@@ -223,6 +223,7 @@ evf-row {
 .has-evf-required-wrapper {
   evf-element-label {
     @include mh.font-extra-small-regular;
+    margin-bottom: 5px;
 
     & {
       color: var(--evf-typography-body2-color, mh.$typography-brand-neutral-dark);

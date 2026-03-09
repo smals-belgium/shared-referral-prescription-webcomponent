@@ -1,17 +1,12 @@
 import { inject, Injectable, signal } from '@angular/core';
-import {
-  HealthcareOrganizationResource,
-  HealthcareProResource,
-  HealthCareProviderRequestResource,
-  ProviderType,
-} from '@reuse/code/openapi';
+import { HealthcareProResource, HealthCareProviderRequestResource, ProviderType } from '@reuse/code/openapi';
 import { catchError, EMPTY, expand, map, mergeScan, Observable, of, scan, startWith, Subject, tap } from 'rxjs';
 import { SearchProfessionalCriteria } from '@reuse/code/interfaces';
 import { HealthcareProviderService } from '@reuse/code/services/api/healthcareProvider.service';
 import { DeviceService } from '@reuse/code/services/helpers/device.service';
 import { takeUntil } from 'rxjs/operators';
 
-type HealthcareResource = HealthcareProResource | HealthcareOrganizationResource;
+type HealthcareResource = HealthcareProResource;
 
 interface InitialTableData {
   data: HealthcareResource[];
@@ -136,7 +131,7 @@ export class RequestProfessionalDataService {
 
     return this.callServiceMethod(params, pageIndex).pipe(
       map(response => ({
-        newItems: [...(response.healthcareProfessionals ?? []), ...(response.healthcareOrganizations ?? [])],
+        newItems: [...(response.healthcareProfessionals ?? [])],
         total: response.total ?? 0,
       })),
       tap(() => this._loading.set(false)),
