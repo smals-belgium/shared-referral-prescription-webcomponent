@@ -11,11 +11,6 @@ const mockProfessionals = [
   { id: { ssin: '456', qualificationCode: 'Q2' }, firstname: 'Piet', lastname: 'Peeters', type: 'Professional' },
 ] as any[];
 
-const mockOrganization = {
-  id: { organizationId: 'ORG-001' },
-  name: 'Ziekenhuis Brussel',
-} as any;
-
 describe('ProfessionalCardsComponent', () => {
   let fixture: ComponentFixture<ProfessionalCardsComponent>;
   let component: ProfessionalCardsComponent;
@@ -172,12 +167,6 @@ describe('ProfessionalCardsComponent', () => {
       const result = component.trackById(mockProfessionals[0]);
 
       expect(result).toBe('123Q1');
-    });
-
-    it('should return organizationId for an organization', () => {
-      const result = component.trackById(mockOrganization);
-
-      expect(result).toBe('ORG-001');
     });
   });
 

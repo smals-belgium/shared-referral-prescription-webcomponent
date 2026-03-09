@@ -25,10 +25,11 @@ const mockProfessional: HealthcareProResource[] = [
   },
 ];
 
-const mockOrganization: HealthcareOrganizationResource[] = [
+const mockProfessional2: HealthcareProResource[] = [
   {
-    id: { organizationId: 'organizationid-1' },
-    cbe: 'test-cbe',
+    id: { ssin: 'ssin-245' },
+    type: 'Professional',
+    healthcarePerson: { firstName: 'Jane Doe' },
   },
 ];
 
@@ -104,7 +105,7 @@ describe('RequestProfessionalDataService', () => {
 
   describe('initializeTableDataStream', () => {
     it('should fetch all pages sequentially until the total count is reached', () => {
-      const mockData = { data: mockOrganization, total: 2 };
+      const mockData = { data: mockProfessional, total: 2 };
 
       service.initializeTableDataStream(mockData, mockCriteria);
 
@@ -154,19 +155,6 @@ describe('RequestProfessionalDataService', () => {
   describe('createCardsDataStream', () => {});
 
   describe('fetchRawItems', () => {
-    it('should merge healthcareProfessionals and healthcareOrganizations into a single newItems array', done => {
-      mockHealthcareProviderService.findAll.mockReturnValue(
-        of(mockApiResponse({ professionals: mockProfessional, organizations: mockOrganization, total: 2 }))
-      );
-
-      service['fetchRawItems'](1, mockCriteria).subscribe(result => {
-        expect(result.newItems).toHaveLength(2);
-        expect(result.total).toBe(2);
-        expect(result.newItems).toEqual([...mockProfessional, ...mockOrganization]);
-        done();
-      });
-    });
-
     it('should return empty items and reset loading to false when the API call fails', done => {
       mockHealthcareProviderService.findAll.mockReturnValue(throwError(() => new Error('API error')));
 
@@ -239,7 +227,7 @@ describe('RequestProfessionalDataService', () => {
   describe('createCardsDataStream', () => {
     it('should initialize with initial data and append new data on triggerLoad', () => {
       const initialData = [...mockProfessional];
-      const apiResponse = mockApiResponse({ organizations: mockOrganization, total: 2 });
+      const apiResponse = mockApiResponse({ professionals: mockProfessional2, total: 2 });
 
       mockHealthcareProviderService.findAll.mockReturnValue(of(apiResponse));
 
@@ -247,7 +235,7 @@ describe('RequestProfessionalDataService', () => {
       expect(service.data()).toEqual(initialData);
 
       service.triggerLoad();
-      expect(service.data()).toEqual([...mockProfessional, ...mockOrganization]);
+      expect(service.data()).toEqual([...mockProfessional, ...mockProfessional2]);
 
       expect(mockHealthcareProviderService.findAll).toHaveBeenCalledWith(
         mockCriteria.query,

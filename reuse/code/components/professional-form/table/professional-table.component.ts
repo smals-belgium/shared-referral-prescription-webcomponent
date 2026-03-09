@@ -19,7 +19,7 @@ import {
 import { FormatEnum, SkeletonComponent } from '@reuse/code/components/progress-indicators/skeleton/skeleton.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { FormatMultilingualObjectPipe } from '@reuse/code/pipes/format-multilingual-object.pipe';
-import { HealthcareOrganizationResource, HealthcareProResource, ProviderType, Translation } from '@reuse/code/openapi';
+import { HealthcareProResource, ProviderType, Translation } from '@reuse/code/openapi';
 import { MatIconModule } from '@angular/material/icon';
 import { AlertType, Intent, SearchProfessionalCriteria } from '@reuse/code/interfaces';
 import { MatButtonModule } from '@angular/material/button';
@@ -61,7 +61,7 @@ export class ProfessionalTableComponent implements OnChanges, OnDestroy {
   protected readonly FormatEnum = FormatEnum;
   private readonly _dataService = inject(RequestProfessionalDataService);
 
-  readonly professionals = input<(HealthcareProResource | HealthcareOrganizationResource)[]>([]);
+  readonly professionals = input<HealthcareProResource[]>([]);
   readonly total = input<number | undefined>(undefined);
   readonly loading = input<boolean>(false);
   readonly currentLang = input.required<TranslationType | undefined>();
@@ -74,7 +74,7 @@ export class ProfessionalTableComponent implements OnChanges, OnDestroy {
   // Public signals from service
   readonly requestData = this._dataService.data;
 
-  readonly selectProfessional = output<HealthcareProResource | HealthcareOrganizationResource>();
+  readonly selectProfessional = output<HealthcareProResource>();
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!changes['professionals']) return;
