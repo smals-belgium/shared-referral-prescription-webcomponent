@@ -14,7 +14,6 @@ import { RestartExecutionPrescriptionDialog } from '@reuse/code/dialogs/restart-
 import { StartExecutionPrescriptionDialog } from '@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog';
 import { FinishExecutionPrescriptionDialog } from '@reuse/code/dialogs/finish-execution-prescription/finish-execution-prescription.dialog';
 import { CancelExecutionPrescriptionDialog } from '@reuse/code/dialogs/cancel-execution-prescription/cancel-execution-prescription.dialog';
-import { TransferAssignationDialog } from '@reuse/code/dialogs/transfer-assignation/transfer-assignation.dialog';
 import { MatDialog } from '@angular/material/dialog';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
@@ -32,6 +31,7 @@ import { ApproveProposalDialog } from '@reuse/code/dialogs/approve-proposal/appr
 import { RejectProposalDialog } from '@reuse/code/dialogs/reject-proposal/reject-proposal.dialog';
 import { SSIN_CLAIM_KEY, USER_PROFILE_CLAIM_KEY } from '@reuse/code/services/auth/auth-constants';
 import { v4 as uuidv4 } from 'uuid';
+import { AssignOrTransferDialog } from '@reuse/code/dialogs/assign-or-transfer-dialog/assign-or-transfer-dialog';
 
 export interface DetailsServices {
   getAccessToken: (audience?: string) => Promise<string | null>;
@@ -319,7 +319,7 @@ export class PrescriptionDetailsSecondaryService {
   }
 
   openTransferAssignationDialog(prescription: ReadRequestResource, task: PerformerTaskResource): void {
-    this._dialog.open(TransferAssignationDialog, {
+    this._dialog.open(AssignOrTransferDialog, {
       data: {
         prescriptionId: prescription.id,
         referralTaskId: prescription.referralTask?.id,
@@ -327,6 +327,7 @@ export class PrescriptionDetailsSecondaryService {
         assignedCareGivers: prescription.performerTasks?.map(c => c.careGiverSsin),
         category: prescription.category,
         intent: prescription.intent,
+        mode: 'transfer',
       },
       panelClass: 'mh-dialog-container',
       maxHeight: '90vh',

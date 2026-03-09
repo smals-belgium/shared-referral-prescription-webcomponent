@@ -11,7 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatInputModule } from '@angular/material/input';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
-import { AlertType, Intent, LoadingStatus } from '@reuse/code/interfaces';
+import { AlertType, Intent } from '@reuse/code/interfaces';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -21,13 +21,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { v4 as uuidv4 } from 'uuid';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
-import {
-  HealthcareOrganizationResource,
-  HealthcareProResource,
-  PerformerTaskIdResource,
-  ProviderType,
-  Translation,
-} from '@reuse/code/openapi';
+import { HealthcareProResource, ProviderType } from '@reuse/code/openapi';
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import { getAssignableProfessionalDisciplines, isProfessional } from '@reuse/code/utils/assignment-disciplines.utils';
 import { getTranslationKeyPrefixForPrescriptionOrProposal, isProposal } from '@reuse/code/utils/utils';
@@ -43,9 +37,13 @@ import { ResponsiveWrapperComponent } from '@reuse/code/components/responsive-wr
 import { ProfessionalCardsComponent } from '@reuse/code/components/professional-form/professional-cards/professional-cards.component';
 import { DeviceService } from '@reuse/code/services/helpers/device.service';
 
-interface AssignPrescriptionDialogData {
+export type AssignOrTransferDialogMode = 'assign' | 'transfer';
+
+export interface AssignOrTransferDialogData {
+  mode: AssignOrTransferDialogMode;
   prescriptionId?: string;
   referralTaskId?: string;
+  performerTaskId?: string; // only used for transfer
   assignedCareGivers?: string[];
   assignedOrganizations?: string[];
   category: string;
@@ -53,9 +51,8 @@ interface AssignPrescriptionDialogData {
 }
 
 @Component({
+  selector: 'assign-or-transfer-dialog',
   standalone: true,
-  templateUrl: './assign-prescription.dialog.html',
-  styleUrls: ['./assign-prescription.dialog.scss'],
   imports: [
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -74,26 +71,25 @@ interface AssignPrescriptionDialogData {
     ResponsiveWrapperComponent,
     ProfessionalCardsComponent,
   ],
+  templateUrl: './assign-or-transfer-dialog.html',
+  styleUrl: './assign-or-transfer-dialog.scss',
 })
-export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
-  private readonly _deviceService = inject(DeviceService);
+export class AssignOrTransferDialog extends BaseDialog implements OnInit {
+  private readonly deviceService = inject(DeviceService);
   private readonly _prescriptionStateService = inject(PrescriptionState);
   private readonly _proposalStateService = inject(ProposalState);
   private readonly _healthcareProviderService = inject(HealthcareProviderService);
   private readonly _toastService = inject(ToastService);
   private readonly _translate = inject(TranslateService);
 
-  protected readonly isDesktop = this._deviceService.isDesktop;
+  protected readonly isDesktop = this.deviceService.isDesktop;
 
   protected translationKeyPrefixIntent = 'prescription';
 
-  protected readonly isProfessional = isProfessional;
   protected readonly AlertType = AlertType;
-  protected readonly LoadingStatus = LoadingStatus;
   readonly searchCriteria$ = signal<SearchCriteria | null>(null);
-
   readonly isLoading = signal(false);
-  readonly selectedProfessional = signal<HealthcareProResource | HealthcareOrganizationResource | undefined>(undefined);
+  readonly selectedProfessional = signal<HealthcareProResource | undefined>(undefined);
 
   private readonly pageable = this.isDesktop()
     ? {
@@ -132,14 +128,8 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
           : of([]);
       }),
       map(healthcareProvider => {
-        if (
-          healthcareProvider &&
-          ('healthcareProfessionals' in healthcareProvider || 'healthcareOrganizations' in healthcareProvider)
-        ) {
-          const allItems: (HealthcareProResource | HealthcareOrganizationResource)[] = [
-            ...(healthcareProvider.healthcareProfessionals ?? []),
-            ...(healthcareProvider.healthcareOrganizations ?? []),
-          ];
+        if (healthcareProvider && 'healthcareProfessionals' in healthcareProvider) {
+          const allItems: HealthcareProResource[] = healthcareProvider.healthcareProfessionals ?? [];
 
           this.isLoading.set(false);
           return {
@@ -164,11 +154,19 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
   currentLang?: TranslationType;
 
   constructor(
-    dialogRef: MatDialogRef<AssignPrescriptionDialog>,
-    @Inject(MAT_DIALOG_DATA) protected data: AssignPrescriptionDialogData
+    dialogRef: MatDialogRef<AssignOrTransferDialog>,
+    @Inject(MAT_DIALOG_DATA) protected data: AssignOrTransferDialogData
   ) {
     super(dialogRef);
     this.currentLang = this._translate.currentLang as TranslationType;
+  }
+
+  get mode() {
+    return this.data.mode;
+  }
+
+  get modeKey() {
+    return this.data.mode === 'assign' ? 'assignPerformer' : 'transferPerformer';
   }
 
   onSearch(criteria: SearchCriteria): void {
@@ -180,71 +178,34 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
     this.translationKeyPrefixIntent = getTranslationKeyPrefixForPrescriptionOrProposal(this.data?.intent);
   }
 
-  selectProfessional(healthcareProvider?: HealthcareProResource | HealthcareOrganizationResource) {
+  selectProfessional(healthcareProvider?: HealthcareProResource) {
     this.selectedProfessional.set(healthcareProvider);
   }
 
-  onAssignSelectedValue() {
+  onSubmitSelectedValue(): void {
     const professional = this.selectedProfessional();
+    if (!professional) {
+      this._toastService.show(`prescription.${this.mode}Professional.undefined`);
+      return;
+    }
+    this.executeAction(professional);
+  }
 
-    if (professional) {
-      this.onAssign(professional);
+  executeAction(professional: HealthcareProResource): void {
+    if (this.data.mode === 'assign') {
+      this.executeAssign(professional);
     } else {
-      this._toastService.show('prescription.assignProfessional.undefined');
+      this.executeTransfer(professional);
     }
   }
 
-  onAssign(healthcareProvider: HealthcareProResource | HealthcareOrganizationResource): void {
-    if (!this.data?.prescriptionId) {
-      this.closeDialog(healthcareProvider);
-    } else if (isProposal(this.data?.intent)) {
-      this.executeAssignment(
-        healthcareProvider,
-        () =>
-          this._proposalStateService.assignProposalPerformer(
-            this.data.prescriptionId!,
-            this.data.referralTaskId!,
-            healthcareProvider,
-            this.generatedUUID
-          ),
-        'proposal'
-      );
-    } else {
-      this.executeAssignment(
-        healthcareProvider,
-        () =>
-          this._prescriptionStateService.assignPrescriptionPerformer(
-            this.data.prescriptionId!,
-            this.data.referralTaskId!,
-            healthcareProvider,
-            this.generatedUUID
-          ),
-        'prescription'
-      );
-    }
-  }
-
-  private executeAssignment(
-    healthcareProvider: HealthcareProResource | HealthcareOrganizationResource,
-    serviceCall: () => Observable<PerformerTaskIdResource>,
-    successPrefix: string
-  ): void {
+  private executeService(serviceCall: () => Observable<any>, successKey: string, professional: any) {
     this.loading = true;
-
     serviceCall().subscribe({
       next: () => {
-        const name =
-          'healthcarePerson' in healthcareProvider
-            ? healthcareProvider.healthcarePerson
-            : this.getOrganizationNameTranslation(healthcareProvider);
-
         this.closeErrorCard();
-        if (healthcareProvider.type === 'Professional') {
-          this._toastService.show(successPrefix + '.assignPerformer.success', { interpolation: name });
-        } else {
-          this._toastService.show(successPrefix + '.assignPerformer.successOrganization', { interpolation: name });
-        }
-        this.closeDialog(healthcareProvider);
+        this._toastService.show(successKey, { interpolation: professional.healthcarePerson });
+        this.closeDialog(professional);
       },
       error: err => {
         this.loading = false;
@@ -253,14 +214,52 @@ export class AssignPrescriptionDialog extends BaseDialog implements OnInit {
     });
   }
 
-  private getOrganizationNameTranslation(healthcareProvider: HealthcareProResource | HealthcareOrganizationResource): {
-    name: string;
-  } {
-    if (isProfessional(healthcareProvider) || !healthcareProvider.organizationName) return { name: '' };
-    type Lang = keyof Translation;
-    const lang = (this.currentLang && this.currentLang.length >= 2 ? this.currentLang.slice(0, 2) : 'fr') as Lang;
-    return {
-      name: healthcareProvider.organizationName[lang] ?? '',
-    };
+  private executeAssign(professional: HealthcareProResource) {
+    if (!this.data.prescriptionId || !isProfessional(professional)) {
+      return this.closeDialog(professional);
+    }
+    const serviceCall = isProposal(this.data?.intent)
+      ? () =>
+          this._proposalStateService.assignProposalPerformer(
+            this.data.prescriptionId!,
+            this.data.referralTaskId!,
+            professional,
+            this.generatedUUID
+          )
+      : () =>
+          this._prescriptionStateService.assignPrescriptionPerformer(
+            this.data.prescriptionId!,
+            this.data.referralTaskId!,
+            professional,
+            this.generatedUUID
+          );
+
+    this.executeService(serviceCall, `${this.translationKeyPrefixIntent}.assignPerformer.success`, professional);
+  }
+
+  private executeTransfer(professional: HealthcareProResource) {
+    if (!this.data.prescriptionId || !isProfessional(professional)) {
+      return this.closeDialog(professional);
+    }
+    const ssinObject = { ssin: professional.id?.ssin || '', discipline: professional.id?.profession || '' };
+    const serviceCall = isProposal(this.data?.intent)
+      ? () =>
+          this._proposalStateService.transferAssignation(
+            this.data.prescriptionId!,
+            this.data.referralTaskId!,
+            this.data.performerTaskId!,
+            ssinObject,
+            this.generatedUUID
+          )
+      : () =>
+          this._prescriptionStateService.transferAssignation(
+            this.data.prescriptionId!,
+            this.data.referralTaskId!,
+            this.data.performerTaskId!,
+            ssinObject,
+            this.generatedUUID
+          );
+
+    this.executeService(serviceCall, `${this.translationKeyPrefixIntent}.transferPerformer.success`, professional);
   }
 }
