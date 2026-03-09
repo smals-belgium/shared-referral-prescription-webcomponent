@@ -4,18 +4,17 @@
   <mat-checkbox
     [checked]="formsToDelete.length === prescriptionForms.length"
     [indeterminate]="formsToDelete.length > 0 && formsToDelete.length !== prescriptionForms.length"
-    (change)="$event.checked ? selectAll() : deselectAll()"
-  >
+    (change)="$event.checked ? selectAll() : deselectAll()">
     {{'prescription.create.cancelPrescriptionsCreation.cancelAll' | translate}}
   </mat-checkbox>
   <div class="checkbox-list">
     @for (prescriptionForm of prescriptionForms; track $index){
-      <mat-checkbox
-        [checked]="formsToDelete.includes(prescriptionForm.trackId)"
-        (change)="toggleDeleteForm(prescriptionForm.trackId)"
-      >{{prescriptionForm.templateCode | templateName}}</mat-checkbox>
+    <mat-checkbox
+      [checked]="formsToDelete.includes(prescriptionForm.trackId)"
+      (change)="toggleDeleteForm(prescriptionForm.trackId)"
+      >{{prescriptionForm.templateCode | templateName}}</mat-checkbox
+    >
     }
-
   </div>
 </div>
 <mat-dialog-actions align="end">

@@ -1,4 +1,4 @@
 {
-    "sonarQubeUri": "https://sonar.vascloud.be",
-    "projectKey": "referral-prescription-web-components"
+  "sonarQubeUri": "https://sonar.vascloud.be",
+  "projectKey": "referral-prescription-web-components"
 }

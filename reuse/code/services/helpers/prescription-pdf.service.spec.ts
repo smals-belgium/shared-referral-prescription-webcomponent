@@ -181,9 +181,7 @@ describe('PrescriptionsPdfService', () => {
 
       const result = service['parseMarkdownList'](markdown);
 
-      expect(result).toEqual([
-        { ul: [{ text: 'Item one' }, { text: 'Item two' }], margin: [10, 0, 0, 0] },
-      ]);
+      expect(result).toEqual([{ ul: [{ text: 'Item one' }, { text: 'Item two' }], margin: [10, 0, 0, 0] }]);
     });
 
     it('should parse bold markdown into pdfmake rich text', () => {

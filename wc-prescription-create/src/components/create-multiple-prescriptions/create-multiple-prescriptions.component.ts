@@ -91,7 +91,7 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['createPrescriptionForms'] && this.createPrescriptionForms?.length === 1) {
-      setTimeout(() => this.panels?.first?.open(), 1);
+      queueMicrotask(() => this.panels?.first?.open());
     }
     this.isPrescriptionValue = isPrescription(this.intent);
   }

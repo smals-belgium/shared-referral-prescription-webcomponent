@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { CreatePrescriptionModelComponent } from './create-prescription-model.component';
 import { Component, signal } from '@angular/core';
 import { of, throwError } from 'rxjs';
@@ -366,11 +366,12 @@ describe('CreatePrescriptionModelComponent', () => {
       expect(errorElement.nativeElement.textContent).toContain('common.mandatory');
     });
 
-    it('should show unique name error when name is not unique', () => {
+    it('should show unique name error when name is not unique', fakeAsync(() => {
       mockNameValidator.validate = jest.fn().mockReturnValue(of({ uniqueName: true }));
 
       component.prescriptionForm = createMockPrescriptionForm({
         modelId: 123,
+        modelName: 'Some Other Name',
         formTemplateState$: signal(
           createMockDataState({
             status: LoadingStatus.SUCCESS,
@@ -391,11 +392,12 @@ describe('CreatePrescriptionModelComponent', () => {
       component.titleControl.setValue('Duplicate Name');
       component.titleControl.markAsTouched();
 
-      setTimeout(() => {
-        const errorElement = fixture.debugElement.query(By.css('mat-error'));
-        expect(errorElement).toBeTruthy();
-      }, 100);
-    });
+      tick(100);
+      fixture.detectChanges();
+
+      const errorElement = fixture.debugElement.query(By.css('mat-error'));
+      expect(errorElement).toBeTruthy();
+    }));
 
     it('should set originalName signal on ngOnChanges', () => {
       component.prescriptionForm = createMockPrescriptionForm({

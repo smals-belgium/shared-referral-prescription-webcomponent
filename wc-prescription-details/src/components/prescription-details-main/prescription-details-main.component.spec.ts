@@ -3,9 +3,7 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { PrescriptionDetailsMainComponent } from './prescription-details-main.component';
-import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
-import { HttpCacheService } from '@reuse/code/services/cache/http-cache.service';
 import {
   FakeLoader,
   mockPerson,
@@ -31,7 +29,6 @@ class MockEvfFormDetailsComponent {}
 describe('PrescriptionDetailsMainComponent', () => {
   let component: PrescriptionDetailsMainComponent;
   let fixture: ComponentFixture<PrescriptionDetailsMainComponent>;
-  let cacheHttpService: HttpCacheService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -62,12 +59,9 @@ describe('PrescriptionDetailsMainComponent', () => {
 
     fixture = TestBed.createComponent(PrescriptionDetailsMainComponent);
     component = fixture.componentInstance;
-
-    cacheHttpService = TestBed.inject(HttpCacheService);
   });
 
   it('should show a prescription based on shortCode and SSIN', () => {
-    jest.spyOn(cacheHttpService, 'loadFromCache').mockReturnValue(of(null));
     const mockResponse = prescriptionResponse();
     const service = TestBed.inject(PrescriptionDetailsSecondaryService) as any;
     (component as any).prescription = mockResponse;

@@ -18,7 +18,6 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
 import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
 import { EncryptionState } from '@reuse/code/states/privacy/encryption.state';
-import { HttpCacheService } from '@reuse/code/services/cache/http-cache.service';
 import { EncryptionService } from '@reuse/code/services/privacy/encryption.service';
 import {
   MockDateAdapter,
@@ -48,7 +47,6 @@ describe('PrescriptionDetailsWebComponent', () => {
   let consoleSpy: jest.SpyInstance;
   let translate: TranslateService;
   let dateAdapter: MockDateAdapter;
-  let cacheHttpService: HttpCacheService;
 
   beforeAll(() => {
     Object.defineProperty(window, 'crypto', {
@@ -99,7 +97,6 @@ describe('PrescriptionDetailsWebComponent', () => {
     pseudoService = TestBed.inject(PseudoService);
     translate = TestBed.inject(TranslateService);
     dateAdapter = TestBed.inject(DateAdapter) as unknown as MockDateAdapter;
-    cacheHttpService = TestBed.inject(HttpCacheService);
   });
 
   afterEach(() => {
@@ -207,7 +204,6 @@ describe('PrescriptionDetailsWebComponent', () => {
 
   it('should load templates and the access matrix when the token changes', () => {
     createFixture();
-    jest.spyOn(cacheHttpService, 'loadFromCache').mockReturnValue(of(null));
 
     mockConfigService.getEnvironmentVariable.mockImplementationOnce(() => false);
     component.services = {

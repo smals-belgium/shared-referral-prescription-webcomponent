@@ -1,10 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { HealthcareProviderService } from './healthcareProvider.service';
-import {
-  HealthCareProviderService as ApiHealthCareProviderService,
-  ProviderType
-} from '@reuse/code/openapi';
+import { HealthCareProviderService as ApiHealthCareProviderService, ProviderType } from '@reuse/code/openapi';
 
 describe('HealthcareProviderService', () => {
   let service: HealthcareProviderService;
@@ -12,14 +9,11 @@ describe('HealthcareProviderService', () => {
 
   beforeEach(() => {
     apiMock = {
-      findHealthCareProviders: jest.fn()
+      findHealthCareProviders: jest.fn(),
     } as unknown as jest.Mocked<ApiHealthCareProviderService>;
 
     TestBed.configureTestingModule({
-      providers: [
-        HealthcareProviderService,
-        { provide: ApiHealthCareProviderService, useValue: apiMock }
-      ]
+      providers: [HealthcareProviderService, { provide: ApiHealthCareProviderService, useValue: apiMock }],
     });
 
     service = TestBed.inject(HealthcareProviderService);
@@ -28,17 +22,13 @@ describe('HealthcareProviderService', () => {
   it('should call API with mapped zip codes and default providerType', () => {
     apiMock.findHealthCareProviders.mockReturnValue(of({} as any));
 
-    service.findAll(
-      'dentist',
-      [12345, 67890],
-      ['CARDIO'],
-    );
+    service.findAll('dentist', [12345, 67890], ['CARDIO']);
 
     expect(apiMock.findHealthCareProviders).toHaveBeenCalledWith(
       undefined,
       'dentist',
-      ['12345', '67890'],   // mapped to string
-      ProviderType.All,    // default value
+      ['12345', '67890'], // mapped to string
+      ProviderType.All, // default value
       ['CARDIO'],
       undefined,
       undefined,
@@ -80,11 +70,7 @@ describe('HealthcareProviderService', () => {
   it('should pass undefined for disciplines when null', () => {
     apiMock.findHealthCareProviders.mockReturnValue(of({} as any));
 
-    service.findAll(
-      'dentist',
-      [12345],
-      null as any
-    );
+    service.findAll('dentist', [12345], null as any);
 
     expect(apiMock.findHealthCareProviders).toHaveBeenCalledWith(
       undefined,

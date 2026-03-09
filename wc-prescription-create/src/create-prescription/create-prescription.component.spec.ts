@@ -27,7 +27,6 @@ import { ConfirmDialog } from '@reuse/code/dialogs/confirm/confirm.dialog';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { CancelCreationDialog } from '@reuse/code/dialogs/cancel-creation/cancel-creation.dialog';
 import { Discipline, PersonResource, ReadRequestResource, ReferralTaskResource, Role } from '@reuse/code/openapi';
-import { HttpCacheService } from '@reuse/code/services/cache/http-cache.service';
 import { PssService } from '@reuse/code/services/api/pss.service';
 import { EncryptionKeyInitializerService } from '@reuse/code/states/privacy/encryption-key-initializer.service';
 import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
@@ -44,7 +43,7 @@ jest.spyOn(MatDialog.prototype, 'open').mockImplementation(
 );
 
 class FakeLoader implements TranslateLoader {
-  getTranslation(lang: string): Observable<any> {
+  getTranslation(): Observable<any> {
     return of({});
   }
 }
@@ -132,7 +131,6 @@ describe('CreatePrescriptionWebComponent', () => {
   let toaster: ToastService;
   let translate: TranslateService;
   let dateAdapter: MockDateAdapter;
-  let cacheHttpService: HttpCacheService;
 
   beforeAll(() => {
     Object.defineProperty(window, 'crypto', {
@@ -154,7 +152,7 @@ describe('CreatePrescriptionWebComponent', () => {
           beforeClosed: () => of(null),
         }) as any
     );
-    jest.spyOn(ToastService.prototype, 'show').mockImplementation((message: string) => {});
+    jest.spyOn(ToastService.prototype, 'show').mockImplementation(() => {});
 
     await TestBed.configureTestingModule({
       imports: [
@@ -201,7 +199,6 @@ describe('CreatePrescriptionWebComponent', () => {
     toaster = TestBed.inject(ToastService);
     translate = TestBed.inject(TranslateService);
     dateAdapter = TestBed.inject(DateAdapter) as unknown as MockDateAdapter;
-    cacheHttpService = TestBed.inject(HttpCacheService);
   });
 
   afterEach(() => {
@@ -342,10 +339,9 @@ describe('CreatePrescriptionWebComponent', () => {
       createFixture('mockPseudomizedKey');
       const openDialogSpy = jest.spyOn(dialog, 'open');
       const addPrescriptionFormSpy = jest.spyOn(component as any, 'addPrescriptionForm');
-      jest.spyOn(cacheHttpService, 'loadFromCache').mockReturnValue(of(null));
       jest.spyOn(component as any, 'isNurse').mockResolvedValue(true);
 
-      component.openSelectDialog();
+      await component.openSelectDialog();
       await Promise.resolve();
 
       expect(openDialogSpy).not.toHaveBeenCalled();
@@ -473,7 +469,6 @@ describe('CreatePrescriptionWebComponent', () => {
       openDialogSpy.mockReturnValue(dialogRefMock as any);
 
       const addPrescriptionFormMock = jest.spyOn(component as any, 'addPrescriptionForm');
-      jest.spyOn(cacheHttpService, 'loadFromCache').mockReturnValue(of(null));
 
       component.addPrescription();
 
@@ -1315,7 +1310,6 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should call handleTokenChange when services change', () => {
       createFixture('mockPseudomizedKey');
       const spy = jest.spyOn(component as any, 'handleTokenChange');
-      jest.spyOn(cacheHttpService, 'loadFromCache').mockReturnValue(of(null));
       const changes: SimpleChanges = {
         services: {
           currentValue: { getAccessToken: jest.fn() },
@@ -1385,7 +1379,6 @@ describe('CreatePrescriptionWebComponent', () => {
       const tokenSpy = jest.spyOn(component as any, 'handleTokenChange');
       // Stub loadPssStatus pour ne pas déclencher le subscribe
       const loadSpy = jest.spyOn(component as any, 'loadPssStatus').mockImplementation(() => {});
-      jest.spyOn(cacheHttpService, 'loadFromCache').mockReturnValue(of(null));
       const changes: SimpleChanges = {
         services: {
           currentValue: { getAccessToken: jest.fn() },
@@ -1417,7 +1410,6 @@ describe('CreatePrescriptionWebComponent', () => {
         initialPrescription: { templateCode: 'ANNEX_82' } as ReadRequestResource,
       };
       const loadingSpy = jest.spyOn(component.loading, 'set');
-      jest.spyOn(cacheHttpService, 'loadFromCache').mockReturnValue(of(null));
 
       const changes: SimpleChanges = {
         initialValues: {

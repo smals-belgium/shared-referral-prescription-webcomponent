@@ -170,7 +170,10 @@ export class PrescriptionsPdfService {
       }
     };
 
-    const lines = markdownText.split('\n').map(l => l.trim()).filter(Boolean);
+    const lines = markdownText
+      .split('\n')
+      .map(l => l.trim())
+      .filter(Boolean);
 
     for (const line of lines) {
       if (/^>\s*-/.test(line)) {

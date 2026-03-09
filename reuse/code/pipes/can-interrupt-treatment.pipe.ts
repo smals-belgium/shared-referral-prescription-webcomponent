@@ -4,7 +4,7 @@ import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
 import {
   checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline,
-  isProfesionalBasedOnRole
+  isProfesionalBasedOnRole,
 } from '@reuse/code/utils/utils';
 
 /**

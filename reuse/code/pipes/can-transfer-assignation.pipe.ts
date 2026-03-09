@@ -5,7 +5,7 @@ import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource, RequestSt
 import {
   checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline,
   isProfesionalBasedOnRole,
-  isProposal
+  isProposal,
 } from '@reuse/code/utils/utils';
 
 /**

@@ -12,15 +12,12 @@ describe('DatePipe', () => {
     mockDateAdapter = {
       parse: jest.fn().mockReturnValue(DateTime.now()),
       format: jest.fn().mockReturnValue('formatted'),
-      localeChanges: of()
+      localeChanges: of(),
     };
     mockChangeDetectorRef = {
-      markForCheck: jest.fn()
+      markForCheck: jest.fn(),
     };
-    instance = new DatePipe(
-      mockDateAdapter,
-      mockChangeDetectorRef
-    );
+    instance = new DatePipe(mockDateAdapter, mockChangeDetectorRef);
   });
 
   afterEach(() => {
@@ -53,15 +50,11 @@ describe('DatePipe', () => {
 
   it('should format the date and only format the date on a local change', () => {
     jest.useFakeTimers();
-    mockDateAdapter.localeChanges = timer(5)
-      .pipe(
-        take(1),
-        mergeMap(() => of([void 0]))
-      );
-    instance = new DatePipe(
-      mockDateAdapter,
-      mockChangeDetectorRef
+    mockDateAdapter.localeChanges = timer(5).pipe(
+      take(1),
+      mergeMap(() => of([void 0]))
     );
+    instance = new DatePipe(mockDateAdapter, mockChangeDetectorRef);
 
     let result = instance.transform('2019-07-13T23:55:00+02:00');
     expect(mockDateAdapter.parse).toHaveBeenCalledTimes(1);
@@ -81,5 +74,7 @@ describe('DatePipe', () => {
     expect(mockDateAdapter.format).toHaveBeenCalledTimes(2);
     expect(mockChangeDetectorRef.markForCheck).toHaveBeenCalledTimes(1);
     expect(result).toEqual('formatted');
+
+    jest.useRealTimers();
   });
 });

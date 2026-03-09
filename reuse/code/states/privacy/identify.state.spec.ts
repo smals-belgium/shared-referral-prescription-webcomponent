@@ -13,10 +13,7 @@ describe('IdentifyState', () => {
     } as unknown as jest.Mocked<PseudoService>;
 
     TestBed.configureTestingModule({
-      providers: [
-        IdentifyState,
-        { provide: PseudoService, useValue: pseudoService },
-      ],
+      providers: [IdentifyState, { provide: PseudoService, useValue: pseudoService }],
     });
 
     state = TestBed.inject(IdentifyState);
@@ -27,7 +24,6 @@ describe('IdentifyState', () => {
   });
 
   describe('loadSSIN', () => {
-
     it('should set SUCCESS when identify resolves', async () => {
       pseudoService.identify.mockResolvedValue('123456');
 
@@ -49,18 +45,14 @@ describe('IdentifyState', () => {
 
       expect(state.state().status).toBe(LoadingStatus.ERROR);
     });
-
   });
 
   describe('setSSIN', () => {
-
     it('should directly set SUCCESS state', () => {
       state.setSSIN('999');
 
       expect(state.state().status).toBe(LoadingStatus.SUCCESS);
       expect(state.state().data).toBe('999');
     });
-
   });
-
 });

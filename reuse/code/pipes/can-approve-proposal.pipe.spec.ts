@@ -40,7 +40,7 @@ describe('CanApproveProposalPipe', () => {
 
     const result = pipe.transform(prescription);
 
-    const allowedStatuses: RequestStatus[]  = [
+    const allowedStatuses: RequestStatus[] = [
       RequestStatus.Draft,
       RequestStatus.Pending,
       RequestStatus.Open,

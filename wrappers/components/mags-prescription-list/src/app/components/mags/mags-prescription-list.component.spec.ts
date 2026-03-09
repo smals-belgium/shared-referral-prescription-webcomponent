@@ -285,5 +285,5 @@ describe('MagsPrescriptionList', () => {
 
 /** Flush all pending microtasks (resolved promises). */
 function flushPromises(): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, 0));
+  return Promise.resolve();
 }

@@ -11,18 +11,18 @@ export class TranslateByIntentPipe implements PipeTransform {
     keys: { order: string; proposal: string; model?: string; default?: string },
     params?: Record<string, any>
   ): string {
-    switch (intent.toLowerCase()){
+    switch (intent.toLowerCase()) {
       case Intent.ORDER:
         return this.translate.instant(keys.order, params);
       case Intent.PROPOSAL:
         return this.translate.instant(keys.proposal, params);
       case Intent.MODEL:
-        if(keys.model != undefined){
+        if (keys.model != undefined) {
           return this.translate.instant(keys.model, params);
         }
         return this.translate.instant(keys.order, params);
       default:
-        if(keys.default != undefined){
+        if (keys.default != undefined) {
           return this.translate.instant(keys.default, params);
         }
         return this.translate.instant(keys.order, params);
