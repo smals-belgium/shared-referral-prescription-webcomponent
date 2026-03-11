@@ -658,6 +658,10 @@ Below is a complete list of the variables that can be overridden:
 - --mat-sys-headline-small-tracking
 - --mat-sys-headline-small-weight
 
+### Multiselect
+
+- --mh-multiselect-overlay-min-height
+
 ---
 
 ## Nihdi Referral Prescription Details
