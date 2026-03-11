@@ -117,7 +117,6 @@ $app-primary: mat.m2-define-palette($app-primary-palette, 800);
   --mat-form-field-outlined-outline-color: var(--mdc-outlined-text-field-outline-color, #{mh.$neutral-50});
   --mat-button-toggle-divider-color: var(--evf-input-border-color, #{mh.$primary-40});
   --mat-form-field-outlined-container-shape: var(--evf-input-border-radius, 4px);
-  --mdc-outlined-text-field-container-shape: mh.$spacing-2xs;
 
   /* expansion panel */
   --mat-expansion-header-expanded-state-height: #{mh.calculateRem(70px)};
@@ -138,13 +137,19 @@ mat-icon.material-icons.mat-warn {
   color: #{mh.$typography-semantic-error-medium};
 }
 
-.cdk-overlay-container evf-tooltip {
-  background-color: var(--mat-tooltip-container-color, mh.$surface-brand-neutral-darker);
-  border-radius: var(--mat-tooltip-container-shape, mh.$border-radius-s);
-  font-family: var(--mat-tooltip-supporting-text-font, var(--mh-default-font-family, mh.$font-stack));
-  font-size: var(--mat-tooltip-supporting-text-size, var(--mat-sys-body-small-size, mh.$font-size-m));
-  p {
-    color: var(--mat-tooltip-supporting-text-color, mh.$surface-brand-neutral-lighter);
+.cdk-overlay-container {
+  [role='listbox'] {
+    min-height: var(--mh-multiselect-overlay-min-height, 200px);
+  }
+
+  evf-tooltip {
+    background-color: var(--mat-tooltip-container-color, mh.$surface-brand-neutral-darker);
+    border-radius: var(--mat-tooltip-container-shape, mh.$border-radius-s);
+    font-family: var(--mat-tooltip-supporting-text-font, var(--mh-default-font-family, mh.$font-stack));
+    font-size: var(--mat-tooltip-supporting-text-size, var(--mat-sys-body-small-size, mh.$font-size-m));
+    p {
+      color: var(--mat-tooltip-supporting-text-color, mh.$surface-brand-neutral-lighter);
+    }
   }
 }
 
@@ -183,13 +188,13 @@ evf-element-body .infoblock {
   }
 
   .material-icons {
-    font-family: 'Material Icons';
+    font-family: 'Material Icons', sans-serif;
     color: var(--evf-infoblock-matrial-icon-color, mh.$typography-brand-primary-dark);
   }
 }
 
 .evf-element-wrapper mat-select .mat-mdc-select-arrow:after {
-  font-family: 'Material Icons';
+  font-family: 'Material Icons', sans-serif;
 }
 
 evf-row {
