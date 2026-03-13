@@ -1,14 +1,20 @@
+import {
+  CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_LIST,
+  CUSTOM_ELEMENT_NAME_UHMEP_PRESCRIPTION_DETAILS,
+  CUSTOM_ELEMENT_NAME_UHMEP_PRESCRIPTION_LIST,
+} from '@reuse/code/constants/common.constants';
+
 export const wrapperManifest = {
-  selector: 'uhmep-prescription-list',
+  selector: CUSTOM_ELEMENT_NAME_UHMEP_PRESCRIPTION_LIST,
   customElement: {
-    tag: 'nihdi-referral-prescription-list',
+    tag: CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_LIST,
   },
   tokenExchange: {
     clientId: 'nihdi-uhmep-patient',
   },
   events: {
     open: {
-      componentTag: 'uhmep-prescription-details',
+      componentTag: CUSTOM_ELEMENT_NAME_UHMEP_PRESCRIPTION_DETAILS,
     },
   },
 };

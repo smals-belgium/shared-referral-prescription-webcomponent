@@ -20,7 +20,7 @@ import {
   PageModelEntityDto,
   ReadRequestListResource,
   SystemCodes,
-  Template
+  Template,
 } from '@reuse/code/openapi';
 import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -30,7 +30,7 @@ import { FeatureFlagService } from '@reuse/code/services/helpers/feature-flag.se
 import { FeatureFlagDirective } from '@reuse/code/directives/feature-flag.directive';
 import { PrescriptionsCardComponent } from '../components/prescriptions/prescriptions-card/prescriptions-card.component';
 import { RequestSummaryDataService } from '@reuse/code/services/helpers/request-summary-data.service';
-import { Lang } from '@reuse/code/interfaces/lang.enum';
+import { Lang } from '@reuse/code/constants/languages';
 
 const BASE_URL = 'http://localhost';
 
@@ -565,12 +565,12 @@ describe('ListPrescriptionsWebComponent', () => {
 
       createFixture();
 
-      expect(translate.getDefaultLang()).toBe(Lang.FR);
-      expect(setLocalesSpy).toHaveBeenCalledWith(Lang.FR);
+      expect(translate.getDefaultLang()).toBe(Lang.FR.full);
+      expect(setLocalesSpy).toHaveBeenCalledWith(Lang.FR.full);
     });
 
     it('should not call use() or setLocale() with initial language only once', () => {
-      translate.use(Lang.NL);
+      translate.use(Lang.NL.full);
 
       const translateUseSpy = jest.spyOn(translate, 'use');
       const dateAdapterSpy = jest.spyOn(dateAdapter, 'setLocale');
@@ -579,8 +579,8 @@ describe('ListPrescriptionsWebComponent', () => {
 
       expect(translateUseSpy).toHaveBeenCalledTimes(1);
       expect(dateAdapterSpy).toHaveBeenCalledTimes(1);
-      expect(translateUseSpy).toHaveBeenCalledWith(Lang.NL);
-      expect(dateAdapterSpy).toHaveBeenCalledWith(Lang.NL);
+      expect(translateUseSpy).toHaveBeenCalledWith(Lang.NL.full);
+      expect(dateAdapterSpy).toHaveBeenCalledWith(Lang.NL.full);
     });
 
     it('should update language by emitting a new lang with _languageChange()', () => {
@@ -589,10 +589,10 @@ describe('ListPrescriptionsWebComponent', () => {
 
       createFixture();
 
-      component['_languageChange'].next(Lang.FR);
+      component['_languageChange'].next(Lang.FR.full);
 
-      expect(translateUseSpy).toHaveBeenCalledWith(Lang.FR);
-      expect(dateAdapterSpy).toHaveBeenCalledWith(Lang.FR);
+      expect(translateUseSpy).toHaveBeenCalledWith(Lang.FR.full);
+      expect(dateAdapterSpy).toHaveBeenCalledWith(Lang.FR.full);
     });
   });
 

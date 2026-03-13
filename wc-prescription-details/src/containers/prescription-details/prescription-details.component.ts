@@ -83,10 +83,11 @@ import {
 import { PrescriptionDetailsBottomComponent } from '../../components/prescription-details-bottom/prescription-details-bottom.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
-import { Lang } from '@reuse/code/interfaces/lang.enum';
+import { Lang } from '@reuse/code/constants/languages';
 import { tap } from 'rxjs/operators';
 import { mapDisplayStatusToColor } from '@reuse/code/utils/request-status-display-map.utils';
 import { PrescriptionDetailsActionsComponent } from '../../components/prescription-details-actions/prescription-details-actions/prescription-details-actions.component';
+import { formatToEvfLangCode } from '@reuse/code/evf/utils/evf-utils';
 
 export interface ViewState {
   prescription: ReadRequestResource;
@@ -142,7 +143,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
   @HostBinding('attr.lang')
   @Input()
-  lang = Lang.FR;
+  lang: string = Lang.FR.full;
   @Input() initialPrescriptionType?: string;
   @Input() prescriptionId!: string;
   @Input() patientSsin?: string;
@@ -177,11 +178,11 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
   loading: WritableSignal<boolean> = this._prescriptionSecondaryService.loading;
   generatedUUID = this._prescriptionSecondaryService.generatedUUID;
-  currentLang = this._prescriptionSecondaryService.currentLang;
+  currentLang: WritableSignal<string> = this._prescriptionSecondaryService.currentLang;
   protected langAlertData: WritableSignal<{ title: string; body: string } | null> = signal(null);
 
   private readonly _subscriptions: Subscription = new Subscription();
-  private readonly _languageChange = new BehaviorSubject<string>(this._translate.currentLang ?? Lang.FR);
+  private readonly _languageChange = new BehaviorSubject<string>(this._translate.currentLang ?? Lang.FR.full);
 
   protected readonly AlertType = AlertType;
 
@@ -189,11 +190,11 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
   constructor() {
     this.currentLang.set(this._translate.currentLang);
-    this._translate.setDefaultLang(Lang.FR);
+    this._translate.setDefaultLang(Lang.FR.full);
 
     if (!this.currentLang()) {
-      this._translate.use(Lang.FR);
-      this._dateAdapter.setLocale(Lang.FR);
+      this._translate.use(Lang.FR.full);
+      this._dateAdapter.setLocale(Lang.FR.full);
       this.currentLang.set(this._translate.currentLang);
     }
 
@@ -291,7 +292,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
   ngOnInit() {
     this.generatedUUID.set(uuidv4());
-    this.evfTranslateService.setDefaultLang('fr');
+    this.evfTranslateService.setDefaultLang(Lang.FR.short);
 
     this._subscriptions.add(
       this._languageChange
@@ -310,7 +311,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
           next: () => {
             this.langAlertData.set(null);
             this._translate.use(this.lang);
-            const formattedLang = this.formatToEvfLangCode(this.lang);
+            const formattedLang = formatToEvfLangCode(this.lang);
             this.evfTranslateService.setCurrentLang(formattedLang);
             this._prescriptionSecondaryService.currentLang.set(formattedLang);
           },
@@ -473,10 +474,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   getStatusColor(status: RequestStatus) {
     const mhColor = mapDisplayStatusToColor(status);
     return mhColor + ' mh-no-overlay';
-  }
-
-  private formatToEvfLangCode(localeCode: string): 'nl' | 'fr' {
-    return (localeCode?.substring(0, 2) as 'nl' | 'fr') ?? 'fr';
   }
 
   ngOnDestroy() {

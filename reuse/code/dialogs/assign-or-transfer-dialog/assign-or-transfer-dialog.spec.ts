@@ -15,6 +15,7 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { Discipline, ProviderType } from '@reuse/code/openapi';
 
 describe('AssignOrTransferDialog', () => {
   beforeAll(() => {
@@ -198,7 +199,7 @@ describe('AssignOrTransferDialog', () => {
           profession: 'nurse',
         },
         healthcarePerson: { firstName: 'Jane' },
-        type: 'Professional',
+        type: ProviderType.Professional,
       };
 
       component.executeAction(professional as any);
@@ -226,7 +227,7 @@ describe('AssignOrTransferDialog', () => {
           profession: 'nurse',
         },
         healthcarePerson: { firstName: 'Jane' },
-        type: 'Professional',
+        type: ProviderType.Professional,
       };
 
       component.executeAction(professional as any);

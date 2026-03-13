@@ -33,6 +33,7 @@ import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
 import { v4 as uuidv4 } from 'uuid';
 import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { Lang } from '@reuse/code/constants/languages';
 
 jest.spyOn(MatDialog.prototype, 'open').mockImplementation(
   () =>
@@ -235,7 +236,7 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should set loading to true and call handlePrescriptionChanges when intent exists without ANNEX_82', () => {
       createFixture('mockPseudomizedKey');
       const initialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
         initialPrescription: { templateCode: 'TEST' },
         initialPrescriptionType: 'TEST',
       };
@@ -627,7 +628,7 @@ describe('CreatePrescriptionWebComponent', () => {
       const componentLoadingSetSpy = jest.spyOn(component.loading, 'set');
 
       component.initialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
       };
       component.handleCreateBulkResultExtended(results);
 
@@ -736,7 +737,7 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should return initialPrescription unchanged if extend is false', () => {
       createFixture('mockPseudomizedKey');
       component.initialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
         extend: false,
       };
       const prescription: ReadRequestResource = {
@@ -760,7 +761,7 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should return initialPrescription unchanged if responses is undefined', () => {
       createFixture('mockPseudomizedKey');
       component.initialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
         extend: true,
       };
       const prescription: ReadRequestResource = {
@@ -783,7 +784,7 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should return initialPrescription unchanged if responses is undefined', () => {
       createFixture('mockPseudomizedKey');
       component.initialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
         extend: true,
       };
       const prescription: ReadRequestResource = {
@@ -806,7 +807,7 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should return initialPrescription unchanged if responses is undefined', () => {
       createFixture('mockPseudomizedKey');
       component.initialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
         extend: true,
       };
       const prescription: ReadRequestResource = {
@@ -819,7 +820,7 @@ describe('CreatePrescriptionWebComponent', () => {
         templateCode: '',
         id: '123',
         responses: undefined as unknown as Record<string, any>,
-        intent: 'order',
+        intent: Intent.ORDER,
         category: 'nursing',
       };
 
@@ -831,7 +832,7 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should return initialPrescription unchanged if prescriptionOriginId already exists', () => {
       createFixture('mockPseudomizedKey');
       component.initialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
         extend: true,
       };
       const prescription: ReadRequestResource = {
@@ -844,7 +845,7 @@ describe('CreatePrescriptionWebComponent', () => {
         templateCode: '',
         id: '123',
         responses: { prescriptionOriginId: '456' },
-        intent: 'order',
+        intent: Intent.ORDER,
         category: 'nursing',
       };
 
@@ -855,7 +856,7 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should return initialPrescription unchanged if responses is undefined', () => {
       createFixture('mockPseudomizedKey');
       component.initialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
         extend: true,
       };
       const prescription: ReadRequestResource = {
@@ -880,7 +881,7 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should return initialPrescription unchanged if prescriptionOriginId already exists', () => {
       createFixture('mockPseudomizedKey');
       component.initialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
         extend: true,
       };
       const prescription: ReadRequestResource = {
@@ -905,7 +906,7 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should return initialPrescription unchanged if initialPrescription.id is undefined', () => {
       createFixture('mockPseudomizedKey');
       component.initialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
         extend: true,
       };
       const prescription: ReadRequestResource = {
@@ -954,7 +955,7 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should return initialPrescription response based on the occurrenceTiming', () => {
       createFixture('mockPseudomizedKey');
       component.initialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
         extend: true,
       };
       const prescription: ReadRequestResource = {
@@ -966,7 +967,7 @@ describe('CreatePrescriptionWebComponent', () => {
         referralTask: {} as ReferralTaskResource,
         templateCode: '',
         category: 'nursing',
-        intent: 'order',
+        intent: Intent.ORDER,
         id: '123',
         responses: {
           feedback: false,
@@ -1005,7 +1006,7 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should return initialPrescription response based on the occurrenceTiming', () => {
       createFixture('mockPseudomizedKey');
       component.initialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
         extend: true,
       };
       const prescription: ReadRequestResource = {
@@ -1241,7 +1242,7 @@ describe('CreatePrescriptionWebComponent', () => {
       ];
 
       component.initialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
       };
       component.handleCreateBulkResultExtended(results);
 
@@ -1260,7 +1261,7 @@ describe('CreatePrescriptionWebComponent', () => {
       const componentLoadingSetSpy = jest.spyOn(component.loading, 'set');
 
       component.initialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
       };
       component.handleCreateBulkResultExtended(results);
 
@@ -1328,7 +1329,7 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should call loadPssStatus when initialValues change and templateCode is ANNEX_82', () => {
       createFixture('mockPseudomizedKey');
       const mockInitialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
         initialPrescription: { templateCode: 'ANNEX_82' } as ReadRequestResource,
       };
       component.initialValues = mockInitialValues;
@@ -1349,7 +1350,7 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should call handlePrescriptionChanges when initialValues change and templateCode is not ANNEX_82', () => {
       createFixture('mockPseudomizedKey');
       const mockInitialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
         initialPrescription: { templateCode: 'OTHER' } as ReadRequestResource,
       };
       component.initialValues = mockInitialValues;
@@ -1372,7 +1373,7 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should handle both services and initialValues changes', () => {
       createFixture('mockPseudomizedKey');
       const mockInitialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
         initialPrescription: { templateCode: 'ANNEX_82' } as ReadRequestResource,
       };
       component.initialValues = mockInitialValues;
@@ -1406,7 +1407,7 @@ describe('CreatePrescriptionWebComponent', () => {
       const mockStatus = { status: 'active' };
       jest.spyOn(mockPssService, 'getPssStatus').mockReturnValue(of(mockStatus));
       component.initialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
         initialPrescription: { templateCode: 'ANNEX_82' } as ReadRequestResource,
       };
       const loadingSpy = jest.spyOn(component.loading, 'set');
@@ -1427,7 +1428,7 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should skip getPssStatus and call handlePrescriptionChanges directly for non-ANNEX_82', () => {
       createFixture('mockPseudomizedKey');
       component.initialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
         initialPrescription: { templateCode: 'OTHER_TYPE' } as ReadRequestResource,
       };
       const handleSpy = jest.spyOn(component as any, 'handlePrescriptionChanges').mockImplementation(() => {});
@@ -1449,7 +1450,7 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should handle case with no templateCode or initialPrescriptionType', () => {
       createFixture('mockPseudomizedKey');
       component.initialValues = {
-        intent: 'order',
+        intent: Intent.ORDER,
         initialPrescription: { templateCode: undefined } as any,
       };
       const handleSpy = jest.spyOn(component as any, 'handlePrescriptionChanges').mockImplementation(() => {});
@@ -1476,12 +1477,12 @@ describe('CreatePrescriptionWebComponent', () => {
 
       translate.currentLang = '';
 
-      expect(translate.getDefaultLang()).toBe('fr-BE');
-      expect(setLocalesSpy).toHaveBeenCalledWith('fr-BE');
+      expect(translate.getDefaultLang()).toBe(Lang.FR.full);
+      expect(setLocalesSpy).toHaveBeenCalledWith(Lang.FR.full);
     });
 
     it('should not call use() or setLocale() with initial language only once', () => {
-      translate.use('nl-BE');
+      translate.use(Lang.NL.full);
 
       const translateUseSpy = jest.spyOn(translate, 'use');
       const dateAdapterSpy = jest.spyOn(dateAdapter, 'setLocale');
@@ -1490,8 +1491,8 @@ describe('CreatePrescriptionWebComponent', () => {
 
       expect(translateUseSpy).toHaveBeenCalledTimes(1);
       expect(dateAdapterSpy).toHaveBeenCalledTimes(1);
-      expect(translateUseSpy).toHaveBeenCalledWith('nl-BE');
-      expect(dateAdapterSpy).toHaveBeenCalledWith('nl-BE');
+      expect(translateUseSpy).toHaveBeenCalledWith(Lang.NL.full);
+      expect(dateAdapterSpy).toHaveBeenCalledWith(Lang.NL.full);
     });
 
     it('should update language by emitting a new lang with _languageChange()', () => {
@@ -1521,7 +1522,7 @@ describe('CreatePrescriptionWebComponent', () => {
       createFixture('mockPseudomizedKey');
       jest.spyOn(translate, 'use').mockReturnValue(throwError(() => new Error('Translation error')));
 
-      (component as any)._languageChange.next('en-GB');
+      (component as any)._languageChange.next(Lang.EN.full);
 
       component.ngOnInit();
 
@@ -1534,7 +1535,7 @@ describe('CreatePrescriptionWebComponent', () => {
       createFixture('mockPseudomizedKey');
       jest.spyOn(translate, 'use').mockReturnValue(throwError(() => new Error('Missing translation')));
 
-      (component as any)._languageChange.next('de-BE');
+      (component as any)._languageChange.next(Lang.DE.full);
       component.ngOnInit();
 
       expect(component.langAlertData()?.title).toBe('Deutsche Übersetzung folgt in Kürze.');
@@ -1544,7 +1545,7 @@ describe('CreatePrescriptionWebComponent', () => {
       createFixture('mockPseudomizedKey');
       jest.spyOn(translate, 'use').mockReturnValue(throwError(() => new Error('Missing translation')));
 
-      (component as any)._languageChange.next('fr-BE');
+      (component as any)._languageChange.next(Lang.FR.full);
       component.ngOnInit();
 
       expect(component.langAlertData()?.title).toBe('Traduction en français à venir.');
@@ -1554,7 +1555,7 @@ describe('CreatePrescriptionWebComponent', () => {
       createFixture('mockPseudomizedKey');
       jest.spyOn(translate, 'use').mockReturnValue(throwError(() => new Error('Missing translation')));
 
-      (component as any)._languageChange.next('nl-BE');
+      (component as any)._languageChange.next(Lang.NL.full);
       component.ngOnInit();
 
       expect(component.langAlertData()?.title).toBe('De Nederlandse vertaling ontbreekt.');
@@ -1564,7 +1565,7 @@ describe('CreatePrescriptionWebComponent', () => {
       createFixture('mockPseudomizedKey');
       jest.spyOn(translate, 'use').mockReturnValue(throwError(() => new Error('Missing translation')));
 
-      component['_languageChange'].next('en-GB');
+      component['_languageChange'].next(Lang.EN.full);
 
       const alertData = component.langAlertData();
       expect(alertData).not.toBeNull();
@@ -1647,7 +1648,7 @@ describe('CreatePrescriptionWebComponent', () => {
     });
 
     it('should use currentLang from translate service when _languageChange is initialized in ngOnInit', () => {
-      translate.currentLang = 'nl-BE';
+      translate.currentLang = Lang.NL.full;
 
       const translateUseSpy = jest.spyOn(translate, 'use').mockReturnValue(of({}));
       const setLocaleSpy = jest.spyOn(dateAdapter, 'setLocale');
@@ -1656,8 +1657,8 @@ describe('CreatePrescriptionWebComponent', () => {
 
       component.ngOnInit();
 
-      expect(setLocaleSpy).toHaveBeenCalledWith('nl-BE');
-      expect(translateUseSpy).toHaveBeenCalledWith('nl-BE');
+      expect(setLocaleSpy).toHaveBeenCalledWith(Lang.NL.full);
+      expect(translateUseSpy).toHaveBeenCalledWith(Lang.NL.full);
     });
 
     describe('findModelById', () => {
@@ -1747,7 +1748,7 @@ describe('CreatePrescriptionWebComponent', () => {
     fixture = TestBed.createComponent(CreatePrescriptionExtendedWebComponent);
     component = fixture.componentInstance;
     mockEncryptionKeyInitializerService.getPseudonymizedKey.mockReturnValue(() => ({ data: pseudonymizedKey }));
-    component.initialValues = { intent: 'order' };
+    component.initialValues = { intent: Intent.ORDER };
     (component as any).isEnabled$ = of(true);
 
     if (pseudonymizedKey) {

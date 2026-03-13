@@ -6,6 +6,7 @@ import { templateIdsAreEqual, templateIdToString } from '@reuse/code/utils/templ
 import { TemplatesState } from '@reuse/code/states/api/templates.state';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { Template } from '@reuse/code/openapi';
+import { Lang } from '@reuse/code/constants/languages';
 
 @Pipe({ name: 'templateName', pure: false, standalone: true })
 export class TemplateNamePipe implements PipeTransform {
@@ -50,22 +51,16 @@ export class TemplateNamePipe implements PipeTransform {
       this.translated = '';
     } else if (typeof this.templateCodeOrId === 'string') {
       const template = this.templates.find(t => t.code === this.templateCodeOrId);
-      const lang = (this.translateService.currentLang || this.translateService.defaultLang).substring(0, 2) as
-        | 'nl'
-        | 'fr'
-        | 'de'
-        | 'en';
+      const lang = (this.translateService.currentLang || this.translateService.defaultLang).substring(0, 2) as Lang;
+
       this.translated = template?.labelTranslations?.[lang] || this.templateCodeOrId || '';
     } else {
       const template = this.templates.find(t => {
         if (!isTemplateId(t.metadata)) return false;
         return templateIdsAreEqual(this.templateCodeOrId as TemplateId, t.metadata);
       });
-      const lang = (this.translateService.currentLang || this.translateService.defaultLang).substring(0, 2) as
-        | 'nl'
-        | 'fr'
-        | 'de'
-        | 'en';
+      const lang = (this.translateService.currentLang || this.translateService.defaultLang).substring(0, 2) as Lang;
+
       this.translated = template?.labelTranslations?.[lang] || templateIdToString(this.templateCodeOrId) || '';
     }
   }

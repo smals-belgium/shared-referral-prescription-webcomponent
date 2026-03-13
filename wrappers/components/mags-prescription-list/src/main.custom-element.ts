@@ -17,13 +17,14 @@ import { importProvidersFrom } from '@angular/core';
 import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { WcTranslateLoader } from '../../../services/translate.loader';
 import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-compiler';
+import { CUSTOM_ELEMENT_NAME_UHMEP_PRESCRIPTION_LIST } from '@reuse/code/constants/common.constants';
 
 export const manifest: MyHealthModuleManifest = {
   specVersion: { major: 4, minor: 0, patch: 1 },
   family: family('uhmep-prescription'),
   components: [
     {
-      tagName: 'uhmep-prescription-list',
+      tagName: CUSTOM_ELEMENT_NAME_UHMEP_PRESCRIPTION_LIST,
       events: ['open'],
       requiredProperties: ['patientSsin'],
     },
@@ -46,7 +47,7 @@ export const bootstrap: MyHealthModuleBootstrap = (config: { services: HostServi
     ],
   }).then(app => {
     customElements.define(
-      'uhmep-prescription-list',
+      CUSTOM_ELEMENT_NAME_UHMEP_PRESCRIPTION_LIST,
       createCustomElement(MagsPrescriptionList, { injector: app.injector })
     );
   });

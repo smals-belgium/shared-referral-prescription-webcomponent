@@ -2,6 +2,7 @@ import { CanAssignCaregiverPipe } from './can-assign-caregiver.pipe';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
 import * as utils from '@reuse/code/utils/utils';
+import { Intent } from '@reuse/code/interfaces';
 
 describe('CanAssignCaregiverPipe', () => {
   let accessMatrixState: jest.Mocked<AccessMatrixState>;
@@ -18,7 +19,7 @@ describe('CanAssignCaregiverPipe', () => {
   const basePrescription: ReadRequestResource = {
     templateCode: 'TEMPLATE_1',
     status: RequestStatus.Draft,
-    intent: 'prescription', // normal prescription by default
+    intent: Intent.ORDER, // normal prescription by default
   } as ReadRequestResource;
 
   describe('non-proposal prescriptions', () => {
@@ -63,13 +64,13 @@ describe('CanAssignCaregiverPipe', () => {
 
   describe('proposal prescriptions', () => {
     beforeEach(() => {
-      jest.spyOn(utils, 'isProposal').mockImplementation(intent => intent === 'proposal');
+      jest.spyOn(utils, 'isProposal').mockImplementation(intent => intent === Intent.PROPOSAL);
     });
 
     it('should call assignProposal permission for proposals', () => {
       const prescription: ReadRequestResource = {
         ...basePrescription,
-        intent: 'proposal',
+        intent: Intent.PROPOSAL,
         status: RequestStatus.Pending,
       };
 
@@ -87,7 +88,7 @@ describe('CanAssignCaregiverPipe', () => {
     it('should return false if permission denied', () => {
       const prescription: ReadRequestResource = {
         ...basePrescription,
-        intent: 'proposal',
+        intent: Intent.PROPOSAL,
         status: RequestStatus.Pending,
       };
 

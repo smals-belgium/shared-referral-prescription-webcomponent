@@ -11,6 +11,7 @@ import { ProposalState } from '../../states/api/proposal.state';
 import { EncryptionHelperService } from '@reuse/code/states/privacy/encryption-helper.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ReadRequestResource } from '@reuse/code/openapi';
+import { Lang } from '@reuse/code/constants/languages';
 
 const mockToastService = {
   show: jest.fn(),
@@ -56,8 +57,8 @@ describe('ApproveProposalDialog', () => {
       ],
     }).compileComponents();
     translate = TestBed.inject(TranslateService);
-    translate.setDefaultLang('nl-BE');
-    translate.use('nl-BE');
+    translate.setDefaultLang(Lang.NL.full);
+    translate.use(Lang.NL.full);
     fixture = TestBed.createComponent(ApproveProposalDialog);
     component = fixture.componentInstance;
 

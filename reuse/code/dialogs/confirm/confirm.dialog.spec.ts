@@ -1,8 +1,9 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ConfirmDialog, ConfirmDialogData } from './confirm.dialog';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { TranslateLoader, TranslateModule, TranslateService, TranslateFakeLoader } from '@ngx-translate/core';
+import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { By } from '@angular/platform-browser';
+import { Lang } from '@reuse/code/constants/languages';
 
 describe('ConfirmDialog (with real TranslateModule)', () => {
   let component: ConfirmDialog;
@@ -31,11 +32,11 @@ describe('ConfirmDialog (with real TranslateModule)', () => {
     translate = TestBed.inject(TranslateService);
 
     // Set default language
-    translate.setDefaultLang('en');
-    translate.use('en');
+    translate.setDefaultLang(Lang.EN.short);
+    translate.use(Lang.EN.short);
 
     // Provide translation dictionary
-    translate.setTranslation('en', {
+    translate.setTranslation(Lang.EN.short, {
       TITLE_KEY: 'Translated Title',
       MESSAGE_KEY: 'Translated Message',
       OK_KEY: 'Confirm',

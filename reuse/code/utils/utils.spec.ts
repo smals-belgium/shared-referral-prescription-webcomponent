@@ -1,7 +1,4 @@
-import {
-  checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline,
-  isProfesionalBasedOnRole,
-} from './utils';
+import { checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline, isProfesionalBasedOnRole } from './utils';
 import { Discipline, PerformerTaskResource, Role } from '../openapi';
 import {
   isSsin,
@@ -89,7 +86,7 @@ describe('Role and Caregiver Utils', () => {
       careGiver: { id: { profession: 'NURSE' } },
     } as PerformerTaskResource;
 
-    const user = { ssin: '12345678901', discipline: 'NURSE' } as Partial<UserInfo>;
+    const user = { ssin: '12345678901', discipline: Discipline.Nurse } as Partial<UserInfo>;
 
     expect(checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline(task, user)).toBe(true);
   });

@@ -3,7 +3,7 @@ import { ProfessionalDisplayComponent } from './professional-display.component';
 import { TranslateFakeLoader, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Discipline, Role } from '@reuse/code/openapi';
+import { Discipline, ProviderType, Role } from '@reuse/code/openapi';
 
 describe('ProfessionalDisplayComponent', () => {
   let component: ProfessionalDisplayComponent;
@@ -29,7 +29,7 @@ describe('ProfessionalDisplayComponent', () => {
     component.professional = {
       healthcareQualification: {} as any,
       address: {} as any,
-      type: 'Professional',
+      type: ProviderType.Professional,
       id: {
         profession: 'NURSE',
         qualificationCode: '789',
@@ -57,7 +57,7 @@ describe('ProfessionalDisplayComponent', () => {
     component.professional = {
       healthcareQualification: {} as any,
       address: {} as any,
-      type: 'Professional',
+      type: ProviderType.Professional,
       id: {
         profession: 'NURSE',
         qualificationCode: '789',
@@ -86,7 +86,7 @@ describe('ProfessionalDisplayComponent', () => {
     component.professional = {
       healthcareQualification: {} as any,
       address: {} as any,
-      type: 'Professional',
+      type: ProviderType.Professional,
       id: {
         profession: 'NURSE',
         qualificationCode: '123',

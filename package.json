@@ -37,7 +37,11 @@
     "postversion": "npm pack .",
     "api:client:init": "git submodule update --init --recursive && copyfiles -f ./lib/openapi-generator-cli/7.14.0/openapi-generator-cli-7.14.0.jar ./node_modules/@openapitools/openapi-generator-cli/versions/ && npm run generate-api:local",
     "push:github": "bash ./push-github.sh",
-    "prepare": "husky"
+    "prepare": "husky",
+    "lint:translate:reuse:uhmep": "ngx-translate-lint -p ./{reuse,wc-prescription-create,wc-prescription-details,wc-prescription-list}/**/*.{html,ts,resx} -l ./reuse/assets/i18n-common/{fr_BE,nl_BE}.json",
+    "prettier:translations:uhmep": "npx prettier --write ./reuse/assets/i18n-common/*.json",
+    "lint:translate:mags": "ngx-translate-lint -p ./wrappers/**/*.{html,ts,resx} -l ./wrappers/assets/{fr-BE,nl-BE}.json",
+    "prettier:translations:mags": "npx prettier --write ./wrappers/assets/*.json"
   },
   "private": true,
   "dependencies": {
@@ -59,9 +63,9 @@
     "@ngx-translate/core": "^16.0.4",
     "@openapitools/openapi-generator-cli": "^2.28.0",
     "@smals-belgium-shared/pseudo-helper": "^1.1.2",
-    "@smals-belgium/myhealth-wc-integration": "^5.0.7",
     "@smals-belgium-shared/vas-evaluation-form-ui-core": "^6.5.0",
     "@smals-belgium-shared/vas-evaluation-form-ui-material": "^6.5.0",
+    "@smals-belgium/myhealth-wc-integration": "^5.0.7",
     "@types/marked": "^6.0.0",
     "@types/pdfmake": "^0.2.9",
     "copyfiles": "^2.4.1",
@@ -106,9 +110,11 @@
     "jest-preset-angular": "^14.2.4",
     "jose": "^5.9.3",
     "lint-staged": "^16.3.2",
+    "ngx-translate-lint": "^1.26.5",
     "nyc": "^17.1.0",
     "prettier": "^3.6.2",
     "rollup-plugin-dts": "^6.2.3",
+    "ts-node": "^10.9.2",
     "typescript": "~5.8.2"
   },
   "lint-staged": {

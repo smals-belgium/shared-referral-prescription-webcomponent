@@ -141,7 +141,8 @@
       },
       "cancelPrescriptionsCreation": {
         "title": "Annuleer een of meerdere voorschriften",
-        "cancelAll": "Alles annuleren"
+        "cancelAll": "Alles annuleren",
+        "noSelectionError": "Kies een of meer opties voordat u de annulering bevestigt."
       },
       "cancelCreation": "Bent u zeker dat u het aanmaken van dit voorschrift wilt annuleren?",
       "prescription": "Voorschrift aanmaken",
@@ -343,7 +344,8 @@
       "invalidSsinChecksum": "Het rijksregisternummer / BIS-nummer is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
       "invalidShortCode": "Voorschrift ID is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
       "decryptionFailed": "Het decoderen van de vrije tekstvelden is mislukt. Probeer het opnieuw.",
-      "failedToCreateModel": "Het sjabloon kon niet worden aangemaakt. Probeer het later opnieuw."
+      "failedToCreateModel": "Het sjabloon kon niet worden aangemaakt. Probeer het later opnieuw.",
+      "failedToLoadTemplate": "Failed to load prescription form template."
     },
     "categories": {
       "bandagisterie": "Bandagisterie",
@@ -577,12 +579,13 @@
   "performerTask": {
     "statuses": {
       "ONHOLD": "Onderbroken",
-      "READY": "Klaar",
+      "READY": "Toegewezen",
       "CANCELLED": "Geannuleerd",
       "FAILED": "Mislukt",
       "INPROGRESS": "In uitvoering",
       "COMPLETED": "Voltooid",
-      "null": "Niet gekend"
+      "null": "Niet gekend",
+      "INACTIVE": "Inactief"
     }
   },
   "models": {

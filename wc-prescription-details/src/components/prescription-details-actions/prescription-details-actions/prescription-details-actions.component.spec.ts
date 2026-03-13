@@ -20,6 +20,7 @@ import { ViewState } from '../../../containers/prescription-details/prescription
 import { CancelPrescriptionDialog } from '@reuse/code/dialogs/cancel-prescription/cancel-prescription-dialog.component';
 import { Intent, UserInfo } from '@reuse/code/interfaces';
 import { AssignOrTransferDialog } from '@reuse/code/dialogs/assign-or-transfer-dialog/assign-or-transfer-dialog';
+import { Lang } from '@reuse/code/constants/languages';
 
 const UserNurse: Partial<UserInfo> = { ssin: 'user-ssin', discipline: Discipline.Nurse };
 const createPerformerTask = (overrides: Partial<PerformerTaskResource> = {}): PerformerTaskResource => ({
@@ -48,7 +49,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
         performerTasks: [{ careGiverSsin: 'ssin-1' }],
         organizationTasks: [{ organizationNihii: 'nihii-1' }],
         category: 'nursing-care',
-        intent: 'order',
+        intent: Intent.ORDER,
       } as ReadRequestResource,
       patient: { firstName: 'John' } as PersonResource,
       currentUser: { ssin: 'user-ssin', discipline: 'nursing', role: 'nurse' } as Partial<PersonResource>,
@@ -117,7 +118,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
     const mockBlob = new Blob(['test'], { type: 'application/pdf' });
     mockPdfService.createCommonPdf.mockReturnValue({ getBlob: (cb: (b: Blob) => void) => cb(mockBlob) });
     component.data = createMockViewState();
-    component.currentLang = 'en';
+    component.currentLang = Lang.EN.short;
     const printSpy = jest.spyOn(component.print, 'emit');
 
     component.createPdf('print');
@@ -130,7 +131,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
     const mockBlob = new Blob(['test'], { type: 'application/pdf' });
     mockPdfService.createCommonPdf.mockReturnValue({ getBlob: (cb: (b: Blob) => void) => cb(mockBlob) });
     component.data = createMockViewState();
-    component.currentLang = 'en';
+    component.currentLang = Lang.EN.short;
     const downloadSpy = jest.spyOn(component.download, 'emit');
 
     component.createPdf('download');
@@ -139,7 +140,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
   });
 
   it('should not create PDF when required data is missing', () => {
-    component.currentLang = 'en';
+    component.currentLang = Lang.EN.short;
 
     [undefined, { decryptedResponses: undefined }, { template: undefined }, { templateVersion: undefined }].forEach(
       dataOverride => {
@@ -215,7 +216,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
       performerTasks: [{ careGiverSsin: 'ssin-1' }, { careGiverSsin: 'ssin-2' }],
       organizationTasks: [{ organizationNihii: 'nihii-1' }],
       category: 'physiotherapy',
-      intent: 'order',
+      intent: Intent.ORDER,
     } as ReadRequestResource;
 
     component.openAssignDialog(prescription);
@@ -242,15 +243,15 @@ describe('PrescriptionDetailsActionsComponent', () => {
 
     const invalidCases = [
       {
-        prescription: { referralTask: { id: 'referral-task-id' }, intent: 'order' } as ReadRequestResource,
+        prescription: { referralTask: { id: 'referral-task-id' }, intent: Intent.ORDER } as ReadRequestResource,
         user: validUser,
       },
-      { prescription: { id: 'prescription-id', intent: 'order' } as ReadRequestResource, user: validUser },
+      { prescription: { id: 'prescription-id', intent: Intent.ORDER } as ReadRequestResource, user: validUser },
       {
         prescription: {
           id: 'prescription-id',
           referralTask: { id: 'referral-task-id' },
-          intent: 'order',
+          intent: Intent.ORDER,
         } as ReadRequestResource,
         user: undefined,
       },
@@ -258,7 +259,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
         prescription: {
           id: 'prescription-id',
           referralTask: { id: 'referral-task-id' },
-          intent: 'order',
+          intent: Intent.ORDER,
         } as ReadRequestResource,
         user: {},
       },
@@ -276,7 +277,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
     const prescription = {
       id: 'prescription-id',
       referralTask: { id: 'referral-task-id' },
-      intent: 'order',
+      intent: Intent.ORDER,
     } as ReadRequestResource;
     const user = UserNurse;
     mockPrescriptionState.assignPrescriptionToMe.mockReturnValue(of({ id: 'task-1' }));
@@ -297,7 +298,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
     const prescription = {
       id: 'prescription-id',
       referralTask: { id: 'referral-task-id' },
-      intent: 'proposal',
+      intent: Intent.PROPOSAL,
     } as ReadRequestResource;
     const user = UserNurse;
     mockProposalState.assignProposalToMe.mockReturnValue(of({ id: 'task-1' }));
@@ -317,7 +318,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
     const prescription = {
       id: 'prescription-id',
       referralTask: { id: 'referral-task-id' },
-      intent: 'order',
+      intent: Intent.ORDER,
     } as ReadRequestResource;
     const user = UserNurse;
     mockPrescriptionState.assignPrescriptionToMe.mockReturnValue(throwError(() => new Error('API Error')));

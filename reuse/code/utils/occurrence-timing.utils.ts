@@ -1,5 +1,7 @@
 import { BoundsDuration, OccurrenceTiming, Repeat, UnitsOfTime, Weekday } from '@reuse/code/interfaces';
 import { ReadRequestResource, Translation } from '@reuse/code/openapi';
+import { Language } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
+import { Lang } from '@reuse/code/constants/languages';
 
 type TranslationType = keyof Translation;
 const translations = {
@@ -215,7 +217,7 @@ export function translateFrequencyAndPeriod(repeat: Repeat, language: keyof Tran
       words.push(translateTimeUnit(repeat.period, repeat.periodUnit, language));
     } else if (repeat.frequency === 1 && repeat.period === 1) {
       words.push(translateEvery(repeat, language));
-      words.push(translateTimeUnit(language === 'fr' ? 2 : 1, repeat.periodUnit, language));
+      words.push(translateTimeUnit(language === Lang.FR.short ? 2 : 1, repeat.periodUnit, language));
     } else if (repeat.frequency === 1 && repeat.period && repeat.period > 1) {
       words.push(translateEvery(repeat, language));
       words.push(repeat.period);
@@ -251,10 +253,7 @@ export function translateDayOfWeek(occurrenceTiming: OccurrenceTiming, language:
   return words.join(' ');
 }
 
-export function translateOccurencyDuration(
-  occurrenceTiming: OccurrenceTiming,
-  language: 'nl' | 'fr' | 'en' | 'de'
-): string {
+export function translateOccurencyDuration(occurrenceTiming: OccurrenceTiming, language: Language): string {
   const words = [];
   if (occurrenceTiming.repeat.boundsDuration) {
     words.push(translations.during[language]);

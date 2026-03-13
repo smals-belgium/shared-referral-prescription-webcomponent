@@ -6,6 +6,7 @@ import { PssRadiologyResultComponent } from '@reuse/code/components/pss-radiolog
 import { SupportOption } from '@reuse/code/openapi';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { By } from '@angular/platform-browser';
+import { Lang } from '@reuse/code/constants/languages';
 
 describe('PssRadiologyResultComponent', () => {
   let component: PssRadiologyResultComponent;
@@ -58,7 +59,7 @@ describe('PssRadiologyResultComponent', () => {
     currentLangSubject = new Subject<Language>();
 
     mockEvfTranslateService = {
-      currentLang: 'nl',
+      currentLang: Lang.NL.short,
       currentLang$: currentLangSubject.asObservable(),
     };
 
@@ -76,7 +77,7 @@ describe('PssRadiologyResultComponent', () => {
   });
 
   it('should initialize with default values', () => {
-    expect(component['language']).toBe('nl');
+    expect(component['language']).toBe(Lang.NL.short);
     expect(component['radiationLevel']).toEqual(Array(5));
     expect(component['clickedRow']).toBeUndefined();
     expect(component['displayedColumns']).toEqual(['select', 'relevance', 'typesOfImagery', 'radiationRate']);

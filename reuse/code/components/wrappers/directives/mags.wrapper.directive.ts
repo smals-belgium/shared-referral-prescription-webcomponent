@@ -25,12 +25,12 @@ export abstract class MagsComponent implements OnInit {
 
   protected readonly componentView = inject<ElementRef<HTMLElement>>(ElementRef);
 
-  protected readonly envs?: Record<string, string[]> = {
-    localPatient: ['dev'],
-    demo: ['demo'],
-    intExtPatient: ['int'],
-    accPatient: ['acc'],
-    prodPatient: ['prod'],
+  protected readonly envs?: Record<string, ConfigName[]> = {
+    localPatient: [ConfigName.DEV],
+    demo: [ConfigName.DEMO],
+    intExtPatient: [ConfigName.INT],
+    accPatient: [ConfigName.ACC],
+    prodPatient: [ConfigName.PROD],
   };
 
   constructor() {
@@ -57,15 +57,15 @@ export abstract class MagsComponent implements OnInit {
   }
 
   protected async getAccessToken(audience?: string) {
-    if (this.hostSettings.configName === 'demo') {
-      return Promise.resolve('demo');
+    if (this.hostSettings.configName === ConfigName.DEMO) {
+      return Promise.resolve(ConfigName.DEMO);
     } else {
       return this.hostServices.getAccessToken(audience);
     }
   }
 
   protected async getIdToken() {
-    if (this.hostSettings.configName === 'demo') {
+    if (this.hostSettings.configName === ConfigName.DEMO) {
       return Promise.resolve({
         userProfile: {
           ssin: '80222700153',

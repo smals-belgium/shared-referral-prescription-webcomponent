@@ -1,5 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { Translation } from '@reuse/code/openapi';
+import { Lang as LanguageType } from '@reuse/code/constants/languages';
 
 type Value = Translation;
 type Lang = keyof Value;
@@ -11,7 +12,7 @@ export class FormatMultilingualObjectPipe implements PipeTransform {
       return '';
     }
 
-    const lang = (userLang && userLang.length >= 2 ? userLang.slice(0, 2) : 'fr') as Lang;
+    const lang = (userLang && userLang.length >= 2 ? userLang.slice(0, 2) : LanguageType.FR.short) as Lang;
 
     if (!(lang in value)) return '';
 

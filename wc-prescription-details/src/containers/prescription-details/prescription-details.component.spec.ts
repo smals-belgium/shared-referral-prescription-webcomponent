@@ -34,7 +34,7 @@ import {
   mockTemplate,
 } from '../../../test.utils';
 import { RequestStatus } from '@reuse/code/openapi';
-import { Lang } from '@reuse/code/interfaces/lang.enum';
+import { Lang } from '@reuse/code/constants/languages';
 mockUuid();
 jest.mock('uuid');
 
@@ -233,18 +233,18 @@ describe('PrescriptionDetailsWebComponent', () => {
 
       createFixture();
 
-      expect(translate.getDefaultLang()).toBe('fr-BE');
-      expect(setLocalesSpy).toHaveBeenCalledWith('fr-BE');
+      expect(translate.getDefaultLang()).toBe(Lang.FR.full);
+      expect(setLocalesSpy).toHaveBeenCalledWith(Lang.FR.full);
     });
 
     it('should intialize and call only once setLocale() from dateAdapter', () => {
-      translate.use('nl-BE');
+      translate.use(Lang.NL.full);
       const setLocalesSpy = jest.spyOn(dateAdapter, 'setLocale');
 
       createFixture();
 
       expect(setLocalesSpy).toHaveBeenCalledTimes(1);
-      expect(setLocalesSpy).toHaveBeenCalledWith(Lang.NL);
+      expect(setLocalesSpy).toHaveBeenCalledWith(Lang.NL.full);
     });
   });
 

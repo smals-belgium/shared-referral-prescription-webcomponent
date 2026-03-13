@@ -14,13 +14,13 @@ const mockCriteria: SearchProfessionalCriteria = {
   disciplines: ['cardiology'],
   prescriptionId: 'rx-1',
   intent: 'search',
-  providerType: 'PROFESSIONAL',
+  providerType: ProviderType.Professional,
 };
 
 const mockProfessional: HealthcareProResource[] = [
   {
     id: { ssin: 'ssin-123' },
-    type: 'Professional',
+    type: ProviderType.Professional,
     healthcarePerson: { firstName: 'John Doe' },
   },
 ];
@@ -28,7 +28,7 @@ const mockProfessional: HealthcareProResource[] = [
 const mockProfessional2: HealthcareProResource[] = [
   {
     id: { ssin: 'ssin-245' },
-    type: 'Professional',
+    type: ProviderType.Professional,
     healthcarePerson: { firstName: 'Jane Doe' },
   },
 ];

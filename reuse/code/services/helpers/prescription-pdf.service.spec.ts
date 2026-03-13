@@ -12,6 +12,7 @@ import {
   DynamicCellLayout,
   PatternFill,
 } from 'pdfmake/interfaces';
+import { Lang } from '@reuse/code/constants/languages';
 
 jest.mock('pdfmake/build/pdfmake', () => ({
   createPdf: jest.fn().mockReturnValue({
@@ -98,7 +99,7 @@ describe('PrescriptionsPdfService', () => {
       occurrenceTiming: { repeat: { frequency: 1, period: 1, periodUnit: 'day' } },
     };
 
-    const result = getResponseLabels('test', elementWithTiming, mockTemplateVersion, responses, 'nl');
+    const result = getResponseLabels('test', elementWithTiming, mockTemplateVersion, responses, Lang.NL.short);
     expect(Array.isArray(result)).toBe(true);
   });
 
@@ -112,7 +113,13 @@ describe('PrescriptionsPdfService', () => {
       ],
     };
 
-    const result = getResponseLabels(['option1', 'option2'], elementWithResponses, mockTemplateVersion, {}, 'nl');
+    const result = getResponseLabels(
+      ['option1', 'option2'],
+      elementWithResponses,
+      mockTemplateVersion,
+      {},
+      Lang.NL.short
+    );
     expect(result).toHaveLength(2);
     expect(result[0]).toBe('Dutch Translation');
   });
@@ -124,7 +131,7 @@ describe('PrescriptionsPdfService', () => {
       responses: [],
     };
 
-    const result = getResponseLabels('2023-10-15', elementWithoutResponses, mockTemplateVersion, {}, 'nl');
+    const result = getResponseLabels('2023-10-15', elementWithoutResponses, mockTemplateVersion, {}, Lang.NL.short);
     expect(result[0]).toBe('15/10/2023');
   });
 
@@ -135,7 +142,7 @@ describe('PrescriptionsPdfService', () => {
       responses: [{ value: 'option1', labelTranslationId: 'label1' }],
     };
 
-    const result = getResponseLabels('option1', elementWithResponses, mockTemplateVersion, {}, 'nl');
+    const result = getResponseLabels('option1', elementWithResponses, mockTemplateVersion, {}, Lang.NL.short);
     expect(result).toEqual(['Dutch Translation']);
   });
 
@@ -146,7 +153,7 @@ describe('PrescriptionsPdfService', () => {
       commonTranslations: {},
     };
 
-    const result = evfTranslate(templateWithoutTranslation, 'nonexistent', 'nl');
+    const result = evfTranslate(templateWithoutTranslation, 'nonexistent', Lang.NL.short);
     expect(result).toBe('Translation not found for "nonexistent"');
   });
 
@@ -218,7 +225,7 @@ describe('PrescriptionsPdfService', () => {
       translateService.instant.mockReturnValue('Cancelled message');
       const templateVersion = { elements: [] };
 
-      const result = service['buildAlertBox'](templateVersion as any, 'nl', true);
+      const result = service['buildAlertBox'](templateVersion as any, Lang.NL.short, true);
 
       expect(result).toMatchObject({
         table: { widths: [18, '*'] },
@@ -240,7 +247,7 @@ describe('PrescriptionsPdfService', () => {
         translations: { 'info.body': { nl: '> - Info item' } },
       };
 
-      const result = service['buildAlertBox'](templateVersion as any, 'nl', false);
+      const result = service['buildAlertBox'](templateVersion as any, Lang.NL.short, false);
 
       expect(result).not.toBeNull();
 
@@ -255,7 +262,7 @@ describe('PrescriptionsPdfService', () => {
     it('should return null when no info element exists', () => {
       const templateVersion = { elements: [{ viewType: 'text' }] };
 
-      const result = service['buildAlertBox'](templateVersion as any, 'nl', false);
+      const result = service['buildAlertBox'](templateVersion as any, Lang.NL.short, false);
 
       expect(result).toBeNull();
     });
@@ -268,7 +275,7 @@ describe('PrescriptionsPdfService', () => {
         shortLabelTranslations: { nl: 'Short Label' },
       };
 
-      const result = service['buildTitleSection'](template as any, 'nl') as { stack: any[] };
+      const result = service['buildTitleSection'](template as any, Lang.NL.short) as { stack: any[] };
 
       expect(result.stack).toHaveLength(2);
       expect(result.stack[0].text).toBe('Main Title');
@@ -356,7 +363,7 @@ describe('PrescriptionsPdfService', () => {
         {},
         template as any,
         templateVersion as any,
-        'nl'
+        Lang.NL.short
       );
 
       expect(result).toHaveLength(3);
@@ -398,11 +405,11 @@ describe('PrescriptionsPdfService', () => {
         responses,
         template as any,
         templateVersion as any,
-        'nl'
+        Lang.NL.short
       );
 
       expect(result).toHaveLength(4); // 3 static + 1 dynamic
-      expect(service['evfTranslate']).toHaveBeenCalledWith(templateVersion, 'label1', 'nl');
+      expect(service['evfTranslate']).toHaveBeenCalledWith(templateVersion, 'label1', Lang.NL.short);
       expect(service['getResponseLabels']).toHaveBeenCalledTimes(1);
     });
 
@@ -423,7 +430,7 @@ describe('PrescriptionsPdfService', () => {
         responses,
         template as any,
         templateVersion as any,
-        'nl'
+        Lang.NL.short
       );
 
       const dynamicRow = (result as any[])[3];
@@ -449,7 +456,7 @@ describe('PrescriptionsPdfService', () => {
         responses,
         template as any,
         templateVersion as any,
-        'nl'
+        Lang.NL.short
       );
 
       const dynamicRow = (result as any[])[3];
@@ -469,7 +476,7 @@ describe('PrescriptionsPdfService', () => {
         {},
         template as any,
         templateVersion as any,
-        'nl'
+        Lang.NL.short
       );
 
       expect(result).toHaveLength(1);
@@ -597,7 +604,7 @@ describe('PrescriptionsPdfService', () => {
       const template = { labelTranslations: { nl: 'Prescription Title' } };
       const patient = { ssin: '12345678901' };
 
-      const result = service['buildTitleSubSection'](template as any, 'nl', patient as any, 'SHORT123');
+      const result = service['buildTitleSubSection'](template as any, Lang.NL.short, patient as any, 'SHORT123');
 
       const results = result as ContentText;
       expect(results.stack?.[0]).not.toBeNull();
@@ -619,7 +626,7 @@ describe('PrescriptionsPdfService', () => {
       const template = { labelTranslations: { nl: 'Title' } };
       const patient = { ssin: null };
 
-      const result = service['buildTitleSubSection'](template as any, 'nl', patient as any);
+      const result = service['buildTitleSubSection'](template as any, Lang.NL.short, patient as any);
       const results = result as ContentText;
 
       expect(results.stack?.[1]).not.toBeNull();

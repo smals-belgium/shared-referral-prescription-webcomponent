@@ -38,7 +38,10 @@
           <app-overlay-spinner mode="inline"></app-overlay-spinner>
         }
         @if (formTemplateState.status === LoadingStatus.ERROR) {
-          <div>Failed to load prescription form template.</div>
+          <app-alert
+            [alert]="AlertType.Error"
+            [message]="'prescription.errors.failedToLoadTemplate' | translate"
+            [error]="modelState?.error"></app-alert>
         }
 
         @if (!!titleControl) {

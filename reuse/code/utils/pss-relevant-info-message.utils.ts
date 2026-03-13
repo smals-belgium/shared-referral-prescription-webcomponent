@@ -1,26 +1,29 @@
+import { Lang } from '@reuse/code/constants/languages';
+import { SupportedLanguages } from '@reuse/code/evf/utils/evf-utils';
+
 const relevantInfoTranslations: Record<string, { fr: string; nl: string }> = {
-  "tmp-addInfo-impl": { fr: "Implants", nl: "Implantaten" },
-  "tmp-addInfo-preg": { fr: "Grossesse", nl: "Zwangerschap" },
-  "tmp-addInfo-diab": { fr: "Diabète", nl: "Diabetes" },
-  "tmp-addInfo-all": { fr: "Allergie à l'agent de contraste", nl: "Allergie voor contrastmiddel" },
-  "tmp-addInfo-metdeb": { fr: "Résidus métalliques", nl: "Metaaldeeltjes" },
-  "tmp-addInfo-rendys": { fr: "Dysfonctionnement rénal", nl: "Nierdisfunctie" },
-  "tmp-addInfo": { fr: "Autre", nl: "Andere" }
+  'tmp-addInfo-impl': { fr: 'Implants', nl: 'Implantaten' },
+  'tmp-addInfo-preg': { fr: 'Grossesse', nl: 'Zwangerschap' },
+  'tmp-addInfo-diab': { fr: 'Diabète', nl: 'Diabetes' },
+  'tmp-addInfo-all': { fr: "Allergie à l'agent de contraste", nl: 'Allergie voor contrastmiddel' },
+  'tmp-addInfo-metdeb': { fr: 'Résidus métalliques', nl: 'Metaaldeeltjes' },
+  'tmp-addInfo-rendys': { fr: 'Dysfonctionnement rénal', nl: 'Nierdisfunctie' },
+  'tmp-addInfo': { fr: 'Autre', nl: 'Andere' },
 };
 
 const implantTypesTranslations: Record<string, { fr: string; nl: string }> = {
-  "tmp-impl-stent": { fr: "endoprothèses (p.ex. stents)", nl: "endoprothese (bv. stent)" },
-  "tmp-impl-neurostim": { fr: "neurostimulateur", nl: "neurostimulator" },
-  "tmp-impl-coch": { fr: "implant cochléaire", nl: "cochleair implantaat" },
-  "tmp-impl-hydro": { fr: "shunt d’hydrocéphalie", nl: "hydrocefalieshunt" },
-  "tmp-impl-ortho": { fr: "implant orthopédique", nl: "orthopedisch implantaat" },
-  "tmp-impl-aesthetic": { fr: "implant esthétique/reconstructif", nl: "esthetisch / reconstructief implantaat" },
-  "tmp-impl-elec": { fr: "électrode", nl: "electrode" },
-  "tmp-impl-biosens": { fr: "biocapteur", nl: "biosensor" },
-  "tmp-impl-mecheart": { fr: "implant cardiaque mécanique", nl: "mechanisch hartimplantaat" },
-  "tmp-impl-elecheart": { fr: "implant cardiaque électronique", nl: "elektronisch hartimplantaat" },
-  "tmp-impl-ophta": { fr: "implant intra-oculaire", nl: "oogheelkundig implantaat" },
-  "tmp-impl": { fr: "autre", nl: "andere" }
+  'tmp-impl-stent': { fr: 'endoprothèses (p.ex. stents)', nl: 'endoprothese (bv. stent)' },
+  'tmp-impl-neurostim': { fr: 'neurostimulateur', nl: 'neurostimulator' },
+  'tmp-impl-coch': { fr: 'implant cochléaire', nl: 'cochleair implantaat' },
+  'tmp-impl-hydro': { fr: 'shunt d’hydrocéphalie', nl: 'hydrocefalieshunt' },
+  'tmp-impl-ortho': { fr: 'implant orthopédique', nl: 'orthopedisch implantaat' },
+  'tmp-impl-aesthetic': { fr: 'implant esthétique/reconstructif', nl: 'esthetisch / reconstructief implantaat' },
+  'tmp-impl-elec': { fr: 'électrode', nl: 'electrode' },
+  'tmp-impl-biosens': { fr: 'biocapteur', nl: 'biosensor' },
+  'tmp-impl-mecheart': { fr: 'implant cardiaque mécanique', nl: 'mechanisch hartimplantaat' },
+  'tmp-impl-elecheart': { fr: 'implant cardiaque électronique', nl: 'elektronisch hartimplantaat' },
+  'tmp-impl-ophta': { fr: 'implant intra-oculaire', nl: 'oogheelkundig implantaat' },
+  'tmp-impl': { fr: 'autre', nl: 'andere' },
 };
 
 /**
@@ -68,19 +71,15 @@ const implantTypesTranslations: Record<string, { fr: string; nl: string }> = {
 export function generateWarningMessage(
   relevantInfo: string[],
   implants: string[],
-  language: 'nl' | 'fr'
+  language: SupportedLanguages
 ): string {
   const translatedItems: string[] = [];
 
   if (implants.length > 0) {
-    const subImplants = implants
-      .map(key => implantTypesTranslations[key]?.[language])
-      .filter(Boolean);
+    const subImplants = implants.map(key => implantTypesTranslations[key]?.[language]).filter(Boolean);
 
     const implantsLabel = relevantInfoTranslations['tmp-addInfo-impl']?.[language] ?? 'Implants';
-    const combinedImplants = subImplants.length
-      ? `${implantsLabel} (${subImplants.join(', ')})`
-      : implantsLabel;
+    const combinedImplants = subImplants.length ? `${implantsLabel} (${subImplants.join(', ')})` : implantsLabel;
 
     translatedItems.push(combinedImplants);
   }
@@ -98,9 +97,10 @@ export function generateWarningMessage(
     return '';
   }
 
-  const intro = language === 'fr'
-    ? 'Les informations pertinentes ci-dessous ne sont pas prises en compte dans ces résultats :'
-    : 'De onderstaande relevante informatie wordt niet in aanmerking genomen in deze resultaten:';
+  const intro =
+    language === Lang.FR.short
+      ? 'Les informations pertinentes ci-dessous ne sont pas prises en compte dans ces résultats :'
+      : 'De onderstaande relevante informatie wordt niet in aanmerking genomen in deze resultaten:';
 
   const bulletList = translatedItems.map(item => `\t• ${item}`).join('\n');
 
