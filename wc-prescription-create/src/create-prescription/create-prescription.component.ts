@@ -133,7 +133,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
   // INPUTS
   @HostBinding('attr.lang')
   @Input()
-  lang = Lang.FR;
+  lang = Lang.FR.full;
   @Input() initialValues?: CreatePrescriptionInitialValues;
   @Input() patientSsin?: string;
   @Input() services!: {

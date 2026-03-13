@@ -469,12 +469,12 @@
       "noResults": "Aucune commune trouvée",
       "organization": "Organisation",
       "dialog": {
-        "title": "Assigner un prestataire de soins à une proposition.",
-        "description": "Si vous ajoutez un prestataire de soins à cette proposition, celui-ci pourra consulter les informations contenues dans celle-ci."
+        "title": "Assigner un médecin à une annexe 81.",
+        "description": "Si vous ajoutez un médecin à cette annexe 81, celui-ci pourra consulter les informations contenues dans l'annexe 81."
       }
     },
     "transferAssignation": {
-      "title": "Transférer l'assignation",
+      "title": "Transférer",
       "success": "{firstName} {lastName} a été assigné comme prestataire.",
       "performer": "Prestataire",
       "searchPerformerPlaceHolder": "N° INAMI, nom",
@@ -482,8 +482,8 @@
       "zipCodeOrCityName": "Code postal ou commune",
       "noResults": "Aucune commune trouvée",
       "dialog": {
-        "title": "Transférer un prestataire de soins à une proposition",
-        "description": "Si vous transférez un prestataire de soins à cette proposition, celui-ci pourra consulter les informations contenues dans cette proposition."
+        "title": "Transférer cette annexe 81 à un autre médecin.",
+        "description": "Si vous transférez cette annexe 81 à un autre médecin, celui-ci pourra consulter les informations contenues dans l'annexe 81."
       }
     },
     "approve": {

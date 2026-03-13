@@ -469,8 +469,8 @@
       "noResults": "Geen gemeente gevonden",
       "organization": "Organisatie",
       "dialog": {
-        "title": "Een zorgverlener toewijzen aan een voorstel.",
-        "description": "Als u een zorgverlener aan dit voorstel toevoegt, kan deze de informatie in dit voorstel inzien."
+        "title": "Een arts toewijzen aan een bijlage 81.",
+        "description": "Als u een arts aan deze bijlage 81 toevoegt, kan deze de informatie in de bijlage 81 raadplegen."
       }
     },
     "transferAssignation": {
@@ -482,8 +482,8 @@
       "zipCodeOrCityName": "Postcode of gemeente",
       "noResults": "Geen gemeente gevonden",
       "dialog": {
-        "title": "Een zorgverlener transfereren naar een voorstel",
-        "description": "Als u dit voorstel overdraagt naar een andere zorgverlener, kan deze de informatie in dit voorstel raadplegen."
+        "title": "Deze bijlage 81 transfereren naar een andere arts.",
+        "description": "Als u deze bijlage 81 transfereert naar een andere arts, kan deze de informatie in de bijlage 81 raadplegen."
       }
     },
     "approve": {
