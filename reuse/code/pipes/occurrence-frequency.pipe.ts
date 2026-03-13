@@ -4,6 +4,7 @@ import { Repeat } from '@reuse/code/interfaces';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { translateFrequencyAndPeriod, validateOccurences } from '@reuse/code/utils/occurrence-timing.utils';
 import { Translation } from '@reuse/code/openapi';
+import { Lang } from '@reuse/code/constants/languages';
 
 type TranslationType = keyof Translation;
 @Pipe({
@@ -38,7 +39,9 @@ export class OccurrenceFrequencyPipe implements PipeTransform {
 
   private translate() {
     if (validateOccurences(this.occurrences)) {
-      this.translated = this.occurrences ? translateFrequencyAndPeriod(this.occurrences, this.language ?? 'fr') : '';
+      this.translated = this.occurrences
+        ? translateFrequencyAndPeriod(this.occurrences, this.language ?? Lang.FR.short)
+        : '';
     } else {
       this.translated = '';
     }

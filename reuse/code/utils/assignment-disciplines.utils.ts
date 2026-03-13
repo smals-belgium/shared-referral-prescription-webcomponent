@@ -1,23 +1,23 @@
 import { Intent } from '@reuse/code/interfaces';
 import { isProposal } from '@reuse/code/utils/utils';
-import { HealthcareOrganizationResource, HealthcareProResource } from '@reuse/code/openapi';
+import { Discipline, HealthcareOrganizationResource, HealthcareProResource, ProviderType } from '@reuse/code/openapi';
 
 export function getAssignableProfessionalDisciplines(category: string, intent: Intent): string[] {
   switch (category) {
     case 'nursing':
       if (isProposal(intent)) {
-        return ['PHYSICIAN'];
+        return [Discipline.Physician];
       } else {
-        return ['NURSE'];
+        return [Discipline.Nurse];
       }
     case 'physiotherapy':
       if (isProposal(intent)) {
-        return ['PHYSICIAN', 'DENTIST'];
+        return [Discipline.Physician, Discipline.Dentist];
       } else {
-        return ['PHYSIOTHERAPIST'];
+        return [Discipline.Physiotherapist];
       }
     case 'diagnosticImaging':
-      return ['PHYSICIAN', 'DENTIST'];
+      return [Discipline.Physician, Discipline.Dentist];
     default:
       return [];
   }
@@ -51,5 +51,5 @@ export function getAssignableOrganizationInstitutionTypes(category: string, inte
 export function isProfessional(
   object: HealthcareProResource | HealthcareOrganizationResource
 ): object is HealthcareProResource {
-  return object.type === 'Professional';
+  return object.type?.toLowerCase() === ProviderType.Professional.toLowerCase();
 }

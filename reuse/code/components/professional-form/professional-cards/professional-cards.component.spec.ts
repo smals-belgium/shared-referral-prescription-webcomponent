@@ -5,10 +5,22 @@ import { RequestProfessionalDataService } from '@reuse/code/services/helpers/req
 import { signal, SimpleChange, SimpleChanges } from '@angular/core';
 import { MatRadioChange } from '@angular/material/radio';
 import { TranslateModule } from '@ngx-translate/core';
+import { Lang } from '@reuse/code/constants/languages';
+import { ProviderType } from '@reuse/code/openapi';
 
 const mockProfessionals = [
-  { id: { ssin: '123', qualificationCode: 'Q1' }, firstname: 'Jan', lastname: 'Janssens', type: 'Professional' },
-  { id: { ssin: '456', qualificationCode: 'Q2' }, firstname: 'Piet', lastname: 'Peeters', type: 'Professional' },
+  {
+    id: { ssin: '123', qualificationCode: 'Q1' },
+    firstname: 'Jan',
+    lastname: 'Janssens',
+    type: ProviderType.Professional,
+  },
+  {
+    id: { ssin: '456', qualificationCode: 'Q2' },
+    firstname: 'Piet',
+    lastname: 'Peeters',
+    type: ProviderType.Professional,
+  },
 ] as any[];
 
 describe('ProfessionalCardsComponent', () => {
@@ -36,7 +48,7 @@ describe('ProfessionalCardsComponent', () => {
     fixture.componentRef.setInput('prescriptionId', 'RX-001');
     fixture.componentRef.setInput('category', 'physiotherapy');
     fixture.componentRef.setInput('intent', 'prescribe');
-    fixture.componentRef.setInput('currentLang', 'nl');
+    fixture.componentRef.setInput('currentLang', Lang.NL.short);
   });
 
   it('should create', () => {

@@ -6,6 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { signal, SimpleChange, SimpleChanges } from '@angular/core';
 import { RequestProfessionalDataService } from '@reuse/code/services/helpers/request-professional-data.service';
 import { HealthcareProResource } from '@reuse/code/openapi';
+import { Lang } from '@reuse/code/constants/languages';
 
 const mockProfessionals: HealthcareProResource[] = [
   { id: { ssin: '123', qualificationCode: 'Q1' }, address: { street: '', zipCode: '' } },
@@ -37,7 +38,7 @@ describe('ProfessionalTableComponent', () => {
     fixture.componentRef.setInput('prescriptionId', 'RX-001');
     fixture.componentRef.setInput('category', 'physiotherapy');
     fixture.componentRef.setInput('intent', 'prescribe');
-    fixture.componentRef.setInput('currentLang', 'nl');
+    fixture.componentRef.setInput('currentLang', Lang.NL.short);
 
     fixture.detectChanges();
   });

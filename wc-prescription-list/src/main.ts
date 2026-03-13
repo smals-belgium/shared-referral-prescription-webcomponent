@@ -20,6 +20,7 @@ import {
 } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
+import { CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_LIST } from '@reuse/code/constants/common.constants';
 
 void (async () => {
   const app = createApplication({
@@ -35,7 +36,7 @@ void (async () => {
         provide: AuthService,
         useClass: WcAuthService,
       },
-      { provide: OVERLAY_QUERY_SELECTOR, useValue: ['nihdi-referral-prescription-list'] },
+      { provide: OVERLAY_QUERY_SELECTOR, useValue: [CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_LIST] },
       {
         provide: OverlayContainer,
         useClass: ShadowDomOverlayContainer,
@@ -58,5 +59,5 @@ void (async () => {
   const prescriptionListElement = createCustomElement(PrescriptionListWebComponent, {
     injector: (await app).injector,
   });
-  customElements.define('nihdi-referral-prescription-list', prescriptionListElement);
+  customElements.define(CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_LIST, prescriptionListElement);
 })();

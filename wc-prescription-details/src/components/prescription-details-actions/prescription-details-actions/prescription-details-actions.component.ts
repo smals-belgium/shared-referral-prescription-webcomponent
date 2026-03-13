@@ -17,7 +17,7 @@ import {
 import { CanAssignCaregiverPipe } from '@reuse/code/pipes/can-assign-caregiver.pipe';
 import { CanSelfAssignPipe } from '@reuse/code/pipes/can-self-assign.pipe';
 import { CanStartTreatmentPipe } from '@reuse/code/pipes/can-start-treatment.pipe';
-import { UserInfo } from '@reuse/code/interfaces';
+import { Intent, UserInfo } from '@reuse/code/interfaces';
 import { isPrescription } from '@reuse/code/utils/utils';
 import { Observable } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
@@ -216,4 +216,6 @@ export class PrescriptionDetailsActionsComponent {
       ?.flatMap(organizationTask => organizationTask.performerTasks ?? [])
       .find(performerTask => performerTask.id === targetId);
   }
+
+  protected readonly Intent = Intent;
 }

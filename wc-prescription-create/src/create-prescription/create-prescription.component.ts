@@ -84,7 +84,7 @@ import { EncryptionKeyInitializerService } from '@reuse/code/states/privacy/encr
 import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
-import { Lang } from '@reuse/code/interfaces/lang.enum';
+import { Lang } from '@reuse/code/constants/languages';
 
 @Component({
   templateUrl: './create-prescription.component.html',
@@ -169,8 +169,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
   ) {
     const currentLang = this.translate.currentLang;
     if (!currentLang) {
-      this.translate.use(Lang.FR);
-      this.dateAdapter.setLocale(Lang.FR);
+      this.translate.use(Lang.FR.full);
+      this.dateAdapter.setLocale(Lang.FR.full);
     }
 
     this.isEnabled$ = of(this.configService.getEnvironmentVariable('enablePseudo') as boolean).pipe(
@@ -740,7 +740,6 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
   }
 
   cancelCreation(): void {
-
     const translationKeyPrefixIntent = getTranslationKeyPrefixForPrescriptionOrProposal(this.initialValues?.intent);
 
     if (this.prescriptionForms().length > 1) {

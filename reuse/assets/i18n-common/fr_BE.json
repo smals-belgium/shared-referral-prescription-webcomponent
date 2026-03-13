@@ -141,7 +141,8 @@
       },
       "cancelPrescriptionsCreation": {
         "title": "Annuler une ou plusieurs prescriptions",
-        "cancelAll": "Annuler tout"
+        "cancelAll": "Annuler tout",
+        "noSelectionError": "Veuillez choisir une ou plusieurs options avant de confirmer l'annulation"
       },
       "cancelCreation": "Êtes-vous sûr(e) de vouloir annuler la création de cette prescription ?",
       "prescription": "Créer prescription",
@@ -343,7 +344,8 @@
       "invalidSsinChecksum": "Le numéro de registre national / BIS n'est pas valide. Veuillez vérifier et essayer à nouveau.",
       "invalidShortCode": "L'ID de la prescription n'est pas valide. Veuillez vérifier et essayer à nouveau.",
       "decryptionFailed": "Le décodage des champs de texte libre a échoué. Ré-essayer.",
-      "failedToCreateModel": "Le modèle n'a pas pu être créé. Veuillez réessayer plus tard."
+      "failedToCreateModel": "Le modèle n'a pas pu être créé. Veuillez réessayer plus tard.",
+      "failedToLoadTemplate": "Failed to load prescription form template."
     },
     "categories": {
       "bandagisterie": "Bandagisterie",
@@ -577,12 +579,13 @@
   "performerTask": {
     "statuses": {
       "ONHOLD": "Interrompu",
-      "READY": "Prêt",
+      "READY": "Assigné·e",
       "CANCELLED": "Annulé",
       "FAILED": "Echoué",
       "INPROGRESS": "En cours",
       "COMPLETED": "Terminé",
-      "null": "Inconnu"
+      "null": "Inconnu",
+      "INACTIVE": "Inactif"
     }
   },
   "models": {

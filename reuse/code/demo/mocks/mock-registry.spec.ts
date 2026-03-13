@@ -2,6 +2,7 @@ import { HttpRequest } from '@angular/common/http';
 import { DEMO_MOCKS, DemoMockEntry, ReadRequestResourceExtended } from '@reuse/code/demo/mocks/mock-registry';
 import {
   CitiesResource,
+  Discipline,
   HealthcarePersonResource,
   RequestSummaryListResource,
   TemplateVersion,
@@ -327,7 +328,7 @@ describe('Demo mode', () => {
     it('should return healthcare professionals when discipline is provided', () => {
       const mock = findMockByUrl(/\/healthCareProviders/);
       const req = createHttpRequest('/healthCareProviders', {
-        discipline: 'NURSE',
+        discipline: Discipline.Nurse,
         page: '1',
         pageSize: '10',
       });
@@ -369,7 +370,7 @@ describe('Demo mode', () => {
     it('should filter professionals by query', () => {
       const mock = findMockByUrl(/\/healthCareProviders/);
       const req = createHttpRequest('/healthCareProviders', {
-        discipline: 'NURSE',
+        discipline: Discipline.Nurse,
         query: 'Ank',
         page: '1',
         pageSize: '10',
@@ -390,7 +391,7 @@ describe('Demo mode', () => {
     it('should filter professionals by zipCode', () => {
       const mock = findMockByUrl(/\/healthCareProviders/);
       const req = createHttpRequest('/healthCareProviders', {
-        discipline: 'NURSE',
+        discipline: Discipline.Nurse,
         zipCode: '1050',
         page: '1',
         pageSize: '10',
@@ -424,7 +425,7 @@ describe('Demo mode', () => {
     it('should paginate professional results', () => {
       const mock = findMockByUrl(/\/healthCareProviders/);
       const req = createHttpRequest('/healthCareProviders', {
-        discipline: 'NURSE',
+        discipline: Discipline.Nurse,
         page: '2',
         pageSize: '2',
       });

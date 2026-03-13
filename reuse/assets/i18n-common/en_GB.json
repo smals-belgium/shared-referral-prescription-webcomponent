@@ -141,7 +141,8 @@
       },
       "cancelPrescriptionsCreation": {
         "title": "",
-        "cancelAll": ""
+        "cancelAll": "",
+        "noSelectionError": ""
       },
       "cancelCreation": "",
       "prescription": "",
@@ -343,7 +344,8 @@
       "invalidSsinChecksum": "",
       "invalidShortCode": "",
       "decryptionFailed": "",
-      "failedToCreateModel": ""
+      "failedToCreateModel": "",
+      "failedToLoadTemplate": "Failed to load prescription form template."
     },
     "categories": {
       "bandagisterie": "",
@@ -582,7 +584,8 @@
       "FAILED": "",
       "INPROGRESS": "",
       "COMPLETED": "",
-      "null": ""
+      "null": "",
+      "INACTIVE": ""
     }
   },
   "models": {

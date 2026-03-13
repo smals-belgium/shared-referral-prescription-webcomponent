@@ -215,7 +215,6 @@ describe('PrescriptionsTableComponent', () => {
     });
 
     it('should show prescription messages when isPrescriptionIntent is true', () => {
-
       component.intent = Intent.ORDER;
       component.ngOnChanges({
         intent: { currentValue: Intent.ORDER, previousValue: undefined, firstChange: true, isFirstChange: () => true },
@@ -231,10 +230,14 @@ describe('PrescriptionsTableComponent', () => {
     });
 
     it('should show proposal messages when isProposalIntent is true', () => {
-
       component.intent = Intent.PROPOSAL;
       component.ngOnChanges({
-        intent: { currentValue: Intent.PROPOSAL, previousValue: undefined, firstChange: true, isFirstChange: () => true },
+        intent: {
+          currentValue: Intent.PROPOSAL,
+          previousValue: undefined,
+          firstChange: true,
+          isFirstChange: () => true,
+        },
       });
       fixture.detectChanges();
 
@@ -247,10 +250,9 @@ describe('PrescriptionsTableComponent', () => {
     });
 
     it('should render nothing for unknown intent', () => {
-
-      component.intent = 'MODEL' as Intent;
+      component.intent = Intent.MODEL;
       component.ngOnChanges({
-        intent: { currentValue: 'MODEL', previousValue: undefined, firstChange: true, isFirstChange: () => true },
+        intent: { currentValue: Intent.MODEL, previousValue: undefined, firstChange: true, isFirstChange: () => true },
       });
       fixture.detectChanges();
 

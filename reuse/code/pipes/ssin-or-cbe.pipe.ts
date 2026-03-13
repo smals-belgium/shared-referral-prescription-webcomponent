@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { HealthcareOrganizationResource, HealthcareProResource } from '@reuse/code/openapi';
+import { HealthcareOrganizationResource, HealthcareProResource, ProviderType } from '@reuse/code/openapi';
 
 @Pipe({ name: 'ssinOrOrganizationId', standalone: true })
 export class SsinOrOrganizationIdPipe implements PipeTransform {
@@ -15,6 +15,6 @@ export class SsinOrOrganizationIdPipe implements PipeTransform {
   }
 
   isProfessional(object: HealthcareProResource | HealthcareOrganizationResource): object is HealthcareProResource {
-    return object.type === 'Professional';
+    return object.type?.toLowerCase() === ProviderType.Professional.toLowerCase();
   }
 }

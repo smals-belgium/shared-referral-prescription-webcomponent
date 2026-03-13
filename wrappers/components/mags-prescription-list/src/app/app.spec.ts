@@ -3,6 +3,7 @@ import { App } from './app';
 import { HOST_SERVICES } from '@reuse/code/components/wrappers/injection-tokens/host-services.injection-token';
 import { HOST_SETTINGS } from '@reuse/code/components/wrappers/injection-tokens/host-settings.injection-token';
 import { TranslateModule } from '@ngx-translate/core';
+import { Lang } from '@reuse/code/constants/languages';
 
 describe('App', () => {
   const mockHostServices = {
@@ -11,7 +12,7 @@ describe('App', () => {
   };
 
   const mockHostSettings = {
-    language: 'en',
+    language: Lang.EN.short,
   };
 
   beforeEach(async () => {

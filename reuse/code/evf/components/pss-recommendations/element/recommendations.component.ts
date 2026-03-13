@@ -29,6 +29,7 @@ import { ControlRequest, SupportOption } from '@reuse/code/openapi';
 import { AlertType } from '@reuse/code/interfaces';
 import { EMPTY_OBJECT } from '@reuse/code/constants/common.constants';
 import { isEmptyValue } from '@reuse/code/utils/utils';
+import { SupportedLanguages } from '@reuse/code/evf/utils/evf-utils';
 
 @Component({
   selector: 'recommendations',
@@ -61,9 +62,9 @@ export class RecommendationsComponent extends EvfBaseFormElementComponent {
   readonly hasValue = signal(false);
   readonly controlIndications = signal<SupportOption[] | undefined>(undefined);
   private static counter = 0;
-  private language?: 'nl' | 'fr';
+  private language?: SupportedLanguages;
 
-  readonly id = 'evf-recommendations-' + RecommendationsComponent.counter++;
+  readonly id = `evf-recommendations-${RecommendationsComponent.counter++}`;
   private readonly REQUIRED_FIELDS = ['age', 'gender', 'clinicalIndications'] as const;
 
   constructor(
@@ -73,9 +74,9 @@ export class RecommendationsComponent extends EvfBaseFormElementComponent {
     private readonly evfTranslate: EvfTranslateService
   ) {
     super(cdRef);
-    this.language = this.evfTranslate.currentLang as 'nl' | 'fr';
+    this.language = this.evfTranslate.currentLang as SupportedLanguages;
     this.evfTranslate.currentLang$.pipe(takeUntilDestroyed()).subscribe(() => {
-      this.language = this.evfTranslate.currentLang as 'nl' | 'fr';
+      this.language = this.evfTranslate.currentLang as SupportedLanguages;
       this.cdRef.markForCheck();
     });
   }

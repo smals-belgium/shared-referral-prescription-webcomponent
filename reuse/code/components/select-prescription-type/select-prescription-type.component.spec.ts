@@ -5,6 +5,7 @@ import { Subject, of } from 'rxjs';
 import { SelectPrescriptionTypeComponent } from './select-prescription-type.component';
 import { ModelEntityDto, Template } from '@reuse/code/openapi';
 import { By } from '@angular/platform-browser';
+import { Lang } from '@reuse/code/constants/languages';
 
 const nursingTemplate: Template = {
   id: 1,
@@ -18,9 +19,7 @@ const nursingTemplate: Template = {
   label: 'Nursing Template 1',
   metadata: {
     code: {},
-    category: [
-      {code: ["9632001"]},
-    ],
+    category: [{ code: ['9632001'] }],
   },
 };
 
@@ -36,9 +35,7 @@ const radiologyTemplate: Template = {
   label: 'Radiology Template 1',
   metadata: {
     code: {},
-    category: [
-      {code: ["363679005"]},
-    ],
+    category: [{ code: ['363679005'] }],
   },
 };
 
@@ -54,11 +51,9 @@ const physiotherapyTemplate: Template = {
   label: 'Physio Template 1',
   metadata: {
     code: {},
-    category: [
-      {code: ["722138006"]},
-    ],
+    category: [{ code: ['722138006'] }],
   },
-}
+};
 
 const allTemplates: Template[] = [nursingTemplate, radiologyTemplate, physiotherapyTemplate];
 
@@ -76,7 +71,7 @@ describe('SelectPrescriptionTypeComponent', () => {
   beforeEach(async () => {
     langChangeSubject = new Subject();
     mockTranslateService = {
-      currentLang: 'en',
+      currentLang: Lang.EN.short,
       onLangChange: langChangeSubject.asObservable(),
       instant: jest.fn((key: string) => {
         const translations: { [key: string]: string } = {
@@ -122,7 +117,7 @@ describe('SelectPrescriptionTypeComponent', () => {
     });
   });
 
-  it('should hide radiology category if no templates for radiology', done=>  {
+  it('should hide radiology category if no templates for radiology', done => {
     component.templates = [nursingTemplate, physiotherapyTemplate];
     component.ngOnInit();
 
@@ -136,7 +131,7 @@ describe('SelectPrescriptionTypeComponent', () => {
     });
   });
 
-  it('should hide category selection if only 1 category available', done =>  {
+  it('should hide category selection if only 1 category available', done => {
     component.templates = [nursingTemplate];
     createFormAndTriggerOnChange();
 
@@ -243,7 +238,7 @@ describe('SelectPrescriptionTypeComponent', () => {
 
   it('should display template label correctly', () => {
     const template = { labelTranslations: { en: 'Test Template' } };
-    mockTranslateService.currentLang = 'en';
+    mockTranslateService.currentLang = Lang.EN.short;
     const result = component.displayTypeWith(template as Template);
     expect(result).toBe('Test Template');
 
@@ -291,7 +286,7 @@ describe('SelectPrescriptionTypeComponent', () => {
     createFormAndTriggerOnChange();
 
     // Change language
-    mockTranslateService.currentLang = 'fr';
+    mockTranslateService.currentLang = Lang.FR.short;
     // @ts-ignore
     mockTranslateService.instant = jest.fn((key: string) => {
       const frTranslations: { [key: string]: string } = {
@@ -302,7 +297,7 @@ describe('SelectPrescriptionTypeComponent', () => {
       return frTranslations[key] || key;
     });
 
-    langChangeSubject.next({ lang: 'fr' });
+    langChangeSubject.next({ lang: Lang.FR.short });
 
     component.categoryOptions$.subscribe(categories => {
       expect(categories[0].label).toBe('Soins Infirmiers');

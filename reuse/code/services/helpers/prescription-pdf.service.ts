@@ -25,6 +25,7 @@ import { BoundsDuration, OccurrenceTiming, Repeat } from '@reuse/code/interfaces
 import { TCreatedPdf } from 'pdfmake/build/pdfmake.js';
 import { FormatSsinPipe } from '@reuse/code/pipes/format-ssin.pipe';
 import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
+import { SupportedLanguages } from '@reuse/code/evf/utils/evf-utils';
 
 @Injectable({ providedIn: 'root' })
 export class PrescriptionsPdfService {
@@ -496,20 +497,22 @@ export class PrescriptionsPdfService {
     language: keyof FormTranslation
   ) {
     if (element.viewType === 'occurrenceTiming') {
-      return [translateOccurrenceTiming(responses['occurrenceTiming'] as OccurrenceTiming, language as 'nl' | 'fr')];
+      return [
+        translateOccurrenceTiming(responses['occurrenceTiming'] as OccurrenceTiming, language as SupportedLanguages),
+      ];
     } else if (element.viewType === 'occurrences') {
-      return [translateFrequencyAndPeriod(responses['occurrences'] as Repeat, language as 'nl' | 'fr')];
+      return [translateFrequencyAndPeriod(responses['occurrences'] as Repeat, language as SupportedLanguages)];
     } else if (element.viewType === 'boundsDuration') {
-      return [translateBoundsDuration(responses['boundsDuration'] as BoundsDuration, language as 'nl' | 'fr')];
+      return [translateBoundsDuration(responses['boundsDuration'] as BoundsDuration, language as SupportedLanguages)];
     } else if (element.responses?.length) {
       if (Array.isArray(value)) {
         return value.map(v => {
           const label = element.responses!.find(r => r.value === v)?.labelTranslationId;
-          return label ? this.evfTranslate(templateVersion, label, language) : '((LABEL NOT FOUND: ' + label + '))';
+          return label ? this.evfTranslate(templateVersion, label, language) : `((LABEL NOT FOUND: ${label}))`;
         });
       } else {
         const label = element.responses.find(r => r.value === value)?.labelTranslationId;
-        return label ? [this.evfTranslate(templateVersion, label, language)] : ['((LABEL NOT FOUND: ' + label + '))'];
+        return label ? [this.evfTranslate(templateVersion, label, language)] : [`((LABEL NOT FOUND: ${label}))`];
       }
     } else if (RegExp(/^\d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$/).test(value as string)) {
       return [this.formatDate(value as string, 'dd/MM/yyyy')];
@@ -523,7 +526,7 @@ export class PrescriptionsPdfService {
     return date instanceof Date ? DateTime.fromJSDate(date).toFormat(format) : DateTime.fromISO(date).toFormat(format);
   }
 
-  private evfTranslate(template: FormTemplate, labelId: string, language: 'nl' | 'fr' | 'de' | 'en'): string {
+  private evfTranslate(template: FormTemplate, labelId: string, language: Language): string {
     return (
       template.translations?.[labelId]?.[language] ??
       template.commonTranslations?.[labelId]?.[language] ??

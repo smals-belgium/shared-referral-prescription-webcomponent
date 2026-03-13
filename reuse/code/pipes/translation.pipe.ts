@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { Translation } from '@reuse/code/openapi';
+import { Lang } from '@reuse/code/constants/languages';
 
 @Pipe({
   name: 'translation',
@@ -37,11 +38,7 @@ export class TranslationPipe implements PipeTransform, OnDestroy {
   }
 
   private translate(): void {
-    const lang = (this.translateService.currentLang || this.translateService.defaultLang).substring(0, 2) as
-      | 'nl'
-      | 'fr'
-      | 'de'
-      | 'en';
+    const lang = (this.translateService.currentLang || this.translateService.defaultLang).substring(0, 2) as Lang;
     this.translated = this.value?.[lang];
   }
 

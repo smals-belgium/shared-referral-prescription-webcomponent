@@ -1,20 +1,21 @@
 import { CanStartTreatmentPipe } from './can-start-treatment.pipe';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { FhirR4TaskStatus, RequestStatus } from '@reuse/code/openapi';
+import { Intent } from '@reuse/code/interfaces';
 
 describe('CanStartTreatmentPipe', () => {
   let pipe: CanStartTreatmentPipe;
   let mockAccess: jest.Mocked<AccessMatrixState>;
 
   const basePrescription = {
-    intent: 'order',
+    intent: Intent.ORDER,
     status: RequestStatus.Open,
-    templateCode: 'templateCode'
+    templateCode: 'templateCode',
   };
 
   beforeEach(() => {
     mockAccess = {
-      hasAtLeastOnePermission: jest.fn()
+      hasAtLeastOnePermission: jest.fn(),
     } as unknown as jest.Mocked<AccessMatrixState>;
 
     pipe = new CanStartTreatmentPipe(mockAccess);
@@ -38,10 +39,7 @@ describe('CanStartTreatmentPipe', () => {
     const result = pipe.transform(basePrescription as any);
 
     expect(result).toBe(false);
-    expect(mockAccess.hasAtLeastOnePermission).toHaveBeenCalledWith(
-      ['executeTreatment'],
-      'templateCode'
-    );
+    expect(mockAccess.hasAtLeastOnePermission).toHaveBeenCalledWith(['executeTreatment'], 'templateCode');
   });
 
   it('should return false when a task exists but is not READY', () => {
@@ -75,7 +73,7 @@ describe('CanStartTreatmentPipe', () => {
   it('should return false when the prescription is a proposal', () => {
     const proposalPrescription = {
       ...basePrescription,
-      intent: 'proposal'
+      intent: Intent.PROPOSAL,
     };
 
     const result = pipe.transform(proposalPrescription as any);

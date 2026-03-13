@@ -13,6 +13,7 @@ import { By } from '@angular/platform-browser';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { QueryList } from '@angular/core';
 import { EvfFormWebComponent } from '../evf-form/evf-form.component';
+import { Lang } from '@reuse/code/constants/languages';
 
 @Component({
   selector: 'evf-form',
@@ -58,12 +59,12 @@ describe('CreateMultiplePrescriptionsComponent', () => {
       .compileComponents();
 
     translate = TestBed.inject(TranslateService);
-    translate.setDefaultLang('nl-BE');
-    translate.use('nl-BE');
+    translate.setDefaultLang(Lang.NL.full);
+    translate.use(Lang.NL.full);
 
     fixture = TestBed.createComponent(CreateMultiplePrescriptionsComponent);
     component = fixture.componentInstance;
-    component.intent = 'order';
+    component.intent = Intent.ORDER;
   });
 
   afterEach(() => {

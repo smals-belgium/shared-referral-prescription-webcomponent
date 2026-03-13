@@ -1,9 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MagsPrescriptionDetails } from './mags-prescription-details.component';
 import { hasUserProfile } from '@reuse/code/utils/mags-utils';
-import { PrintMimeType, PrintOrientation } from '@smals-belgium/myhealth-wc-integration';
+import { PrintMimeType, PrintOrientation, UserLanguage } from '@smals-belgium/myhealth-wc-integration';
 import { HOST_SERVICES } from '@reuse/code/components/wrappers/injection-tokens/host-services.injection-token';
 import { HOST_SETTINGS } from '@reuse/code/components/wrappers//injection-tokens/host-settings.injection-token';
+import { Lang } from '@reuse/code/constants/languages';
+import { Intent } from '@reuse/code/interfaces';
 
 jest.mock('@reuse/code/utils/mags-utils', () => ({
   hasUserProfile: jest.fn(),
@@ -19,7 +21,7 @@ describe('MagsPrescriptionDetails', () => {
   beforeEach(async () => {
     mockWebComponent = {
       services: null,
-      lang: 'nl-BE',
+      lang: Lang.NL.full,
       setAttribute: jest.fn(),
       addEventListener: jest.fn(),
     };
@@ -30,7 +32,7 @@ describe('MagsPrescriptionDetails', () => {
     };
 
     mockHostSettings = {
-      language: 'en',
+      language: UserLanguage.EN,
     };
 
     await TestBed.configureTestingModule({
@@ -52,7 +54,7 @@ describe('MagsPrescriptionDetails', () => {
     componentAny.getIdToken = jest.fn().mockResolvedValue({ userProfile: { ssin: '12345' } });
     componentAny.appendWebComponent = jest.fn();
 
-    jest.spyOn(component, 'userLanguage').mockReturnValue('nl');
+    jest.spyOn(component, 'userLanguage').mockReturnValue(UserLanguage.NL);
 
     componentAny.componentView = {
       nativeElement: {
@@ -123,9 +125,9 @@ describe('MagsPrescriptionDetails', () => {
       fixture.componentRef.setInput('prescriptionId', 'uuid-123');
       component.initWebComponent();
 
-      expect(mockWebComponent.setAttribute).toHaveBeenCalledWith('lang', 'nl-BE');
+      expect(mockWebComponent.setAttribute).toHaveBeenCalledWith('lang', Lang.NL.short);
       expect(mockWebComponent.setAttribute).toHaveBeenCalledWith('prescription-id', 'uuid-123');
-      expect(mockWebComponent.setAttribute).toHaveBeenCalledWith('intent', 'order');
+      expect(mockWebComponent.setAttribute).toHaveBeenCalledWith('intent', Intent.ORDER);
     });
 
     it('should register clickPrint event listener that emits print event', async () => {
@@ -143,7 +145,7 @@ describe('MagsPrescriptionDetails', () => {
 
       expect(printSpy).toHaveBeenCalledWith({
         prescriptionId: 'uuid-123',
-        lang: 'nl-BE',
+        lang: Lang.NL.full,
         content: 'base64content',
         mimeType: PrintMimeType.BASE64,
         orientation: PrintOrientation.PORTRAIT,

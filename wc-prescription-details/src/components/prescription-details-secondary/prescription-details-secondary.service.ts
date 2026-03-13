@@ -32,6 +32,7 @@ import { RejectProposalDialog } from '@reuse/code/dialogs/reject-proposal/reject
 import { SSIN_CLAIM_KEY, USER_PROFILE_CLAIM_KEY } from '@reuse/code/services/auth/auth-constants';
 import { v4 as uuidv4 } from 'uuid';
 import { AssignOrTransferDialog } from '@reuse/code/dialogs/assign-or-transfer-dialog/assign-or-transfer-dialog';
+import { Lang } from '@reuse/code/constants/languages';
 
 export interface DetailsServices {
   getAccessToken: (audience?: string) => Promise<string | null>;
@@ -55,7 +56,7 @@ export class PrescriptionDetailsSecondaryService {
   readonly tokenClaims$ = toSignal(this.authService.getClaims());
   readonly isProfessional$ = toSignal(this.authService.isProfessional());
   readonly discipline$: Signal<Discipline | undefined> = toSignal(this.authService.discipline());
-  readonly currentLang: WritableSignal<string> = signal('fr-BE');
+  readonly currentLang: WritableSignal<string> = signal(Lang.FR.full);
   readonly loading: WritableSignal<boolean> = signal(false);
   readonly generatedUUID: WritableSignal<string> = signal('');
 

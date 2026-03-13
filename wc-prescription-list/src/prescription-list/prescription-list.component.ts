@@ -5,12 +5,14 @@ import {
   HostBinding,
   Input,
   OnChanges,
-  OnDestroy, OnInit,
+  OnDestroy,
+  OnInit,
   Output,
   signal,
   Signal,
   SimpleChanges,
-  ViewEncapsulation, WritableSignal,
+  ViewEncapsulation,
+  WritableSignal,
 } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DateAdapter, MatOptionModule } from '@angular/material/core';
@@ -62,7 +64,7 @@ import { FeatureFlagService } from '@reuse/code/services/helpers/feature-flag.se
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
 import { BehaviorSubject, catchError, EMPTY, Subscription, switchMap } from 'rxjs';
-import { Lang } from '@reuse/code/interfaces/lang.enum';
+import { Lang } from '@reuse/code/constants/languages';
 import { tap } from 'rxjs/operators';
 
 interface ViewState {
@@ -97,10 +99,10 @@ interface SearchCriteria extends SearchFilter {
     MatIcon,
     PrescriptionsModelsCardComponent,
     PrescriptionFilterComponent,
-    FeatureFlagDirective
+    FeatureFlagDirective,
   ],
 })
-export class PrescriptionListWebComponent implements OnChanges,OnInit, OnDestroy, AfterViewInit {
+export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestroy, AfterViewInit {
   // Protected signals from service
   protected readonly searchCriteria$ = signal<SearchCriteria>({
     historical: false,
@@ -139,7 +141,7 @@ export class PrescriptionListWebComponent implements OnChanges,OnInit, OnDestroy
 
   @HostBinding('attr.lang')
   @Input()
-  lang = Lang.FR;
+  lang = Lang.FR.full;
   @Input() patientSsin?: string;
   @Input() requesterSsin?: string;
   @Input() performerSsin?: string;
@@ -149,7 +151,7 @@ export class PrescriptionListWebComponent implements OnChanges,OnInit, OnDestroy
   @Output() clickOpenDetail = new EventEmitter<ReadRequestResource | ModelEntityDto>();
   @Output() clickCreateDetail = new EventEmitter<SelectedTemplate>();
 
-  private readonly _languageChange = new BehaviorSubject<string>(this.translate.currentLang ?? Lang.FR);
+  private readonly _languageChange = new BehaviorSubject<string>(this.translate.currentLang ?? Lang.FR.full);
 
   errorCard: ErrorCard = {
     show: false,
@@ -174,31 +176,33 @@ export class PrescriptionListWebComponent implements OnChanges,OnInit, OnDestroy
   ) {
     const currentLang = this.translate.currentLang;
     if (!currentLang) {
-      this.translate.use('fr-BE');
-      this.dateAdapter.setLocale('fr-BE');
+      this.translate.use(Lang.FR.full);
+      this.dateAdapter.setLocale(Lang.FR.full);
     }
     this.featureFlagService.getFeatureFlags();
   }
 
   ngOnInit(): void {
     this._subscriptions.add(
-      this._languageChange.pipe(
-        tap((lang) =>{
-          this.dateAdapter.setLocale(lang);
-        }),
-        switchMap((lang) => {
-          return this.translate.use(lang).pipe(
-            catchError(()=> {
-              handleMissingTranslationFile(this.langAlertData, lang);
-              return EMPTY;
-            })
-          );
-        }),
-      ).subscribe({
-        next:() => {
-          this.langAlertData.set(null);
-        },
-      })
+      this._languageChange
+        .pipe(
+          tap(lang => {
+            this.dateAdapter.setLocale(lang);
+          }),
+          switchMap(lang => {
+            return this.translate.use(lang).pipe(
+              catchError(() => {
+                handleMissingTranslationFile(this.langAlertData, lang);
+                return EMPTY;
+              })
+            );
+          })
+        )
+        .subscribe({
+          next: () => {
+            this.langAlertData.set(null);
+          },
+        })
     );
   }
 
@@ -433,7 +437,7 @@ export class PrescriptionListWebComponent implements OnChanges,OnInit, OnDestroy
       prescriptionType: undefined,
     });
 
-    this._subscriptions.unsubscribe()
+    this._subscriptions.unsubscribe();
   }
 
   showErrorCard() {

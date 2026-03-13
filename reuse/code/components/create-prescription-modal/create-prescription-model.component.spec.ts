@@ -10,6 +10,7 @@ import { PrescriptionModelService } from '@reuse/code/services/api/prescriptionM
 import { LoadingStatus, PrescriptionModelStatus } from '@reuse/code/interfaces';
 import { UniqueModelNameValidator } from '@reuse/code/directives/unique-model-name.directive';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
+import { Lang } from '@reuse/code/constants/languages';
 
 describe('CreatePrescriptionModelComponent', () => {
   let component: CreatePrescriptionModelComponent;
@@ -75,8 +76,8 @@ describe('CreatePrescriptionModelComponent', () => {
     fixture.componentRef.setInput('disabled', true);
 
     translate = TestBed.inject(TranslateService);
-    translate.setDefaultLang('nl-BE');
-    translate.use('nl-BE');
+    translate.setDefaultLang(Lang.NL.full);
+    translate.use(Lang.NL.full);
 
     fixture.detectChanges();
   });

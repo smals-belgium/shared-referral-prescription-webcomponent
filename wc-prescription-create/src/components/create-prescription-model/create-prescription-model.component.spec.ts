@@ -17,6 +17,7 @@ import { UniqueModelNameValidator } from '@reuse/code/directives/unique-model-na
 import { ReactiveFormsModule } from '@angular/forms';
 import { EvfFormWebComponent } from '../evf-form/evf-form.component';
 import TypeEnum = FormDataType.TypeEnum;
+import { Lang } from '@reuse/code/constants/languages';
 
 @Component({
   selector: 'evf-form',
@@ -81,12 +82,12 @@ describe('CreatePrescriptionModelComponent', () => {
       .compileComponents();
 
     translate = TestBed.inject(TranslateService);
-    translate.setDefaultLang('nl-BE');
-    translate.use('nl-BE');
+    translate.setDefaultLang(Lang.NL.full);
+    translate.use(Lang.NL.full);
 
     fixture = TestBed.createComponent(CreatePrescriptionModelComponent);
     component = fixture.componentInstance;
-    component.lang = 'nl-BE';
+    component.lang = Lang.NL.full;
   });
 
   afterEach(() => {
@@ -289,8 +290,17 @@ describe('CreatePrescriptionModelComponent', () => {
       });
       fixture.detectChanges();
 
-      const errorDiv = fixture.nativeElement.textContent;
-      expect(errorDiv).toContain('Failed to load prescription form template');
+      // const errorDiv = fixture.nativeElement.textContent;
+      // expect(errorDiv).toContain('Failed to load prescription form template');
+
+      //prescription.errors.failedToLoadTemplate
+
+      const alerts = fixture.debugElement.queryAll(By.css('app-alert'));
+
+      const errorAlert = alerts.find(alert =>
+        alert.nativeElement.textContent.includes('prescription.errors.failedToLoadTemplate')
+      );
+      expect(errorAlert).toBeTruthy();
     });
 
     it('should render evf-form when formTemplateState is SUCCESS', () => {

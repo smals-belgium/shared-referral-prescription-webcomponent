@@ -25,6 +25,7 @@ import { provideEvfForm } from '@reuse/code/evf/evf-form.provider';
 import { provideMarkdown } from '@reuse/code/providers/markdown.provider';
 import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
 import { provideEvfFormDetails } from '@reuse/code/evf/evf-form-details.provider';
+import { CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_DETAILS } from '@reuse/code/constants/common.constants';
 
 void (async () => {
   const app = createApplication({
@@ -45,7 +46,7 @@ void (async () => {
       },
       {
         provide: OVERLAY_QUERY_SELECTOR,
-        useValue: ['nihdi-referral-prescription-details'],
+        useValue: [CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_DETAILS],
       },
       {
         provide: OverlayContainer,
@@ -73,5 +74,5 @@ void (async () => {
   const prescriptionDetailElement = createCustomElement(PrescriptionDetailsWebComponent, {
     injector: (await app).injector,
   });
-  customElements.define('nihdi-referral-prescription-details', prescriptionDetailElement);
+  customElements.define(CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_DETAILS, prescriptionDetailElement);
 })();

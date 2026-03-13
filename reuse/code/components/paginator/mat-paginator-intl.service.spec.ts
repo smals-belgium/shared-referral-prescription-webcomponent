@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { MatPaginatorIntlService } from './mat-paginator-intl.service';
+import { Lang } from '@reuse/code/constants/languages';
 
 describe('MatPaginatorIntlService', () => {
   let service: MatPaginatorIntlService;
@@ -51,7 +52,7 @@ describe('MatPaginatorIntlService', () => {
   it('should re-translate labels when language changes', () => {
     const spy = jest.spyOn(service, 'translateLabels');
 
-    translateMock.onLangChange.next({ lang: 'fr' });
+    translateMock.onLangChange.next({ lang: Lang.FR.short });
 
     expect(spy).toHaveBeenCalled();
   });
