@@ -31,7 +31,6 @@ import { PssService } from '@reuse/code/services/api/pss.service';
 import { EncryptionKeyInitializerService } from '@reuse/code/states/privacy/encryption-key-initializer.service';
 import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
 import { v4 as uuidv4 } from 'uuid';
-import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Lang } from '@reuse/code/constants/languages';
 
@@ -110,16 +109,6 @@ jest.mock('uuid', () => ({
 class MockDateAdapter {
   setLocale = jest.fn();
 }
-const containerElement = document.createElement('div');
-const mockShadowDomOverlayContainer = {
-  ngOnDestroy: jest.fn(),
-  getRootElement: jest.fn().mockReturnValue(document.createElement('div').attachShadow({ mode: 'open' })),
-  createContainer: jest.fn(),
-  getContainerElement: jest.fn().mockReturnValue(containerElement),
-  _createContainer: jest.fn(),
-  _containerElement: containerElement,
-  _document: document,
-};
 
 const BASE_URL = 'http://localhost';
 
@@ -183,7 +172,6 @@ describe('CreatePrescriptionWebComponent', () => {
           useValue: mockEncryptionKeyInitializerService,
         },
         { provide: PssService, useValue: mockPssService },
-        { provide: ShadowDomOverlayContainer, useValue: mockShadowDomOverlayContainer },
         {
           provide: BreakpointObserver,
           useValue: {

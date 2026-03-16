@@ -1,15 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 import { DOCUMENT } from '@angular/common';
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { OVERLAY_QUERY_SELECTOR, ShadowDomOverlayContainer } from './shadow-dom-overlay.container';
-
-const overlayQuerySelector = 'nihdi-referral-prescription-create';
+import { ShadowDomOverlayContainer } from './shadow-dom-overlay.container';
+import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
 
 describe('ShadowDomOverlayContainer', () => {
   let service: ShadowDomOverlayContainer;
   let mockDocument: any;
   let mockShadowRoot: any;
   let mockRootElement: any;
+  let mockActiveOverlayHostService: any;
 
   beforeEach(() => {
     mockShadowRoot = {
@@ -27,6 +27,7 @@ describe('ShadowDomOverlayContainer', () => {
       body: {
         appendChild: jest.fn(),
         querySelector: jest.fn(),
+        contains: jest.fn().mockReturnValue(true),
       },
       querySelector: jest.fn().mockReturnValue(mockRootElement),
       querySelectorAll: jest.fn().mockReturnValue([]),
@@ -44,11 +45,17 @@ describe('ShadowDomOverlayContainer', () => {
       })),
     };
 
+    mockActiveOverlayHostService = {
+      set: jest.fn(),
+      clear: jest.fn(),
+      get: jest.fn().mockReturnValue(null),
+    };
+
     TestBed.configureTestingModule({
       providers: [
         ShadowDomOverlayContainer,
         { provide: DOCUMENT, useValue: mockDocument },
-        { provide: OVERLAY_QUERY_SELECTOR, useValue: [overlayQuerySelector] },
+        { provide: ActiveOverlayHostService, useValue: mockActiveOverlayHostService },
       ],
     });
 
@@ -70,21 +77,6 @@ describe('ShadowDomOverlayContainer', () => {
     service.ngOnDestroy();
 
     expect(superNgOnDestroySpy).toHaveBeenCalled();
-  });
-
-  it('should return shadow root from getRootElement()', () => {
-    const result = service.getRootElement();
-
-    expect(mockDocument.querySelector).toHaveBeenCalledWith(overlayQuerySelector);
-    expect(result).toBe(mockShadowRoot);
-  });
-
-  it('should call _createContainer() when createContainer() is invoked', () => {
-    const createContainerSpy = jest.spyOn(service as any, '_createContainer');
-
-    service.createContainer();
-
-    expect(createContainerSpy).toHaveBeenCalled();
   });
 
   it('should create container and return it when getContainerElement() is called first time', () => {
@@ -129,6 +121,9 @@ describe('ShadowDomOverlayContainer', () => {
 
   it('should append container to shadow root when shadow root exists', () => {
     const appendToRootComponentSpy = jest.spyOn(service as any, '_appendToRootComponent');
+    mockActiveOverlayHostService.get.mockReturnValue({
+      shadowRoot: mockShadowRoot,
+    });
 
     service.getContainerElement();
 

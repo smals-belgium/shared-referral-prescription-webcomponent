@@ -79,18 +79,6 @@ class MockDateAdapter {
   setLocale = jest.fn();
 }
 
-const containerElement = document.createElement('div');
-const mockShadowDomOverlayContainer = {
-  ngOnDestroy: jest.fn(),
-
-  getRootElement: jest.fn().mockReturnValue(document.createElement('div').attachShadow({ mode: 'open' })),
-  createContainer: jest.fn(),
-  getContainerElement: jest.fn().mockReturnValue(containerElement),
-  _createContainer: jest.fn(),
-  _containerElement: containerElement,
-  _document: document,
-};
-
 const mockDataService = {
   requestSummaryData$: new BehaviorSubject([]),
   loading$: new BehaviorSubject(false),
@@ -133,7 +121,6 @@ describe('ListPrescriptionsWebComponent', () => {
         { provide: ConfigurationService, useValue: mockConfigService },
         { provide: AuthService, useValue: mockAuthService },
         { provide: PseudonymisationHelper, useValue: MockPseudoHelperFactory() },
-        { provide: ShadowDomOverlayContainer, useValue: mockShadowDomOverlayContainer },
         { provide: MatDialog, useValue: dialogMock },
         {
           provide: BreakpointObserver,
@@ -758,13 +745,6 @@ describe('ListPrescriptionsWebComponent', () => {
 
       expect((component as any).searchCriteria$()).toEqual({ historical: false });
       expect(spyOnLoadData).toHaveBeenCalledWith({ pageIndex: 1 });
-    });
-
-    it('should call shadowDomOverlay.createContainer', () => {
-      createFixture();
-      component.ngAfterViewInit();
-
-      expect(mockShadowDomOverlayContainer.createContainer).toHaveBeenCalled();
     });
 
     it('should call showErrorCard when error is undefined', () => {

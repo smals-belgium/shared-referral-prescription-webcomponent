@@ -212,21 +212,29 @@ export function translateFrequencyAndPeriod(repeat: Repeat, language: keyof Tran
   const words = [];
   if (repeat?.frequency && repeat?.frequency > 0) {
     if (repeat.frequency > 1 && repeat.period === 1) {
-      words.push(repeat.frequency);
-      words.push(translations.timesPer[language]);
-      words.push(translateTimeUnit(repeat.period, repeat.periodUnit, language));
+      words.push(
+        repeat.frequency,
+        translations.timesPer[language],
+        translateTimeUnit(repeat.period, repeat.periodUnit, language)
+      );
     } else if (repeat.frequency === 1 && repeat.period === 1) {
-      words.push(translateEvery(repeat, language));
-      words.push(translateTimeUnit(language === Lang.FR.short ? 2 : 1, repeat.periodUnit, language));
+      words.push(
+        translateEvery(repeat, language),
+        translateTimeUnit(language === Lang.FR.short ? 2 : 1, repeat.periodUnit, language)
+      );
     } else if (repeat.frequency === 1 && repeat.period && repeat.period > 1) {
-      words.push(translateEvery(repeat, language));
-      words.push(repeat.period);
-      words.push(translateTimeUnit(repeat.period, repeat.periodUnit, language));
+      words.push(
+        translateEvery(repeat, language),
+        repeat.period,
+        translateTimeUnit(repeat.period, repeat.periodUnit, language)
+      );
     } else if (repeat.frequency > 1 && repeat.period && repeat.period > 1) {
-      words.push(repeat.frequency);
-      words.push(translations.timesPer[language]);
-      words.push(repeat.period);
-      words.push(translateTimeUnit(repeat.period, repeat.periodUnit, language));
+      words.push(
+        repeat.frequency,
+        translations.timesPer[language],
+        repeat.period,
+        translateTimeUnit(repeat.period, repeat.periodUnit, language)
+      );
     }
   }
   return words.join(' ');
@@ -245,8 +253,7 @@ export function translateDayOfWeek(occurrenceTiming: OccurrenceTiming, language:
 
     words.push(translations.on[language]);
     if (translatedDays.length > 0) {
-      words.push(translatedDays.join(', '));
-      words.push(translations.and[language]);
+      words.push(translatedDays.join(', '), translations.and[language]);
     }
     words.push(last);
   }
@@ -256,8 +263,7 @@ export function translateDayOfWeek(occurrenceTiming: OccurrenceTiming, language:
 export function translateOccurencyDuration(occurrenceTiming: OccurrenceTiming, language: Language): string {
   const words = [];
   if (occurrenceTiming.repeat.boundsDuration) {
-    words.push(translations.during[language]);
-    words.push(occurrenceTiming.repeat.boundsDuration.value);
+    words.push(translations.during[language], occurrenceTiming.repeat.boundsDuration.value);
     if (occurrenceTiming.repeat.boundsDuration.code) {
       words.push(
         translateTimeUnit(
@@ -286,8 +292,7 @@ export function translateDuration(occurrenceTiming: OccurrenceTiming, language: 
   const words = [];
   if (!occurrenceTiming.repeat.duration) return '';
   else {
-    words.push(translations.sessionDuration[language]);
-    words.push(occurrenceTiming.repeat.duration);
+    words.push(translations.sessionDuration[language], occurrenceTiming.repeat.duration);
     if (occurrenceTiming.repeat.durationUnit) {
       words.push(translateTimeUnit(occurrenceTiming.repeat.duration, occurrenceTiming.repeat.durationUnit, language));
     }

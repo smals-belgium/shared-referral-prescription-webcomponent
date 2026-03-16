@@ -3,6 +3,7 @@ import {
   computed,
   CUSTOM_ELEMENTS_SCHEMA,
   effect,
+  ElementRef,
   EventEmitter,
   HostBinding,
   inject,
@@ -87,6 +88,7 @@ import { Lang } from '@reuse/code/constants/languages';
 import { tap } from 'rxjs/operators';
 import { mapDisplayStatusToColor } from '@reuse/code/utils/request-status-display-map.utils';
 import { PrescriptionDetailsActionsComponent } from '../../components/prescription-details-actions/prescription-details-actions/prescription-details-actions.component';
+import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
 import { formatToEvfLangCode } from '@reuse/code/evf/utils/evf-utils';
 
 export interface ViewState {
@@ -137,9 +139,9 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   private readonly _pseudoService = inject(PseudoService);
   private readonly _pssService = inject(PssService);
   private readonly _encryptionStateService = inject(EncryptionState);
-
   private readonly _prescriptionSecondaryService = inject(PrescriptionDetailsSecondaryService);
   protected readonly evfTranslateService = inject(EvfTranslateService);
+  private readonly _activeHostService = inject(ActiveOverlayHostService);
 
   @HostBinding('attr.lang')
   @Input()
@@ -159,6 +161,8 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   @Output() proposalApproved = this._prescriptionSecondaryService.proposalApproved;
   @Output() proposalRejected = this._prescriptionSecondaryService.proposalsRejected;
   @Output() clickOpenExtendedDetail = new EventEmitter<string>();
+
+  protected readonly LoadingStatus = LoadingStatus;
 
   private readonly templateCode$ = this._prescriptionSecondaryService.templateCode$;
   protected readonly isProfessional$ = this._prescriptionSecondaryService.isProfessional$;
@@ -188,7 +192,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
   isProposalValue = false;
 
-  constructor() {
+  constructor(private el: ElementRef<HTMLElement>) {
     this.currentLang.set(this._translate.currentLang);
     this._translate.setDefaultLang(Lang.FR.full);
 
@@ -317,6 +321,8 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
           },
         })
     );
+
+    this._activeHostService.set(this.el.nativeElement);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -483,7 +489,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     } else {
       this._prescriptionStateService.resetPrescription();
     }
+    this._activeHostService.clear(this.el.nativeElement);
   }
-
-  protected readonly LoadingStatus = LoadingStatus;
 }

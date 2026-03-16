@@ -17,10 +17,7 @@ import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-comp
 import { providePseudonymisation } from '@reuse/code/providers/pseudo.provider';
 import { provideOpenApi } from '@reuse/code/providers/open-api.provider';
 import { OverlayContainer } from '@angular/cdk/overlay';
-import {
-  OVERLAY_QUERY_SELECTOR,
-  ShadowDomOverlayContainer,
-} from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
+import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { provideEvfForm } from '@reuse/code/evf/evf-form.provider';
 import { provideMarkdown } from '@reuse/code/providers/markdown.provider';
 import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
@@ -43,10 +40,6 @@ void (async () => {
       {
         provide: AuthService,
         useClass: WcAuthService,
-      },
-      {
-        provide: OVERLAY_QUERY_SELECTOR,
-        useValue: [CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_DETAILS],
       },
       {
         provide: OverlayContainer,

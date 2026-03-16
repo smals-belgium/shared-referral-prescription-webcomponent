@@ -1,12 +1,13 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   EventEmitter,
   HostBinding,
   Inject,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   Output,
   Signal,
@@ -81,10 +82,10 @@ import {
 import { ChooseTemplateDialog, SelectedTemplate } from '@reuse/code/dialogs/choose-template/choose-template.dialog';
 import { getTranslationKeyPrefixForPrescriptionOrProposal, isModel, isPrescription } from '@reuse/code/utils/utils';
 import { EncryptionKeyInitializerService } from '@reuse/code/states/privacy/encryption-key-initializer.service';
-import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
 import { Lang } from '@reuse/code/constants/languages';
+import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
 
 @Component({
   templateUrl: './create-prescription.component.html',
@@ -101,7 +102,7 @@ import { Lang } from '@reuse/code/constants/languages';
     AlertComponent,
   ],
 })
-export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterViewInit {
+export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDestroy {
   protected readonly LoadingStatus = LoadingStatus;
   protected readonly AlertType = AlertType;
   protected readonly discipline$ = toSignal(this.authService.discipline());
@@ -164,8 +165,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
     private readonly pssService: PssService,
     private readonly configService: WcConfigurationService,
     private readonly encryptionKeyInitializer: EncryptionKeyInitializerService,
-    private readonly shadowDomOverlay: ShadowDomOverlayContainer,
-    @Inject(DOCUMENT) private readonly _document: Document
+    private el: ElementRef<HTMLElement>,
+    private activeHostService: ActiveOverlayHostService
   ) {
     const currentLang = this.translate.currentLang;
     if (!currentLang) {
@@ -202,6 +203,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
           },
         })
     );
+
+    this.activeHostService.set(this.el.nativeElement);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -251,10 +254,6 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
     } else {
       this.addPrescription();
     }
-  }
-
-  ngAfterViewInit() {
-    this.shadowDomOverlay.createContainer();
   }
 
   private handleTokenChange(): void {
@@ -810,5 +809,9 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
   private async isNurse() {
     await firstValueFrom(this.authService.discipline());
     return this.discipline$() != null && this.discipline$() === Discipline.Nurse;
+  }
+
+  ngOnDestroy() {
+    this.activeHostService.clear(this.el.nativeElement);
   }
 }
