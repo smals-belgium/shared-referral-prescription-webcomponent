@@ -3,9 +3,11 @@ import {
   setOccurrenceTimingResponses,
   translateBoundsDuration,
   translateOccurrenceTiming,
+  validateBoundsDuration,
+  validateOccurences,
   validateOccurrenceTiming,
 } from './occurrence-timing.utils';
-import { BoundsDuration, OccurrenceTiming, UnitsOfTime, Weekday } from '@reuse/code/interfaces';
+import { BoundsDuration, OccurrenceTiming, Repeat, UnitsOfTime, Weekday } from '@reuse/code/interfaces';
 import { ReadRequestResource } from '@reuse/code/openapi';
 import { Lang } from '@reuse/code/constants/languages';
 
@@ -151,6 +153,54 @@ describe('OccurrenceTimingUtils - Segmented Tests', () => {
     const nl = translateOccurrenceTiming(occ, Lang.NL.short);
     expect(fr).toBe('Toutes les 2 semaines');
     expect(nl).toBe('Elke 2 weken');
+  });
+
+  it('should handle frequency = 1 and period = 1 with feminine unit (week)', () => {
+    const occ: OccurrenceTiming = {
+      repeat: {
+        frequency: 1,
+        period: 1,
+        periodUnit: 'wk',
+      },
+    };
+
+    const fr = translateOccurrenceTiming(occ, Lang.FR.short);
+    const nl = translateOccurrenceTiming(occ, Lang.NL.short);
+
+    expect(fr).toBe('Toutes les semaines');
+    expect(nl).toBe('Elke week');
+  });
+
+  it('should handle frequency > 1 and period > 1', () => {
+    const occ: OccurrenceTiming = {
+      repeat: {
+        frequency: 4,
+        period: 2,
+        periodUnit: 'wk',
+      },
+    };
+
+    const fr = translateOccurrenceTiming(occ, Lang.FR.short);
+    const nl = translateOccurrenceTiming(occ, Lang.NL.short);
+
+    expect(fr).toBe('4 fois par 2 semaines');
+    expect(nl).toBe('4 keer per 2 weken');
+  });
+
+  it('should handle frequency = 1 and period = 1 with masculine unit (month)', () => {
+    const occ: OccurrenceTiming = {
+      repeat: {
+        frequency: 1,
+        period: 1,
+        periodUnit: 'mo',
+      },
+    };
+
+    const fr = translateOccurrenceTiming(occ, Lang.FR.short);
+    const nl = translateOccurrenceTiming(occ, Lang.NL.short);
+
+    expect(fr).toBe('Tous les mois');
+    expect(nl).toBe('Elke maand');
   });
 
   it('should return only dayOfWeek', () => {
@@ -462,5 +512,115 @@ describe('isOccurrenceTiming', () => {
 
   it('should return false for undefined', () => {
     expect(isOccurrenceTiming(undefined)).toBe(false);
+  });
+});
+
+describe('validateOccurences', () => {
+  it('should return true for a valid repeat object', () => {
+    const repeat: Repeat = {
+      frequency: 3,
+      period: 1,
+      periodUnit: 'wk',
+    };
+
+    expect(validateOccurences(repeat)).toBe(true);
+  });
+
+  it('should return true when optional fields are undefined', () => {
+    const repeat: Repeat = {};
+
+    expect(validateOccurences(repeat)).toBe(true);
+  });
+
+  it('should return false if repeat is undefined', () => {
+    expect(validateOccurences(undefined)).toBe(false);
+  });
+
+  it('should return false if frequency is not a number', () => {
+    const repeat = {
+      frequency: '3',
+      period: 1,
+      periodUnit: 'wk',
+    } as unknown as Repeat;
+
+    expect(validateOccurences(repeat)).toBe(false);
+  });
+
+  it('should return false if period is not a number', () => {
+    const repeat = {
+      frequency: 3,
+      period: '1',
+      periodUnit: 'wk',
+    } as unknown as Repeat;
+
+    expect(validateOccurences(repeat)).toBe(false);
+  });
+
+  it('should return false if periodUnit is invalid', () => {
+    const repeat = {
+      frequency: 3,
+      period: 1,
+      periodUnit: 'invalid',
+    } as unknown as Repeat;
+
+    expect(validateOccurences(repeat)).toBe(false);
+  });
+
+  it('should return true if only periodUnit is valid', () => {
+    const repeat: Repeat = {
+      periodUnit: 'd',
+    };
+
+    expect(validateOccurences(repeat)).toBe(true);
+  });
+});
+
+describe('validateBoundsDuration', () => {
+  it('should return true for a valid boundsDuration object', () => {
+    const bounds: BoundsDuration = {
+      value: 3,
+      code: 'mo',
+      system: 'http://unitsofmeasure.org',
+    };
+
+    expect(validateBoundsDuration(bounds)).toBe(true);
+  });
+
+  it('should return false if boundsDuration is undefined', () => {
+    expect(validateBoundsDuration(undefined)).toBe(false);
+  });
+
+  it('should return false if value is not a number', () => {
+    const bounds = {
+      value: '3',
+      code: 'mo',
+      system: 'test',
+    } as unknown as BoundsDuration;
+
+    expect(validateBoundsDuration(bounds)).toBe(false);
+  });
+
+  it('should return false if code is invalid', () => {
+    const bounds = {
+      value: 3,
+      code: 'invalid',
+      system: 'test',
+    } as unknown as BoundsDuration;
+
+    expect(validateBoundsDuration(bounds)).toBe(false);
+  });
+
+  it('should return false if system is not a string', () => {
+    const bounds = {
+      value: 3,
+      code: 'wk',
+      system: 123,
+    } as unknown as BoundsDuration;
+
+    expect(validateBoundsDuration(bounds)).toBe(false);
+  });
+
+  it('should return false if boundsDuration is not an object', () => {
+    expect(validateBoundsDuration('invalid' as unknown as BoundsDuration)).toBe(false);
   });
 });

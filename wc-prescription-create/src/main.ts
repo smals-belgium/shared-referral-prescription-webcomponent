@@ -19,10 +19,7 @@ import { WcAuthService } from '@reuse/code/services/auth/wc-auth.service';
 import { providePseudonymisation } from '@reuse/code/providers/pseudo.provider';
 import { provideOpenApi } from '@reuse/code/providers/open-api.provider';
 import { OverlayContainer } from '@angular/cdk/overlay';
-import {
-  OVERLAY_QUERY_SELECTOR,
-  ShadowDomOverlayContainer,
-} from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
+import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_CREATE } from '@reuse/code/constants/common.constants';
 
 (async () => {
@@ -41,7 +38,6 @@ import { CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_CREATE } from '@reuse/c
         provide: AuthService,
         useClass: WcAuthService,
       },
-      { provide: OVERLAY_QUERY_SELECTOR, useValue: [CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_CREATE] },
       {
         provide: OverlayContainer,
         useClass: ShadowDomOverlayContainer,

@@ -1,6 +1,6 @@
 import {
-  AfterViewInit,
   Component,
+  ElementRef,
   EventEmitter,
   HostBinding,
   Input,
@@ -66,6 +66,7 @@ import { handleMissingTranslationFile } from '@reuse/code/utils/translation.util
 import { BehaviorSubject, catchError, EMPTY, Subscription, switchMap } from 'rxjs';
 import { Lang } from '@reuse/code/constants/languages';
 import { tap } from 'rxjs/operators';
+import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
 
 interface ViewState {
   prescriptions?: ReadRequestListResource;
@@ -102,7 +103,7 @@ interface SearchCriteria extends SearchFilter {
     FeatureFlagDirective,
   ],
 })
-export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestroy, AfterViewInit {
+export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestroy {
   // Protected signals from service
   protected readonly searchCriteria$ = signal<SearchCriteria>({
     historical: false,
@@ -170,9 +171,10 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
     private readonly templatesState: TemplatesState,
     private readonly modelsState: ModelsState,
     private readonly prescriptionModelService: PrescriptionModelService,
-    private readonly shadowDomOverlay: ShadowDomOverlayContainer,
     private readonly dialog: MatDialog,
-    private readonly featureFlagService: FeatureFlagService
+    private readonly featureFlagService: FeatureFlagService,
+    private el: ElementRef<HTMLElement>,
+    private activeHostService: ActiveOverlayHostService
   ) {
     const currentLang = this.translate.currentLang;
     if (!currentLang) {
@@ -204,6 +206,8 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
           },
         })
     );
+
+    this.activeHostService.set(this.el.nativeElement);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -222,10 +226,6 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
     ) {
       this.loadData({ pageIndex: 1 });
     }
-  }
-
-  ngAfterViewInit() {
-    this.shadowDomOverlay.createContainer();
   }
 
   loadData(pageValues?: { pageIndex?: number; pageSize?: number }) {
@@ -438,6 +438,8 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
     });
 
     this._subscriptions.unsubscribe();
+
+    this.activeHostService.clear(this.el.nativeElement);
   }
 
   showErrorCard() {
