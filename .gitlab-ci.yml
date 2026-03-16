@@ -25,7 +25,7 @@ stages:
   - report
 
 generate-api-client:
-  image: gcloud-docker-internet.repo.gcloud.belgium.be/openapitools/openapi-generator-cli:v7.8.0
+  image: gcloud-docker-internet.repo.gcloud.belgium.be/openapitools/openapi-generator-cli:v7.14.0
   stage: open-api
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
