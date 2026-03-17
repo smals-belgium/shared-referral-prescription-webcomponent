@@ -491,7 +491,7 @@
       "success": "Het voorstel werd goedgekeurd.",
       "dialog": {
         "title": "Reden van goedkeuring",
-        "reason": "Reden"
+        "reason": "Commentaar van de arts"
       }
     },
     "reject": {
@@ -500,7 +500,7 @@
       "success": "Het voorstel werd geweigerd.",
       "dialog": {
         "title": "Reden van afwijzing",
-        "reason": "Reden"
+        "reason": "Commentaar van de arts"
       }
     },
     "cancel": {
