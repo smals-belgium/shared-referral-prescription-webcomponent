@@ -31,9 +31,9 @@
           </mat-panel-title>
           <mat-panel-description>
             @if (prescriptionForm.status === LoadingStatus.SUCCESS) {
-              <mat-icon color="accent">check_circle</mat-icon>
+              <mat-icon color="accent" svgIcon="check_circle" aria-hidden="true"></mat-icon>
             } @else if (prescriptionForm.status === LoadingStatus.ERROR) {
-              <mat-icon color="warn">error</mat-icon>
+              <mat-icon color="warn" svgIcon="error" aria-hidden="true"></mat-icon>
             }
 
             @if (prescriptionForm.templateCode | templateName; as template) {
@@ -46,7 +46,7 @@
                       clickDeletePrescription.emit({ form: prescriptionForm, templateName: template })
                     "
                     [attr.aria-label]="'prescription.ariaLabel.delete' | translate">
-                    <mat-icon>delete</mat-icon>
+                    <mat-icon svgIcon="delete" aria-hidden="true"></mat-icon>
                   </button>
                 }
               </ng-container>
@@ -121,7 +121,7 @@
           (click)="clickAddPrescription.emit()"
           mat-stroked-button
           data-cy="prescription-create-add">
-          <mat-icon>add</mat-icon>
+          <mat-icon svgIcon="add" aria-hidden="true"></mat-icon>
           {{ 'prescription.create.addPrescription' | translate }}
         </button>
       }
@@ -148,7 +148,7 @@
           mat-button
           color="error"
           data-cy="prescription-create-cancel">
-          <mat-icon>delete</mat-icon>{{ 'common.cancel' | translate }}
+          <mat-icon svgIcon="delete" aria-hidden="true"></mat-icon>{{ 'common.cancel' | translate }}
         </button>
       </div>
     </div>

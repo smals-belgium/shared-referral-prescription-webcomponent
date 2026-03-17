@@ -243,12 +243,18 @@ describe('CreateMultiplePrescriptionsComponent', () => {
 
     const matPanel_1_icons = matPanel[0].queryAll(By.css('mat-icon'));
     expect(matPanel_1_icons.length).toBe(1);
-    expect(matPanel_1_icons[0].nativeElement.textContent.trim()).toBe('check_circle');
+
+    const matPanel_1_icon_1 = matPanel_1_icons[0].componentInstance;
+    expect(matPanel_1_icon_1.svgIcon).toBe('check_circle');
 
     const matPanel_2_icons = matPanel[1].queryAll(By.css('mat-icon'));
     expect(matPanel_2_icons.length).toBe(2);
-    expect(matPanel_2_icons[0].nativeElement.textContent.trim()).toBe('error');
-    expect(matPanel_2_icons[1].nativeElement.textContent.trim()).toBe('delete');
+
+    const matPanel_2_icon_1 = matPanel_2_icons[0].componentInstance;
+    expect(matPanel_2_icon_1.svgIcon).toBe('error');
+
+    const matPanel_2_icon_2 = matPanel_2_icons[1].componentInstance;
+    expect(matPanel_2_icon_2.svgIcon).toBe('delete');
   });
 
   it('should emit clickDeletePrescription when delete button clicked and multiple forms and not SUCCESS', () => {

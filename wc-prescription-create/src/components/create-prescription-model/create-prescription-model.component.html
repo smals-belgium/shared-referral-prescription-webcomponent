@@ -11,9 +11,9 @@
     </h3>
 
     @if (prescriptionForm.status === LoadingStatus.SUCCESS) {
-      <mat-icon color="accent">check_circle</mat-icon>
+      <mat-icon color="accent" svgIcon="check_circle" aria-hidden="true"></mat-icon>
     } @else if (prescriptionForm.status === LoadingStatus.ERROR) {
-      <mat-icon color="warn">error</mat-icon>
+      <mat-icon color="warn" svgIcon="error" aria-hidden="true"></mat-icon>
     }
 
     @if (modelState?.state === LoadingStatus.ERROR) {
@@ -78,12 +78,12 @@
 
         @if (this.prescriptionForm.modelId) {
           <button type="button" mat-flat-button (click)="handleUpdate(prescriptionForm, formTemplateState.data)">
-            <mat-icon>update</mat-icon>
+            <mat-icon svgIcon="update" aria-hidden="true"></mat-icon>
             {{ 'prescription.model.update.title' | translate }}
           </button>
         } @else {
           <button type="button" mat-flat-button (click)="handleClick(prescriptionForm, formTemplateState.data)">
-            <mat-icon>save</mat-icon>
+            <mat-icon svgIcon="save" aria-hidden="true"></mat-icon>
             {{ 'prescription.model.create.title' | translate }}
           </button>
         }

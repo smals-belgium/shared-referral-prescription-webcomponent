@@ -20,7 +20,7 @@
               mat-flat-button
               data-cy="create-prescription-button"
               (click)="openNewPrescriptionDialog()">
-              <mat-icon>add</mat-icon>
+              <mat-icon svgIcon="add" aria-hidden="true"></mat-icon>
               {{ 'prescription.create.prescription' | translate }}
             </button>
           }
@@ -110,7 +110,7 @@
               mat-flat-button
               data-cy="create-proposal-button"
               (click)="isNurse() ? openAnnex81ProposalForm() : openNewProposalDialog()">
-              <mat-icon>add</mat-icon>
+              <mat-icon svgIcon="add" aria-hidden="true"></mat-icon>
               {{ 'proposal.create.proposal' | translate }}
             </button>
           }
@@ -190,7 +190,7 @@
         <div class="flex-container">
           @if (canCreatePrescription()) {
             <button type="button" mat-flat-button data-cy="create-model-button" (click)="openNewModelDialog()">
-              <mat-icon>add</mat-icon>
+              <mat-icon svgIcon="add" aria-hidden="true"></mat-icon>
               {{ 'prescription.model.create.model' | translate }}
             </button>
           }

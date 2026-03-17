@@ -132,8 +132,9 @@ describe('CreatePrescriptionModelComponent', () => {
       fixture.detectChanges();
 
       const icon = fixture.debugElement.query(By.css('mat-icon[color="accent"]'));
-      expect(icon).toBeTruthy();
-      expect(icon.nativeElement.textContent.trim()).toBe('check_circle');
+      const iconComponent = icon.componentInstance;
+
+      expect(iconComponent.svgIcon).toBe('check_circle');
     });
 
     it('should show error icon when status is ERROR', () => {
@@ -143,8 +144,9 @@ describe('CreatePrescriptionModelComponent', () => {
       fixture.detectChanges();
 
       const icon = fixture.debugElement.query(By.css('mat-icon[color="warn"]'));
-      expect(icon).toBeTruthy();
-      expect(icon.nativeElement.textContent.trim()).toBe('error');
+      const iconComponent = icon.componentInstance;
+
+      expect(iconComponent.svgIcon).toBe('error');
     });
 
     it('should apply invalid class when submitted and elementGroup is invalid', () => {
@@ -479,7 +481,9 @@ describe('CreatePrescriptionModelComponent', () => {
       fixture.detectChanges();
 
       const buttons = fixture.debugElement.queryAll(By.css('button'));
-      const createButton = buttons.find(btn => btn.nativeElement.textContent.includes('save'));
+      const createButton = buttons.find(btn =>
+        btn.nativeElement.textContent.includes('prescription.model.create.title')
+      );
       expect(createButton).toBeTruthy();
     });
 

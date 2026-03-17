@@ -1,16 +1,44 @@
 @use '@angular/material' as mat;
 @use '@myhealth-belgium/design-kit' as mh;
-@use '../../../../node_modules/@smals-belgium-shared/vas-evaluation-form-ui-material/index' as evf;
 
-@include mh.use-font-material-symbols(
-  url('@reuse/assets/fonts/MatSymbols-Rounded.ttf'),
-  'Material Symbols Rounded',
-  ('material-icons', 'material-symbols')
-);
+.material-icons,
+.material-symbols {
+  font-family: 'Material Symbols Rounded';
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
 
-@include mh.use-globals();
-@include mh.use-classes();
-@include mh.use-all-components();
+h1 {
+  @include mh.font-heading-1;
+}
+
+h2 {
+  @include mh.font-heading-2;
+}
+
+p {
+  @include mh.font-default-regular;
+}
+
+a {
+  @include mh.font-nav-link;
+}
+
 @include mh.override-mat-dialog();
 @include mh.override-mat-form-field();
 @include mh.override-mat-button();
@@ -20,6 +48,14 @@
 
 .mat-mdc-dialog-inner-container .mat-mdc-dialog-surface {
   max-height: 100vh;
+}
+
+mat-icon {
+  svg {
+    fill: currentColor;
+    vertical-align: top;
+    text-align: center;
+  }
 }
 
 :host {
