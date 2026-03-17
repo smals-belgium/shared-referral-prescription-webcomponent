@@ -8,19 +8,18 @@
         <mat-chip-row (removed)="remove(item)">
           {{ item.name }}
           <button matChipRemove [attr.aria-label]="'remove ' + item.name">
-            <mat-icon>cancel</mat-icon>
+            <mat-icon svgIcon="cancel" [aria-hidden]="true"></mat-icon>
           </button>
         </mat-chip-row>
       }
     </mat-chip-grid>
     <input
       [formControl]="formControl"
-      [placeholder]="placeholder || '-- ' + ('common.chooseFromList' | translate)+ ' --'"
+      [placeholder]="placeholder || '-- ' + ('common.chooseFromList' | translate) + ' --'"
       #itemInput
       [matChipInputFor]="chipGrid"
       [matAutocomplete]="auto"
-      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-    />
+      [matChipInputSeparatorKeyCodes]="separatorKeysCodes" />
     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event); itemInput.value = ''">
       @for (item of filteredItems(); track item) {
         <mat-option [value]="item.value">{{ item.name }}</mat-option>

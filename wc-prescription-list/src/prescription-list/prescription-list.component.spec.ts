@@ -22,7 +22,6 @@ import {
   SystemCodes,
   Template,
 } from '@reuse/code/openapi';
-import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatDialog } from '@angular/material/dialog';
 import { PrescriptionFilterComponent } from '@reuse/code/components/prescription-filter/prescription-filter.component';
@@ -31,6 +30,7 @@ import { FeatureFlagDirective } from '@reuse/code/directives/feature-flag.direct
 import { PrescriptionsCardComponent } from '../components/prescriptions/prescriptions-card/prescriptions-card.component';
 import { RequestSummaryDataService } from '@reuse/code/services/helpers/request-summary-data.service';
 import { Lang } from '@reuse/code/constants/languages';
+import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
 
 const BASE_URL = 'http://localhost';
 
@@ -96,11 +96,16 @@ describe('ListPrescriptionsWebComponent', () => {
   let dateAdapter: MockDateAdapter;
   let mockDialog: jest.Mocked<MatDialog>;
   let featureService: FeatureFlagService;
+  let mockIconRegistryService: jest.Mocked<Partial<IconRegistryService>>;
 
   beforeEach(async () => {
     const dialogMock = {
       open: jest.fn(),
     } as unknown as jest.Mocked<MatDialog>;
+
+    mockIconRegistryService = {
+      init: jest.fn(),
+    };
 
     await TestBed.configureTestingModule({
       imports: [
@@ -128,6 +133,7 @@ describe('ListPrescriptionsWebComponent', () => {
             observe: jest.fn().mockReturnValue(of({ matches: true })),
           },
         },
+        { provide: IconRegistryService, useValue: mockIconRegistryService },
       ],
     })
       .overrideComponent(PrescriptionsCardComponent, {
@@ -148,6 +154,7 @@ describe('ListPrescriptionsWebComponent', () => {
 
   afterEach(() => {
     httpMock.verify();
+    jest.restoreAllMocks();
   });
 
   describe('default behaviour with prescriptions', () => {
@@ -872,6 +879,21 @@ describe('ListPrescriptionsWebComponent', () => {
         show: true,
         message: 'common.somethingWentWrongWithoutRetry',
       });
+    });
+  });
+
+  describe('init icons', () => {
+    it('should register icons onInit', () => {
+      createFixture();
+      component.ngOnInit();
+
+      expect(mockIconRegistryService.init).toHaveBeenCalledWith(
+        'add',
+        'delete',
+        'more_vert',
+        'keyboard_arrow_right',
+        'close'
+      );
     });
   });
 

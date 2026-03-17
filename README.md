@@ -472,27 +472,27 @@ Below is a complete list of the variables that can be overridden:
 ### Toggle / Switch
 
 - --mat-sys-corner-full
-- --mat-switch-label-text-color
-- --mat-switch-label-text-size
-- --mdc-switch-unselected-icon-color
-- --mat-switch-track-outline-color
-- --mdc-switch-unselected-track-color
-- --mdc-switch-unselected-handle-color
-- --mdc-switch-unselected-hover-handle-color
-- --mdc-switch-unselected-hover-track-color
-- --mdc-switch-unselected-focus-handle-color
-- --mdc-switch-unselected-focus-track-color
-- --mdc-switch-unselected-pressed-handle-color
-- --mdc-switch-unselected-pressed-track-color
-- --mdc-switch-selected-icon-color
-- --mdc-switch-selected-track-color
-- --mdc-switch-selected-handle-color
-- --mdc-switch-selected-hover-handle-color
-- --mdc-switch-selected-hover-track-color
-- --mdc-switch-selected-focus-handle-color
-- --mdc-switch-selected-focus-track-color
-- --mdc-switch-selected-pressed-handle-color
-- --mdc-switch-selected-pressed-track-color
+- --mat-slide-toggle-label-text-color
+- --mat-slide-toggle-label-text-size
+- --mat-slide-toggle-unselected-icon-color
+- --mat-slide-toggle-track-outline-color
+- --mat-slide-toggle-unselected-track-color
+- --mat-slide-toggle-unselected-handle-color
+- --mat-slide-toggle-unselected-hover-handle-color
+- --mat-slide-toggle-unselected-hover-track-color
+- --mat-slide-toggle-unselected-focus-handle-color
+- --mat-slide-toggle-unselected-focus-track-color
+- --mat-slide-toggle-unselected-pressed-handle-color
+- --mat-slide-toggle-unselected-pressed-track-color
+- --mat-slide-toggle-selected-icon-color
+- --mat-slide-toggle-selected-track-color
+- --mat-slide-toggle-selected-handle-color
+- --mat-slide-toggle-selected-hover-handle-color
+- --mat-slide-toggle-selected-hover-track-color
+- --mat-slide-toggle-selected-focus-handle-color
+- --mat-slide-toggle-selected-focus-track-color
+- --mat-slide-toggle-selected-pressed-handle-color
+- --mat-slide-toggle-selected-pressed-track-color
 
 ### Tooltip
 

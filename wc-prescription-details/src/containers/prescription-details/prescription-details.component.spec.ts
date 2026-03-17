@@ -35,6 +35,8 @@ import {
 } from '../../../test.utils';
 import { RequestStatus } from '@reuse/code/openapi';
 import { Lang } from '@reuse/code/constants/languages';
+import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
+
 mockUuid();
 jest.mock('uuid');
 
@@ -47,6 +49,7 @@ describe('PrescriptionDetailsWebComponent', () => {
   let consoleSpy: jest.SpyInstance;
   let translate: TranslateService;
   let dateAdapter: MockDateAdapter;
+  let mockIconRegistryService: jest.Mocked<Partial<IconRegistryService>>;
 
   beforeAll(() => {
     Object.defineProperty(window, 'crypto', {
@@ -66,6 +69,10 @@ describe('PrescriptionDetailsWebComponent', () => {
   });
 
   beforeEach(async () => {
+    mockIconRegistryService = {
+      init: jest.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [
         PrescriptionDetailsWebComponent,
@@ -88,6 +95,7 @@ describe('PrescriptionDetailsWebComponent', () => {
         MatDialog,
         { provide: PseudonymisationHelper, useValue: MockPseudoHelperFactory() },
         { provide: EncryptionState, useValue: encryptionStateService },
+        { provide: IconRegistryService, useValue: mockIconRegistryService },
         EncryptionService,
       ],
     }).compileComponents();
@@ -101,6 +109,7 @@ describe('PrescriptionDetailsWebComponent', () => {
 
   afterEach(() => {
     httpMock.verify();
+    jest.restoreAllMocks();
   });
 
   afterAll(() => consoleSpy.mockRestore());
@@ -398,6 +407,26 @@ describe('PrescriptionDetailsWebComponent', () => {
     await Promise.resolve();
 
     expect(loadSpy).toHaveBeenCalledWith('CAF4FE', 'pseudonymized-identifier');
+  });
+
+  describe('init icons', () => {
+    it('should register icons onInit', () => {
+      createFixture();
+      component.ngOnInit();
+
+      expect(mockIconRegistryService.init).toHaveBeenCalledWith(
+        'keyboard_arrow_up',
+        'keyboard_arrow_down',
+        'more_vert',
+        'delete',
+        'error',
+        'done',
+        'close',
+        'cancel',
+        'arrow_forward_ios',
+        'info'
+      );
+    });
   });
 
   const loadPrescriptionByShortCode = async (

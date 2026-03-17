@@ -4,6 +4,7 @@ import { TranslateFakeLoader, TranslateLoader, TranslateModule } from '@ngx-tran
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Discipline, ProviderType, Role } from '@reuse/code/openapi';
+import { By } from '@angular/platform-browser';
 
 describe('ProfessionalDisplayComponent', () => {
   let component: ProfessionalDisplayComponent;
@@ -79,7 +80,11 @@ describe('ProfessionalDisplayComponent', () => {
 
     const nativeEl = fixture.nativeElement;
     expect(nativeEl.textContent).toContain('common.professional.notFound');
-    expect(nativeEl.querySelector('mat-icon')?.textContent).toContain('error');
+
+    const icon = fixture.debugElement.query(By.css('mat-icon'));
+    const iconComponent = icon.componentInstance;
+
+    expect(iconComponent.svgIcon).toBe('error');
   });
 
   it('should display professional firstName and lastName if available', () => {

@@ -4,7 +4,6 @@ import {
   ElementRef,
   EventEmitter,
   HostBinding,
-  Inject,
   Input,
   OnChanges,
   OnDestroy,
@@ -53,7 +52,7 @@ import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionService } from '@reuse/code/services/api/prescription.service';
 import { ConfirmDialog, ConfirmDialogData } from '@reuse/code/dialogs/confirm/confirm.dialog';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
-import { AsyncPipe, DOCUMENT } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { TemplatesState } from '@reuse/code/states/api/templates.state';
@@ -85,6 +84,7 @@ import { EncryptionKeyInitializerService } from '@reuse/code/states/privacy/encr
 import { toSignal } from '@angular/core/rxjs-interop';
 import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
 import { Lang } from '@reuse/code/constants/languages';
+import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
 import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
 
 @Component({
@@ -165,6 +165,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
     private readonly pssService: PssService,
     private readonly configService: WcConfigurationService,
     private readonly encryptionKeyInitializer: EncryptionKeyInitializerService,
+    private readonly iconRegistryService: IconRegistryService,
     private el: ElementRef<HTMLElement>,
     private activeHostService: ActiveOverlayHostService
   ) {
@@ -182,6 +183,19 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
   }
 
   ngOnInit(): void {
+    this.iconRegistryService.init(
+      'check_circle',
+      'error',
+      'delete',
+      'add',
+      'update',
+      'save',
+      'info',
+      'do_not_disturb_on',
+      'add_circle',
+      'close'
+    );
+
     this._subscriptions.add(
       this._languageChange
         .pipe(

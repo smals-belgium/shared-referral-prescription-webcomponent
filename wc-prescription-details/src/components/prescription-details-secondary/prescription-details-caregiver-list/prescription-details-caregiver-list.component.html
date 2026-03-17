@@ -1,5 +1,4 @@
 @if (prescriptionServiceData && currentUserServiceData && patientServiceData()) {
-
   @let prescriptionData = prescriptionServiceData;
   @let currentUserData = currentUserServiceData;
   @let patientData = patientServiceData();
@@ -11,33 +10,40 @@
           @if (performerTask.careGiver; as careGiver) {
             @if (!careGiver.healthcarePerson?.lastName) {
               @if (careGiver.healthcarePerson?.ssin === currentUserData.ssin) {
-                <span class="caregiver_info_fullName">{{ currentUserData?.firstName }} {{ currentUserData?.lastName }} </span>
+                <span class="caregiver_info_fullName"
+                  >{{ currentUserData?.firstName }} {{ currentUserData?.lastName }}
+                </span>
               } @else {
                 <b>{{ 'common.professional.notFound' | translate }}</b>
-                <mat-icon matTooltip="{{'common.professional.tooltip' | translate}}"
-                          matTooltipPosition="right"
-                          style="color: grey;cursor: pointer;">
-                  error
+                <mat-icon
+                  matTooltip="{{ 'common.professional.tooltip' | translate }}"
+                  matTooltipPosition="right"
+                  svgIcon="error"
+                  aria-hidden="true"
+                  style="color: grey; cursor: pointer">
                 </mat-icon>
               }
             } @else {
-              <span
-                class="caregiver_info_fullName">{{ careGiver.healthcarePerson?.firstName }} {{ careGiver.healthcarePerson?.lastName }} </span>
+              <span class="caregiver_info_fullName"
+                >{{ careGiver.healthcarePerson?.firstName }} {{ careGiver.healthcarePerson?.lastName }}
+              </span>
             }
             @if (careGiver.nihii8 || careGiver.nihii11; as nihii) {
-              <span class="caregiver_info_nihii">({{ nihii | formatNihdi: careGiver.healthcareQualification?.id?.code }})</span>
+              <span class="caregiver_info_nihii"
+                >({{ nihii | formatNihdi: careGiver.healthcareQualification?.id?.code }})</span
+              >
             }
 
             @if (careGiver.healthcareQualification?.id?.profession) {
-              <div
-                class="caregiver_info_profession">{{ 'common.professions.' + careGiver?.healthcareQualification?.id?.profession | translate }}
+              <div class="caregiver_info_profession">
+                {{ 'common.professions.' + careGiver?.healthcareQualification?.id?.profession | translate }}
               </div>
             }
 
-            @if(getReadableStatus(performerTask.status)) {
+            @if (getReadableStatus(performerTask.status)) {
               <div class="performer_task_status">
-                <mat-chip [disableRipple]="true"
-                          [class]="getStatusColor(performerTask.status!)">{{ 'performerTask.statuses.' + performerTask.status | translate }}
+                <mat-chip [disableRipple]="true" [class]="getStatusColor(performerTask.status!)"
+                  >{{ 'performerTask.statuses.' + performerTask.status | translate }}
                 </mat-chip>
               </div>
             }
@@ -50,24 +56,24 @@
           }
         </div>
 
-        @if(currentUserData.role === "patient"){
-        <div class="button-group">
-          @if (patientData?.ssin && (prescriptionServiceData | canRejectAssignation : performerTask : patientData?.ssin : currentUserData)) {
-            <button
-              type="button"
-              (click)="service.openRejectAssignationDialog(prescriptionData, performerTask, patientData)"
-              mat-icon-button
-              data-cy="prescription-reject-assignation-button"
-              [attr.aria-label]="'prescription.ariaLabel.reject' | translate"
-            >
-              <mat-icon>cancel</mat-icon>
-            </button>
-          }
-        </div>
+        @if (currentUserData.role === 'patient') {
+          <div class="button-group">
+            @if (
+              patientData?.ssin &&
+              (prescriptionServiceData | canRejectAssignation: performerTask : patientData?.ssin : currentUserData)
+            ) {
+              <button
+                type="button"
+                (click)="service.openRejectAssignationDialog(prescriptionData, performerTask, patientData)"
+                mat-icon-button
+                data-cy="prescription-reject-assignation-button"
+                [attr.aria-label]="'prescription.ariaLabel.reject' | translate">
+                <mat-icon svgIcon="cancel" aria-hidden="true"></mat-icon>
+              </button>
+            }
+          </div>
         }
       </div>
-
-
     </div>
   }
 }

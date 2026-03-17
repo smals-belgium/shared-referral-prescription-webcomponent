@@ -66,6 +66,8 @@ import { handleMissingTranslationFile } from '@reuse/code/utils/translation.util
 import { BehaviorSubject, catchError, EMPTY, Subscription, switchMap } from 'rxjs';
 import { Lang } from '@reuse/code/constants/languages';
 import { tap } from 'rxjs/operators';
+import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
+import { SupportedMaterialIcons } from '@reuse/code/constants/icons';
 import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
 
 interface ViewState {
@@ -160,6 +162,8 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
     errorResponse: undefined,
   };
 
+  //@todo add to dialogs!!!!
+
   constructor(
     private readonly translate: TranslateService,
     private readonly pseudoService: PseudoService,
@@ -173,6 +177,7 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
     private readonly prescriptionModelService: PrescriptionModelService,
     private readonly dialog: MatDialog,
     private readonly featureFlagService: FeatureFlagService,
+    private readonly iconRegistryService: IconRegistryService,
     private el: ElementRef<HTMLElement>,
     private activeHostService: ActiveOverlayHostService
   ) {
@@ -185,6 +190,8 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
   }
 
   ngOnInit(): void {
+    this.iconRegistryService.init('add', 'delete', 'more_vert', 'keyboard_arrow_right', 'close');
+
     this._subscriptions.add(
       this._languageChange
         .pipe(

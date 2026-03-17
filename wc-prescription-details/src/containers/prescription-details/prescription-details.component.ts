@@ -88,6 +88,7 @@ import { Lang } from '@reuse/code/constants/languages';
 import { tap } from 'rxjs/operators';
 import { mapDisplayStatusToColor } from '@reuse/code/utils/request-status-display-map.utils';
 import { PrescriptionDetailsActionsComponent } from '../../components/prescription-details-actions/prescription-details-actions/prescription-details-actions.component';
+import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
 import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
 import { formatToEvfLangCode } from '@reuse/code/evf/utils/evf-utils';
 
@@ -139,6 +140,8 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   private readonly _pseudoService = inject(PseudoService);
   private readonly _pssService = inject(PssService);
   private readonly _encryptionStateService = inject(EncryptionState);
+  private readonly _iconRegistryService = inject(IconRegistryService);
+
   private readonly _prescriptionSecondaryService = inject(PrescriptionDetailsSecondaryService);
   protected readonly evfTranslateService = inject(EvfTranslateService);
   private readonly _activeHostService = inject(ActiveOverlayHostService);
@@ -295,6 +298,19 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   }
 
   ngOnInit() {
+    this._iconRegistryService.init(
+      'keyboard_arrow_up',
+      'keyboard_arrow_down',
+      'more_vert',
+      'delete',
+      'error',
+      'done',
+      'close',
+      'cancel',
+      'arrow_forward_ios',
+      'info'
+    );
+
     this.generatedUUID.set(uuidv4());
     this.evfTranslateService.setDefaultLang(Lang.FR.short);
 

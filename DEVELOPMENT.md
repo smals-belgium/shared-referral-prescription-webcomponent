@@ -41,6 +41,32 @@ The Figma file serves as the design reference and source of truth for UI impleme
 
 [View designs in Figma](https://www.figma.com/design/eBlfdAk1g07SzNzjd8gado/UHMEP-webapp?t=bU1UJPQM2xoDiIcb-0).
 
+# SVG Icons Guide
+
+1. Add a New Icon  
+   Add your SVG to MATERIAL_ICONS (reuse folder)
+
+2. Register in Component
+
+```typescript
+private readonly iconRegistryService = inject(IconRegistryService);
+
+ngOnInit(): void {
+  this.iconRegistryService.init(...
+}
+```
+
+3. Use in HTML
+
+```html
+<mat-icon svgIcon="add" aria-label="Add item"></mat-icon>
+```
+
+4. Tips:
+
+- aria-label for meaningful icons; use aria-hidden="true" for decorative ones.
+- fill="currentColor" lets the icon inherit text color.
+
 # API Contracts
 
 - **webapi**: https://git.vascloud.be/nihdi/uhmep/healix/api-contract  

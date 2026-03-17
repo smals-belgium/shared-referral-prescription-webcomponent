@@ -2,7 +2,7 @@
   <ng-container matColumnDef="icon">
     <th mat-header-cell *matHeaderCellDef></th>
     <td mat-cell *matCellDef="let row" class="icon-cell">
-      <mat-icon>person</mat-icon>
+      <mat-icon svgIcon="person" [aria-hidden]="true"></mat-icon>
     </td>
   </ng-container>
 
@@ -61,7 +61,7 @@
     <td data-cy="professional-actions-cell" mat-cell *matCellDef="let healthcareProvider">
       <button type="button" matButton (click)="selectProfessional.emit(healthcareProvider)" class="icon-end">
         {{ 'professional.table.select' | translate }}
-        <mat-icon>arrow_forward_ios</mat-icon>
+        <mat-icon svgIcon="arrow_formward_ios" [aria-hidden]="true"></mat-icon>
       </button>
     </td>
   </ng-container>

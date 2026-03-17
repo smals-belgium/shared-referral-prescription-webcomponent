@@ -32,6 +32,7 @@ import { EncryptionKeyInitializerService } from '@reuse/code/states/privacy/encr
 import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
 import { v4 as uuidv4 } from 'uuid';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
 import { Lang } from '@reuse/code/constants/languages';
 
 jest.spyOn(MatDialog.prototype, 'open').mockImplementation(
@@ -121,6 +122,7 @@ describe('CreatePrescriptionWebComponent', () => {
   let toaster: ToastService;
   let translate: TranslateService;
   let dateAdapter: MockDateAdapter;
+  let mockIconRegistryService: jest.Mocked<Partial<IconRegistryService>>;
 
   beforeAll(() => {
     Object.defineProperty(window, 'crypto', {
@@ -143,6 +145,10 @@ describe('CreatePrescriptionWebComponent', () => {
         }) as any
     );
     jest.spyOn(ToastService.prototype, 'show').mockImplementation(() => {});
+
+    mockIconRegistryService = {
+      init: jest.fn(),
+    };
 
     await TestBed.configureTestingModule({
       imports: [
@@ -179,6 +185,7 @@ describe('CreatePrescriptionWebComponent', () => {
           },
         },
         EvfTranslateService,
+        { provide: IconRegistryService, useValue: mockIconRegistryService },
       ],
     }).compileComponents();
 
@@ -1729,6 +1736,26 @@ describe('CreatePrescriptionWebComponent', () => {
         expect(findByIdSpy).toHaveBeenCalledWith(modelId);
         expect(findByIdSpy).toHaveBeenCalledTimes(1);
       }));
+    });
+
+    describe('init icons', () => {
+      it('should register icons onInit', () => {
+        createFixture();
+        component.ngOnInit();
+
+        expect(mockIconRegistryService.init).toHaveBeenCalledWith(
+          'check_circle',
+          'error',
+          'delete',
+          'add',
+          'update',
+          'save',
+          'info',
+          'do_not_disturb_on',
+          'add_circle',
+          'close'
+        );
+      });
     });
   });
 
