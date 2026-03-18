@@ -195,7 +195,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
   isProposalValue = false;
 
-  constructor(private el: ElementRef<HTMLElement>) {
+  constructor(private readonly el: ElementRef<HTMLElement>) {
     this.currentLang.set(this._translate.currentLang);
     this._translate.setDefaultLang(Lang.FR.full);
 

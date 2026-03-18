@@ -177,11 +177,11 @@ export class PrescriptionDetailsSecondaryService {
       };
     }
 
-    const directPerformerTask = state.data!.performerTasks?.find(t => t.careGiverSsin === ssin);
-    if (directPerformerTask) {
+    const directPerformerTask = state.data!.performerTasks?.[ssin];
+    if (directPerformerTask?.length) {
       return {
         status: state.status,
-        data: directPerformerTask,
+        data: directPerformerTask[0],
       };
     }
 
@@ -325,7 +325,7 @@ export class PrescriptionDetailsSecondaryService {
         prescriptionId: prescription.id,
         referralTaskId: prescription.referralTask?.id,
         performerTaskId: task.id,
-        assignedCareGivers: prescription.performerTasks?.map(c => c.careGiverSsin),
+        assignedCareGivers: Object.keys(prescription.performerTasks ?? {}),
         category: prescription.category,
         intent: prescription.intent,
         mode: 'transfer',

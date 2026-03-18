@@ -3,7 +3,7 @@ import { TemplateService as ApiTemplateService } from '@reuse/code/openapi';
 
 @Injectable({ providedIn: 'root' })
 export class PrescriptionTemplateService {
-  private api = inject(ApiTemplateService);
+  private readonly api = inject(ApiTemplateService);
 
   findAllTemplates() {
     return this.api.findTemplates();

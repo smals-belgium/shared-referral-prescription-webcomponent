@@ -5,7 +5,7 @@ import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-ho
 
 @Injectable({ providedIn: 'root' })
 export class ShadowDomOverlayContainer extends OverlayContainer implements OnDestroy {
-  private activeHostService = inject(ActiveOverlayHostService);
+  private readonly activeHostService = inject(ActiveOverlayHostService);
 
   constructor(@Inject(DOCUMENT) _document: Document) {
     super(_document);

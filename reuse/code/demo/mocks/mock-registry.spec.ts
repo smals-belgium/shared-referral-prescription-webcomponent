@@ -180,16 +180,18 @@ describe('Demo mode', () => {
 
       const result = mock.handler!(req, null) as ReadRequestResourceExtended;
 
-      if (result && result.performerTasks && result.performerTasks.length > 0) {
-        result.performerTasks.forEach((task: any) => {
-          if (task.careGiverIndex != null) {
-            expect(task.careGiver).toBeDefined();
+      if (result && result.performerTasks) {
+        Object.values(result.performerTasks).map(performerTasks => {
+          performerTasks.forEach((task: any) => {
+            if (task.careGiverIndex != null) {
+              expect(task.careGiver).toBeDefined();
 
-            const healthcarePerson = task.careGiver.healthcarePerson as HealthcarePersonResource;
-            expect(healthcarePerson.ssin).toBe('10000000009');
-            expect(healthcarePerson.firstName).toBe('Robin');
-            expect(healthcarePerson.lastName).toBe('Dupont');
-          }
+              const healthcarePerson = task.careGiver.healthcarePerson as HealthcarePersonResource;
+              expect(healthcarePerson.ssin).toBe('10000000009');
+              expect(healthcarePerson.firstName).toBe('Robin');
+              expect(healthcarePerson.lastName).toBe('Dupont');
+            }
+          });
         });
       }
     });
@@ -458,7 +460,7 @@ describe('Demo mode', () => {
       const mockPrescription = {
         id: id,
         status: 'OPEN',
-        performerTasks: [],
+        performerTasks: {},
       };
       demoStorage.set('demoPrescription', mockPrescription);
 
@@ -472,8 +474,7 @@ describe('Demo mode', () => {
       const savedPrescription = demoStorage.get('demoPrescription') as ReadRequestResourceExtended;
       expect(savedPrescription).toBeDefined();
       expect(savedPrescription.performerTasks).toBeDefined();
-      expect(Array.isArray(savedPrescription.performerTasks)).toBe(true);
-      expect(savedPrescription.performerTasks?.length).toBe(1);
+      expect(Object.keys(savedPrescription.performerTasks!).length).toBe(1);
     });
   });
 

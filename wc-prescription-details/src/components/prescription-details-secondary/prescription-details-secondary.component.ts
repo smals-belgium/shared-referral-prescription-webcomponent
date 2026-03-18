@@ -1,6 +1,6 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { ReadRequestResource } from '@reuse/code/openapi';
+import { PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
 import { PrescriptionDetailsOrganizationListComponent } from './prescription-details-organization-list/prescription-details-organization-list.component';
 import { PrescriptionDetailsCaregiverListComponent } from './prescription-details-caregiver-list/prescription-details-caregiver-list.component';
 import { PrescriptionDetailsSecondaryService } from './prescription-details-secondary.service';
@@ -17,4 +17,8 @@ export class PrescriptionDetailsSecondaryComponent {
   private readonly _service = inject(PrescriptionDetailsSecondaryService);
 
   readonly prescriptionServiceData: ReadRequestResource | undefined = this._service.getPrescription().data;
+
+  get performerTaskEntries(): [string, PerformerTaskResource[]][] {
+    return Object.entries(this.prescriptionServiceData?.performerTasks ?? {});
+  }
 }

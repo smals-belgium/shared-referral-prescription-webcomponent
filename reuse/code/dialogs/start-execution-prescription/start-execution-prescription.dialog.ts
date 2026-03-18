@@ -17,7 +17,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { v4 as uuidv4 } from 'uuid';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
-import { PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
+import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
 import { SSIN_CLAIM_KEY, USER_PROFILE_CLAIM_KEY } from '@reuse/code/services/auth/auth-constants';
 
 interface StartExecutionPrescriptionDialogData {
@@ -43,7 +43,6 @@ interface StartExecutionPrescriptionDialogData {
   ],
 })
 export class StartExecutionPrescriptionDialog extends BaseDialog implements OnInit {
-
   private readonly _prescriptionStateService = inject(PrescriptionState);
   private readonly _authService = inject(AuthService);
   private readonly _toastService = inject(ToastService);
@@ -56,7 +55,7 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
     startDate: new FormControl<DateTime>(DateTime.now()),
   });
   loading = false;
-  minDate: string = "";
+  minDate: string = '';
   readonly maxDate = DateTime.now().toISO();
   generatedUUID = '';
 
@@ -68,7 +67,7 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
     this.prescription = data.prescription;
     this.performerTask = data.performerTask;
 
-    this.computeMinDate(data)
+    this.computeMinDate(data);
   }
 
   ngOnInit() {
@@ -76,6 +75,12 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
   }
 
   startExecution(): void {
+    const allowedTaskStatuses: FhirR4TaskStatus[] = [
+      FhirR4TaskStatus.Completed,
+      FhirR4TaskStatus.Cancelled,
+      FhirR4TaskStatus.Onhold,
+    ];
+
     this.formGroup.markAllAsTouched();
     if (this.formGroup.valid) {
       const values = this.formGroup.value;
@@ -83,10 +88,13 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
         startDate: values.startDate?.toFormat('yyyy-MM-dd'),
       };
       this.loading = true;
-      if (this.performerTask) {
-        this.startExecutionForTask(this.performerTask, executionStart);
-      } else {
+      if (
+        !this.performerTask ||
+        (!!this.performerTask.status && allowedTaskStatuses.includes(this.performerTask.status))
+      ) {
         this.assignAndStartExecution(executionStart);
+      } else {
+        this.startExecutionForTask(this.performerTask, executionStart);
       }
     }
   }
@@ -151,18 +159,15 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
     return this._authService.getClaims().pipe(map(claims => claims?.[USER_PROFILE_CLAIM_KEY]?.[SSIN_CLAIM_KEY] ?? ''));
   }
 
-  private computeMinDate(data: StartExecutionPrescriptionDialogData){
-
+  private computeMinDate(data: StartExecutionPrescriptionDialogData) {
     const authoredOn = data?.prescription?.authoredOn;
     const validityStartDate = data.prescription?.period?.start;
 
-    if (validityStartDate && authoredOn){
-      if(validityStartDate < authoredOn){
-        this.minDate = validityStartDate
-      }else if(
-        (validityStartDate >= authoredOn)
-      ){
-        this.minDate = authoredOn
+    if (validityStartDate && authoredOn) {
+      if (validityStartDate < authoredOn) {
+        this.minDate = validityStartDate;
+      } else if (validityStartDate >= authoredOn) {
+        this.minDate = authoredOn;
       }
     }
   }

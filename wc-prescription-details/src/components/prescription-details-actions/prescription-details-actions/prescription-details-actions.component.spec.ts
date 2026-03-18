@@ -13,6 +13,7 @@ import {
   PerformerTaskResource,
   PersonResource,
   ReadRequestResource,
+  Role,
 } from '@reuse/code/openapi';
 import { DeviceService } from '@reuse/code/services/helpers/device.service';
 import { PrescriptionDetailsSecondaryService } from '../../prescription-details-secondary/prescription-details-secondary.service';
@@ -46,7 +47,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
       prescription: {
         id: 'prescription-1',
         referralTask: { id: 'referral-1' },
-        performerTasks: [{ careGiverSsin: 'ssin-1' }],
+        performerTasks: { 'ssin-1': [{ careGiverSsin: 'ssin-1' }] },
         organizationTasks: [{ organizationNihii: 'nihii-1' }],
         category: 'nursing-care',
         intent: Intent.ORDER,
@@ -213,7 +214,10 @@ describe('PrescriptionDetailsActionsComponent', () => {
     const prescription = {
       id: 'prescription-123',
       referralTask: { id: 'referral-456' },
-      performerTasks: [{ careGiverSsin: 'ssin-1' }, { careGiverSsin: 'ssin-2' }],
+      performerTasks: {
+        'ssin-1': [{ careGiverSsin: 'ssin-1' }],
+        'ssin-2': [{ careGiverSsin: 'ssin-2' }],
+      },
       organizationTasks: [{ organizationNihii: 'nihii-1' }],
       category: 'physiotherapy',
       intent: Intent.ORDER,
@@ -333,7 +337,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
     it('should return undefined when non-patient has no targetId', () => {
       const readyTask = createPerformerTask({ status: FhirR4TaskStatus.Ready });
       const prescription: ReadRequestResource = {
-        performerTasks: [createPerformerTask(), readyTask],
+        performerTasks: { ssin: [createPerformerTask(), readyTask] },
       };
 
       const viewState = createMockViewState();
@@ -347,33 +351,41 @@ describe('PrescriptionDetailsActionsComponent', () => {
     it('should return task matching targetId for non-patient', () => {
       const viewState = createMockViewState();
       component.data = viewState;
+      const currentUserSsin = viewState.currentUser.ssin || '';
+      const currentUser = viewState.currentUser;
 
       expect(component.currentUser?.role).toBe('nurse');
       expect(component.performerTaskServiceData).toEqual({ id: 'performer-task-1' });
 
       const targetTask = createPerformerTask({ id: 'performer-task-1' });
       const prescription: ReadRequestResource = {
-        performerTasks: [createPerformerTask(), targetTask],
+        performerTasks: { [currentUserSsin]: [createPerformerTask(), targetTask] },
       };
 
-      expect(component.getPerformerTask(prescription)).toBe(targetTask);
+      expect(component.getPerformerTask(prescription, currentUser)).toBe(targetTask);
     });
 
     it('should fallback to organizationTasks when not found in performerTasks', () => {
+      const ssin = 'user-ssin';
+      const currentUser = { ssin, role: Role.Caregiver };
       const viewState = createMockViewState({
-        currentUser: { ssin: 'user-ssin', role: 'nurse' } as Partial<PersonResource>,
+        currentUser: currentUser,
       });
       component.data = viewState;
 
-      expect(component.currentUser?.role).toBe('nurse');
+      expect(component.currentUser?.role).toBe('caregiver');
 
-      const readyTask = createPerformerTask({ id: 'performer-task-1', status: FhirR4TaskStatus.Ready });
+      const readyTask = createPerformerTask({
+        id: 'performer-task-1',
+        status: FhirR4TaskStatus.Ready,
+        careGiverSsin: ssin,
+      });
       const prescription: ReadRequestResource = {
-        performerTasks: [],
+        performerTasks: {},
         organizationTasks: [{ performerTasks: [readyTask] }],
       };
 
-      expect(component.getPerformerTask(prescription)).toBe(readyTask);
+      expect(component.getPerformerTask(prescription, currentUser)).toBe(readyTask);
     });
 
     it('should return undefined when user is patient', () => {
@@ -385,7 +397,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
       expect(component.currentUser?.role).toBe('patient');
       const readyTask = createPerformerTask({ status: FhirR4TaskStatus.Ready });
       const prescription: ReadRequestResource = {
-        performerTasks: [],
+        performerTasks: {},
         organizationTasks: [{ performerTasks: [readyTask] }],
       };
 

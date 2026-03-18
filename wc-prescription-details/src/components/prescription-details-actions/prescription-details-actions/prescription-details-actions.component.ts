@@ -145,7 +145,7 @@ export class PrescriptionDetailsActionsComponent {
       data: {
         prescriptionId: prescription.id,
         referralTaskId: prescription.referralTask?.id,
-        assignedCareGivers: prescription.performerTasks?.map(c => c.careGiverSsin),
+        assignedCareGivers: Object.keys(prescription.performerTasks ?? {}),
         assignedOrganizations: prescription.organizationTasks?.map(o => o.organizationNihii),
         category: prescription.category,
         intent: prescription.intent,
@@ -205,16 +205,21 @@ export class PrescriptionDetailsActionsComponent {
     });
   }
 
-  getPerformerTask(prescription: ReadRequestResource): PerformerTaskResource | undefined {
+  getPerformerTask(
+    prescription: ReadRequestResource,
+    currentUser?: Partial<UserInfo>
+  ): PerformerTaskResource | undefined {
     const targetId = this.performerTaskServiceData?.id;
+    const ssin = currentUser?.ssin;
+
     if (!targetId) return undefined;
 
-    const performerTask = prescription.performerTasks?.find(pt => pt.id === targetId);
-    if (performerTask) return performerTask;
+    const performerTasks = ssin ? prescription.performerTasks?.[ssin] : undefined;
 
-    return prescription.organizationTasks
-      ?.flatMap(organizationTask => organizationTask.performerTasks ?? [])
-      .find(performerTask => performerTask.id === targetId);
+    return (
+      performerTasks?.find(pt => pt.id === targetId) ??
+      prescription.organizationTasks?.flatMap(ot => ot.performerTasks ?? []).find(pt => pt.id === targetId)
+    );
   }
 
   protected readonly Intent = Intent;
