@@ -10,7 +10,7 @@ export class IconRegistryService {
   private readonly iconRegistry = inject(MatIconRegistry);
   private readonly sanitizer = inject(DomSanitizer);
 
-  private registered = new Set<SupportedMaterialIcons>();
+  private readonly registered = new Set<SupportedMaterialIcons>();
 
   init(...icons: SupportedMaterialIcons[]) {
     icons.forEach(name => {

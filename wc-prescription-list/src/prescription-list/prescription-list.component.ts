@@ -46,7 +46,6 @@ import { ToggleHistoricPrescriptionsComponent } from '@reuse/code/components/tog
 import { isModel, isPrescription, isProposal } from '@reuse/code/utils/utils';
 import { PrescriptionsCardComponent } from '../components/prescriptions/prescriptions-card/prescriptions-card.component';
 import { ResponsiveWrapperComponent } from '@reuse/code/components/responsive-wrapper/responsive-wrapper.component';
-import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { ChooseTemplateDialog, SelectedTemplate } from '@reuse/code/dialogs/choose-template/choose-template.dialog';
@@ -67,7 +66,6 @@ import { BehaviorSubject, catchError, EMPTY, Subscription, switchMap } from 'rxj
 import { Lang } from '@reuse/code/constants/languages';
 import { tap } from 'rxjs/operators';
 import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
-import { SupportedMaterialIcons } from '@reuse/code/constants/icons';
 import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
 
 interface ViewState {
@@ -162,8 +160,6 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
     errorResponse: undefined,
   };
 
-  //@todo add to dialogs!!!!
-
   constructor(
     private readonly translate: TranslateService,
     private readonly pseudoService: PseudoService,
@@ -178,8 +174,8 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
     private readonly dialog: MatDialog,
     private readonly featureFlagService: FeatureFlagService,
     private readonly iconRegistryService: IconRegistryService,
-    private el: ElementRef<HTMLElement>,
-    private activeHostService: ActiveOverlayHostService
+    private readonly el: ElementRef<HTMLElement>,
+    private readonly activeHostService: ActiveOverlayHostService
   ) {
     const currentLang = this.translate.currentLang;
     if (!currentLang) {

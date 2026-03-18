@@ -3,31 +3,34 @@
   @let currentUserData = currentUserServiceData;
   @let patientData = patientServiceData();
 
-  @for (performerTask of prescriptionData.performerTasks; track performerTask) {
+  @for (entry of performerTaskEntries; track entry[0]) {
+    @let careGiver = entry[1][0].careGiver;
+    @let performerTask = entry[1][0];
+    @let performerTasks = entry[1];
+
     <div class="caregiver_row">
       <div class="caregiver_container_row" data-cy="prescription-assign-to">
         <div class="caregiver_info">
-          @if (performerTask.careGiver; as careGiver) {
-            @if (!careGiver.healthcarePerson?.lastName) {
-              @if (careGiver.healthcarePerson?.ssin === currentUserData.ssin) {
-                <span class="caregiver_info_fullName"
-                  >{{ currentUserData?.firstName }} {{ currentUserData?.lastName }}
-                </span>
-              } @else {
-                <b>{{ 'common.professional.notFound' | translate }}</b>
-                <mat-icon
-                  matTooltip="{{ 'common.professional.tooltip' | translate }}"
-                  matTooltipPosition="right"
-                  svgIcon="error"
-                  aria-hidden="true"
-                  style="color: grey; cursor: pointer">
-                </mat-icon>
-              }
-            } @else {
-              <span class="caregiver_info_fullName"
-                >{{ careGiver.healthcarePerson?.firstName }} {{ careGiver.healthcarePerson?.lastName }}
+          @if (careGiver) {
+            @if (careGiver.healthcarePerson?.ssin === currentUserData.ssin) {
+              <span class="caregiver_info_fullName">
+                {{ currentUserData?.firstName }} {{ currentUserData?.lastName }}
               </span>
+            } @else if (careGiver.healthcarePerson?.lastName) {
+              <span class="caregiver_info_fullName">
+                {{ careGiver.healthcarePerson?.firstName }} {{ careGiver.healthcarePerson?.lastName }}
+              </span>
+            } @else {
+              <b>{{ 'common.professional.notFound' | translate }}</b>
+              <mat-icon
+                matTooltip="{{ 'common.professional.tooltip' | translate }}"
+                matTooltipPosition="right"
+                svgIcon="error"
+                aria-hidden="true"
+                style="color: grey; cursor: pointer">
+              </mat-icon>
             }
+
             @if (careGiver.nihii8 || careGiver.nihii11; as nihii) {
               <span class="caregiver_info_nihii"
                 >({{ nihii | formatNihdi: careGiver.healthcareQualification?.id?.code }})</span
@@ -47,32 +50,40 @@
                 </mat-chip>
               </div>
             }
-            @if (performerTask.executionPeriod?.start) {
-              <span>{{ performerTask.executionPeriod?.start! | date: 'dd/MM/yyyy' }} - </span>
-            }
-            @if (performerTask.executionPeriod?.end) {
-              <span>{{ performerTask.executionPeriod?.end! | date: 'dd/MM/yyyy' }}</span>
+
+            @for (performerTask of performerTasks; track performerTask.id) {
+              <div class="performer_tasks">
+                <div class="performer_task_periods">
+                  @if (performerTask.executionPeriod?.start) {
+                    <span>{{ performerTask.executionPeriod?.start! | date: 'dd/MM/yyyy' }} - </span>
+                  }
+                  @if (performerTask.executionPeriod?.end) {
+                    <span>{{ performerTask.executionPeriod?.end! | date: 'dd/MM/yyyy' }}</span>
+                  }
+                </div>
+
+                @if (currentUserData.role === 'patient') {
+                  <div class="button-group">
+                    @if (
+                      patientData?.ssin &&
+                      (prescriptionServiceData
+                        | canRejectAssignation: performerTask : patientData?.ssin : currentUserData)
+                    ) {
+                      <button
+                        type="button"
+                        (click)="service.openRejectAssignationDialog(prescriptionData, performerTask, patientData)"
+                        mat-icon-button
+                        data-cy="prescription-reject-assignation-button"
+                        [attr.aria-label]="'prescription.ariaLabel.reject' | translate">
+                        <mat-icon svgIcon="cancel" aria-hidden="true"></mat-icon>
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
             }
           }
         </div>
-
-        @if (currentUserData.role === 'patient') {
-          <div class="button-group">
-            @if (
-              patientData?.ssin &&
-              (prescriptionServiceData | canRejectAssignation: performerTask : patientData?.ssin : currentUserData)
-            ) {
-              <button
-                type="button"
-                (click)="service.openRejectAssignationDialog(prescriptionData, performerTask, patientData)"
-                mat-icon-button
-                data-cy="prescription-reject-assignation-button"
-                [attr.aria-label]="'prescription.ariaLabel.reject' | translate">
-                <mat-icon svgIcon="cancel" aria-hidden="true"></mat-icon>
-              </button>
-            }
-          </div>
-        }
       </div>
     </div>
   }

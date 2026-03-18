@@ -44,12 +44,20 @@ export function prescriptionResponse(
   referralTask: any = null,
   performerTask: PerformerTaskResource[] | null = null
 ) {
+  const performerTasks: Record<string, PerformerTaskResource[]> = {};
+
+  performerTask?.forEach(p => {
+    if (!p?.careGiverSsin) return;
+
+    (performerTasks[p.careGiverSsin] ??= []).push(p);
+  });
+
   return {
     id: id,
     pseudonymizedKey: 'pseudo-key',
     patientIdentifier: mockPerson.ssin,
     referralTask: referralTask,
-    performerTasks: performerTask,
+    performerTasks: performerTasks,
     organizationTasks: organisationTasks,
     templateCode: 'GENERIC',
     authoredOn: '2024-09-04T22:00:00.000+00:00',

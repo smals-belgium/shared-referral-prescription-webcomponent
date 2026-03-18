@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { MARKED_OPTIONS, MarkedOptions, MarkedRenderer, provideMarkdown as provide } from 'ngx-markdown';
 import { Parser } from 'marked';
-import { MATERIAL_ICONS } from '@reuse/code/constants/icons';
 import { DomSanitizer } from '@angular/platform-browser';
 
 export function provideMarkdown() {

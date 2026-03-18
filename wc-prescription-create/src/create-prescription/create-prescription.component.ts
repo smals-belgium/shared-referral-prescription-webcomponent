@@ -166,8 +166,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
     private readonly configService: WcConfigurationService,
     private readonly encryptionKeyInitializer: EncryptionKeyInitializerService,
     private readonly iconRegistryService: IconRegistryService,
-    private el: ElementRef<HTMLElement>,
-    private activeHostService: ActiveOverlayHostService
+    private readonly el: ElementRef<HTMLElement>,
+    private readonly activeHostService: ActiveOverlayHostService
   ) {
     const currentLang = this.translate.currentLang;
     if (!currentLang) {

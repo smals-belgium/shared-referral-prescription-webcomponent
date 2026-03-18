@@ -49,7 +49,7 @@
         }
       }
 
-      @let performerTask = getPerformerTask(prescription);
+      @let performerTask = getPerformerTask(prescription, currentUser);
       @if (!!getPerformerTask) {
         <app-task-button-group [currentPerformerTask]="performerTask!"> </app-task-button-group>
       }
