@@ -567,10 +567,12 @@ Below is a complete list of the variables that can be overridden:
 - --mdc-outlined-text-field-input-text-color
 - --evf-input-number-field-max-width
 - --evf-input-date-field-max-width
+- --evf-select-field-max-width
 - --mh-label-invalid-color
 - --mat-form-field-container-vertical-padding
 - --mat-form-field-container-height
 - --mat-sys-surface-container
+- --evf-textarea-margin-left
 
 ### Info Block
 
@@ -579,6 +581,7 @@ Below is a complete list of the variables that can be overridden:
 - --evf-infoblock-heading-color
 - --evf-infoblock-body-color
 - --evf-infoblock-matrial-icon-color
+- --evf-infoblock-max-width
 
 ### Typography / Labels
 
@@ -638,6 +641,7 @@ Below is a complete list of the variables that can be overridden:
 - --mat-expansion-container-shape
 - --mh-mat-expansion-container-not-expanded-shape
 - --mh-mat-expansion-gap
+- --mh-expansion-panel-textarea-max-width
 
 ### Expansion Panel Text Area
 
