@@ -587,7 +587,7 @@
       "CANCELLED": "Annulé",
       "FAILED": "Echoué",
       "INPROGRESS": "En cours",
-      "COMPLETED": "Terminé",
+      "COMPLETED": "Inactif",
       "null": "Inconnu",
       "INACTIVE": "Inactif"
     }

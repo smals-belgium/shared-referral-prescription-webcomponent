@@ -587,7 +587,7 @@
       "CANCELLED": "Geannuleerd",
       "FAILED": "Mislukt",
       "INPROGRESS": "In uitvoering",
-      "COMPLETED": "Voltooid",
+      "COMPLETED": "Inactief",
       "null": "Niet gekend",
       "INACTIVE": "Inactief"
     }
