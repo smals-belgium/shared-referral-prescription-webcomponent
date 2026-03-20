@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { PrescriptionsTableComponent } from './prescriptions-table.component';
 import { HealthcareProResource, ReadRequestListResource, RequestStatus } from '@reuse/code/openapi';
 import { Intent } from '@reuse/code/interfaces';
@@ -11,6 +11,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
+import { SimpleChange } from '@angular/core';
 
 const requester: HealthcareProResource = {
   healthcarePerson: {
@@ -187,6 +188,34 @@ describe('PrescriptionsTableComponent', () => {
     //header row + 1 element row + footer row
     const rowsLength = 1 + mockPrescriptions.items!.length + 1;
     expect(rows.length).toBe(rowsLength);
+  });
+
+  it('should display a dash when end date is null', () => {
+    const mockPrescriptionsWithNullEnd: ReadRequestListResource = {
+      total: 1,
+      items: [
+        {
+          id: '2',
+          authoredOn: '2024-01-01',
+          status: RequestStatus.Pending,
+          requester: requester,
+          period: {
+            start: '2024-01-01',
+            end: null as any,
+          },
+          intent: Intent.ORDER,
+        },
+      ],
+    };
+    component.intent = Intent.ORDER;
+    component.prescriptions = mockPrescriptionsWithNullEnd;
+    component.ngOnChanges({
+      intent: new SimpleChange(null, Intent.ORDER, true),
+    });
+
+    const items = component.items;
+    expect(items.length).toBe(1);
+    expect(items[0]?.period?.end).toBeNull();
   });
 
   it('should display the alert card AND the table', () => {

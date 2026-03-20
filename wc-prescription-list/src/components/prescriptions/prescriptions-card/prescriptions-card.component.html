@@ -37,7 +37,11 @@
               </div>
               <div class="column">
                 <p class="label">{{ 'prescription.end' | translate }}</p>
-                <p>{{ prescription.period?.end | date: 'D' }}</p>
+                @if (!prescription.period?.end) {
+                  <p>-</p>
+                } @else {
+                  <p>{{ prescription.period?.end | date: 'D' }}</p>
+                }
               </div>
             </div>
 

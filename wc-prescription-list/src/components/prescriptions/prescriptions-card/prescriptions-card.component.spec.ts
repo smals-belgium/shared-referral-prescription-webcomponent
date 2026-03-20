@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PrescriptionsCardComponent } from './prescriptions-card.component';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { DateAdapter } from '@angular/material/core';
+import { DateAdapter, MatNativeDateModule, NativeDateAdapter } from '@angular/material/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ElementRef, SimpleChange, SimpleChanges } from '@angular/core';
@@ -12,7 +12,7 @@ import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
 import { BehaviorSubject, of } from 'rxjs';
 import { Discipline, RequestStatus, RequestSummaryListResource, RequestSummaryResource } from '@reuse/code/openapi';
 import { RequestSummaryDataService } from '@reuse/code/services/helpers/request-summary-data.service';
-import { Intent } from "@reuse/code/interfaces";
+import { Intent } from '@reuse/code/interfaces';
 import { By } from '@angular/platform-browser';
 
 const mockPseudoClient = {
@@ -108,11 +108,12 @@ describe('PrescriptionsCardComponent', () => {
         TranslateModule.forRoot({
           loader: { provide: TranslateLoader, useClass: FakeLoader },
         }),
+        MatNativeDateModule,
       ],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        DateAdapter,
+        { provide: DateAdapter, useClass: NativeDateAdapter },
         { provide: PseudonymisationHelper, useValue: MockPseudoHelperFactory() },
         { provide: ConfigurationService, useValue: mockConfigService },
         { provide: AuthService, useValue: mockAuthService },
@@ -330,6 +331,31 @@ describe('PrescriptionsCardComponent', () => {
       detailsButton.click();
 
       expect(component.clickPrescription.emit).toHaveBeenCalledWith(mockRequestSummaryResource);
+    });
+
+    it('should display a dash when end date is null', () => {
+      const mockRequestWithNullEnd: RequestSummaryResource = {
+        id: '2',
+        status: RequestStatus.Open,
+        period: {
+          start: '2024-01-01',
+          end: null as any,
+        },
+      };
+      mockDataService.requestSummaryData$.next([mockRequestWithNullEnd]);
+      fixture.detectChanges();
+
+      const labels = fixture.debugElement.nativeElement.querySelectorAll('.label');
+      let endLabelIndex = -1;
+      labels.forEach((label: any, index: number) => {
+        if (label.textContent.includes('prescription.end')) {
+          endLabelIndex = index;
+        }
+      });
+
+      expect(endLabelIndex).toBeGreaterThan(-1);
+      const endValue = labels[endLabelIndex].nextElementSibling;
+      expect(endValue.textContent.trim()).toBe('-');
     });
   });
 
