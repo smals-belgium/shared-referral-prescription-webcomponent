@@ -588,8 +588,7 @@
       "FAILED": "Mislukt",
       "INPROGRESS": "In uitvoering",
       "COMPLETED": "Inactief",
-      "null": "Niet gekend",
-      "INACTIVE": "Inactief"
+      "null": "Niet gekend"
     }
   },
   "models": {

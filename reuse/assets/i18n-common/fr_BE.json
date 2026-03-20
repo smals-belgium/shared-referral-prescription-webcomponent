@@ -588,8 +588,7 @@
       "FAILED": "Echoué",
       "INPROGRESS": "En cours",
       "COMPLETED": "Inactif",
-      "null": "Inconnu",
-      "INACTIVE": "Inactif"
+      "null": "Inconnu"
     }
   },
   "models": {

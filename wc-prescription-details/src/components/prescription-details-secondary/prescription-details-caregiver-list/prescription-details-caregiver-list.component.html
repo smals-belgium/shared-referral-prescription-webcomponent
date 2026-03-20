@@ -45,8 +45,8 @@
 
             @if (getReadableStatus(performerTask.status)) {
               <div class="performer_task_status">
-                <mat-chip [disableRipple]="true" [class]="getStatusColor(performerTask.status!)"
-                  >{{ 'performerTask.statuses.' + performerTask.status | translate }}
+                <mat-chip [disableRipple]="true" [class]="getStatusColor(performerTask.status!)">
+                  {{ 'performerTask.statuses.' + performerTask.status | translate }}
                 </mat-chip>
               </div>
             }
