@@ -566,6 +566,7 @@ Below is a complete list of the variables that can be overridden:
 - --mdc-outlined-text-field-outline-color
 - --mdc-outlined-text-field-input-text-color
 - --evf-input-number-field-max-width
+- --evf-input-text-field-max-width
 - --evf-input-date-field-max-width
 - --evf-select-field-max-width
 - --mh-label-invalid-color

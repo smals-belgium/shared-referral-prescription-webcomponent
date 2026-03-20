@@ -362,6 +362,11 @@ evf-dynamic-form mat-form-field .mat-mdc-text-field-wrapper.mdc-text-field--outl
 evf-input-number {
   max-width: var(--evf-input-number-field-max-width, 240px);
 }
+
+evf-input-text {
+  max-width: var(--evf-input-text-field-max-width, 800px);
+}
+
 evf-input-date {
   max-width: var(--evf-input-date-field-max-width, 240px);
 }
