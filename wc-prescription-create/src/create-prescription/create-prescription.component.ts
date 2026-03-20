@@ -123,7 +123,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
   // OBSERVABLES & SIGNALS & SUBJECTS
   public readonly isEnabled$: Observable<boolean>;
   public readonly status$ = new BehaviorSubject<boolean>(false);
-  private readonly _languageChange = new BehaviorSubject<string>(this.translate.currentLang ?? Lang.FR);
+  private readonly _languageChange = new BehaviorSubject<string>(this.translate.currentLang ?? Lang.FR.full);
   public readonly patientState$: Signal<DataState<PersonResource>> = this.patientStateService.state;
   public readonly prescriptionForms = signal<CreatePrescriptionForm[]>([]);
   public readonly loading = signal(false);
