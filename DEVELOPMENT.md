@@ -45,6 +45,14 @@ The Figma file serves as the design reference and source of truth for UI impleme
 
 [View designs in Figma](https://www.figma.com/design/eBlfdAk1g07SzNzjd8gado/UHMEP-webapp?t=bU1UJPQM2xoDiIcb-0).
 
+# Update translations
+
+To update translations, add or remove keys from [loco](https://localise.biz/uhmep-drp/uhmep-web-component) and run
+
+```bash
+pull:translations:ps
+```
+
 # SVG Icons Guide
 
 1. Add a New Icon  

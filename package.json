@@ -41,7 +41,9 @@
     "lint:translate:reuse:uhmep": "ngx-translate-lint -p ./{reuse,wc-prescription-create,wc-prescription-details,wc-prescription-list}/**/*.{html,ts,resx} -l ./reuse/assets/i18n-common/{fr_BE,nl_BE}.json",
     "prettier:translations:uhmep": "npx prettier --write ./reuse/assets/i18n-common/*.json",
     "lint:translate:mags": "ngx-translate-lint -p ./wrappers/**/*.{html,ts,resx} -l ./wrappers/assets/{fr-BE,nl-BE}.json",
-    "prettier:translations:mags": "npx prettier --write ./wrappers/assets/*.json"
+    "prettier:translations:mags": "npx prettier --write ./wrappers/assets/*.json",
+    "pull:translations:ps": "powershell.exe -ExecutionPolicy Bypass -File ./pull-translations.ps1",
+    "pull:translations:sh": "./pull-translations.sh"
   },
   "private": true,
   "dependencies": {
