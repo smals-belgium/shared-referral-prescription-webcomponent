@@ -83,11 +83,12 @@ import { getTranslationKeyPrefixForPrescriptionOrProposal, isModel, isPrescripti
 import { EncryptionKeyInitializerService } from '@reuse/code/states/privacy/encryption-key-initializer.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
-import { Lang } from '@reuse/code/constants/languages';
+import { FullLang, Lang } from '@reuse/code/constants/languages';
 import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
 import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
 
 @Component({
+  selector: 'uhmep-prescription-create',
   templateUrl: './create-prescription.component.html',
   styleUrls: ['./create-prescription.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -134,7 +135,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
   // INPUTS
   @HostBinding('attr.lang')
   @Input()
-  lang = Lang.FR.full;
+  lang: FullLang = Lang.FR.full;
   @Input() initialValues?: CreatePrescriptionInitialValues;
   @Input() patientSsin?: string;
   @Input() services!: {
@@ -177,6 +178,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
 
     this.isEnabled$ = of(this.configService.getEnvironmentVariable('enablePseudo') as boolean).pipe(
       map((value: boolean) => {
+        if (this.configService.getEnvironment() === 'demo') return true;
         return value;
       })
     );

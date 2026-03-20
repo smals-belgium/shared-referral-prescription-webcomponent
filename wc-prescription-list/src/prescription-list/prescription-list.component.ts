@@ -81,6 +81,7 @@ interface SearchCriteria extends SearchFilter {
 }
 
 @Component({
+  selector: 'uhmep-prescription-list',
   templateUrl: './prescription-list.component.html',
   styleUrls: ['./prescription-list.component.scss'],
   encapsulation: ViewEncapsulation.ShadowDom,

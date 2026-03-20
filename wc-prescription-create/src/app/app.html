@@ -1,0 +1,8 @@
+<uhmep-prescription-create
+  [services]="services"
+  [lang]="Lang.NL.full"
+  (prescriptionsCreated)="prescriptionsCreated($event)"
+  (clickCancel)="clickCancel()"
+  (modelCreated)="modelCreated()"
+  [patientSsin]="patientSsin"
+  [initialValues]="initialValues"></uhmep-prescription-create>

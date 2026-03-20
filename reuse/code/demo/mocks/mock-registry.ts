@@ -1,4 +1,4 @@
-import templates from './templates.json';
+import readTemplates from './read-templates.json';
 import accessMatrix from './access-matrix.json';
 import persons from './persons.json';
 import templateVersionsLatest from './templates-versions-latest.json';
@@ -261,13 +261,26 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
   {
     method: ['GET'],
     url: /\/templates$/,
-    body: templates,
+    body: readTemplates,
   },
   {
     method: ['GET'],
     url: /\/templates\/READ_[A-Z0-9_]+\/versions\/latest$/,
     handler: (req: HttpRequest<unknown>) => {
       const name = req.url.match(/READ_([^/]+)/)?.[1];
+      if (!name) return new Error('No template found');
+
+      const template = templateVersionsLatest.find(t => t.id === name);
+      if (!template) return new Error('No template found');
+
+      return { ...template, ...commonTranslations };
+    },
+  },
+  {
+    method: ['GET'],
+    url: /\/templates\/[A-Z0-9_]+\/versions\/latest$/,
+    handler: (req: HttpRequest<unknown>) => {
+      const name = req.url.split('/')[6];
       if (!name) return new Error('No template found');
 
       const template = templateVersionsLatest.find(t => t.id === name);

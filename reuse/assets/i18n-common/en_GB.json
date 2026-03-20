@@ -177,7 +177,8 @@
       "pagination": {
         "models": "",
         "pageSize": ""
-      }
+      },
+      "tableHasRecords": ""
     },
     "filter": {
       "historicToggle": "",
@@ -599,7 +600,6 @@
       "message": ""
     }
   },
-  "prescription-model-tableHasRecords-Le-nombre-total": "",
   "professional": {
     "table": {
       "results": "",
