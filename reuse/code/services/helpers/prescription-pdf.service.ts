@@ -66,15 +66,20 @@ export class PrescriptionsPdfService {
           ...this.buildDefinitionRows(prescription, responses, template, templateVersion, lang),
           this.buildPrescriberSection(prescription),
           this.buildDisclaimer(),
-          ...(cancelled
-            ? []
-            : [
-                this.buildDashLine(),
-                this.buildHeaderSubSection(),
-                this.buildTitleSubSection(template, lang, patient, prescription.shortCode),
-                this.buildPatienInfoSubSection(patient),
-                this.buildValidityPeriodSubSection(prescription),
-              ]),
+          [
+            {
+              stack: cancelled
+                ? []
+                : [
+                    this.buildDashLine(),
+                    this.buildHeaderSubSection(),
+                    this.buildTitleSubSection(template, lang, patient, prescription.shortCode),
+                    this.buildPatienInfoSubSection(patient),
+                    this.buildValidityPeriodSubSection(prescription),
+                  ],
+              unbreakable: true,
+            },
+          ],
         ],
       },
       undefined,
