@@ -319,17 +319,18 @@
       "pageSize": ""
     },
     "statuses": {
-      "DRAFT": "",
-      "BLACKLISTED": "",
-      "PENDING": "",
-      "OPEN": "",
-      "CANCELLED": "",
-      "EXPIRED": "",
-      "IN_PROGRESS": "",
-      "DONE": "",
-      "null": "",
-      "APPROVED": "",
-      "REJECTED": ""
+      "DRAFT": "Draft",
+      "BLACKLISTED": "Blacklisted",
+      "PENDING": "Pending",
+      "OPEN": "Available",
+      "CANCELLED": "Classified without consequence",
+      "EXPIRED": "Expired",
+      "IN_PROGRESS": "In progress",
+      "DONE": "Completed",
+      "null": "Unknown",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected",
+      "STOPPED": "Stopped"
     },
     "errors": {
       "failedToLoadPrescription": "",
@@ -395,7 +396,8 @@
       "success": "{firstName} {lastName} has been assigned as provider.",
       "title": "Transfer assignment",
       "zipCodeOrCityName": "Postal code or city"
-    }
+    },
+    "validityStartDate": ""
   },
   "proposal": {
     "creationDate": "",
@@ -539,7 +541,8 @@
       "DONE": "",
       "null": "",
       "APPROVED": "",
-      "REJECTED": ""
+      "REJECTED": "",
+      "STOPPED": "Stopped"
     },
     "errors": {
       "failedToLoadProposal": "",

@@ -322,14 +322,15 @@
       "DRAFT": "",
       "BLACKLISTED": "",
       "PENDING": "",
-      "OPEN": "",
+      "OPEN": "Verfügbar",
       "CANCELLED": "",
-      "EXPIRED": "",
-      "IN_PROGRESS": "",
-      "DONE": "",
+      "EXPIRED": "Abgelaufen",
+      "IN_PROGRESS": "In bearbeitung",
+      "DONE": "Abgeschlossen",
       "null": "",
       "APPROVED": "",
-      "REJECTED": ""
+      "REJECTED": "",
+      "STOPPED": "Gestoppt"
     },
     "errors": {
       "failedToLoadPrescription": "",
@@ -395,7 +396,8 @@
       "success": "",
       "title": "",
       "zipCodeOrCityName": ""
-    }
+    },
+    "validityStartDate": ""
   },
   "proposal": {
     "creationDate": "",
@@ -539,7 +541,8 @@
       "DONE": "",
       "null": "",
       "APPROVED": "",
-      "REJECTED": ""
+      "REJECTED": "",
+      "STOPPED": "Gestoppt"
     },
     "errors": {
       "failedToLoadProposal": "",

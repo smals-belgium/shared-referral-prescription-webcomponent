@@ -79,6 +79,37 @@ describe('PrescriptionDetailsMainComponent', () => {
     expect(divWithClassId.textContent).toContain(mockResponse.shortCode);
   });
 
+  it('should show validity period when end date is present', () => {
+    const mockResponse = prescriptionResponse();
+    mockResponse.period = { start: '2024-09-04T22:00:00.000+00:00', end: '2025-09-03T22:00:00.000+00:00' };
+    (component as any).prescription = mockResponse;
+
+    fixture.detectChanges();
+
+    const { debugElement } = fixture;
+    const label = debugElement.query(By.css('[data-cy="prescription-validity-period-label"]')).nativeElement;
+    const value = debugElement.query(By.css('[data-cy="prescription-validity-period"]')).nativeElement;
+
+    expect(label.textContent).toContain('prescription.validityPeriod');
+    expect(value.textContent).toBeTruthy();
+  });
+
+  it('should show only start date when end date is null', () => {
+    const mockResponse = prescriptionResponse();
+    mockResponse.period = { start: '2024-09-04T22:00:00.000+00:00', end: null as any };
+    (component as any).prescription = mockResponse;
+
+    fixture.detectChanges();
+
+    const { debugElement } = fixture;
+    const label = debugElement.query(By.css('[data-cy="prescription-validity-start-date-label"]')).nativeElement;
+    const value = debugElement.query(By.css('[data-cy="prescription-validity-start-date"]')).nativeElement;
+
+    expect(label.textContent).toContain('prescription.validityStartDate');
+    expect(value.textContent).toBeTruthy();
+    expect(debugElement.query(By.css('[data-cy="prescription-validity-period-label"]'))).toBeNull();
+  });
+
   it('should propagate patient changes from service to view', () => {
     const service = TestBed.inject(PrescriptionDetailsSecondaryService) as any;
     const patientSignal = signal({ data: mockPerson });

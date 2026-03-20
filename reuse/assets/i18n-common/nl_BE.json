@@ -322,14 +322,15 @@
       "DRAFT": "Concept",
       "BLACKLISTED": "Op de zwarte lijst",
       "PENDING": "In afwachting",
-      "OPEN": "Open",
+      "OPEN": "Beschikbaar",
       "CANCELLED": "Geklasseerd zonder gevolg",
       "EXPIRED": "Vervallen",
       "IN_PROGRESS": "In uitvoering",
       "DONE": "Afgesloten",
       "null": "Niet gekend",
       "APPROVED": "Goedgekeurd",
-      "REJECTED": "Geweigerd"
+      "REJECTED": "Geweigerd",
+      "STOPPED": "Gestopt"
     },
     "errors": {
       "failedToLoadPrescription": "Er is iets misgegaan tijdens het laden van het voorschrift.",
@@ -395,7 +396,8 @@
       "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
       "title": "Toewijzing transfereren",
       "zipCodeOrCityName": "Postcode of gemeente"
-    }
+    },
+    "validityStartDate": "Startdatum geldigheid"
   },
   "proposal": {
     "creationDate": "Aangemaakt op",
@@ -539,7 +541,8 @@
       "DONE": "Afgesloten",
       "null": "Niet gekend",
       "APPROVED": "Goedgekeurd",
-      "REJECTED": "Geweigerd"
+      "REJECTED": "Geweigerd",
+      "STOPPED": "Gestopt"
     },
     "errors": {
       "failedToLoadProposal": "Er is iets misgegaan tijdens het laden van het voorstel.",

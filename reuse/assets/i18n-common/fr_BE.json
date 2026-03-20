@@ -322,14 +322,15 @@
       "DRAFT": "Brouillon",
       "BLACKLISTED": "Liste noire",
       "PENDING": "En attente",
-      "OPEN": "Ouvert",
+      "OPEN": "Disponible",
       "CANCELLED": "Classée sans suite",
       "EXPIRED": "Expiré",
       "IN_PROGRESS": "En cours",
-      "DONE": "Clôturé",
+      "DONE": "Clôturée",
       "null": "Inconnu",
       "APPROVED": "Approuvé",
-      "REJECTED": "Refusé"
+      "REJECTED": "Refusé",
+      "STOPPED": "Arrêtée"
     },
     "errors": {
       "failedToLoadPrescription": "Une erreur s'est produite pendant le chargement de la prescription.",
@@ -395,7 +396,8 @@
       "success": "{firstName} {lastName} a été assigné comme prestataire.",
       "title": "Transférer l'assignation",
       "zipCodeOrCityName": "Code postal ou commune"
-    }
+    },
+    "validityStartDate": "Date de début de validité"
   },
   "proposal": {
     "creationDate": "Créé le",
@@ -532,14 +534,15 @@
       "DRAFT": "Brouillon",
       "BLACKLISTED": "Liste noire",
       "PENDING": "En attente",
-      "OPEN": "Ouvert",
+      "OPEN": "Disponible",
       "CANCELLED": "Classée sans suite ",
       "EXPIRED": "Expiré",
       "IN_PROGRESS": "En cours",
       "DONE": "Clôturé",
       "null": "Inconnu",
       "APPROVED": "Approuvé",
-      "REJECTED": "Refusé"
+      "REJECTED": "Refusé",
+      "STOPPED": "Arrêtée"
     },
     "errors": {
       "failedToLoadProposal": "Une erreur s'est produite pendant le chargement de la proposition.",
