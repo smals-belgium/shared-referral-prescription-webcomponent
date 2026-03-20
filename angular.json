@@ -309,6 +309,11 @@
     },
     "wc-prescription-create": {
       "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
       "root": "wc-prescription-create",
       "sourceRoot": "wc-prescription-create/src",
       "prefix": "healix",
@@ -453,6 +458,11 @@
       }
     },
     "reuse": {
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
       "architect": {
         "test": {
           "builder": "@angular-builders/jest:run",
