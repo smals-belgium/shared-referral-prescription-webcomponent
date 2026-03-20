@@ -103,6 +103,7 @@ export interface ViewState {
 }
 
 @Component({
+  selector: 'uhmep-prescription-details',
   templateUrl: './prescription-details.component.html',
   styleUrls: ['./prescription-details.component.scss'],
   encapsulation: ViewEncapsulation.ShadowDom,

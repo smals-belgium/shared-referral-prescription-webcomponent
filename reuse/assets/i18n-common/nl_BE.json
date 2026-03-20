@@ -177,7 +177,8 @@
       "pagination": {
         "models": "{count, plural, one{sjabloon} other{sjablonen}}",
         "pageSize": "Aantal per pagina"
-      }
+      },
+      "tableHasRecords": "Totaal aantal sjablonen is {total}"
     },
     "filter": {
       "historicToggle": "Historiek",
@@ -599,7 +600,6 @@
       "message": "De PSS (Prescription Search Support) service is momenteel niet beschikbaar.\nU kunt de aanbevelingen voor medische beeldvorming onderzoeken op dit moment niet raadplegen.\nProbeer het later opnieuw."
     }
   },
-  "prescription-model-tableHasRecords-Le-nombre-total": "Totaal aantal sjablonen is {total}",
   "professional": {
     "table": {
       "results": "{results} gevonden resultaten",

@@ -13,26 +13,20 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "385805005"
-          ],
+          "code": ["385805005"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ],
       "orderDetails": [
         {
-          "code": [
-            "tmp-with-tion-7"
-          ],
+          "code": ["tmp-with-tion-7"],
           "system": "https://www.ehealth.fgov.be/standards/fhir/referral/CodeSystem/be-cs-temp-requested-service-detail"
         }
       ]
@@ -52,18 +46,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "385796006"
-          ],
+          "code": ["385796006"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -83,18 +73,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "225964003"
-          ],
+          "code": ["225964003"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -114,18 +100,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "127606004"
-          ],
+          "code": ["127606004"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -145,18 +127,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "CATHETER_CARE"
-          ],
+          "code": ["CATHETER_CARE"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -176,18 +154,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "225230008"
-          ],
+          "code": ["225230008"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -207,18 +181,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "UROGENITAL_CARE"
-          ],
+          "code": ["UROGENITAL_CARE"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -238,18 +208,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "WOUND_CARE"
-          ],
+          "code": ["WOUND_CARE"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -269,18 +235,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "413899004"
-          ],
+          "code": ["413899004"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -300,18 +262,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "tmp-prep-ient"
-          ],
+          "code": ["tmp-prep-ient"],
           "system": "https://www.ehealth.fgov.be/standards/fhir/referral/CodeSystem/be-cs-temp-requested-service"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -331,18 +289,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "182777000"
-          ],
+          "code": ["182777000"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -362,18 +316,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "427391006"
-          ],
+          "code": ["427391006"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -393,18 +343,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "17636008"
-          ],
+          "code": ["17636008"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -424,26 +370,20 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "385805005"
-          ],
+          "code": ["385805005"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ],
       "orderDetails": [
         {
-          "code": [
-            "370858005"
-          ],
+          "code": ["370858005"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -463,18 +403,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "385805005"
-          ],
+          "code": ["385805005"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -494,26 +430,20 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "385805005"
-          ],
+          "code": ["385805005"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ],
       "orderDetails": [
         {
-          "code": [
-            "tmp-with-tory-8"
-          ],
+          "code": ["tmp-with-tory-8"],
           "system": "https://www.ehealth.fgov.be/standards/fhir/referral/CodeSystem/be-cs-temp-requested-service-detail"
         }
       ]
@@ -533,18 +463,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "GASTROINTESTINAL_CARE"
-          ],
+          "code": ["GASTROINTESTINAL_CARE"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -564,18 +490,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "166900001"
-          ],
+          "code": ["166900001"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -595,18 +517,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "18629005"
-          ],
+          "code": ["18629005"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -626,18 +544,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "tmp-prep-x081-2"
-          ],
+          "code": ["tmp-prep-x081-2"],
           "system": "https://www.ehealth.fgov.be/standards/fhir/referral/CodeSystem/be-cs-temp-requested-service"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -657,18 +571,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "PHYSIOTHERAPY_GENERAL"
-          ],
+          "code": ["PHYSIOTHERAPY_GENERAL"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "722138006"
-          ],
+          "code": ["722138006"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -688,18 +598,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "PHYSIOTHERAPY_PALLIATIVE"
-          ],
+          "code": ["PHYSIOTHERAPY_PALLIATIVE"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "722138006"
-          ],
+          "code": ["722138006"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -719,18 +625,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "9632001"
-          ],
+          "code": ["9632001"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -750,27 +652,18 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "tmp-img-ct",
-            "tmp-img-mri",
-            "tmp-img-xray",
-            "tmp-img-us"
-          ],
+          "code": ["tmp-img-ct", "tmp-img-mri", "tmp-img-xray", "tmp-img-us"],
           "system": "http://snomed.info/sct"
         },
         {
-          "code": [
-            "*"
-          ],
+          "code": ["*"],
           "system": "http://qsi.code"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "363679005"
-          ],
+          "code": ["363679005"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -790,18 +683,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "PHYSIOTHERAPY_PERINATAL"
-          ],
+          "code": ["PHYSIOTHERAPY_PERINATAL"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "722138006"
-          ],
+          "code": ["722138006"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -821,18 +710,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "PHYSIOTHERAPY_TEMPOROMANDIBULAR_DYSFUNCTION"
-          ],
+          "code": ["PHYSIOTHERAPY_TEMPOROMANDIBULAR_DYSFUNCTION"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "722138006"
-          ],
+          "code": ["722138006"],
           "system": "http://snomed.info/sct"
         }
       ]
@@ -852,18 +737,14 @@
     "metadata": {
       "code": [
         {
-          "code": [
-            "PHYSIOTHERAPY_CONSULTATIVE"
-          ],
+          "code": ["PHYSIOTHERAPY_CONSULTATIVE"],
           "system": "http://snomed.info/sct"
         }
       ],
       "create": true,
       "category": [
         {
-          "code": [
-            "722138006"
-          ],
+          "code": ["722138006"],
           "system": "http://snomed.info/sct"
         }
       ]

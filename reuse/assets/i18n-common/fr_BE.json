@@ -177,7 +177,8 @@
       "pagination": {
         "models": "{count, plural, one{modèle} other{modèles}}",
         "pageSize": "Nbr/page"
-      }
+      },
+      "tableHasRecords": "Le nombre total de modèles est {total}"
     },
     "filter": {
       "historicToggle": "Historique",
@@ -599,7 +600,6 @@
       "message": "Le service PSS (Prescription Search Support) est momentanément indisponible.\nVous ne pouvez plus consulter les recommandations d'examens en imagerie médicale pour l'instant.\nMerci de réessayer dans quelques minutes."
     }
   },
-  "prescription-model-tableHasRecords-Le-nombre-total": "Le nombre total de modèles est {total}",
   "professional": {
     "table": {
       "results": "{results} résultats trouvé",

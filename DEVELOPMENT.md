@@ -25,6 +25,10 @@ Run `ng generate component component-name` to generate a new component. You can 
 Run `ng build:wc:details`, `ng build:wc:list` or `ng build:wc:create` to build the wc prescription component. The build artifacts will be stored in the `dist/` directory.
 The `dist/build` directory will contain a js and css file needed to implement in your html file in order for the webcomponent to be available.
 
+## Serve
+
+Run `ng serve:wc:details`, `ng serve:wc:list` or `ng serve:wc:create` to serve the wc prescription component. It builds and serves your application, rebuilding on file changes.
+
 ## Running server
 
 serve helps you serve a static site. You need to install serve globally. To do this, just run the command `npm install --global serve`.
