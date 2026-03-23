@@ -1,0 +1,14 @@
+<div class="dialog-header">
+  <h4 mat-dialog-title class="dialog-title">{{ title() }}</h4>
+  <button mat-icon-button mat-dialog-close aria-label="Close dialog">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div mat-dialog-content class="mat-dialog-content">
+  <ng-content select="[dialog-content]"></ng-content>
+</div>
+
+<mat-dialog-actions align="start">
+  <ng-content select="[dialog-actions]"></ng-content>
+</mat-dialog-actions>

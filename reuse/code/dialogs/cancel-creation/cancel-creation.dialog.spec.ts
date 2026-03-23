@@ -64,13 +64,26 @@ describe('CancelCreationDialog', () => {
     fixture.detectChanges();
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('cancelPrescriptions', () => {
     it('should close dialog with selected formsToDelete', () => {
-      component.formsToDelete = [1, 3];
+      component.checkboxesGroup.get('1')?.setValue(true);
+      component.checkboxesGroup.get('3')?.setValue(true);
 
       component.cancelPrescriptions();
 
       expect(mockDialogRef.close).toHaveBeenCalledWith({ formsToDelete: [1, 3] });
+    });
+
+    it('should mark form as touched and not close dialog when no forms are selected', () => {
+      component.cancelPrescriptions();
+
+      expect(component.checkboxesGroup.touched).toBe(true);
+      expect(component.checkboxesGroup.invalid).toBe(true);
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
   });
 
@@ -85,7 +98,8 @@ describe('CancelCreationDialog', () => {
 
   describe('deselectAll', () => {
     it('should clear all selected forms when checked is false', () => {
-      component.formsToDelete = [1, 2, 3];
+      component.selectAll();
+      expect(component.formsToDelete).toHaveLength(component.prescriptionForms.length);
 
       component.deselectAll();
 
@@ -125,16 +139,17 @@ describe('CancelCreationDialog', () => {
 
   describe('toggleDeleteForm', () => {
     it('should add trackId to formsToDelete when not already present', () => {
-      component.toggleDeleteForm(1);
+      component.toggleDeleteForm(1, true);
 
       expect(component.formsToDelete).toContain(1);
       expect(component.formsToDelete).toHaveLength(1);
     });
 
     it('should remove trackId from formsToDelete when already present', () => {
-      component.formsToDelete = [1, 2];
+      component.checkboxesGroup.get('1')?.setValue(true);
+      component.checkboxesGroup.get('2')?.setValue(true);
 
-      component.toggleDeleteForm(1);
+      component.toggleDeleteForm(1, false);
 
       expect(component.formsToDelete).not.toContain(1);
       expect(component.formsToDelete).toEqual([2]);
