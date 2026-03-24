@@ -185,19 +185,9 @@ export class PrescriptionDetailsSecondaryService {
       };
     }
 
-    const organizationTask = state.data!.organizationTasks?.find(ot =>
-      ot.performerTasks?.some(pt => pt.careGiverSsin === ssin)
-    );
-
-    const nestedPerformerTask = organizationTask?.performerTasks?.find(t => t.careGiverSsin === ssin);
-    return nestedPerformerTask
-      ? {
-          status: state.status,
-          data: nestedPerformerTask,
-        }
-      : {
-          status: state.status,
-        };
+    return {
+      status: state.status,
+    };
   }
 
   getTemplate(): DataState<Template | undefined> {
