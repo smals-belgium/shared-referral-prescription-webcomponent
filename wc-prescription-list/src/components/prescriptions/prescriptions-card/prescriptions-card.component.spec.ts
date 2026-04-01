@@ -333,13 +333,14 @@ describe('PrescriptionsCardComponent', () => {
       expect(component.clickPrescription.emit).toHaveBeenCalledWith(mockRequestSummaryResource);
     });
 
-    it('should display a dash when end date is null', () => {
+    it('should display a dash when hideEndDate is true', () => {
       const mockRequestWithNullEnd: RequestSummaryResource = {
         id: '2',
         status: RequestStatus.Open,
         period: {
           start: '2024-01-01',
-          end: null as any,
+          end: '2025-01-01',
+          hideEndDate: true,
         },
       };
       mockDataService.requestSummaryData$.next([mockRequestWithNullEnd]);

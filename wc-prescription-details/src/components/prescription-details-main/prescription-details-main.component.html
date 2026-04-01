@@ -17,7 +17,7 @@
   @if (prescription?.period; as period) {
     <div class="row">
       <div class="info-item">
-        @if (!period.end) {
+        @if (period.hideEndDate) {
           <div data-cy="prescription-validity-start-date-label">{{ 'prescription.validityStartDate' | translate }}</div>
           <div data-cy="prescription-validity-start-date">
             {{ period.start | date }}

@@ -79,9 +79,13 @@ describe('PrescriptionDetailsMainComponent', () => {
     expect(divWithClassId.textContent).toContain(mockResponse.shortCode);
   });
 
-  it('should show validity period when end date is present', () => {
+  it('should show validity period when hideEndDate is false', () => {
     const mockResponse = prescriptionResponse();
-    mockResponse.period = { start: '2024-09-04T22:00:00.000+00:00', end: '2025-09-03T22:00:00.000+00:00' };
+    mockResponse.period = {
+      start: '2024-09-04T22:00:00.000+00:00',
+      end: '2025-09-03T22:00:00.000+00:00',
+      hideEndDate: false,
+    };
     (component as any).prescription = mockResponse;
 
     fixture.detectChanges();
@@ -94,9 +98,13 @@ describe('PrescriptionDetailsMainComponent', () => {
     expect(value.textContent).toBeTruthy();
   });
 
-  it('should show only start date when end date is null', () => {
+  it('should show only start date when hideEndDate is true', () => {
     const mockResponse = prescriptionResponse();
-    mockResponse.period = { start: '2024-09-04T22:00:00.000+00:00', end: null as any };
+    mockResponse.period = {
+      start: '2024-09-04T22:00:00.000+00:00',
+      end: '2025-09-04T22:00:00.000+00:00',
+      hideEndDate: true,
+    };
     (component as any).prescription = mockResponse;
 
     fixture.detectChanges();
