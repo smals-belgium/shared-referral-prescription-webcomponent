@@ -66,6 +66,7 @@ export function prescriptionResponse(
     period: {
       start: '2024-09-04T22:00:00.000+00:00',
       end: '2025-09-03T22:00:00.000+00:00',
+      hideEndDate: false,
     },
     responses: {},
     intent: null,

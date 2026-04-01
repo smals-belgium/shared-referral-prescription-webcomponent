@@ -46,7 +46,7 @@
   <ng-container matColumnDef="end">
     <th data-cy="overview-endDate-title" mat-header-cell *matHeaderCellDef>{{ 'prescription.end' | translate }}</th>
     <td mat-cell [attr.data-cy]="'endDate-cell-' + prescription.id" *matCellDef="let prescription">
-      @if (!prescription.period.end) {
+      @if (prescription.period.hideEndDate) {
         -
       } @else {
         {{ prescription.period.end | date: 'D' }}

@@ -190,7 +190,7 @@ describe('PrescriptionsTableComponent', () => {
     expect(rows.length).toBe(rowsLength);
   });
 
-  it('should display a dash when end date is null', () => {
+  it('should display a dash when hideEndDate is true', () => {
     const mockPrescriptionsWithNullEnd: ReadRequestListResource = {
       total: 1,
       items: [
@@ -201,7 +201,8 @@ describe('PrescriptionsTableComponent', () => {
           requester: requester,
           period: {
             start: '2024-01-01',
-            end: null as any,
+            end: '2025-01-01',
+            hideEndDate: true,
           },
           intent: Intent.ORDER,
         },
@@ -215,7 +216,7 @@ describe('PrescriptionsTableComponent', () => {
 
     const items = component.items;
     expect(items.length).toBe(1);
-    expect(items[0]?.period?.end).toBeNull();
+    expect(items[0]?.period?.hideEndDate).toBe(true);
   });
 
   it('should display the alert card AND the table', () => {
