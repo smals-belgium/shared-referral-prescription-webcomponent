@@ -188,3 +188,13 @@ mat-icon {
   --mdc-outlined-text-field-error-focus-outline-color: #{mh.$error-30};
   --mdc-outlined-text-field-error-hover-outline-color: #{mh.$error-30};
 }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
