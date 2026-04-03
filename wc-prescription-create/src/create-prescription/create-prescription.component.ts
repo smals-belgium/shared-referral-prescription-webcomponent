@@ -829,5 +829,6 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
 
   ngOnDestroy() {
     this.activeHostService.clear(this.el.nativeElement);
+    this.templateVersionsStateService.cleanupAllInstances();
   }
 }

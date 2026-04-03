@@ -892,7 +892,8 @@ describe('ListPrescriptionsWebComponent', () => {
         'delete',
         'more_vert',
         'keyboard_arrow_right',
-        'close'
+        'close',
+        'error'
       );
     });
   });
