@@ -187,7 +187,7 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
   }
 
   ngOnInit(): void {
-    this.iconRegistryService.init('add', 'delete', 'more_vert', 'keyboard_arrow_right', 'close');
+    this.iconRegistryService.init('add', 'delete', 'more_vert', 'keyboard_arrow_right', 'close', 'error');
 
     this._subscriptions.add(
       this._languageChange
