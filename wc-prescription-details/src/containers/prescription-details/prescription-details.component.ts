@@ -65,6 +65,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-responses-state.interface';
 import { PssService } from '@reuse/code/services/api/pss.service';
 import {
+  FormElement,
   PerformerTaskResource,
   PersonResource,
   ReadRequestResource,
@@ -91,6 +92,7 @@ import { PrescriptionDetailsActionsComponent } from '../../components/prescripti
 import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
 import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
 import { formatToEvfLangCode } from '@reuse/code/evf/utils/evf-utils';
+import { InfoDetailComponent } from '@reuse/code/evf/components/info/detail/info-detail.component';
 
 export interface ViewState {
   prescription: ReadRequestResource;
@@ -121,6 +123,7 @@ export interface ViewState {
     PrescriptionDetailsBottomComponent,
     MatMenuModule,
     PrescriptionDetailsActionsComponent,
+    InfoDetailComponent,
   ],
   providers: [EvfTranslateService],
   standalone: true,
@@ -195,6 +198,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   protected readonly AlertType = AlertType;
 
   isProposalValue = false;
+  infoElements: FormElement[] = [];
 
   constructor(private readonly el: ElementRef<HTMLElement>) {
     this.currentLang.set(this._translate.currentLang);
@@ -223,10 +227,18 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
           }
 
           const instanceId = prescription.id || uuidv4();
-          this._templateVersionsStateService.loadTemplateVersionForInstance(
-            instanceId,
-            'READ_' + prescription.templateCode
-          );
+          this._templateVersionsStateService
+            .loadTemplateVersionForInstance(instanceId, 'READ_' + prescription.templateCode)
+            .subscribe({
+              next: template => {
+                this.infoElements = [];
+                template.elements?.forEach(element => {
+                  if (element.viewType === 'info') {
+                    this.infoElements.push(element);
+                  }
+                });
+              },
+            });
         }
       });
     });

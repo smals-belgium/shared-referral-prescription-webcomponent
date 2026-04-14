@@ -14,6 +14,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { QueryList } from '@angular/core';
 import { EvfFormWebComponent } from '../evf-form/evf-form.component';
 import { Lang } from '@reuse/code/constants/languages';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 @Component({
   selector: 'evf-form',
@@ -21,6 +22,7 @@ import { Lang } from '@reuse/code/constants/languages';
   standalone: true,
 })
 class MockEvfFormComponent {}
+
 describe('CreateMultiplePrescriptionsComponent', () => {
   let component: CreateMultiplePrescriptionsComponent;
   let fixture: ComponentFixture<CreateMultiplePrescriptionsComponent>;
@@ -45,6 +47,7 @@ describe('CreateMultiplePrescriptionsComponent', () => {
         MatExpansionModule,
         MatIconModule,
         NoopAnimationsModule,
+        MatIconTestingModule,
       ],
       providers: [
         { provide: PrescriptionModelState, useValue: mockModelState },

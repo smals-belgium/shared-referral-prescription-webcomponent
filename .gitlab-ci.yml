@@ -1,11 +1,11 @@
 .npm:
-  image: gcloud-docker-internet.repo.gcloud.belgium.be/node:22-alpine
+  image: common-docker-central-remote.repo.gcloud.belgium.be/node:22-alpine
   tags:
     - docker
 
 .sonar:
   image:
-    name: gcloud-docker-internet.repo.gcloud.belgium.be/sonarsource/sonar-scanner-cli:latest
+    name: common-docker-central-remote.repo.gcloud.belgium.be/sonarsource/sonar-scanner-cli:latest
     entrypoint: [""]
   tags:
     - shared
@@ -25,7 +25,7 @@ stages:
   - report
 
 generate-api-client:
-  image: gcloud-docker-internet.repo.gcloud.belgium.be/openapitools/openapi-generator-cli:v7.14.0
+  image: common-docker-central-remote.repo.gcloud.belgium.be/openapitools/openapi-generator-cli:v7.14.0
   stage: open-api
   variables:
     GIT_SUBMODULE_STRATEGY: recursive

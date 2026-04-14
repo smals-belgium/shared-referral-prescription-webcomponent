@@ -1,4 +1,4 @@
-import { Discipline, FhirR4TaskStatus, PerformerTaskResource, Role } from '@reuse/code/openapi';
+import { Discipline, FhirR4TaskStatus, PerformerTaskResource, Role, TemplateVersion } from '@reuse/code/openapi';
 import { TranslateLoader } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
 import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
@@ -81,7 +81,7 @@ export class FakeLoader implements TranslateLoader {
   }
 }
 
-export const mockTemplate = {};
+export const mockTemplate = {} as TemplateVersion;
 
 export const mockConfigService = {
   getEnvironment: jest.fn(),
@@ -163,3 +163,10 @@ export class MockDateAdapter {
 }
 
 export const BASE_URL = 'http://localhost';
+
+export const markdownServiceMock = {
+  parse: jest.fn((src: string) => src),
+  compile: jest.fn((src: string) => src),
+  render: jest.fn(),
+  reload$: of(void 0),
+};
