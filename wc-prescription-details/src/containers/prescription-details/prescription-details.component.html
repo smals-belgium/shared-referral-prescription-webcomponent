@@ -38,6 +38,10 @@
                 </div>
               }
 
+              @for (element of infoElements; track element.id) {
+                <evf-info-detail [element]="element"></evf-info-detail>
+              }
+
               @if (!!prescription.status) {
                 <div class="prescription-status">
                   <mat-chip [disableRipple]="true" [class]="getStatusColor(prescription.status)"

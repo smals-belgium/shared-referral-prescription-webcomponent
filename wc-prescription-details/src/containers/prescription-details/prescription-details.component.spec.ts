@@ -32,10 +32,13 @@ import {
   mockUuid,
   mockPerson,
   mockTemplate,
+  markdownServiceMock,
 } from '../../../test.utils';
-import { RequestStatus } from '@reuse/code/openapi';
+import { RequestStatus, TemplateVersion } from '@reuse/code/openapi';
 import { Lang } from '@reuse/code/constants/languages';
 import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
+import { MarkdownService } from 'ngx-markdown';
+import { EvfTranslateService } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 
 mockUuid();
 jest.mock('uuid');
@@ -97,6 +100,8 @@ describe('PrescriptionDetailsWebComponent', () => {
         { provide: EncryptionState, useValue: encryptionStateService },
         { provide: IconRegistryService, useValue: mockIconRegistryService },
         EncryptionService,
+        { provide: MarkdownService, useValue: markdownServiceMock },
+        EvfTranslateService,
       ],
     }).compileComponents();
 
@@ -429,6 +434,40 @@ describe('PrescriptionDetailsWebComponent', () => {
     });
   });
 
+  describe('populate infoElements', () => {
+    it('populates infoElements only with viewType info and resets infoElements on each new prescription load', async () => {
+      const elements = [
+        { id: '1', viewType: 'info', label: 'Info element' },
+        { id: '2', viewType: 'input', label: 'Input element' },
+        { id: '3', viewType: 'info', label: 'Another info' },
+      ];
+
+      const templateRequest = {
+        elements: elements,
+        version: '',
+        templateId: 0,
+      };
+
+      const mockResponse = prescriptionResponse();
+
+      createFixture();
+
+      await loadPrescription(mockResponse, templateRequest);
+
+      expect(component.infoElements).toHaveLength(2);
+      expect(component.infoElements.every(e => e.viewType === 'info')).toBe(true);
+
+      const templateRequest2 = {
+        elements: [],
+        version: '',
+        templateId: 0,
+      };
+      await loadPrescription(mockResponse, templateRequest2);
+
+      expect(component.infoElements).toHaveLength(0);
+    });
+  });
+
   const loadPrescriptionByShortCode = async (
     mockResponse: any,
     shortCode: string,
@@ -460,7 +499,7 @@ describe('PrescriptionDetailsWebComponent', () => {
     fixture.detectChanges();
   };
 
-  const loadPrescription = async (mockResponse: any) => {
+  const loadPrescription = async (mockResponse: any, template: TemplateVersion = mockTemplate) => {
     mockConfigService.getEnvironmentVariable.mockImplementationOnce(() => false);
 
     component.prescriptionId = id;
@@ -477,16 +516,16 @@ describe('PrescriptionDetailsWebComponent', () => {
 
     await Promise.resolve();
 
-    templateRequest();
+    templateRequest(template);
 
     await Promise.resolve();
     fixture.detectChanges();
   };
 
-  const templateRequest = () => {
+  const templateRequest = (template: TemplateVersion = mockTemplate) => {
     const templateRed = httpMock.expectOne(BASE_URL + '/templates/READ_GENERIC/versions/latest');
     expect(templateRed.request.method).toBe('GET');
-    templateRed.flush(mockTemplate);
+    templateRed.flush(template);
   };
 
   const prescriptionRequest = (mockResponse: any) => {
