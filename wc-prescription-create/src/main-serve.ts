@@ -17,7 +17,7 @@ import { provideOpenApi } from '@reuse/code/providers/open-api.provider';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { provideEvfForm } from '@reuse/code/evf/evf-form.provider';
-import { provideMarkdown } from '@reuse/code/providers/markdown.provider';
+import { MARKDOWN_OPTIONS_CONFIG, provideMarkdown } from '@reuse/code/providers/markdown.provider';
 import { AppPrescriptionDetails } from './app/app';
 import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
 
@@ -27,6 +27,7 @@ bootstrapApplication(AppPrescriptionDetails, {
     providePseudonymisation(),
     provideCore(),
     provideEvfForm(),
+    { provide: MARKDOWN_OPTIONS_CONFIG, useValue: { open: true } },
     provideMarkdown(),
     {
       provide: ConfigurationService,

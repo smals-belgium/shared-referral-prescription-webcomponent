@@ -6,6 +6,7 @@ import { PrescriptionDetailsMainComponent } from './prescription-details-main.co
 import { By } from '@angular/platform-browser';
 import {
   FakeLoader,
+  markdownServiceMock,
   mockPerson,
   prescriptionDetailsSecondaryMockService,
   prescriptionResponse,
@@ -18,6 +19,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { PrescriptionDetailsBeneficiaryComponent } from './prescription-details-beneficiary/prescription-details-beneficiary.component';
 import { Component, signal } from '@angular/core';
 import { EvfFormDetailsWebComponent } from '../evf-details/evf-form-details.component';
+import { RequestStatus } from '@reuse/code/openapi';
+import { MarkdownService } from 'ngx-markdown';
+import { EvfTranslateService } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 
 @Component({
   selector: 'evf-form-details',
@@ -49,6 +53,8 @@ describe('PrescriptionDetailsMainComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: PrescriptionDetailsSecondaryService, useValue: prescriptionDetailsSecondaryMockService },
+        { provide: MarkdownService, useValue: markdownServiceMock },
+        EvfTranslateService,
       ],
     })
       .overrideComponent(PrescriptionDetailsMainComponent, {
@@ -137,5 +143,44 @@ describe('PrescriptionDetailsMainComponent', () => {
 
     ssinElement = debugElement.query(By.css('.ssin')).nativeElement;
     expect(ssinElement.textContent).toContain('20.00.00-000.01');
+  });
+
+  describe('getStatusColor', () => {
+    it('should return color for valid status', () => {
+      expect(component.getStatusColor('IN_PROGRESS' as RequestStatus)).toBe('mh-green mh-no-overlay');
+    });
+  });
+
+  describe('populate infoElements', () => {
+    it('populates infoElements only with viewType info and resets infoElements on each new prescription load', async () => {
+      const elements = [
+        { id: '1', viewType: 'info', label: 'Info element' },
+        { id: '2', viewType: 'input', label: 'Input element' },
+        { id: '3', viewType: 'info', label: 'Another info' },
+      ];
+
+      const templateRequest = {
+        elements: elements,
+        version: '',
+        templateId: 0,
+      };
+
+      (component as any).templateVersion = templateRequest;
+
+      fixture.detectChanges();
+
+      expect(component.infoElements).toHaveLength(2);
+      expect(component.infoElements.every(e => e.viewType === 'info')).toBe(true);
+
+      const templateRequest2 = {
+        elements: [],
+        version: '',
+        templateId: 0,
+      };
+      (component as any).templateVersion = templateRequest2;
+      fixture.detectChanges();
+
+      expect(component.infoElements).toHaveLength(0);
+    });
   });
 });

@@ -1,4 +1,16 @@
 <div class="main_details_container">
+  @for (element of infoElements; track element.id) {
+    <evf-info-detail [element]="element"></evf-info-detail>
+  }
+
+  @if (prescription && !!prescription.status) {
+    <div class="prescription-status">
+      <mat-chip [disableRipple]="true" [class]="getStatusColor(prescription.status)"
+        >{{ 'prescription.statuses.' + prescription.status | translate }}
+      </mat-chip>
+    </div>
+  }
+
   <app-prescription-details-beneficiary
     [patient]="patient()"
     [prescription]="prescription"></app-prescription-details-beneficiary>

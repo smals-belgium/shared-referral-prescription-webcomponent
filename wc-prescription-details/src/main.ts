@@ -19,7 +19,7 @@ import { provideOpenApi } from '@reuse/code/providers/open-api.provider';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { provideEvfForm } from '@reuse/code/evf/evf-form.provider';
-import { provideMarkdown } from '@reuse/code/providers/markdown.provider';
+import { MARKDOWN_OPTIONS_CONFIG, provideMarkdown } from '@reuse/code/providers/markdown.provider';
 import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
 import { provideEvfFormDetails } from '@reuse/code/evf/evf-form-details.provider';
 import { CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_DETAILS } from '@reuse/code/constants/common.constants';
@@ -32,7 +32,6 @@ void (async () => {
       providePseudonymisation(),
       provideEvfForm(),
       provideEvfFormDetails(),
-      provideMarkdown(),
       {
         provide: ConfigurationService,
         useClass: WcConfigurationService,
@@ -46,6 +45,7 @@ void (async () => {
         useClass: ShadowDomOverlayContainer,
       },
       provideOpenApi(),
+      { provide: MARKDOWN_OPTIONS_CONFIG, useValue: { open: false } },
       provideMarkdown(),
       importProvidersFrom(
         BrowserAnimationsModule,

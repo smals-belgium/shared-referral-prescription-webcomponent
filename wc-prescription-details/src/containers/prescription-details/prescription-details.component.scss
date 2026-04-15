@@ -444,8 +444,12 @@ evf-info-detail .infoblock {
   border-radius: var(--evf-infoblock-radius-small, 6px);
   box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.13);
   background: var(--evf-infoblock-background-color, mh.$surface-brand-primary-lighter);
-  margin: mh.$spacing-m 0;
+  margin: mh.$spacing-m mh.$spacing-xl mh.$spacing-m 0;
   max-width: var(--evf-infoblock-max-width, 800px);
+
+  @media (max-width: mh.$media-breakpoint-s) {
+    margin: mh.$spacing-m mh.$spacing-m mh.$spacing-m 0;
+  }
 
   &.evf-infoblock-summary {
     details {
