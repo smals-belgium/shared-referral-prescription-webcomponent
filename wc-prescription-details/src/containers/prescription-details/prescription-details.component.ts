@@ -69,7 +69,6 @@ import {
   PerformerTaskResource,
   PersonResource,
   ReadRequestResource,
-  RequestStatus,
   Template,
   TemplateVersion,
 } from '@reuse/code/openapi';
@@ -87,7 +86,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
 import { Lang } from '@reuse/code/constants/languages';
 import { tap } from 'rxjs/operators';
-import { mapDisplayStatusToColor } from '@reuse/code/utils/request-status-display-map.utils';
 import { PrescriptionDetailsActionsComponent } from '../../components/prescription-details-actions/prescription-details-actions/prescription-details-actions.component';
 import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
 import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
@@ -504,11 +502,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
   private getPatientIdentifier(identifier: string): Promise<string> {
     return this._pseudoService.pseudonymize(identifier);
-  }
-
-  getStatusColor(status: RequestStatus) {
-    const mhColor = mapDisplayStatusToColor(status);
-    return mhColor + ' mh-no-overlay';
   }
 
   ngOnDestroy() {

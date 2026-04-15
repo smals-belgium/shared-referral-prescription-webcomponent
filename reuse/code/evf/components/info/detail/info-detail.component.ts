@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { FormElement } from '@reuse/code/openapi';
-import { EvfFormDetailGroupComponent, EvfLabelPipe } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
+import {
+  EvfFormDetailGroupComponent,
+  EvfLabelPipe,
+  FormElement,
+} from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import {
   EvfDetailLabelComponent,
   EvfFormDetailLayoutComponent,

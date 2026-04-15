@@ -2,7 +2,7 @@ import { Tokens } from 'marked';
 import { markedOptionsFactory } from './markdown.provider';
 
 describe('markedOptionsFactory', () => {
-  const { renderer } = markedOptionsFactory();
+  const { renderer } = markedOptionsFactory({ open: false });
 
   const paragraph = (text: string): Tokens.Paragraph => ({
     type: 'paragraph',

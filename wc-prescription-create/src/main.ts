@@ -3,7 +3,7 @@ import { createApplication } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideCore } from '@reuse/code/providers/core.provider';
 import { provideEvfForm } from '@reuse/code/evf/evf-form.provider';
-import { provideMarkdown } from '@reuse/code/providers/markdown.provider';
+import { MARKDOWN_OPTIONS_CONFIG, provideMarkdown } from '@reuse/code/providers/markdown.provider';
 import { createCustomElement } from '@angular/elements';
 import { WcConfigurationService } from '@reuse/code/services/config/wc-configuration.service';
 import { apiUrlInterceptor } from '@reuse/code/interceptors/api-url.interceptor';
@@ -29,6 +29,7 @@ import { CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_CREATE } from '@reuse/c
       providePseudonymisation(),
       provideCore(),
       provideEvfForm(),
+      { provide: MARKDOWN_OPTIONS_CONFIG, useValue: { open: true } },
       provideMarkdown(),
       {
         provide: ConfigurationService,

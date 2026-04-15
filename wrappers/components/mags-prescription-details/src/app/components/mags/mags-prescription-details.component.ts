@@ -23,6 +23,7 @@ import { Intent } from '@reuse/code/interfaces';
   standalone: true,
   selector: wrapperManifest.selector,
   templateUrl: 'mags-prescription-details.component.html',
+  styleUrl: 'mags-prescription-details.component.scss',
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
@@ -55,6 +56,7 @@ export class MagsPrescriptionDetails extends MagsComponent {
 
   override initWebComponent() {
     const webComponent = this.createElement(wrapperManifest.customElement.tag);
+    webComponent.classList.add('bg-white');
 
     webComponent.services = {
       getAccessToken: (audience: string) => this.getAccessToken(audience),

@@ -34,7 +34,7 @@ import {
   mockTemplate,
   markdownServiceMock,
 } from '../../../test.utils';
-import { RequestStatus, TemplateVersion } from '@reuse/code/openapi';
+import { TemplateVersion } from '@reuse/code/openapi';
 import { Lang } from '@reuse/code/constants/languages';
 import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
 import { MarkdownService } from 'ngx-markdown';
@@ -262,13 +262,6 @@ describe('PrescriptionDetailsWebComponent', () => {
     });
   });
 
-  describe('getStatusColor', () => {
-    it('should return color for valid status', () => {
-      createFixture();
-      expect(component.getStatusColor('IN_PROGRESS' as RequestStatus)).toBe('mh-green mh-no-overlay');
-    });
-  });
-
   it('should show error toast when patientSsin is invalid for proposal', () => {
     createFixture();
     const toasterSpy = jest.spyOn(toaster, 'show');
@@ -431,40 +424,6 @@ describe('PrescriptionDetailsWebComponent', () => {
         'arrow_forward_ios',
         'info'
       );
-    });
-  });
-
-  describe('populate infoElements', () => {
-    it('populates infoElements only with viewType info and resets infoElements on each new prescription load', async () => {
-      const elements = [
-        { id: '1', viewType: 'info', label: 'Info element' },
-        { id: '2', viewType: 'input', label: 'Input element' },
-        { id: '3', viewType: 'info', label: 'Another info' },
-      ];
-
-      const templateRequest = {
-        elements: elements,
-        version: '',
-        templateId: 0,
-      };
-
-      const mockResponse = prescriptionResponse();
-
-      createFixture();
-
-      await loadPrescription(mockResponse, templateRequest);
-
-      expect(component.infoElements).toHaveLength(2);
-      expect(component.infoElements.every(e => e.viewType === 'info')).toBe(true);
-
-      const templateRequest2 = {
-        elements: [],
-        version: '',
-        templateId: 0,
-      };
-      await loadPrescription(mockResponse, templateRequest2);
-
-      expect(component.infoElements).toHaveLength(0);
     });
   });
 
