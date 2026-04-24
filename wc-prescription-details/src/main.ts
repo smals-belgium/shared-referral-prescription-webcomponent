@@ -17,14 +17,12 @@ import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-comp
 import { providePseudonymisation } from '@reuse/code/providers/pseudo.provider';
 import { provideOpenApi } from '@reuse/code/providers/open-api.provider';
 import { OverlayContainer } from '@angular/cdk/overlay';
-import {
-  OVERLAY_QUERY_SELECTOR,
-  ShadowDomOverlayContainer,
-} from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
+import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { provideEvfForm } from '@reuse/code/evf/evf-form.provider';
-import { provideMarkdown } from '@reuse/code/providers/markdown.provider';
+import { MARKDOWN_OPTIONS_CONFIG, provideMarkdown } from '@reuse/code/providers/markdown.provider';
 import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
 import { provideEvfFormDetails } from '@reuse/code/evf/evf-form-details.provider';
+import { CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_DETAILS } from '@reuse/code/constants/common.constants';
 
 void (async () => {
   const app = createApplication({
@@ -34,7 +32,6 @@ void (async () => {
       providePseudonymisation(),
       provideEvfForm(),
       provideEvfFormDetails(),
-      provideMarkdown(),
       {
         provide: ConfigurationService,
         useClass: WcConfigurationService,
@@ -44,14 +41,11 @@ void (async () => {
         useClass: WcAuthService,
       },
       {
-        provide: OVERLAY_QUERY_SELECTOR,
-        useValue: ['nihdi-referral-prescription-details'],
-      },
-      {
         provide: OverlayContainer,
         useClass: ShadowDomOverlayContainer,
       },
       provideOpenApi(),
+      { provide: MARKDOWN_OPTIONS_CONFIG, useValue: { open: false } },
       provideMarkdown(),
       importProvidersFrom(
         BrowserAnimationsModule,
@@ -73,5 +67,5 @@ void (async () => {
   const prescriptionDetailElement = createCustomElement(PrescriptionDetailsWebComponent, {
     injector: (await app).injector,
   });
-  customElements.define('nihdi-referral-prescription-details', prescriptionDetailElement);
+  customElements.define(CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_DETAILS, prescriptionDetailElement);
 })();

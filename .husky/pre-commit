@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo "Formatting code in progress (prettier)..."
+
+npx lint-staged

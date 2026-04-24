@@ -8,8 +8,8 @@ import { HealthcareOrganizationResource, HealthcareProResource, ReadRequestResou
 
 @Injectable({ providedIn: 'root' })
 export class PrescriptionState extends BaseState<ReadRequestResource> {
-  private prescriptionService = inject(PrescriptionService);
-  private performerTaskService = inject(TaskService);
+  private readonly prescriptionService = inject(PrescriptionService);
+  private readonly performerTaskService = inject(TaskService);
 
   loadPrescription(id: string) {
     this.load(this.prescriptionService.findOne(id));

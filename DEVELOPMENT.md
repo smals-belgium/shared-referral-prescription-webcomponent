@@ -25,6 +25,10 @@ Run `ng generate component component-name` to generate a new component. You can 
 Run `ng build:wc:details`, `ng build:wc:list` or `ng build:wc:create` to build the wc prescription component. The build artifacts will be stored in the `dist/` directory.
 The `dist/build` directory will contain a js and css file needed to implement in your html file in order for the webcomponent to be available.
 
+## Serve
+
+Run `ng serve:wc:details`, `ng serve:wc:list` or `ng serve:wc:create` to serve the wc prescription component. It builds and serves your application, rebuilding on file changes.
+
 ## Running server
 
 serve helps you serve a static site. You need to install serve globally. To do this, just run the command `npm install --global serve`.
@@ -40,6 +44,40 @@ The visual design of the web components, including layouts, color usage, typogra
 The Figma file serves as the design reference and source of truth for UI implementation.
 
 [View designs in Figma](https://www.figma.com/design/eBlfdAk1g07SzNzjd8gado/UHMEP-webapp?t=bU1UJPQM2xoDiIcb-0).
+
+# Update translations
+
+To update translations, add or remove keys from [loco](https://localise.biz/uhmep-drp/uhmep-web-component) and run
+
+```bash
+pull:translations:ps
+```
+
+# SVG Icons Guide
+
+1. Add a New Icon  
+   Add your SVG to MATERIAL_ICONS (reuse folder)
+
+2. Register in Component
+
+```typescript
+private readonly iconRegistryService = inject(IconRegistryService);
+
+ngOnInit(): void {
+  this.iconRegistryService.init(...
+}
+```
+
+3. Use in HTML
+
+```html
+<mat-icon svgIcon="add" aria-label="Add item"></mat-icon>
+```
+
+4. Tips:
+
+- aria-label for meaningful icons; use aria-hidden="true" for decorative ones.
+- fill="currentColor" lets the icon inherit text color.
 
 # API Contracts
 
@@ -85,7 +123,9 @@ The Figma file serves as the design reference and source of truth for UI impleme
   To regenerate: `npm run generate-api:local`
 
 ## Empty submodules
+
 If git submodules get's removed from the project. Follow these steps.
+
 ```bash
 # remove the untracked folder
 rm -rf api-contract
@@ -102,23 +142,23 @@ git submodule add ../api-contract.git api-contract
 ```
 
 # Push to github
+
 - Update the versions in package.json
-- Remove the package-lock file
-- If you have an .npmrc file update it to use the normal npm registry
+- Remove the `package-lock.json` file
+- If you have an `.npmrc` file, update it to use the normal npm registry
   - registry=https://registry.npmjs.org/
 - Clear npm
-  - npm cache clean --force
-  - npm cache verify
-  - rm -rf node_modules/
-- git add package-lock
-- and run run npm i WITHOUT vpn
-- Run npm run push:github in a bash terminal.
-- After push succeeds remove the package-lock file
+  - `npm cache clean --force`
+  - `npm cache verify`
+  - `rm -rf node_modules/`
+- and run `npm i` WITHOUT being connected to the VPN
+- `git add package-lock.json`
+- Run `npm run push:github` in a bash terminal.
+- After the push succeeds, remove the package-lock file
 - Revert your .npmrc.
 - Clear npm
-  - npm cache clean --force
-  - npm cache verify
-  - rm -rf node_modules/
-- git add package-lock
-- and run run npm i WITHOUT vpn
-
+  - `npm cache clean --force`
+  - `npm cache verify`
+  - `rm -rf node_modules/`
+- and run `run npm i` by being connected to the VPN
+- `git add package-lock.json`

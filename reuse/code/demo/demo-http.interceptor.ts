@@ -38,11 +38,13 @@ export const demoHttpInterceptor: HttpInterceptorFn = (
     return methodMatch && urlMatch;
   });
 
-  const match = matches.sort((a, b) => {
+  matches.sort((a, b) => {
     const lengthDiff = b.url.toString().length - a.url.toString().length;
     if (lengthDiff !== 0) return lengthDiff;
     return DEMO_MOCKS.indexOf(a) - DEMO_MOCKS.indexOf(b);
-  })[0];
+  });
+
+  const match = matches[0];
 
   if (!match) {
     return throwError(

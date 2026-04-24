@@ -1,0 +1,10 @@
+{
+  "referralLists": {
+    "prescription": {
+      "tabLabel": "Voorschriften"
+    },
+    "proposal": {
+      "tabLabel": "Voorstellen"
+    }
+  }
+}

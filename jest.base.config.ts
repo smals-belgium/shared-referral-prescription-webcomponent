@@ -17,4 +17,8 @@ export const config: Config = {
   modulePathIgnorePatterns: ['./dist'],
 
   maxWorkers: 2,
+
+  globals: {
+    runInBand: true,
+  },
 };

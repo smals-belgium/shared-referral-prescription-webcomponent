@@ -1,13 +1,12 @@
 <app-responsive-wrapper>
   <ng-template #desktopTemplate>
-    @if(element?.custom?.['multi']) {
+    @if (element?.custom?.['multi']) {
       <evf-checkbox-list
         [elementControl]="elementControl"
         [metadata]="metadata"
         [elementLayout]="elementLayout"
         [submitted]="submitted"
-        (events)="events"
-      >
+        (events)="(events)">
       </evf-checkbox-list>
     } @else {
       <evf-radio
@@ -15,21 +14,18 @@
         [metadata]="metadata"
         [elementLayout]="elementLayout"
         [submitted]="submitted"
-        (events)="events"
-      >
+        (events)="(events)">
       </evf-radio>
     }
-
   </ng-template>
 
   <ng-template #mobileTemplate>
     <evf-select
-      [elementControl]="getElementConrol()"
+      [elementControl]="getElementControl()"
       [metadata]="metadata"
       [elementLayout]="elementLayout"
       [submitted]="submitted"
-      (events)="events"
-    >
+      (events)="(events)">
     </evf-select>
   </ng-template>
 </app-responsive-wrapper>

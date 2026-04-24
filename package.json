@@ -1,16 +1,16 @@
 {
   "name": "@smals/nihdi-uhmep-healix-web-components",
-  "version": "1.100.0-SNAPSHOT",
+  "version": "1.101.4",
   "scripts": {
     "ng": "ng",
     "start": "npm run serve:wc:details",
     "build": "npm run build:wc:create && npm run build:wc:list && npm run build:wc:details",
     "build:wc:details": "ng build wc-prescription-details --configuration production --output-hashing none && vite build --mode production -c ./wc-prescription-details/vite.config.mjs && rm -rf ./dist/wc-prescription-details/browser && rm -f ./dist/wc-prescription-details/prerendered-routes.json && cp wc-prescription-details/package.json dist/wc-prescription-details/ && cp wc-prescription-details/README.md dist/wc-prescription-details/",
-    "serve:wc:details": "ng serve wc-prescription-details",
+    "serve:wc:details": "ng serve serve-prescription-details --serve-path=/frontend/app",
     "build:wc:list": "ng build wc-prescription-list --configuration production --output-hashing none && vite build --mode production -c ./wc-prescription-list/vite.config.mjs && rm -rf ./dist/wc-prescription-list/browser && rm -f ./dist/wc-prescription-list/prerendered-routes.json && cp wc-prescription-list/package.json dist/wc-prescription-list/ && cp wc-prescription-list/README.md dist/wc-prescription-list/",
-    "serve:wc:list": "ng serve wc-prescription-list",
+    "serve:wc:list": "ng serve serve-prescription-list --serve-path=/frontend/app",
     "build:wc:create": "ng build wc-prescription-create --configuration production --output-hashing none && vite build --mode production -c ./wc-prescription-create/vite.config.mjs && rm -rf ./dist/wc-prescription-create/browser && rm -f ./dist/wc-prescription-create/prerendered-routes.json && cp wc-prescription-create/package.json dist/wc-prescription-create/ && cp wc-prescription-create/README.md dist/wc-prescription-create/",
-    "serve:wc:create": "ng serve wc-prescription-create",
+    "serve:wc:create": "ng serve serve-prescription-create --serve-path=/frontend/app",
     "build:wc:mags-list": "ng build mags-prescription-list-webcomponent --configuration production --output-hashing none && vite build --mode production -c ./wrappers/components/mags-prescription-list/vite.config.mjs && rollup -c ./wrappers/components/mags-prescription-list/rollup.config.dts.mjs && cp wrappers/components/mags-prescription-list/package.json dist/mags-prescription-list/mags",
     "serve:wc:mags-list": "ng serve mags-prescription-list",
     "build:wc:mags-details": "ng build mags-prescription-details-webcomponent --configuration production --output-hashing none && vite build --mode production -c ./wrappers/components/mags-prescription-details/vite.config.mjs && rollup -c ./wrappers/components/mags-prescription-details/rollup.config.dts.mjs && cp wrappers/components/mags-prescription-details/package.json dist/mags-prescription-details/mags",
@@ -37,7 +37,13 @@
     "postversion": "npm pack .",
     "api:client:init": "git submodule update --init --recursive && copyfiles -f ./lib/openapi-generator-cli/7.14.0/openapi-generator-cli-7.14.0.jar ./node_modules/@openapitools/openapi-generator-cli/versions/ && npm run generate-api:local",
     "push:github": "bash ./push-github.sh",
-    "prepare": "husky"
+    "prepare": "husky",
+    "lint:translate:reuse:uhmep": "ngx-translate-lint -p ./{reuse,wc-prescription-create,wc-prescription-details,wc-prescription-list}/**/*.{html,ts,resx} -l ./reuse/assets/i18n-common/{fr_BE,nl_BE}.json",
+    "prettier:translations:uhmep": "npx prettier --write ./reuse/assets/i18n-common/*.json",
+    "lint:translate:mags": "ngx-translate-lint -p ./wrappers/**/*.{html,ts,resx} -l ./wrappers/assets/{fr-BE,nl-BE}.json",
+    "prettier:translations:mags": "npx prettier --write ./wrappers/assets/*.json",
+    "pull:translations:ps": "powershell.exe -ExecutionPolicy Bypass -File ./pull-translations.ps1",
+    "pull:translations:sh": "./pull-translations.sh"
   },
   "private": true,
   "dependencies": {
@@ -58,10 +64,10 @@
     "@myhealth-belgium/myhealth-additional-ui-components": "^2.1.0",
     "@ngx-translate/core": "^16.0.4",
     "@openapitools/openapi-generator-cli": "^2.28.0",
-    "@smals-belgium-shared/pseudo-helper": "^1.1.1",
-    "@smals-belgium/myhealth-wc-integration": "^5.0.7",
+    "@smals-belgium-shared/pseudo-helper": "^1.1.2",
     "@smals-belgium-shared/vas-evaluation-form-ui-core": "^6.5.0",
     "@smals-belgium-shared/vas-evaluation-form-ui-material": "^6.5.0",
+    "@smals-belgium/myhealth-wc-integration": "^5.0.7",
     "@types/marked": "^6.0.0",
     "@types/pdfmake": "^0.2.9",
     "copyfiles": "^2.4.1",
@@ -98,17 +104,25 @@
     "angular-eslint": "^19.4.0",
     "camel-to-kebab": "^1.1.2",
     "concat": "^1.0.3",
-    "eslint": "8.57.0",
+    "eslint": "9.26.0",
     "husky": "^9.1.7",
     "istanbul": "^0.4.5",
     "istanbul-merge": "^2.0.0",
     "jest": "^29.7.0",
     "jest-preset-angular": "^14.2.4",
     "jose": "^5.9.3",
+    "lint-staged": "^16.3.2",
+    "ngx-translate-lint": "^1.26.5",
     "nyc": "^17.1.0",
     "prettier": "^3.6.2",
     "rollup-plugin-dts": "^6.2.3",
+    "ts-node": "^10.9.2",
     "typescript": "~5.8.2"
+  },
+  "lint-staged": {
+    "*.{ts,js,html,css,scss,json,md}": [
+      "prettier --write"
+    ]
   },
   "overrides": {
     "@myhealth-belgium/design-kit": {

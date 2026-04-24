@@ -1,24 +1,38 @@
 <div class="wrapper">
-  <h1 mat-dialog-title>{{ 'prescription.cancel.title' | translate }}</h1>
+  @if (prescription.intent) {
+    <h1 mat-dialog-title>
+      {{
+        prescription.intent
+          | translateByIntent
+            : {
+                order: 'prescription.cancel.title',
+                proposal: 'proposal.cancel.title',
+              }
+      }}
+    </h1>
+  }
   <div mat-dialog-content>
     @if (errorCard.show) {
       <app-alert
         [alert]="AlertType.Error"
-        [message]="errorCard.message | translate : errorCard.translationOptions"
+        [message]="errorCard.message | translate: errorCard.translationOptions"
         [error]="errorCard.errorResponse"
-        [showRetry]="false"
-      ></app-alert>
+        [showRetry]="false"></app-alert>
     }
-    @if(prescription.intent) {
+    @if (prescription.intent) {
       <div>
-        {{ prescription.intent | translateByIntent:{
-        order: 'prescription.cancel.message',
-        proposal: 'proposal.cancel.message'
-      }:{
-        firstName: patient?.firstName,
-        lastName:  patient?.lastName,
-        templateName: (prescription.templateCode | templateName)
-      }
+        {{
+          prescription.intent
+            | translateByIntent
+              : {
+                  order: 'prescription.cancel.message',
+                  proposal: 'proposal.cancel.message',
+                }
+              : {
+                  firstName: patient?.firstName,
+                  lastName: patient?.lastName,
+                  templateName: (prescription.templateCode | templateName),
+                }
         }}
       </div>
     }
@@ -28,14 +42,12 @@
     <button type="submit" data-cy="dialog-confirm-button" mat-raised-button (click)="cancelPrescription()">
       {{ 'common.confirm' | translate }}
     </button>
-    <button type="button" data-cy="dialog-cancel-button" mat-flat-button [mat-dialog-close]="undefined">{{
-        'common.cancel' |
-          translate
-      }}
+    <button type="button" data-cy="dialog-cancel-button" mat-flat-button [mat-dialog-close]="undefined">
+      {{ 'common.cancel' | translate }}
     </button>
   </mat-dialog-actions>
 
-@if(loading){
-  <app-overlay-spinner mode="dialog"></app-overlay-spinner>
-}
+  @if (loading) {
+    <app-overlay-spinner mode="dialog"></app-overlay-spinner>
+  }
 </div>

@@ -41,7 +41,11 @@ describe('PrescriptionDetailsCaregiverListComponent', () => {
     }> = {}
   ) => {
     mockService.getPrescription.mockReturnValue({
-      data: overrides.prescription ?? { performerTasks: [createMockPerformerTask()] },
+      data: overrides.prescription ?? {
+        performerTasks: {
+          '12345': [createMockPerformerTask()],
+        },
+      },
     } as any);
     mockService.getPatient.mockReturnValue({
       data: overrides.patient ?? { ssin: '98765' },
@@ -112,6 +116,37 @@ describe('PrescriptionDetailsCaregiverListComponent', () => {
     });
   });
 
+  describe('performerTaskEntries', () => {
+    it('should return performerTasks entries in original order', () => {
+      setupServiceMock({
+        currentUser: { firstName: 'Current', lastName: 'User', ssin: '33333' },
+        prescription: {
+          performerTasks: {
+            '11111': [
+              createMockPerformerTask({
+                careGiver: {
+                  healthcarePerson: { ssin: '11111', lastName: null },
+                },
+              }),
+            ],
+            '22222': [
+              createMockPerformerTask({
+                careGiver: {
+                  healthcarePerson: { ssin: '22222', lastName: null },
+                },
+              }),
+            ],
+          },
+        },
+      });
+      createComponent();
+
+      const result = component.performerTaskEntries;
+
+      expect(result.map(([ssin]) => ssin)).toEqual(['11111', '22222']);
+    });
+  });
+
   describe('template rendering', () => {
     it('should display caregiver full name when lastName exists', () => {
       setupServiceMock();
@@ -124,13 +159,15 @@ describe('PrescriptionDetailsCaregiverListComponent', () => {
     it('should display current user name when caregiver ssin matches current user', () => {
       setupServiceMock({
         prescription: {
-          performerTasks: [
-            createMockPerformerTask({
-              careGiver: {
-                healthcarePerson: { ssin: '11111', lastName: null },
-              },
-            }),
-          ],
+          performerTasks: {
+            '11111': [
+              createMockPerformerTask({
+                careGiver: {
+                  healthcarePerson: { ssin: '11111', lastName: null },
+                },
+              }),
+            ],
+          },
         },
       });
       createComponent();
@@ -142,13 +179,15 @@ describe('PrescriptionDetailsCaregiverListComponent', () => {
     it('should display not found message when caregiver has no lastName and does not match current user', () => {
       setupServiceMock({
         prescription: {
-          performerTasks: [
-            createMockPerformerTask({
-              careGiver: {
-                healthcarePerson: { ssin: '99999', lastName: null },
-              },
-            }),
-          ],
+          performerTasks: {
+            '99999': [
+              createMockPerformerTask({
+                careGiver: {
+                  healthcarePerson: { ssin: '99999', lastName: null },
+                },
+              }),
+            ],
+          },
         },
       });
       createComponent();
@@ -171,12 +210,54 @@ describe('PrescriptionDetailsCaregiverListComponent', () => {
       expect(chip.nativeElement.classList).toContain('mh-green');
     });
 
+    it('should display only the active status chip when multiple statuses are provided', () => {
+      const tasks = [
+        createMockPerformerTask({ id: '1' }),
+        createMockPerformerTask({ id: '2', status: FhirR4TaskStatus.Completed }),
+        createMockPerformerTask({ id: '3', status: FhirR4TaskStatus.Completed }),
+      ];
+
+      setupServiceMock({
+        prescription: {
+          performerTasks: {
+            '12345': tasks,
+          },
+        },
+      });
+      createComponent();
+      const chips = fixture.debugElement.queryAll(By.css('mat-chip'));
+      expect(chips).toHaveLength(1);
+      expect(chips[0].nativeElement.classList).toContain('mh-green');
+    });
+
     it('should display execution period dates when provided', () => {
       setupServiceMock();
       createComponent();
       const container = fixture.debugElement.query(By.css('.caregiver_info'));
       expect(container.nativeElement.textContent).toContain('01/01/2024');
       expect(container.nativeElement.textContent).toContain('31/12/2024');
+    });
+
+    it('should display multiple execution periods when provided', () => {
+      const tasks = [
+        createMockPerformerTask({ id: '1', executionPeriod: { start: '2024-05-01' } }),
+        createMockPerformerTask({ id: '2', executionPeriod: { start: '2024-03-01', end: '2024-04-01' } }),
+        createMockPerformerTask({ id: '3', executionPeriod: { start: '2024-01-01', end: '2024-02-01' } }),
+      ];
+
+      setupServiceMock({
+        prescription: {
+          performerTasks: {
+            '12345': tasks,
+          },
+        },
+      });
+      createComponent();
+      const periods = fixture.debugElement.queryAll(By.css('.performer_task_periods'));
+      expect(periods).toHaveLength(3);
+      expect(periods[0].nativeElement.textContent).toContain('01/05/2024 - ');
+      expect(periods[1].nativeElement.textContent).toContain('01/03/2024 - 01/04/2024');
+      expect(periods[2].nativeElement.textContent).toContain('01/01/2024 - 01/02/2024');
     });
   });
 });

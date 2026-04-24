@@ -9,7 +9,7 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class PrescriptionService {
-  private api = inject(ApiPrescriptionService);
+  private readonly api = inject(ApiPrescriptionService);
 
   create(createRequestResource: CreateRequestResource, generatedUUID: string) {
     return this.api.createPrescription(generatedUUID, createRequestResource);

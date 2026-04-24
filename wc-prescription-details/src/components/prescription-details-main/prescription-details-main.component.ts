@@ -3,15 +3,18 @@ import { DatePipe } from '@reuse/code/pipes/date.pipe';
 import { ProfessionalDisplayComponent } from '@reuse/code/components/professional-display/professional-display.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DataState, UserInfo } from '@reuse/code/interfaces';
-import { PersonResource, ReadRequestResource } from '@reuse/code/openapi';
+import { PersonResource, ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
 import {
   DetailsServices,
   PrescriptionDetailsSecondaryService,
 } from '../prescription-details-secondary/prescription-details-secondary.service';
 import { PrescriptionDetailsBeneficiaryComponent } from './prescription-details-beneficiary/prescription-details-beneficiary.component';
 import { EvfFormDetailsWebComponent } from '../evf-details/evf-form-details.component';
-import { FormTemplate } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
+import { FormElement, FormTemplate } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
+import { InfoDetailComponent } from '@reuse/code/evf/components/info/detail/info-detail.component';
+import { MatChip } from '@angular/material/chips';
+import { mapDisplayStatusToColor } from '@reuse/code/utils/request-status-display-map.utils';
 
 @Component({
   selector: 'app-prescription-details-main',
@@ -22,6 +25,8 @@ import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
     PrescriptionDetailsBeneficiaryComponent,
     EvfFormDetailsWebComponent,
     FormatNihdiPipe,
+    InfoDetailComponent,
+    MatChip,
   ],
   templateUrl: './prescription-details-main.component.html',
   styleUrl: './prescription-details-main.component.scss',
@@ -45,4 +50,13 @@ export class PrescriptionDetailsMainComponent {
   readonly status: Signal<boolean> = this._service.pssStatus;
   readonly isProfessional$: Signal<boolean | undefined> = this._service.isProfessional$;
   readonly currentLang: Signal<string> = this._service.currentLang;
+
+  get infoElements(): FormElement[] {
+    return this.templateVersion?.elements?.filter(element => element.viewType === 'info') ?? [];
+  }
+
+  getStatusColor(status: RequestStatus) {
+    const mhColor = mapDisplayStatusToColor(status);
+    return mhColor + ' mh-no-overlay';
+  }
 }

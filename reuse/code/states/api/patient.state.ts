@@ -6,7 +6,7 @@ import { PersonResource } from '@reuse/code/openapi';
 
 @Injectable({ providedIn: 'root' })
 export class PatientState extends BaseState<PersonResource> {
-  private personService = inject(PersonService);
+  private readonly personService = inject(PersonService);
 
   loadPatient(ssin: string): void {
     this.load(this.personService.findOne(ssin));

@@ -17,8 +17,7 @@ import {
 import { CanAssignCaregiverPipe } from '@reuse/code/pipes/can-assign-caregiver.pipe';
 import { CanSelfAssignPipe } from '@reuse/code/pipes/can-self-assign.pipe';
 import { CanStartTreatmentPipe } from '@reuse/code/pipes/can-start-treatment.pipe';
-import { AssignPrescriptionDialog } from '@reuse/code/dialogs/assign-prescription/assign-prescription.dialog';
-import { UserInfo } from '@reuse/code/interfaces';
+import { Intent, UserInfo } from '@reuse/code/interfaces';
 import { isPrescription } from '@reuse/code/utils/utils';
 import { Observable } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
@@ -31,6 +30,7 @@ import { PrescriptionsPdfService } from '@reuse/code/services/helpers/prescripti
 import { FormTemplate } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { CancelPrescriptionDialog } from '@reuse/code/dialogs/cancel-prescription/cancel-prescription-dialog.component';
 import { TaskButtonGroupComponent } from '../task-button-group/task-button-group.component';
+import { AssignOrTransferDialog } from '@reuse/code/dialogs/assign-or-transfer-dialog/assign-or-transfer-dialog';
 
 @Component({
   selector: 'app-prescription-details-actions',
@@ -141,14 +141,15 @@ export class PrescriptionDetailsActionsComponent {
   }
 
   openAssignDialog(prescription: ReadRequestResource): void {
-    this._dialog.open(AssignPrescriptionDialog, {
+    this._dialog.open(AssignOrTransferDialog, {
       data: {
         prescriptionId: prescription.id,
         referralTaskId: prescription.referralTask?.id,
-        assignedCareGivers: prescription.performerTasks?.map(c => c.careGiverSsin),
+        assignedCareGivers: Object.keys(prescription.performerTasks ?? {}),
         assignedOrganizations: prescription.organizationTasks?.map(o => o.organizationNihii),
         category: prescription.category,
         intent: prescription.intent,
+        mode: 'assign',
       },
       panelClass: ['mh-dialog-container', 'no-dialog-scroll'],
       height: '90vh',
@@ -204,15 +205,22 @@ export class PrescriptionDetailsActionsComponent {
     });
   }
 
-  getPerformerTask(prescription: ReadRequestResource): PerformerTaskResource | undefined {
+  getPerformerTask(
+    prescription: ReadRequestResource,
+    currentUser?: Partial<UserInfo>
+  ): PerformerTaskResource | undefined {
     const targetId = this.performerTaskServiceData?.id;
+    const ssin = currentUser?.ssin;
+
     if (!targetId) return undefined;
 
-    const performerTask = prescription.performerTasks?.find(pt => pt.id === targetId);
-    if (performerTask) return performerTask;
+    const performerTasks = ssin ? prescription.performerTasks?.[ssin] : undefined;
 
-    return prescription.organizationTasks
-      ?.flatMap(organizationTask => organizationTask.performerTasks ?? [])
-      .find(performerTask => performerTask.id === targetId);
+    return (
+      performerTasks?.find(pt => pt.id === targetId) ??
+      prescription.organizationTasks?.flatMap(ot => ot.performerTasks ?? []).find(pt => pt.id === targetId)
+    );
   }
+
+  protected readonly Intent = Intent;
 }

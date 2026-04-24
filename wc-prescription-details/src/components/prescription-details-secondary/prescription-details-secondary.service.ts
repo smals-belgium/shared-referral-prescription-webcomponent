@@ -14,7 +14,6 @@ import { RestartExecutionPrescriptionDialog } from '@reuse/code/dialogs/restart-
 import { StartExecutionPrescriptionDialog } from '@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog';
 import { FinishExecutionPrescriptionDialog } from '@reuse/code/dialogs/finish-execution-prescription/finish-execution-prescription.dialog';
 import { CancelExecutionPrescriptionDialog } from '@reuse/code/dialogs/cancel-execution-prescription/cancel-execution-prescription.dialog';
-import { TransferAssignationDialog } from '@reuse/code/dialogs/transfer-assignation/transfer-assignation.dialog';
 import { MatDialog } from '@angular/material/dialog';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
@@ -31,6 +30,9 @@ import { TemplatesState } from '@reuse/code/states/api/templates.state';
 import { ApproveProposalDialog } from '@reuse/code/dialogs/approve-proposal/approve-proposal.dialog';
 import { RejectProposalDialog } from '@reuse/code/dialogs/reject-proposal/reject-proposal.dialog';
 import { SSIN_CLAIM_KEY, USER_PROFILE_CLAIM_KEY } from '@reuse/code/services/auth/auth-constants';
+import { v4 as uuidv4 } from 'uuid';
+import { AssignOrTransferDialog } from '@reuse/code/dialogs/assign-or-transfer-dialog/assign-or-transfer-dialog';
+import { Lang } from '@reuse/code/constants/languages';
 
 export interface DetailsServices {
   getAccessToken: (audience?: string) => Promise<string | null>;
@@ -54,7 +56,7 @@ export class PrescriptionDetailsSecondaryService {
   readonly tokenClaims$ = toSignal(this.authService.getClaims());
   readonly isProfessional$ = toSignal(this.authService.isProfessional());
   readonly discipline$: Signal<Discipline | undefined> = toSignal(this.authService.discipline());
-  readonly currentLang: WritableSignal<string> = signal('fr-BE');
+  readonly currentLang: WritableSignal<string> = signal(Lang.FR.full);
   readonly loading: WritableSignal<boolean> = signal(false);
   readonly generatedUUID: WritableSignal<string> = signal('');
 
@@ -175,27 +177,17 @@ export class PrescriptionDetailsSecondaryService {
       };
     }
 
-    const directPerformerTask = state.data!.performerTasks?.find(t => t.careGiverSsin === ssin);
-    if (directPerformerTask) {
+    const directPerformerTask = state.data!.performerTasks?.[ssin];
+    if (directPerformerTask?.length) {
       return {
         status: state.status,
-        data: directPerformerTask,
+        data: directPerformerTask[0],
       };
     }
 
-    const organizationTask = state.data!.organizationTasks?.find(ot =>
-      ot.performerTasks?.some(pt => pt.careGiverSsin === ssin)
-    );
-
-    const nestedPerformerTask = organizationTask?.performerTasks?.find(t => t.careGiverSsin === ssin);
-    return nestedPerformerTask
-      ? {
-          status: state.status,
-          data: nestedPerformerTask,
-        }
-      : {
-          status: state.status,
-        };
+    return {
+      status: state.status,
+    };
   }
 
   getTemplate(): DataState<Template | undefined> {
@@ -233,14 +225,21 @@ export class PrescriptionDetailsSecondaryService {
     task: PerformerTaskResource,
     patient?: PersonResource
   ): void {
-    this._dialog.open(RejectAssignationDialog, {
-      data: {
-        prescription: prescription,
-        performerTask: task,
-        patient: patient,
-      },
-      panelClass: 'mh-dialog-container',
-    });
+    this._dialog
+      .open(RejectAssignationDialog, {
+        data: {
+          prescription: prescription,
+          performerTask: task,
+          patient: patient,
+        },
+        panelClass: 'mh-dialog-container',
+      })
+      .beforeClosed()
+      .subscribe((data?: boolean) => {
+        if (data) {
+          this.generatedUUID.set(uuidv4());
+        }
+      });
   }
 
   openInterruptExecutionDialog(
@@ -311,14 +310,15 @@ export class PrescriptionDetailsSecondaryService {
   }
 
   openTransferAssignationDialog(prescription: ReadRequestResource, task: PerformerTaskResource): void {
-    this._dialog.open(TransferAssignationDialog, {
+    this._dialog.open(AssignOrTransferDialog, {
       data: {
         prescriptionId: prescription.id,
         referralTaskId: prescription.referralTask?.id,
         performerTaskId: task.id,
-        assignedCareGivers: prescription.performerTasks?.map(c => c.careGiverSsin),
+        assignedCareGivers: Object.keys(prescription.performerTasks ?? {}),
         category: prescription.category,
         intent: prescription.intent,
+        mode: 'transfer',
       },
       panelClass: 'mh-dialog-container',
       maxHeight: '90vh',

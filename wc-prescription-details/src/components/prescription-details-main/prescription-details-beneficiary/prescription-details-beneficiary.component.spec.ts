@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PrescriptionDetailsBeneficiaryComponent } from './prescription-details-beneficiary.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Gender, PersonResource, ReadRequestResource } from '@reuse/code/openapi';
+import { Lang } from '@reuse/code/constants/languages';
 
 describe('PrescriptionDetailsBeneficiaryComponent', () => {
   let component: PrescriptionDetailsBeneficiaryComponent;
@@ -13,16 +14,12 @@ describe('PrescriptionDetailsBeneficiaryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        PrescriptionDetailsBeneficiaryComponent,
-        TranslateModule.forRoot(),
-      ]
-    })
-    .compileComponents();
+      imports: [PrescriptionDetailsBeneficiaryComponent, TranslateModule.forRoot()],
+    }).compileComponents();
 
     translate = TestBed.inject(TranslateService);
-    translate.setDefaultLang('nl-BE');
-    translate.use('nl-BE');
+    translate.setDefaultLang(Lang.NL.full);
+    translate.use(Lang.NL.full);
 
     fixture = TestBed.createComponent(PrescriptionDetailsBeneficiaryComponent);
     component = fixture.componentInstance;

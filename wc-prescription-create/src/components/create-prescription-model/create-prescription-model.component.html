@@ -1,53 +1,61 @@
 @if (prescriptionForm) {
+  @let modelState = getModelState(prescriptionForm.trackId);
+
   <div class="wrapper">
     <h3
-      [class.invalid]="prescriptionForm.submitted && (!prescriptionForm.elementGroup?.valid || prescriptionForm.status === 'ERROR')"
-      data-cy="template-label">{{ prescriptionForm.templateCode | templateName }}
+      [class.invalid]="
+        prescriptionForm.submitted && (!prescriptionForm.elementGroup?.valid || prescriptionForm.status === 'ERROR')
+      "
+      data-cy="template-label">
+      {{ prescriptionForm.templateCode | templateName }}
     </h3>
 
     @if (prescriptionForm.status === LoadingStatus.SUCCESS) {
-      <mat-icon color="accent">check_circle</mat-icon>
+      <mat-icon color="accent" svgIcon="check_circle" aria-hidden="true"></mat-icon>
     } @else if (prescriptionForm.status === LoadingStatus.ERROR) {
-      <mat-icon color="warn">error</mat-icon>
+      <mat-icon color="warn" svgIcon="error" aria-hidden="true"></mat-icon>
     }
 
-
-    @if (modelState().state === LoadingStatus.ERROR) {
+    @if (modelState?.state === LoadingStatus.ERROR) {
       <app-alert
         [alert]="AlertType.Error"
         [message]="'prescription.errors.failedToCreateModel' | translate"
-        [error]="modelState().error"
-      ></app-alert>
-    } @else if (modelState().state === LoadingStatus.SUCCESS) {
+        [error]="modelState?.error"></app-alert>
+    } @else if (modelState?.state === LoadingStatus.SUCCESS) {
       <app-alert
         [alert]="AlertType.Success"
-        [message]="'prescription.model.create.success' | translate:{name: modelState().success}"
-      ></app-alert>
-    } @else if (modelState().state === LoadingStatus.LOADING) {
+        [message]="'prescription.model.create.success' | translate: { name: modelState?.success }"
+        [showRetry]="false"></app-alert>
+    } @else if (modelState?.state === LoadingStatus.LOADING) {
       <app-overlay-spinner mode="inline"></app-overlay-spinner>
     }
 
     @if (prescriptionForm.formTemplateState$(); as formTemplateState) {
       <ng-container>
-        @if (formTemplateState.status === LoadingStatus.LOADING || formTemplateState.status === LoadingStatus.UPDATING) {
+        @if (
+          formTemplateState.status === LoadingStatus.LOADING || formTemplateState.status === LoadingStatus.UPDATING
+        ) {
           <app-overlay-spinner mode="inline"></app-overlay-spinner>
         }
         @if (formTemplateState.status === LoadingStatus.ERROR) {
-          <div>Failed to load prescription form template.</div>
+          <app-alert
+            [alert]="AlertType.Error"
+            [message]="'prescription.errors.failedToLoadTemplate' | translate"
+            [error]="modelState?.error"></app-alert>
         }
 
-        @if (!!titleControl && prescriptionForm.modelId) {
+        @if (!!titleControl) {
           <div class="form-model-group">
-            <mat-label class="referral-prescription-label">{{ ('prescription.model.create.dialog.label' | translate) }}
-              <span class="required">*</span></mat-label>
+            <mat-label class="referral-prescription-label"
+              >{{ 'prescription.model.create.dialog.label' | translate }} <span class="required">*</span></mat-label
+            >
             <mat-form-field appearance="outline">
               <input
                 [formControl]="titleControl"
                 matInput
                 data-cy="prescription-modal-dialog-input"
                 minlength="1"
-                maxlength="100"
-              />
+                maxlength="100" />
               @if (titleControl.hasError('required')) {
                 <mat-error>{{ 'common.mandatory' | translate }}</mat-error>
               }
@@ -65,31 +73,21 @@
             [submitted]="!!prescriptionForm.submitted"
             [template]="getTemplateData(formTemplateState)!"
             (changeElementGroup)="setElementGroup(prescriptionForm, $any($event))"
-            [status]="false"
-          ></evf-form>
+            [status]="false"></evf-form>
         }
 
         @if (this.prescriptionForm.modelId) {
-          <button
-            mat-flat-button
-            (click)="handleUpdate(prescriptionForm, formTemplateState.data)"
-          >
-            <mat-icon>update</mat-icon>
+          <button type="button" mat-flat-button (click)="handleUpdate(prescriptionForm, formTemplateState.data)">
+            <mat-icon svgIcon="update" aria-hidden="true"></mat-icon>
             {{ 'prescription.model.update.title' | translate }}
           </button>
         } @else {
-          <button
-            mat-flat-button
-            (click)="handleClick(prescriptionForm, formTemplateState.data)"
-          >
-            <mat-icon>save</mat-icon>
+          <button type="button" mat-flat-button (click)="handleClick(prescriptionForm, formTemplateState.data)">
+            <mat-icon svgIcon="save" aria-hidden="true"></mat-icon>
             {{ 'prescription.model.create.title' | translate }}
           </button>
         }
-
-
       </ng-container>
     }
   </div>
 }
-

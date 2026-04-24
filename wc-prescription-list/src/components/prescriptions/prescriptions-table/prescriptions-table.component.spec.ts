@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { PrescriptionsTableComponent } from './prescriptions-table.component';
 import { HealthcareProResource, ReadRequestListResource, RequestStatus } from '@reuse/code/openapi';
 import { Intent } from '@reuse/code/interfaces';
@@ -11,6 +11,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
+import { SimpleChange } from '@angular/core';
 
 const requester: HealthcareProResource = {
   healthcarePerson: {
@@ -189,6 +190,35 @@ describe('PrescriptionsTableComponent', () => {
     expect(rows.length).toBe(rowsLength);
   });
 
+  it('should display a dash when hideEndDate is true', () => {
+    const mockPrescriptionsWithNullEnd: ReadRequestListResource = {
+      total: 1,
+      items: [
+        {
+          id: '2',
+          authoredOn: '2024-01-01',
+          status: RequestStatus.Pending,
+          requester: requester,
+          period: {
+            start: '2024-01-01',
+            end: '2025-01-01',
+            hideEndDate: true,
+          },
+          intent: Intent.ORDER,
+        },
+      ],
+    };
+    component.intent = Intent.ORDER;
+    component.prescriptions = mockPrescriptionsWithNullEnd;
+    component.ngOnChanges({
+      intent: new SimpleChange(null, Intent.ORDER, true),
+    });
+
+    const items = component.items;
+    expect(items.length).toBe(1);
+    expect(items[0]?.period?.hideEndDate).toBe(true);
+  });
+
   it('should display the alert card AND the table', () => {
     component.loading = true;
     component.error = true;
@@ -207,5 +237,61 @@ describe('PrescriptionsTableComponent', () => {
     expect(fixture.debugElement.query(By.css('[data-cy="skeleton"]'))).toBeTruthy();
     expect(fixture.debugElement.query(By.css('[data-cy="alert"]'))).toBeFalsy();
     expect(fixture.debugElement.query(By.css('table'))).toBeTruthy();
+  });
+
+  describe('Table footer messages', () => {
+    beforeEach(() => {
+      component.prescriptions = { total: 0, items: [] };
+    });
+
+    it('should show prescription messages when isPrescriptionIntent is true', () => {
+      component.intent = Intent.ORDER;
+      component.ngOnChanges({
+        intent: { currentValue: Intent.ORDER, previousValue: undefined, firstChange: true, isFirstChange: () => true },
+      });
+      fixture.detectChanges();
+
+      const footer = fixture.debugElement.query(By.css('td[mat-footer-cell]'));
+      const footerText = footer.nativeElement.textContent;
+
+      expect(component.isPrescriptionIntent).toBe(true);
+      expect(component.isProposalIntent).toBe(false);
+      expect(footerText).toContain('prescription.noPrescriptionsForPatient');
+    });
+
+    it('should show proposal messages when isProposalIntent is true', () => {
+      component.intent = Intent.PROPOSAL;
+      component.ngOnChanges({
+        intent: {
+          currentValue: Intent.PROPOSAL,
+          previousValue: undefined,
+          firstChange: true,
+          isFirstChange: () => true,
+        },
+      });
+      fixture.detectChanges();
+
+      const footer = fixture.debugElement.query(By.css('td[mat-footer-cell]'));
+      const footerText = footer.nativeElement.textContent;
+
+      expect(component.isPrescriptionIntent).toBe(false);
+      expect(component.isProposalIntent).toBe(true);
+      expect(footerText).toContain('proposal.noProposalsForPatient');
+    });
+
+    it('should render nothing for unknown intent', () => {
+      component.intent = Intent.MODEL;
+      component.ngOnChanges({
+        intent: { currentValue: Intent.MODEL, previousValue: undefined, firstChange: true, isFirstChange: () => true },
+      });
+      fixture.detectChanges();
+
+      const footer = fixture.debugElement.query(By.css('td[mat-footer-cell]'));
+      const footerText = footer.nativeElement.textContent.trim();
+
+      expect(component.isPrescriptionIntent).toBe(false);
+      expect(component.isProposalIntent).toBe(false);
+      expect(footerText).toBe('');
+    });
   });
 });

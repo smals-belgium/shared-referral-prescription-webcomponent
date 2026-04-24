@@ -8,7 +8,7 @@ export type Permissions = keyof Omit<AccessMatrix, 'quality' | 'templateName'>;
 
 @Injectable({ providedIn: 'root' })
 export class AccessMatrixState extends BaseState<AccessMatrix[]> {
-  private accessMatrixApiService = inject(AccessMatrixService);
+  private readonly accessMatrixApiService = inject(AccessMatrixService);
 
   loadAccessMatrix(): Observable<AccessMatrix[]> {
     return this.load(this.accessMatrixApiService.getMatrix());

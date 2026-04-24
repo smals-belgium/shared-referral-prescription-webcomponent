@@ -11,6 +11,7 @@ jest.mock('@reuse/code/utils/occurrence-timing.utils', () => ({
 }));
 
 import { validateOccurences, translateFrequencyAndPeriod } from '@reuse/code/utils/occurrence-timing.utils';
+import { Lang } from '@reuse/code/constants/languages';
 
 describe('OccurrenceFrequencyPipe', () => {
   let pipe: OccurrenceFrequencyPipe;
@@ -19,9 +20,9 @@ describe('OccurrenceFrequencyPipe', () => {
   let currentLangSubject: BehaviorSubject<string>;
 
   beforeEach(() => {
-    currentLangSubject = new BehaviorSubject<string>('fr');
+    currentLangSubject = new BehaviorSubject<string>(Lang.FR.short);
     mockEvfTranslateService = {
-      currentLang: 'fr',
+      currentLang: Lang.FR.short,
       currentLang$: currentLangSubject.asObservable(),
     };
     mockChangeDetectorRef = { markForCheck: jest.fn() };
@@ -65,7 +66,7 @@ describe('OccurrenceFrequencyPipe', () => {
     const result = pipe.transform(occurrences);
 
     expect(validateOccurences).toHaveBeenCalledWith(occurrences);
-    expect(translateFrequencyAndPeriod).toHaveBeenCalledWith(occurrences, 'fr');
+    expect(translateFrequencyAndPeriod).toHaveBeenCalledWith(occurrences, Lang.FR.short);
     expect(result).toBe('2 fois par jour');
   });
 });

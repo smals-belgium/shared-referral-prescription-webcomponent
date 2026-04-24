@@ -3,6 +3,10 @@ set -e
 
 # Store current branch
 CURRENT_BRANCH=$(git branch --show-current)
+if [ -z "$CURRENT_BRANCH" ]; then
+    echo "Error: Could not determine current branch. Are you in a detached HEAD state?"
+    exit 1
+fi
 TEMP_BRANCH="${CURRENT_BRANCH}-release"
 
 # Create a temporary branch for github push
@@ -38,7 +42,7 @@ git add api-contract/openapi.yaml
 git commit --amend --no-edit --no-verify
 
 # Push to github
-git push github HEAD:${CURRENT_BRANCH} --force
+git push github HEAD:"${CURRENT_BRANCH}" --force
 
 # Return to original branch
 git checkout ${CURRENT_BRANCH}

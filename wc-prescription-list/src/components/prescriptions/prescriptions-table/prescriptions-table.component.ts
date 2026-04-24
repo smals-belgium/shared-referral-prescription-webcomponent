@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -30,9 +38,10 @@ import { ReadRequestListResource, ReadRequestResource, RequestStatus } from '@re
 import { FormatEnum, SkeletonComponent } from '@reuse/code/components/progress-indicators/skeleton/skeleton.component';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AlertType } from '@reuse/code/interfaces';
+import { AlertType, Intent } from '@reuse/code/interfaces';
 import { MatChip } from '@angular/material/chips';
 import { mapDisplayStatusToColor } from '@reuse/code/utils/request-status-display-map.utils';
+import { isPrescription, isProposal } from '@reuse/code/utils/utils';
 
 @Component({
   selector: 'app-prescriptions-table',
@@ -70,7 +79,10 @@ import { mapDisplayStatusToColor } from '@reuse/code/utils/request-status-displa
     MatFooterCellDef,
   ],
 })
-export class PrescriptionsTableComponent {
+export class PrescriptionsTableComponent implements OnChanges {
+  // Input properties
+  @Input() intent?: Intent;
+
   @Input() prescriptions?: ReadRequestListResource;
   get items() {
     return this.prescriptions?.items ?? [];
@@ -88,8 +100,18 @@ export class PrescriptionsTableComponent {
 
   displayedColumns: string[] = ['creationDate', 'status', 'author', 'typeOfCare', 'start', 'end'];
 
+  isPrescriptionIntent: boolean = false;
+  isProposalIntent: boolean = false;
+
   getStatusColor(status: RequestStatus) {
     const mhColor = mapDisplayStatusToColor(status);
     return mhColor + ' mh-no-overlay';
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['intent']) {
+      this.isPrescriptionIntent = isPrescription(this.intent);
+      this.isProposalIntent = isProposal(this.intent);
+    }
   }
 }
