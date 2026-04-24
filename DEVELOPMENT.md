@@ -151,14 +151,14 @@ git submodule add ../api-contract.git api-contract
   - `npm cache clean --force`
   - `npm cache verify`
   - `rm -rf node_modules/`
-- and run `npm i` WITHOUT vpn
-- `git add package-lock`
+- and run `npm i` WITHOUT being connected to the VPN
+- `git add package-lock.json`
 - Run `npm run push:github` in a bash terminal.
 - After the push succeeds, remove the package-lock file
 - Revert your .npmrc.
 - Clear npm
-  - npm cache clean --force
-  - npm cache verify
-  - rm -rf node_modules/
-- and run `run npm i` WITHOUT vpn
-- git add package-lock
+  - `npm cache clean --force`
+  - `npm cache verify`
+  - `rm -rf node_modules/`
+- and run `run npm i` by being connected to the VPN
+- `git add package-lock.json`
