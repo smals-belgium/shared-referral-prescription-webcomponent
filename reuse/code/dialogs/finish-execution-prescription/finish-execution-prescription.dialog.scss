@@ -1,5 +1,11 @@
 :host {
-  ::ng-deep .mat-mdc-dialog-actions {
-    padding: 0 24px 20px 24px;
+  ::ng-deep {
+    .mat-mdc-dialog-actions {
+      padding: 0 24px 20px 24px;
+    }
+    .mat-mdc-form-field-icon-suffix,
+    .mat-mdc-form-field-icon-prefix {
+      padding: 0 4px 0 4px;
+    }
   }
 }

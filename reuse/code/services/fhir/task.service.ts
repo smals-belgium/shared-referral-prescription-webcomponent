@@ -4,7 +4,7 @@ import { PeriodResource, PrescriptionService as ApiPrescriptionService } from '@
 
 @Injectable({ providedIn: 'root' })
 export class TaskService {
-  private api = inject(ApiPrescriptionService);
+  private readonly api = inject(ApiPrescriptionService);
 
   startExecution(performerTaskId: string, executionStart: PrescriptionExecutionStart, generatedUUID: string) {
     const periodResource: PeriodResource = {

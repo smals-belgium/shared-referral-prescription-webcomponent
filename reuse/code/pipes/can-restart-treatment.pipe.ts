@@ -4,7 +4,7 @@ import { PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi'
 
 @Pipe({ name: 'canRestartTreatment', standalone: true })
 export class CanRestartTreatmentPipe implements PipeTransform {
-  constructor(private _accessMatrixState: AccessMatrixState) {}
+  constructor(private readonly _accessMatrixState: AccessMatrixState) {}
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   transform(_prescription: ReadRequestResource, _task: PerformerTaskResource, _currentUserSsin?: string): boolean {

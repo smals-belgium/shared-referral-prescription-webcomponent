@@ -1,15 +1,13 @@
 @if (hasName) {
-  {{professional?.healthcarePerson?.firstName}} {{professional?.healthcarePerson?.lastName}}
-}
-@else if (isCurrentUser) {
-  {{currentUser?.firstName}} {{currentUser?.lastName}}
-}
-@else {
-  {{'common.professional.notFound' | translate}}
-  <mat-icon matTooltip="{{'common.professional.tooltip' | translate}}"
-            matTooltipPosition="right">
-    error
+  {{ professional?.healthcarePerson?.firstName }} {{ professional?.healthcarePerson?.lastName }}
+} @else if (isCurrentUser) {
+  {{ currentUser?.firstName }} {{ currentUser?.lastName }}
+} @else {
+  {{ 'common.professional.notFound' | translate }}
+  <mat-icon
+    matTooltip="{{ 'common.professional.tooltip' | translate }}"
+    matTooltipPosition="right"
+    svgIcon="error"
+    [aria-hidden]="true">
   </mat-icon>
 }
-
-

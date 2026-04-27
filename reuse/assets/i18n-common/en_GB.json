@@ -1,585 +1,620 @@
 {
-    "common": {
-        "yes": "",
-        "no": "",
-        "confirm": "",
-        "cancel": "",
-        "close": "",
-        "delete": "",
-        "patient": "",
-        "category": "",
-        "typeOfPrescription": "",
-        "shortCode": "",
-        "chooseFromList": "",
-        "tryAgain": "",
-        "goBack": "",
-        "filter": "",
-        "results": "",
-        "search": "",
-        "start": "",
-        "professions": {
-            "NURSE": "",
-            "PHYSICIAN": "",
-            "PHYSIOTHERAPIST": "",
-            "DENTIST": ""
-        },
-        "professional": {
-            "notFound": "",
-            "tooltip": ""
-        },
-        "organization": {
-            "notFound": "",
-            "tooltip": ""
-        },
-        "organizations": {
-            "THIRD_PARTY_PAYING_GROUP": "",
-            "GROUP_OF_DOCTORS": "",
-            "GUARD_POST": "",
-            "MEDICAL_HOUSE": "",
-            "HOME_SERVICES": ""
-        },
-        "lastName": "",
-        "firstName": "",
-        "dateOfBirth": "",
-        "ssin": "",
-        "gender": "",
-        "genders": {
-            "M": "",
-            "F": "",
-            "null": "",
-            "undefined": ""
-        },
-        "gendersFull": {
-            "M": "",
-            "F": "",
-            "null": "",
-            "undefined": ""
-        },
-        "somethingWentWrong": "",
-        "somethingWentWrongWithoutRetry": "",
-        "forbiddenAction": "",
-        "forbiddenResource": "",
-        "notFoundResource": "",
-        "mandatory": "",
-        "ariaLabel": {
-            "loading": ""
-        },
-        "errors": {
-            "pseudoDisabled": ""
-        },
-        "prescriptionModel": "",
-        "error": {
-            "default": {
-                "header": "Technical issue",
-                "subheader": "An error occurred. Please try again in a few moments."
-            }
-        }
+  "common": {
+    "yes": "",
+    "no": "",
+    "confirm": "",
+    "cancel": "",
+    "close": "",
+    "delete": "",
+    "patient": "",
+    "category": "",
+    "typeOfPrescription": "",
+    "shortCode": "",
+    "chooseFromList": "",
+    "tryAgain": "",
+    "goBack": "",
+    "filter": "",
+    "results": "",
+    "search": "",
+    "start": "",
+    "professions": {
+      "NURSE": "",
+      "PHYSICIAN": "",
+      "PHYSIOTHERAPIST": "",
+      "DENTIST": ""
     },
-    "pagination": {
-        "ariaLabel": {
-            "firstPage": "First page",
-            "lastPage": "Last page",
-            "nextPage": "Next page",
-            "previousPage": "Previous page"
-        },
-        "itemsPerPage": "Items per page",
-        "firstPage": "First page",
-        "lastPage": "Last page",
-        "nextPage": "Next page",
-        "previousPage": "Previous page",
-        "rangePage": "{startIndex} - {endIndex} of {length}"
-    },
-    "evf": {
-        "deleteCareGiver": "",
-        "sureDeleteCareGiver": ""
-    },
-    "prescription": {
-        "beneficiary": "",
-        "creationDate": "",
-        "details": {
-            "link": ""
-        },
-        "selectTemplate": {
-            "prescriptionModel": "",
-            "pickOptionFromList": "",
-            "noOptions": ""
-        },
-        "selectModel": {
-            "prescriptionModel": "",
-            "pickOptionFromList": "",
-            "noOptions": ""
-        },
-        "create": {
-            "action": "",
-            "success": "",
-            "allSuccess": "",
-            "allFailed": "",
-            "someSuccessSomeFailed": "",
-            "addPrescription": "",
-            "publish": "",
-            "control": {
-                "title": "",
-                "warning": "",
-                "error": {
-                    "required": ""
-                },
-                "table": {
-                    "title": "",
-                    "select": "",
-                    "relevance": "",
-                    "typesOfImagery": "",
-                    "cost": "",
-                    "radiationRate": "",
-                    "radiationLevel": "",
-                    "deselectRow": "",
-                    "selectRow": ""
-                }
-            },
-            "deletePrescription": {
-                "title": "",
-                "message": ""
-            },
-            "cancelPrescriptionsCreation": {
-                "title": "",
-                "cancelAll": ""
-            },
-            "cancelCreation": "",
-            "prescription": "",
-            "requiredFields": ""
-        },
-        "allPrescriptionsFetched": "",
-        "model": {
-            "allModalsFetched": "",
-            "title": "",
-            "create": {
-                "title": "",
-                "success": "",
-                "dialog": {
-                    "title": "",
-                    "label": "",
-                    "labelNotUnique": ""
-                },
-                "model": ""
-            },
-            "update": {
-                "title": ""
-            },
-            "delete": {
-                "title": "",
-                "message": ""
-            },
-            "creationDate": "",
-            "label": "",
-            "template": "",
-            "actions": "",
-            "noModels": "",
-            "pagination": {
-                "models": "",
-                "pageSize": ""
-            }
-        },
-        "filter": {
-            "historicToggle": "",
-            "prescriptionType": {
-                "label": ""
-            },
-            "status": {
-                "label": ""
-            },
-            "submit": "",
-            "clear": ""
-        },
-        "print": {
-            "content-electronic-prescription": "",
-            "guideline": "",
-            "nihdi": "",
-            "niss": "",
-            "patient": "",
-            "prescriber": "",
-            "proof-of-electronic-prescription": "",
-            "remark": "",
-            "date": "",
-            "subsection": {
-                "patient": "",
-                "startDate": "",
-                "endDate": "",
-                "header": ""
-            },
-            "alert": ""
-        },
-        "author": "",
-        "patient": "",
-        "note": "",
-        "shortcode": "",
-        "typeOfCare": "",
-        "services": "",
-        "frequency": "",
-        "start": "",
-        "end": "",
-        "validityPeriod": "",
-        "consultDetails": "",
-        "assign": "",
-        "transfer": "",
-        "assignMe": "",
-        "reject": "",
-        "copy": "",
-        "printAction": "",
-        "duplicate": "",
-        "extend": "",
-        "careGivers": "",
-        "assigned": "",
-        "noPrescriptionsForPatient": "",
-        "noPrescriptionsForUser": "",
-        "assignPerformer": {
-            "title": "",
-            "success": "",
-            "successOrganization": "",
-            "meSuccess": "",
-            "performer": "",
-            "searchPerformerPlaceHolder": "",
-            "select": "",
-            "locations": "",
-            "zipCodeOrCityName": "",
-            "noResults": "",
-            "organization": "",
-            "dialog": {
-                "title": "",
-                "description": ""
-            },
-            "locationsHint": "",
-            "performerHint": ""
-        },
-        "transferAssignation": {
-            "title": "",
-            "success": "",
-            "performer": "",
-            "searchPerformerPlaceHolder": "",
-            "locations": "",
-            "zipCodeOrCityName": "",
-            "noResults": "",
-            "dialog": {
-                "title": "",
-                "description": ""
-            }
-        },
-        "cancel": {
-            "action": "",
-            "title": "",
-            "message": "",
-            "success": "",
-            "reason": ""
-        },
-        "rejectAssignation": {
-            "action": "",
-            "title": "",
-            "message": "",
-            "success": ""
-        },
-        "cancelExecution": {
-            "action": "",
-            "title": "",
-            "message": "",
-            "success": "",
-            "reason": ""
-        },
-        "interruptExecution": {
-            "action": "",
-            "title": "",
-            "message": "",
-            "success": ""
-        },
-        "startExecution": {
-            "action": "",
-            "title": "",
-            "startDate": "",
-            "success": ""
-        },
-        "restartExecution": {
-            "action": "",
-            "title": "",
-            "message": "",
-            "success": ""
-        },
-        "finishExecution": {
-            "action": "",
-            "title": "",
-            "endDate": "",
-            "success": ""
-        },
-        "frequencyTypes": {
-            "iterative": "",
-            "weekly": ""
-        },
-        "status": "",
-        "prescriptionDate": "",
-        "pagination": {
-            "prescriptions": "",
-            "pageSize": ""
-        },
-        "statuses": {
-            "DRAFT": "",
-            "BLACKLISTED": "",
-            "PENDING": "",
-            "OPEN": "",
-            "CANCELLED": "",
-            "EXPIRED": "",
-            "IN_PROGRESS": "",
-            "DONE": "",
-            "null": "",
-            "APPROVED": "",
-            "REJECTED": ""
-        },
-        "errors": {
-            "failedToLoadPrescription": "",
-            "failedToLoadPrescriptions": "",
-            "invalidFhirString": "",
-            "invalidMaxLength": "",
-            "invalidMinLength": "",
-            "invalidNihiiDigitsCount": "",
-            "invalidCaregiverNameCharacters": "",
-            "dateMustBeEarlierOrEqualTo": "",
-            "dateMustBeLaterOrEqualTo": "",
-            "invalidDateFormat": "",
-            "invalidSsinChecksum": "",
-            "invalidShortCode": "",
-            "decryptionFailed": "",
-            "failedToCreateModel": ""
-        },
-        "categories": {
-            "bandagisterie": "",
-            "dentistry": "",
-            "physiotherapy": "",
-            "orthopedics": "",
-            "otolaryngology": "",
-            "radiology": "",
-            "nursingCare": ""
-        },
-        "ariaLabel": {
-            "delete": "",
-            "removeCity": "",
-            "print": "",
-            "reject": "",
-            "interrupt": "",
-            "restart": ""
-        },
-        "tableHasRecords": "",
-        "extendedShortId": "",
-        "actions": {
-            "button": "",
-            "assignMe": "",
-            "startExecution": "",
-            "assign": "",
-            "copy": "",
-            "extend": "",
-            "print": "",
-            "cancel": ""
-        },
-        "assignProfessional": {
-            "undefined": ""
-        },
-        "transferProfessional": {
-            "undefined": ""
-        }
-    },
-    "proposal": {
-        "creationDate": "",
-        "details": {
-            "link": ""
-        },
-        "selectTemplate": {
-            "proposalModel": "",
-            "pickOptionFromList": "",
-            "noOptions": ""
-        },
-        "create": {
-            "action": "",
-            "success": "",
-            "allSuccess": "",
-            "allFailed": "",
-            "someSuccessSomeFailed": "",
-            "addProposal": "",
-            "publish": "",
-            "deleteProposal": {
-                "title": "",
-                "message": ""
-            },
-            "cancelProposalsCreation": {
-                "title": "",
-                "cancelAll": ""
-            },
-            "cancelCreation": "",
-            "proposal": ""
-        },
-        "allProposalsFetched": "",
-        "print": {
-            "content-electronic-proposal": "",
-            "guideline": "",
-            "nihdi": "",
-            "niss": "",
-            "patient": "",
-            "prescriber": "",
-            "proof-of-electronic-proposal": "",
-            "remark": "",
-            "date": "",
-            "content-electronic-prescription": "",
-            "proof-of-electronic-prescription": ""
-        },
-        "author": "",
-        "patient": "",
-        "typeOfCare": "",
-        "services": "",
-        "frequency": "",
-        "start": "",
-        "end": "",
-        "validityPeriod": "",
-        "consultDetails": "",
-        "assign": "",
-        "transfer": "",
-        "assignMe": "",
-        "duplicate": "",
-        "extend": "",
-        "careGivers": "",
-        "assigned": "",
-        "noProposalsForPatient": "",
-        "noProposalsForUser": "",
-        "assignPerformer": {
-            "title": "",
-            "success": "",
-            "successOrganization": "",
-            "meSuccess": "",
-            "performer": "",
-            "searchPerformerPlaceHolder": "",
-            "locations": "",
-            "zipCodeOrCityName": "",
-            "noResults": "",
-            "organization": "",
-            "dialog": {
-                "title": "",
-                "description": ""
-            }
-        },
-        "transferAssignation": {
-            "title": "",
-            "success": "",
-            "performer": "",
-            "searchPerformerPlaceHolder": "",
-            "locations": "",
-            "zipCodeOrCityName": "",
-            "noResults": ""
-        },
-        "approve": {
-            "action": "",
-            "success": "",
-            "dialog": {
-                "title": "",
-                "reason": ""
-            }
-        },
-        "reject": {
-            "title": "",
-            "action": "",
-            "success": "",
-            "dialog": {
-                "title": "",
-                "reason": ""
-            }
-        },
-        "cancel": {
-            "action": "",
-            "title": "",
-            "message": "",
-            "success": "",
-            "reason": ""
-        },
-        "rejectAssignation": {
-            "action": "",
-            "title": "",
-            "message": "",
-            "success": ""
-        },
-        "frequencyTypes": {
-            "iterative": "",
-            "weekly": ""
-        },
-        "status": "",
-        "proposalDate": "",
-        "proposalInfoTitle": "",
-        "pagination": {
-            "proposals": "",
-            "pageSize": ""
-        },
-        "statuses": {
-            "DRAFT": "",
-            "BLACKLISTED": "",
-            "PENDING": "",
-            "OPEN": "",
-            "CANCELLED": "",
-            "EXPIRED": "",
-            "IN_PROGRESS": "",
-            "DONE": "",
-            "null": "",
-            "APPROVED": "",
-            "REJECTED": ""
-        },
-        "errors": {
-            "failedToLoadProposal": "",
-            "failedToLoadProposals": "",
-            "invalidFhirString": "",
-            "invalidMaxLength": "",
-            "invalidMinLength": "",
-            "invalidNihiiDigitsCount": "",
-            "invalidCaregiverNameCharacters": "",
-            "dateMustBeEarlierOrEqualTo": "",
-            "dateMustBeLaterOrEqualTo": "",
-            "invalidDateFormat": "",
-            "invalidUUID": ""
-        },
-        "categories": {
-            "bandagisterie": "",
-            "dentistry": "",
-            "physiotherapy": "",
-            "orthopedics": "",
-            "otolaryngology": "",
-            "radiology": "",
-            "nursingCare": ""
-        }
-    },
-    "performerTask": {
-        "statuses": {
-            "ONHOLD": "",
-            "READY": "",
-            "CANCELLED": "",
-            "FAILED": "",
-            "INPROGRESS": "",
-            "COMPLETED": "",
-            "null": ""
-        }
-    },
-    "models": {
-        "errors": {
-            "failedToLoadModels": ""
-        }
-    },
-    "pss": {
-        "unavailable": {
-            "title": "",
-            "message": ""
-        }
-    },
-    "prescription-model-tableHasRecords-Le-nombre-total": "",
     "professional": {
-        "table": {
-            "results": "",
-            "firstname": "",
-            "lastname": "",
-            "address": "",
-            "city": "",
-            "actions": "",
-            "tableHasRecords": "",
-            "noRecords": "",
-            "select": ""
-        },
-        "noProfessionals": "",
-        "allProfessionalsFetched": ""
+      "notFound": "",
+      "tooltip": ""
+    },
+    "organization": {
+      "notFound": "",
+      "tooltip": ""
+    },
+    "organizations": {
+      "THIRD_PARTY_PAYING_GROUP": "",
+      "GROUP_OF_DOCTORS": "",
+      "GUARD_POST": "",
+      "MEDICAL_HOUSE": "",
+      "HOME_SERVICES": ""
+    },
+    "lastName": "",
+    "firstName": "",
+    "dateOfBirth": "",
+    "ssin": "",
+    "gender": "",
+    "genders": {
+      "M": "",
+      "F": "",
+      "null": "",
+      "undefined": ""
+    },
+    "gendersFull": {
+      "M": "",
+      "F": "",
+      "null": "",
+      "undefined": ""
+    },
+    "somethingWentWrong": "",
+    "somethingWentWrongWithoutRetry": "",
+    "forbiddenAction": "",
+    "forbiddenResource": "",
+    "notFoundResource": "",
+    "mandatory": "",
+    "ariaLabel": {
+      "loading": ""
+    },
+    "errors": {
+      "pseudoDisabled": ""
+    },
+    "prescriptionModel": "",
+    "error": {
+      "default": {
+        "header": "Technical issue",
+        "subheader": "An error occurred. Please try again in a few moments."
+      }
     }
+  },
+  "pagination": {
+    "ariaLabel": {
+      "firstPage": "First page",
+      "lastPage": "Last page",
+      "nextPage": "Next page",
+      "previousPage": "Previous page"
+    },
+    "itemsPerPage": "Items per page",
+    "firstPage": "First page",
+    "lastPage": "Last page",
+    "nextPage": "Next page",
+    "previousPage": "Previous page",
+    "rangePage": "{startIndex} - {endIndex} of {length}"
+  },
+  "evf": {
+    "deleteCareGiver": "",
+    "sureDeleteCareGiver": ""
+  },
+  "prescription": {
+    "beneficiary": "",
+    "creationDate": "",
+    "details": {
+      "link": ""
+    },
+    "selectTemplate": {
+      "prescriptionModel": "",
+      "pickOptionFromList": "",
+      "noOptions": ""
+    },
+    "selectModel": {
+      "prescriptionModel": "",
+      "pickOptionFromList": "",
+      "noOptions": ""
+    },
+    "create": {
+      "action": "",
+      "success": "",
+      "allSuccess": "",
+      "allFailed": "",
+      "someSuccessSomeFailed": "",
+      "addPrescription": "",
+      "publish": "",
+      "control": {
+        "title": "",
+        "warning": "",
+        "error": {
+          "required": ""
+        },
+        "table": {
+          "title": "",
+          "select": "",
+          "relevance": "",
+          "typesOfImagery": "",
+          "cost": "",
+          "radiationRate": "",
+          "radiationLevel": "",
+          "deselectRow": "",
+          "selectRow": ""
+        }
+      },
+      "deletePrescription": {
+        "title": "",
+        "message": ""
+      },
+      "cancelPrescriptionsCreation": {
+        "title": "",
+        "cancelAll": "",
+        "noSelectionError": ""
+      },
+      "cancelCreation": "",
+      "prescription": "",
+      "requiredFields": ""
+    },
+    "allPrescriptionsFetched": "",
+    "model": {
+      "allModalsFetched": "",
+      "title": "",
+      "create": {
+        "title": "",
+        "success": "",
+        "dialog": {
+          "title": "",
+          "label": "",
+          "labelNotUnique": ""
+        },
+        "model": ""
+      },
+      "update": {
+        "title": ""
+      },
+      "delete": {
+        "title": "",
+        "message": ""
+      },
+      "creationDate": "",
+      "label": "",
+      "template": "",
+      "actions": "",
+      "noModels": "",
+      "pagination": {
+        "models": "",
+        "pageSize": ""
+      },
+      "tableHasRecords": ""
+    },
+    "filter": {
+      "historicToggle": "",
+      "prescriptionType": {
+        "label": ""
+      },
+      "status": {
+        "label": ""
+      },
+      "submit": "",
+      "clear": ""
+    },
+    "print": {
+      "content-electronic-prescription": "",
+      "guideline": "",
+      "nihdi": "",
+      "niss": "",
+      "patient": "",
+      "prescriber": "",
+      "proof-of-electronic-prescription": "",
+      "remark": "",
+      "date": "",
+      "subsection": {
+        "patient": "",
+        "startDate": "",
+        "endDate": "",
+        "header": ""
+      },
+      "alert": ""
+    },
+    "author": "",
+    "patient": "",
+    "note": "",
+    "shortcode": "",
+    "typeOfCare": "",
+    "services": "",
+    "frequency": "",
+    "start": "",
+    "end": "",
+    "validityPeriod": "",
+    "consultDetails": "",
+    "assign": "",
+    "transfer": "",
+    "assignMe": "",
+    "reject": "",
+    "copy": "",
+    "printAction": "",
+    "duplicate": "",
+    "extend": "",
+    "careGivers": "",
+    "assigned": "",
+    "noPrescriptionsForPatient": "",
+    "noPrescriptionsForUser": "",
+    "assignPerformer": {
+      "title": "",
+      "success": "",
+      "successOrganization": "",
+      "meSuccess": "",
+      "performer": "",
+      "searchPerformerPlaceHolder": "",
+      "select": "",
+      "locations": "",
+      "zipCodeOrCityName": "",
+      "noResults": "",
+      "organization": "",
+      "dialog": {
+        "title": "",
+        "description": ""
+      },
+      "locationsHint": "",
+      "performerHint": ""
+    },
+    "transferAssignation": {
+      "title": "Transfer assignment",
+      "success": "{firstName} {lastName} has been assigned as provider.",
+      "performer": "Provider",
+      "searchPerformerPlaceHolder": "INAMI number, name",
+      "locations": "Location(s)",
+      "zipCodeOrCityName": "Postal code or city",
+      "noResults": "No city found",
+      "dialog": {
+        "title": "Transfer a healthcare provider to a prescription",
+        "description": "If you transfer a healthcare provider to this prescription, they will be able to view the information contained in this prescription."
+      }
+    },
+    "cancel": {
+      "action": "",
+      "title": "",
+      "message": "",
+      "success": "",
+      "reason": ""
+    },
+    "rejectAssignation": {
+      "action": "",
+      "title": "",
+      "message": "",
+      "success": ""
+    },
+    "cancelExecution": {
+      "action": "",
+      "title": "",
+      "message": "",
+      "success": "",
+      "reason": ""
+    },
+    "interruptExecution": {
+      "action": "",
+      "title": "",
+      "message": "",
+      "success": ""
+    },
+    "startExecution": {
+      "action": "",
+      "title": "",
+      "startDate": "",
+      "success": ""
+    },
+    "restartExecution": {
+      "action": "",
+      "title": "",
+      "message": "",
+      "success": ""
+    },
+    "finishExecution": {
+      "action": "",
+      "title": "",
+      "endDate": "",
+      "success": ""
+    },
+    "frequencyTypes": {
+      "iterative": "",
+      "weekly": ""
+    },
+    "status": "",
+    "prescriptionDate": "",
+    "pagination": {
+      "prescriptions": "",
+      "pageSize": ""
+    },
+    "statuses": {
+      "DRAFT": "Draft",
+      "BLACKLISTED": "Blacklisted",
+      "PENDING": "Pending",
+      "OPEN": "Available",
+      "CANCELLED": "Classified without consequence",
+      "EXPIRED": "Expired",
+      "IN_PROGRESS": "In progress",
+      "DONE": "Completed",
+      "null": "Unknown",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected",
+      "STOPPED": "Stopped"
+    },
+    "errors": {
+      "failedToLoadPrescription": "",
+      "failedToLoadPrescriptions": "",
+      "invalidFhirString": "",
+      "invalidMaxLength": "",
+      "invalidMinLength": "",
+      "invalidNihiiDigitsCount": "",
+      "invalidCaregiverNameCharacters": "",
+      "dateMustBeEarlierOrEqualTo": "",
+      "dateMustBeLaterOrEqualTo": "",
+      "invalidDateFormat": "",
+      "invalidSsinChecksum": "",
+      "invalidShortCode": "",
+      "decryptionFailed": "",
+      "failedToCreateModel": "",
+      "failedToLoadTemplate": "Failed to load prescription form template."
+    },
+    "categories": {
+      "bandagisterie": "",
+      "dentistry": "",
+      "physiotherapy": "",
+      "orthopedics": "",
+      "otolaryngology": "",
+      "radiology": "",
+      "nursingCare": ""
+    },
+    "ariaLabel": {
+      "delete": "",
+      "removeCity": "",
+      "print": "",
+      "reject": "",
+      "interrupt": "",
+      "restart": ""
+    },
+    "tableHasRecords": "",
+    "extendedShortId": "",
+    "actions": {
+      "button": "",
+      "assignMe": "",
+      "startExecution": "",
+      "assign": "",
+      "copy": "",
+      "extend": "",
+      "print": "",
+      "cancel": ""
+    },
+    "assignProfessional": {
+      "undefined": ""
+    },
+    "transferProfessional": {
+      "undefined": ""
+    },
+    "transferPerformer": {
+      "dialog": {
+        "description": "If you transfer a healthcare provider to this prescription, they will be able to view the information contained in this prescription.",
+        "title": "Transfer a healthcare provider to a prescription"
+      },
+      "locations": "Location(s)",
+      "noResults": "No city found",
+      "performer": "Provider",
+      "searchPerformerPlaceHolder": "INAMI number, name",
+      "success": "{firstName} {lastName} has been assigned as provider.",
+      "title": "Transfer assignment",
+      "zipCodeOrCityName": "Postal code or city"
+    },
+    "validityStartDate": ""
+  },
+  "proposal": {
+    "creationDate": "",
+    "details": {
+      "link": ""
+    },
+    "selectTemplate": {
+      "proposalModel": "",
+      "pickOptionFromList": "",
+      "noOptions": ""
+    },
+    "create": {
+      "action": "",
+      "success": "",
+      "allSuccess": "",
+      "allFailed": "",
+      "someSuccessSomeFailed": "",
+      "addProposal": "",
+      "publish": "",
+      "deleteProposal": {
+        "title": "",
+        "message": ""
+      },
+      "cancelProposalsCreation": {
+        "title": "",
+        "cancelAll": ""
+      },
+      "cancelCreation": "",
+      "proposal": ""
+    },
+    "allProposalsFetched": "",
+    "print": {
+      "content-electronic-proposal": "",
+      "guideline": "",
+      "nihdi": "",
+      "niss": "",
+      "patient": "",
+      "prescriber": "",
+      "proof-of-electronic-proposal": "",
+      "remark": "",
+      "date": "",
+      "content-electronic-prescription": "",
+      "proof-of-electronic-prescription": ""
+    },
+    "author": "",
+    "patient": "",
+    "typeOfCare": "",
+    "services": "",
+    "frequency": "",
+    "start": "",
+    "end": "",
+    "validityPeriod": "",
+    "consultDetails": "",
+    "assign": "",
+    "transfer": "",
+    "assignMe": "",
+    "duplicate": "",
+    "extend": "",
+    "careGivers": "",
+    "assigned": "",
+    "noProposalsForPatient": "",
+    "noProposalsForUser": "",
+    "assignPerformer": {
+      "title": "",
+      "success": "",
+      "successOrganization": "",
+      "meSuccess": "",
+      "performer": "",
+      "searchPerformerPlaceHolder": "",
+      "locations": "",
+      "zipCodeOrCityName": "",
+      "noResults": "",
+      "organization": "",
+      "dialog": {
+        "title": "",
+        "description": ""
+      }
+    },
+    "transferAssignation": {
+      "title": "Transfer assignment",
+      "success": "{firstName} {lastName} has been assigned as provider.",
+      "performer": "Provider",
+      "searchPerformerPlaceHolder": "INAMI number, name",
+      "locations": "Location(s)",
+      "zipCodeOrCityName": "Postal code or city",
+      "noResults": "No city found",
+      "dialog": {
+        "title": "Transfer a healthcare provider to a proposal",
+        "description": "If you transfer a healthcare provider to this proposal, they will be able to view the information contained in this proposal."
+      }
+    },
+    "approve": {
+      "action": "",
+      "success": "",
+      "dialog": {
+        "title": "",
+        "reason": ""
+      }
+    },
+    "reject": {
+      "title": "",
+      "action": "",
+      "success": "",
+      "dialog": {
+        "title": "",
+        "reason": ""
+      }
+    },
+    "cancel": {
+      "action": "",
+      "title": "",
+      "message": "",
+      "success": "",
+      "reason": ""
+    },
+    "rejectAssignation": {
+      "action": "",
+      "title": "",
+      "message": "",
+      "success": ""
+    },
+    "frequencyTypes": {
+      "iterative": "",
+      "weekly": ""
+    },
+    "status": "",
+    "proposalDate": "",
+    "proposalInfoTitle": "",
+    "pagination": {
+      "proposals": "",
+      "pageSize": ""
+    },
+    "statuses": {
+      "DRAFT": "",
+      "BLACKLISTED": "",
+      "PENDING": "",
+      "OPEN": "",
+      "CANCELLED": "",
+      "EXPIRED": "",
+      "IN_PROGRESS": "",
+      "DONE": "",
+      "null": "",
+      "APPROVED": "",
+      "REJECTED": "",
+      "STOPPED": "Stopped"
+    },
+    "errors": {
+      "failedToLoadProposal": "",
+      "failedToLoadProposals": "",
+      "invalidFhirString": "",
+      "invalidMaxLength": "",
+      "invalidMinLength": "",
+      "invalidNihiiDigitsCount": "",
+      "invalidCaregiverNameCharacters": "",
+      "dateMustBeEarlierOrEqualTo": "",
+      "dateMustBeLaterOrEqualTo": "",
+      "invalidDateFormat": "",
+      "invalidUUID": ""
+    },
+    "categories": {
+      "bandagisterie": "",
+      "dentistry": "",
+      "physiotherapy": "",
+      "orthopedics": "",
+      "otolaryngology": "",
+      "radiology": "",
+      "nursingCare": ""
+    },
+    "transferPerformer": {
+      "dialog": {
+        "description": "If you transfer a healthcare provider to this proposal, they will be able to view the information contained in this proposal.",
+        "title": "Transfer a healthcare provider to a proposal"
+      },
+      "locations": "Location(s)",
+      "noResults": "No city found",
+      "performer": "Provider",
+      "searchPerformerPlaceHolder": "INAMI number, name",
+      "success": "{firstName} {lastName} has been assigned as provider.",
+      "title": "Transfer assignment",
+      "zipCodeOrCityName": "Postal code or city"
+    }
+  },
+  "performerTask": {
+    "statuses": {
+      "ONHOLD": "",
+      "READY": "",
+      "CANCELLED": "",
+      "FAILED": "",
+      "INPROGRESS": "",
+      "COMPLETED": "",
+      "null": ""
+    }
+  },
+  "models": {
+    "errors": {
+      "failedToLoadModels": ""
+    }
+  },
+  "pss": {
+    "unavailable": {
+      "title": "",
+      "message": ""
+    }
+  },
+  "professional": {
+    "table": {
+      "results": "",
+      "firstname": "",
+      "lastname": "",
+      "address": "",
+      "city": "",
+      "actions": "",
+      "tableHasRecords": "",
+      "noRecords": "",
+      "select": ""
+    },
+    "noProfessionals": "",
+    "allProfessionalsFetched": ""
+  }
 }

@@ -6,8 +6,8 @@ import { ControlRequest, PssService as ApiPssService } from '@reuse/code/openapi
 
 @Injectable({ providedIn: 'root' })
 export class PssService {
-  private api = inject(ApiPssService);
-  private http = inject(HttpClient);
+  private readonly api = inject(ApiPssService);
+  private readonly http = inject(HttpClient);
 
   public status$ = new BehaviorSubject<boolean>(false);
 

@@ -8,6 +8,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { CancelCreationDialog, CancelCreationDialogData } from './cancel-creation.dialog';
 import { CreatePrescriptionForm } from '@reuse/code/interfaces';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { By } from '@angular/platform-browser';
 
 @Pipe({
   name: 'templateName',
@@ -62,45 +64,92 @@ describe('CancelCreationDialog', () => {
     fixture.detectChanges();
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('cancelPrescriptions', () => {
     it('should close dialog with selected formsToDelete', () => {
-      component.formsToDelete = [1, 3];
+      component.checkboxesGroup.get('1')?.setValue(true);
+      component.checkboxesGroup.get('3')?.setValue(true);
 
       component.cancelPrescriptions();
 
       expect(mockDialogRef.close).toHaveBeenCalledWith({ formsToDelete: [1, 3] });
     });
+
+    it('should mark form as touched and not close dialog when no forms are selected', () => {
+      component.cancelPrescriptions();
+
+      expect(component.checkboxesGroup.touched).toBe(true);
+      expect(component.checkboxesGroup.invalid).toBe(true);
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
   });
 
-  describe('toggleDeleteAll', () => {
+  describe('selectAll', () => {
     it('should select all forms when checked is true', () => {
-      component.toggleDeleteAll(true);
+      component.selectAll();
 
       expect(component.formsToDelete).toEqual([1, 2, 3]);
       expect(component.formsToDelete).toHaveLength(3);
     });
+  });
 
-    it('should deselect all forms when checked is false', () => {
-      component.formsToDelete = [1, 2, 3];
+  describe('deselectAll', () => {
+    it('should clear all selected forms when checked is false', () => {
+      component.selectAll();
+      expect(component.formsToDelete).toHaveLength(component.prescriptionForms.length);
 
-      component.toggleDeleteAll(false);
+      component.deselectAll();
 
       expect(component.formsToDelete).toEqual([]);
     });
   });
 
+  describe('Select All checkbox (template interaction)', () => {
+    it('should call selectAll() when checkbox is checked', () => {
+      const selectAllSpy = jest.spyOn(component, 'selectAll');
+
+      fixture.detectChanges();
+
+      const checkboxes = fixture.debugElement.queryAll(By.directive(MatCheckbox));
+      const selectAllCheckbox = checkboxes[0].componentInstance as MatCheckbox;
+
+      selectAllCheckbox.checked = true;
+      selectAllCheckbox.change.emit({ checked: true } as any);
+
+      expect(selectAllSpy).toHaveBeenCalled();
+    });
+
+    it('should call deselectAll() when checkbox is unchecked', () => {
+      const deselectAllSpy = jest.spyOn(component, 'deselectAll');
+
+      fixture.detectChanges();
+
+      const checkboxes = fixture.debugElement.queryAll(By.directive(MatCheckbox));
+      const selectAllCheckbox = checkboxes[0].componentInstance as MatCheckbox;
+
+      selectAllCheckbox.checked = false;
+      selectAllCheckbox.change.emit({ checked: false } as any);
+
+      expect(deselectAllSpy).toHaveBeenCalled();
+    });
+  });
+
   describe('toggleDeleteForm', () => {
     it('should add trackId to formsToDelete when not already present', () => {
-      component.toggleDeleteForm(1);
+      component.toggleDeleteForm(1, true);
 
       expect(component.formsToDelete).toContain(1);
       expect(component.formsToDelete).toHaveLength(1);
     });
 
     it('should remove trackId from formsToDelete when already present', () => {
-      component.formsToDelete = [1, 2];
+      component.checkboxesGroup.get('1')?.setValue(true);
+      component.checkboxesGroup.get('2')?.setValue(true);
 
-      component.toggleDeleteForm(1);
+      component.toggleDeleteForm(1, false);
 
       expect(component.formsToDelete).not.toContain(1);
       expect(component.formsToDelete).toEqual([2]);

@@ -1,22 +1,23 @@
 import { generateWarningMessage } from './pss-relevant-info-message.utils';
+import { Lang } from '@reuse/code/constants/languages';
 
 describe('generateWarningMessage', () => {
   it('should return a message with one relevant info in French', () => {
-    const result = generateWarningMessage(['tmp-addInfo-diab'], [], 'fr');
+    const result = generateWarningMessage(['tmp-addInfo-diab'], [], Lang.FR.short);
 
     expect(result).toContain('Les informations pertinentes');
     expect(result).toContain('• Diabète');
   });
 
   it('should return a message with implants only in Dutch', () => {
-    const result = generateWarningMessage([], ['tmp-impl-stent', 'tmp-impl-elec'], 'nl');
+    const result = generateWarningMessage([], ['tmp-impl-stent', 'tmp-impl-elec'], Lang.NL.short);
 
     expect(result).toContain('De onderstaande relevante informatie');
     expect(result).toContain('• Implantaten (endoprothese (bv. stent), electrode)');
   });
 
   it('should return a combined message with implants and relevant info in French', () => {
-    const result = generateWarningMessage(['tmp-addInfo-diab', 'tmp-addInfo-impl'], ['tmp-impl-stent'], 'fr');
+    const result = generateWarningMessage(['tmp-addInfo-diab', 'tmp-addInfo-impl'], ['tmp-impl-stent'], Lang.FR.short);
 
     expect(result).toContain('• Implants (endoprothèses (p.ex. stents))');
     expect(result).toContain('• Diabète');
@@ -24,26 +25,26 @@ describe('generateWarningMessage', () => {
   });
 
   it('should ignore unknown implant keys', () => {
-    const result = generateWarningMessage([], ['unknown-implant'], 'fr');
+    const result = generateWarningMessage([], ['unknown-implant'], Lang.FR.short);
 
     expect(result).toContain('Implants'); // default label should still appear
     expect(result).not.toContain('unknown-implant');
   });
 
   it('should ignore unknown relevant info keys', () => {
-    const result = generateWarningMessage(['tmp-unknown'], [], 'fr');
+    const result = generateWarningMessage(['tmp-unknown'], [], Lang.FR.short);
 
     expect(result).toBe('');
   });
 
   it('should return an empty string when both inputs are empty', () => {
-    const result = generateWarningMessage([], [], 'fr');
+    const result = generateWarningMessage([], [], Lang.FR.short);
 
     expect(result).toBe('');
   });
 
   it('should render generic implant and info labels correctly in Dutch', () => {
-    const result = generateWarningMessage(['tmp-addInfo'], ['tmp-impl'], 'nl');
+    const result = generateWarningMessage(['tmp-addInfo'], ['tmp-impl'], Lang.NL.short);
 
     expect(result).toContain('• Implantaten (andere)');
     expect(result).toContain('• Andere');

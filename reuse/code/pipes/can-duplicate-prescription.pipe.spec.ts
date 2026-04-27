@@ -16,13 +16,13 @@ describe('CanDuplicatePrescriptionPipe', () => {
   });
 
   it('should return false if currentUser is undefined', () => {
-    const prescription = { templateCode: 'template1', intent: 'order' } as any;
+    const prescription = { templateCode: 'template1', intent: Intent.ORDER } as any;
     const result = pipe.transform(prescription, undefined);
     expect(result).toBe(false);
   });
 
   it('should return false if currentUser is not a professional', () => {
-    const prescription = { templateCode: 'template1', intent: 'order' } as any;
+    const prescription = { templateCode: 'template1', intent: Intent.ORDER } as any;
     const currentUser = { role: Role.Patient } as any;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
@@ -31,7 +31,7 @@ describe('CanDuplicatePrescriptionPipe', () => {
   });
 
   it('should return false if accessMatrixState hasAtLeastOnePermission returns false', () => {
-    const prescription = { templateCode: 'template1', intent: 'order' } as any;
+    const prescription = { templateCode: 'template1', intent: Intent.ORDER } as any;
     const currentUser = { role: Role.Prescriber } as any;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(false);
 
@@ -49,7 +49,7 @@ describe('CanDuplicatePrescriptionPipe', () => {
   });
 
   it('should return true if all conditions are satisfied', () => {
-    const prescription = { templateCode: 'template1', intent: 'order' } as any;
+    const prescription = { templateCode: 'template1', intent: Intent.ORDER } as any;
     const currentUser = { role: Role.Prescriber } as any;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 

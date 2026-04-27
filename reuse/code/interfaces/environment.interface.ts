@@ -1,6 +1,8 @@
 export type ReferralEnv =
   | 'demo'
   | 'local'
+  | 'localPatient'
+  | 'localHcp'
   | 'testHcp'
   | 'testPatient'
   | 'intExtHcp'

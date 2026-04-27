@@ -106,14 +106,11 @@ describe('AutocompleteMultiselectComponent', () => {
   });
 
   it('should render the form fields', () => {
-
     component.demoTemplate = formTemplate;
     fixture.detectChanges();
 
     // Check that mat-form-field exists
-    const formFieldDebug = fixture.debugElement.query(
-      By.directive(MatFormField)
-    );
+    const formFieldDebug = fixture.debugElement.query(By.directive(MatFormField));
     expect(formFieldDebug).toBeTruthy();
 
     // Check mat-form-field right style
@@ -121,9 +118,7 @@ describe('AutocompleteMultiselectComponent', () => {
     expect(formField.appearance).toBe('outline');
 
     // Check that mat-input exists
-    const inputDe = fixture.debugElement.query(
-      By.directive(MatInput)
-    );
+    const inputDe = fixture.debugElement.query(By.directive(MatInput));
     expect(inputDe).toBeTruthy();
 
     // Is text with id
@@ -136,9 +131,7 @@ describe('AutocompleteMultiselectComponent', () => {
     expect(ngControl.control).toBeTruthy();
 
     // Has no chip present
-    const chips = fixture.debugElement.queryAll(
-      By.directive(MatChipRow)
-    );
+    const chips = fixture.debugElement.queryAll(By.directive(MatChipRow));
     expect(chips.length).toBe(0);
   });
 

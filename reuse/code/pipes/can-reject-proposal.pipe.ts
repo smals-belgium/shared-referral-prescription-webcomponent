@@ -4,7 +4,7 @@ import { ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
 
 @Pipe({ name: 'canRejectProposal', standalone: true })
 export class CanRejectProposalPipe implements PipeTransform {
-  constructor(private accessMatrixState: AccessMatrixState) {}
+  constructor(private readonly accessMatrixState: AccessMatrixState) {}
 
   transform(prescription: ReadRequestResource): boolean {
     const allowedStatuses: RequestStatus[] = [

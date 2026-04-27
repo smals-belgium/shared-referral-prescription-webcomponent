@@ -1,7 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { PaginatorComponent } from './paginator.component';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatPaginatorIntlService } from './mat-paginator-intl.service';
 
 describe('PaginatorComponent', () => {
   let component: PaginatorComponent;
@@ -9,7 +11,8 @@ describe('PaginatorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PaginatorComponent, MatPaginatorModule, NoopAnimationsModule],
+      imports: [PaginatorComponent, MatPaginatorModule, NoopAnimationsModule, TranslateModule.forRoot()],
+      providers: [{ provide: MatPaginatorIntl, useClass: MatPaginatorIntlService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PaginatorComponent);

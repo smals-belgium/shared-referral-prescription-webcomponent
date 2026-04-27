@@ -4,7 +4,7 @@ import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
 import {
   checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline,
-  isProfesionalBasedOnRole
+  isProfesionalBasedOnRole,
 } from '@reuse/code/utils/utils';
 
 /**
@@ -25,7 +25,7 @@ import {
  */
 @Pipe({ name: 'canInterruptTreatment', standalone: true })
 export class CanInterruptTreatmentPipe implements PipeTransform {
-  constructor(private accessMatrixState: AccessMatrixState) {}
+  constructor(private readonly accessMatrixState: AccessMatrixState) {}
 
   transform(prescription: ReadRequestResource, task: PerformerTaskResource, currentUser?: Partial<UserInfo>): boolean {
     if (currentUser == undefined) return false;

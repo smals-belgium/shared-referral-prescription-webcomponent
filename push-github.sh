@@ -1,55 +1,81 @@
 #!/bin/bash
 set -e
 
-# Store current branch
-CURRENT_BRANCH=$(git branch --show-current)
-TEMP_BRANCH="${CURRENT_BRANCH}-release"
+PROXY_URL="http://proxy.smals-mvm.be:8080"
+git config http.proxy ${PROXY_URL}
+npm config set proxy "${PROXY_URL}"
+npm config set https-proxy "${PROXY_URL}"
 
-# Create a temporary branch for github push
-git checkout -B ${TEMP_BRANCH}
+# --- CONFIGURATION ---
+REMOTE_GITLAB="origin"
+REMOTE_GITHUB="github"
+RELEASE_BRANCH_GITLAB="release/business-1.1.x"
+SUBMODULE_PATH="api-contract"
 
-# Copy the actual openapi.yaml content (from submodule) to a temp location
-cp api-contract/openapi.yaml /tmp/openapi.yaml
+echo "🚀 Preparing to push release ${VERSION} to GitHub---"
 
-# Remove the submodule from index only
-git rm -r --cached api-contract
-rm -rf api-contract
+git checkout $RELEASE_BRANCH_GITLAB
+git fetch origin
+git fetch github
 
-# Recreate as regular directory with the file
-mkdir -p api-contract
-cp /tmp/openapi.yaml api-contract/openapi.yaml
+# --- Version retrieval from package.json
+VERSION=$(grep -E '^[[:space:]]*"version"[[:space:]]*:' package.json | head -n 1 | sed -E 's/.*"([0-9]+\.[0-9]+\.[0-9]+)".*/\1/')
+if [ -z "${VERSION}" ]; then
+    echo "❌ Error : Impossible to extract the version from package.json"
+    exit 1
+fi
+PR_BRANCH_NAME="release-v${VERSION}"
+echo "📦 Target version : ${VERSION}"
+echo "🌿 PR branch : ${PR_BRANCH_NAME}"
 
-# --- Remove translation scripts (backup first) ---
-cp pull-translations.ps1 /tmp/pull-translations.ps1 2>/dev/null || true
-cp pull-translations.sh /tmp/pull-translations.sh 2>/dev/null || true
-git rm -f pull-translations.ps1 2>/dev/null || true
-git rm -f pull-translations.sh 2>/dev/null || true
-rm -f pull-translations.ps1 pull-translations.sh
-# ----------------------------------
+echo "🧹 Cleanup of the local file to avoid getting untracked files issues..."
+rm -rf "${SUBMODULE_PATH}"
+git rm -r --cached "${SUBMODULE_PATH}" 2>/dev/null || true
 
-# --- Remove husky pre-commit hooks (backup first) ---
-cp -r .husky /tmp/.husky 2>/dev/null || true
-git rm -rf .husky 2>/dev/null || true
+# Create a transition branch for github push
+git branch -D "${PR_BRANCH_NAME}" 2>/dev/null || true
+git checkout -b "${PR_BRANCH_NAME}" ${REMOTE_GITHUB}/master
+
+git checkout $REMOTE_GITLAB/$RELEASE_BRANCH_GITLAB -- .
+git submodule update --remote
+
+# Cleanup of the submodule directory such that it appears as a regular directory
+if [ -d "${SUBMODULE_PATH}" ]; then
+  echo "Clearing the submodule directory to make it appear as a regular directory and not a sub-module"
+  # Remove the submodule from index only and remove the unnecessary files
+  git rm --cached -r "$SUBMODULE_PATH" 2>/dev/null || true
+  # Using find to remove .git as it might be a file (submodule) or a directory
+  find "${SUBMODULE_PATH}" -name ".git" -exec rm -rf {} + 2>/dev/null || rm -rf "${SUBMODULE_PATH}/.git"
+  rm -rf ${SUBMODULE_PATH}/README.md ${SUBMODULE_PATH}/.gitignore
+  # Also remove .gitmodules to avoid GitHub identifying it as a submodule
+  git rm --cached .gitmodules 2>/dev/null || true
+  rm -f .gitmodules
+fi
+
+rm -f update-translations.bat pull-translations.ps1 pull-translations.sh push-github.sh
 rm -rf .husky
-# -------------------------------------
+rm -rf .openshift
+rm -rf .gitlab
+rm -rf contrib
+rm -f package-lock.json
+rm -f DEVELOPMENT.md
 
-# Commit the change (skip pre-commit hook)
-git add api-contract/openapi.yaml
-git commit --amend --no-edit --no-verify
+npm cache clean --force
+npm cache verify
+rm -rf node_modules/
+npm i
 
-# Push to github
-git push github HEAD:${CURRENT_BRANCH} --force
+echo "Adding changes to the index"
+git add .
+if ! git diff-index --quiet HEAD; then
+    git commit -m "Release $VERSION"
+    echo "✅ Release commit successfully created."
+else
+    echo "⚠️ No changes detected."
+fi
 
-# Return to original branch
-git checkout ${CURRENT_BRANCH}
-git branch -D ${TEMP_BRANCH}
+echo "📤 Pushing to GitHub..."
+git push $REMOTE_GITHUB "${PR_BRANCH_NAME}"
 
-# Restore the submodule
-git submodule update --init --recursive
-
-# Restore backed up files
-cp /tmp/pull-translations.ps1 pull-translations.ps1 2>/dev/null || true
-cp /tmp/pull-translations.sh pull-translations.sh 2>/dev/null || true
-cp -r /tmp/.husky .husky 2>/dev/null || true
-
-echo "Pushed to github with openapi.yaml as regular file"
+git checkout "${RELEASE_BRANCH_GITLAB}"
+git submodule update --remote

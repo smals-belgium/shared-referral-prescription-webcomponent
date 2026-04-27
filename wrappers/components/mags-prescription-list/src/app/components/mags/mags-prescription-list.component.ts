@@ -1,13 +1,13 @@
 import {
-  CUSTOM_ELEMENTS_SCHEMA,
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  ViewEncapsulation,
-  output,
-  AfterViewInit,
-  ViewChild,
+  CUSTOM_ELEMENTS_SCHEMA,
   ElementRef,
   inject,
+  output,
+  ViewChild,
+  ViewEncapsulation,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MagsComponent, Services } from '@reuse/code/components/wrappers/directives/mags.wrapper.directive';
@@ -16,6 +16,9 @@ import { SettingsChangeEvent } from '@smals-belgium/myhealth-wc-integration';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { hasUserProfile } from '@reuse/code/utils/mags-utils';
+import { Intent } from '@reuse/code/interfaces';
+
+export type PrescriptionListIntent = Intent.ORDER | Intent.PROPOSAL;
 
 @Component({
   standalone: true,
@@ -35,25 +38,25 @@ export class MagsPrescriptionList extends MagsComponent implements AfterViewInit
   @ViewChild('orderHost', { read: ElementRef }) orderHost!: ElementRef<HTMLElement>;
   @ViewChild('proposalHost', { read: ElementRef }) proposalHost!: ElementRef<HTMLElement>;
 
-  private readonly instances = new Map<'order' | 'proposal', HTMLElement>();
-  private activeIntent: 'order' | 'proposal' = 'order';
+  private readonly instances = new Map<PrescriptionListIntent, HTMLElement>();
+  private activeIntent: PrescriptionListIntent = Intent.ORDER;
 
   ngAfterViewInit() {
-    this.activate('order'); // default tab
+    this.activate(Intent.ORDER); // default tab
   }
 
   onTabChange(index: number) {
-    this.activate(index === 0 ? 'order' : 'proposal');
+    this.activate(index === 0 ? Intent.ORDER : Intent.PROPOSAL);
   }
 
-  private activate(intent: 'order' | 'proposal') {
+  private activate(intent: PrescriptionListIntent) {
     if (!this.instances.has(intent)) {
       this.createWebcomponent(intent);
     }
     this.activeIntent = intent;
   }
 
-  private async createWebcomponent(intent: 'order' | 'proposal') {
+  private async createWebcomponent(intent: PrescriptionListIntent) {
     let ssin;
     if (this.patientSsin) {
       ssin = this.patientSsin;
@@ -76,7 +79,7 @@ export class MagsPrescriptionList extends MagsComponent implements AfterViewInit
 
     el.addEventListener('clickOpenDetail', this.onOpenDetail);
 
-    const host = intent === 'order' ? this.orderHost.nativeElement : this.proposalHost.nativeElement;
+    const host = intent === Intent.ORDER ? this.orderHost.nativeElement : this.proposalHost.nativeElement;
 
     host.appendChild(el);
     this.instances.set(intent, el);

@@ -2,6 +2,7 @@ import { HttpRequest } from '@angular/common/http';
 import { DEMO_MOCKS, DemoMockEntry, ReadRequestResourceExtended } from '@reuse/code/demo/mocks/mock-registry';
 import {
   CitiesResource,
+  Discipline,
   HealthcarePersonResource,
   RequestSummaryListResource,
   TemplateVersion,
@@ -179,16 +180,18 @@ describe('Demo mode', () => {
 
       const result = mock.handler!(req, null) as ReadRequestResourceExtended;
 
-      if (result && result.performerTasks && result.performerTasks.length > 0) {
-        result.performerTasks.forEach((task: any) => {
-          if (task.careGiverIndex != null) {
-            expect(task.careGiver).toBeDefined();
+      if (result && result.performerTasks) {
+        Object.values(result.performerTasks).map(performerTasks => {
+          performerTasks.forEach((task: any) => {
+            if (task.careGiverIndex != null) {
+              expect(task.careGiver).toBeDefined();
 
-            const healthcarePerson = task.careGiver.healthcarePerson as HealthcarePersonResource;
-            expect(healthcarePerson.ssin).toBe('10000000009');
-            expect(healthcarePerson.firstName).toBe('Robin');
-            expect(healthcarePerson.lastName).toBe('Dupont');
-          }
+              const healthcarePerson = task.careGiver.healthcarePerson as HealthcarePersonResource;
+              expect(healthcarePerson.ssin).toBe('10000000009');
+              expect(healthcarePerson.firstName).toBe('Robin');
+              expect(healthcarePerson.lastName).toBe('Dupont');
+            }
+          });
         });
       }
     });
@@ -327,7 +330,7 @@ describe('Demo mode', () => {
     it('should return healthcare professionals when discipline is provided', () => {
       const mock = findMockByUrl(/\/healthCareProviders/);
       const req = createHttpRequest('/healthCareProviders', {
-        discipline: 'NURSE',
+        discipline: Discipline.Nurse,
         page: '1',
         pageSize: '10',
       });
@@ -369,7 +372,7 @@ describe('Demo mode', () => {
     it('should filter professionals by query', () => {
       const mock = findMockByUrl(/\/healthCareProviders/);
       const req = createHttpRequest('/healthCareProviders', {
-        discipline: 'NURSE',
+        discipline: Discipline.Nurse,
         query: 'Ank',
         page: '1',
         pageSize: '10',
@@ -390,7 +393,7 @@ describe('Demo mode', () => {
     it('should filter professionals by zipCode', () => {
       const mock = findMockByUrl(/\/healthCareProviders/);
       const req = createHttpRequest('/healthCareProviders', {
-        discipline: 'NURSE',
+        discipline: Discipline.Nurse,
         zipCode: '1050',
         page: '1',
         pageSize: '10',
@@ -424,7 +427,7 @@ describe('Demo mode', () => {
     it('should paginate professional results', () => {
       const mock = findMockByUrl(/\/healthCareProviders/);
       const req = createHttpRequest('/healthCareProviders', {
-        discipline: 'NURSE',
+        discipline: Discipline.Nurse,
         page: '2',
         pageSize: '2',
       });
@@ -457,7 +460,7 @@ describe('Demo mode', () => {
       const mockPrescription = {
         id: id,
         status: 'OPEN',
-        performerTasks: [],
+        performerTasks: {},
       };
       demoStorage.set('demoPrescription', mockPrescription);
 
@@ -471,8 +474,7 @@ describe('Demo mode', () => {
       const savedPrescription = demoStorage.get('demoPrescription') as ReadRequestResourceExtended;
       expect(savedPrescription).toBeDefined();
       expect(savedPrescription.performerTasks).toBeDefined();
-      expect(Array.isArray(savedPrescription.performerTasks)).toBe(true);
-      expect(savedPrescription.performerTasks?.length).toBe(1);
+      expect(Object.keys(savedPrescription.performerTasks!).length).toBe(1);
     });
   });
 

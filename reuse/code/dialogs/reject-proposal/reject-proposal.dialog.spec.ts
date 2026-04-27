@@ -11,6 +11,7 @@ import { ProposalState } from '../../states/api/proposal.state';
 import { EncryptionHelperService } from '@reuse/code/states/privacy/encryption-helper.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ReadRequestResource } from '@reuse/code/openapi';
+import { Lang } from '@reuse/code/constants/languages';
 
 const mockToastService = {
   show: jest.fn(),
@@ -55,8 +56,8 @@ describe('RejectProposalDialog', () => {
       ],
     }).compileComponents();
     translate = TestBed.inject(TranslateService);
-    translate.setDefaultLang('nl-BE');
-    translate.use('nl-BE');
+    translate.setDefaultLang(Lang.NL.full);
+    translate.use(Lang.NL.full);
     fixture = TestBed.createComponent(RejectProposalDialog);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -68,7 +69,7 @@ describe('RejectProposalDialog', () => {
 
   afterEach(() => {
     uuidSpy.mockRestore();
-    jest.clearAllMocks()
+    jest.clearAllMocks();
   });
 
   describe('when proposal has no performer tasks', () => {
@@ -124,5 +125,4 @@ describe('RejectProposalDialog', () => {
       expect(mockDialogRef.close).not.toHaveBeenCalled();
     }));
   });
-
 });

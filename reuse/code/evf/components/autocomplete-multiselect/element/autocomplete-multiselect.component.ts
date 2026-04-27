@@ -70,7 +70,7 @@ import { isEmptyValue } from '@reuse/code/utils/utils';
 })
 export class AutocompleteMultiselectComponent extends EvfBaseFormElementComponent implements OnInit, OnChanges {
   private static counter = 0;
-  private queryTrigger$ = new Subject<string>();
+  private readonly queryTrigger$ = new Subject<string>();
   private lastValue: string | undefined;
   private autoSelectInAutocomplete = false;
 
@@ -87,15 +87,15 @@ export class AutocompleteMultiselectComponent extends EvfBaseFormElementComponen
   @ViewChild(MatAutocompleteTrigger, { static: true }) autocompleteTrigger: MatAutocompleteTrigger | undefined;
   @ViewChild('itemInput') inputField!: ElementRef<HTMLInputElement>;
 
-  displayWith = (option: { label: { [x: string]: unknown } } | null | undefined) =>
-    option && option.label && typeof option.label[this.evfTranslate.currentLang] === 'string'
-      ? (option.label[this.evfTranslate.currentLang] as string)
-      : '';
+  displayWith = (option: { label: { [x: string]: unknown } } | null | undefined) => {
+    const label = option?.label?.[this.evfTranslate.currentLang];
+    return typeof label === 'string' ? label : '';
+  };
 
   constructor(
-    private cdRef: ChangeDetectorRef,
-    private evfTranslate: EvfTranslateService,
-    private externalSourceService: EvfExternalSourceService,
+    private readonly cdRef: ChangeDetectorRef,
+    private readonly evfTranslate: EvfTranslateService,
+    private readonly externalSourceService: EvfExternalSourceService,
     @Optional() @Inject(EVF_MATERIAL_OPTIONS) matOptions?: EvfMaterialOptions
   ) {
     super(cdRef, matOptions);
@@ -125,7 +125,7 @@ export class AutocompleteMultiselectComponent extends EvfBaseFormElementComponen
   }
 
   updateQueryOnPaste(event: ClipboardEvent): void {
-    const value = event.clipboardData && event.clipboardData.getData('text');
+    const value = event.clipboardData?.getData('text');
     if (value?.length && this.lastValue !== value) {
       this.lastValue = value;
       this.queryTrigger$.next(value);

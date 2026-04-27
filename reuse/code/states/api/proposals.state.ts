@@ -6,7 +6,7 @@ import { ReadRequestListResource } from '@reuse/code/openapi';
 
 @Injectable({ providedIn: 'root' })
 export class ProposalsState extends BaseState<ReadRequestListResource> {
-  private proposalService = inject(ProposalService);
+  private readonly proposalService = inject(ProposalService);
 
   loadProposals(criteria?: SearchPrescriptionCriteria, page?: number, pageSize?: number): void {
     const currentParams = this.state().params;

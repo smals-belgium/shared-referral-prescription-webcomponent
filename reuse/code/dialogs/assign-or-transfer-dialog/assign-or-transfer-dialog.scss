@@ -1,0 +1,55 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+:host {
+  font-family: var(--mh-default-font-family, #{mh.$font-stack});
+}
+
+.dialog-content {
+  display: flex;
+  flex-direction: column;
+  max-height: 70vh;
+  overflow: auto;
+}
+
+.search-form {
+  flex: 0 0 auto;
+  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.search-results {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  min-height: 200px;
+  @media (max-width: mh.$media-breakpoint-s) {
+    min-height: 80%;
+    margin-bottom: 16px;
+  }
+}
+
+.responsive-wrapper {
+  display: block;
+  width: 100%;
+  .action-buttons-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+}
+
+.results {
+  overflow-y: auto;
+  max-height: calc(100vh - 500px);
+  min-height: 60px;
+
+  > table {
+    width: 100%;
+    border-spacing: 0;
+  }
+}
+
+::ng-deep .mat-mdc-dialog-actions {
+  padding: 0 24px 20px 24px;
+}

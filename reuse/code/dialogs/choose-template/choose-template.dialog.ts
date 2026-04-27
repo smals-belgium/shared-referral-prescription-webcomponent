@@ -104,7 +104,7 @@ export class ChooseTemplateDialog implements OnInit, OnDestroy {
     private readonly modelStateService: ModelsState,
     private readonly dialogRef: MatDialogRef<ChooseTemplateDialog, SelectedTemplate>,
     @Inject(MAT_DIALOG_DATA)
-    private data: {
+    private readonly data: {
       intent: Intent;
     }
   ) {}

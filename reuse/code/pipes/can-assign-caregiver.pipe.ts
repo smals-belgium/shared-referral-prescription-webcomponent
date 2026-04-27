@@ -5,7 +5,7 @@ import { isProposal } from '@reuse/code/utils/utils';
 
 @Pipe({ name: 'canAssignCaregiver', standalone: true })
 export class CanAssignCaregiverPipe implements PipeTransform {
-  constructor(private accessMatrixState: AccessMatrixState) {}
+  constructor(private readonly accessMatrixState: AccessMatrixState) {}
 
   transform(prescription: ReadRequestResource): boolean {
     const allowedStatuses: RequestStatus[] = [

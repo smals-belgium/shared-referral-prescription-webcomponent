@@ -1,25 +1,19 @@
-
 <mat-expansion-panel
   (closed)="isExpanded.set(false)"
   (opened)="isExpanded.set(true)"
   class="mat-elevation-z0"
   hideToggle
-  #matExpansionPanel
->
+  #matExpansionPanel>
   <mat-expansion-panel-header>
     <div class="mat_expansion_panel_header_container">
-      <mat-icon [color]="control.invalid && control.touched? 'warn' : 'primary'">
-        {{isExpanded() ? 'do_not_disturb_on' : 'add_circle'}}
+      <mat-icon
+        [color]="control.invalid && control.touched ? 'warn' : 'primary'"
+        [svgIcon]="isExpanded() ? 'do_not_disturb_on' : 'add_circle'"
+        [aria-hidden]="true">
       </mat-icon>
 
-      <evf-element-label
-        [elementControl]="elementControl"
-        [invalid]="invalid"
-        [for]="id"
-      ></evf-element-label>
-
+      <evf-element-label [elementControl]="elementControl" [invalid]="invalid" [for]="id"></evf-element-label>
     </div>
-
   </mat-expansion-panel-header>
 
   <evf-textarea
@@ -28,7 +22,5 @@
     [metadata]="metadata"
     [id]="id"
     [submitted]="true"
-    (events)="onEventHandling()"
-  ></evf-textarea>
+    (events)="onEventHandling()"></evf-textarea>
 </mat-expansion-panel>
-
