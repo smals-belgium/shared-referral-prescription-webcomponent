@@ -1,0 +1,97 @@
+<h1 mat-dialog-title [attr.data-cy]="'prescription-' + mode + '-performer-title'">
+  {{ translationKeyPrefixIntent + '.' + modeKey + '.title' | translate }}
+</h1>
+
+<div mat-dialog-content class="dialog-content">
+  @if (data.prescriptionId) {
+  <div class="search-form">
+    <app-alert
+      [alert]="AlertType.Info"
+      [title]="translationKeyPrefixIntent + '.' + modeKey + '.dialog.title' | translate"
+      [message]="translationKeyPrefixIntent + '.' + modeKey + '.dialog.description' | translate"
+      [showRetry]="false"></app-alert>
+
+    @if (errorCard.show) {
+    <app-alert
+      [alert]="AlertType.Error"
+      [message]="errorCard.message | translate : errorCard.translationOptions"
+      [error]="errorCard.errorResponse"
+      [showRetry]="false"></app-alert>
+    }
+
+    <professional-search-form (searchCriteria)="onSearch($event)"></professional-search-form>
+  </div>
+
+  <div class="search-results">
+    @if (healthcareProvidersState$(); as healthcareProviderState; ) {
+    <div class="results">
+      <h2>{{ 'professional.table.results' | translate:{ results: healthcareProviderState.data?.total ?? 0 } }}</h2>
+
+      <app-responsive-wrapper>
+        <ng-template #desktopTemplate>
+          <professional-table
+            [professionals]="isLoading() ? [] : healthcareProvidersState$()?.data?.items ?? []"
+            [total]="isLoading() ? undefined : healthcareProvidersState$()?.data?.total ?? 0"
+            [loading]="isLoading()"
+            [currentLang]="currentLang"
+            (selectProfessional)="executeAction($event)"
+            [category]="data.category"
+            [intent]="data.intent"
+            [prescriptionId]="data.prescriptionId"
+            [zipCodes]="searchCriteria$()?.zipCodes ?? []"></professional-table>
+        </ng-template>
+
+        <ng-template #mobileTemplate>
+          <professional-cards
+            [professionals]="isLoading() ? [] : healthcareProvidersState$()?.data?.items ?? []"
+            [total]="healthcareProvidersState$()?.data?.total || null"
+            [initialDataLoading]="isLoading()"
+            [currentLang]="currentLang"
+            [prescriptionId]="data.prescriptionId"
+            [category]="data.category"
+            [intent]="data.intent"
+            [query]="searchCriteria$()?.query ?? ''"
+            [zipCodes]="searchCriteria$()?.zipCodes ?? []"
+            [error]="errorCard.show"
+            (selectProfessional)="selectProfessional($event)"></professional-cards>
+        </ng-template>
+      </app-responsive-wrapper>
+    </div>
+    } @if (loading) {
+    <app-overlay-spinner mode="dialog"></app-overlay-spinner>
+    }
+  </div>
+  } @else {
+  <app-alert
+    [alert]="AlertType.Warning"
+    [message]="'common.somethingWentWrong' | translate"
+    [showRetry]="true"
+    (clickRetry)="dialogRef.close()"></app-alert>
+  } @if (loading) {
+  <app-overlay-spinner mode="dialog"></app-overlay-spinner>
+  }
+</div>
+
+<div mat-dialog-actions class="dialog-actions">
+  <app-responsive-wrapper class="responsive-wrapper">
+    <ng-template #mobileTemplate>
+      <div class="action-buttons-group">
+        <button
+          type="button"
+          mat-flat-button
+          (click)="onSubmitSelectedValue()"
+          [disabled]="!selectedProfessional()"
+          [attr.data-cy]="'prescription-' + mode + '-search-button'">
+          {{ 'professional.table.select' | translate }}
+        </button>
+        <button
+          type="button"
+          mat-stroked-button
+          [mat-dialog-close]="undefined"
+          [attr.data-cy]="'prescription-' + mode + '-cancel-button'">
+          {{ 'common.cancel' | translate }}
+        </button>
+      </div>
+    </ng-template>
+  </app-responsive-wrapper>
+</div>

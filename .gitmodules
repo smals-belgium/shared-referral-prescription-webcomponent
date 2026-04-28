@@ -1,3 +1,0 @@
-[submodule "api-contract"]
-	path = api-contract
-	url = ../api-contract.git

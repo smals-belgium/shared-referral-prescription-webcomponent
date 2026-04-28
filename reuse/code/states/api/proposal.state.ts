@@ -13,7 +13,7 @@ import { isProfessional } from '@reuse/code/utils/assignment-disciplines.utils';
 
 @Injectable({ providedIn: 'root' })
 export class ProposalState extends BaseState<ReadRequestResource> {
-  private proposalService = inject(ProposalService);
+  private readonly proposalService = inject(ProposalService);
 
   loadProposal(id: string): void {
     this.load(this.proposalService.findOne(id));

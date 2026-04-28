@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
-import { of } from 'rxjs';
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { CreateMultiplePrescriptionsComponent } from './create-multiple-prescriptions.component';
 import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionModel.state';
@@ -13,9 +11,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { By } from '@angular/platform-browser';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { TemplateVersion } from '@reuse/code/openapi';
 import { QueryList } from '@angular/core';
 import { EvfFormWebComponent } from '../evf-form/evf-form.component';
+import { Lang } from '@reuse/code/constants/languages';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 @Component({
   selector: 'evf-form',
@@ -23,24 +22,22 @@ import { EvfFormWebComponent } from '../evf-form/evf-form.component';
   standalone: true,
 })
 class MockEvfFormComponent {}
+
 describe('CreateMultiplePrescriptionsComponent', () => {
   let component: CreateMultiplePrescriptionsComponent;
   let fixture: ComponentFixture<CreateMultiplePrescriptionsComponent>;
-  let mockDialog: Partial<MatDialog>;
   let mockModelState: any;
   let translate: TranslateService;
 
   beforeEach(async () => {
     jest.useFakeTimers(); // to control setTimeout
 
-    mockDialog = {
-      open: jest.fn().mockReturnValue({ afterClosed: () => of(true) }),
-    };
-
     mockModelState = {
       modalState: {},
       setInitialState: jest.fn(),
       setModalState: jest.fn(),
+      getModalState: jest.fn(),
+      resetAll: jest.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -50,9 +47,9 @@ describe('CreateMultiplePrescriptionsComponent', () => {
         MatExpansionModule,
         MatIconModule,
         NoopAnimationsModule,
+        MatIconTestingModule,
       ],
       providers: [
-        { provide: MatDialog, useValue: mockDialog },
         { provide: PrescriptionModelState, useValue: mockModelState },
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -65,12 +62,12 @@ describe('CreateMultiplePrescriptionsComponent', () => {
       .compileComponents();
 
     translate = TestBed.inject(TranslateService);
-    translate.setDefaultLang('nl-BE');
-    translate.use('nl-BE');
+    translate.setDefaultLang(Lang.NL.full);
+    translate.use(Lang.NL.full);
 
     fixture = TestBed.createComponent(CreateMultiplePrescriptionsComponent);
     component = fixture.componentInstance;
-    component.intent = 'order';
+    component.intent = Intent.ORDER;
   });
 
   afterEach(() => {
@@ -140,7 +137,7 @@ describe('CreateMultiplePrescriptionsComponent', () => {
 
     const result = component.mapResponsesToRepeatObject(responses);
     expect(result['nbSessions']).toBe(3);
-    expect(result['dayPeriod']).toBe('AM');
+    expect(result['dayPeriod']).toEqual(['AM']);
   });
 
   it('should set elementGroup value in setElementGroup', () => {
@@ -160,43 +157,19 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     expect(setValue).toHaveBeenCalledWith(expect.objectContaining({ a: 1 }));
   });
 
-  it('should call dialog.open in handleClick', () => {
+  it('should call window scroll to on modelSaved', () => {
     fixture.detectChanges();
     const scrollTo = jest.spyOn(window, 'scrollTo').mockImplementation(() => {});
-    const form = {
-      templateCode: 'template_01',
-      initialPrescription: { responses: {} },
-      elementGroup: { getOutputValue: () => ({}) },
-    } as CreatePrescriptionForm;
 
-    const template = {} as TemplateVersion;
+    component.handleModelSaved('123');
 
-    component.handleClick(form, template);
-
-    expect(mockDialog.open).toHaveBeenCalled();
     expect(scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' });
-  });
-
-  it('should set modal state to error if template is missing', () => {
-    fixture.detectChanges();
-    const form = {
-      templateCode: 'template_01',
-      initialPrescription: { responses: {} },
-      elementGroup: { getOutputValue: () => ({}) },
-    } as CreatePrescriptionForm;
-
-    component.handleClick(form);
-    expect(mockModelState.setModalState).toHaveBeenCalledWith(
-      LoadingStatus.ERROR,
-      undefined,
-      expect.any(HttpErrorResponse)
-    );
   });
 
   it('should reset model state on destroy', () => {
     fixture.detectChanges();
     component.ngOnDestroy();
-    expect(mockModelState.setInitialState).toHaveBeenCalled();
+    expect(mockModelState.resetAll).toHaveBeenCalled();
   });
 
   it('should display patient info when patient is set', () => {
@@ -235,9 +208,7 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     setOneTemplate();
     fixture.detectChanges();
 
-    const accordionDebug = fixture.debugElement.query(
-      By.directive(MatAccordion)
-    );
+    const accordionDebug = fixture.debugElement.query(By.directive(MatAccordion));
 
     expect(accordionDebug).toBeTruthy();
 
@@ -275,12 +246,18 @@ describe('CreateMultiplePrescriptionsComponent', () => {
 
     const matPanel_1_icons = matPanel[0].queryAll(By.css('mat-icon'));
     expect(matPanel_1_icons.length).toBe(1);
-    expect(matPanel_1_icons[0].nativeElement.textContent.trim()).toBe('check_circle');
+
+    const matPanel_1_icon_1 = matPanel_1_icons[0].componentInstance;
+    expect(matPanel_1_icon_1.svgIcon).toBe('check_circle');
 
     const matPanel_2_icons = matPanel[1].queryAll(By.css('mat-icon'));
     expect(matPanel_2_icons.length).toBe(2);
-    expect(matPanel_2_icons[0].nativeElement.textContent.trim()).toBe('error');
-    expect(matPanel_2_icons[1].nativeElement.textContent.trim()).toBe('delete');
+
+    const matPanel_2_icon_1 = matPanel_2_icons[0].componentInstance;
+    expect(matPanel_2_icon_1.svgIcon).toBe('error');
+
+    const matPanel_2_icon_2 = matPanel_2_icons[1].componentInstance;
+    expect(matPanel_2_icon_2.svgIcon).toBe('delete');
   });
 
   it('should emit clickDeletePrescription when delete button clicked and multiple forms and not SUCCESS', () => {
@@ -418,6 +395,32 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     jest.runAllTimers();
 
     expect(mockPanel.open).toHaveBeenCalled();
+  });
+
+  it('should delegate getModelState to prescriptionModelState', () => {
+    component.getModelState(42);
+
+    expect(mockModelState.getModalState).toHaveBeenCalledWith(42);
+  });
+
+  it('should add id to checked set when toggled on', () => {
+    component.toggleCheckbox(1, true);
+
+    expect(component.isChecked(1)).toBe(true);
+  });
+
+  it('should remove id from checked set when toggled off', () => {
+    component.toggleCheckbox(5, true);
+    component.toggleCheckbox(5, false);
+
+    expect(component.isChecked(5)).toBe(false);
+  });
+
+  it('should return false for unchecked ids', () => {
+    component.toggleCheckbox(1, true);
+
+    expect(component.isChecked(1)).toBe(true);
+    expect(component.isChecked(99)).toBe(false);
   });
 
   function setForms(forms: any[]) {

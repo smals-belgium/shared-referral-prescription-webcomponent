@@ -336,7 +336,7 @@ describe('AutocompleteMultiselectComponent', () => {
 
       const elementGroupMock = {
         get: (field: string) => {
-          if (field === 'age') return {value: 35, markAsTouched: jest.fn()};
+          if (field === 'age') return { value: 35, markAsTouched: jest.fn() };
           if (field === 'gender') return genderMock;
           if (field === 'clinicalIndications') return { value: [indicationMock], markAsTouched: jest.fn() };
           return { value: null, markAsTouched: jest.fn() };
@@ -361,8 +361,8 @@ describe('AutocompleteMultiselectComponent', () => {
 
       const elementGroupMock = {
         get: (field: string) => {
-          if (field === 'age') return {value: 35, markAsTouched: jest.fn()};
-          if (field === 'gender') return {value: 'M', markAsTouched: jest.fn()};
+          if (field === 'age') return { value: 35, markAsTouched: jest.fn() };
+          if (field === 'gender') return { value: 'M', markAsTouched: jest.fn() };
           if (field === 'clinicalIndications') return clinicalIndicationsMock;
           return { value: null, markAsTouched: jest.fn() };
         },

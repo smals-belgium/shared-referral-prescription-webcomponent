@@ -4,7 +4,7 @@ import { PerformerTaskResource, ReadRequestResource, RequestStatus } from '@reus
 
 @Pipe({ name: 'canSelfAssign', standalone: true })
 export class CanSelfAssignPipe implements PipeTransform {
-  constructor(private accessMatrixState: AccessMatrixState) {}
+  constructor(private readonly accessMatrixState: AccessMatrixState) {}
 
   transform(prescription: ReadRequestResource, task?: PerformerTaskResource): boolean {
     const allowedStatuses: RequestStatus[] = [

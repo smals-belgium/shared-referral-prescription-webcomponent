@@ -1,0 +1,22 @@
+<evf-form-detail-layout [options]="{ showDividers: false, detailLayout: detailLayout }">
+  @if (element().labelTranslationId) {
+    <evf-detail-label [labelId]="element().labelTranslationId || ''"></evf-detail-label>
+  }
+
+  <div class="value">
+    <div class="value-inner">
+      <span markdown class="evf-markdown" [data]="element().bodyTranslationId | evfLabel"></span>
+    </div>
+  </div>
+</evf-form-detail-layout>
+
+<ng-template #detailLayout let-content="content" let-label="label">
+  <div class="info-item">
+    <div>
+      <ng-container *ngTemplateOutlet="label"></ng-container>
+    </div>
+    <div>
+      <ng-container *ngTemplateOutlet="content"></ng-container>
+    </div>
+  </div>
+</ng-template>

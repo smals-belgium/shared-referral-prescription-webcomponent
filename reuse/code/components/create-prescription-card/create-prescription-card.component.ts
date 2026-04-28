@@ -19,6 +19,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 import { NgTemplateOutlet } from '@angular/common';
 import { EvfDynamicFormComponent } from '@smals-belgium-shared/vas-evaluation-form-ui-material/dynamic-form';
+import { Lang } from '@reuse/code/constants/languages';
+import { formatToEvfLangCode } from '@reuse/code/evf/utils/evf-utils';
 
 @Component({
   selector: 'app-create-prescription-card',
@@ -62,8 +64,8 @@ export class CreatePrescriptionCardComponent implements OnChanges, OnInit, OnDes
   }
 
   private initEvfTranslate(): void {
-    this.evfTranslate.setDefaultLang('fr');
-    this.evfTranslate.setCurrentLang(this.formatToEvfLangCode(this.translate.currentLang));
+    this.evfTranslate.setDefaultLang(Lang.FR.short);
+    this.evfTranslate.setCurrentLang(formatToEvfLangCode(this.translate.currentLang));
     this.evfTranslate.addTranslations({
       DATE_NOT_AFTER: {
         nl: 'Datum mag niet na ${date} liggen',
@@ -75,12 +77,8 @@ export class CreatePrescriptionCardComponent implements OnChanges, OnInit, OnDes
       },
     });
     this.translate.onLangChange.pipe(takeUntil(this.destroy$)).subscribe(event => {
-      this.evfTranslate.setCurrentLang(this.formatToEvfLangCode(event.lang));
+      this.evfTranslate.setCurrentLang(formatToEvfLangCode(event.lang));
     });
-  }
-
-  private formatToEvfLangCode(localeCode: string): 'nl' | 'fr' {
-    return (localeCode?.substring(0, 2) as 'nl' | 'fr') ?? 'fr';
   }
 
   setElementGroup(elementGroup: ElementGroup): void {

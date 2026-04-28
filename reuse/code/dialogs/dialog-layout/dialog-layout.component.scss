@@ -1,0 +1,33 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+:host {
+  font-family: #{mh.$font-stack};
+  --mdc-dialog-supporting-text-color: #{mh.$color-black};
+
+  ::ng-deep .mat-mdc-dialog-actions {
+    padding-top: mh.$spacing-l;
+    padding-right: mh.$spacing-m;
+    padding-bottom: mh.$spacing-m;
+    padding-left: mh.$spacing-m;
+  }
+
+  ::ng-deep .mat-mdc-dialog-title::before {
+    display: none;
+  }
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-left: mh.$spacing-m;
+  padding-top: mh.$spacing-xs;
+}
+
+.mat-dialog-content {
+  padding-left: mh.$spacing-m;
+}
+
+.dialog-title {
+  flex: 1;
+}

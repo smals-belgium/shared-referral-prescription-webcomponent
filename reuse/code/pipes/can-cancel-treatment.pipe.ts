@@ -22,7 +22,7 @@ import { isProfesionalBasedOnRole } from '@reuse/code/utils/utils';
  */
 @Pipe({ name: 'canCancelTreatment', standalone: true })
 export class CanCancelTreatmentPipe implements PipeTransform {
-  constructor(private accessMatrixState: AccessMatrixState) {}
+  constructor(private readonly accessMatrixState: AccessMatrixState) {}
 
   transform(prescription: ReadRequestResource, task: PerformerTaskResource, currentUser?: Partial<UserInfo>): boolean {
     if (currentUser == undefined) return false;

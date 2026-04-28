@@ -33,6 +33,7 @@ import { AlertType, Intent } from '@reuse/code/interfaces';
 import { DataLoadConfig, RequestSummaryDataService } from '@reuse/code/services/helpers/request-summary-data.service';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { mapDisplayStatusToColor } from '@reuse/code/utils/request-status-display-map.utils';
+import { isPrescription, isProposal } from '@reuse/code/utils/utils';
 
 @Component({
   selector: 'app-prescriptions-card',
@@ -92,12 +93,20 @@ export class PrescriptionsCardComponent implements OnChanges, AfterViewInit, OnD
   // Protected signals from service
   protected readonly isProfessional$ = toSignal(this.authService.isProfessional());
 
+  isPrescriptionIntent: boolean = false;
+  isProposalIntent: boolean = false;
+
   constructor(
     private readonly dataService: RequestSummaryDataService,
     private readonly authService: AuthService
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['intent']) {
+      this.isPrescriptionIntent = isPrescription(this.intent);
+      this.isProposalIntent = isProposal(this.intent);
+    }
+
     if (changes['requestSummaryListResource'] && this.requestSummaryListResource?.items?.length) {
       this.initializeDataStream();
     }

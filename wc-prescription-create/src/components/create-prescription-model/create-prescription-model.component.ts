@@ -19,8 +19,6 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AlertType, DataState, LoadingStatus } from '@reuse/code/interfaces';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionModel.state';
-import { CreatePrescriptionModelDialog } from '@reuse/code/dialogs/create-prescription-modal/create-prescription-model.dialog';
-import { MatDialog } from '@angular/material/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CreatePrescriptionForm } from '@reuse/code/interfaces/create-prescription-form.interface';
 import { PrescriptionModelService } from '@reuse/code/services/api/prescriptionModel.service';
@@ -60,7 +58,6 @@ import { EvfFormWebComponent } from '../evf-form/evf-form.component';
 export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
   protected readonly LoadingStatus = LoadingStatus;
   protected readonly AlertType = AlertType;
-  modelState = this.prescriptionModelState.modalState;
 
   @Input() lang!: string;
   @Input() prescriptionForm!: CreatePrescriptionForm;
@@ -76,7 +73,6 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
 
   constructor(
     private readonly prescriptionModelState: PrescriptionModelState,
-    private readonly dialog: MatDialog,
     private readonly prescriptionModalService: PrescriptionModelService,
     private readonly nameValidator: UniqueModelNameValidator
   ) {}
@@ -147,6 +143,7 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
   handleClick(prescriptionForm: CreatePrescriptionForm, template?: TemplateVersion) {
     if (!template) {
       this.prescriptionModelState.setModalState(
+        prescriptionForm.trackId,
         LoadingStatus.ERROR,
         undefined,
         new HttpErrorResponse({
@@ -154,28 +151,46 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
         })
       );
     }
-    const responses = this.getResponses(prescriptionForm);
 
-    this.dialog
-      .open<CreatePrescriptionModelDialog, unknown>(CreatePrescriptionModelDialog, {
-        data: {
-          template: template,
+    this.createPrescriptionModel(prescriptionForm);
+  }
+
+  createPrescriptionModel(prescriptionForm: CreatePrescriptionForm): void {
+    this.titleControl.markAllAsTouched();
+
+    if (this.titleControl.valid) {
+      const responses = this.getResponses(prescriptionForm);
+      const name = this.titleControl.getRawValue() || '';
+
+      this.prescriptionModelState.setModalState(prescriptionForm.trackId, LoadingStatus.LOADING);
+
+      this.prescriptionModalService
+        .createModel({
+          name: name,
           templateCode: prescriptionForm.templateCode,
           responses: responses,
-        },
-        panelClass: 'mh-dialog-container',
-      })
-      .afterClosed()
-      .subscribe((createdSuccessfully: boolean) => {
-        if (createdSuccessfully) {
-          this.modelSaved.emit();
-        }
-      });
+        })
+        .subscribe({
+          next: () => {
+            this.prescriptionModelState.setModalState(
+              prescriptionForm.trackId,
+              LoadingStatus.SUCCESS,
+              name || undefined
+            );
+            this.modelSaved.emit();
+          },
+          error: (e: HttpErrorResponse) => {
+            this.prescriptionModelState.setModalState(prescriptionForm.trackId, LoadingStatus.ERROR, undefined, e);
+            this.modelSaved.emit(undefined);
+          },
+        });
+    }
   }
 
   handleUpdate(prescriptionForm: CreatePrescriptionForm, template?: TemplateVersion) {
     if (!template) {
       this.prescriptionModelState.setModalState(
+        prescriptionForm.trackId,
         LoadingStatus.ERROR,
         undefined,
         new HttpErrorResponse({
@@ -187,6 +202,7 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
 
     if (!this.prescriptionForm.modelId) {
       this.prescriptionModelState.setModalState(
+        prescriptionForm.trackId,
         LoadingStatus.ERROR,
         undefined,
         new HttpErrorResponse({
@@ -199,12 +215,12 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
     this.titleControl.markAllAsTouched();
 
     if (this.titleControl.valid) {
-      this.prescriptionModelState.setModalState(LoadingStatus.LOADING);
+      this.prescriptionModelState.setModalState(prescriptionForm.trackId, LoadingStatus.LOADING);
       const responses = this.getResponses(prescriptionForm);
       const name = this.titleControl.getRawValue() || '';
 
       this.prescriptionModalService
-        .updateModel(this.prescriptionForm.modelId!, {
+        .updateModel(this.prescriptionForm.modelId, {
           name: name || '',
           responses: responses,
         })
@@ -213,20 +229,17 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
             this.modelSaved.emit();
           },
           error: (e: HttpErrorResponse) => {
-            this.prescriptionModelState.setModalState(LoadingStatus.ERROR, undefined, e);
+            this.prescriptionModelState.setModalState(prescriptionForm.trackId, LoadingStatus.ERROR, undefined, e);
           },
         });
     } else {
-      this.prescriptionModelState.setModalState(LoadingStatus.UPDATING);
+      this.prescriptionModelState.setModalState(prescriptionForm.trackId, LoadingStatus.UPDATING);
     }
   }
 
   private filterElements(elements: FormElement[]): FormElement[] {
     return elements
-      .filter(
-        value =>
-          !value.tags?.map((tag) => tag.toLowerCase()).includes('notinmodels')
-      )
+      .filter(value => !value.tags?.map(tag => tag.toLowerCase()).includes('notinmodels'))
       .reduce((filteredElements, element) => {
         if (element.elements) {
           element.elements = this.filterElements(element.elements);
@@ -237,8 +250,7 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
         }
 
         const shouldInclude =
-          !(element.dataType?.type === TypeEnum.Date) &&
-          !(element.elements && element.elements.length === 0);
+          element.dataType?.type !== TypeEnum.Date && !(element.elements && element.elements.length === 0);
 
         if (shouldInclude) {
           filteredElements.push(element);
@@ -256,7 +268,11 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
     return formTemplateState.data;
   }
 
+  getModelState(trackById: number) {
+    return this.prescriptionModelState.getModalState(trackById);
+  }
+
   ngOnDestroy() {
-    this.prescriptionModelState.setInitialState();
+    this.prescriptionModelState.resetAll();
   }
 }

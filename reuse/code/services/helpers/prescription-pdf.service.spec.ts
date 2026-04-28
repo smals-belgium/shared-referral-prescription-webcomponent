@@ -12,6 +12,7 @@ import {
   DynamicCellLayout,
   PatternFill,
 } from 'pdfmake/interfaces';
+import { Lang } from '@reuse/code/constants/languages';
 
 jest.mock('pdfmake/build/pdfmake', () => ({
   createPdf: jest.fn().mockReturnValue({
@@ -98,7 +99,7 @@ describe('PrescriptionsPdfService', () => {
       occurrenceTiming: { repeat: { frequency: 1, period: 1, periodUnit: 'day' } },
     };
 
-    const result = getResponseLabels('test', elementWithTiming, mockTemplateVersion, responses, 'nl');
+    const result = getResponseLabels('test', elementWithTiming, mockTemplateVersion, responses, Lang.NL.short);
     expect(Array.isArray(result)).toBe(true);
   });
 
@@ -112,9 +113,15 @@ describe('PrescriptionsPdfService', () => {
       ],
     };
 
-    const result = getResponseLabels(['option1', 'option2'], elementWithResponses, mockTemplateVersion, {}, 'nl');
+    const result = getResponseLabels(
+      ['option1', 'option2'],
+      elementWithResponses,
+      mockTemplateVersion,
+      {},
+      Lang.NL.short
+    );
     expect(result).toHaveLength(2);
-    expect(result[0]).toEqual(['Dutch Translation']);
+    expect(result[0]).toBe('Dutch Translation');
   });
 
   it('should handle date string values in getResponseLabels', () => {
@@ -124,7 +131,7 @@ describe('PrescriptionsPdfService', () => {
       responses: [],
     };
 
-    const result = getResponseLabels('2023-10-15', elementWithoutResponses, mockTemplateVersion, {}, 'nl');
+    const result = getResponseLabels('2023-10-15', elementWithoutResponses, mockTemplateVersion, {}, Lang.NL.short);
     expect(result[0]).toBe('15/10/2023');
   });
 
@@ -135,7 +142,7 @@ describe('PrescriptionsPdfService', () => {
       responses: [{ value: 'option1', labelTranslationId: 'label1' }],
     };
 
-    const result = getResponseLabels('option1', elementWithResponses, mockTemplateVersion, {}, 'nl');
+    const result = getResponseLabels('option1', elementWithResponses, mockTemplateVersion, {}, Lang.NL.short);
     expect(result).toEqual(['Dutch Translation']);
   });
 
@@ -146,17 +153,34 @@ describe('PrescriptionsPdfService', () => {
       commonTranslations: {},
     };
 
-    const result = evfTranslate(templateWithoutTranslation, 'nonexistent', 'nl');
+    const result = evfTranslate(templateWithoutTranslation, 'nonexistent', Lang.NL.short);
     expect(result).toBe('Translation not found for "nonexistent"');
   });
 
   describe('parseMarkdownList', () => {
     it('should parse markdown list items and strip prefixes', () => {
-      const markdown = '> - First item\n> - Second item\n> - Third item';
+      const markdown = '>This form certifies\n> - First item\n> - Second item\n> - Third item';
 
       const result = service['parseMarkdownList'](markdown);
 
-      expect(result).toEqual([{ text: 'First item' }, { text: 'Second item' }, { text: 'Third item' }]);
+      expect(result).toEqual([
+        { text: 'This form certifies' },
+        { ul: [{ text: 'First item' }, { text: 'Second item' }, { text: 'Third item' }], margin: [10, 0, 0, 0] },
+      ]);
+    });
+
+    it('should parse multiple sections each with title and list', () => {
+      const markdown =
+        '> This form certifies\n>- First item\n>- Second item\n> This form 2 certifies\n>- Third item\n>- fourth item';
+
+      const result = service['parseMarkdownList'](markdown);
+
+      expect(result).toEqual([
+        { text: 'This form certifies' },
+        { ul: [{ text: 'First item' }, { text: 'Second item' }], margin: [10, 0, 0, 0] },
+        { text: 'This form 2 certifies' },
+        { ul: [{ text: 'Third item' }, { text: 'fourth item' }], margin: [10, 0, 0, 0] },
+      ]);
     });
 
     it('should filter empty lines and trim whitespace', () => {
@@ -164,7 +188,7 @@ describe('PrescriptionsPdfService', () => {
 
       const result = service['parseMarkdownList'](markdown);
 
-      expect(result).toEqual([{ text: 'Item one' }, { text: 'Item two' }]);
+      expect(result).toEqual([{ ul: [{ text: 'Item one' }, { text: 'Item two' }], margin: [10, 0, 0, 0] }]);
     });
 
     it('should parse bold markdown into pdfmake rich text', () => {
@@ -176,16 +200,21 @@ describe('PrescriptionsPdfService', () => {
 
       expect(result).toEqual([
         {
-          text: [{ text: "il n'est donc " }, { text: 'pas obligatoire', bold: true }],
-        },
-        {
-          text: [
-            { text: 'en cas de ' },
-            { text: 'désorientation du patient', bold: true },
-            { text: ' dans le temps, un ' },
-            { text: 'certificat médical', bold: true },
-            { text: ' est requis' },
+          ul: [
+            {
+              text: [{ text: "il n'est donc " }, { text: 'pas obligatoire', bold: true }],
+            },
+            {
+              text: [
+                { text: 'en cas de ' },
+                { text: 'désorientation du patient', bold: true },
+                { text: ' dans le temps, un ' },
+                { text: 'certificat médical', bold: true },
+                { text: ' est requis' },
+              ],
+            },
           ],
+          margin: [10, 0, 0, 0],
         },
       ]);
     });
@@ -196,7 +225,7 @@ describe('PrescriptionsPdfService', () => {
       translateService.instant.mockReturnValue('Cancelled message');
       const templateVersion = { elements: [] };
 
-      const result = service['buildAlertBox'](templateVersion as any, 'nl', true);
+      const result = service['buildAlertBox'](templateVersion as any, Lang.NL.short, true);
 
       expect(result).toMatchObject({
         table: { widths: [18, '*'] },
@@ -218,7 +247,7 @@ describe('PrescriptionsPdfService', () => {
         translations: { 'info.body': { nl: '> - Info item' } },
       };
 
-      const result = service['buildAlertBox'](templateVersion as any, 'nl', false);
+      const result = service['buildAlertBox'](templateVersion as any, Lang.NL.short, false);
 
       expect(result).not.toBeNull();
 
@@ -233,7 +262,7 @@ describe('PrescriptionsPdfService', () => {
     it('should return null when no info element exists', () => {
       const templateVersion = { elements: [{ viewType: 'text' }] };
 
-      const result = service['buildAlertBox'](templateVersion as any, 'nl', false);
+      const result = service['buildAlertBox'](templateVersion as any, Lang.NL.short, false);
 
       expect(result).toBeNull();
     });
@@ -246,7 +275,7 @@ describe('PrescriptionsPdfService', () => {
         shortLabelTranslations: { nl: 'Short Label' },
       };
 
-      const result = service['buildTitleSection'](template as any, 'nl') as { stack: any[] };
+      const result = service['buildTitleSection'](template as any, Lang.NL.short) as { stack: any[] };
 
       expect(result.stack).toHaveLength(2);
       expect(result.stack[0].text).toBe('Main Title');
@@ -334,7 +363,7 @@ describe('PrescriptionsPdfService', () => {
         {},
         template as any,
         templateVersion as any,
-        'nl'
+        Lang.NL.short
       );
 
       expect(result).toHaveLength(3);
@@ -376,12 +405,62 @@ describe('PrescriptionsPdfService', () => {
         responses,
         template as any,
         templateVersion as any,
-        'nl'
+        Lang.NL.short
       );
 
       expect(result).toHaveLength(4); // 3 static + 1 dynamic
-      expect(service['evfTranslate']).toHaveBeenCalledWith(templateVersion, 'label1', 'nl');
+      expect(service['evfTranslate']).toHaveBeenCalledWith(templateVersion, 'label1', Lang.NL.short);
       expect(service['getResponseLabels']).toHaveBeenCalledTimes(1);
+    });
+
+    it('should render multi-value responses as a bullet list with inline bold markdown', () => {
+      service['getResponseLabels'] = jest.fn(() => ['Label A', 'Déficience motrice **temporaire**']);
+      const prescription = {
+        authoredOn: '2024-01-15',
+        period: { start: '2024-01-15', end: '2024-02-15' },
+      };
+      const template = { labelTranslations: { nl: 'Template Name' } };
+      const templateVersion = {
+        elements: [{ id: 'elem1', labelTranslationId: 'label1' }],
+      };
+      const responses = { elem1: ['answer1', 'answer2'] };
+
+      const result = service['buildDefinitionRows'](
+        prescription as any,
+        responses,
+        template as any,
+        templateVersion as any,
+        Lang.NL.short
+      );
+
+      const dynamicRow = (result as any[])[3];
+      expect(dynamicRow.stack[1]).toEqual({
+        ul: [{ text: 'Label A' }, { text: [{ text: 'Déficience motrice ' }, { text: 'temporaire', bold: true }] }],
+      });
+    });
+
+    it('should render single-value responses as plain text', () => {
+      service['getResponseLabels'] = jest.fn(() => ['Label A']);
+      const prescription = {
+        authoredOn: '2024-01-15',
+        period: { start: '2024-01-15', end: '2024-02-15' },
+      };
+      const template = { labelTranslations: { nl: 'Template Name' } };
+      const templateVersion = {
+        elements: [{ id: 'elem1', labelTranslationId: 'label1' }],
+      };
+      const responses = { elem1: 'answer1' };
+
+      const result = service['buildDefinitionRows'](
+        prescription as any,
+        responses,
+        template as any,
+        templateVersion as any,
+        Lang.NL.short
+      );
+
+      const dynamicRow = (result as any[])[3];
+      expect(dynamicRow.stack[1]).toEqual({ text: 'Label A' });
     });
 
     it('should filter out rows with empty values but still display validityPeriod with empty values', () => {
@@ -397,7 +476,7 @@ describe('PrescriptionsPdfService', () => {
         {},
         template as any,
         templateVersion as any,
-        'nl'
+        Lang.NL.short
       );
 
       expect(result).toHaveLength(1);
@@ -525,7 +604,7 @@ describe('PrescriptionsPdfService', () => {
       const template = { labelTranslations: { nl: 'Prescription Title' } };
       const patient = { ssin: '12345678901' };
 
-      const result = service['buildTitleSubSection'](template as any, 'nl', patient as any, 'SHORT123');
+      const result = service['buildTitleSubSection'](template as any, Lang.NL.short, patient as any, 'SHORT123');
 
       const results = result as ContentText;
       expect(results.stack?.[0]).not.toBeNull();
@@ -547,7 +626,7 @@ describe('PrescriptionsPdfService', () => {
       const template = { labelTranslations: { nl: 'Title' } };
       const patient = { ssin: null };
 
-      const result = service['buildTitleSubSection'](template as any, 'nl', patient as any);
+      const result = service['buildTitleSubSection'](template as any, Lang.NL.short, patient as any);
       const results = result as ContentText;
 
       expect(results.stack?.[1]).not.toBeNull();

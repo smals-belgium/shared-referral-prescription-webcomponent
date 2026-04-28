@@ -1,7 +1,7 @@
 import { TranslateLoader } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
-import * as nlBe from '../assets/nl-BE.json';
-import * as frBe from '../assets/fr-BE.json';
+import * as nlBe from '../assets/nl_BE.json';
+import * as frBe from '../assets/fr_BE.json';
 
 export class WcTranslateLoader implements TranslateLoader {
   public getTranslation(lang: string) {

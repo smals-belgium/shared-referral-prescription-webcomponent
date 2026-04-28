@@ -1,16 +1,18 @@
 import {
-  AfterViewInit,
   Component,
+  ElementRef,
   EventEmitter,
   HostBinding,
   Input,
   OnChanges,
-  OnDestroy, OnInit,
+  OnDestroy,
+  OnInit,
   Output,
   signal,
   Signal,
   SimpleChanges,
-  ViewEncapsulation, WritableSignal,
+  ViewEncapsulation,
+  WritableSignal,
 } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DateAdapter, MatOptionModule } from '@angular/material/core';
@@ -44,7 +46,6 @@ import { ToggleHistoricPrescriptionsComponent } from '@reuse/code/components/tog
 import { isModel, isPrescription, isProposal } from '@reuse/code/utils/utils';
 import { PrescriptionsCardComponent } from '../components/prescriptions/prescriptions-card/prescriptions-card.component';
 import { ResponsiveWrapperComponent } from '@reuse/code/components/responsive-wrapper/responsive-wrapper.component';
-import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { ChooseTemplateDialog, SelectedTemplate } from '@reuse/code/dialogs/choose-template/choose-template.dialog';
@@ -62,8 +63,10 @@ import { FeatureFlagService } from '@reuse/code/services/helpers/feature-flag.se
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
 import { BehaviorSubject, catchError, EMPTY, Subscription, switchMap } from 'rxjs';
-import { Lang } from '@reuse/code/interfaces/lang.enum';
+import { Lang } from '@reuse/code/constants/languages';
 import { tap } from 'rxjs/operators';
+import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
+import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
 
 interface ViewState {
   prescriptions?: ReadRequestListResource;
@@ -78,6 +81,7 @@ interface SearchCriteria extends SearchFilter {
 }
 
 @Component({
+  selector: 'uhmep-prescription-list',
   templateUrl: './prescription-list.component.html',
   styleUrls: ['./prescription-list.component.scss'],
   encapsulation: ViewEncapsulation.ShadowDom,
@@ -97,10 +101,10 @@ interface SearchCriteria extends SearchFilter {
     MatIcon,
     PrescriptionsModelsCardComponent,
     PrescriptionFilterComponent,
-    FeatureFlagDirective
+    FeatureFlagDirective,
   ],
 })
-export class PrescriptionListWebComponent implements OnChanges,OnInit, OnDestroy, AfterViewInit {
+export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestroy {
   // Protected signals from service
   protected readonly searchCriteria$ = signal<SearchCriteria>({
     historical: false,
@@ -139,7 +143,7 @@ export class PrescriptionListWebComponent implements OnChanges,OnInit, OnDestroy
 
   @HostBinding('attr.lang')
   @Input()
-  lang = Lang.FR;
+  lang = Lang.FR.full;
   @Input() patientSsin?: string;
   @Input() requesterSsin?: string;
   @Input() performerSsin?: string;
@@ -149,7 +153,7 @@ export class PrescriptionListWebComponent implements OnChanges,OnInit, OnDestroy
   @Output() clickOpenDetail = new EventEmitter<ReadRequestResource | ModelEntityDto>();
   @Output() clickCreateDetail = new EventEmitter<SelectedTemplate>();
 
-  private readonly _languageChange = new BehaviorSubject<string>(this.translate.currentLang ?? Lang.FR);
+  private readonly _languageChange = new BehaviorSubject<string>(this.translate.currentLang ?? Lang.FR.full);
 
   errorCard: ErrorCard = {
     show: false,
@@ -168,38 +172,46 @@ export class PrescriptionListWebComponent implements OnChanges,OnInit, OnDestroy
     private readonly templatesState: TemplatesState,
     private readonly modelsState: ModelsState,
     private readonly prescriptionModelService: PrescriptionModelService,
-    private readonly shadowDomOverlay: ShadowDomOverlayContainer,
     private readonly dialog: MatDialog,
-    private readonly featureFlagService: FeatureFlagService
+    private readonly featureFlagService: FeatureFlagService,
+    private readonly iconRegistryService: IconRegistryService,
+    private readonly el: ElementRef<HTMLElement>,
+    private readonly activeHostService: ActiveOverlayHostService
   ) {
     const currentLang = this.translate.currentLang;
     if (!currentLang) {
-      this.translate.use('fr-BE');
-      this.dateAdapter.setLocale('fr-BE');
+      this.translate.use(Lang.FR.full);
+      this.dateAdapter.setLocale(Lang.FR.full);
     }
     this.featureFlagService.getFeatureFlags();
   }
 
   ngOnInit(): void {
+    this.iconRegistryService.init('add', 'delete', 'more_vert', 'keyboard_arrow_right', 'close', 'error');
+
     this._subscriptions.add(
-      this._languageChange.pipe(
-        tap((lang) =>{
-          this.dateAdapter.setLocale(lang);
-        }),
-        switchMap((lang) => {
-          return this.translate.use(lang).pipe(
-            catchError(()=> {
-              handleMissingTranslationFile(this.langAlertData, lang);
-              return EMPTY;
-            })
-          );
-        }),
-      ).subscribe({
-        next:() => {
-          this.langAlertData.set(null);
-        },
-      })
+      this._languageChange
+        .pipe(
+          tap(lang => {
+            this.dateAdapter.setLocale(lang);
+          }),
+          switchMap(lang => {
+            return this.translate.use(lang).pipe(
+              catchError(() => {
+                handleMissingTranslationFile(this.langAlertData, lang);
+                return EMPTY;
+              })
+            );
+          })
+        )
+        .subscribe({
+          next: () => {
+            this.langAlertData.set(null);
+          },
+        })
     );
+
+    this.activeHostService.set(this.el.nativeElement);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -218,10 +230,6 @@ export class PrescriptionListWebComponent implements OnChanges,OnInit, OnDestroy
     ) {
       this.loadData({ pageIndex: 1 });
     }
-  }
-
-  ngAfterViewInit() {
-    this.shadowDomOverlay.createContainer();
   }
 
   loadData(pageValues?: { pageIndex?: number; pageSize?: number }) {
@@ -433,7 +441,9 @@ export class PrescriptionListWebComponent implements OnChanges,OnInit, OnDestroy
       prescriptionType: undefined,
     });
 
-    this._subscriptions.unsubscribe()
+    this._subscriptions.unsubscribe();
+
+    this.activeHostService.clear(this.el.nativeElement);
   }
 
   showErrorCard() {

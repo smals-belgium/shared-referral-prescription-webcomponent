@@ -17,6 +17,7 @@ import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 import { TranslateByIntentPipe } from '@reuse/code/pipes/translate-by-intent.pipe';
 import { AlertComponent } from '@myhealth-belgium/myhealth-additional-ui-components';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
+import { Lang } from '@reuse/code/constants/languages';
 
 @Pipe({
   name: 'templateName',
@@ -118,8 +119,8 @@ describe('CancelPrescriptionDialog', () => {
       .compileComponents();
 
     translate = TestBed.inject(TranslateService);
-    translate.setDefaultLang('fr-BE');
-    translate.use('fr-BE');
+    translate.setDefaultLang(Lang.FR.full);
+    translate.use(Lang.FR.full);
 
     fixture = TestBed.createComponent(CancelPrescriptionDialog);
     component = fixture.componentInstance;

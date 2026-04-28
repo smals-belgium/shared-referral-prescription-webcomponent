@@ -71,15 +71,15 @@ export class MultiselectComponent implements OnChanges, OnDestroy, AfterViewInit
 
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['formGroup'] || changes['key'] || changes['data']) && this.formGroup && this.key && this.data) {
-      this.retsetSelectedItems();
+      this.resetSelectedItems();
     }
 
     if (changes['initialValue'] && this.initialValue === undefined && this.formGroup) {
-      this.retsetSelectedItems();
+      this.resetSelectedItems();
     }
   }
 
-  retsetSelectedItems() {
+  resetSelectedItems() {
     this.selectedItems.set([]);
     this.setupAutocompleteOptions();
   }

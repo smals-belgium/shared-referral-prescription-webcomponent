@@ -4,7 +4,7 @@ This repository contains web components and libraries published by **Smals VZW**
 (CBE nr. 0308.357.555, head office at Fonsnylaan 20, 1060 Brussels, Belgium).
 
 These components are made available in collaboration with sponsoring members of Smals,
-for the benefit of recognized and authorized **health care provider IT solutions editors** (the *Integrators*).
+for the benefit of recognized and authorized **health care provider IT solutions editors** (the _Integrators_).
 
 ## Purpose
 
@@ -64,7 +64,7 @@ Three Web Components are available :
 The webcomponents are available through npm install and an example can be viewed on our acceptance url.
 
 |      Component       | Component name                      | npm package                                                                    |                                                                 Acceptance URL                                                                 |
-|:--------------------:|-------------------------------------|--------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------:|
+| :------------------: | ----------------------------------- | ------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------: |
 | Create prescription  | nihdi-referral-prescription-create  | https://www.npmjs.com/package/@smals-belgium-shared/uhmep-prescription-create  |  [wc-create-prescription](https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/prescription-create/wc-prescription-create.js)   |
 | Prescription details | nihdi-referral-prescription-details | https://www.npmjs.com/package/@smals-belgium-shared/uhmep-prescription-details | [wc-prescription-details](https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/prescription-details/wc-prescription-details.js) |
 |  List prescriptions  | nihdi-referral-prescription-list    | https://www.npmjs.com/package/@smals-belgium-shared/uhmep-prescription-list    |     [wc-list-prescriptions](https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/prescription-list/wc-prescription-list.js)     |
@@ -78,33 +78,32 @@ Web Components are designed to take input values and provide output events as fe
 Here are the detailed input data structures expected by the Web Components :
 
 | Create prescription                                | Allowed values                                   | Mandatory | Default | Description                                                                                        |
-|----------------------------------------------------|--------------------------------------------------|:---------:|---------|----------------------------------------------------------------------------------------------------|
-| **lang**: string                                   | 'fr-BE' / 'nl-BE'                                |     ❎     | 'fr-BE' | The lang parameter can be used to control the rendering language of the component.                 |
-| **patientSsin**: string                            | Any valid SSIN                                   |     ❎     | N/A     | The SSIN of the patient for which the prescription should be created.                              |
-| **initialValues**: CreatePrescriptionInitialValues | See the [data structure table](#data-structures) |     ❎     | N/A     | Give the initial context to the component. More details are given below the related data structure |
-| **services**: ComponentServices                    | See the [data structure table](#data-structures) |     ✅     | N/A     | Provide methods to retrieve the access or id tokens.                                               |
+| -------------------------------------------------- | ------------------------------------------------ | :-------: | ------- | -------------------------------------------------------------------------------------------------- |
+| **lang**: string                                   | 'fr-BE' / 'nl-BE'                                |    ❎     | 'fr-BE' | The lang parameter can be used to control the rendering language of the component.                 |
+| **patientSsin**: string                            | Any valid SSIN                                   |    ❎     | N/A     | The SSIN of the patient for which the prescription should be created.                              |
+| **initialValues**: CreatePrescriptionInitialValues | See the [data structure table](#data-structures) |    ❎     | N/A     | Give the initial context to the component. More details are given below the related data structure |
+| **services**: ComponentServices                    | See the [data structure table](#data-structures) |    ✅     | N/A     | Provide methods to retrieve the access or id tokens.                                               |
 
 | List prescriptions              | Allowed values                                   | Mandatory | Default | Description                                                                        |
-|---------------------------------|--------------------------------------------------|:---------:|---------|------------------------------------------------------------------------------------|
-| **lang**: string                | 'fr-BE' / 'nl-BE'                                |     ❎     | 'fr-BE' | The lang parameter can be used to control the rendering language of the component. |
-| **patientSsin**: string         | Any valid SSIN                                   |     ❎     | N/A     | The SSIN of the patient for which the prescription should be listed.               |
-| **requesterSsin**: string       | Any valid SSIN                                   |     ❎     | N/A     | The requestor SSIN for which the prescriptions/proposals should be loaded.         |
-| **performerSsin**: string       | Any valid SSIN                                   |     ❎     | N/A     | The performer SSIN for which the prescriptions/proposals should be loaded.         |
-| **services**: ComponentServices | See the [data structure table](#data-structures) |     ✅     | N/A     | Provide methods to retrieve the access or id tokens.                               |
-| **intent**: string              | order / proposal                                 |     ✅     | N/A     | Indicates if the list should display the proposals or the prescriptions.           |
+| ------------------------------- | ------------------------------------------------ | :-------: | ------- | ---------------------------------------------------------------------------------- |
+| **lang**: string                | 'fr-BE' / 'nl-BE'                                |    ❎     | 'fr-BE' | The lang parameter can be used to control the rendering language of the component. |
+| **patientSsin**: string         | Any valid SSIN                                   |    ❎     | N/A     | The SSIN of the patient for which the prescription should be listed.               |
+| **requesterSsin**: string       | Any valid SSIN                                   |    ❎     | N/A     | The requestor SSIN for which the prescriptions/proposals should be loaded.         |
+| **performerSsin**: string       | Any valid SSIN                                   |    ❎     | N/A     | The performer SSIN for which the prescriptions/proposals should be loaded.         |
+| **services**: ComponentServices | See the [data structure table](#data-structures) |    ✅     | N/A     | Provide methods to retrieve the access or id tokens.                               |
+| **intent**: string              | order / proposal                                 |    ✅     | N/A     | Indicates if the list should display the proposals or the prescriptions.           |
 
 | Prescription details            | Allowed values                                   | Mandatory | Default | Description                                                                         |
-|---------------------------------|--------------------------------------------------|:---------:|---------|-------------------------------------------------------------------------------------|
-| **lang**: string                | 'fr-BE' / 'nl-BE'                                |     ❎     | 'fr-BE' | The lang parameter can be used to control the rendering language of the component.  |
-| **patientSsin**: string         | Any valid SSIN                                   |     ❎     | N/A     | The SSIN of the patient for which the prescription should be listed.                |
-| **prescriptionId**: string      | Any valid prescription/proposal identifier       |     ✅     | N/A     | The prescription/proposal identifier for which the details should be displayed.     |
-| **services**: ComponentServices | See the [data structure table](#data-structures) |     ✅     | N/A     | Provide methods to retrieve the access or id tokens.                                |
-| **intent**: string              | order / proposal                                 |     ✅     | N/A     | Indicates the nature of the loaded resource, either a proposals or a prescriptions. |
+| ------------------------------- | ------------------------------------------------ | :-------: | ------- | ----------------------------------------------------------------------------------- |
+| **lang**: string                | 'fr-BE' / 'nl-BE'                                |    ❎     | 'fr-BE' | The lang parameter can be used to control the rendering language of the component.  |
+| **patientSsin**: string         | Any valid SSIN                                   |    ❎     | N/A     | The SSIN of the patient for which the prescription should be listed.                |
+| **prescriptionId**: string      | Any valid prescription/proposal identifier       |    ✅     | N/A     | The prescription/proposal identifier for which the details should be displayed.     |
+| **services**: ComponentServices | See the [data structure table](#data-structures) |    ✅     | N/A     | Provide methods to retrieve the access or id tokens.                                |
+| **intent**: string              | order / proposal                                 |    ✅     | N/A     | Indicates the nature of the loaded resource, either a proposals or a prescriptions. |
 
 #### Data structures
 
-   ```typescript
-
+```typescript
 /**
  * intent (required) : the value can be either order | proposal, 'order' should be specified when creating a prescription,
  *                     while 'proposal' should be specified when creating a proposal.
@@ -130,21 +129,21 @@ interface CreatePrescriptionInitialValues {
  *                         when using the details web component.
  */
 interface ComponentServices {
-  getAccessToken: (audience: string) => Promise<string | null>,
-  getIdToken?: () => IdToken
+  getAccessToken: (audience: string) => Promise<string | null>;
+  getIdToken?: () => IdToken;
 }
 
 type Professional = {
   [key in keyof LowercaseDiscipline]?: {
-    recognised: boolean
-    nihii11: string
-  }
-}
+    recognised: boolean;
+    nihii11: string;
+  };
+};
 
 interface Personal {
-  lastName: string
-  firstName: string
-  ssin: string
+  lastName: string;
+  firstName: string;
+  ssin: string;
 }
 
 type UserProfile = Personal & Professional;
@@ -152,49 +151,49 @@ type UserProfile = Personal & Professional;
 interface IdToken {
   userProfile: UserProfile;
 }
-   ```
+```
 
 To create a prescription, you can choose to explicitly provide the _initialPrescriptionType_ parameters in the _CreatePrescriptionInitialValues_.
 One of the following values can be provided with the intent value _**order**_ :
 
-* ASSISTING_WITH_PERSONAL_HYGIENE
-* BLEEDING
-* CHRONIC_PERITONEAL_DIALYSIS
-* DIABETIC_EDUCATION_FOR_PATIENTS_WITH_CARE_PATH
-* DIABETIC_EDUCATION_FOR_PATIENTS_WITH_MODEL_OF_CARE
-* DIABETIC_EDUCATION_FOR_PATIENTS_WITHOUT_CARE_PATH
-* DIABETIC_EDUCATION_VIA_CONVENTION_CENTER
-* GLYCEMIC_TEST
-* MEDICATION_PREPARATION_PSYCHIATRIC_PATIENT
-* PARAMETERS
-* SAMPLING
-* GENERIC
+- ASSISTING_WITH_PERSONAL_HYGIENE
+- BLEEDING
+- CHRONIC_PERITONEAL_DIALYSIS
+- DIABETIC_EDUCATION_FOR_PATIENTS_WITH_CARE_PATH
+- DIABETIC_EDUCATION_FOR_PATIENTS_WITH_MODEL_OF_CARE
+- DIABETIC_EDUCATION_FOR_PATIENTS_WITHOUT_CARE_PATH
+- DIABETIC_EDUCATION_VIA_CONVENTION_CENTER
+- GLYCEMIC_TEST
+- MEDICATION_PREPARATION_PSYCHIATRIC_PATIENT
+- PARAMETERS
+- SAMPLING
+- GENERIC
 
 The following value can be provided along with the _**proposal**_ intent :
 
-* ANNEX_81
+- ANNEX_81
 
 #### Outputs
 
 Here are the output data structures emitted by the Web Components :
 
 | Create prescription                | List prescriptions                                           | Prescription details                           |
-|------------------------------------|--------------------------------------------------------------|------------------------------------------------|
+| ---------------------------------- | ------------------------------------------------------------ | ---------------------------------------------- |
 | **prescriptionsCreated**: string[] | **clickOpenDetails** : ReadRequestResource OR ModelEntityDto | **clickDuplicate**: ReadPrescription           |
 | **clickCancel**: void              | **clickCreateDetail** : SelectedTemplate                     | **clickExtend**: ReadPrescription              |
 | **modelCreated**: void             |                                                              | **clickPrint**: Blob                           |
 |                                    |                                                              | **clickDownload**: Blob                        |
 |                                    |                                                              | **clickOpenExtendedDetail**: string            |
 |                                    |                                                              | **proposalApproved**: {prescriptionId: string} |
-|                                    |                                                              | **proposalRejected**: boolean                  |  
+|                                    |                                                              | **proposalRejected**: boolean                  |
 
 ℹ️ Upon successful prescription creation, the Web Component triggers the prescriptionsCreated event and provides the list of identifiers for the prescriptions that were just created.
 A list of one element will be returned in case of a single prescription creation.
 
 #### Data structures
 
-   ```typescript
-   interface ReadRequestResource {
+```typescript
+interface ReadRequestResource {
   id?: string;
   shortCode?: string;
   patientIdentifier?: string;
@@ -207,7 +206,7 @@ A list of one element will be returned in case of a single prescription creation
   status?: RequestStatus;
   category?: string;
   period?: PeriodResource;
-  responses?: { [key: string]: any; };
+  responses?: { [key: string]: any };
   intent?: string;
   pseudonymizedKey?: string;
   kid?: string;
@@ -220,12 +219,11 @@ interface ModelEntityDto {
   creationDate?: string;
   label?: string;
   nihii11?: string;
-  modelData?: { [key: string]: any; };
+  modelData?: { [key: string]: any };
   templateVersionId?: number;
   templateId?: number;
   templateCode?: string;
 }
-
 
 interface ReadRequestResource {
   id?: string;
@@ -240,14 +238,14 @@ interface ReadRequestResource {
   status?: RequestStatus;
   category?: string;
   period?: PeriodResource;
-  responses?: { [key: string]: any; };
+  responses?: { [key: string]: any };
   intent?: string;
   pseudonymizedKey?: string;
   kid?: string;
   note?: string;
   extendedShortId?: string;
 }
-   ```
+```
 
 ## Showcase
 
@@ -272,43 +270,42 @@ In the showcase, the library is initialized via the following instruction
 ```html
 <!-- Referencing the script -->
 <html>
-<head>
-  <script src="../lib/keycloak.js"></script>
-</head>
-<body>
-<script>
-  // Setting the environment dynamically
-  const keycloak = getKeycloakConfigurationForEnv();
-  // Initialization of the authentication library
-  keycloak.init({ onLoad: 'login-required', checkLoginIframe: false })
-    .then(function(authenticated) {
-      // User is successfully authenticated
-    })
+  <head>
+    <script src="../lib/keycloak.js"></script>
+  </head>
+  <body>
+    <script>
+      // Setting the environment dynamically
+      const keycloak = getKeycloakConfigurationForEnv();
+      // Initialization of the authentication library
+      keycloak.init({ onLoad: 'login-required', checkLoginIframe: false }).then(function (authenticated) {
+        // User is successfully authenticated
+      });
 
-  /**
-   * Returns a new Keycloak configuration object for the current environment.
-   *
-   * This function creates and returns an instance of the Keycloak client
-   * configured with the predefined parameters such as the Keycloak server URL,
-   * realm, and client ID. This setup is typically used to initialize the Keycloak
-   * JavaScript adapter in frontend applications.
-   *
-   * @function
-   * @returns {Keycloak} A Keycloak instance configured with:
-   *  - `url`: "https://authentication/server/auth/endpoint"
-   *  - `realm`: "myRealm"
-   *  - `clientId`: "myClientId"
-   *
-   */
-  function getKeycloakConfigurationForEnv() {
-    return new Keycloak({
-      url: `https://api-acpt.ehealth.fgov.be/auth`,
-      realm: `healthcare`,
-      clientId: `nihdi-uhmep-hcp`
-    });
-  }
-</script>
-</body>
+      /**
+       * Returns a new Keycloak configuration object for the current environment.
+       *
+       * This function creates and returns an instance of the Keycloak client
+       * configured with the predefined parameters such as the Keycloak server URL,
+       * realm, and client ID. This setup is typically used to initialize the Keycloak
+       * JavaScript adapter in frontend applications.
+       *
+       * @function
+       * @returns {Keycloak} A Keycloak instance configured with:
+       *  - `url`: "https://authentication/server/auth/endpoint"
+       *  - `realm`: "myRealm"
+       *  - `clientId`: "myClientId"
+       *
+       */
+      function getKeycloakConfigurationForEnv() {
+        return new Keycloak({
+          url: `https://api-acpt.ehealth.fgov.be/auth`,
+          realm: `healthcare`,
+          clientId: `nihdi-uhmep-hcp`,
+        });
+      }
+    </script>
+  </body>
 </html>
 ```
 
@@ -320,16 +317,17 @@ are shown in the following sample code) :
 
 ```html
 <html>
-<head>
-  <script src="../lib/keycloak.js"></script>
-</head>
-<body>
-...
+  <head>
+    <script src="../lib/keycloak.js"></script>
+  </head>
+  <body>
+    ...
 
-<!-- Web component script at the end -->
-<script src="@smals-belgium-shared/uhmep-prescription-create/build/uhmep-prescription-create.js"
-        type="module"></script>
-</body>
+    <!-- Web component script at the end -->
+    <script
+      src="@smals-belgium-shared/uhmep-prescription-create/build/uhmep-prescription-create.js"
+      type="module"></script>
+  </body>
 </html>
 ```
 
@@ -337,21 +335,20 @@ are shown in the following sample code) :
 
 ```html
 <html>
-<head>
-  ...
-</head>
-<body>
-<script>
-  ...
-  keycloak.init({ onLoad: 'login-required', checkLoginIframe: false })
-    .then(function(authenticated) {
-      // Creation of the custom element
-      const create = document.createElement('nihdi-referral-prescription-create');
+  <head>
     ...
-    })
-
-</script>
-</body>
+  </head>
+  <body>
+    <script>
+      ...
+      keycloak.init({ onLoad: 'login-required', checkLoginIframe: false })
+        .then(function(authenticated) {
+          // Creation of the custom element
+          const create = document.createElement('nihdi-referral-prescription-create');
+        ...
+        })
+    </script>
+  </body>
 </html>
 ```
 
@@ -359,44 +356,43 @@ are shown in the following sample code) :
 
 ```html
 <html>
-<head>
-  ...
-</head>
-<body>
-<script>
-  ...
-  keycloak.init({ onLoad: 'login-required', checkLoginIframe: false })
-    .then(function(authenticated) {
-      // Creation of the custom element
-      const create = document.createElement('nihdi-referral-prescription-create');
+  <head>
     ...
-      // Input injecting the initial values
-      create.initialValues = {
-        'intent': 'order',
-        'initialPrescriptionType': 'ASSISTING_WITH_PERSONAL_HYGIENE'
-      };
-      // Input for the language
-      create.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'fr-BE';
-      // Callback method to get a token from the authentication library
-      const exchangedToken = async (audience) => await exchangeToken(keycloak.token, keycloak.clientId, audience)
-      create.services = {
-        'getAccessToken': (audience) => {
-          if (audience) {
-            return Promise.resolve(exchangedToken(audience))
-          } else {
-            return Promise.resolve(keycloak.token);
-          }
-        }
-      };
-      // Listener function to get feedback from the Web Component after the prescription has been successfully created
-      create.addEventListener('prescriptionsCreated', () => {
-        // Simply logging but more advanced logic can be added
-        console.log('Prescriptions successfully created');
-      });
-    })
-
-</script>
-</body>
+  </head>
+  <body>
+    <script>
+      ...
+      keycloak.init({ onLoad: 'login-required', checkLoginIframe: false })
+        .then(function(authenticated) {
+          // Creation of the custom element
+          const create = document.createElement('nihdi-referral-prescription-create');
+        ...
+          // Input injecting the initial values
+          create.initialValues = {
+            'intent': 'order',
+            'initialPrescriptionType': 'ASSISTING_WITH_PERSONAL_HYGIENE'
+          };
+          // Input for the language
+          create.lang = navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'fr-BE';
+          // Callback method to get a token from the authentication library
+          const exchangedToken = async (audience) => await exchangeToken(keycloak.token, keycloak.clientId, audience)
+          create.services = {
+            'getAccessToken': (audience) => {
+              if (audience) {
+                return Promise.resolve(exchangedToken(audience))
+              } else {
+                return Promise.resolve(keycloak.token);
+              }
+            }
+          };
+          // Listener function to get feedback from the Web Component after the prescription has been successfully created
+          create.addEventListener('prescriptionsCreated', () => {
+            // Simply logging but more advanced logic can be added
+            console.log('Prescriptions successfully created');
+          });
+        })
+    </script>
+  </body>
 </html>
 ```
 
@@ -416,7 +412,7 @@ Below is a complete list of the variables that can be overridden:
 
 ### Default variables
 
-* --mh-default-font-family;
+- --mh-default-font-family;
 
 # Nihdi Referral Prescription - CSS Custom Properties
 
@@ -476,27 +472,27 @@ Below is a complete list of the variables that can be overridden:
 ### Toggle / Switch
 
 - --mat-sys-corner-full
-- --mat-switch-label-text-color
-- --mat-switch-label-text-size
-- --mdc-switch-unselected-icon-color
-- --mat-switch-track-outline-color
-- --mdc-switch-unselected-track-color
-- --mdc-switch-unselected-handle-color
-- --mdc-switch-unselected-hover-handle-color
-- --mdc-switch-unselected-hover-track-color
-- --mdc-switch-unselected-focus-handle-color
-- --mdc-switch-unselected-focus-track-color
-- --mdc-switch-unselected-pressed-handle-color
-- --mdc-switch-unselected-pressed-track-color
-- --mdc-switch-selected-icon-color
-- --mdc-switch-selected-track-color
-- --mdc-switch-selected-handle-color
-- --mdc-switch-selected-hover-handle-color
-- --mdc-switch-selected-hover-track-color
-- --mdc-switch-selected-focus-handle-color
-- --mdc-switch-selected-focus-track-color
-- --mdc-switch-selected-pressed-handle-color
-- --mdc-switch-selected-pressed-track-color
+- --mat-slide-toggle-label-text-color
+- --mat-slide-toggle-label-text-size
+- --mat-slide-toggle-unselected-icon-color
+- --mat-slide-toggle-track-outline-color
+- --mat-slide-toggle-unselected-track-color
+- --mat-slide-toggle-unselected-handle-color
+- --mat-slide-toggle-unselected-hover-handle-color
+- --mat-slide-toggle-unselected-hover-track-color
+- --mat-slide-toggle-unselected-focus-handle-color
+- --mat-slide-toggle-unselected-focus-track-color
+- --mat-slide-toggle-unselected-pressed-handle-color
+- --mat-slide-toggle-unselected-pressed-track-color
+- --mat-slide-toggle-selected-icon-color
+- --mat-slide-toggle-selected-track-color
+- --mat-slide-toggle-selected-handle-color
+- --mat-slide-toggle-selected-hover-handle-color
+- --mat-slide-toggle-selected-hover-track-color
+- --mat-slide-toggle-selected-focus-handle-color
+- --mat-slide-toggle-selected-focus-track-color
+- --mat-slide-toggle-selected-pressed-handle-color
+- --mat-slide-toggle-selected-pressed-track-color
 
 ### Tooltip
 
@@ -570,11 +566,14 @@ Below is a complete list of the variables that can be overridden:
 - --mdc-outlined-text-field-outline-color
 - --mdc-outlined-text-field-input-text-color
 - --evf-input-number-field-max-width
+- --evf-input-text-field-max-width
 - --evf-input-date-field-max-width
+- --evf-select-field-max-width
 - --mh-label-invalid-color
 - --mat-form-field-container-vertical-padding
 - --mat-form-field-container-height
 - --mat-sys-surface-container
+- --evf-textarea-margin-left
 
 ### Info Block
 
@@ -583,6 +582,7 @@ Below is a complete list of the variables that can be overridden:
 - --evf-infoblock-heading-color
 - --evf-infoblock-body-color
 - --evf-infoblock-matrial-icon-color
+- --evf-infoblock-max-width
 
 ### Typography / Labels
 
@@ -642,6 +642,7 @@ Below is a complete list of the variables that can be overridden:
 - --mat-expansion-container-shape
 - --mh-mat-expansion-container-not-expanded-shape
 - --mh-mat-expansion-gap
+- --mh-expansion-panel-textarea-max-width
 
 ### Expansion Panel Text Area
 
@@ -661,6 +662,10 @@ Below is a complete list of the variables that can be overridden:
 - --mat-sys-headline-small-size
 - --mat-sys-headline-small-tracking
 - --mat-sys-headline-small-weight
+
+### Multiselect
+
+- --mh-multiselect-overlay-min-height
 
 ---
 
@@ -866,8 +871,8 @@ git push -uf origin master
 
 Hereafter, you can get an overview of the web components, once they have been integrated to a web application.
 
-| Listing                                                                                                                                                   | Creation                                                                                                                                                          | Detail                                                                                                                                                            |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Listing                                                                                                                                                      | Creation                                                                                                                                                          | Detail                                                                                                                                                            |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | ![Listing web component](https://raw.githubusercontent.com/smals-belgium/shared-referral-prescription-webcomponent/refs/heads/master/showcase/list/list.gif) | ![Creation web component](https://raw.githubusercontent.com/smals-belgium/shared-referral-prescription-webcomponent/refs/heads/master/showcase/create/create.gif) | ![Details web component](https://raw.githubusercontent.com/smals-belgium/shared-referral-prescription-webcomponent/refs/heads/master/showcase/details/detail.gif) |
 
 # 🤜🤛 Contributing
@@ -909,6 +914,7 @@ The web components are available to the community and can be used and enhanced c
 - Configure tools like ESLint to ensure code consistency and quality by following specified coding rules.
 
 ---
+
 **General rules:**
 
 - The source of data should be an authentic source. The data cannot be imported from an internal service from the

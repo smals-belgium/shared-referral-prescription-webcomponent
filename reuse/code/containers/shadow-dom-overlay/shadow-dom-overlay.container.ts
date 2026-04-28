@@ -1,15 +1,13 @@
-import { Inject, Injectable, InjectionToken, OnDestroy } from '@angular/core';
+import { inject, Inject, Injectable, OnDestroy } from '@angular/core';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { DOCUMENT } from '@angular/common';
-
-export const OVERLAY_QUERY_SELECTOR = new InjectionToken<string[]>('Overlay query selector');
+import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
 
 @Injectable({ providedIn: 'root' })
 export class ShadowDomOverlayContainer extends OverlayContainer implements OnDestroy {
-  constructor(
-    @Inject(DOCUMENT) _document: Document,
-    @Inject(OVERLAY_QUERY_SELECTOR) private selectors: string[]
-  ) {
+  private readonly activeHostService = inject(ActiveOverlayHostService);
+
+  constructor(@Inject(DOCUMENT) _document: Document) {
     super(_document);
   }
 
@@ -17,23 +15,15 @@ export class ShadowDomOverlayContainer extends OverlayContainer implements OnDes
     super.ngOnDestroy();
   }
 
-  getRootElement(): Element | null {
-    let root: Document | ShadowRoot | Element | null = this._document;
-    for (const selector of this.selectors) {
-      if (!root) return null;
-      const next: Element | null = root.querySelector(selector);
-      root = next?.shadowRoot ?? next;
-    }
-
-    return root as Element | null;
-  }
-
-  createContainer(): void {
-    this._createContainer();
+  private getRootElement(): ShadowRoot | null {
+    return this.activeHostService.get()?.shadowRoot ?? null;
   }
 
   public override getContainerElement(): HTMLElement {
-    if (!this._containerElement || !this._containerElement.isConnected) {
+    const host = this.activeHostService.get();
+    const expectedRoot = host?.shadowRoot ?? this._document.body;
+
+    if (!this._containerElement?.isConnected || !expectedRoot.contains(this._containerElement)) {
       this._createContainer();
     }
 
@@ -46,11 +36,8 @@ export class ShadowDomOverlayContainer extends OverlayContainer implements OnDes
   }
 
   private _appendToRootComponent(): void {
-    if (!this._containerElement) {
-      return;
-    }
-    const rootElement = this.getRootElement();
-    const parent = rootElement || this._document.body;
+    if (!this._containerElement) return;
+    const parent = this.getRootElement() ?? this._document.body;
     parent.appendChild(this._containerElement);
   }
 }

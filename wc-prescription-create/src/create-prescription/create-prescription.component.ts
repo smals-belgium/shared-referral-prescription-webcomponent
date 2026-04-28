@@ -1,12 +1,12 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   EventEmitter,
   HostBinding,
-  Inject,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   Output,
   Signal,
@@ -52,7 +52,7 @@ import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionService } from '@reuse/code/services/api/prescription.service';
 import { ConfirmDialog, ConfirmDialogData } from '@reuse/code/dialogs/confirm/confirm.dialog';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
-import { AsyncPipe, DOCUMENT } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { TemplatesState } from '@reuse/code/states/api/templates.state';
@@ -79,14 +79,16 @@ import {
   TemplateVersion,
 } from '@reuse/code/openapi';
 import { ChooseTemplateDialog, SelectedTemplate } from '@reuse/code/dialogs/choose-template/choose-template.dialog';
-import { isModel, isPrescription } from '@reuse/code/utils/utils';
+import { getTranslationKeyPrefixForPrescriptionOrProposal, isModel, isPrescription } from '@reuse/code/utils/utils';
 import { EncryptionKeyInitializerService } from '@reuse/code/states/privacy/encryption-key-initializer.service';
-import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
-import { Lang } from '@reuse/code/interfaces/lang.enum';
+import { FullLang, Lang } from '@reuse/code/constants/languages';
+import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
+import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
 
 @Component({
+  selector: 'uhmep-prescription-create',
   templateUrl: './create-prescription.component.html',
   styleUrls: ['./create-prescription.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -101,7 +103,7 @@ import { Lang } from '@reuse/code/interfaces/lang.enum';
     AlertComponent,
   ],
 })
-export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterViewInit {
+export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDestroy {
   protected readonly LoadingStatus = LoadingStatus;
   protected readonly AlertType = AlertType;
   protected readonly discipline$ = toSignal(this.authService.discipline());
@@ -121,7 +123,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
   // OBSERVABLES & SIGNALS & SUBJECTS
   public readonly isEnabled$: Observable<boolean>;
   public readonly status$ = new BehaviorSubject<boolean>(false);
-  private readonly _languageChange = new BehaviorSubject<string>(this.translate.currentLang ?? Lang.FR);
+  private readonly _languageChange = new BehaviorSubject<string>(this.translate.currentLang ?? Lang.FR.full);
   public readonly patientState$: Signal<DataState<PersonResource>> = this.patientStateService.state;
   public readonly prescriptionForms = signal<CreatePrescriptionForm[]>([]);
   public readonly loading = signal(false);
@@ -133,7 +135,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
   // INPUTS
   @HostBinding('attr.lang')
   @Input()
-  lang = Lang.FR;
+  lang: FullLang = Lang.FR.full;
   @Input() initialValues?: CreatePrescriptionInitialValues;
   @Input() patientSsin?: string;
   @Input() services!: {
@@ -164,23 +166,38 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
     private readonly pssService: PssService,
     private readonly configService: WcConfigurationService,
     private readonly encryptionKeyInitializer: EncryptionKeyInitializerService,
-    private readonly shadowDomOverlay: ShadowDomOverlayContainer,
-    @Inject(DOCUMENT) private readonly _document: Document
+    private readonly iconRegistryService: IconRegistryService,
+    private readonly el: ElementRef<HTMLElement>,
+    private readonly activeHostService: ActiveOverlayHostService
   ) {
     const currentLang = this.translate.currentLang;
     if (!currentLang) {
-      this.translate.use(Lang.FR);
-      this.dateAdapter.setLocale(Lang.FR);
+      this.translate.use(Lang.FR.full);
+      this.dateAdapter.setLocale(Lang.FR.full);
     }
 
     this.isEnabled$ = of(this.configService.getEnvironmentVariable('enablePseudo') as boolean).pipe(
       map((value: boolean) => {
+        if (this.configService.getEnvironment() === 'demo') return true;
         return value;
       })
     );
   }
 
   ngOnInit(): void {
+    this.iconRegistryService.init(
+      'check_circle',
+      'error',
+      'delete',
+      'add',
+      'update',
+      'save',
+      'info',
+      'do_not_disturb_on',
+      'add_circle',
+      'close'
+    );
+
     this._subscriptions.add(
       this._languageChange
         .pipe(
@@ -202,6 +219,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
           },
         })
     );
+
+    this.activeHostService.set(this.el.nativeElement);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -251,10 +270,6 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
     } else {
       this.addPrescription();
     }
-  }
-
-  ngAfterViewInit() {
-    this.shadowDomOverlay.createContainer();
   }
 
   private handleTokenChange(): void {
@@ -740,6 +755,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
   }
 
   cancelCreation(): void {
+    const translationKeyPrefixIntent = getTranslationKeyPrefixForPrescriptionOrProposal(this.initialValues?.intent);
+
     if (this.prescriptionForms().length > 1) {
       this.dialog
         .open<CancelCreationDialog, CancelCreationDialogData, CancelCreationDialogResult>(CancelCreationDialog, {
@@ -767,7 +784,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
       this.dialog
         .open<ConfirmDialog, ConfirmDialogData, boolean>(ConfirmDialog, {
           data: {
-            messageLabel: 'prescription.create.cancelCreation',
+            messageLabel: `${translationKeyPrefixIntent}.create.cancelCreation`,
             cancelLabel: 'common.close',
             okLabel: 'common.confirm',
           },
@@ -808,5 +825,10 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, AfterV
   private async isNurse() {
     await firstValueFrom(this.authService.discipline());
     return this.discipline$() != null && this.discipline$() === Discipline.Nurse;
+  }
+
+  ngOnDestroy() {
+    this.activeHostService.clear(this.el.nativeElement);
+    this.templateVersionsStateService.cleanupAllInstances();
   }
 }

@@ -11,7 +11,7 @@ import { CheckboxListComponent } from '@smals-belgium-shared/vas-evaluation-form
   templateUrl: './toggle-responsive-wrapper.component.html',
 })
 export class ToggleResponsiveWrapperComponent extends EvfBaseFormElementComponent {
-  getElementConrol() {
+  getElementControl() {
     if (this.element?.custom?.['multi'] && this.elementControl.element) {
       this.elementControl.element.viewType = 'multiselect';
     }

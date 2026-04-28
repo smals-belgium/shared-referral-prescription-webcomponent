@@ -4,7 +4,7 @@
     {
       "id": "DEAD0000-0000-4000-A000-000000000021",
       "templateCode": "ANNEX_81",
-      "intent" : "proposal",
+      "intent": "proposal",
       "authoredOn": "2025-09-23T09:29:58.000+00:00",
       "requesterIndex": 2,
       "careGivers": null,
@@ -15,41 +15,45 @@
         "end": "2026-09-21T22:00:00.000+00:00"
       },
       "assigned": true,
-      "shortCode" : null,
-      "patientIdentifier" : "00000000097",
-      "referralTask" : {
-        "status" : "COMPLETED",
-        "id" : "DEAD0000-0000-4000-A001-000000000021",
-        "executionPeriod" : null
+      "shortCode": null,
+      "patientIdentifier": "00000000097",
+      "referralTask": {
+        "status": "COMPLETED",
+        "id": "DEAD0000-0000-4000-A001-000000000021",
+        "executionPeriod": null
       },
-      "performerTasks" : [ {
-        "careGiverIndex" : 2,
-        "status" : "OPEN",
-        "id" : "DEAD0000-0000-4001-A000-000000000021",
-        "executionPeriod" : {
-          "start" : "2025-10-22",
-          "end" : null
-        }
-      } ],
-      "organizationTasks" : [ ],
-      "category" : "nursing",
-      "responses" : {
-        "occurrences" : {
-          "frequency" : 1,
-          "period" : 1,
-          "periodUnit" : "wk"
+      "performerTasks": {
+        "67120919457": [
+          {
+            "careGiverIndex": 2,
+            "status": "OPEN",
+            "id": "DEAD0000-0000-4001-A000-000000000021",
+            "executionPeriod": {
+              "start": "2025-10-22",
+              "end": null
+            }
+          }
+        ]
+      },
+      "organizationTasks": [],
+      "category": "nursing",
+      "responses": {
+        "occurrences": {
+          "frequency": 1,
+          "period": 1,
+          "periodUnit": "wk"
         },
-        "boundsDuration" : null,
-        "feedback" : false,
-        "nursing-diagnosis" : [ "373930000", "418415002" ],
-        "nbSessions" : null,
-        "occurrenceTiming" : {},
-        "medical-problem" : [ "52448006" ]
+        "boundsDuration": null,
+        "feedback": false,
+        "nursing-diagnosis": ["373930000", "418415002"],
+        "nbSessions": null,
+        "occurrenceTiming": {},
+        "medical-problem": ["52448006"]
       },
-      "pseudonymizedKey" : null,
-      "kid" : null,
-      "note" : null,
-      "extendedShortId" : null
+      "pseudonymizedKey": null,
+      "kid": null,
+      "note": null,
+      "extendedShortId": null
     },
     {
       "id": "DEAD0000-0000-4000-A000-000000000022",
@@ -64,17 +68,17 @@
         "end": "2026-09-20T22:00:00.000+00:00"
       },
       "assigned": true,
-      "shortCode" : null,
-      "patientIdentifier" : "00000000097",
-      "referralTask" : {
-        "status" : "COMPLETED",
-        "id" : "DEAD0000-0000-4000-A001-000000000022",
-        "executionPeriod" : null
+      "shortCode": null,
+      "patientIdentifier": "00000000097",
+      "referralTask": {
+        "status": "COMPLETED",
+        "id": "DEAD0000-0000-4000-A001-000000000022",
+        "executionPeriod": null
       },
-      "performerTasks" : [ ],
-      "organizationTasks" : [ ],
-      "category" : "nursing",
-      "responses" : {
+      "performerTasks": {},
+      "organizationTasks": [],
+      "category": "nursing",
+      "responses": {
         "occurrences": {
           "frequency": 4,
           "period": 1,
@@ -82,19 +86,15 @@
         },
         "boundsDuration": null,
         "feedback": false,
-        "nursing-diagnosis": [
-          "372089002"
-        ],
+        "nursing-diagnosis": ["372089002"],
         "nbSessions": null,
         "occurrenceTiming": {},
-        "medical-problem": [
-          "52448006"
-        ]
+        "medical-problem": ["52448006"]
       },
-      "pseudonymizedKey" : null,
-      "kid" : null,
-      "note" : null,
-      "extendedShortId" : null
+      "pseudonymizedKey": null,
+      "kid": null,
+      "note": null,
+      "extendedShortId": null
     },
     {
       "id": "DEAD0000-0000-4000-A000-000000000023",
@@ -109,25 +109,29 @@
         "end": "2026-08-18T22:00:00.000+00:00"
       },
       "assigned": true,
-      "shortCode" : null,
-      "patientIdentifier" : "00000000097",
-      "referralTask" : {
-        "status" : "COMPLETED",
-        "id" : "DEAD0000-0000-4000-A001-000000000023",
-        "executionPeriod" : null
+      "shortCode": null,
+      "patientIdentifier": "00000000097",
+      "referralTask": {
+        "status": "COMPLETED",
+        "id": "DEAD0000-0000-4000-A001-000000000023",
+        "executionPeriod": null
       },
-      "performerTasks" : [ {
-        "careGiverIndex" : 3,
-        "status" : "COMPLETED",
-        "id" : "DEAD0000-0000-4001-A000-000000000023",
-        "executionPeriod" : {
-          "start" : "2025-10-22",
-          "end" : "2025-10-22"
-        }
-      } ],
-      "organizationTasks" : [ ],
-      "category" : "nursing",
-      "responses" : {
+      "performerTasks": {
+        "67120919457": [
+          {
+            "careGiverIndex": 3,
+            "status": "COMPLETED",
+            "id": "DEAD0000-0000-4001-A000-000000000023",
+            "executionPeriod": {
+              "start": "2025-10-22",
+              "end": "2025-10-22"
+            }
+          }
+        ]
+      },
+      "organizationTasks": [],
+      "category": "nursing",
+      "responses": {
         "occurrences": {
           "frequency": 1,
           "period": 1,
@@ -135,19 +139,15 @@
         },
         "boundsDuration": null,
         "feedback": true,
-        "nursing-diagnosis": [
-          "372089002"
-        ],
+        "nursing-diagnosis": ["372089002"],
         "nbSessions": null,
         "occurrenceTiming": {},
-        "medical-problem": [
-          "397540003"
-        ]
+        "medical-problem": ["397540003"]
       },
-      "pseudonymizedKey" : null,
-      "kid" : null,
-      "note" : null,
-      "extendedShortId" : null
+      "pseudonymizedKey": null,
+      "kid": null,
+      "note": null,
+      "extendedShortId": null
     }
   ]
 }

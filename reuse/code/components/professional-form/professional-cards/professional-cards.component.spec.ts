@@ -2,20 +2,26 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProfessionalCardsComponent } from './professional-cards.component';
 import { RequestProfessionalDataService } from '@reuse/code/services/helpers/request-professional-data.service';
-import { of } from 'rxjs';
-import { SimpleChange, SimpleChanges } from '@angular/core';
+import { signal, SimpleChange, SimpleChanges } from '@angular/core';
 import { MatRadioChange } from '@angular/material/radio';
 import { TranslateModule } from '@ngx-translate/core';
+import { Lang } from '@reuse/code/constants/languages';
+import { ProviderType } from '@reuse/code/openapi';
 
 const mockProfessionals = [
-  { id: { ssin: '123', qualificationCode: 'Q1' }, firstname: 'Jan', lastname: 'Janssens', type: 'Professional' },
-  { id: { ssin: '456', qualificationCode: 'Q2' }, firstname: 'Piet', lastname: 'Peeters', type: 'Professional' },
+  {
+    id: { ssin: '123', qualificationCode: 'Q1' },
+    firstname: 'Jan',
+    lastname: 'Janssens',
+    type: ProviderType.Professional,
+  },
+  {
+    id: { ssin: '456', qualificationCode: 'Q2' },
+    firstname: 'Piet',
+    lastname: 'Peeters',
+    type: ProviderType.Professional,
+  },
 ] as any[];
-
-const mockOrganization = {
-  id: { organizationId: 'ORG-001' },
-  name: 'Ziekenhuis Brussel',
-} as any;
 
 describe('ProfessionalCardsComponent', () => {
   let fixture: ComponentFixture<ProfessionalCardsComponent>;
@@ -24,9 +30,9 @@ describe('ProfessionalCardsComponent', () => {
 
   beforeEach(async () => {
     dataServiceMock = {
-      data$: of([]),
-      loading$: of(false),
-      initializeDataStream: jest.fn(),
+      data: signal([]),
+      loading: signal(false),
+      initializeCardsDataStream: jest.fn(),
       triggerLoad: jest.fn(),
       reset: jest.fn(),
     } as any;
@@ -42,7 +48,7 @@ describe('ProfessionalCardsComponent', () => {
     fixture.componentRef.setInput('prescriptionId', 'RX-001');
     fixture.componentRef.setInput('category', 'physiotherapy');
     fixture.componentRef.setInput('intent', 'prescribe');
-    fixture.componentRef.setInput('currentLang', 'nl');
+    fixture.componentRef.setInput('currentLang', Lang.NL.short);
   });
 
   it('should create', () => {
@@ -73,7 +79,7 @@ describe('ProfessionalCardsComponent', () => {
   });
 
   describe('ngOnChanges', () => {
-    it('should call initializeDataStream when professionals change with data', () => {
+    it('should call initializeCardsDataStream when professionals change with data', () => {
       fixture.componentRef.setInput('professionals', mockProfessionals);
       fixture.detectChanges();
 
@@ -82,11 +88,11 @@ describe('ProfessionalCardsComponent', () => {
       };
       component.ngOnChanges(changes);
 
-      expect(dataServiceMock.initializeDataStream).toHaveBeenCalled();
+      expect(dataServiceMock.initializeCardsDataStream).toHaveBeenCalled();
     });
 
-    it('should not call initializeDataStream when professionals change to empty', () => {
-      dataServiceMock.initializeDataStream.mockClear();
+    it('should not call initializeCardsDataStream when professionals change to empty', () => {
+      dataServiceMock.initializeCardsDataStream.mockClear();
 
       fixture.componentRef.setInput('professionals', []);
       fixture.detectChanges();
@@ -96,18 +102,18 @@ describe('ProfessionalCardsComponent', () => {
       };
       component.ngOnChanges(changes);
 
-      expect(dataServiceMock.initializeDataStream).not.toHaveBeenCalled();
+      expect(dataServiceMock.initializeCardsDataStream).not.toHaveBeenCalled();
     });
 
-    it('should not call initializeDataStream for unrelated changes', () => {
-      dataServiceMock.initializeDataStream.mockClear();
+    it('should not call initializeCardsDataStream for unrelated changes', () => {
+      dataServiceMock.initializeCardsDataStream.mockClear();
 
       const changes: SimpleChanges = {
         loading: new SimpleChange(false, true, false),
       };
       component.ngOnChanges(changes);
 
-      expect(dataServiceMock.initializeDataStream).not.toHaveBeenCalled();
+      expect(dataServiceMock.initializeCardsDataStream).not.toHaveBeenCalled();
     });
   });
 
@@ -173,12 +179,6 @@ describe('ProfessionalCardsComponent', () => {
       const result = component.trackById(mockProfessionals[0]);
 
       expect(result).toBe('123Q1');
-    });
-
-    it('should return organizationId for an organization', () => {
-      const result = component.trackById(mockOrganization);
-
-      expect(result).toBe('ORG-001');
     });
   });
 

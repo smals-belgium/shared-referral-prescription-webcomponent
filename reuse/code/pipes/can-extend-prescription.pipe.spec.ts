@@ -34,7 +34,7 @@ describe('canExtendPrescription', () => {
   });
 
   it('should return false if currentUser is not a professional', () => {
-    const prescription = { templateCode: 'template1', intent: 'order' } as any;
+    const prescription = { templateCode: 'template1', intent: Intent.ORDER } as any;
     const currentUser = { role: Role.Patient } as any;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
