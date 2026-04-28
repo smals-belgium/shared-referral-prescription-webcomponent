@@ -2,7 +2,7 @@ openapi: "3.0.3"
 info:
   title: "backend API"
   description: "backend API"
-  version: "1.200.0"
+  version: "1.100.0"
 servers:
   - url: "/" # this acts as the “base path”
     description: |
@@ -313,12 +313,6 @@ paths:
           required: true
           schema:
             type: "string"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ReasonResource"
-        required: true
       responses:
         "200":
           description: "OK"
@@ -920,11 +914,6 @@ paths:
           required: true
           schema:
             type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ReasonResource"
       responses:
         "200":
           description: "OK"
@@ -1657,19 +1646,6 @@ components:
           additionalProperties: true # → keys can be any string, and values can be any type (any)
         pseudonymizedKey:
           type: string
-        prescriber:
-          $ref: "#/components/schemas/PrescriberResource"
-    PrescriberResource:
-      required:
-        - ssin
-        - discipline
-      properties:
-        ssin:
-          type: string
-        discipline:
-          type: string
-        organizationNihii11: 
-          type: string         
     AssignCareGiverResource:
       type: "object"
       required:
@@ -1778,14 +1754,10 @@ components:
     InstitutionTypeResource:
       type: string
       enum:
-        - OTD_PHARMACY
-        - OFFICE_DOCTORS
-        - GROUPOFDOCTORS
+        - THIRD_PARTY_PAYING_GROUP
+        - GROUP_OF_DOCTORS
         - GUARD_POST
         - MEDICAL_HOUSE
-        - HOSPITAL
-        - REEDUCATION
-        - GROUPOFNURSES
         - HOME_SERVICES
     CityResource:
       type: "object"
@@ -1853,20 +1825,10 @@ components:
         - "DENTIST"
         - "NURSE"
         - "MIDWIFE"
-        - "PHYSIOTHERAPIST"
+        - "HEAD"
+        - "ADMINISTRATIVE"
         - "PATIENT"
-    OIDC:
-      type: "string"
-      enum:
-        - "otdpharmacy"
-        - "officedoctors"
-        - "groupofdoctors"
-        - "guardpost"
-        - "medicalhouse"
-        - "hospital"
-        - "reeducation"
-        - "groupofnurses"
-        - "homecareservices"        
+        - "PHYSIOTHERAPIST"
     HealthcareOrganizationResource:
       type: "object"
       properties:
@@ -2163,7 +2125,8 @@ components:
         - pharmacist
         - dentist
         - midwife
-        - organization
+        - administrative
+        - head
     PageModelEntityDto:
       type: object
       properties:
