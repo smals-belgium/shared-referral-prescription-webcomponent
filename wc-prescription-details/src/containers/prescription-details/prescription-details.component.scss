@@ -1,18 +1,44 @@
 @use '@angular/material' as mat;
 @use '@myhealth-belgium/design-kit' as mh;
-@use '../../../../node_modules/@smals-belgium-shared/vas-evaluation-form-ui-material/index' as evf;
 
-@include mh.use-font-material-symbols(
-    url('@reuse/assets/fonts/MatSymbols-Rounded.ttf'),
-    'Material Symbols Rounded',
-      (
-        'material-icons',
-        'material-symbols',
-      ));
+.material-icons,
+.material-symbols {
+  font-family: 'Material Symbols Rounded', sans-serif;
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
 
-@include mh.use-globals();
-@include mh.use-classes();
-@include mh.use-all-components();
+h1 {
+  @include mh.font-heading-1;
+}
+
+h2 {
+  @include mh.font-heading-2;
+}
+
+p {
+  @include mh.font-default-regular;
+}
+
+a {
+  @include mh.font-nav-link;
+}
+
 @include mh.override-mat-dialog();
 @include mh.override-mat-form-field();
 @include mh.override-mat-button();
@@ -20,25 +46,39 @@
 @include mh.override-mat-chips();
 @include mh.override-mat-table();
 
-.mat-mdc-dialog-inner-container .mat-mdc-dialog-surface{
+.mat-mdc-dialog-inner-container .mat-mdc-dialog-surface {
   max-height: 100vh;
 }
 
-:host{
+mat-icon {
+  svg {
+    fill: currentColor;
+    vertical-align: top;
+    text-align: center;
+  }
+}
 
+:host {
   /* Box Shadows */
-  --mat-sys-level0: 0px 0px 0px 0px rgba(0, 0, 0, 0.2), 0px 0px 0px 0px rgba(0, 0, 0, 0.14), 0px 0px 0px 0px rgba(0, 0, 0, 0.12);
-  --mat-sys-level1: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
-  --mat-sys-level2: 0px 3px 3px -2px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 8px 0px rgba(0, 0, 0, 0.12);
-  --mat-sys-level3: 0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
-  --mat-sys-level4: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
-  --mat-sys-level5: 0px 7px 8px -4px rgba(0, 0, 0, 0.2), 0px 12px 17px 2px rgba(0, 0, 0, 0.14), 0px 5px 22px 4px rgba(0, 0, 0, 0.12);
+  --mat-sys-level0:
+    0px 0px 0px 0px rgba(0, 0, 0, 0.2), 0px 0px 0px 0px rgba(0, 0, 0, 0.14), 0px 0px 0px 0px rgba(0, 0, 0, 0.12);
+  --mat-sys-level1:
+    0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+  --mat-sys-level2:
+    0px 3px 3px -2px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+  --mat-sys-level3:
+    0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+  --mat-sys-level4:
+    0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
+  --mat-sys-level5:
+    0px 7px 8px -4px rgba(0, 0, 0, 0.2), 0px 12px 17px 2px rgba(0, 0, 0, 0.14), 0px 5px 22px 4px rgba(0, 0, 0, 0.12);
 
   /* Default font */
   --mh-default-font-family: #{mh.$font-stack};
 
   /* Body Large */
-  --mat-sys-body-large: #{mh.$font-weight-regular} #{mh.$font-size-m} / #{mh.calculateRem(22px)} var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-body-large: #{mh.$font-weight-regular} #{mh.$font-size-m} / #{mh.calculateRem(22px)}
+    var(--mh-default-font-family, #{mh.$font-stack});
   --mat-sys-body-large-font: var(--mh-default-font-family, #{mh.$font-stack});
   --mat-sys-body-large-line-height: #{mh.calculateRem(22px)};
   --mat-sys-body-large-size: #{mh.$font-size-m};
@@ -46,7 +86,8 @@
   --mat-sys-body-large-weight: #{mh.$font-weight-regular};
 
   /* Body Medium */
-  --mat-sys-body-medium: #{mh.$font-weight-regular} #{mh.$font-size-s} / #{mh.calculateRem(20px)} var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-body-medium: #{mh.$font-weight-regular} #{mh.$font-size-s} / #{mh.calculateRem(20px)}
+    var(--mh-default-font-family, #{mh.$font-stack});
   --mat-sys-body-medium-font: var(--mh-default-font-family, #{mh.$font-stack});
   --mat-sys-body-medium-line-height: #{mh.calculateRem(20px)};
   --mat-sys-body-medium-size: #{mh.$font-size-s};
@@ -54,7 +95,8 @@
   --mat-sys-body-medium-weight: #{mh.$font-weight-regular};
 
   /* Label Large */
-  --mat-sys-label-large: #{mh.$font-weight-medium} #{mh.$font-size-s} / #{mh.calculateRem(28px)} var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-label-large: #{mh.$font-weight-medium} #{mh.$font-size-s} / #{mh.calculateRem(28px)}
+    var(--mh-default-font-family, #{mh.$font-stack});
   --mat-sys-label-large-font: var(--mh-default-font-family, #{mh.$font-stack});
   --mat-sys-label-large-line-height: #{mh.calculateRem(28px)};
   --mat-sys-label-large-size: #{mh.$font-size-m};
@@ -63,7 +105,8 @@
   --mat-sys-label-large-weight-prominent: #{mh.$font-weight-bold};
 
   /* Heading Small */
-  --mat-sys-headline-small: #{mh.$font-weight-regular} #{mh.$font-size-2xl} / 2rem var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-sys-headline-small: #{mh.$font-weight-regular} #{mh.$font-size-2xl} / 2rem
+    var(--mh-default-font-family, #{mh.$font-stack});
   --mat-sys-headline-small-font: var(--mh-default-font-family, #{mh.$font-stack});
   --mat-sys-headline-small-line-height: 2rem;
   --mat-sys-headline-small-size: #{mh.$font-size-2xl};
@@ -104,7 +147,7 @@
   --mat-sys-inverse-on-surface: #{mh.$neutral-95};
 
   /* Icons */
-  --mh-prescriber-details-icon-color : yellow;
+  --mh-prescriber-details-icon-color: yellow;
 
   /* Form Fields */
   --mdc-outlined-text-field-error-outline-color: #{mh.$error-30};
@@ -123,7 +166,10 @@
   --mat-sys-body-medium-size: #{mh.$font-size-s};
   --mat-sys-surface-container-high: #{mh.$primary-100};
   --mat-sys-on-surface-variant: #414753;
-  --mdc-text-button-label-text-color: var(--mat-datepicker-calendar-period-button-text-color, var(--mat-sys-on-surface-variant));
+  --mdc-text-button-label-text-color: var(
+    --mat-datepicker-calendar-period-button-text-color,
+    var(--mat-sys-on-surface-variant)
+  );
   --mat-datepicker-calendar-container-elevation-shadow: rgba(0, 0, 0, 0.12) 0px 1px 9px 0px;
   --mat-datepicker-calendar-period-button-icon-color: #{mh.$primary-40};
   --mat-sys-hover-state-layer-opacity: 0.08;
@@ -135,7 +181,7 @@
   --mat-form-field-container-height: 46px;
   --mat-sys-surface-container: #{mh.$primary-100};
   --mdc-outlined-text-field-error-outline-color: #{mh.$error-30};
-  --mdc-outlined-text-field-outline-width:  #{mh.calculateRem(1px)};
+  --mdc-outlined-text-field-outline-width: #{mh.calculateRem(1px)};
   --mdc-outlined-text-field-error-focus-outline-color: #{mh.$error-30};
   --mdc-outlined-text-field-error-hover-outline-color: #{mh.$error-30};
 
@@ -182,29 +228,29 @@
   --mat-menu-item-icon-color: #{mh.$primary-40};
 
   /* Set fallback style for icons */
-  .material-icons{
+  .material-icons {
     font-family: 'Material Symbols Rounded', 'Material Icons', sans-serif;
   }
 }
 
 /* Component */
-.details_container{
+.details_container {
   font-family: var(--mh-default-font-family), sans-serif;
 
   display: flex;
   flex-direction: column;
   gap: mh.$spacing-rem-xl;
 
-  .details_header{
+  .details_header {
     display: flex;
     justify-content: space-between;
 
-    .details_title_container{
+    .details_title_container {
       display: flex;
       flex-direction: column;
       gap: mh.$spacing-rem-s;
 
-      .details_title{
+      .details_title {
         display: block;
         margin: 0;
       }
@@ -215,10 +261,10 @@
           padding: var(--mh-text-button-link-text-padding, mh.$spacing-rem-2xs);
           min-height: var(--mh-text-button-link-height, auto);
           border-radius: var(--mh-text-button-link-border-radius, 0);
-          .mat-mdc-button-touch-target{
+          .mat-mdc-button-touch-target {
             height: var(--mh-text-button-link-height, auto);
           }
-          .mdc-button__label{
+          .mdc-button__label {
             font-weight: var(--mh-text-button-link-text-weight, var(--mat-sys-label-medium-weight));
             text-decoration: var(--mh-text-button-link-text-decoration, underline);
           }
@@ -235,21 +281,21 @@
         }
       }
 
-      .status{
+      .status {
         max-width: min-content;
       }
     }
-    .details_action_container{
+    .details_action_container {
       display: flex;
       gap: mh.$spacing-rem-m;
 
-      button{
+      button {
         max-height: mh.$font-size-3xl;
       }
     }
   }
 
-  .details_body{
+  .details_body {
     display: flex;
     flex-direction: row;
 
@@ -257,18 +303,18 @@
       flex-direction: column;
     }
 
-    > :nth-child(1){
+    > :nth-child(1) {
       flex: 2;
     }
 
-    > :nth-child(2){
+    > :nth-child(2) {
       flex: 1;
     }
   }
 }
 
 /* EVF */
-evf-form-detail-group{
+evf-form-detail-group {
   display: flex !important;
   flex-direction: column;
   gap: mh.$spacing-rem-l;
@@ -276,7 +322,6 @@ evf-form-detail-group{
   .info-item {
     display: flex;
     flex-direction: column;
-
 
     & > div:first-of-type {
       & > evf-detail-label {
@@ -289,29 +334,28 @@ evf-form-detail-group{
     }
 
     & > div:nth-child(2) {
-      & > .value{
+      & > .value {
         * {
           align-items: center;
           margin: 0;
         }
       }
     }
-
   }
 }
 
-evf-checkbox-list[data-evf-element-id="additional-relevant-information-checked"] {
+evf-checkbox-list[data-evf-element-id='additional-relevant-information-checked'] {
   .sub-group .checkbox-group {
-    &> div:last-child{
-      mat-checkbox{
+    & > div:last-child {
+      mat-checkbox {
         pointer-events: unset;
         opacity: 1;
       }
     }
   }
-  .checkbox-group{
-    &> div:last-child{
-      mat-checkbox{
+  .checkbox-group {
+    & > div:last-child {
+      mat-checkbox {
         pointer-events: none;
         opacity: 0.5;
       }
@@ -319,29 +363,18 @@ evf-checkbox-list[data-evf-element-id="additional-relevant-information-checked"]
   }
 }
 
-evf-checkbox-list[data-evf-element-id="additional-relevant-information-unknown"] {
+evf-checkbox-list[data-evf-element-id='additional-relevant-information-unknown'] {
   .sub-group .checkbox-group {
-    &> div{
-      mat-checkbox{
+    & > div {
+      mat-checkbox {
         pointer-events: none;
         opacity: 0.5;
       }
     }
   }
-  .checkbox-group{
-    &> div:not(:last-child){
-      mat-checkbox{
-        pointer-events: none;
-        opacity: 0.5;
-      }
-    }
-  }
-}
-
-evf-checkbox-list[data-evf-element-id="previous-relevant-examinations-checked"] {
-  .checkbox-group{
-    &> div:last-child{
-      mat-checkbox{
+  .checkbox-group {
+    & > div:not(:last-child) {
+      mat-checkbox {
         pointer-events: none;
         opacity: 0.5;
       }
@@ -349,10 +382,21 @@ evf-checkbox-list[data-evf-element-id="previous-relevant-examinations-checked"] 
   }
 }
 
-evf-checkbox-list[data-evf-element-id="previous-relevant-examinations-unknown"] {
-  .checkbox-group{
-    &> div:not(:last-child){
-      mat-checkbox{
+evf-checkbox-list[data-evf-element-id='previous-relevant-examinations-checked'] {
+  .checkbox-group {
+    & > div:last-child {
+      mat-checkbox {
+        pointer-events: none;
+        opacity: 0.5;
+      }
+    }
+  }
+}
+
+evf-checkbox-list[data-evf-element-id='previous-relevant-examinations-unknown'] {
+  .checkbox-group {
+    & > div:not(:last-child) {
+      mat-checkbox {
         pointer-events: none;
         opacity: 0.5;
       }
@@ -361,17 +405,17 @@ evf-checkbox-list[data-evf-element-id="previous-relevant-examinations-unknown"] 
 }
 
 /* Dialogs */
-.mh-action-menu{
-  &.mat-mdc-menu-panel{
-      min-width: 200px;
-      max-width: 250px;
+.mh-action-menu {
+  &.mat-mdc-menu-panel {
+    min-width: 200px;
+    max-width: 250px;
 
-    div.mat-mdc-menu-content{
+    div.mat-mdc-menu-content {
       padding: var(--mh-action-menu-content-padding, mh.$spacing-rem-s 0);
 
-      button.mat-mdc-menu-item{
+      button.mat-mdc-menu-item {
         border-radius: var(--mh-action-menu-item-border-radius, 0);
-        &:not([disabled]):hover{
+        &:not([disabled]):hover {
           background-color: var(--mh-action-menu-item-background-color, mh.$surface-brand-primary-light);
         }
         &.destructive-action {
@@ -387,8 +431,97 @@ evf-checkbox-list[data-evf-element-id="previous-relevant-examinations-unknown"] 
     }
   }
 }
-.no-dialog-scroll{
+.no-dialog-scroll {
   .mat-mdc-dialog-surface {
     overflow: hidden;
+  }
+}
+
+evf-info-detail .infoblock {
+  display: flex;
+  padding: mh.$spacing-s;
+  gap: mh.$spacing-s;
+  border-radius: var(--evf-infoblock-radius-small, 6px);
+  box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.13);
+  background: var(--evf-infoblock-background-color, mh.$surface-brand-primary-lighter);
+  margin: mh.$spacing-m mh.$spacing-xl mh.$spacing-m 0;
+  max-width: var(--evf-infoblock-max-width, 800px);
+
+  @media (max-width: mh.$media-breakpoint-s) {
+    margin: mh.$spacing-m mh.$spacing-m mh.$spacing-m 0;
+  }
+
+  &.evf-infoblock-summary {
+    details {
+      width: 100%;
+      color: var(--evf-infoblock-body-color, mh.$typography-brand-primary-dark);
+
+      .title {
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        width: 100%;
+
+        &::before {
+          content: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%20-960%20960%20960%22%20fill%3D%22%231d5caf%22%3E%3Cpath%20d%3D%22M440-280h80v-240h-80v240Zm68.5-331.5Q520-623%20520-640t-11.5-28.5Q497-680%20480-680t-28.5%2011.5Q440-657%20440-640t11.5%2028.5Q463-600%20480-600t28.5-11.5ZM480-80q-83%200-156-31.5T197-197q-54-54-85.5-127T80-480q0-83%2031.5-156T197-763q54-54%20127-85.5T480-880q83%200%20156%2031.5T763-763q54%2054%2085.5%20127T880-480q0%2083-31.5%20156T763-197q-54%2054-127%2085.5T480-80Zm0-80q134%200%20227-93t93-227q0-134-93-227t-227-93q-134%200-227%2093t-93%20227q0%20134%2093%20227t227%2093Zm0-320Z%22/%3E%3C/svg%3E');
+          display: inline-block;
+          width: 24px;
+          height: 24px;
+          margin-right: 8px;
+        }
+
+        &::after {
+          content: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20height%3D%2224px%22%20viewBox%3D%220%20-960%20960%20960%22%20width%3D%2224px%22%20fill%3D%22%231d5caf%22%3E%3Cpath%20d%3D%22M480-528%20324-372q-11%2011-28%2011t-28-11q-11-11-11-28t11-28l184-184q12-12%2028-12t28%2012l184%20184q11%2011%2011%2028t-11%2028q-11%2011-28%2011t-28-11L480-528Z%22/%3E%3C/svg%3E');
+          display: inline-block;
+          width: 24px;
+          height: 24px;
+          margin-left: auto;
+        }
+      }
+
+      &:not([open]) {
+        .title {
+          &::after {
+            content: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20height%3D%2224px%22%20viewBox%3D%220%20-960%20960%20960%22%20width%3D%2224px%22%20fill%3D%22%231d5caf%22%3E%3Cpath%20d%3D%22M465-363.5q-7-2.5-13-8.5L268-556q-11-11-11-28t11-28q11-11%2028-11t28%2011l156%20156%20156-156q11-11%2028-11t28%2011q11%2011%2011%2028t-11%2028L508-372q-6%206-13%208.5t-15%202.5q-8%200-15-2.5Z%22/%3E%3C/svg%3E');
+          }
+        }
+      }
+    }
+  }
+
+  &.evf-infoblock {
+    &::before {
+      content: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%20-960%20960%20960%22%20fill%3D%22%231d5caf%22%3E%3Cpath%20d%3D%22M440-280h80v-240h-80v240Zm68.5-331.5Q520-623%20520-640t-11.5-28.5Q497-680%20480-680t-28.5%2011.5Q440-657%20440-640t11.5%2028.5Q463-600%20480-600t28.5-11.5ZM480-80q-83%200-156-31.5T197-197q-54-54-85.5-127T80-480q0-83%2031.5-156T197-763q54-54%20127-85.5T480-880q83%200%20156%2031.5T763-763q54%2054%2085.5%20127T880-480q0%2083-31.5%20156T763-197q-54%2054-127%2085.5T480-80Zm0-80q134%200%20227-93t93-227q0-134-93-227t-227-93q-134%200-227%2093t-93%20227q0%20134%2093%20227t227%2093Zm0-320Z%22/%3E%3C/svg%3E');
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      margin-right: 8px;
+    }
+  }
+
+  & > span > ul {
+    margin: 0;
+  }
+
+  h2 {
+    @include mh.font-default-semibold;
+
+    & {
+      color: var(--evf-infoblock-heading-color, mh.$typography-brand-primary-dark);
+      margin: 0;
+    }
+  }
+
+  p,
+  ul,
+  ol,
+  span {
+    @include mh.font-small-regular;
+
+    & {
+      color: var(--evf-infoblock-body-color, mh.$typography-brand-primary-dark);
+      margin: 0;
+    }
   }
 }

@@ -77,7 +77,7 @@ export class PrescriptionFilterComponent implements OnChanges, OnInit, OnDestroy
   updateStatusOptions(statusList: string[]): void {
     this.statusOptions = statusList.map(status => ({
       value: status,
-      name: this.translate.instant('prescription.statuses.' + status),
+      name: this.translate.instant(`prescription.statuses.${status}`) as string,
     }));
   }
 
@@ -125,7 +125,7 @@ export class PrescriptionFilterComponent implements OnChanges, OnInit, OnDestroy
   }
 
   private filteredOnAccessMatrix(e: Template) {
-    if (this.intent === 'proposal') {
+    if (this.intent === Intent.PROPOSAL) {
       return this.accessMatrix.find(m => e.code === m.templateName)?.consultProposal;
     }
     return this.accessMatrix.find(m => e.code === m.templateName)?.consultPrescription;

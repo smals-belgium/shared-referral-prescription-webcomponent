@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class PersonService {
-  private api = inject(ApiPersonService);
+  private readonly api = inject(ApiPersonService);
   private cache: Record<string, PersonResource> = {};
 
   findAll(criteria: PersonSearchCriteria) {

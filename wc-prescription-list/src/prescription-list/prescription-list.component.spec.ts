@@ -20,9 +20,8 @@ import {
   PageModelEntityDto,
   ReadRequestListResource,
   SystemCodes,
-  Template
+  Template,
 } from '@reuse/code/openapi';
-import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatDialog } from '@angular/material/dialog';
 import { PrescriptionFilterComponent } from '@reuse/code/components/prescription-filter/prescription-filter.component';
@@ -30,7 +29,8 @@ import { FeatureFlagService } from '@reuse/code/services/helpers/feature-flag.se
 import { FeatureFlagDirective } from '@reuse/code/directives/feature-flag.directive';
 import { PrescriptionsCardComponent } from '../components/prescriptions/prescriptions-card/prescriptions-card.component';
 import { RequestSummaryDataService } from '@reuse/code/services/helpers/request-summary-data.service';
-import { Lang } from '@reuse/code/interfaces/lang.enum';
+import { Lang } from '@reuse/code/constants/languages';
+import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
 
 const BASE_URL = 'http://localhost';
 
@@ -79,18 +79,6 @@ class MockDateAdapter {
   setLocale = jest.fn();
 }
 
-const containerElement = document.createElement('div');
-const mockShadowDomOverlayContainer = {
-  ngOnDestroy: jest.fn(),
-
-  getRootElement: jest.fn().mockReturnValue(document.createElement('div').attachShadow({ mode: 'open' })),
-  createContainer: jest.fn(),
-  getContainerElement: jest.fn().mockReturnValue(containerElement),
-  _createContainer: jest.fn(),
-  _containerElement: containerElement,
-  _document: document,
-};
-
 const mockDataService = {
   requestSummaryData$: new BehaviorSubject([]),
   loading$: new BehaviorSubject(false),
@@ -108,11 +96,16 @@ describe('ListPrescriptionsWebComponent', () => {
   let dateAdapter: MockDateAdapter;
   let mockDialog: jest.Mocked<MatDialog>;
   let featureService: FeatureFlagService;
+  let mockIconRegistryService: jest.Mocked<Partial<IconRegistryService>>;
 
   beforeEach(async () => {
     const dialogMock = {
       open: jest.fn(),
     } as unknown as jest.Mocked<MatDialog>;
+
+    mockIconRegistryService = {
+      init: jest.fn(),
+    };
 
     await TestBed.configureTestingModule({
       imports: [
@@ -133,7 +126,6 @@ describe('ListPrescriptionsWebComponent', () => {
         { provide: ConfigurationService, useValue: mockConfigService },
         { provide: AuthService, useValue: mockAuthService },
         { provide: PseudonymisationHelper, useValue: MockPseudoHelperFactory() },
-        { provide: ShadowDomOverlayContainer, useValue: mockShadowDomOverlayContainer },
         { provide: MatDialog, useValue: dialogMock },
         {
           provide: BreakpointObserver,
@@ -141,6 +133,7 @@ describe('ListPrescriptionsWebComponent', () => {
             observe: jest.fn().mockReturnValue(of({ matches: true })),
           },
         },
+        { provide: IconRegistryService, useValue: mockIconRegistryService },
       ],
     })
       .overrideComponent(PrescriptionsCardComponent, {
@@ -161,6 +154,7 @@ describe('ListPrescriptionsWebComponent', () => {
 
   afterEach(() => {
     httpMock.verify();
+    jest.restoreAllMocks();
   });
 
   describe('default behaviour with prescriptions', () => {
@@ -565,12 +559,12 @@ describe('ListPrescriptionsWebComponent', () => {
 
       createFixture();
 
-      expect(translate.getDefaultLang()).toBe(Lang.FR);
-      expect(setLocalesSpy).toHaveBeenCalledWith(Lang.FR);
+      expect(translate.getDefaultLang()).toBe(Lang.FR.full);
+      expect(setLocalesSpy).toHaveBeenCalledWith(Lang.FR.full);
     });
 
     it('should not call use() or setLocale() with initial language only once', () => {
-      translate.use(Lang.NL);
+      translate.use(Lang.NL.full);
 
       const translateUseSpy = jest.spyOn(translate, 'use');
       const dateAdapterSpy = jest.spyOn(dateAdapter, 'setLocale');
@@ -579,8 +573,8 @@ describe('ListPrescriptionsWebComponent', () => {
 
       expect(translateUseSpy).toHaveBeenCalledTimes(1);
       expect(dateAdapterSpy).toHaveBeenCalledTimes(1);
-      expect(translateUseSpy).toHaveBeenCalledWith(Lang.NL);
-      expect(dateAdapterSpy).toHaveBeenCalledWith(Lang.NL);
+      expect(translateUseSpy).toHaveBeenCalledWith(Lang.NL.full);
+      expect(dateAdapterSpy).toHaveBeenCalledWith(Lang.NL.full);
     });
 
     it('should update language by emitting a new lang with _languageChange()', () => {
@@ -589,10 +583,10 @@ describe('ListPrescriptionsWebComponent', () => {
 
       createFixture();
 
-      component['_languageChange'].next(Lang.FR);
+      component['_languageChange'].next(Lang.FR.full);
 
-      expect(translateUseSpy).toHaveBeenCalledWith(Lang.FR);
-      expect(dateAdapterSpy).toHaveBeenCalledWith(Lang.FR);
+      expect(translateUseSpy).toHaveBeenCalledWith(Lang.FR.full);
+      expect(dateAdapterSpy).toHaveBeenCalledWith(Lang.FR.full);
     });
   });
 
@@ -760,13 +754,6 @@ describe('ListPrescriptionsWebComponent', () => {
       expect(spyOnLoadData).toHaveBeenCalledWith({ pageIndex: 1 });
     });
 
-    it('should call shadowDomOverlay.createContainer', () => {
-      createFixture();
-      component.ngAfterViewInit();
-
-      expect(mockShadowDomOverlayContainer.createContainer).toHaveBeenCalled();
-    });
-
     it('should call showErrorCard when error is undefined', () => {
       createFixture();
       const spyOnShowErrorCard = jest.spyOn(component, 'showErrorCard');
@@ -892,6 +879,22 @@ describe('ListPrescriptionsWebComponent', () => {
         show: true,
         message: 'common.somethingWentWrongWithoutRetry',
       });
+    });
+  });
+
+  describe('init icons', () => {
+    it('should register icons onInit', () => {
+      createFixture();
+      component.ngOnInit();
+
+      expect(mockIconRegistryService.init).toHaveBeenCalledWith(
+        'add',
+        'delete',
+        'more_vert',
+        'keyboard_arrow_right',
+        'close',
+        'error'
+      );
     });
   });
 

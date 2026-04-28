@@ -39,11 +39,8 @@ describe('CanCancelPrescriptionOrProposal', () => {
     } as unknown as jest.Mocked<AccessMatrixState>;
 
     TestBed.configureTestingModule({
-      providers: [
-        CanCancelPrescriptionOrProposalPipe,
-        { provide:AccessMatrixState, useValue: mockAccessMatrixState }
-      ]
-    })
+      providers: [CanCancelPrescriptionOrProposalPipe, { provide: AccessMatrixState, useValue: mockAccessMatrixState }],
+    });
 
     pipe = TestBed.inject(CanCancelPrescriptionOrProposalPipe);
   });
@@ -151,9 +148,11 @@ describe('CanCancelPrescriptionOrProposal', () => {
     const prescription = {
       intent: Intent.ORDER,
       status: RequestStatus.Open,
-      performerTasks: [
-        { status: FhirR4TaskStatus.Completed },
-      ],
+      performerTasks: {
+        [currentUser.ssin]: [{ status: FhirR4TaskStatus.Ready }, { status: FhirR4TaskStatus.Completed }],
+        ['123']: [{ status: FhirR4TaskStatus.Ready }],
+        ['234']: [{ status: FhirR4TaskStatus.Ready }],
+      },
       requester: {
         healthcarePerson: {
           ssin: requester.ssin,

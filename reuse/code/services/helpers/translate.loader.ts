@@ -7,7 +7,9 @@ import * as deDE from '@reuse/assets/i18n-common/de_DE.json';
 
 export class WcTranslateLoader implements TranslateLoader {
   public getTranslation(lang: string) {
-    switch (lang.toLowerCase().substring(0, 2)) {
+    const normalized = typeof lang === 'string' ? lang.toLowerCase().substring(0, 2) : null;
+
+    switch (normalized) {
       case 'nl':
         return of(nlBe);
       case 'fr':

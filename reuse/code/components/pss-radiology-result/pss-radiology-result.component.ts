@@ -19,6 +19,7 @@ import { MatIcon, MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { CodedValueItem, SupportOption } from '@reuse/code/openapi';
+import { SupportedLanguages } from '@reuse/code/evf/utils/evf-utils';
 
 const radiationIcon = `
 <?xml version="1.0" encoding="utf-8"?>
@@ -39,7 +40,7 @@ const radiationIcon = `
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PssRadiologyResultComponent implements OnChanges {
-  private language: 'nl' | 'fr' = 'nl';
+  private language: SupportedLanguages = 'nl';
   protected radiationLevel = Array(5);
   protected clickedRow: SupportOption | undefined;
   protected selectedRow: SupportOption | undefined;
@@ -56,9 +57,9 @@ export class PssRadiologyResultComponent implements OnChanges {
     private readonly translate: TranslateService,
     private readonly evfTranslate: EvfTranslateService
   ) {
-    this.language = this.evfTranslate.currentLang as 'nl' | 'fr';
+    this.language = this.evfTranslate.currentLang as SupportedLanguages;
     this.evfTranslate.currentLang$.pipe(takeUntilDestroyed()).subscribe(() => {
-      this.language = this.evfTranslate.currentLang as 'nl' | 'fr';
+      this.language = this.evfTranslate.currentLang as SupportedLanguages;
     });
 
     this.registerIcon();

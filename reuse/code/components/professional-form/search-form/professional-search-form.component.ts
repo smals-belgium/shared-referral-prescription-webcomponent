@@ -1,7 +1,7 @@
 import { Component, inject, output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
-import { NgxMaskDirective } from 'ngx-mask';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { TranslateModule } from '@ngx-translate/core';
 import { AsyncPipe } from '@angular/common';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
@@ -9,7 +9,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { TranslationPipe } from '@reuse/code/pipes/translation.pipe';
 import { CaregiverNamePatternValidator } from '@reuse/code/utils/validators';
 import { CityResource, GeographyService } from '@reuse/code/openapi';
-import { debounceTime, of, switchMap, map, filter } from 'rxjs';
+import { debounceTime, filter, map, of, switchMap } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -17,7 +17,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ResponsiveWrapperComponent } from '@reuse/code/components/responsive-wrapper/responsive-wrapper.component';
-import { provideNgxMask } from 'ngx-mask';
 
 export type ProfessionalType = 'CAREGIVER' | 'ORGANIZATION' | 'ALL';
 

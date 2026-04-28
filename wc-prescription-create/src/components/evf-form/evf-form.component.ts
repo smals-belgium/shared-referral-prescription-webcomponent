@@ -24,6 +24,8 @@ import { DateTime } from 'luxon';
 import { PssService } from '@reuse/code/services/api/pss.service';
 import { TranslateService } from '@ngx-translate/core';
 import { TemplateVersion } from '@reuse/code/openapi';
+import { Lang } from '@reuse/code/constants/languages';
+import { formatToEvfLangCode } from '@reuse/code/evf/utils/evf-utils';
 
 @Component({
   selector: 'evf-form',
@@ -49,7 +51,7 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
 
   @HostBinding('attr.lang')
   @Input()
-  lang = 'fr-BE';
+  lang: string = Lang.FR.full;
   @Input() template!: TemplateVersion | string;
   @Input() readonly = false;
   @Input() submitted = false;
@@ -59,7 +61,7 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['lang']) {
-      const formattedLang = this.formatToEvfLangCode(this.lang);
+      const formattedLang = formatToEvfLangCode(this.lang);
       this.dateAdapter.setLocale(SupportedLocales[formattedLang]);
       this.evfTranslate.setCurrentLang(formattedLang);
       this.translate.use(this.lang);
@@ -95,10 +97,10 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
   }
 
   private initEvfTranslate(): void {
-    const formattedLang = this.formatToEvfLangCode(this.lang);
+    const formattedLang = formatToEvfLangCode(this.lang);
 
     this.dateAdapter.setLocale(SupportedLocales[formattedLang]);
-    this.evfTranslate.setDefaultLang('fr');
+    this.evfTranslate.setDefaultLang(Lang.FR.short);
     this.evfTranslate.setCurrentLang(formattedLang);
     this.evfTranslate.addTranslations({
       DATE_NOT_AFTER: {
@@ -122,10 +124,6 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
         fr: 'Le sexe est obligatoires!',
       },
     });
-  }
-
-  private formatToEvfLangCode(localeCode: string): 'nl' | 'fr' {
-    return (localeCode?.substring(0, 2) as 'nl' | 'fr') ?? 'fr';
   }
 
   setElementGroup(elementGroup: ElementGroup): void {

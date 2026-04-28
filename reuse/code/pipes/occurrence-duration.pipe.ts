@@ -4,11 +4,13 @@ import { BoundsDuration } from '@reuse/code/interfaces';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { translateBoundsDuration, validateBoundsDuration } from '@reuse/code/utils/occurrence-timing.utils';
 import { Translation } from '@reuse/code/openapi';
+import { Lang } from '@reuse/code/constants/languages';
 
 type TranslationType = keyof Translation;
 @Pipe({
   standalone: true,
   name: 'occurrenceDuration',
+  pure: false,
 })
 export class OccurrenceDurationPipe implements PipeTransform {
   private readonly _evfTranslate = inject(EvfTranslateService);
@@ -37,7 +39,9 @@ export class OccurrenceDurationPipe implements PipeTransform {
 
   private translate() {
     if (validateBoundsDuration(this.boundsDuration)) {
-      this.translated = this.boundsDuration ? translateBoundsDuration(this.boundsDuration, this.language ?? 'fr') : '';
+      this.translated = this.boundsDuration
+        ? translateBoundsDuration(this.boundsDuration, this.language ?? Lang.FR.short)
+        : '';
     } else {
       this.translated = '';
     }

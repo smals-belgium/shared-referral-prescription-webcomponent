@@ -20,7 +20,10 @@ const config: Config = {
     '^jose': require.resolve('jose'),
     '^@smals/vas-evaluation-form-ui-core': '@smals-belgium-shared/vas-evaluation-form-ui-core',
   },
-  collectCoverageFrom: ['wc-prescription-list/src/components/**/*.ts'],
+  collectCoverageFrom: [
+    'wc-prescription-list/src/components/**/*.ts',
+    'wc-prescription-list/src/prescription-list/**/*.ts',
+  ],
   transform: {
     '^.+\\.(ts|html)$': [
       'ts-jest',

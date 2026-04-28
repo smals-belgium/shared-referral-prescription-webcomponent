@@ -4,7 +4,7 @@ import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource } from '@r
 
 @Pipe({ name: 'canFinishTreatment', standalone: true })
 export class CanFinishTreatmentPipe implements PipeTransform {
-  constructor(private accessMatrixState: AccessMatrixState) {}
+  constructor(private readonly accessMatrixState: AccessMatrixState) {}
 
   transform(prescription: ReadRequestResource, task: PerformerTaskResource): boolean {
     const allowedStatuses: FhirR4TaskStatus[] = [FhirR4TaskStatus.Inprogress];

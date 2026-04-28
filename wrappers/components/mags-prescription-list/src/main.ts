@@ -7,6 +7,7 @@ import { importProvidersFrom } from '@angular/core';
 import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-compiler';
 import { WcTranslateLoader } from 'wrappers/services/translate.loader';
+import { ConfigName, UserLanguage } from '@smals-belgium/myhealth-wc-integration';
 
 bootstrapApplication(App, {
   ...appConfig,
@@ -15,8 +16,8 @@ bootstrapApplication(App, {
     {
       provide: HOST_SETTINGS,
       useValue: {
-        userLanguage: 'nl',
-        configName: 'demo',
+        userLanguage: UserLanguage.NL,
+        configName: ConfigName.DEMO,
       },
     },
     {

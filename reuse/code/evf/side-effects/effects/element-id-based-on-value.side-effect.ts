@@ -19,7 +19,7 @@ export function withElementIdBasedOnValueEffect() {
 function updateElementIdBasedOnValue(params: ElementIdBasedOnValueSideEffect, elementGroup: ElementGroupLike) {
   const element = elementGroup.get(params.target);
 
-  if (!element || !element.element) {
+  if (!element?.element) {
     return;
   }
 
@@ -27,6 +27,11 @@ function updateElementIdBasedOnValue(params: ElementIdBasedOnValueSideEffect, el
   const hasValues = value && value.length > 0;
   const hasUnknownFlag = value?.includes(params.unknownValue);
 
-  const idSuffix = hasValues ? (hasUnknownFlag ? '-unknown' : '-checked') : '';
+  let idSuffix = '';
+
+  if (hasValues) {
+    idSuffix = hasUnknownFlag ? '-unknown' : '-checked';
+  }
+
   element.element.id = `${params.target}${idSuffix}`;
 }

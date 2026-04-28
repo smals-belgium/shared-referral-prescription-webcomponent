@@ -18,6 +18,7 @@ import { generateWarningMessage } from '@reuse/code/utils/pss-relevant-info-mess
 import { SupportOption } from '@reuse/code/openapi';
 import { AlertType } from '@reuse/code/interfaces';
 import { EMPTY_OBJECT } from '@reuse/code/constants/common.constants';
+import { SupportedLanguages } from '@reuse/code/evf/utils/evf-utils';
 
 @Component({
   selector: 'recommendations-detail',
@@ -64,7 +65,7 @@ export class RecommendationsDetailComponent extends EvfBaseFormDetailComponent i
   private pssExchangeId: string = '';
   private userIsProfessional: boolean = false;
   private pssStatus: boolean = false;
-  private language?: 'nl' | 'fr';
+  private language?: SupportedLanguages;
 
   constructor(
     private readonly cdRef: ChangeDetectorRef,
@@ -73,9 +74,9 @@ export class RecommendationsDetailComponent extends EvfBaseFormDetailComponent i
     private readonly evfTranslate: EvfTranslateService
   ) {
     super(cdRef);
-    this.language = this.evfTranslate.currentLang as 'nl' | 'fr';
+    this.language = this.evfTranslate.currentLang as SupportedLanguages;
     this.evfTranslate.currentLang$.pipe(takeUntilDestroyed()).subscribe(() => {
-      this.language = this.evfTranslate.currentLang as 'nl' | 'fr';
+      this.language = this.evfTranslate.currentLang as SupportedLanguages;
       this.cdRef.markForCheck();
     });
   }

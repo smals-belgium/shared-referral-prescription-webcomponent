@@ -3,11 +3,10 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { PrescriptionDetailsMainComponent } from './prescription-details-main.component';
-import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
-import { HttpCacheService } from '@reuse/code/services/cache/http-cache.service';
 import {
   FakeLoader,
+  markdownServiceMock,
   mockPerson,
   prescriptionDetailsSecondaryMockService,
   prescriptionResponse,
@@ -20,6 +19,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { PrescriptionDetailsBeneficiaryComponent } from './prescription-details-beneficiary/prescription-details-beneficiary.component';
 import { Component, signal } from '@angular/core';
 import { EvfFormDetailsWebComponent } from '../evf-details/evf-form-details.component';
+import { RequestStatus } from '@reuse/code/openapi';
+import { MarkdownService } from 'ngx-markdown';
+import { EvfTranslateService } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 
 @Component({
   selector: 'evf-form-details',
@@ -31,7 +33,6 @@ class MockEvfFormDetailsComponent {}
 describe('PrescriptionDetailsMainComponent', () => {
   let component: PrescriptionDetailsMainComponent;
   let fixture: ComponentFixture<PrescriptionDetailsMainComponent>;
-  let cacheHttpService: HttpCacheService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -52,6 +53,8 @@ describe('PrescriptionDetailsMainComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: PrescriptionDetailsSecondaryService, useValue: prescriptionDetailsSecondaryMockService },
+        { provide: MarkdownService, useValue: markdownServiceMock },
+        EvfTranslateService,
       ],
     })
       .overrideComponent(PrescriptionDetailsMainComponent, {
@@ -62,12 +65,9 @@ describe('PrescriptionDetailsMainComponent', () => {
 
     fixture = TestBed.createComponent(PrescriptionDetailsMainComponent);
     component = fixture.componentInstance;
-
-    cacheHttpService = TestBed.inject(HttpCacheService);
   });
 
   it('should show a prescription based on shortCode and SSIN', () => {
-    jest.spyOn(cacheHttpService, 'loadFromCache').mockReturnValue(of(null));
     const mockResponse = prescriptionResponse();
     const service = TestBed.inject(PrescriptionDetailsSecondaryService) as any;
     (component as any).prescription = mockResponse;
@@ -83,6 +83,45 @@ describe('PrescriptionDetailsMainComponent', () => {
 
     const divWithClassId = debugElement.query(By.css('.prescription_shortcode')).nativeElement;
     expect(divWithClassId.textContent).toContain(mockResponse.shortCode);
+  });
+
+  it('should show validity period when hideEndDate is false', () => {
+    const mockResponse = prescriptionResponse();
+    mockResponse.period = {
+      start: '2024-09-04T22:00:00.000+00:00',
+      end: '2025-09-03T22:00:00.000+00:00',
+      hideEndDate: false,
+    };
+    (component as any).prescription = mockResponse;
+
+    fixture.detectChanges();
+
+    const { debugElement } = fixture;
+    const label = debugElement.query(By.css('[data-cy="prescription-validity-period-label"]')).nativeElement;
+    const value = debugElement.query(By.css('[data-cy="prescription-validity-period"]')).nativeElement;
+
+    expect(label.textContent).toContain('prescription.validityPeriod');
+    expect(value.textContent).toBeTruthy();
+  });
+
+  it('should show only start date when hideEndDate is true', () => {
+    const mockResponse = prescriptionResponse();
+    mockResponse.period = {
+      start: '2024-09-04T22:00:00.000+00:00',
+      end: '2025-09-04T22:00:00.000+00:00',
+      hideEndDate: true,
+    };
+    (component as any).prescription = mockResponse;
+
+    fixture.detectChanges();
+
+    const { debugElement } = fixture;
+    const label = debugElement.query(By.css('[data-cy="prescription-validity-start-date-label"]')).nativeElement;
+    const value = debugElement.query(By.css('[data-cy="prescription-validity-start-date"]')).nativeElement;
+
+    expect(label.textContent).toContain('prescription.validityStartDate');
+    expect(value.textContent).toBeTruthy();
+    expect(debugElement.query(By.css('[data-cy="prescription-validity-period-label"]'))).toBeNull();
   });
 
   it('should propagate patient changes from service to view', () => {
@@ -104,5 +143,44 @@ describe('PrescriptionDetailsMainComponent', () => {
 
     ssinElement = debugElement.query(By.css('.ssin')).nativeElement;
     expect(ssinElement.textContent).toContain('20.00.00-000.01');
+  });
+
+  describe('getStatusColor', () => {
+    it('should return color for valid status', () => {
+      expect(component.getStatusColor('IN_PROGRESS' as RequestStatus)).toBe('mh-green mh-no-overlay');
+    });
+  });
+
+  describe('populate infoElements', () => {
+    it('populates infoElements only with viewType info and resets infoElements on each new prescription load', async () => {
+      const elements = [
+        { id: '1', viewType: 'info', label: 'Info element' },
+        { id: '2', viewType: 'input', label: 'Input element' },
+        { id: '3', viewType: 'info', label: 'Another info' },
+      ];
+
+      const templateRequest = {
+        elements: elements,
+        version: '',
+        templateId: 0,
+      };
+
+      (component as any).templateVersion = templateRequest;
+
+      fixture.detectChanges();
+
+      expect(component.infoElements).toHaveLength(2);
+      expect(component.infoElements.every(e => e.viewType === 'info')).toBe(true);
+
+      const templateRequest2 = {
+        elements: [],
+        version: '',
+        templateId: 0,
+      };
+      (component as any).templateVersion = templateRequest2;
+      fixture.detectChanges();
+
+      expect(component.infoElements).toHaveLength(0);
+    });
   });
 });

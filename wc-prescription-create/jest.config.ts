@@ -5,7 +5,7 @@ const config: Config = {
   ...jestBaseConfig,
 
   // The directory where Jest should output its coverage files
-  coverageDirectory: '<rootDir>/wc-prescription-createcoverage',
+  coverageDirectory: '<rootDir>/wc-prescription-create/coverage',
 
   setupFilesAfterEnv: ['./setup-jest.ts'],
 
@@ -15,7 +15,10 @@ const config: Config = {
     '^jose': require.resolve('jose'),
     '^@smals/vas-evaluation-form-ui-core': '@smals-belgium-shared/vas-evaluation-form-ui-core',
   },
-  collectCoverageFrom: ['wc-prescription-create/src/components/**/*.ts'],
+  collectCoverageFrom: [
+    'wc-prescription-create/src/components/**/*.ts',
+    'wc-prescription-create/src/create-prescription/**/*.ts',
+  ],
   transform: {
     '^.+\\.(ts|html)$': [
       'ts-jest',

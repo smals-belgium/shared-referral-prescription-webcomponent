@@ -17,21 +17,17 @@
             [formControl]="searchCityControl"
             [matAutocomplete]="auto"
             (blur)="searchInput.value = ''; searchCityControl.reset()"
-            data-cy="prescription-assign-search-city"
-          />
+            data-cy="prescription-assign-search-city" />
           <mat-autocomplete
             #auto="matAutocomplete"
             [autoActiveFirstOption]="true"
-            (optionSelected)="addCity($event, searchInput)"
-          >
+            (optionSelected)="addCity($event, searchInput)">
             @if (cityOptions$ | async; as cityOptions) {
               @for (option of cityOptions; track option) {
-                <mat-option [value]="option">
-                  {{ option.zipCode }} - {{ option.cityName | translation }}
-                </mat-option>
+                <mat-option [value]="option"> {{ option.zipCode }} - {{ option.cityName | translation }} </mat-option>
               } @empty {
                 <mat-option data-cy="no-locality-found-message" [value]="null" class="warning">
-                  <mat-icon>warning</mat-icon>
+                  <mat-icon svgIcon="warning" [aria-hidden]="true"></mat-icon>
                   {{ 'prescription.assignPerformer.noResults' | translate }}
                 </mat-option>
               }
@@ -61,8 +57,7 @@
           [mask]="queryIsNumeric ? '0-00000-00-000||0-00000-00' : ''"
           [validation]="queryIsNumeric"
           maxlength="50"
-          (input)="onInput($event)"
-        />
+          (input)="onInput($event)" />
         @if (!queryIsNumeric) {
           <mat-hint align="end">{{ queryControl.value.length }} / {{ caregiverNameMaxLength }}</mat-hint>
         }
@@ -76,43 +71,45 @@
           <mat-error>{{ 'prescription.errors.invalidCaregiverNameCharacters' | translate }}</mat-error>
         }
         @if (!queryIsNumeric && !queryControl.hasError('pattern') && queryControl.hasError('maxlength')) {
-          <mat-error>{{ 'prescription.errors.invalidMaxLength' | translate: queryControl.getError('maxlength') }}</mat-error>
+          <mat-error>{{
+            'prescription.errors.invalidMaxLength' | translate: queryControl.getError('maxlength')
+          }}</mat-error>
         }
         @if (!queryIsNumeric && !queryControl.hasError('pattern') && queryControl.hasError('minlength')) {
-          <mat-error>{{ 'prescription.errors.invalidMinLength' | translate: queryControl.getError('minlength') }}</mat-error>
+          <mat-error>{{
+            'prescription.errors.invalidMinLength' | translate: queryControl.getError('minlength')
+          }}</mat-error>
         }
       </mat-form-field>
     </div>
   </div>
   <mat-chip-set>
     @for (city of cityControl.value; track city.zipCode) {
-      <mat-chip
-        class="mh-blue"
-        data-cy="prescription-selected-city"
-        (removed)="removeCity(city)"
-      >
+      <mat-chip class="mh-blue" data-cy="prescription-selected-city" (removed)="removeCity(city)">
         {{ city.zipCode }} - {{ city.cityName | translation }}
         <button
           type="button"
           data-cy="prescription-selected-city-remove"
           matChipRemove
-          [attr.aria-label]="'prescription.ariaLabel.removeCity' | translate"
-        >
-          <mat-icon>cancel</mat-icon>
+          [attr.aria-label]="'prescription.ariaLabel.removeCity' | translate">
+          <mat-icon svgIcon="cancel" [aria-hidden]="true"></mat-icon>
         </button>
       </mat-chip>
     }
   </mat-chip-set>
 
   <div class="button-group">
-  <button type="submit" mat-flat-button
-          data-cy="prescription-assign-search-button">{{ 'common.search' | translate }}
-  </button>
+    <button type="submit" mat-flat-button data-cy="prescription-assign-search-button">
+      {{ 'common.search' | translate }}
+    </button>
     <app-responsive-wrapper>
       <ng-template #desktopTemplate>
-        <button type="button" mat-stroked-button
-                [mat-dialog-close]="undefined"
-                data-cy="prescription-assign-cancel-button">{{ 'common.cancel' | translate }}
+        <button
+          type="button"
+          mat-stroked-button
+          [mat-dialog-close]="undefined"
+          data-cy="prescription-assign-cancel-button">
+          {{ 'common.cancel' | translate }}
         </button>
       </ng-template>
     </app-responsive-wrapper>

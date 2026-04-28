@@ -1,5 +1,6 @@
 import { FormatMultilingualObjectPipe } from './format-multilingual-object.pipe';
 import { Translation } from '@reuse/code/openapi';
+import { Lang } from '@reuse/code/constants/languages';
 
 describe('FormatMultilingualObjectPipe', () => {
   let pipe: FormatMultilingualObjectPipe;
@@ -12,7 +13,7 @@ describe('FormatMultilingualObjectPipe', () => {
     fr: 'Bonjour',
     en: 'Hello',
     nl: 'Hallo',
-    de: 'Hallo DE'
+    de: 'Hallo DE',
   };
 
   it('should return empty string when value is undefined', () => {
@@ -24,10 +25,10 @@ describe('FormatMultilingualObjectPipe', () => {
   });
 
   it('should return correct translation for valid language code', () => {
-    expect(pipe.transform(value, 'fr')).toBe('Bonjour');
-    expect(pipe.transform(value, 'nl')).toBe('Hallo');
-    expect(pipe.transform(value, 'de')).toBe('Hallo DE');
-    expect(pipe.transform(value, 'en-US')).toBe('Hello');
+    expect(pipe.transform(value, Lang.FR.short)).toBe('Bonjour');
+    expect(pipe.transform(value, Lang.NL.short)).toBe('Hallo');
+    expect(pipe.transform(value, Lang.DE.short)).toBe('Hallo DE');
+    expect(pipe.transform(value, Lang.EN.short)).toBe('Hello');
   });
 
   it('should return empty string when lang not found in value', () => {

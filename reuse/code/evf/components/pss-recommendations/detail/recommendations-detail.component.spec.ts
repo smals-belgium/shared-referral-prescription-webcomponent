@@ -10,6 +10,7 @@ import { RecommendationsDetailComponent } from '@reuse/code/evf/components/pss-r
 import { EvfTranslateService } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { generateWarningMessage } from '@reuse/code/utils/pss-relevant-info-message.utils';
 import { PssService } from '@reuse/code/services/api/pss.service';
+import { Lang } from '@reuse/code/constants/languages';
 
 jest.mock('@reuse/code/utils/pss-relevant-info-message.utils', () => ({
   generateWarningMessage: jest.fn(() => 'Mocked warning message'),
@@ -29,7 +30,7 @@ describe('RecommendationsDetailComponent (Jest)', () => {
 
   const currentLangSubject = new Subject<string>();
   const mockTranslateService = {
-    currentLang: 'fr',
+    currentLang: Lang.FR.short,
     currentLang$: currentLangSubject.asObservable(),
   };
 
@@ -143,7 +144,7 @@ describe('RecommendationsDetailComponent (Jest)', () => {
   });
 
   it('should return a warning message from generateWarningMessage', () => {
-    component['language'] = 'fr';
+    component['language'] = Lang.FR.short;
     component.elementControl = {
       elementGroup: {
         getOutputValue: () => ({
@@ -157,7 +158,7 @@ describe('RecommendationsDetailComponent (Jest)', () => {
     expect(generateWarningMessage).toHaveBeenCalledWith(
       ['tmp-addInfo-impl', 'tmp-addInfo-diab'],
       ['tmp-impl-stent'],
-      'fr'
+      Lang.FR.short
     );
     expect(result).toBe('Mocked warning message');
   });

@@ -20,18 +20,20 @@
         "id": "DEAD0000-0000-4000-0001-000000000001",
         "executionPeriod": null
       },
-      "performerTasks": [
-        {
-          "careGiverSsin": "67120919457",
-          "careGiverIndex": 2,
-          "status": "READY",
-          "id": "DEAD0000-0000-4001-0000-000000000001",
-          "executionPeriod": {
-            "start": null,
-            "end": null
+      "performerTasks": {
+        "67120919457": [
+          {
+            "careGiverSsin": "67120919457",
+            "careGiverIndex": 2,
+            "status": "READY",
+            "id": "DEAD0000-0000-4001-0000-000000000001",
+            "executionPeriod": {
+              "start": null,
+              "end": null
+            }
           }
-        }
-      ],
+        ]
+      },
       "organizationTasks": null,
       "responses": {
         "occurrences": {
@@ -73,18 +75,20 @@
         "id": "DEAD0000-0000-4000-0001-000000000002",
         "executionPeriod": null
       },
-      "performerTasks": [
-        {
-          "careGiverSsin": "67120919457",
-          "careGiverIndex": 3,
-          "status": "READY",
-          "id": "DEAD0000-0000-4001-0000-000000000001",
-          "executionPeriod": {
-            "start": null,
-            "end": null
+      "performerTasks": {
+        "67120919457": [
+          {
+            "careGiverSsin": "67120919457",
+            "careGiverIndex": 3,
+            "status": "READY",
+            "id": "DEAD0000-0000-4001-0000-000000000001",
+            "executionPeriod": {
+              "start": null,
+              "end": null
+            }
           }
-        }
-      ],
+        ]
+      },
       "organizationTasks": null,
       "responses": {
         "occurrences": {
@@ -126,18 +130,20 @@
         "id": "DEAD0000-0000-4000-0001-000000000003",
         "executionPeriod": null
       },
-      "performerTasks": [
-        {
-          "careGiverSsin": "67120919457",
-          "careGiverIndex": 2,
-          "status": "READY",
-          "id": "DEAD0000-0000-4001-0000-000000000003",
-          "executionPeriod": {
-            "start": null,
-            "end": null
+      "performerTasks": {
+        "67120919457": [
+          {
+            "careGiverSsin": "67120919457",
+            "careGiverIndex": 2,
+            "status": "READY",
+            "id": "DEAD0000-0000-4001-0000-000000000003",
+            "executionPeriod": {
+              "start": null,
+              "end": null
+            }
           }
-        }
-      ],
+        ]
+      },
       "organizationTasks": null,
       "responses": {
         "occurrences": {
@@ -229,18 +235,20 @@
         "id": "DEAD0000-0000-4000-0001-000000000005",
         "executionPeriod": null
       },
-      "performerTasks": [
-        {
-          "careGiverSsin": "67120919457",
-          "careGiverIndex": 2,
-          "status": "READY",
-          "id": "DEAD0000-0000-4001-0000-000000000005",
-          "executionPeriod": {
-            "start": "2025-09-14T22:00:00.000+00:00",
-            "end": null
+      "performerTasks": {
+        "67120919457": [
+          {
+            "careGiverSsin": "67120919457",
+            "careGiverIndex": 2,
+            "status": "READY",
+            "id": "DEAD0000-0000-4001-0000-000000000005",
+            "executionPeriod": {
+              "start": "2025-09-14T22:00:00.000+00:00",
+              "end": null
+            }
           }
-        }
-      ],
+        ]
+      },
       "organizationTasks": null,
       "responses": {
         "occurrences": {
@@ -282,18 +290,20 @@
         "id": "DEAD0000-0000-4000-0001-000000000006",
         "executionPeriod": null
       },
-      "performerTasks": [
-        {
-          "careGiverSsin": "10000000009",
-          "careGiverIndex": 3,
-          "status": "READY",
-          "id": "DEAD0000-0000-4001-0000-000000000006",
-          "executionPeriod": {
-            "start": "2025-09-01T22:00:00.000+00:00",
-            "end": "2025-09-13T22:00:00.000+00:00"
+      "performerTasks": {
+        "10000000009": [
+          {
+            "careGiverSsin": "10000000009",
+            "careGiverIndex": 3,
+            "status": "READY",
+            "id": "DEAD0000-0000-4001-0000-000000000006",
+            "executionPeriod": {
+              "start": "2025-09-01T22:00:00.000+00:00",
+              "end": "2025-09-13T22:00:00.000+00:00"
+            }
           }
-        }
-      ],
+        ]
+      },
       "organizationTasks": null,
       "responses": {
         "occurrences": {
@@ -337,18 +347,20 @@
         "id": "DEAD0000-0000-4000-0001-000000000006",
         "executionPeriod": null
       },
-      "performerTasks": [
-        {
-          "careGiverSsin": "10000000009",
-          "careGiverIndex": 3,
-          "status": "READY",
-          "id": "DEAD0000-0000-4001-0000-000000000006",
-          "executionPeriod": {
-            "start": "2025-09-01T22:00:00.000+00:00",
-            "end": "2025-09-13T22:00:00.000+00:00"
+      "performerTasks": {
+        "10000000009": [
+          {
+            "careGiverSsin": "10000000009",
+            "careGiverIndex": 3,
+            "status": "READY",
+            "id": "DEAD0000-0000-4001-0000-000000000006",
+            "executionPeriod": {
+              "start": "2025-09-01T22:00:00.000+00:00",
+              "end": "2025-09-13T22:00:00.000+00:00"
+            }
           }
-        }
-      ],
+        ]
+      },
       "organizationTasks": null,
       "responses": {
         "occurrences": {
@@ -391,28 +403,30 @@
         "id": "DEAD0000-0000-4000-0001-000000000005",
         "executionPeriod": null
       },
-      "performerTasks": [
-        {
-          "careGiverSsin": "10000000009",
-          "careGiverIndex": 3,
-          "status": "READY",
-          "id": "DEAD0000-0000-4001-0000-000000000008",
-          "executionPeriod": {
-            "start": "2025-08-18T22:00:00.000+00:00",
-            "end": null
+      "performerTasks": {
+        "10000000009": [
+          {
+            "careGiverSsin": "10000000009",
+            "careGiverIndex": 3,
+            "status": "READY",
+            "id": "DEAD0000-0000-4001-0000-000000000008",
+            "executionPeriod": {
+              "start": "2025-08-18T22:00:00.000+00:00",
+              "end": null
+            }
+          },
+          {
+            "careGiverSsin": "10000000009",
+            "careGiverIndex": 3,
+            "status": "READY",
+            "id": "DEAD0000-0000-4001-0000-000000000008",
+            "executionPeriod": {
+              "start": "2025-08-15T22:00:00.000+00:00",
+              "end": "2025-08-18T22:00:00.000+00:00"
+            }
           }
-        },
-        {
-          "careGiverSsin": "10000000009",
-          "careGiverIndex": 3,
-          "status": "READY",
-          "id": "DEAD0000-0000-4001-0000-000000000008",
-          "executionPeriod": {
-            "start": "2025-08-15T22:00:00.000+00:00",
-            "end": "2025-08-18T22:00:00.000+00:00"
-          }
-        }
-      ],
+        ]
+      },
       "organizationTasks": null,
       "responses": {
         "occurrences": {
@@ -561,18 +575,20 @@
         "id": "DEAD0000-0000-4000-0001-000000000009",
         "executionPeriod": null
       },
-      "performerTasks": [
-        {
-          "careGiverSsin": "67120919457",
-          "careGiverIndex": 2,
-          "status": "READY",
-          "id": "DEAD0000-0000-4001-0000-000000000003",
-          "executionPeriod": {
-            "start": null,
-            "end": null
+      "performerTasks": {
+        "67120919457": [
+          {
+            "careGiverSsin": "67120919457",
+            "careGiverIndex": 2,
+            "status": "READY",
+            "id": "DEAD0000-0000-4001-0000-000000000003",
+            "executionPeriod": {
+              "start": null,
+              "end": null
+            }
           }
-        }
-      ],
+        ]
+      },
       "organizationTasks": null,
       "responses": {
         "occurrences": {
@@ -659,18 +675,20 @@
         "id": "DEAD0000-0000-4000-0001-000000000001",
         "executionPeriod": null
       },
-      "performerTasks": [
-        {
-          "careGiverSsin": "67120919457",
-          "careGiverIndex": 2,
-          "status": "READY",
-          "id": "DEAD0000-0000-4001-0000-000000000001",
-          "executionPeriod": {
-            "start": null,
-            "end": null
+      "performerTasks": {
+        "67120919457": [
+          {
+            "careGiverSsin": "67120919457",
+            "careGiverIndex": 2,
+            "status": "READY",
+            "id": "DEAD0000-0000-4001-0000-000000000001",
+            "executionPeriod": {
+              "start": null,
+              "end": null
+            }
           }
-        }
-      ],
+        ]
+      },
       "organizationTasks": null,
       "responses": {
         "occurrences": {

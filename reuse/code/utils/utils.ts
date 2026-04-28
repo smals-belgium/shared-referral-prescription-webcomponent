@@ -66,6 +66,8 @@ export function isModel(intent: string | undefined): boolean {
   return intent?.toLowerCase() === Intent.MODEL;
 }
 
+export const getTranslationKeyPrefixForPrescriptionOrProposal = (intent: string | undefined) => isPrescription(intent) ? "prescription" : "proposal";
+
 export function isEmptyValue(value: any): boolean {
   if (value == null) {
     return true;

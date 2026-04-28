@@ -1,16 +1,16 @@
-@if (prescriptionServiceData){
+@if (prescriptionServiceData) {
   @let prescription = prescriptionServiceData;
 
   <div class="secondary_details_container">
     <h3 data-cy="prescription-assign-to-label">{{ 'prescription.careGivers' | translate }}</h3>
 
-    @if ((prescription.performerTasks && prescription.performerTasks.length > 0) || (prescription.organizationTasks && prescription.organizationTasks.length > 0)) {
+    @if (
+      performerTaskEntries.length > 0 || (prescription.organizationTasks && prescription.organizationTasks.length > 0)
+    ) {
       <div data-cy="prescription-assign-to-list">
-        <app-prescription-details-organization-list
-        ></app-prescription-details-organization-list>
+        <app-prescription-details-organization-list></app-prescription-details-organization-list>
 
-        <app-prescription-details-caregiver-list
-        ></app-prescription-details-caregiver-list>
+        <app-prescription-details-caregiver-list></app-prescription-details-caregiver-list>
       </div>
     }
   </div>

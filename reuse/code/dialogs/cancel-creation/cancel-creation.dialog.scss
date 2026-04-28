@@ -1,12 +1,9 @@
-:host {
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-  --mdc-dialog-supporting-text-color: black;
-
-  ::ng-deep .mat-mdc-dialog-actions {
-    padding: 0 24px 20px 24px;
-  }
-}
-
 .checkbox-list {
   margin-left: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+:host ::ng-deep .mat-mdc-form-field-error-wrapper {
+  position: static;
 }

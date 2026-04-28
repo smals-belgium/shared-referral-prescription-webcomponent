@@ -1,13 +1,9 @@
 import { inject, Injectable } from '@angular/core';
-import {
-  CreateModelResource,
-  ModelService as ApiModelService,
-  PatchModelResource,
-} from '@reuse/code/openapi';
+import { CreateModelResource, ModelService as ApiModelService, PatchModelResource } from '@reuse/code/openapi';
 
 @Injectable({ providedIn: 'root' })
 export class PrescriptionModelService {
-  private api = inject(ApiModelService);
+  private readonly api = inject(ApiModelService);
 
   createModel(createModelResource: CreateModelResource) {
     return this.api.createPrescriptionModel(createModelResource);

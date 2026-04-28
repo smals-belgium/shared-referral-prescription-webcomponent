@@ -5,6 +5,9 @@ import { HOST_SERVICES } from '@reuse/code/components/wrappers/injection-tokens/
 import { HOST_SETTINGS } from '@reuse/code/components/wrappers/injection-tokens/host-settings.injection-token';
 import { wrapperManifest } from '../../../../manifest';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Lang } from '@reuse/code/constants/languages';
+import { Intent } from '@reuse/code/interfaces';
+import { UserLanguage } from '@smals-belgium/myhealth-wc-integration';
 
 jest.mock('@reuse/code/utils/mags-utils', () => ({
   hasUserProfile: jest.fn(),
@@ -20,11 +23,11 @@ describe('MagsPrescriptionList', () => {
   beforeEach(async () => {
     mockWebComponent = {
       intent: null,
-      lang: 'nl-be',
+      lang: Lang.NL.full,
       services: undefined as any,
       setAttribute: jest.fn(),
       addEventListener: jest.fn(),
-      getAttribute: jest.fn().mockReturnValue('nl-BE'),
+      getAttribute: jest.fn().mockReturnValue(Lang.NL.full),
     };
 
     (hasUserProfile as unknown as jest.Mock).mockReturnValue(true);
@@ -35,7 +38,7 @@ describe('MagsPrescriptionList', () => {
     };
 
     mockHostSettings = {
-      language: 'en',
+      language: UserLanguage.EN,
     };
 
     await TestBed.configureTestingModule({
@@ -55,7 +58,7 @@ describe('MagsPrescriptionList', () => {
     componentAny.getAccessToken = jest.fn().mockResolvedValue('access-token');
     componentAny.getIdToken = jest.fn().mockResolvedValue({ userProfile: { ssin: '12345' } });
 
-    jest.spyOn(component, 'userLanguage').mockReturnValue('nl');
+    jest.spyOn(component, 'userLanguage').mockReturnValue(UserLanguage.NL);
 
     jest.spyOn(document, 'createElement').mockReturnValue(mockWebComponent as unknown as HTMLElement);
 
@@ -155,7 +158,7 @@ describe('MagsPrescriptionList', () => {
     it('should set services with getAccessToken', async () => {
       component.patientSsin = '12345';
 
-      await (component as any).createWebcomponent('order');
+      await (component as any).createWebcomponent(Intent.ORDER);
 
       expect(mockWebComponent.services).toBeDefined();
       expect(mockWebComponent.services.getAccessToken).toBeDefined();
@@ -164,10 +167,10 @@ describe('MagsPrescriptionList', () => {
     it('should set correct attributes on the web component', async () => {
       component.patientSsin = '98765';
 
-      await (component as any).createWebcomponent('order');
+      await (component as any).createWebcomponent(Intent.ORDER);
 
-      expect(mockWebComponent.setAttribute).toHaveBeenCalledWith('lang', 'nl-BE');
-      expect(mockWebComponent.setAttribute).toHaveBeenCalledWith('intent', 'order');
+      expect(mockWebComponent.setAttribute).toHaveBeenCalledWith('lang', Lang.NL.full);
+      expect(mockWebComponent.setAttribute).toHaveBeenCalledWith('intent', Intent.ORDER);
       expect(mockWebComponent.setAttribute).toHaveBeenCalledWith('patient-ssin', '98765');
     });
 
@@ -175,7 +178,7 @@ describe('MagsPrescriptionList', () => {
       const openSpy = jest.spyOn(component.open, 'emit');
       component.patientSsin = '12345';
 
-      await (component as any).createWebcomponent('order');
+      await (component as any).createWebcomponent(Intent.ORDER);
 
       const handler = mockWebComponent.addEventListener.mock.calls.find(
         (call: any[]) => call[0] === 'clickOpenDetail'
@@ -187,8 +190,8 @@ describe('MagsPrescriptionList', () => {
         componentTag: wrapperManifest.events['open'].componentTag,
         props: {
           prescriptionId: 'uuid-123',
-          intent: 'order',
-          lang: 'nl-BE',
+          intent: Intent.ORDER,
+          lang: Lang.NL.full,
         },
       });
     });
@@ -196,9 +199,9 @@ describe('MagsPrescriptionList', () => {
     it('should store the created element in the instances map', async () => {
       component.patientSsin = '12345';
 
-      await (component as any).createWebcomponent('proposal');
+      await (component as any).createWebcomponent(Intent.PROPOSAL);
 
-      expect((component as any).instances.get('proposal')).toBe(mockWebComponent);
+      expect((component as any).instances.get(Intent.PROPOSAL)).toBe(mockWebComponent);
     });
   });
 
@@ -206,10 +209,10 @@ describe('MagsPrescriptionList', () => {
     it('should not create a second web component for the same intent', async () => {
       component.patientSsin = '12345';
 
-      await (component as any).createWebcomponent('order');
+      await (component as any).createWebcomponent(Intent.ORDER);
       (document.createElement as jest.Mock).mockClear();
 
-      (component as any).activate('order');
+      (component as any).activate(Intent.ORDER);
       await flushPromises();
 
       expect(document.createElement).not.toHaveBeenCalled();
@@ -223,33 +226,33 @@ describe('MagsPrescriptionList', () => {
 
       await component.initWebComponent();
 
-      expect(useSpy).toHaveBeenCalledWith('nl-BE');
+      expect(useSpy).toHaveBeenCalledWith(Lang.NL.full);
     });
   });
 
   describe('onSettingsChanged', () => {
     it('should update language on all existing web component instances', async () => {
       component.patientSsin = '12345';
-      await (component as any).createWebcomponent('order');
+      await (component as any).createWebcomponent(Intent.ORDER);
       mockWebComponent.setAttribute.mockClear();
 
       const secondMock = { setAttribute: jest.fn(), addEventListener: jest.fn(), getAttribute: jest.fn() };
       (document.createElement as jest.Mock).mockReturnValue(secondMock);
-      await (component as any).createWebcomponent('proposal');
+      await (component as any).createWebcomponent(Intent.PROPOSAL);
 
-      jest.spyOn(component, 'userLanguage').mockReturnValue('fr');
+      jest.spyOn(component, 'userLanguage').mockReturnValue(UserLanguage.FR);
 
       component.onSettingsChanged({
-        detail: { setting: 'userLanguage', value: 'fr' },
+        detail: { setting: 'userLanguage', value: UserLanguage.FR },
       } as any);
 
-      expect(mockWebComponent.setAttribute).toHaveBeenCalledWith('lang', 'fr-BE');
-      expect(secondMock.setAttribute).toHaveBeenCalledWith('lang', 'fr-BE');
+      expect(mockWebComponent.setAttribute).toHaveBeenCalledWith('lang', Lang.FR.full);
+      expect(secondMock.setAttribute).toHaveBeenCalledWith('lang', Lang.FR.full);
     });
 
     it('should ignore settings changes that are not userLanguage', async () => {
       component.patientSsin = '12345';
-      await (component as any).createWebcomponent('order');
+      await (component as any).createWebcomponent(Intent.ORDER);
       mockWebComponent.setAttribute.mockClear();
 
       component.onSettingsChanged({
@@ -264,10 +267,10 @@ describe('MagsPrescriptionList', () => {
       const useSpy = jest.spyOn(translateService, 'use');
 
       component.onSettingsChanged({
-        detail: { setting: 'userLanguage', value: 'fr' },
+        detail: { setting: 'userLanguage', value: UserLanguage.FR },
       } as any);
 
-      expect(useSpy).toHaveBeenCalledWith('fr-BE');
+      expect(useSpy).toHaveBeenCalledWith(Lang.FR.full);
     });
   });
 
@@ -278,12 +281,12 @@ describe('MagsPrescriptionList', () => {
 
       component.ngAfterViewInit();
 
-      expect(activateSpy).toHaveBeenCalledWith('order');
+      expect(activateSpy).toHaveBeenCalledWith(Intent.ORDER);
     });
   });
 });
 
 /** Flush all pending microtasks (resolved promises). */
 function flushPromises(): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, 0));
+  return Promise.resolve();
 }

@@ -1,51 +1,44 @@
 <evf-form-element-layout [elementLayout]="elementLayout" [elementControl]="elementControl" [metadata]="metadata">
   @if (!useMatLabel) {
-    <evf-element-label
-      [elementControl]="elementControl"
-      [invalid]="invalid"
-      [for]="id"
-    ></evf-element-label>
+    <evf-element-label [elementControl]="elementControl" [invalid]="invalid" [for]="id"></evf-element-label>
   }
 
   @if (element.bodyTranslationId) {
-    <evf-element-body
-      [elementControl]="elementControl"
-    ></evf-element-body>
+    <evf-element-body [elementControl]="elementControl"></evf-element-body>
   }
 
   @if (element.helpTranslationId) {
-    <evf-element-help
-      [elementControl]="elementControl"
-    ></evf-element-help>
+    <evf-element-help [elementControl]="elementControl"></evf-element-help>
   }
 
   <mat-form-field [appearance]="appearance || 'outline'">
     @if (useMatLabel) {
-      <mat-label>{{ element.labelTranslationId | evfLabel:elementControl.elementGroup }}</mat-label>
+      <mat-label>{{ element.labelTranslationId | evfLabel: elementControl.elementGroup }}</mat-label>
     }
 
     <input
       matInput
       type="text"
       [formControl]="searchControl"
-      [placeholder]="element.placeholderTranslationId && (element.placeholderTranslationId | evfLabel) || ''"
+      [placeholder]="(element.placeholderTranslationId && (element.placeholderTranslationId | evfLabel)) || ''"
       #itemInput
       [matAutocomplete]="auto"
       [id]="id"
       (keyup)="updateQuery($event)"
-      (paste)="updateQueryOnPaste($event)"
-    />
+      (paste)="updateQueryOnPaste($event)" />
 
-    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayWith"
-                      (optionSelected)="selected($event); itemInput.value = ''">
+    <mat-autocomplete
+      #auto="matAutocomplete"
+      [displayWith]="displayWith"
+      (optionSelected)="selected($event); itemInput.value = ''">
       @if (options$ | async; as options) {
         <ng-container>
           @if (options.hasOwnProperty('translate')) {
             <mat-option [value]="null">
-                      <span class="invalid"
-                      ><mat-icon>warning</mat-icon>
-                        {{ toErrorObject(options).translate | evfLabel }}</span
-                      >
+              <span class="invalid"
+                ><mat-icon svgIcon="warning" [aria-hidden]="true"></mat-icon>
+                {{ toErrorObject(options).translate | evfLabel }}</span
+              >
             </mat-option>
           }
           @if (!options.hasOwnProperty('translate')) {
@@ -57,7 +50,7 @@
               }
               @if (toAutocompleteOptionList(options).length === 0) {
                 <mat-option [value]="null">
-                  {{ "NO_OPTION_FOUND" | evfLabel }}
+                  {{ 'NO_OPTION_FOUND' | evfLabel }}
                 </mat-option>
               }
             </ng-container>
@@ -69,22 +62,20 @@
     @if (control.errors) {
       <mat-error>
         @if (control.errors | commonErrors; as error) {
-          <span>{{
-              error.label | evfLabel: error.values
-            }}</span>
+          <span>{{ error.label | evfLabel: error.values }}</span>
         }
 
         @if (control.hasError('pattern')) {
           <span>{{
-              control.getError('pattern').errorTranslationId
-                ? (control.getError('pattern').errorTranslationId | evfLabel)
-                : ("WRONG_FORMAT" | evfLabel)
-            }}</span>
+            control.getError('pattern').errorTranslationId
+              ? (control.getError('pattern').errorTranslationId | evfLabel)
+              : ('WRONG_FORMAT' | evfLabel)
+          }}</span>
         }
 
         @if (control.hasError('noAutocompleteResponse')) {
           <span>
-              {{ "SELECT_FROM_DROPDOWN" | evfLabel }}
+            {{ 'SELECT_FROM_DROPDOWN' | evfLabel }}
           </span>
         }
       </mat-error>
@@ -97,7 +88,7 @@
       <mat-chip (removed)="remove(item)" [removable]="true">
         {{ item.label[currentLang] }}
         <button matChipRemove [attr.aria-label]="'remove ' + item.label[currentLang]">
-          <mat-icon>cancel</mat-icon>
+          <mat-icon svgIcon="cancel" [aria-hidden]="true">cancel</mat-icon>
         </button>
       </mat-chip>
     }

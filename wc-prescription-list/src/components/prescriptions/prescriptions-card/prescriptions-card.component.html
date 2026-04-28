@@ -4,13 +4,16 @@
       @for (prescription of requestData(); track trackById(prescription)) {
         <mat-card appearance="raised">
           <mat-card-content>
-              @if(!!prescription.status) {
-                <div class="row" align="right">
-                  <mat-chip [disableRipple]="true" data-cy="prescription-status"
-                            [class]="getStatusColor(prescription.status!)">{{ 'prescription.statuses.' + prescription.status | translate }}
-                  </mat-chip>
-                </div>
-              }
+            @if (!!prescription.status) {
+              <div class="row" align="right">
+                <mat-chip
+                  [disableRipple]="true"
+                  data-cy="prescription-status"
+                  [class]="getStatusColor(prescription.status!)"
+                  >{{ 'prescription.statuses.' + prescription.status | translate }}
+                </mat-chip>
+              </div>
+            }
             <div class="row">
               <p class="template-title">{{ prescription.templateCode | templateName }}</p>
             </div>
@@ -18,33 +21,34 @@
             <div class="row">
               <p class="label">{{ 'prescription.author' | translate }}</p>
               <p>
-                <app-professional-display
-                  [professional]="prescription.requester"
-                ></app-professional-display>
+                <app-professional-display [professional]="prescription.requester"></app-professional-display>
               </p>
               <span class="info">
-               @if (getProfessional(prescription.requester); as professional) {
-                 ({{ (professional.nihii8 || professional.nihii11) | formatNihdi: professional.id?.qualificationCode }})
-               }
-            </span>
+                @if (getProfessional(prescription.requester); as professional) {
+                  ({{ professional.nihii8 || professional.nihii11 | formatNihdi: professional.id?.qualificationCode }})
+                }
+              </span>
             </div>
 
             <div class="row row-with-columns">
               <div class="column">
                 <p class="label">{{ 'prescription.start' | translate }}</p>
-                <p> {{ prescription.period?.start | date:'D' }}</p>
+                <p>{{ prescription.period?.start | date: 'D' }}</p>
               </div>
               <div class="column">
                 <p class="label">{{ 'prescription.end' | translate }}</p>
-                <p>{{ prescription.period?.end | date:'D' }}</p>
+                @if (prescription.period?.hideEndDate === true) {
+                  <p>-</p>
+                } @else {
+                  <p>{{ prescription.period?.end | date: 'D' }}</p>
+                }
               </div>
-
             </div>
 
             <div class="row" align="right">
-              <button mat-button type="button"
-                      (click)="clickPrescription.emit(prescription)">{{ 'prescription.details.link' | translate }}
-                <mat-icon fontIcon="keyboard_arrow_right" aria-hidden="true" iconPositionEnd></mat-icon>
+              <button mat-button type="button" (click)="clickPrescription.emit(prescription)">
+                {{ 'prescription.details.link' | translate }}
+                <mat-icon svgIcon="keyboard_arrow_right" aria-hidden="true" iconPositionEnd></mat-icon>
               </button>
             </div>
           </mat-card-content>
@@ -53,21 +57,29 @@
     </div>
   } @else if (itemsLength === 0) {
     <div class="mh-margin-top-bottom">
-      <app-alert
-        [alert]="AlertType.Info"
-        [message]="(isProfessional$() ? 'prescription.noPrescriptionsForPatient' : 'prescription.noPrescriptionsForUser') | translate"
-        [showRetry]="false"
-      ></app-alert>
+      @if (isPrescriptionIntent) {
+        <app-alert
+          [alert]="AlertType.Info"
+          [message]="
+            (isProfessional$() ? 'prescription.noPrescriptionsForPatient' : 'prescription.noPrescriptionsForUser')
+              | translate
+          "
+          [showRetry]="false"></app-alert>
+      } @else if (isProposalIntent) {
+        <app-alert
+          [alert]="AlertType.Info"
+          [message]="(isProfessional$() ? 'proposal.noProposalsForPatient' : 'proposal.noProposalsForUser') | translate"
+          [showRetry]="false"></app-alert>
+      }
     </div>
   }
 
   @if (!canLoadMore()) {
     <div class="mh-margin-bottom">
-    <app-alert
-      [alert]="AlertType.Info"
-      [message]="'prescription.allPrescriptionsFetched' | translate"
-      [showRetry]="false"
-    ></app-alert>
+      <app-alert
+        [alert]="AlertType.Info"
+        [message]="'prescription.allPrescriptionsFetched' | translate"
+        [showRetry]="false"></app-alert>
     </div>
   }
 
@@ -81,8 +93,7 @@
         [alert]="AlertType.Error"
         [message]="errorMsg"
         [error]="errorResponse"
-        (clickRetry)="onErrorRetryClick()"
-      ></app-alert>
+        (clickRetry)="onErrorRetryClick()"></app-alert>
     </div>
   }
 

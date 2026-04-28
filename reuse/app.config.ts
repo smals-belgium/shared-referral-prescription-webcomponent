@@ -1,3 +1,5 @@
+import { ReferralEnv } from '@reuse/code/interfaces/environment.interface';
+
 interface IEnvironmentVariables {
   readonly [variableName: string]: any;
 }
@@ -25,7 +27,7 @@ export interface EnabledFeatures {
 }
 
 interface AppConfigVariables {
-  env: string;
+  env: ReferralEnv;
   fhirGatewayUrl: string;
   fhirGatewayClientId?: string;
   apiUrl: string;

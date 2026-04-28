@@ -1,6 +1,6 @@
 {
   "name": "@smals-belgium-shared/uhmep-mags-prescription-list",
-  "version": "1.15.1",
+  "version": "1.101.4",
   "description": "MAGS integration for prescription list web component",
   "keywords": [
     "web-component",

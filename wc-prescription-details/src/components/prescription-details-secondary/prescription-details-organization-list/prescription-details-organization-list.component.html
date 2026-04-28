@@ -1,20 +1,20 @@
-@if (prescriptionServiceData && currentUserServiceData){
-
+@if (prescriptionServiceData && currentUserServiceData) {
   @let prescription = prescriptionServiceData;
   @let currentUser = currentUserServiceData;
 
   @for (task of prescription.organizationTasks; track task) {
-
     @let organizationName = task.organization?.organizationName | formatMultilingualObject: currentLang();
 
     <div class="organization_row" data-cy="prescription-assign-to">
       <div class="caregiver_name">
         @if (!organizationName) {
-          <span class="text_bold" >{{ 'common.organization.notFound' | translate }}</span>
-          <mat-icon matTooltip="{{'common.organization.tooltip' | translate}}"
-                    matTooltipPosition="after"
-                    style="color: grey;cursor: pointer;">
-            error
+          <span class="text_bold">{{ 'common.organization.notFound' | translate }}</span>
+          <mat-icon
+            matTooltip="{{ 'common.organization.tooltip' | translate }}"
+            matTooltipPosition="after"
+            svgIcon="error"
+            aria-hidden="true"
+            style="color: grey; cursor: pointer">
           </mat-icon>
         } @else {
           <span class="text_bold">{{ organizationName }} </span>
@@ -22,7 +22,7 @@
 
         @if (task.organization?.nihii8 ?? task.organization?.nihii11; as nihii) {
           <span>({{ nihii | formatNihdi: task?.organization?.qualificationCode }})</span>
-          <br/>
+          <br />
         }
         @if (task.executionPeriod?.start) {
           <span>{{ task.executionPeriod?.start! | date: 'dd/MM/yyyy' }} - </span>
@@ -42,23 +42,26 @@
                   @let nihii = caregiver.nihii8 ?? caregiver.nihii11;
 
                   @if (hasLastName) {
-                    <span class="text_bold">{{ caregiver.healthcarePerson?.firstName }} {{ caregiver.healthcarePerson?.lastName }}</span>
-                  }@else if (isCurrentUser) {
+                    <span class="text_bold"
+                      >{{ caregiver.healthcarePerson?.firstName }} {{ caregiver.healthcarePerson?.lastName }}</span
+                    >
+                  } @else if (isCurrentUser) {
                     {{ currentUser?.firstName }} {{ currentUser?.lastName }}
                   } @else {
                     <span class="text_bold">{{ 'common.professional.notFound' | translate }}</span>
                     <mat-icon
                       matTooltip="{{ 'common.professional.tooltip' | translate }}"
-                      matTooltipPosition="right">
-                      error
+                      matTooltipPosition="right"
+                      svgIcon="error"
+                      aria-hidden="true">
                     </mat-icon>
                   }
 
                   @if (nihii) {
-                    ({{ nihii  | formatNihdi: caregiver.healthcareQualification?.id?.code }})
+                    ({{ nihii | formatNihdi: caregiver.healthcareQualification?.id?.code }})
                   }
                 }
-                <br/>
+                <br />
                 @if (performertask.executionPeriod?.start) {
                   <span>{{ performertask.executionPeriod?.start! | date: 'dd/MM/yyyy' }} - </span>
                 }
@@ -66,15 +69,18 @@
                   <span>{{ performertask.executionPeriod?.end! | date: 'dd/MM/yyyy' }}</span>
                 }
               </div>
-              @if (patientData && currentUser.role === "patient" && (prescription | canRejectAssignation : performertask : patientData.ssin : currentUser)) {
+              @if (
+                patientData &&
+                currentUser.role === 'patient' &&
+                (prescription | canRejectAssignation: performertask : patientData.ssin : currentUser)
+              ) {
                 <button
                   type="button"
                   (click)="_service.openRejectAssignationDialog(prescription, performertask, patientData)"
                   mat-icon-button
                   data-cy="prescription-reject-assignation-button"
-                  [attr.aria-label]="'prescription.ariaLabel.reject' | translate"
-                >
-                  <mat-icon>cancel</mat-icon>
+                  [attr.aria-label]="'prescription.ariaLabel.reject' | translate">
+                  <mat-icon svgIcon="cancel" aria-hidden="true"></mat-icon>
                 </button>
               }
             </div>
