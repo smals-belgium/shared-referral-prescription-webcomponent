@@ -17,11 +17,13 @@ import {
 } from '@smals-belgium/myhealth-wc-integration';
 import { mapLanguageToTranslations } from '@reuse/code/components/wrappers/utils/mags.utils';
 import { hasUserProfile } from '@reuse/code/utils/mags-utils';
+import { Intent } from '@reuse/code/interfaces';
 
 @Component({
   standalone: true,
   selector: wrapperManifest.selector,
   templateUrl: 'mags-prescription-details.component.html',
+  styleUrl: 'mags-prescription-details.component.scss',
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
@@ -54,6 +56,7 @@ export class MagsPrescriptionDetails extends MagsComponent {
 
   override initWebComponent() {
     const webComponent = this.createElement(wrapperManifest.customElement.tag);
+    webComponent.classList.add('bg-white');
 
     webComponent.services = {
       getAccessToken: (audience: string) => this.getAccessToken(audience),
@@ -62,7 +65,7 @@ export class MagsPrescriptionDetails extends MagsComponent {
 
     webComponent.setAttribute('lang', mapLanguageToTranslations(this.userLanguage()));
     webComponent.setAttribute('prescription-id', this.prescriptionId() || '');
-    webComponent.setAttribute('intent', this.intent() || 'order');
+    webComponent.setAttribute('intent', this.intent() || Intent.ORDER);
 
     webComponent.addEventListener('clickPrint', async (event: Event) => {
       const customEvent = event as CustomEvent<Blob>;

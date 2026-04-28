@@ -3,6 +3,7 @@ import {
   computed,
   CUSTOM_ELEMENTS_SCHEMA,
   effect,
+  ElementRef,
   EventEmitter,
   HostBinding,
   inject,
@@ -64,20 +65,16 @@ import { v4 as uuidv4 } from 'uuid';
 import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-responses-state.interface';
 import { PssService } from '@reuse/code/services/api/pss.service';
 import {
+  FormElement,
   PerformerTaskResource,
   PersonResource,
   ReadRequestResource,
-  RequestStatus,
   Template,
   TemplateVersion,
 } from '@reuse/code/openapi';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatChip } from '@angular/material/chips';
-import {
-  EvfTranslateService,
-  FormTranslations,
-} from '@smals-belgium-shared/vas-evaluation-form-ui-core';
-import { PrescriptionsPdfService } from '@reuse/code/services/helpers/prescription-pdf.service';
+import { EvfTranslateService, FormTranslations } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { PrescriptionDetailsMainComponent } from '../../components/prescription-details-main/prescription-details-main.component';
 import { PrescriptionDetailsSecondaryComponent } from '../../components/prescription-details-secondary/prescription-details-secondary.component';
 import {
@@ -87,10 +84,13 @@ import {
 import { PrescriptionDetailsBottomComponent } from '../../components/prescription-details-bottom/prescription-details-bottom.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
-import { Lang } from '@reuse/code/interfaces/lang.enum';
+import { Lang } from '@reuse/code/constants/languages';
 import { tap } from 'rxjs/operators';
-import { mapDisplayStatusToColor } from '@reuse/code/utils/request-status-display-map.utils';
 import { PrescriptionDetailsActionsComponent } from '../../components/prescription-details-actions/prescription-details-actions/prescription-details-actions.component';
+import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
+import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
+import { formatToEvfLangCode } from '@reuse/code/evf/utils/evf-utils';
+import { InfoDetailComponent } from '@reuse/code/evf/components/info/detail/info-detail.component';
 
 export interface ViewState {
   prescription: ReadRequestResource;
@@ -103,6 +103,7 @@ export interface ViewState {
 }
 
 @Component({
+  selector: 'uhmep-prescription-details',
   templateUrl: './prescription-details.component.html',
   styleUrls: ['./prescription-details.component.scss'],
   encapsulation: ViewEncapsulation.ShadowDom,
@@ -120,6 +121,7 @@ export interface ViewState {
     PrescriptionDetailsBottomComponent,
     MatMenuModule,
     PrescriptionDetailsActionsComponent,
+    InfoDetailComponent,
   ],
   providers: [EvfTranslateService],
   standalone: true,
@@ -140,13 +142,15 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   private readonly _pseudoService = inject(PseudoService);
   private readonly _pssService = inject(PssService);
   private readonly _encryptionStateService = inject(EncryptionState);
+  private readonly _iconRegistryService = inject(IconRegistryService);
 
   private readonly _prescriptionSecondaryService = inject(PrescriptionDetailsSecondaryService);
   protected readonly evfTranslateService = inject(EvfTranslateService);
+  private readonly _activeHostService = inject(ActiveOverlayHostService);
 
   @HostBinding('attr.lang')
   @Input()
-  lang = Lang.FR;
+  lang: string = Lang.FR.full;
   @Input() initialPrescriptionType?: string;
   @Input() prescriptionId!: string;
   @Input() patientSsin?: string;
@@ -162,6 +166,8 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   @Output() proposalApproved = this._prescriptionSecondaryService.proposalApproved;
   @Output() proposalRejected = this._prescriptionSecondaryService.proposalsRejected;
   @Output() clickOpenExtendedDetail = new EventEmitter<string>();
+
+  protected readonly LoadingStatus = LoadingStatus;
 
   private readonly templateCode$ = this._prescriptionSecondaryService.templateCode$;
   protected readonly isProfessional$ = this._prescriptionSecondaryService.isProfessional$;
@@ -181,23 +187,24 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
   loading: WritableSignal<boolean> = this._prescriptionSecondaryService.loading;
   generatedUUID = this._prescriptionSecondaryService.generatedUUID;
-  currentLang = this._prescriptionSecondaryService.currentLang;
+  currentLang: WritableSignal<string> = this._prescriptionSecondaryService.currentLang;
   protected langAlertData: WritableSignal<{ title: string; body: string } | null> = signal(null);
 
   private readonly _subscriptions: Subscription = new Subscription();
-  private readonly _languageChange = new BehaviorSubject<string>(this._translate.currentLang ?? Lang.FR);
+  private readonly _languageChange = new BehaviorSubject<string>(this._translate.currentLang ?? Lang.FR.full);
 
   protected readonly AlertType = AlertType;
 
   isProposalValue = false;
+  infoElements: FormElement[] = [];
 
-  constructor() {
+  constructor(private readonly el: ElementRef<HTMLElement>) {
     this.currentLang.set(this._translate.currentLang);
-    this._translate.setDefaultLang(Lang.FR);
+    this._translate.setDefaultLang(Lang.FR.full);
 
     if (!this.currentLang()) {
-      this._translate.use(Lang.FR);
-      this._dateAdapter.setLocale(Lang.FR);
+      this._translate.use(Lang.FR.full);
+      this._dateAdapter.setLocale(Lang.FR.full);
       this.currentLang.set(this._translate.currentLang);
     }
 
@@ -218,10 +225,18 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
           }
 
           const instanceId = prescription.id || uuidv4();
-          this._templateVersionsStateService.loadTemplateVersionForInstance(
-            instanceId,
-            'READ_' + prescription.templateCode
-          );
+          this._templateVersionsStateService
+            .loadTemplateVersionForInstance(instanceId, 'READ_' + prescription.templateCode)
+            .subscribe({
+              next: template => {
+                this.infoElements = [];
+                template.elements?.forEach(element => {
+                  if (element.viewType === 'info') {
+                    this.infoElements.push(element);
+                  }
+                });
+              },
+            });
         }
       });
     });
@@ -294,8 +309,21 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   }
 
   ngOnInit() {
+    this._iconRegistryService.init(
+      'keyboard_arrow_up',
+      'keyboard_arrow_down',
+      'more_vert',
+      'delete',
+      'error',
+      'done',
+      'close',
+      'cancel',
+      'arrow_forward_ios',
+      'info'
+    );
+
     this.generatedUUID.set(uuidv4());
-    this.evfTranslateService.setDefaultLang('fr');
+    this.evfTranslateService.setDefaultLang(Lang.FR.short);
 
     this._subscriptions.add(
       this._languageChange
@@ -314,12 +342,14 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
           next: () => {
             this.langAlertData.set(null);
             this._translate.use(this.lang);
-            const formattedLang = this.formatToEvfLangCode(this.lang);
+            const formattedLang = formatToEvfLangCode(this.lang);
             this.evfTranslateService.setCurrentLang(formattedLang);
             this._prescriptionSecondaryService.currentLang.set(formattedLang);
           },
         })
     );
+
+    this._activeHostService.set(this.el.nativeElement);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -409,23 +439,26 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
           concatMap(([key, value]) => {
             const formElement = template.elements?.find(e => e.id === key);
 
-            if (formElement?.tags?.includes('freeText')) {
-              if (!cryptoKey) {
-                return throwError(() => new Error(`Pseudo key is missing for key "${key}"`));
-              }
-              return this._encryptionService.decryptText(value as string, cryptoKey).pipe(
-                map(decrypted => {
-                  decryptedResponses[key] = decrypted;
-                  return decryptedResponses;
-                }),
-                catchError((error: HttpErrorResponse) => {
-                  return throwError(() => new Error(`Decryption failed for key "${key}": ${error.message}`));
-                })
-              );
-            } else {
+            const isFreeText = formElement?.tags?.includes('freeText');
+
+            if (!isFreeText) {
               decryptedResponses[key] = value;
               return of(decryptedResponses);
             }
+
+            if (!cryptoKey) {
+              return throwError(() => new Error(`Pseudo key is missing for key "${key}"`));
+            }
+
+            return this._encryptionService.decryptText(value as string, cryptoKey).pipe(
+              map(decrypted => {
+                decryptedResponses[key] = decrypted;
+                return decryptedResponses;
+              }),
+              catchError((error: HttpErrorResponse) => {
+                return throwError(() => new Error(`Decryption failed for key "${key}": ${error.message}`));
+              })
+            );
           })
         )
         .subscribe({
@@ -471,15 +504,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     return this._pseudoService.pseudonymize(identifier);
   }
 
-  getStatusColor(status: RequestStatus) {
-    const mhColor = mapDisplayStatusToColor(status);
-    return mhColor + ' mh-no-overlay';
-  }
-
-  private formatToEvfLangCode(localeCode: string): 'nl' | 'fr' {
-    return (localeCode?.substring(0, 2) as 'nl' | 'fr') ?? 'fr';
-  }
-
   ngOnDestroy() {
     this._encryptionStateService.resetCryptoKey();
     if (isProposal(this.intent)) {
@@ -487,7 +511,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     } else {
       this._prescriptionStateService.resetPrescription();
     }
+    this._activeHostService.clear(this.el.nativeElement);
   }
-
-  protected readonly LoadingStatus = LoadingStatus;
 }

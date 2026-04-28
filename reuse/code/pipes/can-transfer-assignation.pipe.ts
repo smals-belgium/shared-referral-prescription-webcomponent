@@ -5,7 +5,7 @@ import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource, RequestSt
 import {
   checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline,
   isProfesionalBasedOnRole,
-  isProposal
+  isProposal,
 } from '@reuse/code/utils/utils';
 
 /**
@@ -27,7 +27,7 @@ import {
  */
 @Pipe({ name: 'canTransferAssignation', standalone: true })
 export class CanTransferAssignationPipe implements PipeTransform {
-  constructor(private accessMatrixState: AccessMatrixState) {}
+  constructor(private readonly accessMatrixState: AccessMatrixState) {}
 
   transform(prescription: ReadRequestResource, task?: PerformerTaskResource, currentUser?: Partial<UserInfo>): boolean {
     if (currentUser == undefined) return false;

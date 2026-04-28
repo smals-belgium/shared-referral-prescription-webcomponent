@@ -1,4 +1,5 @@
 import { SsinOrOrganizationIdPipe } from '@reuse/code/pipes/ssin-or-cbe.pipe';
+import { ProviderType } from '@reuse/code/openapi';
 
 describe('SsinOrOrganizationIdPipe', () => {
   let pipe: SsinOrOrganizationIdPipe;
@@ -9,8 +10,8 @@ describe('SsinOrOrganizationIdPipe', () => {
 
   it('should return ssin when provider is a Professional', () => {
     const provider = {
-      type: 'Professional',
-      id: { ssin: '12345678901' }
+      type: ProviderType.Professional,
+      id: { ssin: '12345678901' },
     } as any;
 
     const result = pipe.transform(provider);
@@ -21,7 +22,7 @@ describe('SsinOrOrganizationIdPipe', () => {
   it('should return organizationId when provider is an Organization', () => {
     const provider = {
       type: 'Organization',
-      id: { organizationId: '987654321' }
+      id: { organizationId: '987654321' },
     } as any;
 
     const result = pipe.transform(provider);
@@ -31,8 +32,8 @@ describe('SsinOrOrganizationIdPipe', () => {
 
   it('should return undefined if id is missing', () => {
     const provider = {
-      type: 'Professional',
-      id: {}
+      type: ProviderType.Professional,
+      id: {},
     } as any;
 
     const result = pipe.transform(provider);
@@ -42,7 +43,7 @@ describe('SsinOrOrganizationIdPipe', () => {
 
   it('should return undefined if provider has no id', () => {
     const provider = {
-      type: 'Organization'
+      type: 'Organization',
     } as any;
 
     const result = pipe.transform(provider);

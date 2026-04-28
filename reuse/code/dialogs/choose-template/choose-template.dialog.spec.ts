@@ -3,14 +3,15 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { signal, Component, input, Input } from '@angular/core';
+import { Component, Input, signal } from '@angular/core';
 import { ChooseTemplateDialog } from './choose-template.dialog';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { TemplatesState } from '@reuse/code/states/api/templates.state';
 import { ModelsState } from '@reuse/code/states/api/models.state';
-import { Intent, DataState, LoadingStatus } from '@reuse/code/interfaces';
-import { AccessMatrix, Template, ModelEntityDto, PageModelEntityDto } from '@reuse/code/openapi';
+import { DataState, Intent, LoadingStatus } from '@reuse/code/interfaces';
+import { AccessMatrix, ModelEntityDto, PageModelEntityDto, Template } from '@reuse/code/openapi';
 import { SelectPrescriptionTypeComponent } from '@reuse/code/components/select-prescription-type/select-prescription-type.component';
+import { Lang } from '@reuse/code/constants/languages';
 
 /**
  * Mock du composant enfant
@@ -71,7 +72,7 @@ describe('ChooseTemplateDialog', () => {
         ChooseTemplateDialog,
         NoopAnimationsModule,
         ReactiveFormsModule,
-        TranslateModule.forRoot({ defaultLanguage: 'fr' }),
+        TranslateModule.forRoot({ defaultLanguage: Lang.FR.short }),
       ],
       providers: [
         { provide: AccessMatrixState, useValue: mockAccessMatrixState },

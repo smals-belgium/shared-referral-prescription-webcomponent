@@ -40,7 +40,7 @@ describe('PrescriptionDetailsSecondaryComponent', () => {
 
   it('should render lists when prescription has performerTasks or organizationTasks', () => {
     (component as any).prescriptionServiceData = {
-      performerTasks: [{ careGiverSsin: 'care-giver-ssin' }],
+      performerTasks: { 'care-giver-ssin': [{ careGiverSsin: 'care-giver-ssin' }] },
       organizationTasks: [{ organizationNihii: 'organization-nihii' }],
     } as any;
 
@@ -54,7 +54,7 @@ describe('PrescriptionDetailsSecondaryComponent', () => {
 
   it('should not render lists when prescription has no tasks', () => {
     (component as any).prescriptionServiceData = {
-      performerTasks: [],
+      performerTasks: {},
       organizationTasks: [],
     } as any;
 

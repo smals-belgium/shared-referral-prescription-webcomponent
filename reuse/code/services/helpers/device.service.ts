@@ -5,7 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({ providedIn: 'root' })
 export class DeviceService {
-  private breakpointObserver = inject(BreakpointObserver);
+  private readonly breakpointObserver = inject(BreakpointObserver);
 
   readonly isDesktop = toSignal(
     this.breakpointObserver

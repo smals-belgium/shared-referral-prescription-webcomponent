@@ -1,8 +1,10 @@
 import { WritableSignal } from '@angular/core';
-import {Lang} from '@reuse/code/interfaces/lang.enum';
+import { Lang } from '@reuse/code/constants/languages';
 
-export function handleMissingTranslationFile(langAlertData: WritableSignal<{ title: string; body: string } | null>, currentLang: string){
-
+export function handleMissingTranslationFile(
+  langAlertData: WritableSignal<{ title: string; body: string } | null>,
+  currentLang: string
+) {
   const TITLE_EN: string = 'English translation coming soon.';
   const BODY_EN: string = 'In the meantime, you can view the content in Dutch or French.';
 
@@ -15,27 +17,26 @@ export function handleMissingTranslationFile(langAlertData: WritableSignal<{ tit
   const TITLE_NL: string = 'De Nederlandse vertaling ontbreekt.';
   const BODY_NL: string = 'In de tussentijd kunt u de inhoud in het Frans of in het Duits bekijken.';
 
-
   switch (currentLang) {
-    case Lang.DE:
+    case Lang.DE.full:
       langAlertData.set({
         title: TITLE_DE,
         body: BODY_DE,
       });
       break;
-    case Lang.EN:
+    case Lang.EN.full:
       langAlertData.set({
         title: TITLE_EN,
         body: BODY_EN,
       });
       break;
-    case Lang.NL:
+    case Lang.NL.full:
       langAlertData.set({
         title: TITLE_NL,
         body: BODY_NL,
       });
       break;
-    case Lang.FR:
+    case Lang.FR.full:
       langAlertData.set({
         title: TITLE_FR,
         body: BODY_FR,

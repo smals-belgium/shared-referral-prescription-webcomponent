@@ -1,4 +1,4 @@
-import { Discipline, FhirR4TaskStatus, PerformerTaskResource, Role } from '@reuse/code/openapi';
+import { Discipline, FhirR4TaskStatus, PerformerTaskResource, Role, TemplateVersion } from '@reuse/code/openapi';
 import { TranslateLoader } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
 import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
@@ -44,12 +44,20 @@ export function prescriptionResponse(
   referralTask: any = null,
   performerTask: PerformerTaskResource[] | null = null
 ) {
+  const performerTasks: Record<string, PerformerTaskResource[]> = {};
+
+  performerTask?.forEach(p => {
+    if (!p?.careGiverSsin) return;
+
+    (performerTasks[p.careGiverSsin] ??= []).push(p);
+  });
+
   return {
     id: id,
     pseudonymizedKey: 'pseudo-key',
     patientIdentifier: mockPerson.ssin,
     referralTask: referralTask,
-    performerTasks: performerTask,
+    performerTasks: performerTasks,
     organizationTasks: organisationTasks,
     templateCode: 'GENERIC',
     authoredOn: '2024-09-04T22:00:00.000+00:00',
@@ -58,6 +66,7 @@ export function prescriptionResponse(
     period: {
       start: '2024-09-04T22:00:00.000+00:00',
       end: '2025-09-03T22:00:00.000+00:00',
+      hideEndDate: false,
     },
     responses: {},
     intent: null,
@@ -72,7 +81,7 @@ export class FakeLoader implements TranslateLoader {
   }
 }
 
-export const mockTemplate = {};
+export const mockTemplate = {} as TemplateVersion;
 
 export const mockConfigService = {
   getEnvironment: jest.fn(),
@@ -154,3 +163,10 @@ export class MockDateAdapter {
 }
 
 export const BASE_URL = 'http://localhost';
+
+export const markdownServiceMock = {
+  parse: jest.fn((src: string) => src),
+  compile: jest.fn((src: string) => src),
+  render: jest.fn(),
+  reload$: of(void 0),
+};

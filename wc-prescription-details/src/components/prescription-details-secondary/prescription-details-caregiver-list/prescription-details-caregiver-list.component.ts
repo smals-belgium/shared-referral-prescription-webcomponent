@@ -6,7 +6,7 @@ import { DatePipe } from '@angular/common';
 import { CanRejectAssignationPipe } from '@reuse/code/pipes/can-reject-assignation.pipe';
 import { MatIconButton } from '@angular/material/button';
 import { UserInfo } from '@reuse/code/interfaces';
-import { FhirR4TaskStatus, ReadRequestResource } from '@reuse/code/openapi';
+import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
 import { PrescriptionDetailsSecondaryService } from '../prescription-details-secondary.service';
 import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
 import { MatChip } from '@angular/material/chips';
@@ -34,6 +34,10 @@ export class PrescriptionDetailsCaregiverListComponent {
   readonly prescriptionServiceData: ReadRequestResource | undefined = this.service.getPrescription().data;
   readonly patientServiceData = computed(() => this.service.getPatient().data);
   readonly currentUserServiceData: Partial<UserInfo> | undefined = this.service.getCurrentUser().data;
+
+  get performerTaskEntries(): [string, PerformerTaskResource[]][] {
+    return Object.entries(this.prescriptionServiceData?.performerTasks ?? {});
+  }
 
   getReadableStatus(status?: FhirR4TaskStatus) {
     if (!status) return undefined;

@@ -18,7 +18,6 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
 import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
 import { EncryptionState } from '@reuse/code/states/privacy/encryption.state';
-import { HttpCacheService } from '@reuse/code/services/cache/http-cache.service';
 import { EncryptionService } from '@reuse/code/services/privacy/encryption.service';
 import {
   MockDateAdapter,
@@ -33,9 +32,14 @@ import {
   mockUuid,
   mockPerson,
   mockTemplate,
+  markdownServiceMock,
 } from '../../../test.utils';
-import { RequestStatus } from '@reuse/code/openapi';
-import { Lang } from '@reuse/code/interfaces/lang.enum';
+import { TemplateVersion } from '@reuse/code/openapi';
+import { Lang } from '@reuse/code/constants/languages';
+import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
+import { MarkdownService } from 'ngx-markdown';
+import { EvfTranslateService } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
+
 mockUuid();
 jest.mock('uuid');
 
@@ -48,7 +52,7 @@ describe('PrescriptionDetailsWebComponent', () => {
   let consoleSpy: jest.SpyInstance;
   let translate: TranslateService;
   let dateAdapter: MockDateAdapter;
-  let cacheHttpService: HttpCacheService;
+  let mockIconRegistryService: jest.Mocked<Partial<IconRegistryService>>;
 
   beforeAll(() => {
     Object.defineProperty(window, 'crypto', {
@@ -68,6 +72,10 @@ describe('PrescriptionDetailsWebComponent', () => {
   });
 
   beforeEach(async () => {
+    mockIconRegistryService = {
+      init: jest.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [
         PrescriptionDetailsWebComponent,
@@ -90,7 +98,10 @@ describe('PrescriptionDetailsWebComponent', () => {
         MatDialog,
         { provide: PseudonymisationHelper, useValue: MockPseudoHelperFactory() },
         { provide: EncryptionState, useValue: encryptionStateService },
+        { provide: IconRegistryService, useValue: mockIconRegistryService },
         EncryptionService,
+        { provide: MarkdownService, useValue: markdownServiceMock },
+        EvfTranslateService,
       ],
     }).compileComponents();
 
@@ -99,11 +110,11 @@ describe('PrescriptionDetailsWebComponent', () => {
     pseudoService = TestBed.inject(PseudoService);
     translate = TestBed.inject(TranslateService);
     dateAdapter = TestBed.inject(DateAdapter) as unknown as MockDateAdapter;
-    cacheHttpService = TestBed.inject(HttpCacheService);
   });
 
   afterEach(() => {
     httpMock.verify();
+    jest.restoreAllMocks();
   });
 
   afterAll(() => consoleSpy.mockRestore());
@@ -207,7 +218,6 @@ describe('PrescriptionDetailsWebComponent', () => {
 
   it('should load templates and the access matrix when the token changes', () => {
     createFixture();
-    jest.spyOn(cacheHttpService, 'loadFromCache').mockReturnValue(of(null));
 
     mockConfigService.getEnvironmentVariable.mockImplementationOnce(() => false);
     component.services = {
@@ -237,25 +247,18 @@ describe('PrescriptionDetailsWebComponent', () => {
 
       createFixture();
 
-      expect(translate.getDefaultLang()).toBe('fr-BE');
-      expect(setLocalesSpy).toHaveBeenCalledWith('fr-BE');
+      expect(translate.getDefaultLang()).toBe(Lang.FR.full);
+      expect(setLocalesSpy).toHaveBeenCalledWith(Lang.FR.full);
     });
 
     it('should intialize and call only once setLocale() from dateAdapter', () => {
-      translate.use('nl-BE');
+      translate.use(Lang.NL.full);
       const setLocalesSpy = jest.spyOn(dateAdapter, 'setLocale');
 
       createFixture();
 
       expect(setLocalesSpy).toHaveBeenCalledTimes(1);
-      expect(setLocalesSpy).toHaveBeenCalledWith(Lang.NL);
-    });
-  });
-
-  describe('getStatusColor', () => {
-    it('should return color for valid status', () => {
-      createFixture();
-      expect(component.getStatusColor('IN_PROGRESS' as RequestStatus)).toBe('mh-green mh-no-overlay');
+      expect(setLocalesSpy).toHaveBeenCalledWith(Lang.NL.full);
     });
   });
 
@@ -404,6 +407,26 @@ describe('PrescriptionDetailsWebComponent', () => {
     expect(loadSpy).toHaveBeenCalledWith('CAF4FE', 'pseudonymized-identifier');
   });
 
+  describe('init icons', () => {
+    it('should register icons onInit', () => {
+      createFixture();
+      component.ngOnInit();
+
+      expect(mockIconRegistryService.init).toHaveBeenCalledWith(
+        'keyboard_arrow_up',
+        'keyboard_arrow_down',
+        'more_vert',
+        'delete',
+        'error',
+        'done',
+        'close',
+        'cancel',
+        'arrow_forward_ios',
+        'info'
+      );
+    });
+  });
+
   const loadPrescriptionByShortCode = async (
     mockResponse: any,
     shortCode: string,
@@ -435,7 +458,7 @@ describe('PrescriptionDetailsWebComponent', () => {
     fixture.detectChanges();
   };
 
-  const loadPrescription = async (mockResponse: any) => {
+  const loadPrescription = async (mockResponse: any, template: TemplateVersion = mockTemplate) => {
     mockConfigService.getEnvironmentVariable.mockImplementationOnce(() => false);
 
     component.prescriptionId = id;
@@ -452,16 +475,16 @@ describe('PrescriptionDetailsWebComponent', () => {
 
     await Promise.resolve();
 
-    templateRequest();
+    templateRequest(template);
 
     await Promise.resolve();
     fixture.detectChanges();
   };
 
-  const templateRequest = () => {
+  const templateRequest = (template: TemplateVersion = mockTemplate) => {
     const templateRed = httpMock.expectOne(BASE_URL + '/templates/READ_GENERIC/versions/latest');
     expect(templateRed.request.method).toBe('GET');
-    templateRed.flush(mockTemplate);
+    templateRed.flush(template);
   };
 
   const prescriptionRequest = (mockResponse: any) => {

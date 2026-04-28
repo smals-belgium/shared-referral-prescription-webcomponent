@@ -5,7 +5,7 @@ import {
 } from './assignment-disciplines.utils';
 import { Intent } from '@reuse/code/interfaces';
 import { isProposal } from '@reuse/code/utils/utils';
-import { HealthcareOrganizationResource, HealthcareProResource } from '@reuse/code/openapi';
+import { Discipline, HealthcareOrganizationResource, HealthcareProResource, ProviderType } from '@reuse/code/openapi';
 
 jest.mock('@reuse/code/utils/utils');
 
@@ -31,7 +31,7 @@ describe('assignment-disciplines.utils', () => {
 
       const result = getAssignableProfessionalDisciplines('nursing', Intent.ORDER);
 
-      expect(result).toEqual(['NURSE']);
+      expect(result).toEqual([Discipline.Nurse]);
     });
 
     it('should return PHYSICIAN and DENTIST for physiotherapy + proposal', () => {
@@ -81,12 +81,7 @@ describe('assignment-disciplines.utils', () => {
 
       const result = getAssignableOrganizationInstitutionTypes('nursing', Intent.ORDER);
 
-      expect(result).toEqual([
-        'THIRD_PARTY_PAYING_GROUP',
-        'GUARD_POST',
-        'MEDICAL_HOUSE',
-        'HOME_SERVICES',
-      ]);
+      expect(result).toEqual(['THIRD_PARTY_PAYING_GROUP', 'GUARD_POST', 'MEDICAL_HOUSE', 'HOME_SERVICES']);
     });
 
     it('should return empty array for physiotherapy + proposal', () => {
@@ -110,12 +105,7 @@ describe('assignment-disciplines.utils', () => {
 
       const result = getAssignableOrganizationInstitutionTypes('diagnosticImaging', Intent.PROPOSAL);
 
-      expect(result).toEqual([
-        'THIRD_PARTY_PAYING_GROUP',
-        'GUARD_POST',
-        'MEDICAL_HOUSE',
-        'HOME_SERVICES',
-      ]);
+      expect(result).toEqual(['THIRD_PARTY_PAYING_GROUP', 'GUARD_POST', 'MEDICAL_HOUSE', 'HOME_SERVICES']);
     });
 
     it('should return MEDICAL_HOUSE for diagnosticImaging + prescription', () => {
@@ -138,7 +128,7 @@ describe('assignment-disciplines.utils', () => {
   describe('isProfessional', () => {
     it('should return true for HealthcareProResource', () => {
       const professional: HealthcareProResource = {
-        type: 'Professional',
+        type: ProviderType.Professional,
         id: '123',
       } as any;
 
@@ -149,11 +139,11 @@ describe('assignment-disciplines.utils', () => {
 
     it('should be type guard - narrow type to HealthcareProResource', () => {
       const object: HealthcareProResource | HealthcareOrganizationResource = {
-        type: 'Professional',
+        type: ProviderType.Professional,
       } as any;
 
       if (isProfessional(object)) {
-        expect(object.type).toBe('Professional');
+        expect(object.type).toBe(ProviderType.Professional);
       }
     });
   });

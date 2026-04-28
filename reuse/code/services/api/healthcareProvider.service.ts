@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { HealthCareProviderService as ApiHealthCareProviderService, ProviderType } from '@reuse/code/openapi';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class HealthcareProviderService {
-  private api = inject(ApiHealthCareProviderService);
+  private readonly api = inject(ApiHealthCareProviderService);
 
   findAll(
     query: string,

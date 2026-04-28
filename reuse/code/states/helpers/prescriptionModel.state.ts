@@ -5,13 +5,39 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class PrescriptionModelState {
-  modalState = signal<PrescriptionModelStatus>({ state: LoadingStatus.INITIAL });
+  modalStates = signal<PrescriptionModelStatus[]>([]);
 
-  setModalState(state: LoadingStatus, success?: string, error?: HttpErrorResponse) {
-    this.modalState.set({ state, success, error });
+  setModalState(prescriptionTrackById: number, state: LoadingStatus, success?: string, error?: HttpErrorResponse) {
+    this.modalStates.update(states => {
+      const existing = states.findIndex(s => s.prescriptionTrackById === prescriptionTrackById);
+      const entry: PrescriptionModelStatus = { prescriptionTrackById, state, success, error };
+      if (existing >= 0) {
+        const updated = [...states];
+        updated[existing] = entry;
+        return updated;
+      }
+      return [...states, entry];
+    });
   }
 
-  setInitialState() {
-    this.modalState.set({ state: LoadingStatus.INITIAL });
+  getModalState(prescriptionTrackById: number): PrescriptionModelStatus | undefined {
+    return this.modalStates().find(s => s.prescriptionTrackById === prescriptionTrackById);
+  }
+
+  setInitialState(prescriptionTrackById: number) {
+    this.modalStates.update(states => {
+      const existing = states.findIndex(s => s.prescriptionTrackById === prescriptionTrackById);
+      const entry: PrescriptionModelStatus = { prescriptionTrackById, state: LoadingStatus.INITIAL };
+      if (existing >= 0) {
+        const updated = [...states];
+        updated[existing] = entry;
+        return updated;
+      }
+      return [...states, entry];
+    });
+  }
+
+  resetAll() {
+    this.modalStates.set([]);
   }
 }

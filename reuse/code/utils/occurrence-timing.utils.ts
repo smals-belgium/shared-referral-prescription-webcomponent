@@ -1,5 +1,7 @@
 import { BoundsDuration, OccurrenceTiming, Repeat, UnitsOfTime, Weekday } from '@reuse/code/interfaces';
 import { ReadRequestResource, Translation } from '@reuse/code/openapi';
+import { Language } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
+import { Lang } from '@reuse/code/constants/languages';
 
 type TranslationType = keyof Translation;
 const translations = {
@@ -210,21 +212,29 @@ export function translateFrequencyAndPeriod(repeat: Repeat, language: keyof Tran
   const words = [];
   if (repeat?.frequency && repeat?.frequency > 0) {
     if (repeat.frequency > 1 && repeat.period === 1) {
-      words.push(repeat.frequency);
-      words.push(translations.timesPer[language]);
-      words.push(translateTimeUnit(repeat.period, repeat.periodUnit, language));
+      words.push(
+        repeat.frequency,
+        translations.timesPer[language],
+        translateTimeUnit(repeat.period, repeat.periodUnit, language)
+      );
     } else if (repeat.frequency === 1 && repeat.period === 1) {
-      words.push(translateEvery(repeat, language));
-      words.push(translateTimeUnit(language === 'fr' ? 2 : 1, repeat.periodUnit, language));
+      words.push(
+        translateEvery(repeat, language),
+        translateTimeUnit(language === Lang.FR.short ? 2 : 1, repeat.periodUnit, language)
+      );
     } else if (repeat.frequency === 1 && repeat.period && repeat.period > 1) {
-      words.push(translateEvery(repeat, language));
-      words.push(repeat.period);
-      words.push(translateTimeUnit(repeat.period, repeat.periodUnit, language));
+      words.push(
+        translateEvery(repeat, language),
+        repeat.period,
+        translateTimeUnit(repeat.period, repeat.periodUnit, language)
+      );
     } else if (repeat.frequency > 1 && repeat.period && repeat.period > 1) {
-      words.push(repeat.frequency);
-      words.push(translations.timesPer[language]);
-      words.push(repeat.period);
-      words.push(translateTimeUnit(repeat.period, repeat.periodUnit, language));
+      words.push(
+        repeat.frequency,
+        translations.timesPer[language],
+        repeat.period,
+        translateTimeUnit(repeat.period, repeat.periodUnit, language)
+      );
     }
   }
   return words.join(' ');
@@ -243,22 +253,17 @@ export function translateDayOfWeek(occurrenceTiming: OccurrenceTiming, language:
 
     words.push(translations.on[language]);
     if (translatedDays.length > 0) {
-      words.push(translatedDays.join(', '));
-      words.push(translations.and[language]);
+      words.push(translatedDays.join(', '), translations.and[language]);
     }
     words.push(last);
   }
   return words.join(' ');
 }
 
-export function translateOccurencyDuration(
-  occurrenceTiming: OccurrenceTiming,
-  language: 'nl' | 'fr' | 'en' | 'de'
-): string {
+export function translateOccurencyDuration(occurrenceTiming: OccurrenceTiming, language: Language): string {
   const words = [];
   if (occurrenceTiming.repeat.boundsDuration) {
-    words.push(translations.during[language]);
-    words.push(occurrenceTiming.repeat.boundsDuration.value);
+    words.push(translations.during[language], occurrenceTiming.repeat.boundsDuration.value);
     if (occurrenceTiming.repeat.boundsDuration.code) {
       words.push(
         translateTimeUnit(
@@ -287,8 +292,7 @@ export function translateDuration(occurrenceTiming: OccurrenceTiming, language: 
   const words = [];
   if (!occurrenceTiming.repeat.duration) return '';
   else {
-    words.push(translations.sessionDuration[language]);
-    words.push(occurrenceTiming.repeat.duration);
+    words.push(translations.sessionDuration[language], occurrenceTiming.repeat.duration);
     if (occurrenceTiming.repeat.durationUnit) {
       words.push(translateTimeUnit(occurrenceTiming.repeat.duration, occurrenceTiming.repeat.durationUnit, language));
     }
@@ -302,32 +306,59 @@ export function translateTimeUnit(unit = 1, unitOfTime?: UnitsOfTime, language: 
 }
 
 export function validateOccurrenceTiming(input: any): input is OccurrenceTiming {
-  if (!input || typeof input !== 'object') return false;
+  if (!isRecord(input)) return false;
 
-  const repeat = input.repeat;
-  if (!repeat || typeof repeat !== 'object') return false;
+  if (!isRecord(input['repeat'])) return false;
+  const repeat = input['repeat'] as Repeat;
 
-  const { frequency, period, periodUnit, duration, durationUnit, dayOfWeek, boundsDuration } = repeat;
+  if (!isOptionalNumber(repeat.frequency)) return false;
+  if (!isOptionalNumber(repeat.period)) return false;
+  if (!isOptionalUnit(repeat.periodUnit)) return false;
 
-  if (frequency !== undefined && typeof frequency !== 'number') return false;
-  if (period !== undefined && typeof period !== 'number') return false;
-  if (periodUnit !== undefined && !isValidUnitOfTime(periodUnit)) return false;
+  if (!isOptionalNumber(repeat.duration)) return false;
+  if (!isOptionalUnit(repeat.durationUnit)) return false;
 
-  if (duration !== undefined && typeof duration !== 'number') return false;
-  if (durationUnit !== undefined && !isValidUnitOfTime(durationUnit)) return false;
+  if (!isOptionalWeekdays(repeat.dayOfWeek)) return false;
 
-  if (dayOfWeek !== undefined && !Array.isArray(dayOfWeek)) return false;
-  if (dayOfWeek && !dayOfWeek.every((d: unknown) => isValidWeekday(d))) return false;
+  const bd = repeat.boundsDuration;
 
-  if (boundsDuration !== undefined) {
-    if (typeof boundsDuration !== 'object') return false;
-    if (typeof boundsDuration.value !== 'number') return false;
-    if (!isValidUnitOfTime(boundsDuration.code)) return false;
-    if (typeof boundsDuration.system !== 'string') return false;
+  if (bd !== undefined) {
+    if (
+      typeof bd !== 'object' ||
+      typeof bd.value !== 'number' ||
+      !isValidUnitOfTime(bd.code) ||
+      typeof bd.system !== 'string'
+    ) {
+      return false;
+    }
   }
 
   return true;
 }
+
+/**
+ * helpers
+ *
+ */
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isOptionalNumber(value: unknown): boolean {
+  return value === undefined || typeof value === 'number';
+}
+
+function isOptionalUnit(value: unknown): boolean {
+  return value === undefined || isValidUnitOfTime(value);
+}
+
+function isOptionalWeekdays(value: unknown): boolean {
+  return value === undefined || (Array.isArray(value) && value.every(isValidWeekday));
+}
+
+/**
+ * end helpers
+ */
 
 export function validateOccurences(repeat?: Repeat) {
   if (!repeat) return false;

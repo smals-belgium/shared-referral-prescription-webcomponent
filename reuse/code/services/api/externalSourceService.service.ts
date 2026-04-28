@@ -15,7 +15,7 @@ import { mapAutocompleteOptions } from '@reuse/code/utils/autocomplete.utils';
   providedIn: 'root',
 })
 export class ExternalSourceService implements EvfExternalSourceServiceInterface {
-  constructor(private pssService: PssService) {}
+  constructor(private readonly pssService: PssService) {}
 
   handleAutocomplete(externalSource: ExternalSource, value: string): Observable<AutocompleteOption[]> {
     value = value.toLowerCase();

@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { TranslationPipe } from './translation.pipe';
 import { Translation } from '@reuse/code/openapi';
+import { Lang } from '@reuse/code/constants/languages';
 
 describe('TranslationPipe - 100% Coverage', () => {
   let pipe: TranslationPipe;
@@ -14,8 +15,8 @@ describe('TranslationPipe - 100% Coverage', () => {
     onLangChange = new Subject();
     translateService = {
       onLangChange: onLangChange.asObservable(),
-      currentLang: 'fr',
-      defaultLang: 'fr',
+      currentLang: Lang.FR.short,
+      defaultLang: Lang.FR.short,
     } as jest.Mocked<TranslateService>;
 
     cd = {
@@ -46,7 +47,7 @@ describe('TranslationPipe - 100% Coverage', () => {
   });
 
   it('should use currentLang when available', () => {
-    translateService.currentLang = 'nl';
+    translateService.currentLang = Lang.NL.short;
     const prescription: Translation = {
       fr: 'Pansement stérile',
       nl: 'Steriel verband',

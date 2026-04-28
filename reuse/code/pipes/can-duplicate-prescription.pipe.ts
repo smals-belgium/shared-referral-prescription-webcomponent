@@ -21,7 +21,7 @@ import { isProfesionalBasedOnRole, isProposal } from '@reuse/code/utils/utils';
  */
 @Pipe({ name: 'canDuplicatePrescription', standalone: true })
 export class CanDuplicatePrescriptionPipe implements PipeTransform {
-  constructor(private accessMatrixState: AccessMatrixState) {}
+  constructor(private readonly accessMatrixState: AccessMatrixState) {}
 
   transform(prescription: ReadRequestResource, currentUser?: Partial<UserInfo>): boolean {
     if (currentUser == undefined || isProposal(prescription.intent)) return false;

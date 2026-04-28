@@ -36,6 +36,10 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
+bom.json
+bom.xml
+*-cyclonedx.xml
+*-sbom.cdx.json
 
 # System files
 .DS_Store

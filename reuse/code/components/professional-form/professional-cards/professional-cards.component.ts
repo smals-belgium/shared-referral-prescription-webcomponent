@@ -15,15 +15,14 @@ import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
 import { MatCard, MatCardContent } from '@angular/material/card';
 import { FormatEnum, SkeletonComponent } from '@reuse/code/components/progress-indicators/skeleton/skeleton.component';
 import { TranslatePipe } from '@ngx-translate/core';
-import { HealthcareOrganizationResource, HealthcareProResource, ProviderType } from '@reuse/code/openapi';
+import { HealthcareProResource, ProviderType } from '@reuse/code/openapi';
 import { MatIconModule } from '@angular/material/icon';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { RequestProfessionalDataService } from '@reuse/code/services/helpers/request-professional-data.service';
 import { getAssignableProfessionalDisciplines, isProfessional } from '@reuse/code/utils/assignment-disciplines.utils';
 import { AlertType, Intent, SearchProfessionalCriteria } from '@reuse/code/interfaces';
 import { FormatMultilingualObjectPipe } from '@reuse/code/pipes/format-multilingual-object.pipe';
 import { TranslationType } from '@reuse/code/components/professional-form/table/professional-table.component';
-import { MatRadioModule, MatRadioChange } from '@angular/material/radio';
+import { MatRadioChange, MatRadioModule } from '@angular/material/radio';
 import { v4 as uuidv4 } from 'uuid';
 
 @Component({
@@ -43,11 +42,13 @@ import { v4 as uuidv4 } from 'uuid';
   styleUrl: './professional-cards.component.scss',
 })
 export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, OnDestroy {
+  private readonly dataService = inject(RequestProfessionalDataService);
+
   protected readonly AlertType = AlertType;
   protected readonly FormatEnum = FormatEnum;
   protected readonly isProfessional = isProfessional;
-  private readonly dataService = inject(RequestProfessionalDataService);
-  readonly professionals = input<(HealthcareProResource | HealthcareOrganizationResource)[]>([]);
+
+  readonly professionals = input<HealthcareProResource[]>([]);
   readonly total = input<number | null>(null);
   readonly prescriptionId = input.required<string>();
   readonly category = input.required<string>();
@@ -58,7 +59,7 @@ export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, 
   readonly error = input<boolean>(false);
   readonly currentLang = input.required<TranslationType | undefined>();
 
-  readonly selectProfessional = output<HealthcareProResource | HealthcareOrganizationResource | undefined>();
+  readonly selectProfessional = output<HealthcareProResource | undefined>();
 
   get itemsLength() {
     if (this.total() === undefined) return -1;
@@ -66,10 +67,8 @@ export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, 
   }
 
   // Public signals from service
-  readonly requestData = toSignal(this.dataService.data$, {
-    initialValue: [],
-  });
-  readonly isLoading = toSignal(this.dataService.loading$, { initialValue: false });
+  readonly requestData = this.dataService.data;
+  readonly isLoading = this.dataService.loading;
   private observer?: IntersectionObserver;
   private destroyed = false;
   observerInitialized = false;
@@ -90,6 +89,7 @@ export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, 
     }
   }
 
+  // When user scrolls close from the bottom of the results container (60px), it can load more data
   private setupObserver(): void {
     const root = this.getScrollContainer(this.scrollframe.nativeElement);
 
@@ -129,10 +129,10 @@ export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, 
       institutionTypes: [],
       providerType: ProviderType.Professional,
       prescriptionId: this.prescriptionId(),
-      intent: this.intent()
+      intent: this.intent(),
     };
 
-    this.dataService.initializeDataStream(initialData, config);
+    this.dataService.initializeCardsDataStream(initialData, config);
   }
 
   private getScrollContainer(el: HTMLElement): HTMLElement | null {
@@ -164,19 +164,17 @@ export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, 
 
   changeValue(event: MatRadioChange) {
     if (event.source.checked) {
-      this.selectProfessional.emit(event.value as HealthcareProResource | HealthcareOrganizationResource);
+      this.selectProfessional.emit(event.value as HealthcareProResource);
     } else {
       this.selectProfessional.emit(undefined);
     }
   }
 
-  trackById(profession: HealthcareProResource | HealthcareOrganizationResource) {
-    if (isProfessional(profession)) {
-      if (profession.id?.ssin && profession.id?.qualificationCode)
-        return profession.id.ssin + profession.id.qualificationCode;
-      return uuidv4();
+  trackById(profession: HealthcareProResource) {
+    if (isProfessional(profession) && profession.id?.ssin && profession.id?.qualificationCode) {
+      return profession.id.ssin + profession.id.qualificationCode;
     } else {
-      return profession.id?.organizationId ?? uuidv4();
+      return uuidv4();
     }
   }
 

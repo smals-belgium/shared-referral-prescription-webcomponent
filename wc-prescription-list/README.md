@@ -50,12 +50,13 @@ npm install @smals-belgium-shared/uhmep-prescription-list
 ```
 
 Import the web component in your application entry point:
+
 ```javascript
 import '@smals-belgium-shared/uhmep-prescription-list';
 ```
 
-
 Use the custom element in your HTML:
+
 ```html
 <nihdi-referral-prescription-list></nihdi-referral-prescription-list>
 ```
@@ -66,13 +67,13 @@ Ensure the bundle is loaded only once in the application lifecycle.
 
 This component is implemented as a standard Web Component and can be integrated into:
 
-* Angular applications
+- Angular applications
 
-* React applications
+- React applications
 
-* Vue applications
+- Vue applications
 
-* Vanilla JavaScript or HTML projects
+- Vanilla JavaScript or HTML projects
 
 No framework-specific wrappers are required.
 

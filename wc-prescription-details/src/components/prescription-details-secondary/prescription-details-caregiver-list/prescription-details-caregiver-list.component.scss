@@ -13,13 +13,19 @@
 }
 
 .caregiver_info {
-  .caregiver_info_fullName, .caregiver_info_nihii {
+  .caregiver_info_fullName,
+  .caregiver_info_nihii {
     @include mh.font-default-semibold();
   }
 }
 
-.performer_task_status{
+.performer_task_status {
   margin-bottom: mh.$spacing-2xs;
   margin-top: mh.$spacing-2xs;
 }
 
+.performer_tasks {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}

@@ -1,4 +1,4 @@
-import templates from './templates.json';
+import readTemplates from './read-templates.json';
 import accessMatrix from './access-matrix.json';
 import persons from './persons.json';
 import templateVersionsLatest from './templates-versions-latest.json';
@@ -28,7 +28,7 @@ interface PerformerTaskResourceExtended extends PerformerTaskResource {
 }
 
 export interface ReadRequestResourceExtended extends ReadRequestResource {
-  performerTasks?: Array<PerformerTaskResourceExtended>;
+  performerTasks?: { [key: string]: Array<PerformerTaskResource> };
   requesterIndex?: number;
 }
 
@@ -142,13 +142,17 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
 
         demoStorage.set('demoPrescription', newPrescription);
 
-        newPrescription.performerTasks?.forEach((performerTask: PerformerTaskResourceExtended) => {
-          const index = performerTask.careGiverIndex as number;
-          if (index != null) {
-            const requester = professionals[index];
-            performerTask.careGiver = requester as unknown as HealthcareProResource;
-          }
-        });
+        if (newPrescription.performerTasks) {
+          Object.values(newPrescription.performerTasks).map(performerTasks =>
+            performerTasks.forEach((performerTask: PerformerTaskResourceExtended) => {
+              const index = performerTask.careGiverIndex as number;
+              if (index != null) {
+                const requester = professionals[index];
+                performerTask.careGiver = requester as unknown as HealthcareProResource;
+              }
+            })
+          );
+        }
 
         const index = newPrescription.requesterIndex as number;
 
@@ -181,13 +185,17 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
 
         demoStorage.set('demoProposal', newProposal);
 
-        newProposal.performerTasks?.forEach((performerTask: PerformerTaskResourceExtended) => {
-          const index = performerTask.careGiverIndex as number;
-          if (index != null) {
-            const requester = professionals[index];
-            performerTask.careGiver = requester as unknown as HealthcareProResource;
-          }
-        });
+        if (newProposal.performerTasks) {
+          Object.values(newProposal.performerTasks).map(performerTasks =>
+            performerTasks.forEach((performerTask: PerformerTaskResourceExtended) => {
+              const index = performerTask.careGiverIndex as number;
+              if (index != null) {
+                const requester = professionals[index];
+                performerTask.careGiver = requester as unknown as HealthcareProResource;
+              }
+            })
+          );
+        }
 
         const index = newProposal.requesterIndex as number;
         if (index != null) {
@@ -222,13 +230,17 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
 
         demoStorage.set('demoPrescription', newPrescription);
 
-        newPrescription.performerTasks?.forEach((performerTask: PerformerTaskResourceExtended) => {
-          const index = performerTask.careGiverIndex as number;
-          if (index != null) {
-            const requester = professionals[index];
-            performerTask.careGiver = requester as unknown as HealthcareProResource;
-          }
-        });
+        if (newPrescription.performerTasks) {
+          Object.values(newPrescription.performerTasks).map(performerTasks =>
+            performerTasks.forEach((performerTask: PerformerTaskResourceExtended) => {
+              const index = performerTask.careGiverIndex as number;
+              if (index != null) {
+                const requester = professionals[index];
+                performerTask.careGiver = requester as unknown as HealthcareProResource;
+              }
+            })
+          );
+        }
 
         const index = newPrescription.requesterIndex as number;
 
@@ -249,13 +261,26 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
   {
     method: ['GET'],
     url: /\/templates$/,
-    body: templates,
+    body: readTemplates,
   },
   {
     method: ['GET'],
     url: /\/templates\/READ_[A-Z0-9_]+\/versions\/latest$/,
     handler: (req: HttpRequest<unknown>) => {
       const name = req.url.match(/READ_([^/]+)/)?.[1];
+      if (!name) return new Error('No template found');
+
+      const template = templateVersionsLatest.find(t => t.id === name);
+      if (!template) return new Error('No template found');
+
+      return { ...template, ...commonTranslations };
+    },
+  },
+  {
+    method: ['GET'],
+    url: /\/templates\/[A-Z0-9_]+\/versions\/latest$/,
+    handler: (req: HttpRequest<unknown>) => {
+      const name = req.url.split('/')[6];
       if (!name) return new Error('No template found');
 
       const template = templateVersionsLatest.find(t => t.id === name);
@@ -378,10 +403,16 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
         const savedPrescription = demoStorage.get<ReadRequestResourceExtended>('demoPrescription') || {};
 
         if (!savedPrescription.performerTasks) {
-          savedPrescription.performerTasks = [];
+          savedPrescription.performerTasks = {};
         }
 
-        savedPrescription.performerTasks.unshift(performerTaskResource);
+        const ssin = performerTaskResource.careGiverSsin;
+        if (ssin) {
+          if (!savedPrescription.performerTasks[ssin]) {
+            savedPrescription.performerTasks[ssin] = [];
+          }
+          savedPrescription.performerTasks[ssin].unshift(performerTaskResource);
+        }
 
         demoStorage.set('demoPrescription', savedPrescription);
 
@@ -412,10 +443,16 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
         const savedProposal = demoStorage.get<ReadRequestResourceExtended>('demoProposal') || {};
 
         if (!savedProposal.performerTasks) {
-          savedProposal.performerTasks = [];
+          savedProposal.performerTasks = {};
         }
 
-        savedProposal.performerTasks.unshift(performerTaskResource);
+        const ssin = performerTaskResource.careGiverSsin;
+        if (ssin) {
+          if (!savedProposal.performerTasks[ssin]) {
+            savedProposal.performerTasks[ssin] = [];
+          }
+          savedProposal.performerTasks[ssin].unshift(performerTaskResource);
+        }
 
         demoStorage.set('demoPrescription', savedProposal);
 

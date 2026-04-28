@@ -26,9 +26,12 @@ export class CanCancelPrescriptionOrProposalPipe implements PipeTransform {
   transform(prescription: ReadRequestResource, patientSsin?: string, currentUser?: Partial<UserInfo>): boolean {
     if (!currentUser) return false;
 
-    const checkThatNoOneStartedTheExecution = Array.isArray(prescription?.performerTasks)
-      ? prescription.performerTasks?.some(task => task?.status !== undefined && task?.status != FhirR4TaskStatus.Ready)
-      : false;
+    const checkThatNoOneStartedTheExecution =
+      prescription?.performerTasks && Object.keys(prescription?.performerTasks).length
+        ? Object.entries(prescription.performerTasks).filter(entry => {
+            return entry[1].some(task => task?.status !== undefined && task?.status != FhirR4TaskStatus.Ready);
+          })
+        : [];
 
     const checkStatus = prescription.status === RequestStatus.Open || prescription.status === RequestStatus.Pending;
 
@@ -40,7 +43,7 @@ export class CanCancelPrescriptionOrProposalPipe implements PipeTransform {
         patientSsin,
         prescription.requester?.healthcarePerson?.ssin
       ) &&
-      !checkThatNoOneStartedTheExecution
+      checkThatNoOneStartedTheExecution.length <= 0
     );
   }
 

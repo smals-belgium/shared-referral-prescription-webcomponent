@@ -8,6 +8,7 @@ import {
   OnDestroy,
   Output,
   QueryList,
+  signal,
   SimpleChanges,
   ViewChild,
   ViewChildren,
@@ -22,15 +23,14 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AlertType, CreatePrescriptionForm, LoadingStatus } from '@reuse/code/interfaces';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionModel.state';
-import { CreatePrescriptionModelDialog } from '@reuse/code/dialogs/create-prescription-modal/create-prescription-model.dialog';
-import { MatDialog } from '@angular/material/dialog';
-import { HttpErrorResponse } from '@angular/common/http';
+import { CreatePrescriptionModelComponent } from '@reuse/code/components/create-prescription-modal/create-prescription-model.component';
 import { isOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
 import { isPrescription, isProposal } from '@reuse/code/utils/utils';
-import { PersonResource, TemplateVersion } from '@reuse/code/openapi';
+import { PersonResource } from '@reuse/code/openapi';
 import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
 import { PatientInfoBarComponent } from '../patient-info-bar/patient-info-bar.component';
 import { EvfFormWebComponent } from '../evf-form/evf-form.component';
+import { MatCheckbox } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-create-multiple-prescriptions',
@@ -48,6 +48,8 @@ import { EvfFormWebComponent } from '../evf-form/evf-form.component';
     AlertComponent,
     EvfFormWebComponent,
     PatientInfoBarComponent,
+    MatCheckbox,
+    CreatePrescriptionModelComponent,
   ],
 })
 export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestroy {
@@ -55,7 +57,8 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
   protected readonly AlertType = AlertType;
 
   readonly trackByFn = (item: CreatePrescriptionForm) => item.trackId;
-  modelState = this.prescriptionModelState.modalState;
+  modelStates = this.prescriptionModelState.modalStates;
+  checkedPrescriptions = signal<Set<number>>(new Set());
 
   isPrescriptionValue = false;
 
@@ -80,10 +83,7 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
 
   @ViewChild(MatAccordion, { static: true }) accordion!: MatAccordion;
   @ViewChildren(MatExpansionPanel) panels!: QueryList<MatExpansionPanel>;
-  constructor(
-    private prescriptionModelState: PrescriptionModelState,
-    private dialog: MatDialog
-  ) {}
+  constructor(private readonly prescriptionModelState: PrescriptionModelState) {}
 
   get numberOfPrescriptionsToCreate(): number {
     return this.createPrescriptionForms.filter(f => f.status !== LoadingStatus.SUCCESS).length;
@@ -91,7 +91,7 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['createPrescriptionForms'] && this.createPrescriptionForms?.length === 1) {
-      setTimeout(() => this.panels?.first?.open(), 1);
+      queueMicrotask(() => this.panels?.first?.open());
     }
     this.isPrescriptionValue = isPrescription(this.intent);
   }
@@ -112,11 +112,7 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
 
     let dayPeriod = {};
     if (repeat.when) {
-      if (Array.isArray(repeat.when)) {
-        dayPeriod = { dayPeriod: repeat.when[0] };
-      } else {
-        dayPeriod = { dayPeriod: repeat.when };
-      }
+      dayPeriod = { dayPeriod: repeat.when };
     }
 
     const maxSessions = { nbSessions: repeat.count };
@@ -164,36 +160,34 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
     }
   }
 
-  handleClick(prescriptionForm: CreatePrescriptionForm, template?: TemplateVersion) {
-    if (!template) {
-      this.prescriptionModelState.setModalState(
-        LoadingStatus.ERROR,
-        undefined,
-        new HttpErrorResponse({
-          error: 'No templateCode found.',
-        })
-      );
+  handleModelSaved(modelId?: string) {
+    if (modelId) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    const responses = this.getResponses(prescriptionForm);
+  }
 
-    this.dialog
-      .open<CreatePrescriptionModelDialog, unknown>(CreatePrescriptionModelDialog, {
-        data: {
-          template: template,
-          templateCode: prescriptionForm.templateCode,
-          responses: responses,
-        },
-      })
-      .afterClosed()
-      .subscribe((createdSuccessfully: boolean) => {
-        if (createdSuccessfully) {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      });
+  getModelState(trackById: number) {
+    return this.prescriptionModelState.getModalState(trackById);
+  }
+
+  toggleCheckbox(prescriptionTrackById: number, checked: boolean) {
+    this.checkedPrescriptions.update(set => {
+      const updated = new Set(set);
+      if (checked) {
+        updated.add(prescriptionTrackById);
+      } else {
+        updated.delete(prescriptionTrackById);
+      }
+      return updated;
+    });
+  }
+
+  isChecked(prescriptionTrackById: number): boolean {
+    return this.checkedPrescriptions().has(prescriptionTrackById);
   }
 
   ngOnDestroy() {
-    this.prescriptionModelState.setInitialState();
+    this.prescriptionModelState.resetAll();
   }
 
   isPrescription(intent: string): boolean {

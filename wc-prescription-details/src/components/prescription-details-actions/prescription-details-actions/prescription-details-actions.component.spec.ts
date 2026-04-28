@@ -13,13 +13,15 @@ import {
   PerformerTaskResource,
   PersonResource,
   ReadRequestResource,
+  Role,
 } from '@reuse/code/openapi';
 import { DeviceService } from '@reuse/code/services/helpers/device.service';
 import { PrescriptionDetailsSecondaryService } from '../../prescription-details-secondary/prescription-details-secondary.service';
 import { ViewState } from '../../../containers/prescription-details/prescription-details.component';
 import { CancelPrescriptionDialog } from '@reuse/code/dialogs/cancel-prescription/cancel-prescription-dialog.component';
-import { AssignPrescriptionDialog } from '@reuse/code/dialogs/assign-prescription/assign-prescription.dialog';
-import { UserInfo } from '@reuse/code/interfaces';
+import { Intent, UserInfo } from '@reuse/code/interfaces';
+import { AssignOrTransferDialog } from '@reuse/code/dialogs/assign-or-transfer-dialog/assign-or-transfer-dialog';
+import { Lang } from '@reuse/code/constants/languages';
 
 const UserNurse: Partial<UserInfo> = { ssin: 'user-ssin', discipline: Discipline.Nurse };
 const createPerformerTask = (overrides: Partial<PerformerTaskResource> = {}): PerformerTaskResource => ({
@@ -45,10 +47,10 @@ describe('PrescriptionDetailsActionsComponent', () => {
       prescription: {
         id: 'prescription-1',
         referralTask: { id: 'referral-1' },
-        performerTasks: [{ careGiverSsin: 'ssin-1' }],
+        performerTasks: { 'ssin-1': [{ careGiverSsin: 'ssin-1' }] },
         organizationTasks: [{ organizationNihii: 'nihii-1' }],
         category: 'nursing-care',
-        intent: 'order',
+        intent: Intent.ORDER,
       } as ReadRequestResource,
       patient: { firstName: 'John' } as PersonResource,
       currentUser: { ssin: 'user-ssin', discipline: 'nursing', role: 'nurse' } as Partial<PersonResource>,
@@ -117,7 +119,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
     const mockBlob = new Blob(['test'], { type: 'application/pdf' });
     mockPdfService.createCommonPdf.mockReturnValue({ getBlob: (cb: (b: Blob) => void) => cb(mockBlob) });
     component.data = createMockViewState();
-    component.currentLang = 'en';
+    component.currentLang = Lang.EN.short;
     const printSpy = jest.spyOn(component.print, 'emit');
 
     component.createPdf('print');
@@ -130,7 +132,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
     const mockBlob = new Blob(['test'], { type: 'application/pdf' });
     mockPdfService.createCommonPdf.mockReturnValue({ getBlob: (cb: (b: Blob) => void) => cb(mockBlob) });
     component.data = createMockViewState();
-    component.currentLang = 'en';
+    component.currentLang = Lang.EN.short;
     const downloadSpy = jest.spyOn(component.download, 'emit');
 
     component.createPdf('download');
@@ -139,7 +141,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
   });
 
   it('should not create PDF when required data is missing', () => {
-    component.currentLang = 'en';
+    component.currentLang = Lang.EN.short;
 
     [undefined, { decryptedResponses: undefined }, { template: undefined }, { templateVersion: undefined }].forEach(
       dataOverride => {
@@ -212,22 +214,26 @@ describe('PrescriptionDetailsActionsComponent', () => {
     const prescription = {
       id: 'prescription-123',
       referralTask: { id: 'referral-456' },
-      performerTasks: [{ careGiverSsin: 'ssin-1' }, { careGiverSsin: 'ssin-2' }],
+      performerTasks: {
+        'ssin-1': [{ careGiverSsin: 'ssin-1' }],
+        'ssin-2': [{ careGiverSsin: 'ssin-2' }],
+      },
       organizationTasks: [{ organizationNihii: 'nihii-1' }],
       category: 'physiotherapy',
-      intent: 'order',
+      intent: Intent.ORDER,
     } as ReadRequestResource;
 
     component.openAssignDialog(prescription);
 
-    expect(mockDialog.open).toHaveBeenCalledWith(AssignPrescriptionDialog, {
+    expect(mockDialog.open).toHaveBeenCalledWith(AssignOrTransferDialog, {
       data: {
         prescriptionId: 'prescription-123',
         referralTaskId: 'referral-456',
         assignedCareGivers: ['ssin-1', 'ssin-2'],
         assignedOrganizations: ['nihii-1'],
         category: 'physiotherapy',
-        intent: 'order',
+        intent: Intent.ORDER,
+        mode: 'assign',
       },
       panelClass: ['mh-dialog-container', 'no-dialog-scroll'],
       height: '90vh',
@@ -241,15 +247,15 @@ describe('PrescriptionDetailsActionsComponent', () => {
 
     const invalidCases = [
       {
-        prescription: { referralTask: { id: 'referral-task-id' }, intent: 'order' } as ReadRequestResource,
+        prescription: { referralTask: { id: 'referral-task-id' }, intent: Intent.ORDER } as ReadRequestResource,
         user: validUser,
       },
-      { prescription: { id: 'prescription-id', intent: 'order' } as ReadRequestResource, user: validUser },
+      { prescription: { id: 'prescription-id', intent: Intent.ORDER } as ReadRequestResource, user: validUser },
       {
         prescription: {
           id: 'prescription-id',
           referralTask: { id: 'referral-task-id' },
-          intent: 'order',
+          intent: Intent.ORDER,
         } as ReadRequestResource,
         user: undefined,
       },
@@ -257,7 +263,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
         prescription: {
           id: 'prescription-id',
           referralTask: { id: 'referral-task-id' },
-          intent: 'order',
+          intent: Intent.ORDER,
         } as ReadRequestResource,
         user: {},
       },
@@ -275,7 +281,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
     const prescription = {
       id: 'prescription-id',
       referralTask: { id: 'referral-task-id' },
-      intent: 'order',
+      intent: Intent.ORDER,
     } as ReadRequestResource;
     const user = UserNurse;
     mockPrescriptionState.assignPrescriptionToMe.mockReturnValue(of({ id: 'task-1' }));
@@ -296,7 +302,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
     const prescription = {
       id: 'prescription-id',
       referralTask: { id: 'referral-task-id' },
-      intent: 'proposal',
+      intent: Intent.PROPOSAL,
     } as ReadRequestResource;
     const user = UserNurse;
     mockProposalState.assignProposalToMe.mockReturnValue(of({ id: 'task-1' }));
@@ -316,7 +322,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
     const prescription = {
       id: 'prescription-id',
       referralTask: { id: 'referral-task-id' },
-      intent: 'order',
+      intent: Intent.ORDER,
     } as ReadRequestResource;
     const user = UserNurse;
     mockPrescriptionState.assignPrescriptionToMe.mockReturnValue(throwError(() => new Error('API Error')));
@@ -331,7 +337,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
     it('should return undefined when non-patient has no targetId', () => {
       const readyTask = createPerformerTask({ status: FhirR4TaskStatus.Ready });
       const prescription: ReadRequestResource = {
-        performerTasks: [createPerformerTask(), readyTask],
+        performerTasks: { ssin: [createPerformerTask(), readyTask] },
       };
 
       const viewState = createMockViewState();
@@ -345,33 +351,41 @@ describe('PrescriptionDetailsActionsComponent', () => {
     it('should return task matching targetId for non-patient', () => {
       const viewState = createMockViewState();
       component.data = viewState;
+      const currentUserSsin = viewState.currentUser.ssin || '';
+      const currentUser = viewState.currentUser;
 
       expect(component.currentUser?.role).toBe('nurse');
       expect(component.performerTaskServiceData).toEqual({ id: 'performer-task-1' });
 
       const targetTask = createPerformerTask({ id: 'performer-task-1' });
       const prescription: ReadRequestResource = {
-        performerTasks: [createPerformerTask(), targetTask],
+        performerTasks: { [currentUserSsin]: [createPerformerTask(), targetTask] },
       };
 
-      expect(component.getPerformerTask(prescription)).toBe(targetTask);
+      expect(component.getPerformerTask(prescription, currentUser)).toBe(targetTask);
     });
 
     it('should fallback to organizationTasks when not found in performerTasks', () => {
+      const ssin = 'user-ssin';
+      const currentUser = { ssin, role: Role.Caregiver };
       const viewState = createMockViewState({
-        currentUser: { ssin: 'user-ssin', role: 'nurse' } as Partial<PersonResource>,
+        currentUser: currentUser,
       });
       component.data = viewState;
 
-      expect(component.currentUser?.role).toBe('nurse');
+      expect(component.currentUser?.role).toBe('caregiver');
 
-      const readyTask = createPerformerTask({ id: 'performer-task-1', status: FhirR4TaskStatus.Ready });
+      const readyTask = createPerformerTask({
+        id: 'performer-task-1',
+        status: FhirR4TaskStatus.Ready,
+        careGiverSsin: ssin,
+      });
       const prescription: ReadRequestResource = {
-        performerTasks: [],
+        performerTasks: {},
         organizationTasks: [{ performerTasks: [readyTask] }],
       };
 
-      expect(component.getPerformerTask(prescription)).toBe(readyTask);
+      expect(component.getPerformerTask(prescription, currentUser)).toBe(readyTask);
     });
 
     it('should return undefined when user is patient', () => {
@@ -383,7 +397,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
       expect(component.currentUser?.role).toBe('patient');
       const readyTask = createPerformerTask({ status: FhirR4TaskStatus.Ready });
       const prescription: ReadRequestResource = {
-        performerTasks: [],
+        performerTasks: {},
         organizationTasks: [{ performerTasks: [readyTask] }],
       };
 

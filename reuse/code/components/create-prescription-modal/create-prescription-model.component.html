@@ -1,0 +1,32 @@
+<form (ngSubmit)="createPrescriptionModel()" [formGroup]="formGroup" data-cy="form-create-prescription-model">
+  <div class="mh-form-field mh-create-model">
+    <label for="prescription-modal-dialog-input">{{ 'prescription.model.create.dialog.label' | translate }}</label>
+    <mat-form-field appearance="outline">
+      <input
+        id="prescription-modal-dialog-input"
+        [formControlName]="'name'"
+        matInput
+        data-cy="prescription-modal-dialog-input"
+        minlength="1"
+        maxlength="100" />
+      @if (formGroup.get('name')?.hasError('required')) {
+        <mat-error>{{ 'common.mandatory' | translate }}</mat-error>
+      }
+      @if (formGroup.get('name')?.hasError('uniqueName')) {
+        <mat-error>{{ 'prescription.model.create.dialog.labelNotUnique' | translate }}</mat-error>
+      }
+    </mat-form-field>
+  </div>
+
+  <button
+    type="submit"
+    mat-raised-button
+    [disabled]="disabled() || formGroup.get('name')?.invalid"
+    data-cy="dialog-confirm-button">
+    {{ 'common.confirm' | translate }}
+  </button>
+
+  @if (getModelState()?.state === LoadingStatus.LOADING) {
+    <app-overlay-spinner mode="dialog"></app-overlay-spinner>
+  }
+</form>

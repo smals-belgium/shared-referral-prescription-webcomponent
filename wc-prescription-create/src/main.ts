@@ -3,7 +3,7 @@ import { createApplication } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideCore } from '@reuse/code/providers/core.provider';
 import { provideEvfForm } from '@reuse/code/evf/evf-form.provider';
-import { provideMarkdown } from '@reuse/code/providers/markdown.provider';
+import { MARKDOWN_OPTIONS_CONFIG, provideMarkdown } from '@reuse/code/providers/markdown.provider';
 import { createCustomElement } from '@angular/elements';
 import { WcConfigurationService } from '@reuse/code/services/config/wc-configuration.service';
 import { apiUrlInterceptor } from '@reuse/code/interceptors/api-url.interceptor';
@@ -19,10 +19,8 @@ import { WcAuthService } from '@reuse/code/services/auth/wc-auth.service';
 import { providePseudonymisation } from '@reuse/code/providers/pseudo.provider';
 import { provideOpenApi } from '@reuse/code/providers/open-api.provider';
 import { OverlayContainer } from '@angular/cdk/overlay';
-import {
-  OVERLAY_QUERY_SELECTOR,
-  ShadowDomOverlayContainer,
-} from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
+import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
+import { CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_CREATE } from '@reuse/code/constants/common.constants';
 
 (async () => {
   const app = createApplication({
@@ -31,6 +29,7 @@ import {
       providePseudonymisation(),
       provideCore(),
       provideEvfForm(),
+      { provide: MARKDOWN_OPTIONS_CONFIG, useValue: { open: true } },
       provideMarkdown(),
       {
         provide: ConfigurationService,
@@ -40,7 +39,6 @@ import {
         provide: AuthService,
         useClass: WcAuthService,
       },
-      { provide: OVERLAY_QUERY_SELECTOR, useValue: ['nihdi-referral-prescription-create'] },
       {
         provide: OverlayContainer,
         useClass: ShadowDomOverlayContainer,
@@ -65,5 +63,5 @@ import {
   const createPrescriptionElement = createCustomElement(CreatePrescriptionWebComponent, {
     injector: (await app).injector,
   });
-  customElements.define('nihdi-referral-prescription-create', createPrescriptionElement);
+  customElements.define(CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_CREATE, createPrescriptionElement);
 })();

@@ -1,7 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { CreatePrescriptionModelComponent } from './create-prescription-model.component';
 import { Component, signal } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionModel.state';
@@ -18,6 +17,7 @@ import { UniqueModelNameValidator } from '@reuse/code/directives/unique-model-na
 import { ReactiveFormsModule } from '@angular/forms';
 import { EvfFormWebComponent } from '../evf-form/evf-form.component';
 import TypeEnum = FormDataType.TypeEnum;
+import { Lang } from '@reuse/code/constants/languages';
 
 @Component({
   selector: 'evf-form',
@@ -29,31 +29,30 @@ class MockEvfFormComponent {}
 describe('CreatePrescriptionModelComponent', () => {
   let component: CreatePrescriptionModelComponent;
   let fixture: ComponentFixture<CreatePrescriptionModelComponent>;
-  let mockDialog: Partial<MatDialog>;
   let mockModelState: PrescriptionModelState;
   let mockPrescriptionModelService: Partial<PrescriptionModelService>;
   let mockNameValidator: Partial<UniqueModelNameValidator>;
   let translate: TranslateService;
 
   beforeEach(async () => {
-    mockDialog = {
-      open: jest.fn().mockReturnValue({
-        afterClosed: () => of(true),
-      }),
-    };
-
     mockModelState = {
-      modalState: signal<PrescriptionModelStatus>({
-        state: LoadingStatus.INITIAL,
-        error: undefined,
-        success: undefined,
-      }),
+      modalStates: signal<PrescriptionModelStatus[]>([
+        {
+          state: LoadingStatus.INITIAL,
+          error: undefined,
+          success: undefined,
+          prescriptionTrackById: 0,
+        },
+      ]),
       setInitialState: jest.fn(),
       setModalState: jest.fn(),
+      getModalState: jest.fn(),
+      resetAll: jest.fn(),
     };
 
     mockPrescriptionModelService = {
       updateModel: jest.fn().mockReturnValue(of({})),
+      createModel: jest.fn().mockReturnValue(of({ id: '123' })),
     };
 
     mockNameValidator = {
@@ -69,7 +68,6 @@ describe('CreatePrescriptionModelComponent', () => {
         ReactiveFormsModule,
       ],
       providers: [
-        { provide: MatDialog, useValue: mockDialog },
         { provide: PrescriptionModelState, useValue: mockModelState },
         { provide: PrescriptionModelService, useValue: mockPrescriptionModelService },
         { provide: UniqueModelNameValidator, useValue: mockNameValidator },
@@ -84,12 +82,12 @@ describe('CreatePrescriptionModelComponent', () => {
       .compileComponents();
 
     translate = TestBed.inject(TranslateService);
-    translate.setDefaultLang('nl-BE');
-    translate.use('nl-BE');
+    translate.setDefaultLang(Lang.NL.full);
+    translate.use(Lang.NL.full);
 
     fixture = TestBed.createComponent(CreatePrescriptionModelComponent);
     component = fixture.componentInstance;
-    component.lang = 'nl-BE';
+    component.lang = Lang.NL.full;
   });
 
   afterEach(() => {
@@ -134,8 +132,9 @@ describe('CreatePrescriptionModelComponent', () => {
       fixture.detectChanges();
 
       const icon = fixture.debugElement.query(By.css('mat-icon[color="accent"]'));
-      expect(icon).toBeTruthy();
-      expect(icon.nativeElement.textContent.trim()).toBe('check_circle');
+      const iconComponent = icon.componentInstance;
+
+      expect(iconComponent.svgIcon).toBe('check_circle');
     });
 
     it('should show error icon when status is ERROR', () => {
@@ -145,8 +144,9 @@ describe('CreatePrescriptionModelComponent', () => {
       fixture.detectChanges();
 
       const icon = fixture.debugElement.query(By.css('mat-icon[color="warn"]'));
-      expect(icon).toBeTruthy();
-      expect(icon.nativeElement.textContent.trim()).toBe('error');
+      const iconComponent = icon.componentInstance;
+
+      expect(iconComponent.svgIcon).toBe('error');
     });
 
     it('should apply invalid class when submitted and elementGroup is invalid', () => {
@@ -193,9 +193,10 @@ describe('CreatePrescriptionModelComponent', () => {
 
   describe('Model State Alerts', () => {
     it('should show error alert when modelState is ERROR', () => {
-      mockModelState.modalState.set({
+      mockModelState.getModalState = jest.fn().mockReturnValue({
         state: LoadingStatus.ERROR,
         error: new HttpErrorResponse({ error: 'Test error', status: 500 }),
+        prescriptionTrackById: 0,
       });
 
       component.prescriptionForm = createMockPrescriptionForm();
@@ -211,9 +212,10 @@ describe('CreatePrescriptionModelComponent', () => {
     });
 
     it('should show success alert when modelState is SUCCESS', () => {
-      mockModelState.modalState.set({
+      mockModelState.getModalState = jest.fn().mockReturnValue({
         state: LoadingStatus.SUCCESS,
         success: 'Test Model Name',
+        prescriptionTrackById: 0,
       });
       component.prescriptionForm = createMockPrescriptionForm();
       fixture.detectChanges();
@@ -225,8 +227,9 @@ describe('CreatePrescriptionModelComponent', () => {
     });
 
     it('should show spinner when modelState is LOADING', () => {
-      mockModelState.modalState.set({
+      mockModelState.getModalState = jest.fn().mockReturnValue({
         state: LoadingStatus.LOADING,
+        prescriptionTrackById: 0,
       });
       component.prescriptionForm = createMockPrescriptionForm();
       fixture.detectChanges();
@@ -236,9 +239,12 @@ describe('CreatePrescriptionModelComponent', () => {
     });
 
     it('should not show alerts when modelState is INITIAL', () => {
-      mockModelState.modalState.set({
-        state: LoadingStatus.INITIAL,
-      });
+      mockModelState.modalStates.set([
+        {
+          state: LoadingStatus.INITIAL,
+          prescriptionTrackById: 0,
+        },
+      ]);
       component.prescriptionForm = createMockPrescriptionForm();
       fixture.detectChanges();
 
@@ -286,8 +292,17 @@ describe('CreatePrescriptionModelComponent', () => {
       });
       fixture.detectChanges();
 
-      const errorDiv = fixture.nativeElement.textContent;
-      expect(errorDiv).toContain('Failed to load prescription form template');
+      // const errorDiv = fixture.nativeElement.textContent;
+      // expect(errorDiv).toContain('Failed to load prescription form template');
+
+      //prescription.errors.failedToLoadTemplate
+
+      const alerts = fixture.debugElement.queryAll(By.css('app-alert'));
+
+      const errorAlert = alerts.find(alert =>
+        alert.nativeElement.textContent.includes('prescription.errors.failedToLoadTemplate')
+      );
+      expect(errorAlert).toBeTruthy();
     });
 
     it('should render evf-form when formTemplateState is SUCCESS', () => {
@@ -334,22 +349,6 @@ describe('CreatePrescriptionModelComponent', () => {
       expect(component.titleControl.value).toBe('Test Model');
     });
 
-    it('should not display model name input when modelId is undefined', () => {
-      component.prescriptionForm = createMockPrescriptionForm({
-        modelId: undefined,
-        formTemplateState$: signal(
-          createMockDataState({
-            status: LoadingStatus.SUCCESS,
-            data: createMockTemplateVersion(),
-          })
-        ),
-      });
-      fixture.detectChanges();
-
-      const input = fixture.debugElement.query(By.css('[data-cy="prescription-modal-dialog-input"]'));
-      expect(input).toBeFalsy();
-    });
-
     it('should show required error when title is empty', () => {
       component.prescriptionForm = createMockPrescriptionForm({
         modelId: 123,
@@ -379,11 +378,12 @@ describe('CreatePrescriptionModelComponent', () => {
       expect(errorElement.nativeElement.textContent).toContain('common.mandatory');
     });
 
-    it('should show unique name error when name is not unique', () => {
+    it('should show unique name error when name is not unique', fakeAsync(() => {
       mockNameValidator.validate = jest.fn().mockReturnValue(of({ uniqueName: true }));
 
       component.prescriptionForm = createMockPrescriptionForm({
         modelId: 123,
+        modelName: 'Some Other Name',
         formTemplateState$: signal(
           createMockDataState({
             status: LoadingStatus.SUCCESS,
@@ -404,11 +404,12 @@ describe('CreatePrescriptionModelComponent', () => {
       component.titleControl.setValue('Duplicate Name');
       component.titleControl.markAsTouched();
 
-      setTimeout(() => {
-        const errorElement = fixture.debugElement.query(By.css('mat-error'));
-        expect(errorElement).toBeTruthy();
-      }, 100);
-    });
+      tick(100);
+      fixture.detectChanges();
+
+      const errorElement = fixture.debugElement.query(By.css('mat-error'));
+      expect(errorElement).toBeTruthy();
+    }));
 
     it('should set originalName signal on ngOnChanges', () => {
       component.prescriptionForm = createMockPrescriptionForm({
@@ -480,7 +481,9 @@ describe('CreatePrescriptionModelComponent', () => {
       fixture.detectChanges();
 
       const buttons = fixture.debugElement.queryAll(By.css('button'));
-      const createButton = buttons.find(btn => btn.nativeElement.textContent.includes('save'));
+      const createButton = buttons.find(btn =>
+        btn.nativeElement.textContent.includes('prescription.model.create.title')
+      );
       expect(createButton).toBeTruthy();
     });
 
@@ -782,10 +785,12 @@ describe('CreatePrescriptionModelComponent', () => {
   });
 
   describe('handleClick (Create Model)', () => {
-    it('should open dialog with correct data', () => {
+    it('should call createPrescriptionModel on handleClick', () => {
       const mockElementGroup = createMockElementGroup({
         getOutputValue: () => ({ field: 'value', anotherField: 123 }),
       });
+
+      const createPrescriptionModelSpy = jest.spyOn(component, 'createPrescriptionModel');
 
       const form = createMockPrescriptionForm({
         templateCode: 'TEST_TEMPLATE',
@@ -796,28 +801,15 @@ describe('CreatePrescriptionModelComponent', () => {
 
       component.handleClick(form, template);
 
-      expect(mockDialog.open).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          data: {
-            template: template,
-            templateCode: 'TEST_TEMPLATE',
-            responses: { field: 'value', anotherField: 123 },
-          },
-          panelClass: 'mh-dialog-container',
-        })
-      );
+      expect(createPrescriptionModelSpy).toHaveBeenCalled();
     });
 
-    it('should emit modelSaved when dialog returns true', () => {
-      mockDialog.open = jest.fn().mockReturnValue({
-        afterClosed: () => of(true),
-      });
-
+    it('should emit modelSaved when fields are filled and title is valid returns true', () => {
       const mockElementGroup = createMockElementGroup({
         getOutputValue: () => ({}),
       });
 
+      component.titleControl.setValue('Valid Name');
       const form = createMockPrescriptionForm({
         templateCode: 'TEST_TEMPLATE',
         elementGroup: mockElementGroup,
@@ -829,30 +821,19 @@ describe('CreatePrescriptionModelComponent', () => {
 
       component.handleClick(form, template);
 
+      expect(mockPrescriptionModelService.createModel).toHaveBeenCalledWith({
+        name: 'Valid Name',
+        responses: {},
+        templateCode: 'TEST_TEMPLATE',
+      });
+
       expect(component.modelSaved.emit).toHaveBeenCalled();
     });
 
-    it('should not emit modelSaved when dialog returns false', () => {
-      mockDialog.open = jest.fn().mockReturnValue({
-        afterClosed: () => of(false),
-      });
-
-      const mockElementGroup = createMockElementGroup({
-        getOutputValue: () => ({}),
-      });
-
-      const form = createMockPrescriptionForm({
-        elementGroup: mockElementGroup,
-      });
-
-      jest.spyOn(component.modelSaved, 'emit');
-
-      component.handleClick(form, createMockTemplateVersion());
-
-      expect(component.modelSaved.emit).not.toHaveBeenCalled();
-    });
-
     it('should set error state when template is missing', () => {
+      const error = new HttpErrorResponse({ error: 'Creation failed', status: 500 });
+      mockPrescriptionModelService.createModel = jest.fn().mockReturnValue(throwError(() => error));
+
       const form = createMockPrescriptionForm({
         templateCode: 'TEST_TEMPLATE',
       });
@@ -860,6 +841,7 @@ describe('CreatePrescriptionModelComponent', () => {
       component.handleClick(form, undefined);
 
       expect(mockModelState.setModalState).toHaveBeenCalledWith(
+        0,
         LoadingStatus.ERROR,
         undefined,
         expect.any(HttpErrorResponse)
@@ -867,6 +849,10 @@ describe('CreatePrescriptionModelComponent', () => {
     });
 
     it('should merge modelResponses with elementGroup output', () => {
+      jest.spyOn(component.modelSaved, 'emit');
+
+      component.titleControl.setValue('Valid Name');
+
       const mockElementGroup = createMockElementGroup({
         getOutputValue: () => ({ elementField: 'element value' }),
       });
@@ -879,17 +865,16 @@ describe('CreatePrescriptionModelComponent', () => {
 
       component.handleClick(form, createMockTemplateVersion());
 
-      expect(mockDialog.open).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          data: expect.objectContaining({
-            responses: {
-              modelField: 'model value',
-              elementField: 'element value',
-            },
-          }),
-        })
-      );
+      expect(mockPrescriptionModelService.createModel).toHaveBeenCalledWith({
+        name: 'Valid Name',
+        responses: {
+          elementField: 'element value',
+          modelField: 'model value',
+        },
+        templateCode: 'TEST_TEMPLATE',
+      });
+
+      expect(component.modelSaved.emit).toHaveBeenCalled();
     });
   });
 
@@ -980,7 +965,7 @@ describe('CreatePrescriptionModelComponent', () => {
 
       component.handleUpdate(component.prescriptionForm, createMockTemplateVersion());
 
-      expect(mockModelState.setModalState).toHaveBeenCalledWith(LoadingStatus.LOADING);
+      expect(mockModelState.setModalState).toHaveBeenCalledWith(0, LoadingStatus.LOADING);
     });
 
     it('should set error state on update failure', () => {
@@ -1010,7 +995,7 @@ describe('CreatePrescriptionModelComponent', () => {
 
       component.handleUpdate(component.prescriptionForm, createMockTemplateVersion());
 
-      expect(mockModelState.setModalState).toHaveBeenCalledWith(LoadingStatus.ERROR, undefined, error);
+      expect(mockModelState.setModalState).toHaveBeenCalledWith(0, LoadingStatus.ERROR, undefined, error);
     });
 
     it('should not call service when title is invalid', () => {
@@ -1034,7 +1019,7 @@ describe('CreatePrescriptionModelComponent', () => {
       component.handleUpdate(component.prescriptionForm, createMockTemplateVersion());
 
       expect(mockPrescriptionModelService.updateModel).not.toHaveBeenCalled();
-      expect(mockModelState.setModalState).toHaveBeenCalledWith(LoadingStatus.UPDATING);
+      expect(mockModelState.setModalState).toHaveBeenCalledWith(0, LoadingStatus.UPDATING);
     });
 
     it('should mark all controls as touched when validating', () => {
@@ -1067,6 +1052,7 @@ describe('CreatePrescriptionModelComponent', () => {
       component.handleUpdate(component.prescriptionForm, undefined);
 
       expect(mockModelState.setModalState).toHaveBeenCalledWith(
+        0,
         LoadingStatus.ERROR,
         undefined,
         expect.any(HttpErrorResponse)
@@ -1081,6 +1067,7 @@ describe('CreatePrescriptionModelComponent', () => {
       component.handleUpdate(component.prescriptionForm, createMockTemplateVersion());
 
       expect(mockModelState.setModalState).toHaveBeenCalledWith(
+        0,
         LoadingStatus.ERROR,
         undefined,
         expect.objectContaining({
@@ -1304,7 +1291,7 @@ describe('CreatePrescriptionModelComponent', () => {
   describe('ngOnDestroy', () => {
     it('should reset prescription model state', () => {
       component.ngOnDestroy();
-      expect(mockModelState.setInitialState).toHaveBeenCalled();
+      expect(mockModelState.resetAll).toHaveBeenCalled();
     });
   });
 
