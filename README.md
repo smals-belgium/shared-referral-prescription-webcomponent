@@ -179,7 +179,7 @@ Here are the output data structures emitted by the Web Components :
 
 | Create prescription                | List prescriptions                                           | Prescription details                           |
 | ---------------------------------- | ------------------------------------------------------------ | ---------------------------------------------- |
-| **prescriptionsCreated**: string[] | **clickOpenDetails** : ReadRequestResource OR ModelEntityDto | **clickDuplicate**: ReadPrescription           |
+| **prescriptionsCreated**: string[] | **clickOpenDetail** : ReadRequestResource OR ModelEntityDto | **clickDuplicate**: ReadPrescription           |
 | **clickCancel**: void              | **clickCreateDetail** : SelectedTemplate                     | **clickExtend**: ReadPrescription              |
 | **modelCreated**: void             |                                                              | **clickPrint**: Blob                           |
 |                                    |                                                              | **clickDownload**: Blob                        |
