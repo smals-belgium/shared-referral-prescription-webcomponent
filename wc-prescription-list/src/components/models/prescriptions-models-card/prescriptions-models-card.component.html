@@ -2,7 +2,7 @@
   @if (itemsLength > 0) {
     <div class="grid-container mh-margin-top-bottom">
       @for (model of modelData(); track trackById(model)) {
-        <mat-card appearance="raised">
+        <mat-card appearance="raised" (click)="openPrescriptionModel.emit(model)">
           <mat-card-content>
             <div class="row" align="end">
               <button
@@ -40,10 +40,10 @@
             </div>
 
             <div class="row" align="right">
-              <button mat-button type="button" (click)="openPrescriptionModel.emit(model)">
+              <span class="mat-button-text">
                 {{ 'prescription.model.details.link' | translate }}
                 <mat-icon svgIcon="keyboard_arrow_right" aria-hidden="true" iconPositionEnd></mat-icon>
-              </button>
+              </span>
             </div>
           </mat-card-content>
         </mat-card>

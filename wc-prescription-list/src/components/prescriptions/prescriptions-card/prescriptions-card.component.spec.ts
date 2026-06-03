@@ -324,11 +324,11 @@ describe('PrescriptionsCardComponent', () => {
       expect(errorAlert).toBeTruthy();
     });
 
-    it('should emit clickPrescription when prescription details button is clicked', () => {
+    it('should emit clickPrescription when prescription card is clicked', () => {
       jest.spyOn(component.clickPrescription, 'emit');
 
-      const detailsButton = fixture.debugElement.nativeElement.querySelector('button[mat-button]');
-      detailsButton.click();
+      const detailsCard = fixture.debugElement.nativeElement.querySelector('mat-card');
+      detailsCard.click();
 
       expect(component.clickPrescription.emit).toHaveBeenCalledWith(mockRequestSummaryResource);
     });

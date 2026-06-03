@@ -2,37 +2,51 @@
   @if (itemsLength > 0) {
     <div class="grid-container mh-margin-top-bottom">
       @for (professional of requestData(); track trackById(professional)) {
-        <mat-card appearance="raised" class="mh-mat-card">
+        <mat-card
+          appearance="raised"
+          class="mh-mat-card"
+          (click)="radioButton.checked = true; changeValue(professional)">
           <mat-card-content>
             <div class="row">
-              <mat-radio-button [value]="professional" class="no-padding" [aria-label]="'professional.table.select' | translate" (change)="changeValue($event)"></mat-radio-button>
+              <mat-radio-button
+                #radioButton
+                [value]="professional"
+                class="no-padding"
+                [aria-label]="'professional.table.select' | translate"
+                (click)="$event.stopPropagation()">
+              </mat-radio-button>
             </div>
-            @if(isProfessional(professional)){
-            <div class="row">
-              <p class="professional-name">
-                @if (professional.healthcarePerson; as person) {
-                  {{ (person.lastName || '') }} {{ (person.firstName || '') }}
+            @if (isProfessional(professional)) {
+              <div class="row">
+                <p class="professional-name">
+                  @if (professional.healthcarePerson; as person) {
+                    {{ person.lastName || '' }} {{ person.firstName || '' }}
+                  }
+                </p>
+              </div>
+
+              <div class="row">
+                <span class="info">
+                  {{
+                    professional.nihii8 ?? professional.nihii11
+                      | formatNihdi: professional.healthcareQualification?.id?.code
+                  }}
+                </span>
+              </div>
+
+              <div class="row">
+                @if (professional.address) {
+                  {{ professional.address.street | formatMultilingualObject: currentLang() }}
+                  {{ professional.address.houseNumber || '' }} {{ professional.address.box || '' }}
                 }
-              </p>
-            </div>
+              </div>
 
-            <div class="row">
-              <span class="info">
-               {{ professional.nihii8 ?? professional.nihii11 | formatNihdi: professional.healthcareQualification?.id?.code }}
-              </span>
-            </div>
-
-            <div class="row">
-              @if(professional.address) {
-              {{ professional.address.street | formatMultilingualObject: currentLang() }} {{ professional.address.houseNumber || '' }} {{ professional.address.box || '' }}
-              }
-            </div>
-
-            <div class="row">
-              @if(professional.address) {
-              {{ professional.address.zipCode + ' ' || '' }} {{ professional.address.municipality | formatMultilingualObject:  currentLang() }}
-              }
-            </div>
+              <div class="row">
+                @if (professional.address) {
+                  {{ professional.address.zipCode + ' ' || '' }}
+                  {{ professional.address.municipality | formatMultilingualObject: currentLang() }}
+                }
+              </div>
             }
           </mat-card-content>
         </mat-card>
@@ -43,8 +57,7 @@
       <app-alert
         [alert]="AlertType.Info"
         [message]="'professional.noProfessionals' | translate"
-        [showRetry]="false"
-      ></app-alert>
+        [showRetry]="false"></app-alert>
     </div>
   }
 
@@ -53,8 +66,7 @@
       <app-alert
         [alert]="AlertType.Info"
         [message]="'professional.allProfessionalsFetched' | translate"
-        [showRetry]="false"
-      ></app-alert>
+        [showRetry]="false"></app-alert>
     </div>
   }
 

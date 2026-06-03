@@ -17,6 +17,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { hasUserProfile } from '@reuse/code/utils/mags-utils';
 import { Intent } from '@reuse/code/interfaces';
+import { Observable, of } from 'rxjs';
+import { mapLanguageToTranslations } from '@reuse/code/components/wrappers/utils/mags.utils';
 
 export type PrescriptionListIntent = Intent.ORDER | Intent.PROPOSAL;
 
@@ -31,15 +33,21 @@ export type PrescriptionListIntent = Intent.ORDER | Intent.PROPOSAL;
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class MagsPrescriptionList extends MagsComponent implements AfterViewInit {
+  private orderWebcomponent: any;
   private readonly _translate = inject(TranslateService);
   patientSsin?: string;
-  open = output<unknown>();
 
   @ViewChild('orderHost', { read: ElementRef }) orderHost!: ElementRef<HTMLElement>;
   @ViewChild('proposalHost', { read: ElementRef }) proposalHost!: ElementRef<HTMLElement>;
 
   private readonly instances = new Map<PrescriptionListIntent, HTMLElement>();
   private activeIntent: PrescriptionListIntent = Intent.ORDER;
+
+  protected override readonly refreshData = (): Observable<unknown> => {
+    this.orderWebcomponent.loadData({ pageIndex: 1 });
+    this.activate(Intent.ORDER);
+    return of(undefined);
+  };
 
   ngAfterViewInit() {
     this.activate(Intent.ORDER); // default tab
@@ -73,13 +81,17 @@ export class MagsPrescriptionList extends MagsComponent implements AfterViewInit
       getAccessToken: (audience: string) => this.getAccessToken(audience),
     };
 
-    el.setAttribute('lang', `${this.userLanguage()}-BE`);
+    el.setAttribute('lang', mapLanguageToTranslations(this.userLanguage()));
     el.setAttribute('patient-ssin', ssin);
     el.setAttribute('intent', intent);
 
     el.addEventListener('clickOpenDetail', this.onOpenDetail);
 
     const host = intent === Intent.ORDER ? this.orderHost.nativeElement : this.proposalHost.nativeElement;
+
+    if (intent === Intent.ORDER) {
+      this.orderWebcomponent = el;
+    }
 
     host.appendChild(el);
     this.instances.set(intent, el);
@@ -109,7 +121,7 @@ export class MagsPrescriptionList extends MagsComponent implements AfterViewInit
   };
 
   override async initWebComponent() {
-    this._translate.use(`${this.userLanguage()}-BE`);
+    this._translate.use(mapLanguageToTranslations(this.userLanguage()));
   }
 
   override onSettingsChanged = (s: SettingsChangeEvent): void => {
@@ -117,7 +129,7 @@ export class MagsPrescriptionList extends MagsComponent implements AfterViewInit
       return;
     }
 
-    const lang = `${s.detail.value}-BE`;
+    const lang = mapLanguageToTranslations(s.detail.value);
     this._translate.use(lang);
 
     for (const wc of this.instances.values()) {

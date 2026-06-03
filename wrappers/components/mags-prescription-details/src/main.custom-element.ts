@@ -21,10 +21,11 @@ export const manifest: MyHealthModuleManifest = {
   components: [
     {
       tagName: CUSTOM_ELEMENT_NAME_UHMEP_PRESCRIPTION_DETAILS,
-      events: ['print', 'open'],
+      events: ['print', 'open', 'refresh'],
       requiredProperties: ['prescriptionId', 'intent'],
     },
   ],
+  permissionsForMandateAccess: [],
 };
 
 export const bootstrap: MyHealthModuleBootstrap = (config: { services: HostServices; settings: HostSettings }) => {

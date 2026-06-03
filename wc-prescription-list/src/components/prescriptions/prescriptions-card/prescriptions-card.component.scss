@@ -1,39 +1,52 @@
 @use '@myhealth-belgium/design-kit' as mh;
 
-.grid-container{
+.grid-container {
   display: grid;
   gap: mh.$spacing-m;
+  .mat-mdc-card {
+    cursor: pointer;
+    transition: box-shadow 0.2s ease;
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
 }
-.mh-margin-top-bottom{
+.mh-margin-top-bottom {
   margin: mh.$spacing-m 0;
 }
-.mh-margin-bottom{
+.mh-margin-bottom {
   margin-bottom: mh.$spacing-m;
 }
 
-.row{
+.row {
   margin: mh.$spacing-m 0;
 }
 
-.row-with-columns{
+.row-with-columns {
   grid-template-columns: auto auto;
   display: grid;
   column-gap: mh.$spacing-2xl;
 }
 
-.template-title{
+.template-title {
   @include mh.font-default-bold();
 }
 
-p{
+p {
   @include mh.font-small-regular();
   margin: 0;
-  &.label{
+  &.label {
     color: mh.$typography-brand-neutral-dark;
   }
 }
-span.info{
+span.info {
   @include mh.font-small-regular();
   color: mh.$typography-brand-neutral-medium;
 }
 
+.mat-button-text {
+  justify-content: end;
+  align-items: center;
+  display: flex;
+  color: var(--mh-card-link-text, mh.$color-primary);
+}

@@ -185,14 +185,14 @@
         },
         "houseNumber": "88",
         "box": "D1",
-        "zipCode": "5100",
+        "zipCode": "3500",
         "municipality": {
-          "nl": "Jurbeke",
-          "fr": "Jurbeke",
-          "de": "Jurbeke",
-          "en": "Jurbeke"
+          "nl": "Hasselt",
+          "fr": "Hasselt",
+          "de": "Hasselt",
+          "en": "Hasselt"
         },
-        "cityCode": 5100,
+        "cityCode": 3500,
         "country": {
           "nl": "België",
           "fr": "Belgique",

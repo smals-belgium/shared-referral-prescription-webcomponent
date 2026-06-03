@@ -162,12 +162,8 @@ export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, 
     this.dataService.triggerLoad();
   }
 
-  changeValue(event: MatRadioChange) {
-    if (event.source.checked) {
-      this.selectProfessional.emit(event.value as HealthcareProResource);
-    } else {
-      this.selectProfessional.emit(undefined);
-    }
+  changeValue(professional: HealthcareProResource): void {
+    this.selectProfessional.emit(professional);
   }
 
   trackById(profession: HealthcareProResource) {

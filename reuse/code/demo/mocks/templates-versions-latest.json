@@ -1,823 +1,1344 @@
-[{
-  "id" : "ASSISTING_WITH_PERSONAL_HYGIENE",
-  "version" : "1",
-  "commonTranslationsId" : 1,
-  "extraData" : {
-    "welcome" : {
-      "en" : "Template 12 : Hygienic care",
-      "nl" : "Template 12 : Hygiënische zorg",
-      "fr" : "Template 12 : Soins hygiéniques"
-    }
-  },
-  "elements" : [ {
-    "id" : "occurrences",
-    "dataType" : {
-      "type" : "object"
-    },
-    "viewType" : "occurrences",
-    "labelTranslationId" : "frequencyRow"
-  }, {
-    "id" : "boundsDuration",
-    "dataType" : {
-      "type" : "object"
-    },
-    "viewType" : "boundsDuration",
-    "labelTranslationId" : "boundsDurationRow"
-  }, {
-    "id" : "nbSessions",
-    "dataType" : {
-      "type" : "number"
-    },
-    "viewType" : "number",
-    "labelTranslationId" : "nbSessions"
-  }, {
-    "id" : "diagnosis",
-    "dataType" : {
-      "type" : "string"
-    },
-    "viewType" : "textarea",
-    "labelTranslationId" : "diagnosis"
-  }, {
-    "id" : "medicalReason",
-    "dataType" : {
-      "type" : "string"
-    },
-    "viewType" : "textarea",
-    "labelTranslationId" : "medicalReason"
-  }, {
-    "id" : "contraindications",
-    "dataType" : {
-      "type" : "string"
-    },
-    "viewType" : "textarea",
-    "labelTranslationId" : "contraindications"
-  }, {
-    "id" : "generalRemarks",
-    "dataType" : {
-      "type" : "string"
-    },
-    "viewType" : "textarea",
-    "labelTranslationId" : "generalRemarks"
-  }, {
-    "id" : "feedback",
-    "dataType" : {
-      "type" : "boolean"
-    },
-    "viewType" : "radio",
-    "labelTranslationId" : "feedback",
-    "responses" : [ {
-      "value" : true,
-      "labelTranslationId" : "yes"
-    }, {
-      "value" : false,
-      "labelTranslationId" : "no"
-    } ]
-  } ],
-  "translations" : {}
-},
+[
   {
-    "id" : "SAMPLING",
-    "version" : "1",
-    "commonTranslationsId" : 1,
-    "extraData" : {
-      "welcome" : {
-        "en" : "Template 8 : Sampling",
-        "nl" : "Template 8 : Staalname",
-        "fr" : "Template 8 : Échantillon"
+    "id": "ASSISTING_WITH_PERSONAL_HYGIENE",
+    "version": "1",
+    "commonTranslationsId": 1,
+    "extraData": {
+      "welcome": {
+        "en": "Hygienic care",
+        "nl": "Hygiënische verzorging",
+        "fr": "Soins hygiéniques"
       }
     },
-    "elements" : [ {
-      "id" : "sampleType",
-      "dataType" : {
-        "type" : "string"
+    "elements": [
+      {
+        "id": "prescriptionOriginId",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "inputText",
+        "viewMode": "hidden"
       },
-      "viewType" : "select",
-      "labelTranslationId" : "sampleType",
-      "responses" : [ {
-        "value" : "45710003",
-        "labelTranslationId" : "sputum"
-      }, {
-        "value" : "78014005",
-        "labelTranslationId" : "urine"
-      }, {
-        "value" : "87612001",
-        "labelTranslationId" : "blood"
-      }, {
-        "value" : "39477002",
-        "labelTranslationId" : "feces"
-      }, {
-        "value" : "247450001",
-        "labelTranslationId" : "woundFluid"
-      }, {
-        "value" : "410582009",
-        "labelTranslationId" : "nasalFluid"
-      }, {
-        "value" : "256897009",
-        "labelTranslationId" : "saliva"
-      }, {
-        "value" : "otherSampleType",
-        "labelTranslationId" : "otherSampleType"
-      } ]
-    }, {
-      "id" : "sampleTypeOther",
-      "dataType" : {
-        "type" : "string"
+      {
+        "id": "authoredOn",
+        "dataType": {
+          "type": "date",
+          "format": "yearMonthDay"
+        },
+        "viewType": "date",
+        "viewMode": "hidden",
+        "defaultValue": "${now | parseDate}"
       },
-      "viewType" : "inputText",
-      "skipIf" : {
-        "leftValue" : "${responses:sampleType}",
-        "operator" : "!=",
-        "rightValue" : "otherSampleType"
+      {
+        "id": "templateInfo",
+        "viewType": "info",
+        "bodyTranslationId": "templateInfo"
+      },
+      {
+        "id": "frequencyRow",
+        "viewType": "row",
+        "labelTranslationId": "frequencyRowRequired",
+        "custom": {
+          "required": true
+        },
+        "elements": [
+          {
+            "id": "frequency",
+            "dataType": {
+              "type": "number"
+            },
+            "viewType": "number",
+            "labelTranslationId": "frequency",
+            "validations": [
+              {
+                "name": "required"
+              },
+              {
+                "name": "minValue",
+                "minValue": 1
+              },
+              {
+                "name": "maxValue",
+                "maxValue": 99
+              },
+              {
+                "name": "maxDecimals",
+                "maxDecimals": 0
+              }
+            ],
+            "custom": {
+              "suffixTranslationId": "frequencySuffix"
+            },
+            "sideEffects": [
+              {
+                "name": "setNbSessions",
+                "condition": null,
+                "target": "nbSessions",
+                "frequency": "frequency",
+                "periodUnit": "periodUnit",
+                "boundsDuration": "boundsDuration",
+                "boundsDurationUnit": "boundsDurationUnit"
+              }
+            ]
+          },
+          {
+            "id": "period",
+            "dataType": {
+              "type": "number"
+            },
+            "defaultValue": 1
+          },
+          {
+            "id": "periodUnit",
+            "dataType": {
+              "type": "string"
+            },
+            "viewType": "toggleButton",
+            "validations": [
+              {
+                "name": "required"
+              }
+            ],
+            "responses": [
+              {
+                "value": "d",
+                "labelTranslationId": "frequencyDay"
+              },
+              {
+                "value": "wk",
+                "labelTranslationId": "frequencyWeek"
+              }
+            ],
+            "custom": {
+              "buttonToggleMode": true,
+              "multi": false
+            },
+            "sideEffects": [
+              {
+                "name": "setNbSessions",
+                "condition": null,
+                "target": "nbSessions",
+                "frequency": "frequency",
+                "periodUnit": "periodUnit",
+                "boundsDuration": "boundsDuration",
+                "boundsDurationUnit": "boundsDurationUnit"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "boundsDurationRow",
+        "viewType": "row",
+        "labelTranslationId": "boundsDurationRowRequired",
+        "custom": {
+          "required": true
+        },
+        "elements": [
+          {
+            "id": "boundsDuration",
+            "dataType": {
+              "type": "number"
+            },
+            "viewType": "number",
+            "validations": [
+              {
+                "name": "required"
+              },
+              {
+                "name": "minValue",
+                "minValue": 1
+              },
+              {
+                "name": "maxValue",
+                "maxValue": 365
+              },
+              {
+                "name": "maxDecimals",
+                "maxDecimals": 0
+              }
+            ],
+            "sideEffects": [
+              {
+                "name": "setNbSessions",
+                "condition": null,
+                "target": "nbSessions",
+                "frequency": "frequency",
+                "periodUnit": "periodUnit",
+                "boundsDuration": "boundsDuration",
+                "boundsDurationUnit": "boundsDurationUnit"
+              }
+            ]
+          },
+          {
+            "id": "boundsDurationUnit",
+            "dataType": {
+              "type": "string"
+            },
+            "viewType": "toggleButton",
+            "validations": [
+              {
+                "name": "required"
+              }
+            ],
+            "responses": [
+              {
+                "value": "wk",
+                "labelTranslationId": "week"
+              },
+              {
+                "value": "mo",
+                "labelTranslationId": "month"
+              },
+              {
+                "value": "a",
+                "labelTranslationId": "year"
+              }
+            ],
+            "custom": {
+              "buttonToggleMode": true,
+              "multi": false
+            },
+            "sideEffects": [
+              {
+                "name": "setNbSessions",
+                "condition": null,
+                "target": "nbSessions",
+                "frequency": "frequency",
+                "periodUnit": "periodUnit",
+                "boundsDuration": "boundsDuration",
+                "boundsDurationUnit": "boundsDurationUnit"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "nbSessionsRow",
+        "viewType": "row",
+        "labelTranslationId": "nbSessionsRowRequired",
+        "custom": {
+          "required": true
+        },
+        "elements": [
+          {
+            "id": "nbSessions",
+            "dataType": {
+              "type": "number"
+            },
+            "viewType": "number",
+            "placeholderTranslationId": "nbSessionsPlaceholder",
+            "validations": [
+              {
+                "name": "required"
+              },
+              {
+                "name": "minValue",
+                "minValue": 1
+              },
+              {
+                "name": "maxValue",
+                "maxValue": 10000
+              },
+              {
+                "name": "maxDecimals",
+                "maxDecimals": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "diagnosis",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "textarea",
+        "viewMode": [
+          {
+            "value": "readonly",
+            "condition": {
+              "leftValue": "${responses:prescriptionOriginId}",
+              "operator": "empty",
+              "invert": true
+            }
+          }
+        ],
+        "labelTranslationId": "diagnosis",
+        "validations": [
+          {
+            "name": "maxLength",
+            "maxLength": 350
+          },
+          {
+            "name": "pattern",
+            "pattern": "[A-Za-zÀ-ÖØ-öø-ÿĀ-ſ0-9\\w\\d\\s\\t\\n\\r\\.\\,\\;\\?\\!\\:\\'\"\\(\\)\\-\\+@\\<\\>\\=\\%\\°\\µ\\\\\\/\\^\\²\\³\\#\\~&]+",
+            "errorTranslationId": "patternErrorSpecificsPointsOfAttention"
+          }
+        ],
+        "tags": ["notInModels"]
+      },
+      {
+        "id": "medicalReason",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "textarea",
+        "viewMode": [
+          {
+            "value": "readonly",
+            "condition": {
+              "leftValue": "${responses:prescriptionOriginId}",
+              "operator": "empty",
+              "invert": true
+            }
+          }
+        ],
+        "labelTranslationId": "medicalReason",
+        "validations": [
+          {
+            "name": "maxLength",
+            "maxLength": 350
+          },
+          {
+            "name": "pattern",
+            "pattern": "[A-Za-zÀ-ÖØ-öø-ÿĀ-ſ0-9\\w\\d\\s\\t\\n\\r\\.\\,\\;\\?\\!\\:\\'\"\\(\\)\\-\\+@\\<\\>\\=\\%\\°\\µ\\\\\\/\\^\\²\\³\\#\\~&]+",
+            "errorTranslationId": "patternErrorSpecificsPointsOfAttention"
+          },
+          {
+            "name": "required",
+            "condition": {
+              "operator": "and",
+              "conditions": [
+                {
+                  "leftValue": "${responses:frequency}",
+                  "operator": ">=",
+                  "rightValue": 2
+                },
+                {
+                  "leftValue": "${responses:periodUnit}",
+                  "operator": "=",
+                  "rightValue": "d"
+                }
+              ]
+            }
+          }
+        ],
+        "tags": ["freeText", "notInModels"]
+      },
+      {
+        "id": "contraindications",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "textarea",
+        "viewMode": [
+          {
+            "value": "readonly",
+            "condition": {
+              "leftValue": "${responses:prescriptionOriginId}",
+              "operator": "empty",
+              "invert": true
+            }
+          }
+        ],
+        "labelTranslationId": "contraindications",
+        "validations": [
+          {
+            "name": "maxLength",
+            "maxLength": 350
+          },
+          {
+            "name": "pattern",
+            "pattern": "[A-Za-zÀ-ÖØ-öø-ÿĀ-ſ0-9\\w\\d\\s\\t\\n\\r\\.\\,\\;\\?\\!\\:\\'\"\\(\\)\\-\\+@\\<\\>\\=\\%\\°\\µ\\\\\\/\\^\\²\\³\\#\\~&]+",
+            "errorTranslationId": "patternErrorSpecificsPointsOfAttention"
+          }
+        ],
+        "tags": ["freeText", "notInModels"]
+      },
+      {
+        "id": "generalRemarks",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "textarea",
+        "viewMode": [
+          {
+            "value": "readonly",
+            "condition": {
+              "leftValue": "${responses:prescriptionOriginId}",
+              "operator": "empty",
+              "invert": true
+            }
+          }
+        ],
+        "labelTranslationId": "generalRemarks",
+        "validations": [
+          {
+            "name": "maxLength",
+            "maxLength": 350
+          },
+          {
+            "name": "pattern",
+            "pattern": "[A-Za-zÀ-ÖØ-öø-ÿĀ-ſ0-9\\w\\d\\s\\t\\n\\r\\.\\,\\;\\?\\!\\:\\'\"\\(\\)\\-\\+@\\<\\>\\=\\%\\°\\µ\\\\\\/\\^\\²\\³\\#\\~&]+",
+            "errorTranslationId": "patternErrorSpecificsPointsOfAttention"
+          }
+        ],
+        "tags": ["freeText", "notInModels"]
+      },
+      {
+        "id": "feedback",
+        "dataType": {
+          "type": "boolean"
+        },
+        "viewType": "radio",
+        "viewMode": [
+          {
+            "value": "readonly",
+            "condition": {
+              "leftValue": "${responses:prescriptionOriginId}",
+              "operator": "empty",
+              "invert": true
+            }
+          }
+        ],
+        "labelTranslationId": "feedback",
+        "validations": [
+          {
+            "name": "required"
+          }
+        ],
+        "responses": [
+          {
+            "value": true,
+            "labelTranslationId": "yes"
+          },
+          {
+            "value": false,
+            "labelTranslationId": "no"
+          }
+        ],
+        "custom": {
+          "buttonToggleMode": true
+        },
+        "defaultValue": false
+      },
+      {
+        "id": "validityStartDate",
+        "dataType": {
+          "type": "date",
+          "format": "yearMonthDay"
+        },
+        "viewType": "date",
+        "labelTranslationId": "validityStartDate",
+        "validations": [
+          {
+            "name": "required"
+          },
+          {
+            "name": "minValue",
+            "minValue": "${now | transformDate:minus(5,day) | transformDate:startOf(day)}"
+          },
+          {
+            "name": "maxValue",
+            "maxValue": "${now | transformDate:plus(1,year)}"
+          }
+        ],
+        "defaultValue": "${now | parseDate}",
+        "tags": ["notInModels"]
       }
-    }, {
-      "id" : "bodyLocation",
-      "dataType" : {
-        "type" : "string"
-      },
-      "viewType" : "select",
-      "labelTranslationId" : "bodyLocation",
-      "responses" : [ {
-        "value" : "31640002",
-        "labelTranslationId" : "afterheadArea"
-      }, {
-        "value" : "789699009",
-        "labelTranslationId" : "structureOfOccipitalCondyle"
-      }, {
-        "value" : "78277001",
-        "labelTranslationId" : "temporalLobe"
-      }, {
-        "value" : "69536005",
-        "labelTranslationId" : "head"
-      }, {
-        "value" : "81745001",
-        "labelTranslationId" : "eye"
-      }, {
-        "value" : "117590005",
-        "labelTranslationId" : "ear"
-      }, {
-        "value" : "123851003",
-        "labelTranslationId" : "mouth"
-      }, {
-        "value" : "45206002",
-        "labelTranslationId" : "nose"
-      }, {
-        "value" : "1797002",
-        "labelTranslationId" : "anteriorNaris"
-      }, {
-        "value" : "48477009",
-        "labelTranslationId" : "lip"
-      }, {
-        "value" : "60819002",
-        "labelTranslationId" : "cheek"
-      }, {
-        "value" : "51185008",
-        "labelTranslationId" : "chest"
-      }, {
-        "value" : "113345001",
-        "labelTranslationId" : "belly"
-      }, {
-        "value" : "727234005",
-        "labelTranslationId" : "entireBack"
-      }, {
-        "value" : "53120007",
-        "labelTranslationId" : "upperLimb"
-      }, {
-        "value" : "14975008",
-        "labelTranslationId" : "forearm"
-      }, {
-        "value" : "127949000",
-        "labelTranslationId" : "elbow"
-      }, {
-        "value" : "85562004",
-        "labelTranslationId" : "hand"
-      }, {
-        "value" : "16982005",
-        "labelTranslationId" : "shoulder"
-      }, {
-        "value" : "182281004",
-        "labelTranslationId" : "leg"
-      }, {
-        "value" : "78234002",
-        "labelTranslationId" : "shin"
-      }, {
-        "value" : "72696002",
-        "labelTranslationId" : "knee"
-      }, {
-        "value" : "421235005",
-        "labelTranslationId" : "thighBone"
-      }, {
-        "value" : "30547001",
-        "labelTranslationId" : "greaterTrochanter"
-      }, {
-        "value" : "87342007",
-        "labelTranslationId" : "fibula"
-      }, {
-        "value" : "360857004",
-        "labelTranslationId" : "structureOfMalleolusOfFibula"
-      }, {
-        "value" : "244015008",
-        "labelTranslationId" : "entireCalfOfLowerLeg"
-      }, {
-        "value" : "1376500",
-        "labelTranslationId" : "malleolarRegion"
-      }, {
-        "value" : "344001",
-        "labelTranslationId" : "ankle"
-      }, {
-        "value" : "76853006",
-        "labelTranslationId" : "heel"
-      }, {
-        "value" : "244187005",
-        "labelTranslationId" : "skinOfInstepOfFoot"
-      }, {
-        "value" : "56459004",
-        "labelTranslationId" : "foot"
-      }, {
-        "value" : "78883009",
-        "labelTranslationId" : "bigToe"
-      }, {
-        "value" : "55078004",
-        "labelTranslationId" : "secondToe"
-      }, {
-        "value" : "78132007",
-        "labelTranslationId" : "thirdToe"
-      }, {
-        "value" : "80349001",
-        "labelTranslationId" : "fourthToe"
-      }, {
-        "value" : "39915008",
-        "labelTranslationId" : "fifthToe"
-      }, {
-        "value" : "79601000",
-        "labelTranslationId" : "scapula"
-      }, {
-        "value" : "85710004",
-        "labelTranslationId" : "sisticBone"
-      }, {
-        "value" : "182034009",
-        "labelTranslationId" : "entireIliacCrest"
-      }, {
-        "value" : "18911002",
-        "labelTranslationId" : "penis"
-      }, {
-        "value" : "76784001",
-        "labelTranslationId" : "vagina"
-      }, {
-        "value" : "53505006",
-        "labelTranslationId" : "anus"
-      }, {
-        "value" : "52795006",
-        "labelTranslationId" : "forehead"
-      }, {
-        "value" : "89545001",
-        "labelTranslationId" : "structureOfTheFace"
-      }, {
-        "value" : "45048000",
-        "labelTranslationId" : "neck"
-      }, {
-        "value" : "76505004",
-        "labelTranslationId" : "thumb"
-      }, {
-        "value" : "83738005",
-        "labelTranslationId" : "indexFinger"
-      }, {
-        "value" : "65531009",
-        "labelTranslationId" : "middleFinger"
-      }, {
-        "value" : "82002001",
-        "labelTranslationId" : "ringFinger"
-      }, {
-        "value" : "12406000",
-        "labelTranslationId" : "littleFinger"
-      }, {
-        "value" : "29836001",
-        "labelTranslationId" : "hip"
-      }, {
-        "value" : "68367000",
-        "labelTranslationId" : "thigh"
-      }, {
-        "value" : "30021000",
-        "labelTranslationId" : "lowerLeg"
-      }, {
-        "value" : "699698002",
-        "labelTranslationId" : "sacrum"
-      }, {
-        "value" : "66040006",
-        "labelTranslationId" : "pubicBone"
-      } ],
-      "showIf" : {
-        "leftValue" : "${responses:sampleType}",
-        "operator" : "=",
-        "rightValue" : "247450001"
-      },
-      "skipIf" : {
-        "leftValue" : "${responses:sampleType}",
-        "operator" : "=",
-        "rightValue" : "410582009"
-      },
-      "valueIfSkipped" : "45206002"
-    }, {
-      "id" : "bodyLaterality",
-      "dataType" : {
-        "type" : "string"
-      },
-      "viewType" : "select",
-      "labelTranslationId" : "bodyLaterality",
-      "responses" : [ {
-        "value" : "7771000",
-        "labelTranslationId" : "left",
-        "skipIf" : {
-          "leftValue" : "${responses:sampleType}",
-          "operator" : "=",
-          "rightValue" : "410582009"
-        }
-      }, {
-        "value" : "24028007",
-        "labelTranslationId" : "right",
-        "skipIf" : {
-          "leftValue" : "${responses:sampleType}",
-          "operator" : "=",
-          "rightValue" : "410582009"
-        }
-      }, {
-        "value" : "419161000",
-        "labelTranslationId" : "unilateralLeft"
-      }, {
-        "value" : "419465000",
-        "labelTranslationId" : "unilateralRight"
-      }, {
-        "value" : "51440002",
-        "labelTranslationId" : "bilateral"
-      }, {
-        "value" : "261183002",
-        "labelTranslationId" : "atTheTopOf",
-        "skipIf" : {
-          "leftValue" : "${responses:sampleType}",
-          "operator" : "=",
-          "rightValue" : "410582009"
-        }
-      }, {
-        "value" : "261122009",
-        "labelTranslationId" : "atTheBottomOf",
-        "skipIf" : {
-          "leftValue" : "${responses:sampleType}",
-          "operator" : "=",
-          "rightValue" : "410582009"
-        }
-      }, {
-        "value" : "255561001",
-        "labelTranslationId" : "medial",
-        "skipIf" : {
-          "leftValue" : "${responses:sampleType}",
-          "operator" : "=",
-          "rightValue" : "410582009"
-        }
-      }, {
-        "value" : "49370004",
-        "labelTranslationId" : "lateral",
-        "skipIf" : {
-          "leftValue" : "${responses:sampleType}",
-          "operator" : "=",
-          "rightValue" : "410582009"
-        }
-      }, {
-        "value" : "264217000",
-        "labelTranslationId" : "superior",
-        "skipIf" : {
-          "leftValue" : "${responses:sampleType}",
-          "operator" : "=",
-          "rightValue" : "410582009"
-        }
-      }, {
-        "value" : "261089000",
-        "labelTranslationId" : "inferior",
-        "skipIf" : {
-          "leftValue" : "${responses:sampleType}",
-          "operator" : "=",
-          "rightValue" : "410582009"
-        }
-      }, {
-        "value" : "255551008",
-        "labelTranslationId" : "posteriorBack",
-        "skipIf" : {
-          "leftValue" : "${responses:sampleType}",
-          "operator" : "=",
-          "rightValue" : "410582009"
-        }
-      }, {
-        "value" : "255549009",
-        "labelTranslationId" : "anteriorFront",
-        "skipIf" : {
-          "leftValue" : "${responses:sampleType}",
-          "operator" : "=",
-          "rightValue" : "410582009"
-        }
-      }, {
-        "value" : "351726001",
-        "labelTranslationId" : "below",
-        "skipIf" : {
-          "leftValue" : "${responses:sampleType}",
-          "operator" : "=",
-          "rightValue" : "410582009"
-        }
-      }, {
-        "value" : "352730000",
-        "labelTranslationId" : "upstairs",
-        "skipIf" : {
-          "leftValue" : "${responses:sampleType}",
-          "operator" : "=",
-          "rightValue" : "410582009"
-        }
-      }, {
-        "value" : "260521003",
-        "labelTranslationId" : "internal",
-        "skipIf" : {
-          "leftValue" : "${responses:sampleType}",
-          "operator" : "=",
-          "rightValue" : "410582009"
-        }
-      }, {
-        "value" : "261074009",
-        "labelTranslationId" : "external",
-        "skipIf" : {
-          "leftValue" : "${responses:sampleType}",
-          "operator" : "=",
-          "rightValue" : "410582009"
-        }
-      } ],
-      "showIf" : {
-        "operator" : "or",
-        "conditions" : [ {
-          "leftValue" : "${responses:sampleType}",
-          "operator" : "=",
-          "rightValue" : "247450001"
-        }, {
-          "leftValue" : "${responses:sampleType}",
-          "operator" : "=",
-          "rightValue" : "410582009"
-        } ]
-      }
-    }, {
-      "id" : "occurrences",
-      "dataType" : {
-        "type" : "object"
-      },
-      "viewType" : "occurrences",
-      "labelTranslationId" : "frequencyRow"
-    }, {
-      "id" : "boundsDuration",
-      "dataType" : {
-        "type" : "object"
-      },
-      "viewType" : "boundsDuration",
-      "labelTranslationId" : "boundsDurationRow"
-    }, {
-      "id" : "nbSessions",
-      "dataType" : {
-        "type" : "number"
-      },
-      "viewType" : "number",
-      "labelTranslationId" : "nbSessions",
-      "placeholderTranslationId" : "nbSessionsPlaceholder"
-    }, {
-      "id" : "diagnosis",
-      "dataType" : {
-        "type" : "string"
-      },
-      "viewType" : "textarea",
-      "labelTranslationId" : "diagnosis"
-    }, {
-      "id" : "medicalReason",
-      "dataType" : {
-        "type" : "string"
-      },
-      "viewType" : "textarea",
-      "labelTranslationId" : "medicalReason"
-    }, {
-      "id" : "contraindications",
-      "dataType" : {
-        "type" : "string"
-      },
-      "viewType" : "textarea",
-      "labelTranslationId" : "contraindications"
-    }, {
-      "id" : "generalRemarks",
-      "dataType" : {
-        "type" : "string"
-      },
-      "viewType" : "textarea",
-      "labelTranslationId" : "generalRemarks"
-    }, {
-      "id" : "feedback",
-      "dataType" : {
-        "type" : "boolean"
-      },
-      "viewType" : "radio",
-      "labelTranslationId" : "feedback",
-      "responses" : [ {
-        "value" : true,
-        "labelTranslationId" : "yes"
-      }, {
-        "value" : false,
-        "labelTranslationId" : "no"
-      } ]
-    } ],
-    "translations" : {
-      "nurse" : {
-        "nl" : "Verpleeger/verpleegster",
-        "fr" : "Infirmier·ère"
-      },
-      "sampleType" : {
-        "en" : "Sample type",
-        "nl" : "Type staal",
-        "fr" : "Type d'échantillon"
+    ],
+    "translations": {
+      "templateInfo": {
+        "nl": "> Dit formulier bevestigt de noodzaak van hygiënische zorg.\n>- Het is dus **niet verplicht**.\n> - Het garandeert geen terugbetaling, die afhankelijk is van de verpleegkundige score op de **Katz-schaal**.\n> - Bij **desoriëntatie van de patiënt** in tijd en ruimte is een **specifiek medisch attest vereist** om dagelijkse lichaamsverzorging te rechtvaardigen.\n\n> Elke zorgbehoefte moet binnen twee jaar worden gestart en kan vervolgens gedurende vijf jaar worden voortgezet.",
+        "fr": "> Ce formulaire atteste un besoin en soins d'hygiène\n>- il n'est donc **pas obligatoire**\n>- il ne garantit pas le remboursement qui est fonction du score infirmier **échelle de Katz**\n>- en cas de **désorientation du patient** dans le temps et l'espace, un **certificat médical spécifique est requis** pour justifier une toilette quotidienne.\n\n> Chaque besoin de soins doit être initié dans les deux ans et peut ensuite être poursuivi pendant cinq ans."
       }
     }
   },
   {
-    "id" : "BLEEDING",
-    "version" : "1",
-    "commonTranslationsId" : 1,
-    "extraData" : {
-      "welcome" : {
-        "en" : "Template 10 : Bleeding",
-        "nl" : "Template 10 : Aderlating (nomenclatuur 149096)",
-        "fr" : "Template 10 : Phlébotomie (nomenclatuur 149096)"
+    "id": "SAMPLING",
+    "version": "1",
+    "commonTranslationsId": 1,
+    "extraData": {
+      "welcome": {
+        "en": "Template 8 : Sampling",
+        "nl": "Template 8 : Staalname",
+        "fr": "Template 8 : Échantillon"
       }
     },
-    "elements" : [ {
-      "id" : "bloodQuantity",
-      "dataType" : {
-        "type" : "number"
+    "elements": [
+      {
+        "id": "sampleType",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "select",
+        "labelTranslationId": "sampleType",
+        "responses": [
+          {
+            "value": "45710003",
+            "labelTranslationId": "sputum"
+          },
+          {
+            "value": "78014005",
+            "labelTranslationId": "urine"
+          },
+          {
+            "value": "87612001",
+            "labelTranslationId": "blood"
+          },
+          {
+            "value": "39477002",
+            "labelTranslationId": "feces"
+          },
+          {
+            "value": "247450001",
+            "labelTranslationId": "woundFluid"
+          },
+          {
+            "value": "410582009",
+            "labelTranslationId": "nasalFluid"
+          },
+          {
+            "value": "256897009",
+            "labelTranslationId": "saliva"
+          },
+          {
+            "value": "otherSampleType",
+            "labelTranslationId": "otherSampleType"
+          }
+        ]
       },
-      "viewType" : "number",
-      "labelTranslationId" : "bloodQuantity",
-      "custom" : {
-        "suffixTranslationId" : "bloodQuantitySuffix"
+      {
+        "id": "sampleTypeOther",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "inputText",
+        "skipIf": {
+          "leftValue": "${responses:sampleType}",
+          "operator": "!=",
+          "rightValue": "otherSampleType"
+        }
+      },
+      {
+        "id": "bodyLocation",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "select",
+        "labelTranslationId": "bodyLocation",
+        "responses": [
+          {
+            "value": "31640002",
+            "labelTranslationId": "afterheadArea"
+          },
+          {
+            "value": "789699009",
+            "labelTranslationId": "structureOfOccipitalCondyle"
+          },
+          {
+            "value": "78277001",
+            "labelTranslationId": "temporalLobe"
+          },
+          {
+            "value": "69536005",
+            "labelTranslationId": "head"
+          },
+          {
+            "value": "81745001",
+            "labelTranslationId": "eye"
+          },
+          {
+            "value": "117590005",
+            "labelTranslationId": "ear"
+          },
+          {
+            "value": "123851003",
+            "labelTranslationId": "mouth"
+          },
+          {
+            "value": "45206002",
+            "labelTranslationId": "nose"
+          },
+          {
+            "value": "1797002",
+            "labelTranslationId": "anteriorNaris"
+          },
+          {
+            "value": "48477009",
+            "labelTranslationId": "lip"
+          },
+          {
+            "value": "60819002",
+            "labelTranslationId": "cheek"
+          },
+          {
+            "value": "51185008",
+            "labelTranslationId": "chest"
+          },
+          {
+            "value": "113345001",
+            "labelTranslationId": "belly"
+          },
+          {
+            "value": "727234005",
+            "labelTranslationId": "entireBack"
+          },
+          {
+            "value": "53120007",
+            "labelTranslationId": "upperLimb"
+          },
+          {
+            "value": "14975008",
+            "labelTranslationId": "forearm"
+          },
+          {
+            "value": "127949000",
+            "labelTranslationId": "elbow"
+          },
+          {
+            "value": "85562004",
+            "labelTranslationId": "hand"
+          },
+          {
+            "value": "16982005",
+            "labelTranslationId": "shoulder"
+          },
+          {
+            "value": "182281004",
+            "labelTranslationId": "leg"
+          },
+          {
+            "value": "78234002",
+            "labelTranslationId": "shin"
+          },
+          {
+            "value": "72696002",
+            "labelTranslationId": "knee"
+          },
+          {
+            "value": "421235005",
+            "labelTranslationId": "thighBone"
+          },
+          {
+            "value": "30547001",
+            "labelTranslationId": "greaterTrochanter"
+          },
+          {
+            "value": "87342007",
+            "labelTranslationId": "fibula"
+          },
+          {
+            "value": "360857004",
+            "labelTranslationId": "structureOfMalleolusOfFibula"
+          },
+          {
+            "value": "244015008",
+            "labelTranslationId": "entireCalfOfLowerLeg"
+          },
+          {
+            "value": "1376500",
+            "labelTranslationId": "malleolarRegion"
+          },
+          {
+            "value": "344001",
+            "labelTranslationId": "ankle"
+          },
+          {
+            "value": "76853006",
+            "labelTranslationId": "heel"
+          },
+          {
+            "value": "244187005",
+            "labelTranslationId": "skinOfInstepOfFoot"
+          },
+          {
+            "value": "56459004",
+            "labelTranslationId": "foot"
+          },
+          {
+            "value": "78883009",
+            "labelTranslationId": "bigToe"
+          },
+          {
+            "value": "55078004",
+            "labelTranslationId": "secondToe"
+          },
+          {
+            "value": "78132007",
+            "labelTranslationId": "thirdToe"
+          },
+          {
+            "value": "80349001",
+            "labelTranslationId": "fourthToe"
+          },
+          {
+            "value": "39915008",
+            "labelTranslationId": "fifthToe"
+          },
+          {
+            "value": "79601000",
+            "labelTranslationId": "scapula"
+          },
+          {
+            "value": "85710004",
+            "labelTranslationId": "sisticBone"
+          },
+          {
+            "value": "182034009",
+            "labelTranslationId": "entireIliacCrest"
+          },
+          {
+            "value": "18911002",
+            "labelTranslationId": "penis"
+          },
+          {
+            "value": "76784001",
+            "labelTranslationId": "vagina"
+          },
+          {
+            "value": "53505006",
+            "labelTranslationId": "anus"
+          },
+          {
+            "value": "52795006",
+            "labelTranslationId": "forehead"
+          },
+          {
+            "value": "89545001",
+            "labelTranslationId": "structureOfTheFace"
+          },
+          {
+            "value": "45048000",
+            "labelTranslationId": "neck"
+          },
+          {
+            "value": "76505004",
+            "labelTranslationId": "thumb"
+          },
+          {
+            "value": "83738005",
+            "labelTranslationId": "indexFinger"
+          },
+          {
+            "value": "65531009",
+            "labelTranslationId": "middleFinger"
+          },
+          {
+            "value": "82002001",
+            "labelTranslationId": "ringFinger"
+          },
+          {
+            "value": "12406000",
+            "labelTranslationId": "littleFinger"
+          },
+          {
+            "value": "29836001",
+            "labelTranslationId": "hip"
+          },
+          {
+            "value": "68367000",
+            "labelTranslationId": "thigh"
+          },
+          {
+            "value": "30021000",
+            "labelTranslationId": "lowerLeg"
+          },
+          {
+            "value": "699698002",
+            "labelTranslationId": "sacrum"
+          },
+          {
+            "value": "66040006",
+            "labelTranslationId": "pubicBone"
+          }
+        ],
+        "showIf": {
+          "leftValue": "${responses:sampleType}",
+          "operator": "=",
+          "rightValue": "247450001"
+        },
+        "skipIf": {
+          "leftValue": "${responses:sampleType}",
+          "operator": "=",
+          "rightValue": "410582009"
+        },
+        "valueIfSkipped": "45206002"
+      },
+      {
+        "id": "bodyLaterality",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "select",
+        "labelTranslationId": "bodyLaterality",
+        "responses": [
+          {
+            "value": "7771000",
+            "labelTranslationId": "left",
+            "skipIf": {
+              "leftValue": "${responses:sampleType}",
+              "operator": "=",
+              "rightValue": "410582009"
+            }
+          },
+          {
+            "value": "24028007",
+            "labelTranslationId": "right",
+            "skipIf": {
+              "leftValue": "${responses:sampleType}",
+              "operator": "=",
+              "rightValue": "410582009"
+            }
+          },
+          {
+            "value": "419161000",
+            "labelTranslationId": "unilateralLeft"
+          },
+          {
+            "value": "419465000",
+            "labelTranslationId": "unilateralRight"
+          },
+          {
+            "value": "51440002",
+            "labelTranslationId": "bilateral"
+          },
+          {
+            "value": "261183002",
+            "labelTranslationId": "atTheTopOf",
+            "skipIf": {
+              "leftValue": "${responses:sampleType}",
+              "operator": "=",
+              "rightValue": "410582009"
+            }
+          },
+          {
+            "value": "261122009",
+            "labelTranslationId": "atTheBottomOf",
+            "skipIf": {
+              "leftValue": "${responses:sampleType}",
+              "operator": "=",
+              "rightValue": "410582009"
+            }
+          },
+          {
+            "value": "255561001",
+            "labelTranslationId": "medial",
+            "skipIf": {
+              "leftValue": "${responses:sampleType}",
+              "operator": "=",
+              "rightValue": "410582009"
+            }
+          },
+          {
+            "value": "49370004",
+            "labelTranslationId": "lateral",
+            "skipIf": {
+              "leftValue": "${responses:sampleType}",
+              "operator": "=",
+              "rightValue": "410582009"
+            }
+          },
+          {
+            "value": "264217000",
+            "labelTranslationId": "superior",
+            "skipIf": {
+              "leftValue": "${responses:sampleType}",
+              "operator": "=",
+              "rightValue": "410582009"
+            }
+          },
+          {
+            "value": "261089000",
+            "labelTranslationId": "inferior",
+            "skipIf": {
+              "leftValue": "${responses:sampleType}",
+              "operator": "=",
+              "rightValue": "410582009"
+            }
+          },
+          {
+            "value": "255551008",
+            "labelTranslationId": "posteriorBack",
+            "skipIf": {
+              "leftValue": "${responses:sampleType}",
+              "operator": "=",
+              "rightValue": "410582009"
+            }
+          },
+          {
+            "value": "255549009",
+            "labelTranslationId": "anteriorFront",
+            "skipIf": {
+              "leftValue": "${responses:sampleType}",
+              "operator": "=",
+              "rightValue": "410582009"
+            }
+          },
+          {
+            "value": "351726001",
+            "labelTranslationId": "below",
+            "skipIf": {
+              "leftValue": "${responses:sampleType}",
+              "operator": "=",
+              "rightValue": "410582009"
+            }
+          },
+          {
+            "value": "352730000",
+            "labelTranslationId": "upstairs",
+            "skipIf": {
+              "leftValue": "${responses:sampleType}",
+              "operator": "=",
+              "rightValue": "410582009"
+            }
+          },
+          {
+            "value": "260521003",
+            "labelTranslationId": "internal",
+            "skipIf": {
+              "leftValue": "${responses:sampleType}",
+              "operator": "=",
+              "rightValue": "410582009"
+            }
+          },
+          {
+            "value": "261074009",
+            "labelTranslationId": "external",
+            "skipIf": {
+              "leftValue": "${responses:sampleType}",
+              "operator": "=",
+              "rightValue": "410582009"
+            }
+          }
+        ],
+        "showIf": {
+          "operator": "or",
+          "conditions": [
+            {
+              "leftValue": "${responses:sampleType}",
+              "operator": "=",
+              "rightValue": "247450001"
+            },
+            {
+              "leftValue": "${responses:sampleType}",
+              "operator": "=",
+              "rightValue": "410582009"
+            }
+          ]
+        }
+      },
+      {
+        "id": "occurrences",
+        "dataType": {
+          "type": "object"
+        },
+        "viewType": "occurrences",
+        "labelTranslationId": "frequencyRow"
+      },
+      {
+        "id": "boundsDuration",
+        "dataType": {
+          "type": "object"
+        },
+        "viewType": "boundsDuration",
+        "labelTranslationId": "boundsDurationRow"
+      },
+      {
+        "id": "nbSessions",
+        "dataType": {
+          "type": "number"
+        },
+        "viewType": "number",
+        "labelTranslationId": "nbSessions",
+        "placeholderTranslationId": "nbSessionsPlaceholder"
+      },
+      {
+        "id": "diagnosis",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "textarea",
+        "labelTranslationId": "diagnosis"
+      },
+      {
+        "id": "medicalReason",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "textarea",
+        "labelTranslationId": "medicalReason"
+      },
+      {
+        "id": "contraindications",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "textarea",
+        "labelTranslationId": "contraindications"
+      },
+      {
+        "id": "generalRemarks",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "textarea",
+        "labelTranslationId": "generalRemarks"
+      },
+      {
+        "id": "feedback",
+        "dataType": {
+          "type": "boolean"
+        },
+        "viewType": "radio",
+        "labelTranslationId": "feedback",
+        "responses": [
+          {
+            "value": true,
+            "labelTranslationId": "yes"
+          },
+          {
+            "value": false,
+            "labelTranslationId": "no"
+          }
+        ]
       }
-    }, {
-      "id" : "occurrences",
-      "dataType" : {
-        "type" : "object"
+    ],
+    "translations": {
+      "nurse": {
+        "nl": "Verpleeger/verpleegster",
+        "fr": "Infirmier·ère"
       },
-      "viewType" : "occurrences",
-      "labelTranslationId" : "frequencyRow"
-    }, {
-      "id" : "boundsDuration",
-      "dataType" : {
-        "type" : "object"
-      },
-      "viewType" : "boundsDuration",
-      "labelTranslationId" : "boundsDurationRow"
-    }, {
-      "id" : "nbSessions",
-      "dataType" : {
-        "type" : "number"
-      },
-      "viewType" : "number",
-      "labelTranslationId" : "nbSessions",
-      "placeholderTranslationId" : "nbSessionsPlaceholder"
-    }, {
-      "id" : "diagnosis",
-      "dataType" : {
-        "type" : "string"
-      },
-      "viewType" : "textarea",
-      "labelTranslationId" : "diagnosis"
-    }, {
-      "id" : "medicalReason",
-      "dataType" : {
-        "type" : "string"
-      },
-      "viewType" : "textarea",
-      "labelTranslationId" : "medicalReason"
-    }, {
-      "id" : "contraindications",
-      "dataType" : {
-        "type" : "string"
-      },
-      "viewType" : "textarea",
-      "labelTranslationId" : "contraindications"
-    }, {
-      "id" : "generalRemarks",
-      "dataType" : {
-        "type" : "string"
-      },
-      "viewType" : "textarea",
-      "labelTranslationId" : "generalRemarks"
-    }, {
-      "id" : "feedback",
-      "dataType" : {
-        "type" : "boolean"
-      },
-      "viewType" : "radio",
-      "labelTranslationId" : "feedback",
-      "responses" : [ {
-        "value" : true,
-        "labelTranslationId" : "yes"
-      }, {
-        "value" : false,
-        "labelTranslationId" : "no"
-      } ]
-    } ],
-    "translations" : {
-      "bloodQuantity" : {
-        "nl" : "Aantal ml af te nemen",
-        "fr" : "Quantité de sang à prélever"
-      },
-      "bloodQuantitySuffix" : {
-        "nl" : "ml",
-        "fr" : "ml"
-      },
-      "bloodQuantityPlaceholder" : {
-        "nl" : "0 tot 1000",
-        "fr" : "0 à 1000"
+      "sampleType": {
+        "en": "Sample type",
+        "nl": "Type staal",
+        "fr": "Type d'échantillon"
       }
     }
   },
   {
-    "id" : "GENERIC",
-    "version" : "1",
-    "commonTranslationsId" : 1,
-    "extraData" : {
-      "welcome" : {
-        "en" : "Template 21 : Specific technical care",
-        "nl" : "Template 21 : Specifieke technische verstrekking",
-        "fr" : "Template 21 : Soin spécifique technique"
+    "id": "BLEEDING",
+    "version": "1",
+    "commonTranslationsId": 1,
+    "extraData": {
+      "welcome": {
+        "en": "Template 10 : Bleeding",
+        "nl": "Template 10 : Aderlating (nomenclatuur 149096)",
+        "fr": "Template 10 : Phlébotomie (nomenclatuur 149096)"
       }
     },
-    "elements" : [ {
-      "id" : "careType",
-      "dataType" : {
-        "type" : "string"
+    "elements": [
+      {
+        "id": "bloodQuantity",
+        "dataType": {
+          "type": "number"
+        },
+        "viewType": "number",
+        "labelTranslationId": "bloodQuantity",
+        "custom": {
+          "suffixTranslationId": "bloodQuantitySuffix"
+        }
       },
-      "viewType" : "select",
-      "labelTranslationId" : "careType",
-      "validations" : [ {
-        "name" : "required"
-      } ],
-      "responses" : [ {
-        "value" : "18629005",
-        "labelTranslationId" : "medicationAdministration"
-      }, {
-        "value" : "57485005",
-        "labelTranslationId" : "respiratoryCare"
-      }, {
-        "value" : "tmp-gast-care-1",
-        "labelTranslationId" : "gastrointestinalCare"
-      }, {
-        "value" : "225268005",
-        "labelTranslationId" : "urogenitalCare"
-      }, {
-        "value" : "tmp-care-eter-9",
-        "labelTranslationId" : "catheterCare"
-      }, {
-        "value" : "225358003",
-        "labelTranslationId" : "woundCare"
-      }, {
-        "value" : "413899004",
-        "labelTranslationId" : "compressionTherapy"
-      }, {
-        "value" : "otherCare",
-        "labelTranslationId" : "otherCare"
-      } ]
-    }, {
-      "id" : "otherCareType",
-      "dataType" : {
-        "type" : "string"
+      {
+        "id": "occurrences",
+        "dataType": {
+          "type": "object"
+        },
+        "viewType": "occurrences",
+        "labelTranslationId": "frequencyRow"
       },
-      "viewType" : "inputText",
-      "labelTranslationId" : "otherCareType",
-      "showIf" : {
-        "leftValue" : "${responses:careType}",
-        "operator" : "=",
-        "rightValue" : "otherCare"
+      {
+        "id": "boundsDuration",
+        "dataType": {
+          "type": "object"
+        },
+        "viewType": "boundsDuration",
+        "labelTranslationId": "boundsDurationRow"
+      },
+      {
+        "id": "nbSessions",
+        "dataType": {
+          "type": "number"
+        },
+        "viewType": "number",
+        "labelTranslationId": "nbSessions",
+        "placeholderTranslationId": "nbSessionsPlaceholder"
+      },
+      {
+        "id": "diagnosis",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "textarea",
+        "labelTranslationId": "diagnosis"
+      },
+      {
+        "id": "medicalReason",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "textarea",
+        "labelTranslationId": "medicalReason"
+      },
+      {
+        "id": "contraindications",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "textarea",
+        "labelTranslationId": "contraindications"
+      },
+      {
+        "id": "generalRemarks",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "textarea",
+        "labelTranslationId": "generalRemarks"
+      },
+      {
+        "id": "feedback",
+        "dataType": {
+          "type": "boolean"
+        },
+        "viewType": "radio",
+        "labelTranslationId": "feedback",
+        "responses": [
+          {
+            "value": true,
+            "labelTranslationId": "yes"
+          },
+          {
+            "value": false,
+            "labelTranslationId": "no"
+          }
+        ]
       }
-    }, {
-      "id" : "occurrences",
-      "dataType" : {
-        "type" : "object"
+    ],
+    "translations": {
+      "bloodQuantity": {
+        "nl": "Aantal ml af te nemen",
+        "fr": "Quantité de sang à prélever"
       },
-      "viewType" : "occurrences",
-      "labelTranslationId" : "frequencyRow"
-    }, {
-      "id" : "boundsDuration",
-      "dataType" : {
-        "type" : "object"
+      "bloodQuantitySuffix": {
+        "nl": "ml",
+        "fr": "ml"
       },
-      "viewType" : "boundsDuration",
-      "labelTranslationId" : "boundsDurationRow"
-    }, {
-      "id" : "nbSessions",
-      "dataType" : {
-        "type" : "number"
+      "bloodQuantityPlaceholder": {
+        "nl": "0 tot 1000",
+        "fr": "0 à 1000"
+      }
+    }
+  },
+  {
+    "id": "GENERIC",
+    "version": "1",
+    "commonTranslationsId": 1,
+    "extraData": {
+      "welcome": {
+        "en": "Template 21 : Specific technical care",
+        "nl": "Template 21 : Specifieke technische verstrekking",
+        "fr": "Template 21 : Soin spécifique technique"
+      }
+    },
+    "elements": [
+      {
+        "id": "careType",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "select",
+        "labelTranslationId": "careType",
+        "validations": [
+          {
+            "name": "required"
+          }
+        ],
+        "responses": [
+          {
+            "value": "18629005",
+            "labelTranslationId": "medicationAdministration"
+          },
+          {
+            "value": "57485005",
+            "labelTranslationId": "respiratoryCare"
+          },
+          {
+            "value": "tmp-gast-care-1",
+            "labelTranslationId": "gastrointestinalCare"
+          },
+          {
+            "value": "225268005",
+            "labelTranslationId": "urogenitalCare"
+          },
+          {
+            "value": "tmp-care-eter-9",
+            "labelTranslationId": "catheterCare"
+          },
+          {
+            "value": "225358003",
+            "labelTranslationId": "woundCare"
+          },
+          {
+            "value": "413899004",
+            "labelTranslationId": "compressionTherapy"
+          },
+          {
+            "value": "otherCare",
+            "labelTranslationId": "otherCare"
+          }
+        ]
       },
-      "viewType" : "number",
-      "labelTranslationId" : "nbSessions",
-      "placeholderTranslationId" : "nbSessionsPlaceholder"
-    }, {
-      "id" : "diagnosis",
-      "dataType" : {
-        "type" : "string"
+      {
+        "id": "otherCareType",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "inputText",
+        "labelTranslationId": "otherCareType",
+        "showIf": {
+          "leftValue": "${responses:careType}",
+          "operator": "=",
+          "rightValue": "otherCare"
+        }
       },
-      "viewType" : "textarea",
-      "labelTranslationId" : "diagnosis"
-    }, {
-      "id" : "medicalReason",
-      "dataType" : {
-        "type" : "string"
+      {
+        "id": "occurrences",
+        "dataType": {
+          "type": "object"
+        },
+        "viewType": "occurrences",
+        "labelTranslationId": "frequencyRow"
       },
-      "viewType" : "textarea",
-      "labelTranslationId" : "medicalReason"
-    }, {
-      "id" : "contraindications",
-      "dataType" : {
-        "type" : "string"
+      {
+        "id": "boundsDuration",
+        "dataType": {
+          "type": "object"
+        },
+        "viewType": "boundsDuration",
+        "labelTranslationId": "boundsDurationRow"
       },
-      "viewType" : "textarea",
-      "labelTranslationId" : "contraindications"
-    }, {
-      "id" : "generalRemarks",
-      "dataType" : {
-        "type" : "string"
+      {
+        "id": "nbSessions",
+        "dataType": {
+          "type": "number"
+        },
+        "viewType": "number",
+        "labelTranslationId": "nbSessions",
+        "placeholderTranslationId": "nbSessionsPlaceholder"
       },
-      "viewType" : "textarea",
-      "labelTranslationId" : "generalRemarks"
-    }, {
-      "id" : "feedback",
-      "dataType" : {
-        "type" : "boolean"
+      {
+        "id": "diagnosis",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "textarea",
+        "labelTranslationId": "diagnosis"
       },
-      "viewType" : "radio",
-      "labelTranslationId" : "feedback",
-      "responses" : [ {
-        "value" : true,
-        "labelTranslationId" : "yes"
-      }, {
-        "value" : false,
-        "labelTranslationId" : "no"
-      } ]
-    } ],
-    "translations" : {
-      "specificInstructions" : {
-        "nl" : "Specifieke instructies",
-        "fr" : "Instructions spécifiques"
+      {
+        "id": "medicalReason",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "textarea",
+        "labelTranslationId": "medicalReason"
       },
-      "sampling" : {
-        "nl" : "Voorbeeldverzameling",
-        "fr" : "Prélèvement d'échantillon"
+      {
+        "id": "contraindications",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "textarea",
+        "labelTranslationId": "contraindications"
       },
-      "glycemicTest" : {
-        "nl" : "Glykemische test met een glucometer",
-        "fr" : "Test glycémic avec un glucomètre"
+      {
+        "id": "generalRemarks",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "textarea",
+        "labelTranslationId": "generalRemarks"
       },
-      "bleeding" : {
-        "nl" : "Phlebotomie",
-        "fr" : "Phlébotomie"
+      {
+        "id": "feedback",
+        "dataType": {
+          "type": "boolean"
+        },
+        "viewType": "radio",
+        "labelTranslationId": "feedback",
+        "responses": [
+          {
+            "value": true,
+            "labelTranslationId": "yes"
+          },
+          {
+            "value": false,
+            "labelTranslationId": "no"
+          }
+        ]
+      }
+    ],
+    "translations": {
+      "specificInstructions": {
+        "nl": "Specifieke instructies",
+        "fr": "Instructions spécifiques"
       },
-      "medicationAdministration" : {
-        "nl" : "Geneesmiddelentoediening",
-        "fr" : "Administration de médicament"
+      "sampling": {
+        "nl": "Voorbeeldverzameling",
+        "fr": "Prélèvement d'échantillon"
       },
-      "medicationPrepaNotReimbursed" : {
-        "nl" : "Bereiding van medicijnen (niet vergoed)",
-        "fr" : "Préparation de médicament (non remboursé)"
+      "glycemicTest": {
+        "nl": "Glykemische test met een glucometer",
+        "fr": "Test glycémic avec un glucomètre"
       },
-      "parameters" : {
-        "nl" : "Parameteraansluiting",
-        "fr" : "Prise de paramètre"
+      "bleeding": {
+        "nl": "Phlebotomie",
+        "fr": "Phlébotomie"
       },
-      "respiratoryCare" : {
-        "nl" : "Verzorging van de luchtwegen",
-        "fr" : "Soins des voies respiratoires"
+      "medicationAdministration": {
+        "nl": "Geneesmiddelentoediening",
+        "fr": "Administration de médicament"
       },
-      "gastrointestinalCare" : {
-        "nl" : "Maagdarmzorg",
-        "fr" : "Soins gastrointestinaux"
+      "medicationPrepaNotReimbursed": {
+        "nl": "Bereiding van medicijnen (niet vergoed)",
+        "fr": "Préparation de médicament (non remboursé)"
       },
-      "urogenitalCare" : {
-        "nl" : "Urinogenitale zorg",
-        "fr" : "Soins urogénitaux"
+      "parameters": {
+        "nl": "Parameteraansluiting",
+        "fr": "Prise de paramètre"
       },
-      "catheterCare" : {
-        "nl" : "Katheter zorg",
-        "fr" : "Soins de cathéter"
+      "respiratoryCare": {
+        "nl": "Verzorging van de luchtwegen",
+        "fr": "Soins des voies respiratoires"
       },
-      "woundCare" : {
-        "nl" : "Wond zorg",
-        "fr" : "Soins de plaies"
+      "gastrointestinalCare": {
+        "nl": "Maagdarmzorg",
+        "fr": "Soins gastrointestinaux"
       },
-      "compressionTherapy" : {
-        "nl" : "Compressietherapie",
-        "fr" : "Thérapie de compression"
+      "urogenitalCare": {
+        "nl": "Urinogenitale zorg",
+        "fr": "Soins urogénitaux"
       },
-      "otherCare" : {
-        "nl" : "Andere",
-        "fr" : "Autre"
+      "catheterCare": {
+        "nl": "Katheter zorg",
+        "fr": "Soins de cathéter"
       },
-      "otherCareType" : {
-        "nl" : "Ander soort zorg",
-        "fr" : "Autre type de soin"
+      "woundCare": {
+        "nl": "Wond zorg",
+        "fr": "Soins de plaies"
+      },
+      "compressionTherapy": {
+        "nl": "Compressietherapie",
+        "fr": "Thérapie de compression"
+      },
+      "otherCare": {
+        "nl": "Andere",
+        "fr": "Autre"
+      },
+      "otherCareType": {
+        "nl": "Ander soort zorg",
+        "fr": "Autre type de soin"
       }
     }
   },
