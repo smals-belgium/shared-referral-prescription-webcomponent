@@ -1,17 +1,15 @@
 import { UserLanguage } from '@smals-belgium/myhealth-wc-integration';
 import { Lang } from '@reuse/code/constants/languages';
 
-export function mapLanguageToTranslations(language?: UserLanguage): Lang {
+export function mapLanguageToTranslations(language?: UserLanguage) {
   switch (language) {
     case 'nl':
-      return Lang.NL.short;
+      return Lang.NL.full;
     case 'fr':
-      return Lang.FR.short;
+      return Lang.FR.full;
     case 'de':
-      return Lang.DE.short;
     case 'en':
-      return Lang.EN.short;
     default:
-      return Lang.FR.short;
+      return Lang.NL.full;
   }
 }

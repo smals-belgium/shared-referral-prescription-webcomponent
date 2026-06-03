@@ -2,7 +2,7 @@
   @if (itemsLength > 0) {
     <div class="grid-container mh-margin-top-bottom">
       @for (prescription of requestData(); track trackById(prescription)) {
-        <mat-card appearance="raised">
+        <mat-card appearance="raised" (click)="clickPrescription.emit(prescription)">
           <mat-card-content>
             @if (!!prescription.status) {
               <div class="row" align="right">
@@ -10,7 +10,7 @@
                   [disableRipple]="true"
                   data-cy="prescription-status"
                   [class]="getStatusColor(prescription.status!)"
-                  >{{ 'prescription.statuses.' + prescription.status | translate }}
+                >{{ 'prescription.statuses.' + prescription.status | translate }}
                 </mat-chip>
               </div>
             }
@@ -46,10 +46,10 @@
             </div>
 
             <div class="row" align="right">
-              <button mat-button type="button" (click)="clickPrescription.emit(prescription)">
+              <span class="mat-button-text">
                 {{ 'prescription.details.link' | translate }}
                 <mat-icon svgIcon="keyboard_arrow_right" aria-hidden="true" iconPositionEnd></mat-icon>
-              </button>
+              </span>
             </div>
           </mat-card-content>
         </mat-card>

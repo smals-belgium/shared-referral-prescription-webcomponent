@@ -26,7 +26,6 @@ import { MatCardModule } from '@angular/material/card';
 import { DatePipe } from '@reuse/code/pipes/date.pipe';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
-import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AlertType, Intent } from '@reuse/code/interfaces';
@@ -47,7 +46,6 @@ import { isPrescription, isProposal } from '@reuse/code/utils/utils';
     DatePipe,
     SkeletonComponent,
     AlertComponent,
-    MatButton,
     MatIcon,
   ],
   templateUrl: './prescriptions-card.component.html',

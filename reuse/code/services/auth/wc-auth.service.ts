@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   BehaviorSubject,
   catchError,
@@ -8,7 +8,7 @@ import {
   Observable,
   of,
   shareReplay,
-  switchMap
+  switchMap,
 } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Buffer } from 'buffer';
@@ -16,12 +16,16 @@ import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { AccessToken, IdToken, ResourceAccess, UserProfile } from '@reuse/code/interfaces';
 import { Discipline, Role } from '@reuse/code/openapi';
 import { CLIENT_ID, RESOURCE_ACCESS_CLAIM_KEY, USER_PROFILE_CLAIM_KEY } from '@reuse/code/services/auth/auth-constants';
+import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
 
 @Injectable({ providedIn: 'root' })
 export class WcAuthService extends AuthService {
-  private readonly ready$ = new BehaviorSubject<boolean>(false);
   private _getAccessToken!: (audience?: string) => Promise<string | null>;
   private _getIdToken!: () => IdToken;
+  private readonly _configService = inject(ConfigurationService);
+
+  private readonly ready$ = new BehaviorSubject<boolean>(false);
+  private readonly exchangeToClientId = this._configService.getEnvironmentVariable('fhirGatewayClientId') as string;
 
   constructor() {
     super();
@@ -29,6 +33,7 @@ export class WcAuthService extends AuthService {
 
   override init(getAccessToken: (audience?: string) => Promise<string | null>, getIdToken?: () => IdToken): void {
     this._getAccessToken = getAccessToken;
+
     if (getIdToken) {
       this._getIdToken = getIdToken;
     }
@@ -49,8 +54,8 @@ export class WcAuthService extends AuthService {
     );
   }
 
-  getResourceAccess() {
-    return this.getAccessToken().pipe(
+  getResourceAccess(audience: string) {
+    return this.getAccessToken(audience).pipe(
       filter(token => token !== null),
       map(token => this.decodeJwt<AccessToken>(token)),
       catchError(() => of(null))
@@ -61,7 +66,10 @@ export class WcAuthService extends AuthService {
     return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
   }
 
-  private readonly isProfessional$Internal = combineLatest([this.getClaims(), this.getResourceAccess()]).pipe(
+  private readonly isProfessional$Internal = combineLatest([
+    this.getClaims(),
+    this.getResourceAccess(this.exchangeToClientId),
+  ]).pipe(
     map(([claims, access]) => this.userProfileHasProfessionalKey(claims?.userProfile, access?.resource_access)),
     shareReplay(1)
   );
@@ -83,7 +91,7 @@ export class WcAuthService extends AuthService {
   }
 
   override role(): Observable<string> {
-    return this.getResourceAccess().pipe(
+    return this.getResourceAccess(this.exchangeToClientId).pipe(
       map(accessToken => {
         const roles = accessToken?.[RESOURCE_ACCESS_CLAIM_KEY]?.[CLIENT_ID]?.roles ?? [];
         const match = Object.values(Role).find(role => roles.includes(role.toLowerCase()));

@@ -1,27 +1,45 @@
-import { Directive, ElementRef, inject, input, OnInit } from '@angular/core';
+import { Directive, ElementRef, inject, input, output, OnInit } from '@angular/core';
 import {
+  AuthenticationStatus,
   ConfigName,
   IdToken,
+  OpenEventDetail,
+  RefreshEvent,
+  RefreshEventDetail,
+  refreshEventType,
   SettingsChangeEvent,
   UserLanguage,
   VersionMismatchEvent,
+  WebComponentWithSignals,
 } from '@smals-belgium/myhealth-wc-integration';
 import { HOST_SERVICES } from '../injection-tokens/host-services.injection-token';
 import { HOST_SETTINGS } from '../injection-tokens/host-settings.injection-token';
 import { ReferralEnv } from '@reuse/code/interfaces/environment.interface';
 import { jwtDecode } from 'jwt-decode';
+import { IdToken as UhmepIdToken } from '@reuse/code/interfaces';
+import { catchError, filter, fromEvent, map, mergeMap, Observable, of, tap } from 'rxjs';
 
+type Refresh = 'request' | 'success' | 'fail';
 export interface Services {
   getAccessToken: (audience: string) => Promise<string>;
   getIdToken?: () => Promise<unknown>;
 }
 @Directive()
-export abstract class MagsComponent implements OnInit {
-  userLanguage = input<UserLanguage>();
-  configName = input<ConfigName>();
-
+export abstract class MagsComponent implements WebComponentWithSignals, OnInit {
   protected readonly hostServices = inject(HOST_SERVICES);
   protected readonly hostSettings = inject(HOST_SETTINGS);
+
+  readonly userLanguage = input<UserLanguage>(this.hostSettings.userLanguage);
+  readonly configName = input<ConfigName>(this.hostSettings.configName);
+  readonly authenticationStatus = input<AuthenticationStatus>(this.hostSettings.authenticationStatus);
+  readonly crashReportingEnabled = () => false;
+  readonly offlineDataStorageEnabled = () => false;
+  readonly isOfflineAuthenticated = () => false;
+  readonly userContactInfo = input(this.hostSettings.userContactInfo);
+  readonly permissionForMandateAccess = [];
+
+  readonly open = output<OpenEventDetail>();
+  readonly refresh = output<RefreshEventDetail>();
 
   protected readonly componentView = inject<ElementRef<HTMLElement>>(ElementRef);
 
@@ -43,6 +61,21 @@ export abstract class MagsComponent implements OnInit {
     this.hostServices.events.addEventListener('version-mismatch', this.onVersionMissmatch);
   }
 
+  readonly refreshSub = fromEvent<RefreshEvent>(this.componentView.nativeElement, refreshEventType)
+    .pipe(
+      filter(event => event.detail.status === 'request'),
+      mergeMap(() =>
+        this.refreshData().pipe(
+          map(() => 'success' as const),
+          catchError(() => of('fail' as const))
+        )
+      ),
+      tap(status => this.refresh.emit({ status: status as Refresh }))
+    )
+    .subscribe();
+
+  protected readonly refreshData = (): Observable<unknown> => of(undefined);
+
   protected abstract initWebComponent(): void;
   protected appendWebComponent(webComponent: HTMLElement) {
     this.componentView.nativeElement.append(webComponent);
@@ -51,7 +84,7 @@ export abstract class MagsComponent implements OnInit {
   protected setEnvName(envs?: Record<string, string[]>) {
     if (envs) {
       const [referralPrescriptionEnv] =
-        Object.entries(envs).find(([, configNames]) => configNames.includes(this.hostSettings.configName)) || [];
+      Object.entries(envs).find(([, configNames]) => configNames.includes(this.hostSettings.configName)) || [];
       window.referralPrescriptionEnv = referralPrescriptionEnv as ReferralEnv;
     }
   }
@@ -66,14 +99,13 @@ export abstract class MagsComponent implements OnInit {
 
   protected async getIdToken() {
     if (this.hostSettings.configName === ConfigName.DEMO) {
-      return Promise.resolve({
+      return {
         userProfile: {
           ssin: '80222700153',
           firstName: 'John',
           lastName: 'Doe',
-          gender: 'M',
         },
-      });
+      } as UhmepIdToken;
     } else {
       const idToken = await this.hostServices.getIdToken();
       return this.getDecodedIdToken(idToken);

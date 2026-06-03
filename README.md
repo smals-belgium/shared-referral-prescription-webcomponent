@@ -69,6 +69,11 @@ The webcomponents are available through npm install and an example can be viewed
 | Prescription details | nihdi-referral-prescription-details | https://www.npmjs.com/package/@smals-belgium-shared/uhmep-prescription-details | [wc-prescription-details](https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/prescription-details/wc-prescription-details.js) |
 |  List prescriptions  | nihdi-referral-prescription-list    | https://www.npmjs.com/package/@smals-belgium-shared/uhmep-prescription-list    |     [wc-list-prescriptions](https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/prescription-list/wc-prescription-list.js)     |
 
+### 🔌 Wrapper Integration
+
+If you are building a patient-facing interface using the [shared-myhealth-wc-integration package](https://www.npmjs.com/package/@smals-belgium/myhealth-wc-integration) together with the [design kit](https://www.npmjs.com/package/@myhealth-belgium/design-kit),
+we provide ready-made wrappers to get you started. See the [wrapper integration guide](docs/README-WRAPPERS.md).
+
 ### Input/output contract
 
 Web Components are designed to take input values and provide output events as feedback to the parent container.
@@ -177,15 +182,15 @@ The following value can be provided along with the _**proposal**_ intent :
 
 Here are the output data structures emitted by the Web Components :
 
-| Create prescription                | List prescriptions                                           | Prescription details                           |
-| ---------------------------------- | ------------------------------------------------------------ | ---------------------------------------------- |
+| Create prescription                | List prescriptions                                          | Prescription details                           |
+| ---------------------------------- | ----------------------------------------------------------- | ---------------------------------------------- |
 | **prescriptionsCreated**: string[] | **clickOpenDetail** : ReadRequestResource OR ModelEntityDto | **clickDuplicate**: ReadPrescription           |
-| **clickCancel**: void              | **clickCreateDetail** : SelectedTemplate                     | **clickExtend**: ReadPrescription              |
-| **modelCreated**: void             |                                                              | **clickPrint**: Blob                           |
-|                                    |                                                              | **clickDownload**: Blob                        |
-|                                    |                                                              | **clickOpenExtendedDetail**: string            |
-|                                    |                                                              | **proposalApproved**: {prescriptionId: string} |
-|                                    |                                                              | **proposalRejected**: boolean                  |
+| **clickCancel**: void              | **clickCreateDetail** : SelectedTemplate                    | **clickExtend**: ReadPrescription              |
+| **modelCreated**: void             |                                                             | **clickPrint**: Blob                           |
+|                                    |                                                             | **clickDownload**: Blob                        |
+|                                    |                                                             | **clickOpenExtendedDetail**: string            |
+|                                    |                                                             | **proposalApproved**: {prescriptionId: string} |
+|                                    |                                                             | **proposalRejected**: boolean                  |
 
 ℹ️ Upon successful prescription creation, the Web Component triggers the prescriptionsCreated event and provides the list of identifiers for the prescriptions that were just created.
 A list of one element will be returned in case of a single prescription creation.
@@ -510,6 +515,7 @@ Below is a complete list of the variables that can be overridden:
 - --mat-sys-corner-medium
 - --mdc-elevated-card-container-elevation
 - --mat-sys-level1
+- --mh-card-link-text
 
 ### Buttons
 

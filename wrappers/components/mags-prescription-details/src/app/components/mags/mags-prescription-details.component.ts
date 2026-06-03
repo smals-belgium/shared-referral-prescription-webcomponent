@@ -10,14 +10,15 @@ import { CommonModule } from '@angular/common';
 import { MagsComponent } from '@reuse/code/components/wrappers/directives/mags.wrapper.directive';
 import { wrapperManifest } from '../../../../manifest';
 import {
+  PrintEventDetail,
   PrintMimeType,
   PrintOrientation,
   SettingsChangeEvent,
-  UserLanguage,
 } from '@smals-belgium/myhealth-wc-integration';
 import { mapLanguageToTranslations } from '@reuse/code/components/wrappers/utils/mags.utils';
 import { hasUserProfile } from '@reuse/code/utils/mags-utils';
 import { Intent } from '@reuse/code/interfaces';
+import { Observable, of } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -30,9 +31,15 @@ import { Intent } from '@reuse/code/interfaces';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class MagsPrescriptionDetails extends MagsComponent {
+  private webComponent: any;
   prescriptionId = input<string | undefined>(undefined);
   intent = input<string | undefined>(undefined);
-  print = output<unknown>();
+  print = output<PrintEventDetail>();
+
+  protected override readonly refreshData = (): Observable<unknown> => {
+    this.webComponent.loadPrescriptionOrProposal();
+    return of(undefined);
+  };
 
   blobToBase64 = (blob: Blob): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -74,8 +81,7 @@ export class MagsPrescriptionDetails extends MagsComponent {
       const content = await this.blobToBase64(blob);
 
       this.print.emit({
-        prescriptionId: this.prescriptionId(),
-        lang: webComponent.lang,
+        title: this.prescriptionId() ?? 'prescription',
         content: content,
         mimeType: PrintMimeType.BASE64,
         orientation: PrintOrientation.PORTRAIT,
@@ -88,13 +94,14 @@ export class MagsPrescriptionDetails extends MagsComponent {
       this.updateAttribute('prescription-id', d?.detail || '');
     });
 
+    this.webComponent = webComponent;
     this.appendWebComponent(webComponent);
   }
 
   override onSettingsChanged = (s: SettingsChangeEvent): void => {
     if (s.detail.setting === 'userLanguage') {
       const w = this.componentView.nativeElement.getElementsByTagName(wrapperManifest.customElement.tag);
-      w[0].setAttribute('lang', mapLanguageToTranslations(s.detail.value as unknown as UserLanguage));
+      w[0].setAttribute('lang', mapLanguageToTranslations(s.detail.value));
     }
   };
 

@@ -888,12 +888,13 @@ describe('ListPrescriptionsWebComponent', () => {
       component.ngOnInit();
 
       expect(mockIconRegistryService.init).toHaveBeenCalledWith(
+        'error',
+        'more_vert',
         'add',
         'delete',
-        'more_vert',
         'keyboard_arrow_right',
         'close',
-        'error'
+        'warning'
       );
     });
   });

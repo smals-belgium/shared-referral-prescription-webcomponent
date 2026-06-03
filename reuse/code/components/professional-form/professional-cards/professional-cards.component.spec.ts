@@ -151,26 +151,10 @@ describe('ProfessionalCardsComponent', () => {
   describe('changeValue', () => {
     it('should emit the professional when radio is checked', () => {
       const emitSpy = jest.spyOn(component.selectProfessional, 'emit');
-      const event = {
-        source: { checked: true },
-        value: mockProfessionals[0],
-      } as unknown as MatRadioChange;
 
-      component.changeValue(event);
+      component.changeValue(mockProfessionals[0]);
 
       expect(emitSpy).toHaveBeenCalledWith(mockProfessionals[0]);
-    });
-
-    it('should emit undefined when radio is unchecked', () => {
-      const emitSpy = jest.spyOn(component.selectProfessional, 'emit');
-      const event = {
-        source: { checked: false },
-        value: mockProfessionals[0],
-      } as unknown as MatRadioChange;
-
-      component.changeValue(event);
-
-      expect(emitSpy).toHaveBeenCalledWith(undefined);
     });
   });
 
