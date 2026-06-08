@@ -3,10 +3,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProfessionalTableComponent } from './professional-table.component';
 import { By } from '@angular/platform-browser';
 import { TranslateModule } from '@ngx-translate/core';
-import { signal, SimpleChange, SimpleChanges } from '@angular/core';
-import { RequestProfessionalDataService } from '@reuse/code/services/helpers/request-professional-data.service';
 import { HealthcareProResource } from '@reuse/code/openapi';
 import { Lang } from '@reuse/code/constants/languages';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
+import { PaginatorComponent } from '@reuse/code/components/paginator/paginator.component';
 
 const mockProfessionals: HealthcareProResource[] = [
   { id: { ssin: '123', qualificationCode: 'Q1' }, address: { street: '', zipCode: '' } },
@@ -16,28 +16,15 @@ const mockProfessionals: HealthcareProResource[] = [
 describe('ProfessionalTableComponent', () => {
   let component: ProfessionalTableComponent;
   let fixture: ComponentFixture<ProfessionalTableComponent>;
-  let dataServiceMock: jest.Mocked<RequestProfessionalDataService>;
 
   beforeEach(async () => {
-    dataServiceMock = {
-      data: signal([]),
-      loading: signal(false),
-      initializeTableDataStream: jest.fn(),
-      triggerLoad: jest.fn(),
-      tableReset: jest.fn(),
-    } as any;
-
     await TestBed.configureTestingModule({
-      imports: [ProfessionalTableComponent, TranslateModule.forRoot()],
-      providers: [{ provide: RequestProfessionalDataService, useValue: dataServiceMock }],
+      imports: [ProfessionalTableComponent, TranslateModule.forRoot(), MatIconTestingModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProfessionalTableComponent);
     component = fixture.componentInstance;
 
-    fixture.componentRef.setInput('prescriptionId', 'RX-001');
-    fixture.componentRef.setInput('category', 'physiotherapy');
-    fixture.componentRef.setInput('intent', 'prescribe');
     fixture.componentRef.setInput('currentLang', Lang.NL.short);
 
     fixture.detectChanges();
@@ -47,44 +34,9 @@ describe('ProfessionalTableComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('ngOnChanges', () => {
-    it('should call initializeTableDataStream when professionals change with data', () => {
-      fixture.componentRef.setInput('professionals', mockProfessionals);
-
-      const changes: SimpleChanges = {
-        professionals: new SimpleChange(null, mockProfessionals, true),
-      };
-      component.ngOnChanges(changes);
-
-      expect(dataServiceMock.initializeTableDataStream).toHaveBeenCalled();
-    });
-
-    it('should not call initializeTableDataStream when professionals change to empty', () => {
-      fixture.componentRef.setInput('professionals', []);
-
-      const changes: SimpleChanges = {
-        professionals: new SimpleChange(null, [], true),
-      };
-      component.ngOnChanges(changes);
-
-      expect(dataServiceMock.initializeTableDataStream).not.toHaveBeenCalled();
-    });
-
-    it('should not call initializeTableDataStream for unrelated changes', () => {
-      dataServiceMock.initializeTableDataStream.mockClear();
-
-      const changes: SimpleChanges = {
-        loading: new SimpleChange(false, true, false),
-      };
-      component.ngOnChanges(changes);
-
-      expect(dataServiceMock.initializeTableDataStream).not.toHaveBeenCalled();
-    });
-
+  describe('Data rendering', () => {
     it('should render a row for each professional', () => {
-      dataServiceMock.initializeTableDataStream.mockClear();
-
-      (component as any).requestData.set(mockProfessionals);
+      fixture.componentRef.setInput('requestData', mockProfessionals);
 
       fixture.detectChanges();
 
@@ -94,7 +46,7 @@ describe('ProfessionalTableComponent', () => {
   });
 
   it('should display the correct column headers', () => {
-    fixture.componentRef.setInput('professionals', mockProfessionals);
+    fixture.componentRef.setInput('requestData', mockProfessionals);
 
     const headerCells = fixture.debugElement.queryAll(By.css('th'));
     const headerTexts = headerCells.map(cell => cell.nativeElement.textContent.trim());
@@ -103,7 +55,7 @@ describe('ProfessionalTableComponent', () => {
   });
 
   it('should show no rows when professionals list is empty', () => {
-    fixture.componentRef.setInput('professionals', []);
+    fixture.componentRef.setInput('requestData', []);
 
     const rows = fixture.debugElement.queryAll(By.css('tbody tr, mat-row'));
 
@@ -111,7 +63,7 @@ describe('ProfessionalTableComponent', () => {
   });
 
   it('should show loading state when loading is true', () => {
-    fixture.componentRef.setInput('professionals', []);
+    fixture.componentRef.setInput('requestData', []);
     fixture.componentRef.setInput('loading', true);
 
     fixture.detectChanges();
@@ -122,15 +74,26 @@ describe('ProfessionalTableComponent', () => {
   });
 
   it('should emit selectProfessional when a row action is triggered', () => {
-    const emitSpy = jest.spyOn(component.selectProfessional, 'emit');
-
-    (component as any).requestData.set(mockProfessionals);
-
+    fixture.componentRef.setInput('requestData', mockProfessionals);
     fixture.detectChanges();
+
+    const emitSpy = jest.spyOn(component.selectProfessional, 'emit');
 
     const actionButton = fixture.debugElement.query(By.css('[data-cy="professional-actions-cell"] button'));
     actionButton.nativeElement.click();
+    fixture.detectChanges();
 
     expect(emitSpy).toHaveBeenCalledWith(mockProfessionals[0]);
+  });
+  describe('pagination', () => {
+    it('should emit changePage when paginator triggers an event', () => {
+      const emitSpy = jest.spyOn(component.changePage, 'emit');
+      const paginator = fixture.debugElement.query(By.directive(PaginatorComponent));
+
+      const mockEvent = { pageIndex: 2, pageSize: 10 };
+      paginator.componentInstance.changePage.emit(mockEvent);
+
+      expect(emitSpy).toHaveBeenCalledWith(mockEvent);
+    });
   });
 });

@@ -15,7 +15,7 @@
           <app-create-multiple-prescriptions
             [createPrescriptionForms]="prescriptionForms()"
             [intent]="initialValues!.intent"
-            [errorCard]="errorCard"
+            [errorCard]="errorCard()"
             [patient]="patientState$().data"
             [status]="status$.getValue()"
             [lang]="lang"

@@ -23,17 +23,10 @@ describe('AlertComponent', () => {
 
   it('should create component with default values', () => {
     expect(component).toBeTruthy();
-    expect(component.alert).toBe(AlertType.Error);
-    expect(component.title).toBe('');
-    expect(component.showRetry).toBe(true);
+    expect(component.alert()).toBe(AlertType.Error);
+    expect(component.title()).toBe('');
+    expect(component.showRetry()).toBe(true);
     expect(component.genericErrorMsgKey).toBeUndefined();
-  });
-
-  it('should have correct generic errors mapping', () => {
-    expect(component.genericErrors).toEqual({
-      403: 'common.forbiddenResource',
-      404: 'common.notFoundResource',
-    });
   });
 
   it('should call setGenericErrorMsgKey when error input changes', () => {
@@ -58,29 +51,16 @@ describe('AlertComponent', () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it('should set genericErrorMsgKey for 403 error', () => {
-    component.error = new HttpErrorResponse({ status: 403 });
-    (component as any).setGenericErrorMsgKey();
-
-    expect(component.genericErrorMsgKey).toBe('common.forbiddenResource');
-  });
-
-  it('should set genericErrorMsgKey for 404 error', () => {
-    component.error = new HttpErrorResponse({ status: 404 });
-    (component as any).setGenericErrorMsgKey();
-
-    expect(component.genericErrorMsgKey).toBe('common.notFoundResource');
-  });
-
   it('should set genericErrorMsgKey to undefined for unmapped error codes', () => {
-    component.error = new HttpErrorResponse({ status: 500 });
+    const res = new HttpErrorResponse({ status: 500 });
+    fixture.componentRef.setInput('error', res);
     (component as any).setGenericErrorMsgKey();
 
     expect(component.genericErrorMsgKey).toBeUndefined();
   });
 
   it('should set genericErrorMsgKey to undefined when error is null', () => {
-    component.error = undefined;
+    fixture.componentRef.setInput('error', undefined);
     (component as any).setGenericErrorMsgKey();
 
     expect(component.genericErrorMsgKey).toBeUndefined();
@@ -94,9 +74,9 @@ describe('AlertComponent', () => {
   });
 
   it('should pass correct inputs to mh-alert component', () => {
-    component.alert = AlertType.Warning;
-    component.title = 'Test Title';
-    component.showRetry = false;
+    fixture.componentRef.setInput('alert', AlertType.Warning);
+    fixture.componentRef.setInput('title', 'Test Title');
+    fixture.componentRef.setInput('showRetry', false);
 
     fixture.detectChanges();
 
@@ -108,13 +88,13 @@ describe('AlertComponent', () => {
   });
 
   it('should set default error message when not defined in generic errors mapping', () => {
-    component.error = new HttpErrorResponse({ status: 499 });
-
+    const res = new HttpErrorResponse({ status: 499 });
+    fixture.componentRef.setInput('error', res);
     (component as any).setGenericErrorMsgKey();
 
     expect(component.showBody()).toBe(false);
-    expect(component.title).toBe("common.error.default.header");
-    expect(component.subTitle).toBe("common.error.default.subheader");
-    expect(component.alert).toBe("warning");
-  })
+    expect(component.title()).toBe('common.error.default.header');
+    expect(component.subTitle()).toBe('common.error.default.subheader');
+    expect(component.alert()).toBe('warning');
+  });
 });

@@ -1,9 +1,6 @@
-import { Discipline, Role } from '@reuse/code/openapi';
+import { Discipline, OIDC, Role } from '@reuse/code/openapi';
 
 export interface UserInfo extends UserProfile {
-  lastName: string;
-  firstName: string;
-  ssin: string;
   professional: true;
   role: Role;
   discipline: Discipline;
@@ -16,10 +13,10 @@ type LowercaseEnumKeys<T> = {
 };
 
 // Generate a lowercase interface from the enum Discipline
-type LowercaseDiscipline = LowercaseEnumKeys<typeof Discipline>;
+type LowercaseDisciplineKeys = keyof LowercaseEnumKeys<typeof Discipline>;
 
 type Professional = {
-  [key in keyof LowercaseDiscipline]?: {
+  [key in LowercaseDisciplineKeys]?: {
     recognised: boolean;
     nihii11: string;
   };
@@ -31,7 +28,21 @@ interface Personal {
   ssin: string;
 }
 
-export type UserProfile = Personal & Professional;
+// Generate a lowercase interface from the enum OIDC
+type LowercaseOIDCKeys = keyof LowercaseEnumKeys<typeof OIDC>;
+
+type Organization = {
+  [K in LowercaseOIDCKeys]?: {
+    nihii: string;
+    name?: string;
+  };
+};
+
+interface Organizations {
+  organizations?: Organization[];
+}
+
+export type UserProfile = Personal & Professional & Organizations;
 
 export interface IdToken {
   userProfile: UserProfile;
@@ -40,12 +51,6 @@ export interface IdToken {
 export interface AccessToken {
   resource_access: ResourceAccess;
   iss: string;
-}
-
-export interface Token {
-  accessToken: string;
-  idToken: IdToken;
-  getAuthExchangeToken: Promise<string>;
 }
 
 export interface ResourceAccess {

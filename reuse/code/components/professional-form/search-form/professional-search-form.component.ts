@@ -1,4 +1,4 @@
-import { Component, inject, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, OnInit, output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
@@ -17,18 +17,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ResponsiveWrapperComponent } from '@reuse/code/components/responsive-wrapper/responsive-wrapper.component';
-
-export type ProfessionalType = 'CAREGIVER' | 'ORGANIZATION' | 'ALL';
+import { ProfessionalSearchChipListComponent } from '@reuse/code/components/professional-form/city-chip-list/professional-search-chip-list.component';
 
 export interface SearchCriteria {
   query: string;
-  zipCodes: number[];
-}
-
-export interface SearchFormData {
-  query: string;
   cities: CityResource[];
-  searchCity: string;
 }
 
 @Component({
@@ -49,26 +42,36 @@ export interface SearchFormData {
     AsyncPipe,
     MatButtonToggleModule,
     ResponsiveWrapperComponent,
+    ProfessionalSearchChipListComponent,
   ],
   providers: [provideNgxMask()],
   templateUrl: './professional-search-form.component.html',
   styleUrl: './professional-search-form.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProfessionalSearchFormComponent {
+export class ProfessionalSearchFormComponent implements OnInit {
   private readonly geographyService = inject(GeographyService);
   private readonly nameValidators = [Validators.minLength(2), CaregiverNamePatternValidator];
 
   protected readonly caregiverNameMaxLength = 50;
 
   readonly searchCriteria = output<SearchCriteria>();
+  readonly cityRemove = output<void>();
 
-  readonly queryControl = new FormControl('', { nonNullable: true });
-  readonly cityControl = new FormControl<CityResource[]>([], { nonNullable: true });
+  readonly formGroup = input.required<
+    FormGroup<{
+      query: FormControl<string>;
+      cities: FormControl<CityResource[]>;
+    }>
+  >();
 
-  readonly formGroup = new FormGroup({
-    query: this.queryControl,
-    cities: this.cityControl,
-  });
+  get queryControl() {
+    return this.formGroup().controls.query;
+  }
+
+  get citiesControl() {
+    return this.formGroup().controls.cities;
+  }
 
   readonly searchCityControl = new FormControl('', { nonNullable: true });
 
@@ -88,19 +91,18 @@ export class ProfessionalSearchFormComponent {
       );
     })
   );
-  cityControlmaxLength: number = 5;
 
-  constructor() {
+  ngOnInit(): void {
     this.setValidators();
   }
 
   private setValidators(): void {
     this.queryControl.setValidators([
-      (control: AbstractControl) => (this.cityControl.value.length === 0 ? Validators.required(control) : null),
+      (control: AbstractControl) => (this.citiesControl.value.length === 0 ? Validators.required(control) : null),
     ]);
     this.queryControl.addValidators(this.nameValidators);
 
-    this.cityControl.setValidators((control: AbstractControl) =>
+    this.citiesControl.setValidators((control: AbstractControl) =>
       Validators.required(this.queryControl) != null
         ? Validators.required(control) || Validators.minLength(1)(control)
         : null
@@ -108,20 +110,20 @@ export class ProfessionalSearchFormComponent {
   }
 
   search(): void {
-    this.formGroup.markAllAsTouched();
-    if (!this.formGroup.valid) return;
+    this.formGroup().markAllAsTouched();
+    if (this.formGroup().invalid) return;
 
-    const cities = this.cityControl.value ?? [];
-    const zipCodes = cities.map(c => c.zipCode).filter((z): z is number => z !== undefined);
+    const cities = this.citiesControl.value ?? [];
+    const filteredCities = cities.filter((c): c is typeof c & { zipCode: number } => c.zipCode !== undefined);
 
     this.searchCriteria.emit({
       query: this.queryControl.value,
-      zipCodes,
+      cities: filteredCities,
     });
   }
 
   onInput(event: Event): void {
-    this.cityControl.updateValueAndValidity();
+    this.citiesControl.updateValueAndValidity();
     this.updateQueryTypeAndValidators(event);
   }
 
@@ -129,18 +131,19 @@ export class ProfessionalSearchFormComponent {
     if (!event.option.value) return;
 
     const selectedCity = event.option.value as CityResource;
-    const cities = this.cityControl.value.filter(c => c.zipCode !== selectedCity.zipCode);
+    const cities = this.citiesControl.value.filter(c => c.zipCode !== selectedCity.zipCode);
     cities.push(selectedCity);
-    this.cityControl.setValue(cities);
+    this.citiesControl.setValue(cities);
     searchInput.value = '';
     this.queryControl.updateValueAndValidity();
   }
 
   removeCity(city: CityResource): void {
-    const index = this.cityControl.value.indexOf(city);
+    const index = this.citiesControl.value.findIndex(c => c.zipCode === city.zipCode);
+
     if (index >= 0) {
-      this.cityControl.value.splice(index, 1);
-      this.cityControl.updateValueAndValidity();
+      this.citiesControl.value.splice(index, 1);
+      this.citiesControl.updateValueAndValidity();
     }
     this.queryControl.updateValueAndValidity();
   }

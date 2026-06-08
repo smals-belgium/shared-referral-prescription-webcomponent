@@ -55,6 +55,8 @@ export class PrescriptionDetailsSecondaryService {
 
   readonly tokenClaims$ = toSignal(this.authService.getClaims());
   readonly isProfessional$ = toSignal(this.authService.isProfessional());
+  readonly role$ = toSignal(this.authService.role());
+
   readonly discipline$: Signal<Discipline | undefined> = toSignal(this.authService.discipline());
   readonly currentLang: WritableSignal<string> = signal(Lang.FR.full);
   readonly loading: WritableSignal<boolean> = signal(false);
@@ -205,7 +207,7 @@ export class PrescriptionDetailsSecondaryService {
 
   getCurrentUser(): DataState<Partial<UserInfo>> {
     const token = this.tokenClaims$()?.[USER_PROFILE_CLAIM_KEY];
-    const professional = this.isProfessional$();
+    const role = this.role$();
     const discipline = this.discipline$();
 
     return token
@@ -213,7 +215,7 @@ export class PrescriptionDetailsSecondaryService {
           status: LoadingStatus.SUCCESS,
           data: {
             ...token,
-            role: professional ? Role.Prescriber : Role.Patient,
+            role: role || Role.Patient,
             discipline: discipline,
           },
         }

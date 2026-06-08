@@ -11,7 +11,7 @@ import { Lang } from '@reuse/code/constants/languages';
   pure: false,
 })
 export class TranslationPipe implements PipeTransform, OnDestroy {
-  private destroyed$ = new Subject<void>();
+  private readonly destroyed$ = new Subject<void>();
   private value?: Translation;
   private translated?: string;
 
@@ -23,6 +23,7 @@ export class TranslationPipe implements PipeTransform, OnDestroy {
   }
 
   transform(value?: Translation): string {
+    if (!value) return '';
     if (!this.translated || this.value !== value) {
       this.value = value;
       this.translate();

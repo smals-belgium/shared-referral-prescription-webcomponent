@@ -11,4 +11,7 @@ export const pseudonymInTransitMock = {
       },
     };
   },
+  asShortString() {
+    return 'pseudo-by-demo';
+  },
 } as unknown as PseudonymInTransit;

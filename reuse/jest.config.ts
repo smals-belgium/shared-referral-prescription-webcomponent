@@ -13,6 +13,8 @@ const config: Config = {
   coverageDirectory: '<rootDir>/reuse/coverage',
 
   setupFilesAfterEnv: ['./setup-jest.ts'],
+  testEnvironment: '<rootDir>/reuse/custom-jsdom-environment.ts',
+
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   moduleNameMapper: {
     '^jose': require.resolve('jose'),

@@ -1,4 +1,13 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  signal,
+  SimpleChanges,
+  WritableSignal,
+} from '@angular/core';
 import { AbstractControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AsyncPipe } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -30,15 +39,16 @@ import { NURSING_CODES, PHYSIOTHERAPY_CODES, RADIOLOGY_CODES, TemplateCategory }
     HighlightFilterPipe,
     AsyncPipe,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SelectPrescriptionTypeComponent implements OnChanges, OnInit {
-  categories: TemplateCategory[] = [];
+  categories: WritableSignal<TemplateCategory[]> = signal([]);
 
   private readonly categories$ = this.translate.onLangChange.pipe(
     map(() => this.translate.currentLang),
     startWith(this.translate.currentLang),
     map(() =>
-      this.categories.map(category => ({
+      this.categories().map(category => ({
         code: category.code,
         label: this.translate.instant('prescription.categories.' + category.code) as string,
       }))
@@ -75,11 +85,13 @@ export class SelectPrescriptionTypeComponent implements OnChanges, OnInit {
         .filter(code => code !== undefined)
     );
 
-    this.categories = [
-      { code: 'nursingCare', fhirCode: '9632001' },
-      { code: 'radiology', fhirCode: '363679005' },
-      { code: 'physiotherapy', fhirCode: '722138006' },
-    ].filter(category => templateCategoryCodes.has(category.fhirCode));
+    this.categories.set(
+      [
+        { code: 'nursingCare', fhirCode: '9632001' },
+        { code: 'radiology', fhirCode: '363679005' },
+        { code: 'physiotherapy', fhirCode: '722138006' },
+      ].filter(category => templateCategoryCodes.has(category.fhirCode))
+    );
   }
 
   ngOnChanges(changes: SimpleChanges): void {

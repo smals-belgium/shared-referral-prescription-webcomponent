@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AssignOrTransferDialog, AssignOrTransferDialogData } from './assign-or-transfer-dialog';
 
@@ -15,7 +15,8 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Discipline, ProviderType } from '@reuse/code/openapi';
+import { ProviderType } from '@reuse/code/openapi';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 describe('AssignOrTransferDialog', () => {
   beforeAll(() => {
@@ -72,7 +73,13 @@ describe('AssignOrTransferDialog', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [AssignOrTransferDialog, ReactiveFormsModule, NoopAnimationsModule, TranslateModule.forRoot()],
+      imports: [
+        AssignOrTransferDialog,
+        ReactiveFormsModule,
+        NoopAnimationsModule,
+        TranslateModule.forRoot(),
+        MatIconTestingModule,
+      ],
       providers: [
         { provide: MAT_DIALOG_DATA, useValue: dialogData },
         { provide: MatDialogRef, useValue: mockDialogRef },
@@ -111,7 +118,7 @@ describe('AssignOrTransferDialog', () => {
 
   describe('Search Functionality', () => {
     it('should set search criteria when onSearch is called', () => {
-      const criteria = { query: 'John', zipCodes: [1000], page: 1, pageSize: 10 };
+      const criteria = { query: 'John', cities: [{ zipCode: 1000 }] };
 
       component.onSearch(criteria);
       expect(component.searchCriteria$()).toEqual(criteria);
@@ -179,11 +186,6 @@ describe('AssignOrTransferDialog', () => {
   });
 
   describe('executeTransfer', () => {
-    const professional = {
-      id: { ssin: '987', profession: 'nurse' },
-      healthcarePerson: 'Jane Doe',
-    };
-
     beforeEach(() => {
       (component as any).data = {
         ...dialogData,
@@ -237,7 +239,7 @@ describe('AssignOrTransferDialog', () => {
   });
 
   describe('healthcareProvidersState$', () => {
-    it('should call healthcareProviderService.findAll when searchCriteria is set', fakeAsync(() => {
+    it('should call healthcareProviderService.findAll when searchCriteria is set', () => {
       const response = {
         healthcareProfessionals: [{ id: { ssin: '123' } }],
         total: 1,
@@ -248,19 +250,17 @@ describe('AssignOrTransferDialog', () => {
       // activate the signal subscription
       component.healthcareProvidersState$();
 
-      const criteria = { query: 'John', zipCodes: [1000], page: 1, pageSize: 10 };
+      const criteria = { query: 'John', cities: [{ zipCode: 1000 }], page: 1, pageSize: 10 };
 
       component.onSearch(criteria);
 
       fixture.detectChanges();
 
-      tick(); // flush signal observable pipeline
-
       const state = component.healthcareProvidersState$();
 
       expect(healthcareProviderServiceMock.findAll).toHaveBeenCalled();
       expect(state?.data?.items.length).toBe(1);
-    }));
+    });
 
     it('should return empty list when criteria is null', () => {
       component.searchCriteria$.set(null);
@@ -273,13 +273,35 @@ describe('AssignOrTransferDialog', () => {
     it('should handle service error gracefully', () => {
       (healthcareProviderServiceMock.findAll as jest.Mock).mockReturnValue(new Observable(sub => sub.error('error')));
 
-      const criteria = { query: 'John', zipCodes: [1000], page: 1, pageSize: 10 };
+      const criteria = { query: 'John', cities: [{ zipCode: 1000 }], page: 1, pageSize: 10 };
 
       component.onSearch(criteria);
 
       const state = component.healthcareProvidersState$();
 
       expect(state?.data?.items).toEqual([]);
+    });
+  });
+  describe('goBackToSearch', () => {
+    it('should reset pagination and reset query field when professional form is about to be displayed', () => {
+      const query = component.queryControl;
+      const pagination = component['pageable'];
+      const isSearchMode = component['isSearchMode'];
+
+      expect(component['pageable']).toBeDefined();
+      expect(component['isSearchMode']).toBeDefined();
+
+      pagination.set({ page: 5, pageSize: 10 });
+      isSearchMode.set(false);
+      query.setValue('TestValue');
+      query.markAsTouched();
+
+      component.goBackToSearch();
+
+      expect(pagination()).toStrictEqual({ page: 1, pageSize: 10 });
+      expect(query.value).toBe('');
+      expect(query.untouched).toBe(true);
+      expect(isSearchMode()).toBe(true);
     });
   });
 });

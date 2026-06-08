@@ -80,6 +80,11 @@ mat-icon {
     vertical-align: top;
     text-align: center;
   }
+  &.mat-warn {
+    svg {
+      fill: var(--mdc-outlined-text-field-error-outline-color, mh.$error-30);
+    }
+  }
 }
 
 .form-element {
@@ -432,4 +437,42 @@ mat-accordion.mat-accordion
   expansion-panel-textarea:last-of-type
   mat-expansion-panel.mat-expansion-panel {
   margin-bottom: var(--mh-expansion-panel-textarea-margin-bottom, mh.$spacing-rem-xl);
+}
+
+evf-form-element-group {
+  evf-element-label.invalid {
+    color: var(--mdc-outlined-text-field-error-outline-color, mh.$error-30);
+  }
+}
+
+evf-radio.form-element {
+  display: inline-block;
+}
+
+evf-element-sub-label {
+  .mat-mdc-form-field-error {
+    max-width: fit-content;
+  }
+}
+
+mat-button-toggle-group + evf-element-sub-label,
+mat-radio-group + evf-element-sub-label,
+.checkbox-group + evf-element-sub-label {
+  .mat-mdc-form-field-error {
+    padding: 1px mh.$spacing-rem-xs;
+    border-radius: 2px;
+    margin-top: 0.33rem;
+    color: mh.$typography-semantic-error-dark;
+    background-color: mh.$surface-semantic-error-light;
+    animation: _mat-form-field-subscript-animation 0ms cubic-bezier(0.55, 0, 0.55, 0.2);
+    animation-duration: 300ms;
+  }
+}
+
+.asterisk {
+  color: var(--mdc-outlined-text-field-error-outline-color, mh.$error-30);
+}
+
+.highlight {
+  font-weight: mh.$font-weight-bold;
 }

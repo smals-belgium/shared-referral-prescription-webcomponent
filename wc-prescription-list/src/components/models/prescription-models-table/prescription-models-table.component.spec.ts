@@ -10,6 +10,8 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { PrescriptionModelsTableComponent } from './prescription-models-table.component';
 import { DateAdapter } from '@angular/material/core';
+import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 const mockPrescriptionModels: ModelEntityDto[] = [
   {
@@ -57,6 +59,7 @@ describe('PrescriptionModelsTableComponent', () => {
         TranslateModule.forRoot({
           loader: { provide: TranslateLoader, useClass: FakeLoader },
         }),
+        MatIconTestingModule,
       ],
       providers: [{ provide: DateAdapter, useValue: mockDateAdapter }],
     }).compileComponents();
@@ -99,9 +102,9 @@ describe('PrescriptionModelsTableComponent', () => {
     const alertComponent = fixture.debugElement.query(By.css('app-alert'));
 
     expect(alert).toBeTruthy();
-    expect(alertComponent.componentInstance.alert).toBe('error');
-    expect(alertComponent.componentInstance.message).toBe('Test error');
-    expect(alertComponent.componentInstance.error).toBe(mockError);
+    expect(alertComponent.componentInstance.alert()).toBe('error');
+    expect(alertComponent.componentInstance.message()).toBe('Test error');
+    expect(alertComponent.componentInstance.error()).toBe(mockError);
 
     alertComponent.triggerEventHandler('clickRetry', null);
     expect(retryEmitSpy).toHaveBeenCalledWith();

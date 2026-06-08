@@ -6,6 +6,7 @@ import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { TranslateService } from '@ngx-translate/core';
 import { MatNativeDateModule } from '@angular/material/core';
 import { Observable, of } from 'rxjs';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 describe('PrescriptionDetailsBottomComponent – final tests', () => {
   let fixture: ComponentFixture<PrescriptionDetailsBottomComponent>;
@@ -53,7 +54,7 @@ describe('PrescriptionDetailsBottomComponent – final tests', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [PrescriptionDetailsBottomComponent, MatNativeDateModule],
+      imports: [PrescriptionDetailsBottomComponent, MatNativeDateModule, MatIconTestingModule],
       providers: [
         { provide: PrescriptionDetailsSecondaryService, useValue: serviceMock },
         { provide: AccessMatrixState, useValue: accessMatrixStateMock },

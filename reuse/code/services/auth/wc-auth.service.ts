@@ -14,8 +14,13 @@ import { map } from 'rxjs/operators';
 import { Buffer } from 'buffer';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { AccessToken, IdToken, ResourceAccess, UserProfile } from '@reuse/code/interfaces';
-import { Discipline, Role } from '@reuse/code/openapi';
-import { CLIENT_ID, RESOURCE_ACCESS_CLAIM_KEY, USER_PROFILE_CLAIM_KEY } from '@reuse/code/services/auth/auth-constants';
+import { Discipline, OIDC, Role } from '@reuse/code/openapi';
+import {
+  CLIENT_ID,
+  ORGANIZATIONS_CLAIM_KEY,
+  RESOURCE_ACCESS_CLAIM_KEY,
+  USER_PROFILE_CLAIM_KEY,
+} from '@reuse/code/services/auth/auth-constants';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
 
 @Injectable({ providedIn: 'root' })
@@ -90,12 +95,24 @@ export class WcAuthService extends AuthService {
     );
   }
 
-  override role(): Observable<string> {
+  override role() {
     return this.getResourceAccess(this.exchangeToClientId).pipe(
       map(accessToken => {
         const roles = accessToken?.[RESOURCE_ACCESS_CLAIM_KEY]?.[CLIENT_ID]?.roles ?? [];
         const match = Object.values(Role).find(role => roles.includes(role.toLowerCase()));
-        return match ?? '';
+        return (match as Role) ?? '';
+      })
+    );
+  }
+
+  override oidc(): Observable<OIDC | null> {
+    return this.getClaims().pipe(
+      map(claims => {
+        const keys = claims?.[USER_PROFILE_CLAIM_KEY]?.[ORGANIZATIONS_CLAIM_KEY]
+          ? Object.keys(claims?.[USER_PROFILE_CLAIM_KEY]?.[ORGANIZATIONS_CLAIM_KEY]).map(k => k.toLowerCase())
+          : [];
+        const match = Object.values(OIDC).find(oidc => keys.includes(oidc.toLowerCase()));
+        return match ?? null; //null as default value
       })
     );
   }

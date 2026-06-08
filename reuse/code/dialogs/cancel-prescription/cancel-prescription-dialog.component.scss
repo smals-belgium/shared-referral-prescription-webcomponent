@@ -1,17 +1,30 @@
-:host {
-  textarea {
-    max-height: 50vh;
-  }
+@use '@myhealth-belgium/design-kit' as mh;
 
-  div[mat-dialog-content] {
-    --mdc-dialog-supporting-text-color: black;
-  }
+p {
+  margin: 0;
+}
 
-  mat-form-field {
-    width: 100%;
+label {
+  .required {
+    color: var(--mh-label-invalid-color, mh.$typography-semantic-error-medium);
   }
+}
 
-  ::ng-deep .mat-mdc-dialog-actions {
-    padding: 0 24px 20px 24px;
+.prescription_type_container {
+  display: flex;
+  gap: mh.$spacing-2xs;
+  flex-direction: column;
+
+  .prescription_type_text {
+    color: mh.$typography-brand-neutral-dark;
   }
+  .prescription_type_value {
+    @include mh.font-default-semibold();
+  }
+}
+
+.dialog-layout-content {
+  gap: 10px;
+  display: flex;
+  flex-direction: column;
 }

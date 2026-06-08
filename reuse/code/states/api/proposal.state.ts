@@ -23,8 +23,8 @@ export class ProposalState extends BaseState<ReadRequestResource> {
     return this.proposalService.approveProposal(proposalId, reason, generatedUUID);
   }
 
-  cancelProposal(proposalId: string, generatedUUID: string) {
-    return this.proposalService.cancelProposal(proposalId, generatedUUID);
+  cancelProposal(proposalId: string, reason: ReasonResource, generatedUUID: string) {
+    return this.proposalService.cancelProposal(proposalId, reason, generatedUUID);
   }
 
   rejectProposal(proposalId: string, reason: ReasonResource, generatedUUID: string) {
@@ -48,56 +48,34 @@ export class ProposalState extends BaseState<ReadRequestResource> {
     return this.proposalService.assignCaregiver(prescriptionId, referralTaskId, caregiver, generatedUUID);
   }
 
-  assignProposalToMe(
-    proposalId: string,
-    referralTaskId: string,
-    professional: {
-      ssin: string;
-      discipline: string;
-    },
-    generatedUUID: string
-  ) {
-    return this.proposalService
-      .assignCaregiver(
-        proposalId,
-        referralTaskId,
-        {
-          ssin: professional.ssin!,
-          role: professional.discipline.toUpperCase(),
-        },
-        generatedUUID
-      )
-      .pipe(tap(() => this.loadProposal(proposalId)));
-  }
-
   assignProposalPerformer(
     proposalId: string,
     referralTaskId: string,
-    healthcareProvider: HealthcareProResource | HealthcareOrganizationResource,
+    ssinOrNihdi: string,
+    role: string,
+    type: string,
     generatedUUID: string
   ) {
-    if (isProfessional(healthcareProvider)) {
+    if (type === 'Professional') {
       return this.proposalService
         .assignCaregiver(
           proposalId,
           referralTaskId,
           {
-            ssin: healthcareProvider.healthcarePerson?.ssin ?? '',
-            role: healthcareProvider.id?.profession ?? '',
+            ssin: ssinOrNihdi || '',
+            role: role || '',
           },
           generatedUUID
         )
         .pipe(tap(() => this.loadProposal(proposalId)));
     } else {
-      const nihdi =
-        (healthcareProvider.nihii8 ?? healthcareProvider.nihii8) + (healthcareProvider.qualificationCode ?? '');
       return this.proposalService
         .assignOrganization(
           proposalId,
           referralTaskId,
           {
-            nihii: nihdi,
-            institutionTypeCode: healthcareProvider.typeCode ?? '',
+            nihii: ssinOrNihdi,
+            institutionTypeCode: type || '',
           },
           generatedUUID
         )

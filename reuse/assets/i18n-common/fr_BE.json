@@ -269,7 +269,10 @@
       "title": "Classer la prescription sans suite",
       "message": "Êtes-vous sûr de vouloir classer la prescription \"{templateName}\" de {firstName} {lastName} sans suite?",
       "success": "Prescription classée sans suite avec succès.",
-      "reason": "Raison"
+      "reason": "Raison",
+      "info": "Si un rendez-vous a déjà été fixé, n’oubliez pas de contacter le prestataire de soins. Vous éviterez ainsi que la prestation vous soit facturée.",
+      "hint": "La raison sera notifiée au prescripteur",
+      "infoDescription": "Si un rendez-vous a déjà été fixé, n'oubliez pas de contacter le prestataire de soins. Vous éviterez ainsi que la prestation vous soit facturée."
     },
     "rejectAssignation": {
       "action": "Rejeter",
@@ -348,7 +351,11 @@
       "invalidShortCode": "L'ID de la prescription n'est pas valide. Veuillez vérifier et essayer à nouveau.",
       "decryptionFailed": "Le décodage des champs de texte libre a échoué. Ré-essayer.",
       "failedToCreateModel": "Le modèle n'a pas pu être créé. Veuillez réessayer plus tard.",
-      "failedToLoadTemplate": "Failed to load prescription form template."
+      "failedToLoadTemplate": "Impossible de charger le formulaire de prescription.",
+      "errorsInForm": {
+        "title": "Il reste des erreurs dans le formulaire.",
+        "subTitle": "Merci de corriger les éléments suivants:"
+      }
     },
     "categories": {
       "bandagisterie": "Bandagisterie",
@@ -396,7 +403,8 @@
       "searchPerformerPlaceHolder": "N° INAMI, nom",
       "success": "{firstName} {lastName} a été assigné comme prestataire.",
       "title": "Transférer l'assignation",
-      "zipCodeOrCityName": "Code postal ou commune"
+      "zipCodeOrCityName": "Code postal ou commune",
+      "updateCriteria": "modifier critères"
     },
     "validityStartDate": "Date de début de validité"
   },
@@ -512,7 +520,10 @@
       "title": "Classer la proposition sans suite",
       "message": "Êtes-vous sûr de vouloir classer la proposition \"{templateName}\" de {firstName} {lastName} sans suite?",
       "success": "Proposition classée sans suite avec succès.",
-      "reason": "Raison"
+      "reason": "Raison",
+      "info": "Si un rendez-vous a déjà été fixé, n’oubliez pas de contacter le prestataire de soins. Vous éviterez ainsi que la prestation vous soit facturée.",
+      "hint": "La raison sera notifiée au prescripteur",
+      "infoDescription": "Si un rendez-vous a déjà été fixé, n'oubliez pas de contacter le prestataire de soins. Vous éviterez ainsi que la prestation vous soit facturée."
     },
     "rejectAssignation": {
       "action": "Rejeter",
@@ -588,7 +599,7 @@
       "READY": "Assigné·e",
       "CANCELLED": "Annulé",
       "FAILED": "Echoué",
-      "INPROGRESS": "En cours",
+      "INPROGRESS": "Actif",
       "COMPLETED": "Inactif",
       "null": "Inconnu"
     }

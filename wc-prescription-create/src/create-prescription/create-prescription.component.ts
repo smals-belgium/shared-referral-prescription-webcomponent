@@ -45,6 +45,7 @@ import {
   CreatePrescriptionForm,
   CreatePrescriptionInitialValues,
   DataState,
+  IdToken,
   LoadingStatus,
 } from '@reuse/code/interfaces';
 import { CreateMultiplePrescriptionsComponent } from '../components/create-multiple-prescriptions/create-multiple-prescriptions.component';
@@ -75,6 +76,7 @@ import {
   FormElement,
   ModelEntityDto,
   PersonResource,
+  PrescriberResource,
   ReadRequestResource,
   TemplateVersion,
 } from '@reuse/code/openapi';
@@ -107,6 +109,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
   protected readonly LoadingStatus = LoadingStatus;
   protected readonly AlertType = AlertType;
   protected readonly discipline$ = toSignal(this.authService.discipline());
+  protected readonly oidc$ = toSignal(this.authService.oidc());
+  protected readonly claims$ = toSignal(this.authService.getClaims());
 
   private trackId = 0;
   public readonly errorResponseBadGateway = new HttpErrorResponse({
@@ -114,11 +118,11 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
     statusText: 'Bad Gateway',
   });
   public isModelValue: boolean = false;
-  public errorCard: ErrorCard = {
+  public errorCard: WritableSignal<ErrorCard> = signal({
     show: false,
     message: '',
     errorResponse: undefined,
-  };
+  });
 
   // OBSERVABLES & SIGNALS & SUBJECTS
   public readonly isEnabled$: Observable<boolean>;
@@ -140,6 +144,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
   @Input() patientSsin?: string;
   @Input() services!: {
     getAccessToken: (audience?: string) => Promise<string | null>;
+    getIdToken: () => IdToken;
   };
   @Input() extend?: boolean = false;
 
@@ -195,7 +200,12 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
       'info',
       'do_not_disturb_on',
       'add_circle',
-      'close'
+      'close',
+      'keyboard_arrow_up',
+      'keyboard_arrow_down',
+      'warning',
+      'emergency_home',
+      'notifications'
     );
 
     this._subscriptions.add(
@@ -273,7 +283,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
   }
 
   private handleTokenChange(): void {
-    this.authService.init(this.services.getAccessToken);
+    this.authService.init(this.services.getAccessToken, this.services.getIdToken);
     this.accessMatrixStateService.loadAccessMatrix();
     this.templatesStateService.loadTemplates();
   }
@@ -391,6 +401,9 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
     }
 
     initialPrescription.responses['prescriptionOriginId'] = initialPrescription.id;
+
+    initialPrescription.responses['prescriptionOriginMedicalReason'] = initialPrescription?.responses['medicalReason'];
+
     return initialPrescription;
   }
 
@@ -426,7 +439,22 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
       return;
     }
     this.prescriptionForms().forEach(f => f.elementGroup?.markAllAsTouched());
-    this.prescriptionForms.update(prescriptionForms => prescriptionForms.map(t => ({ ...t, submitted: true })));
+    this.prescriptionForms.update(prescriptionForms =>
+      prescriptionForms.map(t => {
+        const validationObject = t.elementGroup?.getAllValidationErrors() || null;
+        const hasErrors = validationObject && Object.keys(validationObject).length > 0;
+        if (hasErrors) {
+          return { ...t, errors: validationObject, submitted: true };
+        }
+
+        return { ...t, errors: undefined, submitted: true };
+      })
+    );
+
+    const hasErrors = this.prescriptionForms().some(f => f.errors);
+
+    if (hasErrors) return;
+
     if (this.prescriptionForms().every(f => f.elementGroup!.valid)) {
       this.loading.set(true);
       if (this.prescriptionForms().length === 1) {
@@ -454,8 +482,9 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
             switchMap(identifier =>
               this.toCreatePrescriptionRequest(
                 prescriptionForm.templateCode,
-                prescriptionForm.elementGroup!.getOutputValue(),
-                identifier
+                prescriptionForm.elementGroup!.getOutputValue() as Record<string, unknown>,
+                identifier,
+                this.claims$()
               )
             ),
             switchMap(createPrescriptionRequest => {
@@ -478,13 +507,11 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
           this.prescriptionsCreated.emit(ids);
         },
         error: (err: HttpErrorResponse) => {
-          const errorBody = err.error as { detail?: string };
-
-          this.errorCard = {
+          this.errorCard.set({
             show: true,
-            message: errorBody.detail || 'common.somethingWentWrong',
+            message: '',
             errorResponse: err,
-          };
+          });
           this.generateNewUuid();
           this.loading.set(false);
         },
@@ -526,7 +553,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
         const createPrescriptionRequest$ = this.toCreatePrescriptionRequest(
           f.templateCode,
           f.elementGroup!.getOutputValue() as Record<string, unknown>,
-          identifier
+          identifier,
+          this.claims$()
         );
 
         return createPrescriptionRequest$.pipe(
@@ -662,7 +690,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
   protected toCreatePrescriptionRequest(
     templateCode: string,
     responses: Record<string, unknown>,
-    subject: string
+    subject: string,
+    idToken?: IdToken | null
   ): Observable<CreateRequestResource> {
     if (templateCode === 'ANNEX_82') {
       const pssSessionId = this.pssService.getPssSessionId();
@@ -670,6 +699,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
         responses['exchangeId'] = pssSessionId;
       }
     }
+
     return this.encryptFreeTextInResponses(templateCode, responses).pipe(
       map(encryptedResponses => {
         if (!this.encryptionKeyInitializer.getPseudonymizedKey()) {
@@ -681,13 +711,39 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
           responses: encryptedResponses,
           pseudonymizedKey: this.encryptionKeyInitializer.getPseudonymizedKey(),
           subject,
-        };
+          prescriber: this.mapIdTokenToPrescriber(idToken),
+        } as CreateRequestResource;
       }),
       catchError(error => {
         console.error('Failed to create prescription request:', error);
         throw error;
       })
     );
+  }
+
+  private mapIdTokenToPrescriber(idToken: IdToken | null | undefined) {
+    if (!idToken) {
+      return undefined;
+    }
+
+    let prescriber = {
+      ssin: idToken.userProfile?.ssin,
+      discipline: this.discipline$(),
+    } as PrescriberResource;
+
+    const oidc = this.oidc$();
+
+    if (oidc) {
+      const organization = idToken.userProfile?.organizations?.[0];
+      const oidcValue = organization?.[oidc as keyof typeof organization];
+
+      prescriber = {
+        ...prescriber,
+        organizationNihii11: oidcValue?.nihii,
+      };
+    }
+
+    return prescriber;
   }
 
   protected handleCreateBulkResult(
@@ -704,19 +760,19 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
       this.prescriptionsCreated.emit(ids);
     } else if (successCount === 0) {
       if (isPrescription(this.initialValues?.intent)) {
-        this.errorCard = {
+        this.errorCard.set({
           show: true,
           message: 'prescription.create.allFailed',
           translationOptions: { count: failedCount },
           errorResponse: undefined,
-        };
+        });
       } else {
-        this.errorCard = {
+        this.errorCard.set({
           show: true,
           message: 'proposal.create.allFailed',
           translationOptions: { count: failedCount },
           errorResponse: undefined,
-        };
+        });
       }
       this.prescriptionForms.update(prescriptionForms =>
         prescriptionForms.map(t => ({
@@ -728,19 +784,19 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
       this.loading.set(false);
     } else {
       if (isPrescription(this.initialValues?.intent)) {
-        this.errorCard = {
+        this.errorCard.set({
           show: true,
           message: 'prescription.create.someSuccessSomeFailed',
           translationOptions: { successCount, failedCount },
           errorResponse: undefined,
-        };
+        });
       } else {
-        this.errorCard = {
+        this.errorCard.set({
           show: true,
           message: 'proposal.create.someSuccessSomeFailed',
           translationOptions: { successCount, failedCount },
           errorResponse: undefined,
-        };
+        });
       }
 
       this.prescriptionForms.update(prescriptionForms =>
@@ -804,11 +860,11 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
   }
 
   closeErrorCard(): void {
-    this.errorCard = {
+    this.errorCard.set({
       show: false,
       message: '',
       errorResponse: undefined,
-    };
+    });
   }
 
   private generateNewUuid() {

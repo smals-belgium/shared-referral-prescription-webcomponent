@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -110,11 +110,10 @@ describe('CancelExecutionPrescriptionDialog', () => {
   });
 
   describe('cancelPrescriptionExecution', () => {
-    it('should cancel prescription execution successfully', fakeAsync(() => {
+    it('should cancel prescription execution successfully', () => {
       mockPrescriptionState.cancelPrescriptionExecution.mockReturnValue(of({}));
 
       component.cancelPrescriptionExecution();
-      tick();
 
       expect(mockPrescriptionState.cancelPrescriptionExecution).toHaveBeenCalledWith(
         'prescription-123',
@@ -124,7 +123,7 @@ describe('CancelExecutionPrescriptionDialog', () => {
       expect(mockToastService.show).toHaveBeenCalledWith('prescription.cancelExecution.success');
       expect(mockDialogRef.close).toHaveBeenCalledWith(true);
       expect(component.errorCard.show).toBe(false);
-    }));
+    });
 
     it('should show error card when prescription id is missing', () => {
       component.prescription.id = undefined;

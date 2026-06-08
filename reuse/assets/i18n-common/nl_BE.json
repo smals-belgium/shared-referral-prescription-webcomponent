@@ -269,7 +269,10 @@
       "title": "Klasseer voorschrift zonder gevolg",
       "message": "Bent u zeker dat u het voorschrift \"{templateName}\" van {firstName} {lastName} wilt klasseren zonder gevolg?",
       "success": "Het voorschrift werd met succes geklasseerd zonder gevolg.",
-      "reason": "Reden"
+      "reason": "Reden",
+      "info": "",
+      "hint": "De reden zal aan de voorschrijver meegedeeld worden",
+      "infoDescription": "Als je al een afspraak hebt, vergeet dan niet contact op te nemen met de zorgverlener. Zo voorkom je dat je voor de behandeling moet betalen."
     },
     "rejectAssignation": {
       "action": "Weigeren",
@@ -348,7 +351,11 @@
       "invalidShortCode": "Voorschrift ID is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
       "decryptionFailed": "Het decoderen van de vrije tekstvelden is mislukt. Probeer het opnieuw.",
       "failedToCreateModel": "Het sjabloon kon niet worden aangemaakt. Probeer het later opnieuw.",
-      "failedToLoadTemplate": "Failed to load prescription form template."
+      "failedToLoadTemplate": "Failed to load prescription form template.",
+      "errorsInForm": {
+        "title": "Er zitten nog steeds fouten in het formulier.",
+        "subTitle": "Corrigeer het volgende:"
+      }
     },
     "categories": {
       "bandagisterie": "Bandagisterie",
@@ -396,7 +403,8 @@
       "searchPerformerPlaceHolder": "RIZIV nummer, naam",
       "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
       "title": "Toewijzing transfereren",
-      "zipCodeOrCityName": "Postcode of gemeente"
+      "zipCodeOrCityName": "Postcode of gemeente",
+      "updateCriteria": "criteria wijzigen"
     },
     "validityStartDate": "Startdatum geldigheid"
   },
@@ -512,7 +520,10 @@
       "title": "Klasseer voorstel zonder gevolg",
       "message": "Bent u zeker dat u het voorstel \"{templateName}\" van {firstName} {lastName} wilt klasseren zonder gevolg?",
       "success": "Het voorstel werd met succes geklasseerd zonder gevolg.",
-      "reason": "Reden"
+      "reason": "Reden",
+      "info": "",
+      "hint": "De reden zal aan de voorschrijver meegedeeld worden",
+      "infoDescription": "Als je al een afspraak hebt, vergeet dan niet contact op te nemen met de zorgverlener. Zo voorkom je dat je voor de behandeling moet betalen."
     },
     "rejectAssignation": {
       "action": "Weigeren",
@@ -588,7 +599,7 @@
       "READY": "Toegewezen",
       "CANCELLED": "Geannuleerd",
       "FAILED": "Mislukt",
-      "INPROGRESS": "In uitvoering",
+      "INPROGRESS": "Actief",
       "COMPLETED": "Inactief",
       "null": "Niet gekend"
     }

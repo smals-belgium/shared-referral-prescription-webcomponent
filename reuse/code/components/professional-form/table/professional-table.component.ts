@@ -1,4 +1,4 @@
-import { Component, inject, input, OnChanges, OnDestroy, output, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
 import {
   MatCell,
@@ -19,12 +19,12 @@ import {
 import { FormatEnum, SkeletonComponent } from '@reuse/code/components/progress-indicators/skeleton/skeleton.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { FormatMultilingualObjectPipe } from '@reuse/code/pipes/format-multilingual-object.pipe';
-import { HealthcareProResource, ProviderType, Translation } from '@reuse/code/openapi';
+import { HealthcareProResource, Translation } from '@reuse/code/openapi';
 import { MatIconModule } from '@angular/material/icon';
-import { AlertType, Intent, SearchProfessionalCriteria } from '@reuse/code/interfaces';
+import { AlertType } from '@reuse/code/interfaces';
 import { MatButtonModule } from '@angular/material/button';
-import { getAssignableProfessionalDisciplines } from '@reuse/code/utils/assignment-disciplines.utils';
-import { RequestProfessionalDataService } from '@reuse/code/services/helpers/request-professional-data.service';
+import { PaginatorComponent } from '@reuse/code/components/paginator/paginator.component';
+import { HighlightFilterPipe } from '@reuse/code/pipes/highlight-filter.pipe';
 
 export type TranslationType = keyof Translation;
 
@@ -51,58 +51,27 @@ export type TranslationType = keyof Translation;
     MatFooterCellDef,
     TranslatePipe,
     MatButtonModule,
+    HighlightFilterPipe,
+    PaginatorComponent,
   ],
   templateUrl: './professional-table.component.html',
   styleUrl: './professional-table.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProfessionalTableComponent implements OnChanges, OnDestroy {
+export class ProfessionalTableComponent {
   protected readonly displayedColumns: string[] = ['icon', 'lastname', 'firstname', 'address', 'city', 'actions'];
   protected readonly AlertType = AlertType;
   protected readonly FormatEnum = FormatEnum;
-  private readonly _dataService = inject(RequestProfessionalDataService);
 
-  readonly professionals = input<HealthcareProResource[]>([]);
+  readonly requestData = input<HealthcareProResource[]>([]);
   readonly total = input<number | undefined>(undefined);
+  readonly page = input<number>(0);
+  readonly pageSize = input<number>(0);
+  readonly query = input<string>('');
   readonly loading = input<boolean>(false);
   readonly currentLang = input.required<TranslationType | undefined>();
-  readonly category = input.required<string>();
-  readonly intent = input.required<Intent>();
-  readonly query = input<string>('');
-  readonly zipCodes = input<number[]>([]);
-  readonly prescriptionId = input.required<string>();
-
-  // Public signals from service
-  readonly requestData = this._dataService.data;
 
   readonly selectProfessional = output<HealthcareProResource>();
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (!changes['professionals']) return;
-
-    if (this.professionals()?.length) {
-      this.initializeDataStream();
-    } else {
-      this._dataService.tableReset();
-    }
-  }
-
-  private initializeDataStream(): void {
-    const initialData = this.professionals() ?? [];
-    const disciplines: string[] = getAssignableProfessionalDisciplines(this.category(), this.intent());
-    const config: SearchProfessionalCriteria = {
-      query: this.query(),
-      zipCodes: this.zipCodes(),
-      disciplines,
-      institutionTypes: [],
-      providerType: ProviderType.Professional,
-      prescriptionId: this.prescriptionId(),
-      intent: this.intent(),
-    };
-
-    this._dataService.initializeTableDataStream({ data: initialData, total: this.total() ?? -1 }, config);
-  }
-
-  ngOnDestroy() {
-    this._dataService.tableReset();
-  }
+  readonly changePage = output<{ pageIndex?: number; pageSize?: number }>();
 }

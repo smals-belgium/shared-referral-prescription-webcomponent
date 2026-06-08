@@ -1,5 +1,6 @@
 import {
   AfterViewChecked,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   inject,
@@ -24,6 +25,8 @@ import { FormatMultilingualObjectPipe } from '@reuse/code/pipes/format-multiling
 import { TranslationType } from '@reuse/code/components/professional-form/table/professional-table.component';
 import { MatRadioChange, MatRadioModule } from '@angular/material/radio';
 import { v4 as uuidv4 } from 'uuid';
+import { HighlightFilterPipe } from '@reuse/code/pipes/highlight-filter.pipe';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'professional-cards',
@@ -37,9 +40,11 @@ import { v4 as uuidv4 } from 'uuid';
     TranslatePipe,
     FormatMultilingualObjectPipe,
     MatRadioModule,
+    HighlightFilterPipe,
   ],
   templateUrl: './professional-cards.component.html',
   styleUrl: './professional-cards.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, OnDestroy {
   private readonly dataService = inject(RequestProfessionalDataService);
@@ -67,8 +72,12 @@ export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, 
   }
 
   // Public signals from service
-  readonly requestData = this.dataService.data;
-  readonly isLoading = this.dataService.loading;
+
+  readonly requestData = toSignal(this.dataService.data$, {
+    initialValue: [],
+  });
+  readonly isLoading = toSignal(this.dataService.loading$, { initialValue: false });
+
   private observer?: IntersectionObserver;
   private destroyed = false;
   observerInitialized = false;
@@ -132,7 +141,7 @@ export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, 
       intent: this.intent(),
     };
 
-    this.dataService.initializeCardsDataStream(initialData, config);
+    this.dataService.initializeDataStream(initialData, config);
   }
 
   private getScrollContainer(el: HTMLElement): HTMLElement | null {

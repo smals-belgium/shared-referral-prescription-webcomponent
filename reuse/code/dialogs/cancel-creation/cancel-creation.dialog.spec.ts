@@ -10,6 +10,7 @@ import { CreatePrescriptionForm } from '@reuse/code/interfaces';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { By } from '@angular/platform-browser';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 @Pipe({
   name: 'templateName',
@@ -47,6 +48,7 @@ describe('CancelCreationDialog', () => {
         NoopAnimationsModule,
         TranslateModule.forRoot(),
         MockTemplateNamePipe,
+        MatIconTestingModule,
       ],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },

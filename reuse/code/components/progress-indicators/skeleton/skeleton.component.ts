@@ -1,4 +1,4 @@
-import { Component, input, InputSignal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, InputSignal } from '@angular/core';
 import { NgxSkeletonLoaderComponent } from 'ngx-skeleton-loader';
 import { MatCard, MatCardContent } from '@angular/material/card';
 
@@ -12,6 +12,7 @@ export enum FormatEnum {
   templateUrl: './skeleton.component.html',
   styleUrls: ['./skeleton.component.scss'],
   imports: [NgxSkeletonLoaderComponent, MatCardContent, MatCard],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SkeletonComponent {
   readonly items: InputSignal<number> = input.required();

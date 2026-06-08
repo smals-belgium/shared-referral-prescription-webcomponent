@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IdToken } from '@reuse/code/interfaces';
-import { Discipline } from '@reuse/code/openapi';
+import { Discipline, OIDC, Role } from '@reuse/code/openapi';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -27,7 +27,11 @@ export class AuthService {
     throw new Error('Not implemented');
   }
 
-  role(): Observable<string> {
+  role(): Observable<Role> {
+    throw new Error('Not implemented');
+  }
+
+  oidc(): Observable<OIDC | null> {
     throw new Error('Not implemented');
   }
 }

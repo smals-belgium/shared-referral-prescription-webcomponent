@@ -2,7 +2,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
+  ElementRef,
   EventEmitter,
+  inject,
   Input,
   OnChanges,
   OnDestroy,
@@ -31,6 +33,9 @@ import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
 import { PatientInfoBarComponent } from '../patient-info-bar/patient-info-bar.component';
 import { EvfFormWebComponent } from '../evf-form/evf-form.component';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { TranslateByElementPipe } from '@reuse/code/pipes/translate-by-element.pipe';
+import { MarkdownModule } from 'ngx-markdown';
+import { GetErrorMessagesFromFormPipe } from '@reuse/code/pipes/get-error-messages-from-form.pipe';
 
 @Component({
   selector: 'app-create-multiple-prescriptions',
@@ -50,13 +55,18 @@ import { MatCheckbox } from '@angular/material/checkbox';
     PatientInfoBarComponent,
     MatCheckbox,
     CreatePrescriptionModelComponent,
+    TranslateByElementPipe,
+    MarkdownModule,
+    GetErrorMessagesFromFormPipe,
   ],
+  providers: [GetErrorMessagesFromFormPipe],
 })
 export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestroy {
+  private readonly getErrorMessagesPipe = inject(GetErrorMessagesFromFormPipe);
+
   protected readonly LoadingStatus = LoadingStatus;
   protected readonly AlertType = AlertType;
 
-  readonly trackByFn = (item: CreatePrescriptionForm) => item.trackId;
   modelStates = this.prescriptionModelState.modalStates;
   checkedPrescriptions = signal<Set<number>>(new Set());
 
@@ -83,15 +93,21 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
 
   @ViewChild(MatAccordion, { static: true }) accordion!: MatAccordion;
   @ViewChildren(MatExpansionPanel) panels!: QueryList<MatExpansionPanel>;
-  constructor(private readonly prescriptionModelState: PrescriptionModelState) {}
+  constructor(
+    private readonly prescriptionModelState: PrescriptionModelState,
+    private readonly host: ElementRef<HTMLElement>
+  ) {}
 
   get numberOfPrescriptionsToCreate(): number {
     return this.createPrescriptionForms.filter(f => f.status !== LoadingStatus.SUCCESS).length;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['createPrescriptionForms'] && this.createPrescriptionForms?.length === 1) {
-      queueMicrotask(() => this.panels?.first?.open());
+    if (changes['createPrescriptionForms']) {
+      if (this.createPrescriptionForms?.length === 1) {
+        queueMicrotask(() => this.panels?.first?.open());
+      }
+      this.scrollToTop();
     }
     this.isPrescriptionValue = isPrescription(this.intent);
   }
@@ -196,5 +212,36 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
 
   isProposal(intent: string): boolean {
     return isProposal(intent);
+  }
+
+  private getFirstPrescriptionWithErrors() {
+    return this.createPrescriptionForms.find(form => form.errors && Object.keys(form.errors).length);
+  }
+
+  scrollToTop() {
+    const firstFormWithErrors = this.getFirstPrescriptionWithErrors();
+
+    if (firstFormWithErrors && firstFormWithErrors.errors) {
+      const messages = this.getErrorMessagesPipe.transform(
+        firstFormWithErrors.errors,
+        firstFormWithErrors.formTemplateState$().data
+      );
+      if (messages.length === 1) {
+        const id = messages[0].id;
+        if (id) this.scrollTo(id, firstFormWithErrors.trackId);
+      } else {
+        this.scrollTo();
+      }
+    }
+  }
+
+  scrollTo(elementId?: string, trackId?: number) {
+    const shadow = this.host.nativeElement;
+    const wrapper = trackId ? shadow?.querySelector(`#mat-expension-panel-${trackId}`) : shadow;
+    const target = elementId ? wrapper?.querySelector(`[data-evf-element-id="${elementId}"]`) : shadow;
+
+    if (!target) return;
+
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }

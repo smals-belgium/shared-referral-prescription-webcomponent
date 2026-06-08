@@ -9,6 +9,7 @@ import {
 } from '@smals-belgium-shared/pseudo-helper';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
 import { pseudonymInTransitMock } from '@reuse/code/demo/mocks/pseudonymInTransit';
+import { pseudonymValue } from '@reuse/code/demo/mocks/pseudonymValue';
 
 @Injectable({ providedIn: 'root' })
 export class PseudoService {
@@ -73,6 +74,9 @@ export class PseudoService {
 
   byteArrayToValue(str: Uint8Array) {
     if (!this.pseudonymizationDomain) {
+      if (this.env === 'demo') {
+        return pseudonymValue;
+      }
       this.handlePseudomizationNotEnabled();
       return null;
     }

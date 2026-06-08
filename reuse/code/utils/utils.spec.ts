@@ -50,11 +50,6 @@ describe('Utils', () => {
     expect(validateSsinChecksum('01051500320')).toBe(true);
   });
 
-  it('should normalize strings for search', () => {
-    expect(toSearchString('Éléphant')).toBe('elephant');
-    expect(toSearchString('')).toBe('');
-  });
-
   it('should detect intent types', () => {
     expect(isPrescription(Intent.ORDER)).toBe(true);
     expect(isProposal(Intent.PROPOSAL)).toBe(true);
@@ -70,6 +65,24 @@ describe('Utils', () => {
     expect(isEmptyValue([1])).toBe(false);
     expect(isEmptyValue({})).toBe(true);
     expect(isEmptyValue({ a: 1 })).toBe(false);
+  });
+
+  describe('toSearchString', () => {
+    it('returns empty string for falsy input', () => {
+      expect(toSearchString('')).toBe('');
+      expect(toSearchString(null as unknown as string)).toBe('');
+      expect(toSearchString(undefined as unknown as string)).toBe('');
+    });
+
+    it('lowercases the input', () => {
+      expect(toSearchString('HELLO')).toBe('hello');
+    });
+
+    it('strips combining diacritics', () => {
+      expect(toSearchString('Éléphant')).toBe('elephant');
+      expect(toSearchString('café')).toBe('cafe');
+      expect(toSearchString('Ñoño')).toBe('nono');
+    });
   });
 });
 

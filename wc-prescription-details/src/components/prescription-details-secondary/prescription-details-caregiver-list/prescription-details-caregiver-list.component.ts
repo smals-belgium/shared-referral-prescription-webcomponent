@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -27,6 +27,7 @@ import { mapDisplayStatusToColor, mapFhirTaskStatus } from '@reuse/code/utils/fh
   templateUrl: './prescription-details-caregiver-list.component.html',
   styleUrl: './prescription-details-caregiver-list.component.scss',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrescriptionDetailsCaregiverListComponent {
   protected readonly service = inject(PrescriptionDetailsSecondaryService);

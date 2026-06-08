@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output, WritableSignal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output, WritableSignal } from '@angular/core';
 import { CanCancelPrescriptionOrProposalPipe } from '@reuse/code/pipes/can-cancel-prescription-or-proposal.pipe';
 import { CanDuplicatePrescriptionPipe } from '@reuse/code/pipes/can-duplicate-prescription.pipe';
 import { CanExtendPrescriptionPipe } from '@reuse/code/pipes/can-extend-prescription.pipe';
@@ -53,6 +53,7 @@ import { AssignOrTransferDialog } from '@reuse/code/dialogs/assign-or-transfer-d
   ],
   templateUrl: './prescription-details-actions.component.html',
   styleUrl: './prescription-details-actions.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrescriptionDetailsActionsComponent {
   protected readonly _deviceService = inject(DeviceService);
@@ -151,29 +152,43 @@ export class PrescriptionDetailsActionsComponent {
         intent: prescription.intent,
         mode: 'assign',
       },
-      panelClass: ['mh-dialog-container', 'no-dialog-scroll'],
-      height: '90vh',
-      width: '90vw',
-      maxWidth: '1300px',
+      panelClass: 'mh-dialog-container',
+      maxHeight: '90vh',
     });
   }
 
   onSelfAssign(prescription: ReadRequestResource, currentUser?: Partial<UserInfo>): void {
-    if (!prescription.id || !prescription.referralTask?.id || !currentUser?.ssin) {
+    if (!prescription.id || !prescription.referralTask?.id || !(currentUser?.ssin || currentUser?.organizations)) {
       this._toastService.showSomethingWentWrong();
       return;
     }
 
     this.loading.set(true);
-    const ssin = currentUser.ssin;
-    const discipline = currentUser.discipline || '';
+    let ssinOrNihdi = currentUser.ssin;
+    let discipline = currentUser.discipline || '';
+    let type = 'Professional';
+    if (currentUser.organizations) {
+      const organizationEntry = Object.entries(currentUser.organizations[0])[0];
+      ssinOrNihdi = organizationEntry[1].nihii;
+      type = organizationEntry[0];
+      discipline = '';
+    }
+
+    if (!ssinOrNihdi) {
+      this.loading.set(false);
+      this._toastService.showSomethingWentWrong();
+      return;
+    }
+
     if (isPrescription(prescription.intent)) {
       this.selfAssign(
         () =>
-          this._prescriptionStateService.assignPrescriptionToMe(
+          this._prescriptionStateService.assignPrescriptionPerformer(
             prescription.id!,
             prescription.referralTask!.id!,
-            { ssin, discipline },
+            ssinOrNihdi,
+            discipline,
+            type,
             this.generatedUUID()
           ),
         'prescription'
@@ -181,10 +196,12 @@ export class PrescriptionDetailsActionsComponent {
     } else {
       this.selfAssign(
         () =>
-          this._proposalStateService.assignProposalToMe(
+          this._proposalStateService.assignProposalPerformer(
             prescription.id!,
             prescription.referralTask!.id!,
-            { ssin, discipline },
+            ssinOrNihdi,
+            discipline,
+            type,
             this.generatedUUID()
           ),
         'proposal'

@@ -1,8 +1,15 @@
 <div class="dialog-header">
-  <h4 mat-dialog-title class="dialog-title">{{ title() }}</h4>
-  <button mat-icon-button mat-dialog-close aria-label="Close dialog">
-    <mat-icon>close</mat-icon>
+  <div class="dialog-title-wrapper">
+    <h4 mat-dialog-title class="dialog-title">{{ title() }}</h4>
+    @if(requiredSubTitle()){
+      <p><span class="required">*</span>{{ 'common.mandatory' | translate }}</p>
+    }
+  </div>
+  <button mat-icon-button mat-dialog-close [aria-label]="'common.close' | translate">
+    <mat-icon svgIcon="close" [aria-hidden]="true"></mat-icon>
   </button>
+
+
 </div>
 
 <div mat-dialog-content class="mat-dialog-content">

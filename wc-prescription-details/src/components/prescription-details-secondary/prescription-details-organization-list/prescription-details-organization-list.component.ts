@@ -1,4 +1,4 @@
-import { Component, inject, Signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Signal } from '@angular/core';
 import { FormatMultilingualObjectPipe } from '@reuse/code/pipes/format-multilingual-object.pipe';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -26,6 +26,7 @@ import { MatIconButton } from '@angular/material/button';
   templateUrl: './prescription-details-organization-list.component.html',
   styleUrl: './prescription-details-organization-list.component.scss',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrescriptionDetailsOrganizationListComponent {
   protected readonly _service = inject(PrescriptionDetailsSecondaryService);

@@ -1,4 +1,4 @@
-import { importProvidersFrom } from '@angular/core';
+import { importProvidersFrom, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { createApplication } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { WcConfigurationService } from '@reuse/code/services/config/wc-configuration.service';
@@ -14,14 +14,15 @@ import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { WcAuthService } from '@reuse/code/services/auth/wc-auth.service';
 import { providePseudonymisation } from '@reuse/code/providers/pseudo.provider';
 import { provideOpenApi } from '@reuse/code/providers/open-api.provider';
-import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
-import { OverlayContainer } from '@angular/cdk/overlay';
 import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
+import { provideShadowDom } from '@reuse/code/shadow-dom/shadow-dom.provider';
 import { CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_LIST } from '@reuse/code/constants/common.constants';
 
 void (async () => {
   const app = createApplication({
     providers: [
+      provideZonelessChangeDetection(),
+      provideBrowserGlobalErrorListeners(),
       provideCore(),
       provideHttpClient(withInterceptors([demoHttpInterceptor, apiUrlInterceptor])),
       providePseudonymisation(),
@@ -33,10 +34,7 @@ void (async () => {
         provide: AuthService,
         useClass: WcAuthService,
       },
-      {
-        provide: OverlayContainer,
-        useClass: ShadowDomOverlayContainer,
-      },
+      provideShadowDom(),
       provideOpenApi(),
       importProvidersFrom(
         TranslateModule.forRoot({

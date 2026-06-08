@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CreatePrescriptionModelComponent } from './create-prescription-model.component';
 import { Component, signal } from '@angular/core';
 import { of, throwError } from 'rxjs';
@@ -16,8 +16,9 @@ import { PrescriptionModelService } from '@reuse/code/services/api/prescriptionM
 import { UniqueModelNameValidator } from '@reuse/code/directives/unique-model-name.directive';
 import { ReactiveFormsModule } from '@angular/forms';
 import { EvfFormWebComponent } from '../evf-form/evf-form.component';
-import TypeEnum = FormDataType.TypeEnum;
 import { Lang } from '@reuse/code/constants/languages';
+import TypeEnum = FormDataType.TypeEnum;
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 @Component({
   selector: 'evf-form',
@@ -66,6 +67,7 @@ describe('CreatePrescriptionModelComponent', () => {
         MatIconModule,
         NoopAnimationsModule,
         ReactiveFormsModule,
+        MatIconTestingModule,
       ],
       providers: [
         { provide: PrescriptionModelState, useValue: mockModelState },
@@ -221,9 +223,9 @@ describe('CreatePrescriptionModelComponent', () => {
       fixture.detectChanges();
 
       const alerts = fixture.debugElement.queryAll(By.css('app-alert'));
-      const successAlert = alerts.find(alert => alert.componentInstance.alert === 'success');
+      const successAlert = alerts.find(alert => alert.componentInstance.alert() === 'success');
       expect(successAlert).toBeTruthy();
-      expect(successAlert?.componentInstance.message).toBe('prescription.model.create.success');
+      expect(successAlert?.componentInstance.message()).toBe('prescription.model.create.success');
     });
 
     it('should show spinner when modelState is LOADING', () => {
@@ -291,11 +293,6 @@ describe('CreatePrescriptionModelComponent', () => {
         ),
       });
       fixture.detectChanges();
-
-      // const errorDiv = fixture.nativeElement.textContent;
-      // expect(errorDiv).toContain('Failed to load prescription form template');
-
-      //prescription.errors.failedToLoadTemplate
 
       const alerts = fixture.debugElement.queryAll(By.css('app-alert'));
 
@@ -378,7 +375,7 @@ describe('CreatePrescriptionModelComponent', () => {
       expect(errorElement.nativeElement.textContent).toContain('common.mandatory');
     });
 
-    it('should show unique name error when name is not unique', fakeAsync(() => {
+    it('should show unique name error when name is not unique', async () => {
       mockNameValidator.validate = jest.fn().mockReturnValue(of({ uniqueName: true }));
 
       component.prescriptionForm = createMockPrescriptionForm({
@@ -404,12 +401,12 @@ describe('CreatePrescriptionModelComponent', () => {
       component.titleControl.setValue('Duplicate Name');
       component.titleControl.markAsTouched();
 
-      tick(100);
       fixture.detectChanges();
+      await fixture.whenStable();
 
       const errorElement = fixture.debugElement.query(By.css('mat-error'));
       expect(errorElement).toBeTruthy();
-    }));
+    });
 
     it('should set originalName signal on ngOnChanges', () => {
       component.prescriptionForm = createMockPrescriptionForm({

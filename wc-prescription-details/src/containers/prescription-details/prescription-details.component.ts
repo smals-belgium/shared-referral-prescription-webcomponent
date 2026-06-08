@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   CUSTOM_ELEMENTS_SCHEMA,
@@ -73,7 +74,6 @@ import {
   TemplateVersion,
 } from '@reuse/code/openapi';
 import { HttpErrorResponse } from '@angular/common/http';
-import { MatChip } from '@angular/material/chips';
 import { EvfTranslateService, FormTranslations } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { PrescriptionDetailsMainComponent } from '../../components/prescription-details-main/prescription-details-main.component';
 import { PrescriptionDetailsSecondaryComponent } from '../../components/prescription-details-secondary/prescription-details-secondary.component';
@@ -90,7 +90,6 @@ import { PrescriptionDetailsActionsComponent } from '../../components/prescripti
 import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
 import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
 import { formatToEvfLangCode } from '@reuse/code/evf/utils/evf-utils';
-import { InfoDetailComponent } from '@reuse/code/evf/components/info/detail/info-detail.component';
 
 export interface ViewState {
   prescription: ReadRequestResource;
@@ -115,16 +114,15 @@ export interface ViewState {
     MatIconModule,
     TranslateModule,
     TemplateNamePipe,
-    MatChip,
     PrescriptionDetailsMainComponent,
     PrescriptionDetailsSecondaryComponent,
     PrescriptionDetailsBottomComponent,
     MatMenuModule,
     PrescriptionDetailsActionsComponent,
-    InfoDetailComponent,
   ],
   providers: [EvfTranslateService],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDestroy {
   private readonly _translate = inject(TranslateService);
@@ -230,11 +228,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
             .subscribe({
               next: template => {
                 this.infoElements = [];
-                template.elements?.forEach(element => {
-                  if (element.viewType === 'info') {
-                    this.infoElements.push(element);
-                  }
-                });
+                this.getInfoElemnts(template);
               },
             });
         }
@@ -319,7 +313,9 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       'close',
       'cancel',
       'arrow_forward_ios',
-      'info'
+      'info',
+      'person',
+      'warning'
     );
 
     this.generatedUUID.set(uuidv4());
@@ -353,25 +349,41 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['services']) {
-      this._authService.init(this.services.getAccessToken, this.services.getIdToken);
-      this._accessMatrixStateService.loadAccessMatrix();
-      this._templatesStateService.loadTemplates();
-      this._prescriptionSecondaryService.services = this.services;
-    }
-    if (changes['lang']) {
-      const currentLang: string = (changes['lang'].currentValue ?? '') as string;
-      this._languageChange.next(currentLang);
-    }
+    if (changes['services']) this.handleServicesChange();
+    if (changes['lang']) this._languageChange.next(this.lang ?? '');
+    if (changes['intent']) this._prescriptionSecondaryService.intent.set(this.intent);
 
     if (changes['prescriptionId'] || changes['patientSsin']) {
+      this.handlePrescriptionOrSsinChange(changes);
+    }
+  }
+
+  private handleServicesChange(): void {
+    this._authService.init(this.services.getAccessToken, this.services.getIdToken);
+    this._accessMatrixStateService.loadAccessMatrix();
+    this._templatesStateService.loadTemplates();
+    this._prescriptionSecondaryService.services = this.services;
+  }
+
+  private handlePrescriptionOrSsinChange(changes: SimpleChanges): void {
+    const hasValidPrescriptionId = isPrescriptionId(this.prescriptionId);
+    const hasValidShortCode = isPrescriptionShortCode(this.prescriptionId) && !!this.patientSsin;
+
+    const shouldHandlePrescriptionChange = changes['prescriptionId'] && (hasValidPrescriptionId || hasValidShortCode);
+    const shouldHandleSsinChange = changes['patientSsin'] && !hasValidPrescriptionId;
+
+    if (shouldHandlePrescriptionChange || shouldHandleSsinChange) {
       this._encryptionStateService.resetCryptoKey();
       this.loadPrescriptionOrProposal();
     }
+  }
 
-    if (changes['intent']) {
-      this._prescriptionSecondaryService.intent.set(this.intent);
-    }
+  private getInfoElemnts(template: TemplateVersion) {
+    template.elements?.forEach(element => {
+      if (element.viewType === 'info') {
+        this.infoElements.push(element);
+      }
+    });
   }
 
   private loadPssStatus(templateCode: string) {

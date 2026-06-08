@@ -3,31 +3,36 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProfessionalSearchFormComponent } from './professional-search-form.component';
 import { CityResource } from '@reuse/code/openapi';
 import { GeographyService } from '@reuse/code/services/api/geography.service';
-import { OrganizationService } from '@reuse/code/services/helpers/organization.service';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TranslateModule } from '@ngx-translate/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { provideNgxMask } from 'ngx-mask';
+import { ProfessionalSearchChipListComponent } from '@reuse/code/components/professional-form/city-chip-list/professional-search-chip-list.component';
 
 describe('ProfessionalSearchFormComponent', () => {
   let component: ProfessionalSearchFormComponent;
   let fixture: ComponentFixture<ProfessionalSearchFormComponent>;
+  let formGroup;
 
   beforeEach(async () => {
+    formGroup = new FormGroup({
+      query: new FormControl<string>(''),
+      cities: new FormControl<CityResource[]>([]),
+    });
     const geographyServiceMock = {
       findAll: jest.fn(),
     };
 
-    const organizationServiceMock = {
-      getGroupNameByCode: jest.fn().mockReturnValue('hospital'),
-    };
-
     await TestBed.configureTestingModule({
-      imports: [ProfessionalSearchFormComponent, ReactiveFormsModule, TranslateModule.forRoot()],
+      imports: [
+        ProfessionalSearchFormComponent,
+        ProfessionalSearchChipListComponent,
+        ReactiveFormsModule,
+        TranslateModule.forRoot(),
+      ],
       providers: [
         { provide: GeographyService, useValue: geographyServiceMock },
-        { provide: OrganizationService, useValue: organizationServiceMock },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
         provideNgxMask(),
@@ -36,6 +41,9 @@ describe('ProfessionalSearchFormComponent', () => {
 
     fixture = TestBed.createComponent(ProfessionalSearchFormComponent);
     component = fixture.componentInstance;
+
+    fixture.componentRef.setInput('formGroup', formGroup);
+
     fixture.detectChanges();
   });
 
@@ -49,36 +57,36 @@ describe('ProfessionalSearchFormComponent', () => {
 
   describe('Form validation', () => {
     it('should be invalid when query and cities are empty', () => {
-      component.formGroup.setValue({
+      component.formGroup().setValue({
         query: '',
         cities: [],
       });
 
-      component.formGroup.updateValueAndValidity();
-      expect(component.formGroup.valid).toBe(false);
+      component.formGroup().updateValueAndValidity();
+      expect(component.formGroup().valid).toBe(false);
     });
 
     it('should be valid with query only', () => {
-      component.formGroup.setValue({
+      component.formGroup().setValue({
         query: 'John',
         cities: [],
       });
 
-      component.formGroup.updateValueAndValidity();
-      expect(component.formGroup.valid).toBe(true);
+      component.formGroup().updateValueAndValidity();
+      expect(component.formGroup().valid).toBe(true);
     });
 
     it('should be valid with cities only', () => {
-      component.formGroup.setValue({
+      component.formGroup().setValue({
         query: '',
         cities: [{ zipCode: 1000, cityName: 'Brussels' } as any],
       });
 
-      component.formGroup.updateValueAndValidity();
-      component.formGroup.get('query')!.updateValueAndValidity();
-      component.formGroup.get('cities')!.updateValueAndValidity();
+      component.formGroup().updateValueAndValidity();
+      component.formGroup().get('query')!.updateValueAndValidity();
+      component.formGroup().get('cities')!.updateValueAndValidity();
 
-      expect(component.formGroup.valid).toBe(true);
+      expect(component.formGroup().valid).toBe(true);
     });
   });
 
@@ -88,11 +96,11 @@ describe('ProfessionalSearchFormComponent', () => {
       const event = { option: { value: city } } as any;
       const input = { value: 'test' } as HTMLInputElement;
 
-      component.formGroup.get('cities')!.setValue([]);
+      component.citiesControl.setValue([]);
 
       component.addCity(event, input);
 
-      expect(component.formGroup.get('cities')!.value).toEqual([city]);
+      expect(component.citiesControl.value).toEqual([city]);
 
       expect(input.value).toBe('');
     });
@@ -100,17 +108,17 @@ describe('ProfessionalSearchFormComponent', () => {
     it('should remove city', () => {
       const city: CityResource = { zipCode: 1000 };
 
-      component.formGroup.get('cities')!.setValue([city]);
+      component.citiesControl.setValue([city]);
 
       component.removeCity(city);
 
-      expect(component.formGroup.get('cities')!.value).toEqual([]);
+      expect(component.citiesControl.value).toEqual([]);
     });
   });
 
-  describe('setValidators (via constructor)', () => {
+  describe('setValidators (via OnInit)', () => {
     it('should require query when no cities are selected', () => {
-      component.cityControl.setValue([]);
+      component.citiesControl.setValue([]);
       component.queryControl.setValue('');
       component.queryControl.updateValueAndValidity();
 
@@ -119,7 +127,7 @@ describe('ProfessionalSearchFormComponent', () => {
     });
 
     it('should not require query when a city is selected', () => {
-      component.cityControl.setValue([{ zipCode: 1000 }]);
+      component.citiesControl.setValue([{ zipCode: 1000 }]);
       component.queryControl.setValue('');
       component.queryControl.updateValueAndValidity();
 
@@ -130,7 +138,7 @@ describe('ProfessionalSearchFormComponent', () => {
   describe('search', () => {
     it('should not emit searchCriteria when form is invalid', () => {
       const emitSpy = jest.spyOn(component.searchCriteria, 'emit');
-      component.cityControl.setValue([]);
+      component.citiesControl.setValue([]);
       component.queryControl.setValue('');
 
       component.search();
@@ -140,14 +148,17 @@ describe('ProfessionalSearchFormComponent', () => {
 
     it('should emit query and zipCodes when form is valid', () => {
       const emitSpy = jest.spyOn(component.searchCriteria, 'emit');
+
+      const mockCities = [{ zipCode: 1000 }, { zipCode: 2000 }];
+
       component.queryControl.setValue('Janssens');
-      component.cityControl.setValue([{ zipCode: 1000 }, { zipCode: 2000 }]);
+      component.citiesControl.setValue(mockCities);
 
       component.search();
 
       expect(emitSpy).toHaveBeenCalledWith({
         query: 'Janssens',
-        zipCodes: [1000, 2000],
+        cities: mockCities,
       });
     });
   });

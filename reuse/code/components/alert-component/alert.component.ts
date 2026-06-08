@@ -1,10 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
-  Input,
+  computed,
+  contentChild,
+  input,
+  model,
   OnChanges,
-  Output,
+  output,
   signal,
   SimpleChanges,
   WritableSignal,
@@ -22,17 +24,19 @@ import { AlertType } from '@reuse/code/interfaces';
   imports: [TranslateModule, MhAlertComponent],
 })
 export class AlertComponent implements OnChanges {
-  readonly genericErrors: Record<number, string> = { 403: 'common.forbiddenResource', 404: 'common.notFoundResource' };
   genericErrorMsgKey?: string;
 
-  @Input() alert: AlertType = AlertType.Error;
-  @Input() title: string = '';
-  @Input() subTitle = '';
-  @Input() message?: string;
-  @Input() showRetry = true;
-  @Input() error?: HttpErrorResponse;
+  alert = model<AlertType>(AlertType.Error);
+  title = model<string>('');
+  subTitle = model<string>('');
+  message = input<string | undefined>();
+  showRetry = model<boolean>(true);
+  error = input<HttpErrorResponse | undefined>();
 
-  @Output() clickRetry = new EventEmitter<void>();
+  clickRetry = output<void>();
+
+  readonly contentRef = contentChild('content');
+  readonly hasContent = computed(() => !!this.contentRef());
 
   showBody: WritableSignal<boolean> = signal(false);
 
@@ -43,14 +47,14 @@ export class AlertComponent implements OnChanges {
   }
 
   private setGenericErrorMsgKey(): void {
-    if (this.error && !this.message && !(this.error.status.toString() in this.genericErrors)) {
-      this.title = 'common.error.default.header';
-      this.subTitle = 'common.error.default.subheader';
-      this.alert = AlertType.Warning;
-      this.showRetry = false;
+    if (this.error?.() && !this.message?.()?.length) {
+      this.title.set('common.error.default.header');
+      this.subTitle.set('common.error.default.subheader');
+      this.alert.set(AlertType.Warning);
+      this.showRetry.set(false);
       this.showBody.set(false);
     } else {
-      this.genericErrorMsgKey = this.error ? this.genericErrors[this.error.status] : undefined;
+      this.genericErrorMsgKey = undefined;
       this.showBody.set(true);
     }
   }

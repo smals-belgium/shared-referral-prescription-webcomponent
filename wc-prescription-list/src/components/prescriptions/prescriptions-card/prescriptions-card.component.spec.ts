@@ -5,7 +5,7 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { DateAdapter, MatNativeDateModule, NativeDateAdapter } from '@angular/material/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { ElementRef, SimpleChange, SimpleChanges } from '@angular/core';
+import { ElementRef } from '@angular/core';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
@@ -14,6 +14,7 @@ import { Discipline, RequestStatus, RequestSummaryListResource, RequestSummaryRe
 import { RequestSummaryDataService } from '@reuse/code/services/helpers/request-summary-data.service';
 import { Intent } from '@reuse/code/interfaces';
 import { By } from '@angular/platform-browser';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 const mockPseudoClient = {
   getDomain: jest.fn(),
@@ -109,6 +110,7 @@ describe('PrescriptionsCardComponent', () => {
           loader: { provide: TranslateLoader, useClass: FakeLoader },
         }),
         MatNativeDateModule,
+        MatIconTestingModule,
       ],
       providers: [
         provideHttpClient(),
@@ -144,33 +146,35 @@ describe('PrescriptionsCardComponent', () => {
   });
 
   it('should calculate itemsLength correctly', () => {
-    component.requestSummaryListResource = undefined;
+    fixture.componentRef.setInput('requestSummaryListResource', undefined);
+
     expect(component.itemsLength).toBe(-1);
 
-    component.requestSummaryListResource = { items: [], total: undefined };
+    fixture.componentRef.setInput('requestSummaryListResource', { items: [], total: undefined });
+
     expect(component.itemsLength).toBe(-1);
 
-    component.requestSummaryListResource = mockRequestSummaryListResource;
+    fixture.componentRef.setInput('requestSummaryListResource', mockRequestSummaryListResource);
+
     expect(component.itemsLength).toBe(1);
   });
 
   it('should initialize data stream when requestSummaryListResource changes with items', () => {
-    component.requestSummaryListResource = mockRequestSummaryListResource;
-    const changes: SimpleChanges = {
-      requestSummaryListResource: new SimpleChange(null, mockRequestSummaryListResource, true),
-    };
-
     jest.spyOn(component as any, 'initializeDataStream');
 
-    component.ngOnChanges(changes);
+    fixture.componentRef.setInput('requestSummaryListResource', mockRequestSummaryListResource);
+
+    fixture.detectChanges();
 
     expect(component['initializeDataStream']).toHaveBeenCalled();
   });
 
   it('should trigger loadMore when anchor element intersects', () => {
     component.requestSummaryListResource = mockRequestSummaryListResource10;
-    component.loading = false;
-    component.error = false;
+    fixture.componentRef.setInput('requestSummaryListResource', mockRequestSummaryListResource10);
+    fixture.componentRef.setInput('loading', false);
+    fixture.componentRef.setInput('error', false);
+
     expect(component.itemsLength).toBe(10);
 
     jest.spyOn(component, 'loadMore');
@@ -193,9 +197,11 @@ describe('PrescriptionsCardComponent', () => {
   });
 
   it('should not trigger loadMore when conditions are not met', () => {
-    component.requestSummaryListResource = mockRequestSummaryListResource10;
-    component.loading = true;
-    component.error = false;
+    fixture.componentRef.setInput('requestSummaryListResource', mockRequestSummaryListResource10);
+
+    fixture.componentRef.setInput('loading', true);
+    fixture.componentRef.setInput('error', false);
+
     expect(component.itemsLength).toBe(10);
 
     jest.spyOn(component, 'loadMore');
@@ -216,9 +222,11 @@ describe('PrescriptionsCardComponent', () => {
   });
 
   it('should not trigger loadMore when not intersecting', () => {
-    component.requestSummaryListResource = mockRequestSummaryListResource10;
-    component.loading = false;
-    component.error = false;
+    fixture.componentRef.setInput('requestSummaryListResource', mockRequestSummaryListResource10);
+
+    fixture.componentRef.setInput('loading', false);
+    fixture.componentRef.setInput('error', false);
+
     expect(component.itemsLength).toBe(10);
 
     jest.spyOn(component, 'loadMore');
@@ -240,11 +248,13 @@ describe('PrescriptionsCardComponent', () => {
 
   it('should determine if more items can be loaded', () => {
     // No resource - should return true
-    component.requestSummaryListResource = undefined;
+    fixture.componentRef.setInput('requestSummaryListResource', undefined);
+
     expect(component.canLoadMore()).toBe(true);
 
     // Has more items to load
-    component.requestSummaryListResource = { items: [mockRequestSummaryResource], total: 10 };
+    fixture.componentRef.setInput('requestSummaryListResource', { items: [mockRequestSummaryResource], total: 10 });
+
     mockDataService.requestSummaryData$.next([mockRequestSummaryResource]);
     expect(component.canLoadMore()).toBe(true);
 
@@ -293,7 +303,7 @@ describe('PrescriptionsCardComponent', () => {
   describe('Template Rendering', () => {
     beforeEach(() => {
       // Set up component with test data
-      component.requestSummaryListResource = mockRequestSummaryListResource;
+      fixture.componentRef.setInput('requestSummaryListResource', mockRequestSummaryListResource);
       mockDataService.requestSummaryData$.next([mockRequestSummaryResource]);
       mockAuthService.isProfessional.mockReturnValue(of(true));
       fixture.detectChanges();
@@ -308,7 +318,8 @@ describe('PrescriptionsCardComponent', () => {
     });
 
     it('should display skeleton loader when loading', () => {
-      component.loading = true;
+      fixture.componentRef.setInput('loading', true);
+
       fixture.detectChanges();
 
       const skeletonElement = fixture.debugElement.nativeElement.querySelector('app-skeleton');
@@ -316,8 +327,9 @@ describe('PrescriptionsCardComponent', () => {
     });
 
     it('should display error alert when in error state', () => {
-      component.error = true;
-      component.errorMsg = 'Test error message';
+      fixture.componentRef.setInput('error', true);
+      fixture.componentRef.setInput('errorMsg', 'Test error message');
+
       fixture.detectChanges();
 
       const errorAlert = fixture.debugElement.nativeElement.querySelector('app-alert');
@@ -368,22 +380,25 @@ describe('PrescriptionsCardComponent', () => {
 
   describe('Intent Flags', () => {
     it('should set isPrescriptionIntent to true when intent is ORDER', () => {
-      component.intent = Intent.ORDER;
-      component.ngOnChanges({ intent: new SimpleChange(null, Intent.ORDER, true) });
+      fixture.componentRef.setInput('intent', Intent.ORDER);
+      fixture.detectChanges();
       expect(component.isPrescriptionIntent).toBe(true);
       expect(component.isProposalIntent).toBe(false);
     });
 
     it('should set isProposalIntent to true when intent is PROPOSAL', () => {
-      component.intent = Intent.PROPOSAL;
-      component.ngOnChanges({ intent: new SimpleChange(null, Intent.PROPOSAL, true) });
+      fixture.componentRef.setInput('intent', Intent.PROPOSAL);
+      fixture.detectChanges();
+
       expect(component.isPrescriptionIntent).toBe(false);
       expect(component.isProposalIntent).toBe(true);
     });
 
     it('should set both flags to false when intent is neither ORDER nor PROPOSAL', () => {
-      component.intent = Intent.MODEL;
-      component.ngOnChanges({ intent: new SimpleChange(null, Intent.MODEL, true) });
+      fixture.componentRef.setInput('intent', Intent.MODEL);
+
+      fixture.detectChanges();
+
       expect(component.isPrescriptionIntent).toBe(false);
       expect(component.isProposalIntent).toBe(false);
     });
@@ -392,16 +407,15 @@ describe('PrescriptionsCardComponent', () => {
   // --- Empty state alert tests ---
   describe('Empty State Alerts based on Intent', () => {
     beforeEach(() => {
-      component.requestSummaryListResource = { items: [], total: 0 };
+      fixture.componentRef.setInput('requestSummaryListResource', { items: [], total: 0 });
       mockDataService.requestSummaryData$.next([]);
     });
 
     it('should display prescription alert with patient message when user is professional', () => {
       mockAuthService.isProfessional.mockReturnValue(of(true));
-      component.isPrescriptionIntent = true;
-      component.isProposalIntent = false;
+      fixture.componentRef.setInput('intent', Intent.ORDER);
+
       fixture.detectChanges();
-      const alertElement = fixture.debugElement.nativeElement.querySelector('app-alert');
 
       const footer = fixture.debugElement.query(By.css('div[alert-details]'));
       const footerText = footer.nativeElement.textContent;
@@ -411,19 +425,19 @@ describe('PrescriptionsCardComponent', () => {
 
     it('should display proposal alert with patient message when user is professional', () => {
       mockAuthService.isProfessional.mockReturnValue(of(true));
-      component.isPrescriptionIntent = false;
-      component.isProposalIntent = true;
+
+      fixture.componentRef.setInput('intent', Intent.PROPOSAL);
+
       fixture.detectChanges();
-      const alertElement = fixture.debugElement.nativeElement.querySelector('app-alert');
       const footer = fixture.debugElement.query(By.css('div[alert-details]'));
       const footerText = footer.nativeElement.textContent;
 
       expect(footerText).toContain('proposal.noProposalsForPatient');
     });
 
-    it('should not display any alert if both flags are false', () => {
-      component.isPrescriptionIntent = false;
-      component.isProposalIntent = false;
+    it('should not display any alert intent is undefined', () => {
+      fixture.componentRef.setInput('intent', undefined);
+
       fixture.detectChanges();
       expect(fixture.debugElement.nativeElement.querySelector('app-alert')).toBeNull();
     });

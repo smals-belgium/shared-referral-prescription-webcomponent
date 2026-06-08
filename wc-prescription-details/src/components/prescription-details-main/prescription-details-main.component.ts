@@ -1,4 +1,4 @@
-import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, inject, Signal } from '@angular/core';
 import { DatePipe } from '@reuse/code/pipes/date.pipe';
 import { ProfessionalDisplayComponent } from '@reuse/code/components/professional-display/professional-display.component';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -32,6 +32,7 @@ import { mapDisplayStatusToColor } from '@reuse/code/utils/request-status-displa
   styleUrl: './prescription-details-main.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrescriptionDetailsMainComponent {
   private readonly _service = inject(PrescriptionDetailsSecondaryService);

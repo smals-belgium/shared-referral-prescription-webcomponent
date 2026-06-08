@@ -35,7 +35,7 @@ describe('PrescriptionDetailsBeneficiaryComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render patient and prescription info', () => {
+  it('should render patient and prescription info', async () => {
     const mockPatient: PersonResource = {
       firstName: 'Alice',
       lastName: 'Smith',
@@ -47,9 +47,10 @@ describe('PrescriptionDetailsBeneficiaryComponent', () => {
       shortCode: 'RX123',
     } as ReadRequestResource;
 
-    component.patient = mockPatient;
-    component.prescription = mockPrescription;
+    fixture.componentRef.setInput('patient', mockPatient);
+    fixture.componentRef.setInput('prescription', mockPrescription);
     fixture.detectChanges();
+    await fixture.whenStable();
 
     // Verify rendered text
     expect(element.textContent).toContain('prescription.beneficiary');
@@ -60,8 +61,9 @@ describe('PrescriptionDetailsBeneficiaryComponent', () => {
   });
 
   it('should handle missing patient and prescription gracefully', () => {
-    component.patient = undefined;
-    component.prescription = undefined;
+    fixture.componentRef.setInput('patient', undefined);
+    fixture.componentRef.setInput('prescription', undefined);
+
     fixture.detectChanges();
 
     // Still renders the static label

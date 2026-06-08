@@ -13,7 +13,7 @@ import { Discipline, ModelEntityDto, PageModelEntityDto } from '@reuse/code/open
 import { FormatEnum } from '@reuse/code/components/progress-indicators/skeleton/skeleton.component';
 import { ElementRef, SimpleChanges } from '@angular/core';
 import { Intent } from '@reuse/code/interfaces';
-import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 const mockConfigService = {
   getEnvironment: jest.fn(),
@@ -97,6 +97,7 @@ describe('PrescriptionsModelsCardComponent', () => {
         TranslateModule.forRoot({
           loader: { provide: TranslateLoader, useClass: FakeLoader },
         }),
+        MatIconTestingModule,
       ],
       providers: [
         provideHttpClient(),
@@ -312,7 +313,7 @@ describe('PrescriptionsModelsCardComponent', () => {
   describe('Template Rendering', () => {
     beforeEach(() => {
       // Set up component with test data
-      component.modelEntityPage = mockModelEntityPage;
+      fixture.componentRef.setInput('modelEntityPage', mockModelEntityPage);
       mockDataService.modelEntityData$.next([mockModelEntityDto]);
       mockAuthService.isProfessional.mockReturnValue(of(true));
       fixture.detectChanges();
@@ -324,7 +325,7 @@ describe('PrescriptionsModelsCardComponent', () => {
     });
 
     it('should display no models, but alert when no items available', () => {
-      component.modelEntityPage = { content: [], numberOfElements: 0 };
+      fixture.componentRef.setInput('modelEntityPage', { content: [], numberOfElements: 0 });
       mockDataService.modelEntityData$.next([]);
       fixture.detectChanges();
 
@@ -333,7 +334,7 @@ describe('PrescriptionsModelsCardComponent', () => {
     });
 
     it('should display skeleton loader when loading', () => {
-      component.loading = true;
+      fixture.componentRef.setInput('loading', true);
       fixture.detectChanges();
 
       const skeletonElement = fixture.debugElement.nativeElement.querySelector('app-skeleton');
@@ -341,8 +342,8 @@ describe('PrescriptionsModelsCardComponent', () => {
     });
 
     it('should display error alert when in error state', () => {
-      component.error = true;
-      component.errorMsg = 'Test error message';
+      fixture.componentRef.setInput('error', true);
+      fixture.componentRef.setInput('errorMsg', 'Test error message');
       fixture.detectChanges();
 
       const errorAlert = fixture.debugElement.nativeElement.querySelector('app-alert');

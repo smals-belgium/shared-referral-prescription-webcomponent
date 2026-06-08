@@ -7,6 +7,7 @@ import { FhirR4TaskStatus } from '@reuse/code/openapi';
 import { PrescriptionDetailsSecondaryService } from '../prescription-details-secondary.service';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 describe('PrescriptionDetailsCaregiverListComponent', () => {
   let component: PrescriptionDetailsCaregiverListComponent;
@@ -70,7 +71,12 @@ describe('PrescriptionDetailsCaregiverListComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [PrescriptionDetailsCaregiverListComponent, NoopAnimationsModule, TranslateModule.forRoot()],
+      imports: [
+        PrescriptionDetailsCaregiverListComponent,
+        NoopAnimationsModule,
+        TranslateModule.forRoot(),
+        MatIconTestingModule,
+      ],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),

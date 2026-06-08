@@ -1,6 +1,5 @@
-import { importProvidersFrom } from '@angular/core';
+import { importProvidersFrom, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
 import { WcConfigurationService } from '@reuse/code/services/config/wc-configuration.service';
@@ -13,40 +12,42 @@ import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-transl
 import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-compiler';
 import { providePseudonymisation } from '@reuse/code/providers/pseudo.provider';
 import { provideOpenApi } from '@reuse/code/providers/open-api.provider';
-import { OverlayContainer } from '@angular/cdk/overlay';
-import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { AppPrescriptionDetails } from './app/app';
 import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
+import { provideShadowDom } from '@reuse/code/shadow-dom/shadow-dom.provider';
 
-bootstrapApplication(AppPrescriptionDetails, {
-  providers: [
-    provideCore(),
-    provideHttpClient(withInterceptors([demoHttpInterceptor, apiUrlInterceptor])),
-    providePseudonymisation(),
-    {
-      provide: ConfigurationService,
-      useClass: WcConfigurationService,
-    },
-    {
-      provide: AuthService,
-      useClass: WcAuthService,
-    },
-    {
-      provide: OverlayContainer,
-      useClass: ShadowDomOverlayContainer,
-    },
-    provideOpenApi(),
-    importProvidersFrom(
-      TranslateModule.forRoot({
-        loader: {
-          provide: TranslateLoader,
-          useClass: WcTranslateLoader,
-        },
-        compiler: {
-          provide: TranslateCompiler,
-          useClass: TranslateMessageFormatCompiler,
-        },
-      })
-    ),
-  ],
-}).catch(err => console.error(err));
+try {
+  await bootstrapApplication(AppPrescriptionDetails, {
+    providers: [
+      provideZonelessChangeDetection(),
+      provideBrowserGlobalErrorListeners(),
+      provideCore(),
+      provideHttpClient(withInterceptors([demoHttpInterceptor, apiUrlInterceptor])),
+      providePseudonymisation(),
+      {
+        provide: ConfigurationService,
+        useClass: WcConfigurationService,
+      },
+      {
+        provide: AuthService,
+        useClass: WcAuthService,
+      },
+      provideShadowDom(),
+      provideOpenApi(),
+      importProvidersFrom(
+        TranslateModule.forRoot({
+          loader: {
+            provide: TranslateLoader,
+            useClass: WcTranslateLoader,
+          },
+          compiler: {
+            provide: TranslateCompiler,
+            useClass: TranslateMessageFormatCompiler,
+          },
+        })
+      ),
+    ],
+  });
+} catch (err) {
+  console.error(err);
+}

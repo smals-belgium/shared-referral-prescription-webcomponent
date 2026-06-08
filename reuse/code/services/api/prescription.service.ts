@@ -5,6 +5,7 @@ import {
   AssignOrganizationResource,
   CreateRequestResource,
   PrescriptionService as ApiPrescriptionService,
+  ReasonResource,
 } from '@reuse/code/openapi';
 
 @Injectable({ providedIn: 'root' })
@@ -34,8 +35,8 @@ export class PrescriptionService {
     return this.api.getPrescriptionByShortCode(ssin, shortCode);
   }
 
-  cancel(prescriptionId: string, generatedUUID: string) {
-    return this.api.cancelPrescription(prescriptionId, generatedUUID);
+  cancel(prescriptionId: string, reason: ReasonResource, generatedUUID: string) {
+    return this.api.cancelPrescription(prescriptionId, generatedUUID, reason);
   }
 
   assignCaregiver(

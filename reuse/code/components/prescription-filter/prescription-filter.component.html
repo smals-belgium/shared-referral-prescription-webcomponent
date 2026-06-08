@@ -1,18 +1,18 @@
 <form [formGroup]="formGroup" (ngSubmit)="onSubmit()" class="filter-form">
-  @if (statusOptions) {
+  @if (statusOptions().length > 0) {
     <app-multiselect
       label="{{ 'prescription.filter.status.label' | translate }}"
       key="status"
       [formGroup]="formGroup"
-      [data]="statusOptions"
+      [data]="statusOptions()"
       [initialValue]="initialFilter.status"
     ></app-multiselect>
-  } @if (templateOptions) {
+  } @if (templateOptions().length > 0) {
   <app-multiselect
     label="{{ 'prescription.filter.prescriptionType.label' | translate }}"
     key="prescriptionType"
     [formGroup]="formGroup"
-    [data]="templateOptions"
+    [data]="templateOptions()"
     [initialValue]="initialFilter.prescriptionType"
   ></app-multiselect>
   }

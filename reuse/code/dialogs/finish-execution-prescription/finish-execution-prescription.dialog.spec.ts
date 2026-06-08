@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -14,7 +14,11 @@ import { PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi'
 import { provideLuxonDateAdapter } from '@angular/material-luxon-adapter';
 
 @Pipe({ name: 'appDate', standalone: true })
-class MockDatePipe implements PipeTransform { transform(v: any) { return v; } }
+class MockDatePipe implements PipeTransform {
+  transform(v: any) {
+    return v;
+  }
+}
 @Component({ selector: 'app-overlay-spinner', template: '', standalone: true })
 class MockOverlaySpinnerComponent {}
 @Component({ selector: 'app-alert', template: '', standalone: true })
@@ -35,8 +39,15 @@ describe('FinishExecutionPrescriptionDialog', () => {
   beforeEach(async () => {
     jest.spyOn(uuid, 'v4').mockReturnValue('uuid-123' as any);
     await TestBed.configureTestingModule({
-      imports: [FinishExecutionPrescriptionDialog, NoopAnimationsModule, ReactiveFormsModule,
-        TranslateModule.forRoot(), MockDatePipe, MockOverlaySpinnerComponent, MockAlertComponent],
+      imports: [
+        FinishExecutionPrescriptionDialog,
+        NoopAnimationsModule,
+        ReactiveFormsModule,
+        TranslateModule.forRoot(),
+        MockDatePipe,
+        MockOverlaySpinnerComponent,
+        MockAlertComponent,
+      ],
       providers: [
         { provide: ToastService, useValue: mockToastService },
         { provide: PrescriptionState, useValue: mockPrescriptionState },
@@ -44,25 +55,29 @@ describe('FinishExecutionPrescriptionDialog', () => {
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
         provideLuxonDateAdapter(),
       ],
-    }).overrideComponent(FinishExecutionPrescriptionDialog, {
-      remove: { imports: [] },
-      add: { imports: [MockDatePipe, MockOverlaySpinnerComponent, MockAlertComponent] },
-    }).compileComponents();
+    })
+      .overrideComponent(FinishExecutionPrescriptionDialog, {
+        remove: { imports: [] },
+        add: { imports: [MockDatePipe, MockOverlaySpinnerComponent, MockAlertComponent] },
+      })
+      .compileComponents();
     fixture = TestBed.createComponent(FinishExecutionPrescriptionDialog);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should finish execution successfully', fakeAsync(() => {
+  it('should finish execution successfully', () => {
     const endDate = DateTime.now();
     component.formGroup.patchValue({ endDate });
     mockPrescriptionState.finishPrescriptionExecution.mockReturnValue(of(void 0));
     component.finishExecution();
-    tick();
     expect(mockPrescriptionState.finishPrescriptionExecution).toHaveBeenCalledWith(
-      'prescriptionId', 'performerTaskId', { endDate: endDate.toFormat('yyyy-MM-dd') }, 'uuid-123'
+      'prescriptionId',
+      'performerTaskId',
+      { endDate: endDate.toFormat('yyyy-MM-dd') },
+      'uuid-123'
     );
     expect(mockToastService.show).toHaveBeenCalledWith('prescription.finishExecution.success');
     expect(mockDialogRef.close).toHaveBeenCalledWith(true);
-  }));
+  });
 });

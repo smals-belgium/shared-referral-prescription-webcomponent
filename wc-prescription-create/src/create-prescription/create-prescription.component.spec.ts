@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -26,7 +26,7 @@ import { By } from '@angular/platform-browser';
 import { ConfirmDialog } from '@reuse/code/dialogs/confirm/confirm.dialog';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { CancelCreationDialog } from '@reuse/code/dialogs/cancel-creation/cancel-creation.dialog';
-import { Discipline, PersonResource, ReadRequestResource, ReferralTaskResource, Role } from '@reuse/code/openapi';
+import { Discipline, OIDC, PersonResource, ReadRequestResource, ReferralTaskResource, Role } from '@reuse/code/openapi';
 import { PssService } from '@reuse/code/services/api/pss.service';
 import { EncryptionKeyInitializerService } from '@reuse/code/states/privacy/encryption-key-initializer.service';
 import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
@@ -34,6 +34,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
 import { Lang } from '@reuse/code/constants/languages';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 jest.spyOn(MatDialog.prototype, 'open').mockImplementation(
   () =>
@@ -82,6 +83,7 @@ const mockAuthService = {
   discipline: jest.fn(() => of(Discipline.Physician)),
   getAccessToken: jest.fn(() => of('')),
   role: jest.fn(() => of(Role.Prescriber)),
+  oidc: jest.fn(() => of(OIDC.Hospital)),
 } as jest.Mocked<AuthService>;
 
 const mockPssService = {
@@ -159,6 +161,7 @@ describe('CreatePrescriptionWebComponent', () => {
         MatDatepickerModule,
         MatDialogModule,
         NoopAnimationsModule,
+        MatIconTestingModule,
       ],
       providers: [
         provideHttpClient(),
@@ -250,7 +253,7 @@ describe('CreatePrescriptionWebComponent', () => {
   });
 
   describe('Publish prescriptions', () => {
-    it('should call publishOnePrescription when one prescription form is present and valid', fakeAsync(() => {
+    it('should call publishOnePrescription when one prescription form is present and valid', () => {
       createFixture('mockPseudomizedKey');
 
       //1 form
@@ -272,8 +275,8 @@ describe('CreatePrescriptionWebComponent', () => {
       expect(mockPublishOnePrescription).toHaveBeenCalled();
 
       expect(emitPrescriptionCreated).toHaveBeenCalledWith(['123']);
-    }));
-    it('should call publishMultiplePrescriptions when more then one prescription form is present and valid', fakeAsync(() => {
+    });
+    it('should call publishMultiplePrescriptions when more then one prescription form is present and valid', () => {
       createFixture('mockPseudomizedKey');
 
       //2 forms
@@ -291,7 +294,34 @@ describe('CreatePrescriptionWebComponent', () => {
 
       expect(mockPublish).toHaveBeenCalled();
       expect(mockPublishMultiplePrescriptions).toHaveBeenCalled();
-    }));
+    });
+    it('should not publish and not emit when prescription form has validation errors', () => {
+      createFixture('mockPseudomizedKey');
+      const mockValidationErrors = { someField: ['required'] };
+
+      component.prescriptionForms.set([
+        {
+          elementGroup: {
+            markAllAsTouched: jest.fn(),
+            valid: false,
+            getOutputValue: jest.fn(),
+            getAllValidationErrors: () => mockValidationErrors,
+          } as unknown as ElementGroup,
+          errors: mockValidationErrors,
+          submitted: false,
+        } as unknown as CreatePrescriptionForm,
+      ]);
+
+      const emitPrescriptionCreated = jest.spyOn(component.prescriptionsCreated, 'emit');
+      const mockPublishOnePrescription = jest.spyOn(component as any, 'publishOnePrescriptionOrProposal');
+      const mockPublishMultiplePrescriptions = jest.spyOn(component as any, 'publishMultiplePrescriptionsOrProposals');
+
+      component.publishPrescriptions();
+
+      expect(mockPublishOnePrescription).not.toHaveBeenCalled();
+      expect(mockPublishMultiplePrescriptions).not.toHaveBeenCalled();
+      expect(emitPrescriptionCreated).not.toHaveBeenCalled();
+    });
   });
 
   describe('dialog management', () => {
@@ -308,7 +338,7 @@ describe('CreatePrescriptionWebComponent', () => {
       expect(dialog.open).toHaveBeenCalled();
     });
 
-    it('should call findModelById when result has modelId and templateCode', fakeAsync(() => {
+    it('should call findModelById when result has modelId and templateCode', () => {
       createFixture('mockPseudomizedKey');
 
       const mockResult = {
@@ -325,11 +355,10 @@ describe('CreatePrescriptionWebComponent', () => {
       const findModelByIdSpy = jest.spyOn(component as any, 'findModelById').mockImplementation(() => {});
 
       (component as any).addPrescription();
-      tick();
 
       expect(findModelByIdSpy).toHaveBeenCalledWith('TEMPLATE_001', 42);
       expect(findModelByIdSpy).toHaveBeenCalledTimes(1);
-    }));
+    });
 
     it('should NOT open the dialog when addPrescription is called and discipline is Nurse', async () => {
       createFixture('mockPseudomizedKey');
@@ -597,15 +626,15 @@ describe('CreatePrescriptionWebComponent', () => {
   describe('error handling', () => {
     it('should reset the errorCard properties when closeErrorCard is called', () => {
       createFixture('mockPseudomizedKey');
-      component.errorCard = {
+      component.errorCard.set({
         show: true,
         message: 'Some error occurred',
         errorResponse: { error: 'Some error details' } as HttpErrorResponse,
-      };
+      });
 
       component.closeErrorCard();
 
-      expect(component.errorCard).toEqual({
+      expect(component.errorCard()).toEqual({
         show: false,
         message: '',
         errorResponse: undefined,
@@ -627,7 +656,7 @@ describe('CreatePrescriptionWebComponent', () => {
       };
       component.handleCreateBulkResultExtended(results);
 
-      expect(component.errorCard).toEqual({
+      expect(component.errorCard()).toEqual({
         show: true,
         message: 'prescription.create.allFailed',
         translationOptions: { count: 2 },
@@ -658,7 +687,7 @@ describe('CreatePrescriptionWebComponent', () => {
       };
       component.handleCreateBulkResultExtended(results);
 
-      expect(component.errorCard).toEqual({
+      expect(component.errorCard()).toEqual({
         show: true,
         message: 'proposal.create.allFailed',
         translationOptions: { count: 2 },
@@ -1260,7 +1289,7 @@ describe('CreatePrescriptionWebComponent', () => {
       };
       component.handleCreateBulkResultExtended(results);
 
-      expect(component.errorCard).toEqual({
+      expect(component.errorCard()).toEqual({
         show: true,
         message: 'prescription.create.someSuccessSomeFailed',
         translationOptions: { successCount: 1, failedCount: 1 },
@@ -1288,7 +1317,7 @@ describe('CreatePrescriptionWebComponent', () => {
       };
       component.handleCreateBulkResultExtended(results);
 
-      expect(component.errorCard).toEqual({
+      expect(component.errorCard()).toEqual({
         show: true,
         message: 'proposal.create.someSuccessSomeFailed',
         translationOptions: { successCount: 1, failedCount: 1 },
@@ -1314,7 +1343,10 @@ describe('CreatePrescriptionWebComponent', () => {
           isFirstChange: () => false,
         },
       };
-      component.services = { getAccessToken: jest.fn() };
+      component.services = {
+        getAccessToken: jest.fn(),
+        getIdToken: jest.fn().mockResolvedValue({ userProfile: { ssin: '12345' } }),
+      };
       component.ngOnChanges(changes);
       getTemplates();
       getAccessMatrix();
@@ -1389,7 +1421,10 @@ describe('CreatePrescriptionWebComponent', () => {
           isFirstChange: () => true,
         },
       };
-      component.services = { getAccessToken: jest.fn() };
+      component.services = {
+        getAccessToken: jest.fn(),
+        getIdToken: jest.fn().mockResolvedValue({ userProfile: { ssin: '12345' } }),
+      };
       component.ngOnChanges(changes);
       getTemplates();
       getAccessMatrix();
@@ -1568,7 +1603,7 @@ describe('CreatePrescriptionWebComponent', () => {
       expect(alertData?.body).toBe('In the meantime, you can view the content in Dutch or French.');
     });
 
-    it('should handle missing translation for unknown language', fakeAsync(() => {
+    it('should handle missing translation for unknown language', () => {
       createFixture('mockPseudomizedKey');
       jest.spyOn(translate, 'use').mockReturnValue(throwError(() => new Error('Missing translation')));
 
@@ -1579,7 +1614,7 @@ describe('CreatePrescriptionWebComponent', () => {
       const alertData = component.langAlertData();
       expect(alertData?.title).toBe('Unknown lang');
       expect(alertData?.body).toContain(unknownLang);
-    }));
+    });
   });
 
   describe('ngOnInit tests', () => {
@@ -1657,7 +1692,7 @@ describe('CreatePrescriptionWebComponent', () => {
     });
 
     describe('findModelById', () => {
-      it('should call addPrescriptionFormByModel when model is found', fakeAsync(() => {
+      it('should call addPrescriptionFormByModel when model is found', () => {
         createFixture('mockPseudomizedKey');
 
         const templateCode = 'TEMPLATE_001';
@@ -1670,14 +1705,13 @@ describe('CreatePrescriptionWebComponent', () => {
         const loadingSpy = jest.spyOn(component['loading'], 'set');
 
         (component as any).findModelById(templateCode, modelId);
-        tick();
 
         expect(addFormSpy).toHaveBeenCalledWith(templateCode, mockModel);
         expect(loadingSpy).toHaveBeenCalledWith(false);
         expect(loadingSpy).toHaveBeenCalledTimes(1);
-      }));
+      });
 
-      it('should show error toast when model is null', fakeAsync(() => {
+      it('should show error toast when model is null', () => {
         createFixture('mockPseudomizedKey');
 
         const templateCode = 'TEMPLATE_001';
@@ -1690,15 +1724,14 @@ describe('CreatePrescriptionWebComponent', () => {
         const loadingSpy = jest.spyOn(component['loading'], 'set');
 
         (component as any).findModelById(templateCode, modelId);
-        tick();
 
         expect(addFormSpy).not.toHaveBeenCalled();
         expect(toastSpy).toHaveBeenCalled();
         expect(loadingSpy).toHaveBeenCalledWith(false);
         expect(loadingSpy).toHaveBeenCalledTimes(1);
-      }));
+      });
 
-      it('should show error toast when service throws error', fakeAsync(() => {
+      it('should show error toast when service throws error', () => {
         createFixture('mockPseudomizedKey');
 
         const templateCode = 'TEMPLATE_001';
@@ -1712,15 +1745,14 @@ describe('CreatePrescriptionWebComponent', () => {
         const loadingSpy = jest.spyOn(component['loading'], 'set');
 
         (component as any).findModelById(templateCode, modelId);
-        tick();
 
         expect(addFormSpy).not.toHaveBeenCalled();
         expect(toastSpy).toHaveBeenCalled();
         expect(loadingSpy).toHaveBeenCalledWith(false);
         expect(loadingSpy).toHaveBeenCalledTimes(1);
-      }));
+      });
 
-      it('should call prescriptionModelService.findById with correct modelId', fakeAsync(() => {
+      it('should call prescriptionModelService.findById with correct modelId', () => {
         createFixture('mockPseudomizedKey');
 
         const modelId = 123;
@@ -1731,11 +1763,10 @@ describe('CreatePrescriptionWebComponent', () => {
           .mockReturnValue(of(null) as any);
 
         (component as any).findModelById(templateCode, modelId);
-        tick();
 
         expect(findByIdSpy).toHaveBeenCalledWith(modelId);
         expect(findByIdSpy).toHaveBeenCalledTimes(1);
-      }));
+      });
     });
 
     describe('init icons', () => {
@@ -1753,7 +1784,12 @@ describe('CreatePrescriptionWebComponent', () => {
           'info',
           'do_not_disturb_on',
           'add_circle',
-          'close'
+          'close',
+          'keyboard_arrow_up',
+          'keyboard_arrow_down',
+          'warning',
+          'emergency_home',
+          'notifications'
         );
       });
     });

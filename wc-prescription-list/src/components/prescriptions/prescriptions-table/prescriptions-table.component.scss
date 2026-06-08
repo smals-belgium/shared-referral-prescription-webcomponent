@@ -18,7 +18,7 @@ tr.no-data {
   height: var(--mh-table-empty-footer-container-height, 0);
 }
 
-span.info{
+span.info {
   display: block;
   @include mh.font-extra-small-regular();
   color: mh.$typography-brand-neutral-dark;

@@ -49,7 +49,8 @@ export function prescriptionResponse(
   performerTask?.forEach(p => {
     if (!p?.careGiverSsin) return;
 
-    (performerTasks[p.careGiverSsin] ??= []).push(p);
+    performerTasks[p.careGiverSsin] ??= [];
+    performerTasks[p.careGiverSsin].push(p);
   });
 
   return {

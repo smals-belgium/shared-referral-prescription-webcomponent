@@ -6,6 +6,6 @@
     "types": [],
     "resolveJsonModule": true
   },
-  "files": ["src/main-serve.ts", "src/polyfills.ts"],
+  "files": ["src/main-serve.ts"],
   "include": ["src/**/*.d.ts", "../reuse/code/constants/global.d.ts"]
 }

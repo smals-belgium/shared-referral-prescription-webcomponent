@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -69,10 +69,9 @@ describe('RestartExecutionPrescriptionDialog', () => {
     jest.clearAllMocks();
   });
 
-  it('should restart execution successfully', fakeAsync(() => {
+  it('should restart execution successfully', () => {
     mockPrescriptionState.restartExecution.mockReturnValue(of(void 0));
     component.restartExecution();
-    tick();
     expect(mockPrescriptionState.restartExecution).toHaveBeenCalledWith(
       'prescriptionId',
       'performerTaskId',
@@ -80,7 +79,7 @@ describe('RestartExecutionPrescriptionDialog', () => {
     );
     expect(mockToastService.show).toHaveBeenCalledWith('prescription.restartExecution.success');
     expect(mockDialogRef.close).toHaveBeenCalledWith(true);
-  }));
+  });
 
   it('should show error when prescription id missing', () => {
     component.prescription.id = undefined;
@@ -96,13 +95,12 @@ describe('RestartExecutionPrescriptionDialog', () => {
     expect(spy).toHaveBeenCalledWith('common.somethingWentWrong');
   });
 
-  it('should handle API error', fakeAsync(() => {
+  it('should handle API error', () => {
     const error = new HttpErrorResponse({ status: 500 });
     const spy = jest.spyOn(component as any, 'showErrorCard');
     mockPrescriptionState.restartExecution.mockReturnValue(throwError(() => error));
     component.restartExecution();
-    tick();
     expect(component.loading).toBe(false);
     expect(spy).toHaveBeenCalledWith('common.somethingWentWrong');
-  }));
+  });
 });

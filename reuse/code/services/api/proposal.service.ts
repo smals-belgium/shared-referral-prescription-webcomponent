@@ -73,8 +73,8 @@ export class ProposalService {
     return this.api.approveProposal(proposalId, generatedUUID, reason);
   }
 
-  cancelProposal(proposalId: string, generatedUUID: string) {
-    return this.api.cancelProposal(proposalId, generatedUUID);
+  cancelProposal(proposalId: string, reason: ReasonResource, generatedUUID: string) {
+    return this.api.cancelProposal(proposalId, generatedUUID, reason);
   }
 
   rejectProposal(proposalId: string, reason: ReasonResource, generatedUUID: string) {

@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { UserInfo } from '@reuse/code/interfaces';
 import { PerformerTaskResource, PersonResource, ReadRequestResource } from '@reuse/code/openapi';
 import { PrescriptionDetailsSecondaryService } from '../../prescription-details-secondary/prescription-details-secondary.service';
@@ -29,6 +29,7 @@ import { MatMenuItem } from '@angular/material/menu';
   ],
   templateUrl: './task-button-group.component.html',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaskButtonGroupComponent {
   @Input({ required: true }) currentPerformerTask!: PerformerTaskResource;

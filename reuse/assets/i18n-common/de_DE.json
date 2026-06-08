@@ -269,7 +269,10 @@
       "title": "",
       "message": "",
       "success": "",
-      "reason": ""
+      "reason": "",
+      "info": "",
+      "hint": "",
+      "infoDescription": ""
     },
     "rejectAssignation": {
       "action": "",
@@ -347,7 +350,11 @@
       "invalidShortCode": "",
       "decryptionFailed": "",
       "failedToCreateModel": "",
-      "failedToLoadTemplate": "Failed to load prescription form template."
+      "failedToLoadTemplate": "Failed to load prescription form template.",
+      "errorsInForm": {
+        "title": "",
+        "subTitle": ""
+      }
     },
     "categories": {
       "bandagisterie": "",
@@ -395,7 +402,8 @@
       "searchPerformerPlaceHolder": "",
       "success": "",
       "title": "",
-      "zipCodeOrCityName": ""
+      "zipCodeOrCityName": "",
+      "updateCriteria": ""
     },
     "validityStartDate": ""
   },
@@ -511,7 +519,10 @@
       "title": "",
       "message": "",
       "success": "",
-      "reason": ""
+      "reason": "",
+      "info": "",
+      "hint": "",
+      "infoDescription": ""
     },
     "rejectAssignation": {
       "action": "",
@@ -582,12 +593,12 @@
   },
   "performerTask": {
     "statuses": {
-      "ONHOLD": "",
-      "READY": "",
+      "ONHOLD": "Unterbrochen",
+      "READY": "Zugewiesen",
       "CANCELLED": "",
       "FAILED": "",
-      "INPROGRESS": "",
-      "COMPLETED": "",
+      "INPROGRESS": "Aktiv",
+      "COMPLETED": "Inaktiv",
       "null": ""
     }
   },

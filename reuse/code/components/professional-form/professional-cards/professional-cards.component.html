@@ -20,7 +20,8 @@
               <div class="row">
                 <p class="professional-name">
                   @if (professional.healthcarePerson; as person) {
-                    {{ person.lastName || '' }} {{ person.firstName || '' }}
+                    @let name = (person.lastName || '') + ' ' + (person.firstName || '');
+                    <span [innerHTML]="name | highlightFilter: query()"></span>
                   }
                 </p>
               </div>

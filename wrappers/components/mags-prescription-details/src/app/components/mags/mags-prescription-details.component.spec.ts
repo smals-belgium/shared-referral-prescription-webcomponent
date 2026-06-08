@@ -24,6 +24,9 @@ describe('MagsPrescriptionDetails', () => {
       lang: Lang.NL.full,
       setAttribute: jest.fn(),
       addEventListener: jest.fn(),
+      classList: {
+        add: jest.fn(),
+      },
     };
 
     mockHostServices = {

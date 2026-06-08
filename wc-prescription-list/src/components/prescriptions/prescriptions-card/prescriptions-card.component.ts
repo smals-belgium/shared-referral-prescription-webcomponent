@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   EventEmitter,
@@ -51,6 +52,7 @@ import { isPrescription, isProposal } from '@reuse/code/utils/utils';
   templateUrl: './prescriptions-card.component.html',
   styleUrls: ['./prescriptions-card.component.scss'],
   providers: [RequestSummaryDataService],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrescriptionsCardComponent implements OnChanges, AfterViewInit, OnDestroy {
   // Input properties

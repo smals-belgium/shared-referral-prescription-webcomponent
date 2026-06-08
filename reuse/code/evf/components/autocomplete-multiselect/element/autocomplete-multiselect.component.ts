@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ElementRef,
@@ -67,6 +68,7 @@ import { isEmptyValue } from '@reuse/code/utils/utils';
   ],
   templateUrl: './autocomplete-multiselect.component.html',
   styleUrl: './autocomplete-multiselect.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AutocompleteMultiselectComponent extends EvfBaseFormElementComponent implements OnInit, OnChanges {
   private static counter = 0;

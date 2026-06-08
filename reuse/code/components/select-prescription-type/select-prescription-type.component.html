@@ -5,7 +5,7 @@
     </div>
   }
 
-  @if (categories.length > 1) {
+  @if (categories().length > 1) {
     <label for="category" data-cy="prescriptionCategory-label">{{ 'common.category' | translate }}</label>
     @if (formGroup.get('category'); as control) {
       <mat-form-field appearance="outline">
@@ -17,19 +17,21 @@
           data-cy="prescription-create-category"
           [placeholder]="'-- ' + ('common.chooseFromList' | translate) + ' --'"
           [matAutocomplete]="catAuto" />
-        @if (control?.value) {
-          <button matSuffix mat-icon-button (click)="control?.setValue('')" class="button-close-icon">
+        @if (control.value) {
+          <button matSuffix mat-icon-button (click)="control.setValue('')" class="button-close-icon">
             <mat-icon svgIcon="close" [aria-hidden]="false" [attr.aria-label]="'common.close' | translate"></mat-icon>
           </button>
         }
         <mat-autocomplete autoActiveFirstOption #catAuto="matAutocomplete" [displayWith]="displayCategoryWith">
-          @for (option of categoryOptions$ | async; track option) {
+          @for (option of categoryOptions$ | async; track option.code) {
             <mat-option [value]="option">
-              <div class="option-with-highlight" [innerHTML]="option.label | highlightFilter: control.value"></div>
+              <div
+                class="option-with-highlight"
+                [innerHTML]="option.label | highlightFilter: control.value : true"></div>
             </mat-option>
           }
         </mat-autocomplete>
-        @if (control?.hasError('pickOptionFromList')) {
+        @if (control.hasError('pickOptionFromList')) {
           <mat-error>{{ 'prescription.selectTemplate.pickOptionFromList' | translate }}</mat-error>
         }
       </mat-form-field>
@@ -54,7 +56,7 @@
           [placeholder]="'-- ' + ('common.chooseFromList' | translate) + ' --'"
           [matAutocomplete]="typeAuto" />
         @if (control?.value) {
-          <button matSuffix mat-icon-button (click)="control?.setValue('')" class="button-close-icon">
+          <button matSuffix mat-icon-button (click)="control.setValue('')" class="button-close-icon">
             <mat-icon svgIcon="close" [aria-hidden]="false" [attr.aria-label]="'common.close' | translate"></mat-icon>
           </button>
         }
@@ -63,7 +65,7 @@
             <mat-option [value]="option">
               <div
                 class="option-with-highlight"
-                [innerHTML]="option.labelTranslations | translation | highlightFilter: control.value"></div>
+                [innerHTML]="option.labelTranslations | translation | highlightFilter: control.value : true"></div>
             </mat-option>
           }
           @if (templateOptions.length === 0 && !control.value?.code) {
@@ -72,7 +74,7 @@
             >
           }
         </mat-autocomplete>
-        @if (control?.hasError('pickOptionFromList')) {
+        @if (control.hasError('pickOptionFromList')) {
           <mat-error>{{ 'prescription.selectTemplate.pickOptionFromList' | translate }}</mat-error>
         }
       </mat-form-field>
@@ -99,8 +101,8 @@
           data-cy="prescription-create-model"
           [placeholder]="'-- ' + ('common.chooseFromList' | translate) + ' --'"
           [matAutocomplete]="typeAuto" />
-        @if (control?.value) {
-          <button matSuffix mat-icon-button (click)="control?.setValue('')" class="button-close-icon">
+        @if (control.value) {
+          <button matSuffix mat-icon-button (click)="control.setValue('')" class="button-close-icon">
             <mat-icon svgIcon="close" [aria-hidden]="false" [attr.aria-label]="'common.close' | translate"></mat-icon>
           </button>
         }
@@ -108,7 +110,9 @@
           @for (option of modelOption; track option) {
             @if (option.label) {
               <mat-option [value]="option">
-                <div class="option-with-highlight" [innerHTML]="option.label | highlightFilter: control.value"></div>
+                <div
+                  class="option-with-highlight"
+                  [innerHTML]="option.label | highlightFilter: control.value : true"></div>
               </mat-option>
             }
           }
@@ -118,7 +122,7 @@
             >
           }
         </mat-autocomplete>
-        @if (control?.hasError('pickOptionFromList')) {
+        @if (control.hasError('pickOptionFromList')) {
           <mat-error>{{ 'prescription.selectModel.pickOptionFromList' | translate }}</mat-error>
         }
       </mat-form-field>

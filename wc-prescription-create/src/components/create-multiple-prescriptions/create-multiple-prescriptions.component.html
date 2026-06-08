@@ -14,8 +14,8 @@
   }
 
   <mat-accordion [hideToggle]="createPrescriptionForms.length === 1" togglePosition="after">
-    @for (prescriptionForm of createPrescriptionForms; track trackByFn(prescriptionForm); let last = $last) {
-      <mat-expansion-panel [expanded]="last">
+    @for (prescriptionForm of createPrescriptionForms; track prescriptionForm.trackId; let last = $last) {
+      <mat-expansion-panel [expanded]="last" [id]="`mat-expension-panel-${prescriptionForm.trackId}`">
         <mat-expansion-panel-header
           [class.no-toggle]="createPrescriptionForms.length === 1"
           [tabIndex]="createPrescriptionForms.length === 1 ? -1 : 0">
@@ -77,8 +77,38 @@
               <app-overlay-spinner mode="inline"></app-overlay-spinner>
             }
             @if (formTemplateState.status === LoadingStatus.ERROR) {
-              <div>Failed to load prescription form template.</div>
+              <app-alert
+                [alert]="AlertType.Error"
+                [message]="'prescription.errors.failedToLoadTemplate' | translate"
+                [error]="modelState?.error"></app-alert>
             }
+
+            @if (prescriptionForm.errors) {
+              <app-alert
+                class="elements-in-error-summary"
+                [alert]="AlertType.Error"
+                [title]="'prescription.errors.errorsInForm.title' | translate"
+                [subTitle]="'prescription.errors.errorsInForm.subTitle' | translate"
+                [showRetry]="false">
+                <ul #content class="elements-in-error">
+                  @for (
+                    item of prescriptionForm.errors | getErrorMessagesFromForm: formTemplateState.data;
+                    track item.label
+                  ) {
+                    <li>
+                      @if (item.id) {
+                        <a (click)="scrollTo(item.id, prescriptionForm.trackId)">{{
+                          item.label | translateByElement: prescriptionForm.elementGroup : lang
+                        }}</a>
+                      } @else {
+                        {{ item.label | translateByElement: prescriptionForm.elementGroup : lang }}
+                      }
+                    </li>
+                  }
+                </ul>
+              </app-alert>
+            }
+
             @if (formTemplateState.status === LoadingStatus.SUCCESS) {
               <evf-form
                 [lang]="lang"

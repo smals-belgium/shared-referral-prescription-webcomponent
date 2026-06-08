@@ -1,52 +1,88 @@
-<div class="wrapper">
-  @if (prescription.intent) {
-    <h1 mat-dialog-title>
-      {{
-        prescription.intent | translateByIntent:{
-          order: 'prescription.cancel.title',
-          proposal: 'proposal.cancel.title'
-        }
-      }}
+@if (prescription.intent) {
+  <app-dialog-layout
+    [title]="
+      prescription.intent
+        | translateByIntent
+          : {
+              order: 'prescription.cancel.title',
+              proposal: 'proposal.cancel.title',
+            }
+    "
+    [requiredSubTitle]="true">
+    <div dialog-content class="dialog-layout-content">
+      @if (errorCard.show) {
+        <app-alert
+          [alert]="AlertType.Error"
+          [message]="errorCard.message | translate: errorCard.translationOptions"
+          [error]="errorCard.errorResponse"
+          [showRetry]="false"></app-alert>
+      }
 
-    </h1>
-  }
-  <div mat-dialog-content>
-    @if (errorCard.show) {
       <app-alert
-        [alert]="AlertType.Error"
-        [message]="errorCard.message | translate : errorCard.translationOptions"
-        [error]="errorCard.errorResponse"
-        [showRetry]="false"
-      ></app-alert>
-    }
-    @if (prescription.intent) {
-      <div>
-        {{
-          prescription.intent | translateByIntent:{
-            order: 'prescription.cancel.message',
-            proposal: 'proposal.cancel.message'
-          }:{
-            firstName: patient?.firstName,
-            lastName: patient?.lastName,
-            templateName: (prescription.templateCode | templateName)
-          }
-        }}
+        [alert]="AlertType.Info"
+        [message]="
+          prescription.intent
+            | translateByIntent
+              : {
+                  order: 'prescription.cancel.infoDescription',
+                  proposal: 'proposal.cancel.infoDescription',
+                }
+        "
+        [showRetry]="false">
+      </app-alert>
+
+      <div class="prescription_type_container">
+        <p class="prescription_type_text">{{ 'common.typeOfPrescription' | translate }}</p>
+        <p class="prescription_type_value">{{ prescription.templateCode | templateName }}</p>
       </div>
-    }
-  </div>
 
-  <mat-dialog-actions align="end">
-    <button type="submit" data-cy="dialog-confirm-button" mat-raised-button (click)="cancelPrescription()">
-      {{ 'common.confirm' | translate }}
-    </button>
-    <button type="button" data-cy="dialog-cancel-button" mat-flat-button [mat-dialog-close]="undefined">{{
-        'common.cancel' |
-          translate
-      }}
-    </button>
-  </mat-dialog-actions>
+      <form (ngSubmit)="cancelPrescription()" [formGroup]="formGroup" id="cancelPrescriptionForm">
+        <div class="mh-form-field">
+          <label for="reason"
+            >{{
+              prescription.intent
+                | translateByIntent
+                  : {
+                      order: 'prescription.cancel.reason',
+                      proposal: 'proposal.cancel.reason',
+                    }
+            }}
+            <span class="required">*</span></label
+          >
+          <mat-form-field appearance="outline">
+            <textarea id="reason" matInput [formControl]="reason" [maxlength]="MAX_LENGTH_REASON"></textarea>
+            <mat-hint>{{
+              prescription.intent
+                | translateByIntent
+                  : {
+                      order: 'prescription.cancel.hint',
+                      proposal: 'proposal.cancel.hint',
+                    }
+            }}</mat-hint>
+            <mat-hint align="end">{{ reason.value?.length }}/{{ MAX_LENGTH_REASON }}</mat-hint>
+            @if (reason.hasError('required')) {
+              <mat-error>{{ 'common.mandatory' | translate }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </form>
+    </div>
 
+    <ng-container dialog-actions>
+      <button type="submit" data-cy="dialog-confirm-button" mat-flat-button form="cancelPrescriptionForm">
+        {{ 'common.confirm' | translate }}
+      </button>
+      <button type="button" data-cy="dialog-cancel-button" matButton="outlined" [mat-dialog-close]="undefined">
+        {{ 'common.cancel' | translate }}
+      </button>
+    </ng-container>
+  </app-dialog-layout>
   @if (loading) {
     <app-overlay-spinner mode="dialog"></app-overlay-spinner>
   }
-</div>
+} @else {
+  <app-alert
+    [alert]="AlertType.Error"
+    [message]="'common.somethingWentWrongWithoutRetry' | translate"
+    [showRetry]="false"></app-alert>
+}

@@ -1,9 +1,9 @@
 @use '@angular/material' as mat;
 @use '@myhealth-belgium/design-kit' as mh;
 
-
 .container {
-  width: min-content;
+  width: auto;
+  max-width: 280px;
   border: var(--mh-main-beneficiary-container-border, 2px solid mh.$border-brand-primary-medium);
   border-radius: var(--mh-main-beneficiary-container-border-radius, mh.$border-radius-s);
   padding: mh.$spacing-rem-s;
@@ -45,7 +45,3 @@
     }
   }
 }
-
-
-
-

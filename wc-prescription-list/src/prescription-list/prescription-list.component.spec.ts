@@ -6,7 +6,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateAdapter, MatNativeDateModule } from '@angular/material/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
-import { importProvidersFrom, signal, SimpleChange, SimpleChanges } from '@angular/core';
+import { importProvidersFrom, signal, SimpleChange, SimpleChanges, WritableSignal } from '@angular/core';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
@@ -30,6 +30,7 @@ import { FeatureFlagDirective } from '@reuse/code/directives/feature-flag.direct
 import { PrescriptionsCardComponent } from '../components/prescriptions/prescriptions-card/prescriptions-card.component';
 import { RequestSummaryDataService } from '@reuse/code/services/helpers/request-summary-data.service';
 import { Lang } from '@reuse/code/constants/languages';
+import { DeviceService } from '@reuse/code/services/helpers/device.service';
 import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
 
 const BASE_URL = 'http://localhost';
@@ -97,6 +98,7 @@ describe('ListPrescriptionsWebComponent', () => {
   let mockDialog: jest.Mocked<MatDialog>;
   let featureService: FeatureFlagService;
   let mockIconRegistryService: jest.Mocked<Partial<IconRegistryService>>;
+  let mockDeviceService: { isDesktop: WritableSignal<boolean> };
 
   beforeEach(async () => {
     const dialogMock = {
@@ -105,6 +107,10 @@ describe('ListPrescriptionsWebComponent', () => {
 
     mockIconRegistryService = {
       init: jest.fn(),
+    };
+
+    mockDeviceService = {
+      isDesktop: signal(true),
     };
 
     await TestBed.configureTestingModule({
@@ -134,6 +140,7 @@ describe('ListPrescriptionsWebComponent', () => {
           },
         },
         { provide: IconRegistryService, useValue: mockIconRegistryService },
+        { provide: DeviceService, useValue: mockDeviceService },
       ],
     })
       .overrideComponent(PrescriptionsCardComponent, {
@@ -148,12 +155,12 @@ describe('ListPrescriptionsWebComponent', () => {
     dateAdapter = TestBed.inject(DateAdapter) as unknown as MockDateAdapter;
     mockDialog = TestBed.inject(MatDialog) as jest.Mocked<MatDialog>;
     featureService = TestBed.inject(FeatureFlagService);
-
     featureService.features.set({ filters: true });
   });
 
   afterEach(() => {
     httpMock.verify();
+    mockDeviceService.isDesktop.set(true);
     jest.restoreAllMocks();
   });
 
@@ -171,16 +178,16 @@ describe('ListPrescriptionsWebComponent', () => {
 
       const intent = Intent.ORDER;
       component.intent = intent;
-      component.isPrescriptionValue = true;
+      component.isPrescriptionValue.set(true);
       component.patientSsin = undefined;
 
       const simpleChanges: SimpleChanges = { intent: new SimpleChange('', intent, true) };
       component.ngOnChanges(simpleChanges);
 
-      expect(loadDataSpy).toHaveBeenCalledWith({ pageIndex: 1 });
+      expect(loadDataSpy).toHaveBeenCalledWith();
       expect(loadPrescriptionsSpy).not.toHaveBeenCalledWith();
 
-      expect(component.errorCard.show).toBeTruthy();
+      expect(component.errorCard().show).toBeTruthy();
       fixture.detectChanges();
       const { debugElement } = fixture;
       const alertComponent = debugElement.query(By.css('app-alert'));
@@ -193,14 +200,14 @@ describe('ListPrescriptionsWebComponent', () => {
       const loadPrescriptionsSpy = jest.spyOn(component, 'loadPrescriptions');
       const ssin = 'ssin';
       component.intent = Intent.ORDER;
-      component.isPrescriptionValue = true;
+      component.isPrescriptionValue.set(true);
 
       const simpleChanges: SimpleChanges = { patientSsin: new SimpleChange('', ssin, true) };
       component.patientSsin = ssin;
       component.ngOnChanges(simpleChanges);
 
-      expect(loadDataSpy).toHaveBeenCalledWith({ pageIndex: 1 });
-      expect(loadPrescriptionsSpy).toHaveBeenCalledWith(1, undefined);
+      expect(loadDataSpy).toHaveBeenCalledWith();
+      expect(loadPrescriptionsSpy).toHaveBeenCalledWith(undefined, undefined);
 
       jest.spyOn(component['prescriptionsState'], 'loadPrescriptions').mockReturnValue();
     });
@@ -211,7 +218,7 @@ describe('ListPrescriptionsWebComponent', () => {
       (global as any).isPrescription = jest.fn().mockReturnValue(true);
       component.intent = Intent.ORDER;
       component.loadData();
-      expect(component.isPrescriptionValue).toBe(true);
+      expect(component.isPrescriptionValue()).toBe(true);
 
       // Switch to proposal
       (global as any).isPrescription = jest.fn().mockReturnValue(false);
@@ -219,19 +226,17 @@ describe('ListPrescriptionsWebComponent', () => {
       component.intent = Intent.PROPOSAL;
       component.loadData();
 
-      expect(component.isPrescriptionValue).toBe(false);
-      expect(component.isProposalValue).toBe(true);
-      expect(component.isModelValue).toBe(false);
+      expect(component.isPrescriptionValue()).toBe(false);
+      expect(component.isProposalValue()).toBe(true);
+      expect(component.isModelValue()).toBe(false);
     });
 
     it('should display a table when viewStatePrescriptions$ has data and state success and breakpoint is NOT mobile', () => {
-      createFixture();
+      createFixture(true);
       const { debugElement } = fixture;
-      let prescriptionTable = debugElement.query(By.css('app-prescriptions-table'));
-      expect(prescriptionTable).toBeNull();
-      component.intent = Intent.ORDER;
-      component.patientSsin = 'ssin';
-      component.isPrescriptionValue = true;
+
+      fixture.componentRef.setInput('patientSsin', 'ssin');
+      component.isPrescriptionValue.set(true);
 
       const expectedState = {
         data: {
@@ -255,19 +260,26 @@ describe('ListPrescriptionsWebComponent', () => {
         },
         status: LoadingStatus.SUCCESS,
       };
-
       // @ts-expect-error: it's a test where we define the object, so the type check is not needed
       jest.spyOn(component, 'viewStatePrescriptions$').mockReturnValue(expectedState);
 
       fixture.detectChanges();
 
-      prescriptionTable = debugElement.query(By.css('app-prescriptions-table'));
+      expect(component.errorCard().show).toBeFalsy();
+      expect(component.isPrescriptionValue()).toBe(true);
+
+      expect(component.isPrescriptionValue()).toBe(true);
+      expect(component.viewStatePrescriptions$()).toBeDefined();
+
+      const prescriptionTable = debugElement.query(By.css('app-prescriptions-table'));
       expect(prescriptionTable).toBeTruthy();
 
       expect(component.viewStatePrescriptions$()).toEqual(expectedState);
     });
 
-    it('should display a list of cards when viewStatePrescriptions$ has data and state success and breakpoint is mobile', () => {
+    it('should display a list of cards when viewStatePrescriptions$ has data and state success and breakpoint is mobile', async () => {
+      mockDeviceService.isDesktop.set(false);
+
       const breakpointObserverTest = TestBed.inject(BreakpointObserver) as any;
       (breakpointObserverTest.observe as jest.Mock).mockReturnValue(of({ matches: false }));
 
@@ -288,15 +300,6 @@ describe('ListPrescriptionsWebComponent', () => {
           thresholds: [],
         };
       }) as any;
-
-      createFixture();
-
-      const { debugElement } = fixture;
-      let prescriptionListOfCards = debugElement.query(By.css('app-prescriptions-card'));
-      expect(prescriptionListOfCards).toBeNull();
-      component.intent = Intent.ORDER;
-      component.patientSsin = 'ssin';
-      component.isPrescriptionValue = true;
 
       const expectedState = {
         data: {
@@ -320,10 +323,21 @@ describe('ListPrescriptionsWebComponent', () => {
         status: LoadingStatus.SUCCESS,
       };
 
+      createFixture(true);
+
+      const { debugElement } = fixture;
+
+      let prescriptionListOfCards = debugElement.query(By.css('app-prescriptions-card'));
+      expect(prescriptionListOfCards).toBeNull();
+
       // @ts-expect-error: it's a test where we define the object, so the type check is not needed
       jest.spyOn(component, 'viewStatePrescriptions$').mockReturnValue(expectedState);
 
+      component.isPrescriptionValue.set(true);
+      fixture.componentRef.setInput('patientSsin', 'ssin');
+
       fixture.detectChanges();
+      await fixture.whenStable();
 
       // Verify observer was created and observe was called
       expect(global.IntersectionObserver).toHaveBeenCalled();
@@ -342,8 +356,9 @@ describe('ListPrescriptionsWebComponent', () => {
   });
 
   describe('filter', () => {
-    it('should render and pass correct inputs when templates exist on prescriptions', () => {
-      createFixture();
+    it('should render and pass correct inputs when templates exist on prescriptions', async () => {
+      createFixture(true);
+
       const template: Template = {
         code: 'template1',
         id: 1,
@@ -382,12 +397,14 @@ describe('ListPrescriptionsWebComponent', () => {
         },
         status: LoadingStatus.SUCCESS,
       };
+      component.isPrescriptionValue.set(true);
 
       jest.spyOn(component, 'viewStatePrescriptions$').mockReturnValue(expectedState);
 
-      component.isPrescriptionValue = true;
-
       fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockDeviceService.isDesktop()).toBe(true);
 
       const filterComponent = fixture.debugElement.query(By.directive(PrescriptionFilterComponent));
       expect(filterComponent).toBeTruthy();
@@ -441,16 +458,20 @@ describe('ListPrescriptionsWebComponent', () => {
         },
         status: LoadingStatus.SUCCESS,
       };
-      component.isPrescriptionValue = true;
-      component.patientSsin = 'ssin';
 
       jest.spyOn(component, 'viewStatePrescriptions$').mockReturnValue(expectedState);
       const loadPrescriptionsSpy = jest.spyOn(component, 'loadPrescriptions');
-      fixture.detectChanges();
-
       jest.spyOn(component, 'onFilterUpdate');
 
+      component.isPrescriptionValue.set(true);
+
+      fixture.componentRef.setInput('patientSsin', 'ssin');
+
+      fixture.detectChanges();
+
       const filterComponent = fixture.debugElement.query(By.directive(PrescriptionFilterComponent));
+      expect(filterComponent).toBeTruthy();
+
       filterComponent.triggerEventHandler('filterChange', {
         newCriteria: 'Updated',
       });
@@ -459,7 +480,7 @@ describe('ListPrescriptionsWebComponent', () => {
         newCriteria: 'Updated',
       });
 
-      expect(loadPrescriptionsSpy).toHaveBeenCalledWith(1, undefined);
+      expect(loadPrescriptionsSpy).toHaveBeenCalledWith(undefined, undefined);
     });
 
     it('should hide component when templates are undefined on proposals', () => {
@@ -506,14 +527,14 @@ describe('ListPrescriptionsWebComponent', () => {
       const loadProposalsSpy = jest.spyOn(component, 'loadProposals');
       const ssin = 'ssin';
       component.intent = Intent.PROPOSAL;
-      component.isProposalValue = true;
+      component.isProposalValue.set(true);
 
       const simpleChanges: SimpleChanges = { patientSsin: new SimpleChange('', ssin, true) };
       component.patientSsin = ssin;
       component.ngOnChanges(simpleChanges);
 
-      expect(loadDataSpy).toHaveBeenCalledWith({ pageIndex: 1 });
-      expect(loadProposalsSpy).toHaveBeenCalledWith(1, undefined);
+      expect(loadDataSpy).toHaveBeenCalledWith();
+      expect(loadProposalsSpy).toHaveBeenCalledWith(undefined, undefined);
 
       jest.spyOn(component['proposalsState'], 'loadProposals').mockReturnValue();
     });
@@ -524,14 +545,14 @@ describe('ListPrescriptionsWebComponent', () => {
       const loadProposalsSpy = jest.spyOn(component, 'loadProposals');
       const ssin = 'ssin';
       component.intent = Intent.PROPOSAL;
-      component.isProposalValue = true;
+      component.isProposalValue.set(true);
 
       const simpleChanges: SimpleChanges = { patientSsin: new SimpleChange('', ssin, true) };
       component.patientSsin = ssin;
       component.ngOnChanges(simpleChanges);
 
-      expect(loadDataSpy).toHaveBeenCalledWith({ pageIndex: 1 });
-      expect(loadProposalsSpy).toHaveBeenCalledWith(1, undefined);
+      expect(loadDataSpy).toHaveBeenCalledWith();
+      expect(loadProposalsSpy).toHaveBeenCalledWith(undefined, undefined);
 
       jest.spyOn(component['proposalsState'], 'loadProposals').mockReturnValue();
     });
@@ -540,15 +561,15 @@ describe('ListPrescriptionsWebComponent', () => {
   describe('resetOutdatedValues', () => {
     it('should reset all intent type flags to false', () => {
       createFixture();
-      component.isPrescriptionValue = true;
-      component.isProposalValue = true;
-      component.isModelValue = true;
+      component.isPrescriptionValue.set(true);
+      component.isProposalValue.set(true);
+      component.isModelValue.set(true);
 
       component.resetOutdatedValues();
 
-      expect(component.isPrescriptionValue).toBe(false);
-      expect(component.isProposalValue).toBe(false);
-      expect(component.isModelValue).toBe(false);
+      expect(component.isPrescriptionValue()).toBe(false);
+      expect(component.isProposalValue()).toBe(false);
+      expect(component.isModelValue()).toBe(false);
     });
   });
 
@@ -563,13 +584,15 @@ describe('ListPrescriptionsWebComponent', () => {
       expect(setLocalesSpy).toHaveBeenCalledWith(Lang.FR.full);
     });
 
-    it('should not call use() or setLocale() with initial language only once', () => {
+    it('should not call use() or setLocale() with initial language only once', async () => {
       translate.use(Lang.NL.full);
 
       const translateUseSpy = jest.spyOn(translate, 'use');
       const dateAdapterSpy = jest.spyOn(dateAdapter, 'setLocale');
 
       createFixture();
+      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(translateUseSpy).toHaveBeenCalledTimes(1);
       expect(dateAdapterSpy).toHaveBeenCalledTimes(1);
@@ -875,7 +898,7 @@ describe('ListPrescriptionsWebComponent', () => {
       createFixture();
       component.showErrorCard();
 
-      expect(component.errorCard).toEqual({
+      expect(component.errorCard()).toEqual({
         show: true,
         message: 'common.somethingWentWrongWithoutRetry',
       });
@@ -899,10 +922,13 @@ describe('ListPrescriptionsWebComponent', () => {
     });
   });
 
-  const createFixture = () => {
+  const createFixture = (disableShowCard?: boolean) => {
     fixture = TestBed.createComponent(PrescriptionListWebComponent);
     component = fixture.componentInstance;
-    component.intent = Intent.ORDER;
-    fixture.detectChanges();
+
+    if (disableShowCard) {
+      jest.spyOn(component, 'showErrorCard').mockImplementation(() => {});
+    }
+    fixture.componentRef.setInput('intent', Intent.ORDER);
   };
 });

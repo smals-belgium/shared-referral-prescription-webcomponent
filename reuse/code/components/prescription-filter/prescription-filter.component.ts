@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   inject,
@@ -7,10 +8,11 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  signal,
   SimpleChanges,
+  WritableSignal,
 } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HighlightFilterPipe } from '../../pipes/highlight-filter.pipe';
 import { MatButton } from '@angular/material/button';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslationPipe } from '../../pipes/translation.pipe';
@@ -29,9 +31,10 @@ export interface SearchFilter {
   selector: 'app-prescription-filter',
   standalone: true,
   imports: [FormsModule, ReactiveFormsModule, TranslateModule, MatButton, MultiselectComponent],
-  providers: [HighlightFilterPipe, TranslationPipe],
+  providers: [TranslationPipe],
   templateUrl: './prescription-filter.component.html',
   styleUrl: './prescription-filter.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrescriptionFilterComponent implements OnChanges, OnInit, OnDestroy {
   private readonly translate = inject(TranslateService);
@@ -43,8 +46,8 @@ export class PrescriptionFilterComponent implements OnChanges, OnInit, OnDestroy
 
   readonly formGroup: FormGroup;
 
-  templateOptions?: MultiselectOption[];
-  statusOptions?: MultiselectOption[];
+  templateOptions: WritableSignal<MultiselectOption[]> = signal([]);
+  statusOptions: WritableSignal<MultiselectOption[]> = signal([]);
   private langChangeSubscription!: Subscription;
 
   constructor() {
@@ -75,10 +78,12 @@ export class PrescriptionFilterComponent implements OnChanges, OnInit, OnDestroy
   }
 
   updateStatusOptions(statusList: string[]): void {
-    this.statusOptions = statusList.map(status => ({
-      value: status,
-      name: this.translate.instant(`prescription.statuses.${status}`) as string,
-    }));
+    this.statusOptions.set(
+      statusList.map(status => ({
+        value: status,
+        name: this.translate.instant(`prescription.statuses.${status}`) as string,
+      }))
+    );
   }
 
   ngOnInit() {
@@ -101,12 +106,14 @@ export class PrescriptionFilterComponent implements OnChanges, OnInit, OnDestroy
   }
 
   private filterTemplatesAndMapToOptions(): void {
-    this.templateOptions = this.getTemplatesByIntentAndFilteredByAccessMatrix().map(template => {
-      return {
-        value: template.code,
-        name: template.labelTranslations?.[this.evfCurrentLang] || '',
-      } as MultiselectOption;
-    });
+    this.templateOptions.set(
+      this.getTemplatesByIntentAndFilteredByAccessMatrix().map(template => {
+        return {
+          value: template.code,
+          name: template.labelTranslations?.[this.evfCurrentLang] || '',
+        } as MultiselectOption;
+      })
+    );
   }
 
   private getTemplatesByIntentAndFilteredByAccessMatrix(): Template[] {

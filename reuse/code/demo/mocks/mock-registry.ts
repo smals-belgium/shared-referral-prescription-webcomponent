@@ -143,7 +143,7 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
         demoStorage.set('demoPrescription', newPrescription);
 
         if (newPrescription.performerTasks) {
-          Object.values(newPrescription.performerTasks).map(performerTasks =>
+          Object.values(newPrescription.performerTasks).forEach(performerTasks =>
             performerTasks.forEach((performerTask: PerformerTaskResourceExtended) => {
               const index = performerTask.careGiverIndex as number;
               if (index != null) {
@@ -186,7 +186,7 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
         demoStorage.set('demoProposal', newProposal);
 
         if (newProposal.performerTasks) {
-          Object.values(newProposal.performerTasks).map(performerTasks =>
+          Object.values(newProposal.performerTasks).forEach(performerTasks =>
             performerTasks.forEach((performerTask: PerformerTaskResourceExtended) => {
               const index = performerTask.careGiverIndex as number;
               if (index != null) {
@@ -231,7 +231,7 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
         demoStorage.set('demoPrescription', newPrescription);
 
         if (newPrescription.performerTasks) {
-          Object.values(newPrescription.performerTasks).map(performerTasks =>
+          Object.values(newPrescription.performerTasks).forEach(performerTasks =>
             performerTasks.forEach((performerTask: PerformerTaskResourceExtended) => {
               const index = performerTask.careGiverIndex as number;
               if (index != null) {

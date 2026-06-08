@@ -1,4 +1,4 @@
-import { Component, ContentChild, inject, TemplateRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ContentChild, inject, TemplateRef } from '@angular/core';
 import { DeviceService } from '@reuse/code/services/helpers/device.service';
 import { NgTemplateOutlet } from '@angular/common';
 
@@ -6,6 +6,7 @@ import { NgTemplateOutlet } from '@angular/common';
   selector: 'app-responsive-wrapper',
   templateUrl: './responsive-wrapper.component.html',
   imports: [NgTemplateOutlet],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResponsiveWrapperComponent {
   private readonly deviceService = inject(DeviceService);

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnChanges, signal, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnChanges, signal, SimpleChanges } from '@angular/core';
 import {
   EvfBaseFormDetailComponent,
   EvfDetailLabelComponent,
@@ -35,6 +35,7 @@ import { SupportedLanguages } from '@reuse/code/evf/utils/evf-utils';
   ],
   templateUrl: './recommendations-detail.component.html',
   styleUrl: './recommendations-detail.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 /**
  * Component responsible for the management of the EVF custom element "recommendations"

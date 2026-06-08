@@ -5,6 +5,8 @@ import { Component } from '@angular/core';
 import { By } from '@angular/platform-browser';
 
 import { DialogLayoutComponent } from './dialog-layout.component';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 @Component({
   template: `
@@ -29,10 +31,11 @@ describe('DialogLayoutComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DialogLayoutComponent, NoopAnimationsModule],
+      imports: [DialogLayoutComponent, NoopAnimationsModule, TranslateModule.forRoot(), MatIconTestingModule],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {} },
+        TranslateService,
       ],
     }).compileComponents();
 
@@ -56,7 +59,7 @@ describe('DialogLayoutComponent - content projection', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TestHostComponent, NoopAnimationsModule],
+      imports: [TestHostComponent, NoopAnimationsModule, TranslateModule.forRoot(), MatIconTestingModule],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: {} },

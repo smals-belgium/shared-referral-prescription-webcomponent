@@ -58,6 +58,19 @@ mat-expansion-panel-header {
   justify-content: flex-end;
 }
 
+@media (min-width: mh.$media-breakpoint-s) {
+  :host ::ng-deep {
+    .mat-expansion-panel-content {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+
+      .mat-expansion-panel-body {
+        grid-column: 1 / 3;
+      }
+    }
+  }
+}
+
 button + button {
   margin-left: mh.$spacing-l;
 }
@@ -82,4 +95,15 @@ mat-accordion.mat-accordion mat-expansion-panel.mat-expansion-panel:first-of-typ
 
 mat-accordion.mat-accordion {
   gap: var(--mh-mat-expansion-gap, 0);
+}
+
+.elements-in-error-summary {
+  margin: mh.$spacing-rem-m 0 mh.$spacing-rem-2xs;
+  display: block;
+}
+.elements-in-error {
+  a {
+    color: var(--mh-label-invalid-color, mh.$typography-semantic-error-medium);
+    cursor: pointer;
+  }
 }

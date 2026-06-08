@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { CreateMultiplePrescriptionsComponent } from './create-multiple-prescriptions.component';
@@ -80,12 +80,6 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     const spy = jest.spyOn(component.clickAddPrescription, 'emit');
     component.clickAddPrescription.emit();
     expect(spy).toHaveBeenCalled();
-  });
-
-  it('should return correct value from trackByFn', () => {
-    fixture.detectChanges();
-    const mockItem = { trackId: 'trackId_01' } as unknown as CreatePrescriptionForm;
-    expect(component.trackByFn(mockItem)).toBe('trackId_01');
   });
 
   it('should compute numberOfPrescriptionsToCreate correctly', () => {
@@ -421,6 +415,124 @@ describe('CreateMultiplePrescriptionsComponent', () => {
 
     expect(component.isChecked(1)).toBe(true);
     expect(component.isChecked(99)).toBe(false);
+  });
+
+  describe('Display error summary', () => {
+    it('should scroll to element when target exists', () => {
+      const target = document.createElement('div');
+      target.setAttribute('data-evf-element-id', 'frequency');
+      const shadow = document.createElement('div');
+      shadow.appendChild(target);
+
+      (component as any)['host'] = new ElementRef(shadow);
+      target.scrollIntoView = jest.fn();
+
+      component.scrollTo('frequency');
+
+      expect(target.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+    });
+
+    it('should scroll to element with trackId when target exists', () => {
+      const target = document.createElement('div');
+      target.setAttribute('data-evf-element-id', 'frequency');
+      const wrapper = document.createElement('div');
+      wrapper.setAttribute('id', 'mat-expension-panel-123');
+      wrapper.appendChild(target);
+      const shadow = document.createElement('div');
+      shadow.appendChild(wrapper);
+
+      (component as any)['host'] = new ElementRef(shadow);
+      target.scrollIntoView = jest.fn();
+
+      component.scrollTo('frequency', 123);
+
+      expect(target.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+    });
+
+    it('should scroll to top when multiple errors exist', () => {
+      const mockTemplateVersionState = jest.fn().mockReturnValue({
+        data: {
+          id: '1',
+          templateId: 'A',
+        },
+        status: LoadingStatus.INITIAL,
+      });
+      const mockForm = {
+        errors: {
+          frequency: {
+            required: true,
+          },
+          validityDate: {
+            required: true,
+          },
+        },
+        formTemplateState$: mockTemplateVersionState,
+      } as unknown as CreatePrescriptionForm;
+
+      const target = document.createElement('div');
+      target.setAttribute('data-evf-element-id', 'frequency');
+      const shadow = document.createElement('div');
+      shadow.appendChild(target);
+
+      (component as any)['host'] = new ElementRef(shadow);
+      target.scrollIntoView = jest.fn();
+      shadow.scrollIntoView = jest.fn();
+
+      jest.spyOn(component as any, 'getFirstPrescriptionWithErrors').mockReturnValue(mockForm);
+      const scrollToSpy = jest.spyOn(component, 'scrollTo');
+
+      component.scrollToTop();
+
+      expect(scrollToSpy).toHaveBeenCalledWith();
+      expect(target.scrollIntoView).not.toHaveBeenCalled();
+      expect(shadow.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+    });
+
+    it('should scroll to target when only 1 error exist', () => {
+      const mockTemplateVersionState = jest.fn().mockReturnValue({
+        data: {
+          id: '1',
+          templateId: 'A',
+        },
+        status: LoadingStatus.INITIAL,
+      });
+      const mockForm = {
+        errors: {
+          frequency: {
+            required: true,
+          },
+        },
+        trackId: 123,
+        formTemplateState$: mockTemplateVersionState,
+      } as unknown as CreatePrescriptionForm;
+
+      const target = document.createElement('div');
+      target.setAttribute('data-evf-element-id', 'frequency');
+      const wrapper = document.createElement('div');
+      wrapper.setAttribute('id', 'mat-expension-panel-123');
+      wrapper.appendChild(target);
+      const shadow = document.createElement('div');
+      shadow.appendChild(wrapper);
+
+      (component as any)['host'] = new ElementRef(shadow);
+      target.scrollIntoView = jest.fn();
+      shadow.scrollIntoView = jest.fn();
+
+      jest.spyOn(component as any, 'getFirstPrescriptionWithErrors').mockReturnValue(mockForm);
+      jest.spyOn((component as any).getErrorMessagesPipe, 'transform').mockReturnValue([
+        {
+          label: 'frequency',
+          id: 'frequency',
+        },
+      ]);
+      const scrollToSpy = jest.spyOn(component, 'scrollTo');
+
+      component.scrollToTop();
+
+      expect(scrollToSpy).toHaveBeenCalledWith('frequency', 123);
+      expect(target.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+      expect(shadow.scrollIntoView).not.toHaveBeenCalled();
+    });
   });
 
   function setForms(forms: any[]) {

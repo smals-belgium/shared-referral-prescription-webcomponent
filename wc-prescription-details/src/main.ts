@@ -1,4 +1,4 @@
-import { importProvidersFrom } from '@angular/core';
+import { importProvidersFrom, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { createApplication } from '@angular/platform-browser';
 import { createCustomElement } from '@angular/elements';
 import { PrescriptionDetailsWebComponent } from './containers/prescription-details/prescription-details.component';
@@ -16,17 +16,18 @@ import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-transl
 import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-compiler';
 import { providePseudonymisation } from '@reuse/code/providers/pseudo.provider';
 import { provideOpenApi } from '@reuse/code/providers/open-api.provider';
-import { OverlayContainer } from '@angular/cdk/overlay';
-import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { provideEvfForm } from '@reuse/code/evf/evf-form.provider';
 import { MARKDOWN_OPTIONS_CONFIG, provideMarkdown } from '@reuse/code/providers/markdown.provider';
 import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
 import { provideEvfFormDetails } from '@reuse/code/evf/evf-form-details.provider';
+import { provideShadowDom } from '@reuse/code/shadow-dom/shadow-dom.provider';
 import { CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_DETAILS } from '@reuse/code/constants/common.constants';
 
 void (async () => {
   const app = createApplication({
     providers: [
+      provideZonelessChangeDetection(),
+      provideBrowserGlobalErrorListeners(),
       provideCore(),
       provideHttpClient(withInterceptors([demoHttpInterceptor, apiUrlInterceptor])),
       providePseudonymisation(),
@@ -40,10 +41,7 @@ void (async () => {
         provide: AuthService,
         useClass: WcAuthService,
       },
-      {
-        provide: OverlayContainer,
-        useClass: ShadowDomOverlayContainer,
-      },
+      provideShadowDom(),
       provideOpenApi(),
       { provide: MARKDOWN_OPTIONS_CONFIG, useValue: { open: false } },
       provideMarkdown(),

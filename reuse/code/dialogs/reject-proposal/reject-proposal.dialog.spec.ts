@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
@@ -83,7 +83,7 @@ describe('RejectProposalDialog', () => {
       expect(component.generatedUUID).toBe('mock-uuid-12345');
     });
 
-    it('should encrypt reason and call rejectProposal on success', fakeAsync(() => {
+    it('should encrypt reason and call rejectProposal on success', () => {
       const reasonText = 'Rejection reason';
       const encryptedData = { encryptedText: 'encrypted-text', pseudonymizedKey: 'existing-pseudo-key-xyz' };
       component.formGroup.get('reason')?.setValue(reasonText);
@@ -91,7 +91,6 @@ describe('RejectProposalDialog', () => {
       mockProposalState.rejectProposal.mockReturnValue(of({ success: true }));
 
       component.rejectProposal();
-      tick();
 
       expect(mockEncryptionHelper.getEncryptedReasonAndPseudoKey).toHaveBeenCalledWith(
         reasonText,
@@ -106,9 +105,9 @@ describe('RejectProposalDialog', () => {
       expect(mockToastService.show).toHaveBeenCalledWith('proposal.reject.success');
       expect(mockDialogRef.close).toHaveBeenCalledWith(true);
       expect(component.loading).toBe(false);
-    }));
+    });
 
-    it('should handle error from proposalState.rejectProposal', fakeAsync(() => {
+    it('should handle error from proposalState.rejectProposal', () => {
       const error = new Error('API rejection failed');
       component.formGroup.get('reason')?.setValue('a reason');
       mockEncryptionHelper.getEncryptedReasonAndPseudoKey.mockReturnValue(
@@ -118,11 +117,10 @@ describe('RejectProposalDialog', () => {
       const handleErrorSpy = jest.spyOn(component as any, 'handleError');
 
       component.rejectProposal();
-      tick();
 
       expect(component.loading).toBe(false);
       expect(handleErrorSpy).toHaveBeenCalledWith(error);
       expect(mockDialogRef.close).not.toHaveBeenCalled();
-    }));
+    });
   });
 });

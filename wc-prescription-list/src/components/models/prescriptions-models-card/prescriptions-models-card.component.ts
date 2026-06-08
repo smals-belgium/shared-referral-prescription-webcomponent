@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   EventEmitter,
@@ -41,6 +42,7 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
   templateUrl: './prescriptions-models-card.component.html',
   styleUrls: ['./prescriptions-models-card.component.scss'],
   providers: [RequestSummaryDataService],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrescriptionsModelsCardComponent implements OnChanges, AfterViewInit, OnDestroy {
   // Input properties

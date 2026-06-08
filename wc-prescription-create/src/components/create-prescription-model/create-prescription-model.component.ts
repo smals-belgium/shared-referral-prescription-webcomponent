@@ -31,8 +31,8 @@ import {
 } from '@reuse/code/directives/unique-model-name.directive';
 import { isOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
 import { FormDataType, FormElement, TemplateVersion } from '@reuse/code/openapi';
-import TypeEnum = FormDataType.TypeEnum;
 import { EvfFormWebComponent } from '../evf-form/evf-form.component';
+import TypeEnum = FormDataType.TypeEnum;
 
 @Component({
   selector: 'app-create-prescription-model',

@@ -22,6 +22,7 @@ import { CancelPrescriptionDialog } from '@reuse/code/dialogs/cancel-prescriptio
 import { Intent, UserInfo } from '@reuse/code/interfaces';
 import { AssignOrTransferDialog } from '@reuse/code/dialogs/assign-or-transfer-dialog/assign-or-transfer-dialog';
 import { Lang } from '@reuse/code/constants/languages';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 const UserNurse: Partial<UserInfo> = { ssin: 'user-ssin', discipline: Discipline.Nurse };
 const createPerformerTask = (overrides: Partial<PerformerTaskResource> = {}): PerformerTaskResource => ({
@@ -71,11 +72,11 @@ describe('PrescriptionDetailsActionsComponent', () => {
     mockPdfService = { createCommonPdf: jest.fn() } as unknown as jest.Mocked<PrescriptionsPdfService>;
     mockDialog = { open: jest.fn() } as unknown as jest.Mocked<MatDialog>;
     mockToastService = { show: jest.fn(), showSomethingWentWrong: jest.fn() } as unknown as jest.Mocked<ToastService>;
-    mockPrescriptionState = { assignPrescriptionToMe: jest.fn() } as unknown as jest.Mocked<PrescriptionState>;
-    mockProposalState = { assignProposalToMe: jest.fn() } as unknown as jest.Mocked<ProposalState>;
+    mockPrescriptionState = { assignPrescriptionPerformer: jest.fn() } as unknown as jest.Mocked<PrescriptionState>;
+    mockProposalState = { assignProposalPerformer: jest.fn() } as unknown as jest.Mocked<ProposalState>;
 
     await TestBed.configureTestingModule({
-      imports: [PrescriptionDetailsActionsComponent],
+      imports: [PrescriptionDetailsActionsComponent, MatIconTestingModule],
       providers: [
         { provide: DeviceService, useValue: {} },
         { provide: PrescriptionDetailsSecondaryService, useValue: mockSecondaryService },
@@ -235,10 +236,8 @@ describe('PrescriptionDetailsActionsComponent', () => {
         intent: Intent.ORDER,
         mode: 'assign',
       },
-      panelClass: ['mh-dialog-container', 'no-dialog-scroll'],
-      height: '90vh',
-      width: '90vw',
-      maxWidth: '1300px',
+      panelClass: 'mh-dialog-container',
+      maxHeight: '90vh',
     });
   });
 
@@ -274,7 +273,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
     });
 
     expect(mockToastService.showSomethingWentWrong).toHaveBeenCalledTimes(4);
-    expect(mockPrescriptionState.assignPrescriptionToMe).not.toHaveBeenCalled();
+    expect(mockPrescriptionState.assignPrescriptionPerformer).not.toHaveBeenCalled();
   });
 
   it('should assign prescription successfully and show success toast', () => {
@@ -284,14 +283,16 @@ describe('PrescriptionDetailsActionsComponent', () => {
       intent: Intent.ORDER,
     } as ReadRequestResource;
     const user = UserNurse;
-    mockPrescriptionState.assignPrescriptionToMe.mockReturnValue(of({ id: 'task-1' }));
+    mockPrescriptionState.assignPrescriptionPerformer.mockReturnValue(of({ id: 'task-1' }));
 
     component.onSelfAssign(prescription, user);
 
-    expect(mockPrescriptionState.assignPrescriptionToMe).toHaveBeenCalledWith(
+    expect(mockPrescriptionState.assignPrescriptionPerformer).toHaveBeenCalledWith(
       'prescription-id',
       'referral-task-id',
-      UserNurse,
+      'user-ssin',
+      'NURSE',
+      'Professional',
       'test-uuid-123'
     );
     expect(mockToastService.show).toHaveBeenCalledWith('prescription.assignPerformer.meSuccess');
@@ -305,14 +306,16 @@ describe('PrescriptionDetailsActionsComponent', () => {
       intent: Intent.PROPOSAL,
     } as ReadRequestResource;
     const user = UserNurse;
-    mockProposalState.assignProposalToMe.mockReturnValue(of({ id: 'task-1' }));
+    mockProposalState.assignProposalPerformer.mockReturnValue(of({ id: 'task-1' }));
 
     component.onSelfAssign(prescription, user);
 
-    expect(mockProposalState.assignProposalToMe).toHaveBeenCalledWith(
+    expect(mockProposalState.assignProposalPerformer).toHaveBeenCalledWith(
       'prescription-id',
       'referral-task-id',
-      UserNurse,
+      'user-ssin',
+      'NURSE',
+      'Professional',
       'test-uuid-123'
     );
     expect(mockToastService.show).toHaveBeenCalledWith('proposal.assignPerformer.meSuccess');
@@ -325,7 +328,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
       intent: Intent.ORDER,
     } as ReadRequestResource;
     const user = UserNurse;
-    mockPrescriptionState.assignPrescriptionToMe.mockReturnValue(throwError(() => new Error('API Error')));
+    mockPrescriptionState.assignPrescriptionPerformer.mockReturnValue(throwError(() => new Error('API Error')));
 
     component.onSelfAssign(prescription, user);
 

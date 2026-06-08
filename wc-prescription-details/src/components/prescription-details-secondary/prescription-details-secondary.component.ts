@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
 import { PrescriptionDetailsOrganizationListComponent } from './prescription-details-organization-list/prescription-details-organization-list.component';
@@ -12,6 +12,7 @@ import { PrescriptionDetailsSecondaryService } from './prescription-details-seco
   styleUrl: './prescription-details-secondary.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrescriptionDetailsSecondaryComponent {
   private readonly _service = inject(PrescriptionDetailsSecondaryService);

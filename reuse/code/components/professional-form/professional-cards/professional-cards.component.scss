@@ -12,8 +12,12 @@
 }
 
 .professional-name {
-  @include mh.font-default-bold();
+  @include mh.font-default-regular();
   margin-bottom: mh.$spacing-m;
+}
+
+:host ::ng-deep .highlight {
+  font-weight: mh.$font-weight-bold;
 }
 
 p {

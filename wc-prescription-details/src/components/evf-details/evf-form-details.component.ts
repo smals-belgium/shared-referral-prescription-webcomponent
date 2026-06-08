@@ -1,4 +1,12 @@
-import { Component, HostBinding, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostBinding,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 import {
   ElementGroup,
   ElementGroupBuilder,
@@ -27,6 +35,7 @@ interface MetaData {
   templateUrl: './evf-form-details.component.html',
   standalone: true,
   imports: [EvfFormDetailGroupComponent, NgTemplateOutlet],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EvfFormDetailsWebComponent implements OnChanges, OnInit {
   elementGroup!: ElementGroup;

@@ -12,6 +12,7 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { SimpleChange } from '@angular/core';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 const requester: HealthcareProResource = {
   healthcarePerson: {
@@ -71,6 +72,7 @@ describe('PrescriptionsTableComponent', () => {
         TranslateModule.forRoot({
           loader: { provide: TranslateLoader, useClass: FakeLoader },
         }),
+        MatIconTestingModule,
       ],
       providers: [{ provide: AuthService, useValue: mockAuthService }],
     }).compileComponents();
@@ -121,9 +123,9 @@ describe('PrescriptionsTableComponent', () => {
     const alertComponent = fixture.debugElement.query(By.css('app-alert'));
 
     expect(alert).toBeTruthy();
-    expect(alertComponent.componentInstance.alert).toBe('error');
-    expect(alertComponent.componentInstance.message).toBe('Test error');
-    expect(alertComponent.componentInstance.error).toBe(mockError);
+    expect(alertComponent.componentInstance.alert()).toBe('error');
+    expect(alertComponent.componentInstance.message()).toBe('Test error');
+    expect(alertComponent.componentInstance.error()).toBe(mockError);
 
     alertComponent.triggerEventHandler('clickRetry', null);
     expect(retryEmitSpy).toHaveBeenCalledWith();

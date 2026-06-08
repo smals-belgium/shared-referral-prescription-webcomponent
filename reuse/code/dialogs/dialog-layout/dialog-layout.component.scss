@@ -22,6 +22,13 @@
   align-items: flex-start;
   padding-left: mh.$spacing-m;
   padding-top: mh.$spacing-xs;
+
+  p{
+    margin: 0 0 10px;
+    .required {
+      color: var(--mh-label-invalid-color, mh.$typography-semantic-error-medium);
+    }
+  }
 }
 
 .mat-dialog-content {

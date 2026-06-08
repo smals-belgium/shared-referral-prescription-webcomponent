@@ -1,8 +1,8 @@
-@if (errorCard.show) {
+@if (errorCard().show) {
   <app-alert
     [alert]="AlertType.Error"
-    [message]="errorCard.message | translate: errorCard.translationOptions"
-    [error]="errorCard.errorResponse"
+    [message]="errorCard().message | translate: errorCard().translationOptions"
+    [error]="errorCard().errorResponse"
     [showRetry]="false"
     data-cy="failed-prescription-list-default-error-message"></app-alert>
 } @else if (langAlertData()) {
@@ -10,7 +10,7 @@
   <app-alert [title]="langValue.title" [message]="langValue.body" [alert]="AlertType.Info" [showRetry]="false">
   </app-alert>
 } @else {
-  @if (isPrescriptionValue) {
+  @if (isPrescriptionValue()) {
     @if (viewStatePrescriptions$(); as prescriptionState) {
       <div class="container">
         <div class="flex-container align-right">
@@ -100,7 +100,7 @@
         </app-responsive-wrapper>
       </div>
     }
-  } @else if (isProposalValue) {
+  } @else if (isProposalValue()) {
     @if (viewStateProposals$(); as proposalState) {
       <div class="container">
         <div class="flex-container align-right">
@@ -184,7 +184,7 @@
         </app-responsive-wrapper>
       </div>
     }
-  } @else if (isModelValue) {
+  } @else if (isModelValue()) {
     @if (viewStateModels$(); as modelState) {
       <div class="container">
         <div class="flex-container">

@@ -19,7 +19,6 @@ export class AppPrescriptionDetails {
           ssin: '80222700153',
           firstName: 'John',
           lastName: 'Doe',
-          gender: 'M',
         },
       };
     },

@@ -84,7 +84,7 @@ export abstract class MagsComponent implements WebComponentWithSignals, OnInit {
   protected setEnvName(envs?: Record<string, string[]>) {
     if (envs) {
       const [referralPrescriptionEnv] =
-      Object.entries(envs).find(([, configNames]) => configNames.includes(this.hostSettings.configName)) || [];
+        Object.entries(envs).find(([, configNames]) => configNames.includes(this.hostSettings.configName)) || [];
       window.referralPrescriptionEnv = referralPrescriptionEnv as ReferralEnv;
     }
   }

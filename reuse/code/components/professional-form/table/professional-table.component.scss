@@ -1,39 +1,62 @@
 @use '@myhealth-belgium/design-kit' as mh;
 
-//Applied when prescriptions are successfully loaded, but there are no prescriptions
-tr.no-professionals {
-  > td {
-    text-align: center;
-    cursor: none;
-    border-radius: mh.$border-radius-m;
+:host {
+  ::ng-deep .highlight {
+    font-weight: mh.$font-weight-bold;
+  }
+  table.mat-mdc-table {
+    margin-bottom: unset;
+  }
+}
 
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
+//Applied when prescriptions are successfully loaded, but there are no prescriptions
+.table_container {
+  app-paginator {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+  }
+  tr.no-professionals {
+    > td {
+      text-align: center;
+      cursor: none;
+      border-radius: mh.$border-radius-m;
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+      }
     }
   }
-}
 
-//Applied when there is an error in the prescriptions or prescriptions are still loading
-tr.no-data {
-  height: var(--mh-table-empty-footer-container-height, 0);
-}
-
-.icon-end {
-  display: inline-flex;
-  align-items: center;
-  & mat-icon {
-    order: 2;
-    margin-inline-start: 8px;
+  //Applied when there is an error in the prescriptions or prescriptions are still loading
+  tr.no-data {
+    height: var(--mh-table-empty-footer-container-height, 0);
   }
-}
 
-.icon-cell{
-  color: mh.$typography-brand-primary-medium;
+  .icon-end {
+    display: inline-flex;
+    align-items: center;
+    & mat-icon {
+      order: 2;
+      margin-inline-start: 8px;
+    }
+  }
+
+  .icon-cell {
+    color: mh.$typography-brand-primary-medium;
+  }
+
+  .mat-column-lastname {
+    .nihii {
+      @include mh.font-small-regular();
+      color: mh.$typography-brand-neutral-dark;
+    }
+  }
 }

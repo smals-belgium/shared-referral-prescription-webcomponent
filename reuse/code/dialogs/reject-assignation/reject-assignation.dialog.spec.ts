@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -82,10 +82,9 @@ describe('RejectAssignationDialog', () => {
     jest.clearAllMocks();
   });
 
-  it('should reject prescription assignment successfully', fakeAsync(() => {
+  it('should reject prescription assignment successfully', () => {
     mockPrescriptionState.rejectAssignation.mockReturnValue(of(void 0));
     component.onReject();
-    tick();
     expect(mockPrescriptionState.rejectAssignation).toHaveBeenCalledWith(
       'prescriptionId',
       'performerTaskId',
@@ -93,16 +92,15 @@ describe('RejectAssignationDialog', () => {
     );
     expect(mockToastService.show).toHaveBeenCalledWith('prescription.rejectAssignation.success');
     expect(mockDialogRef.close).toHaveBeenCalledWith(true);
-  }));
+  });
 
-  it('should reject proposal assignment successfully', fakeAsync(() => {
+  it('should reject proposal assignment successfully', () => {
     component['prescription'].intent = Intent.PROPOSAL;
     mockProposalState.rejectAssignation.mockReturnValue(of(void 0));
     component.onReject();
-    tick();
     expect(mockProposalState.rejectAssignation).toHaveBeenCalledWith('prescriptionId', 'performerTaskId', 'uuid-123');
     expect(mockToastService.show).toHaveBeenCalledWith('proposal.rejectAssignation.success');
-  }));
+  });
 
   it('should show error when required ids are missing', () => {
     const showErrorSpy = jest.spyOn(component as any, 'showErrorCard');

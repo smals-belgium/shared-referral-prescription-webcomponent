@@ -56,7 +56,8 @@ a {
 
 .flex-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
+  gap: mh.$spacing-rem-m;
   align-items: center;
   margin-bottom: 1rem;
 }
@@ -199,4 +200,8 @@ mat-icon {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
+}
+
+.highlight {
+  font-weight: mh.$font-weight-bold;
 }

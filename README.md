@@ -132,6 +132,7 @@ interface CreatePrescriptionInitialValues {
  * getAccessToken (required) : the method expects to retrieve the access token related to specified audience.
  * getIdToken (optional) : the method expects to retrieve the id token related to the current user. Only required
  *                         when using the details web component.
+ *                         ⚠️ See "Organization-specific requirements" below for stricter rules.
  */
 interface ComponentServices {
   getAccessToken: (audience: string) => Promise<string | null>;
@@ -177,6 +178,67 @@ One of the following values can be provided with the intent value _**order**_ :
 The following value can be provided along with the _**proposal**_ intent :
 
 - ANNEX_81
+
+##### Organization-specific requirements
+
+When logged in as an **organization**, `getIdToken` is **required** for
+all components (`create`, `list`, and `details`) and must return an
+`IdToken` matching the following structure:
+
+```typescript
+type LowercaseOIDCKeys = keyof LowercaseEnumKeys<typeof OIDC>;
+
+/**
+ * NIHII identifier in the **11-digit** format (NIHII-11).
+ * The 8-digit format (NIHII-8) is not accepted.
+ *
+ * @example "12345678901"
+ */
+type Organization = {
+  [K in LowercaseOIDCKeys]?: {
+    nihii: string;
+    name?: string;
+  };
+};
+
+interface Organizations {
+  organizations?: Organization[];
+}
+
+export type UserProfile = Personal & Professional & Organizations;
+
+interface IdToken {
+  userProfile: UserProfile;
+}
+```
+
+Example:
+
+```json
+interface IdToken {
+  userProfile: {
+    ssin: '00222000000',
+    firstName: 'John',
+    lastName: 'Doe',
+    gender: 'M',
+    physician: {
+      recognised: true,
+      nihii11: '00000080001',
+    },
+    organizations: [
+      {
+        hospital: {
+          nihii: '12345678901',
+          name: 'Hospital Name',
+        },
+      },
+    ],
+  }
+}
+```
+
+> **Note:** Omitting `getIdToken` for organizations, or returning a
+> token that doesn't match this shape, will cause the component to fail.
 
 #### Outputs
 

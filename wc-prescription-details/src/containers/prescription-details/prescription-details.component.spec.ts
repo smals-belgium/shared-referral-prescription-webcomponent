@@ -9,7 +9,7 @@ import { DateAdapter, MatNativeDateModule } from '@angular/material/core';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { By } from '@angular/platform-browser';
-import { importProvidersFrom, SimpleChanges } from '@angular/core';
+import { importProvidersFrom, SimpleChange, SimpleChanges } from '@angular/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { IdToken, Intent } from '@reuse/code/interfaces';
@@ -20,25 +20,27 @@ import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
 import { EncryptionState } from '@reuse/code/states/privacy/encryption.state';
 import { EncryptionService } from '@reuse/code/services/privacy/encryption.service';
 import {
-  MockDateAdapter,
-  FakeLoader,
-  mockConfigService,
-  mockAuthService,
-  MockPseudoHelperFactory,
-  encryptionStateService,
-  prescriptionResponse,
-  id,
   BASE_URL,
-  mockUuid,
-  mockPerson,
-  mockTemplate,
+  encryptionStateService,
+  FakeLoader,
+  id,
   markdownServiceMock,
+  mockAuthService,
+  mockConfigService,
+  MockDateAdapter,
+  mockPerson,
+  MockPseudoHelperFactory,
+  mockTemplate,
+  mockUuid,
+  prescriptionResponse,
 } from '../../../test.utils';
 import { TemplateVersion } from '@reuse/code/openapi';
 import { Lang } from '@reuse/code/constants/languages';
 import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
 import { MarkdownService } from 'ngx-markdown';
 import { EvfTranslateService } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
+import * as utils from '@reuse/code/utils/utils';
 
 mockUuid();
 jest.mock('uuid');
@@ -49,7 +51,6 @@ describe('PrescriptionDetailsWebComponent', () => {
   let httpMock: HttpTestingController;
   let toaster: ToastService;
   let pseudoService: PseudoService;
-  let consoleSpy: jest.SpyInstance;
   let translate: TranslateService;
   let dateAdapter: MockDateAdapter;
   let mockIconRegistryService: jest.Mocked<Partial<IconRegistryService>>;
@@ -63,11 +64,6 @@ describe('PrescriptionDetailsWebComponent', () => {
           getRandomValues: jest.fn(),
         },
       },
-    });
-    consoleSpy = jest.spyOn(global.console, 'error').mockImplementation(message => {
-      if (!message?.message?.includes('Could not parse CSS stylesheet')) {
-        global.console.warn(message);
-      }
     });
   });
 
@@ -86,6 +82,7 @@ describe('PrescriptionDetailsWebComponent', () => {
         MatNativeDateModule,
         MatDialogModule,
         NoopAnimationsModule,
+        MatIconTestingModule,
       ],
       providers: [
         provideHttpClient(),
@@ -116,8 +113,6 @@ describe('PrescriptionDetailsWebComponent', () => {
     httpMock.verify();
     jest.restoreAllMocks();
   });
-
-  afterAll(() => consoleSpy.mockRestore());
 
   it('should create the app', () => {
     createFixture();
@@ -422,8 +417,104 @@ describe('PrescriptionDetailsWebComponent', () => {
         'close',
         'cancel',
         'arrow_forward_ios',
-        'info'
+        'info',
+        'person',
+        'warning'
       );
+    });
+  });
+
+  describe('populate infoElements', () => {
+    it('populates infoElements only with viewType info and resets infoElements on each new prescription load', async () => {
+      const elements = [
+        { id: '1', viewType: 'info', label: 'Info element' },
+        { id: '2', viewType: 'input', label: 'Input element' },
+        { id: '3', viewType: 'info', label: 'Another info' },
+      ];
+
+      const templateRequest = {
+        elements: elements,
+        version: '',
+        templateId: 0,
+      };
+
+      const mockResponse = prescriptionResponse();
+
+      createFixture();
+
+      await loadPrescription(mockResponse, templateRequest);
+
+      expect(component.infoElements).toHaveLength(2);
+      expect(component.infoElements.every(e => e.viewType === 'info')).toBe(true);
+
+      const templateRequest2 = {
+        elements: [],
+        version: '',
+        templateId: 0,
+      };
+      await loadPrescription(mockResponse, templateRequest2);
+
+      expect(component.infoElements).toHaveLength(0);
+    });
+  });
+
+  describe('prescription/ssin change handling', () => {
+    const change = (previous: unknown, current: unknown, firstChange = false): SimpleChange =>
+      new SimpleChange(previous, current, firstChange);
+
+    it('resets crypto key and loads when prescriptionId changes to a valid ID', () => {
+      createFixture();
+      const loadSpy = jest.spyOn(component, 'loadPrescriptionOrProposal');
+      jest.spyOn(utils, 'isPrescriptionId').mockReturnValue(true);
+
+      const prescriptionId = 'VALID-ID-123';
+      component.prescriptionId = prescriptionId;
+
+      const changes: SimpleChanges = {
+        prescriptionId: change(undefined, prescriptionId),
+      };
+      component.ngOnChanges(changes);
+
+      expect(encryptionStateService.resetCryptoKey).toHaveBeenCalledTimes(1);
+      expect(loadSpy).toHaveBeenCalledTimes(1);
+
+      prescriptionRequest(null, prescriptionId);
+    });
+
+    it('resets crypto key and loads when patientSsin changes and prescriptionId is not a full valid ID', () => {
+      createFixture();
+      const loadSpy = jest.spyOn(component, 'loadPrescriptionOrProposal');
+
+      jest.spyOn(utils, 'isPrescriptionId').mockReturnValue(false);
+      jest.spyOn(utils, 'isPrescriptionShortCode').mockReturnValue(false);
+
+      component.prescriptionId = 'SHORT';
+      component.patientSsin = '12345678901';
+
+      const changes: SimpleChanges = {
+        patientSsin: change(undefined, '12345678901'),
+      };
+      component.ngOnChanges(changes);
+
+      expect(encryptionStateService.resetCryptoKey).toHaveBeenCalledTimes(1);
+      expect(loadSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('does NOT reset or load when patientSsin changes but prescriptionId is already a valid full ID', () => {
+      createFixture();
+      const loadSpy = jest.spyOn(component, 'loadPrescriptionOrProposal');
+      jest.spyOn(utils, 'isPrescriptionId').mockReturnValue(true);
+
+      component.prescriptionId = 'VALID-ID-123';
+      component.patientSsin = '12345678901';
+
+      const changes: SimpleChanges = {
+        patientSsin: change(undefined, '12345678901'),
+      };
+      component.ngOnChanges(changes);
+
+      expect(encryptionStateService.resetCryptoKey).not.toHaveBeenCalled();
+      expect(loadSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -487,8 +578,8 @@ describe('PrescriptionDetailsWebComponent', () => {
     templateRed.flush(template);
   };
 
-  const prescriptionRequest = (mockResponse: any) => {
-    const req = httpMock.expectOne(`${BASE_URL}/prescriptions/${id}`);
+  const prescriptionRequest = (mockResponse: any, prescriptionId: string = id) => {
+    const req = httpMock.expectOne(`${BASE_URL}/prescriptions/${prescriptionId}`);
     expect(req.request.method).toBe('GET');
     req.flush(mockResponse);
   };

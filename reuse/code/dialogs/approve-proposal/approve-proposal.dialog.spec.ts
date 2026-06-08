@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
@@ -77,7 +77,7 @@ describe('ApproveProposalDialog', () => {
   });
 
   describe('approveProposal', () => {
-    it('should approve proposal with a NEW pseudonymized key if generated', fakeAsync(() => {
+    it('should approve proposal with a NEW pseudonymized key if generated', () => {
       const reasonText = 'Approval reason';
       const encryptedData = { encryptedText: 'encrypted-text', pseudonymizedKey: 'new-pseudo-key' };
       component.formGroup.get('reason')?.setValue(reasonText);
@@ -86,7 +86,6 @@ describe('ApproveProposalDialog', () => {
       mockDialogData.proposal.pseudonymizedKey = undefined;
 
       component.approveProposal();
-      tick();
       expect(mockEncryptionHelper.getEncryptedReasonAndPseudoKey).toHaveBeenCalledWith(
         reasonText,
         mockDialogData.proposal.pseudonymizedKey
@@ -99,9 +98,9 @@ describe('ApproveProposalDialog', () => {
       expect(mockToastService.show).toHaveBeenCalledWith('proposal.approve.success');
       expect(mockDialogRef.close).toHaveBeenCalledWith({ prescriptionId: undefined });
       expect(component.loading).toBe(false);
-    }));
+    });
 
-    it('should approve proposal with the EXISTING pseudonymized key if a new one is not generated', fakeAsync(() => {
+    it('should approve proposal with the EXISTING pseudonymized key if a new one is not generated', () => {
       const reasonText = 'Another reason';
       const encryptedData = { encryptedText: 'encrypted-text-2', pseudonymizedKey: undefined };
       component.formGroup.get('reason')?.setValue(reasonText);
@@ -109,7 +108,6 @@ describe('ApproveProposalDialog', () => {
       mockProposalState.approveProposal.mockReturnValue(of({ success: true }));
 
       component.approveProposal();
-      tick();
 
       expect(mockProposalState.approveProposal).toHaveBeenCalledWith(
         'proposal-123',
@@ -123,24 +121,23 @@ describe('ApproveProposalDialog', () => {
       expect(mockToastService.show).toHaveBeenCalledWith('proposal.approve.success');
       expect(mockDialogRef.close).toHaveBeenCalledWith({ prescriptionId: undefined });
       expect(component.loading).toBe(false);
-    }));
+    });
 
-    it('should handle error from encryption service', fakeAsync(() => {
+    it('should handle error from encryption service', () => {
       const error = new Error('Encryption failed!');
       component.formGroup.get('reason')?.setValue('some reason');
       mockEncryptionHelper.getEncryptedReasonAndPseudoKey.mockReturnValue(throwError(() => error));
       const handleErrorSpy = jest.spyOn(component as any, 'handleError');
 
       component.approveProposal();
-      tick();
 
       expect(component.loading).toBe(false);
       expect(handleErrorSpy).toHaveBeenCalledWith(error);
       expect(mockProposalState.approveProposal).not.toHaveBeenCalled();
       expect(mockDialogRef.close).not.toHaveBeenCalled();
-    }));
+    });
 
-    it('should handle error from proposal state service during approval', fakeAsync(() => {
+    it('should handle error from proposal state service during approval', () => {
       const error = new Error('API approval failed');
       const reasonText = 'A reason';
       const encryptedData = { encryptedText: 'encrypted-text', pseudonymizedKey: 'new-key' };
@@ -151,12 +148,11 @@ describe('ApproveProposalDialog', () => {
       const handleErrorSpy = jest.spyOn(component as any, 'handleError');
 
       component.approveProposal();
-      tick();
 
       expect(component.loading).toBe(false);
       expect(handleErrorSpy).toHaveBeenCalledWith(error);
       expect(mockToastService.show).not.toHaveBeenCalled();
       expect(mockDialogRef.close).not.toHaveBeenCalled();
-    }));
+    });
   });
 });

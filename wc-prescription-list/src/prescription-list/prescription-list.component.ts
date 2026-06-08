@@ -1,8 +1,11 @@
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
   HostBinding,
+  inject,
   Input,
   OnChanges,
   OnDestroy,
@@ -103,8 +106,10 @@ interface SearchCriteria extends SearchFilter {
     PrescriptionFilterComponent,
     FeatureFlagDirective,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestroy {
+  private readonly _cdr = inject(ChangeDetectorRef);
   // Protected signals from service
   protected readonly searchCriteria$ = signal<SearchCriteria>({
     historical: false,
@@ -137,9 +142,9 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
 
   private _subscriptions: Subscription = new Subscription();
 
-  isPrescriptionValue = false;
-  isProposalValue = false;
-  isModelValue = false;
+  isPrescriptionValue: WritableSignal<boolean> = signal(false);
+  isProposalValue: WritableSignal<boolean> = signal(false);
+  isModelValue: WritableSignal<boolean> = signal(false);
 
   @HostBinding('attr.lang')
   @Input()
@@ -155,11 +160,11 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
 
   private readonly _languageChange = new BehaviorSubject<string>(this.translate.currentLang ?? Lang.FR.full);
 
-  errorCard: ErrorCard = {
+  errorCard: WritableSignal<ErrorCard> = signal({
     show: false,
     message: '',
     errorResponse: undefined,
-  };
+  });
 
   constructor(
     private readonly translate: TranslateService,
@@ -228,7 +233,8 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
       (changes['patientSsin'] || changes['requesterSsin'] || changes['performerSsin'] || changes['intent']) &&
       this.intent
     ) {
-      this.loadData({ pageIndex: 1 });
+      this.loadData();
+      this._cdr.markForCheck();
     }
   }
 
@@ -242,23 +248,23 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
 
     if (isPrescription(this.intent)) {
       this.resetOutdatedValues();
-      this.isPrescriptionValue = true;
+      this.isPrescriptionValue.set(true);
       this.loadPrescriptions(pageIndex, pageSize);
     } else if (isProposal(this.intent)) {
       this.resetOutdatedValues();
-      this.isProposalValue = true;
+      this.isProposalValue.set(true);
       this.loadProposals(pageIndex, pageSize);
     } else if (isModel(this.intent)) {
       this.resetOutdatedValues();
-      this.isModelValue = true;
+      this.isModelValue.set(true);
       this.loadModels(pageIndex, pageSize);
     }
   }
 
   resetOutdatedValues() {
-    this.isPrescriptionValue = false;
-    this.isProposalValue = false;
-    this.isModelValue = false;
+    this.isPrescriptionValue.set(false);
+    this.isProposalValue.set(false);
+    this.isModelValue.set(false);
   }
 
   loadPrescriptions(page?: number, pageSize?: number) {
@@ -274,7 +280,8 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
             patient: identifier,
           },
           page,
-          pageSize
+          pageSize,
+          this.patientSsin
         );
       });
     } else {
@@ -295,7 +302,8 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
             patient: identifier,
           },
           page,
-          pageSize
+          pageSize,
+          this.patientSsin
         );
       });
     } else {
@@ -447,9 +455,9 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
   }
 
   showErrorCard() {
-    this.errorCard = {
+    this.errorCard.set({
       show: true,
       message: 'common.somethingWentWrongWithoutRetry',
-    };
+    });
   }
 }

@@ -253,7 +253,17 @@
         "dataType": {
           "type": "string"
         },
-        "viewType": "textarea",
+        "viewType": "expansionPanelTextarea",
+        "viewMode": [
+          {
+            "value": "readonly",
+            "condition": {
+              "leftValue": "${responses:prescriptionOriginId}",
+              "operator": "empty",
+              "invert": true
+            }
+          }
+        ],
         "viewMode": [
           {
             "value": "readonly",
@@ -283,7 +293,17 @@
         "dataType": {
           "type": "string"
         },
-        "viewType": "textarea",
+        "viewType": "expansionPanelTextarea",
+        "viewMode": [
+          {
+            "value": "readonly",
+            "condition": {
+              "leftValue": "${responses:prescriptionOriginId}",
+              "operator": "empty",
+              "invert": true
+            }
+          }
+        ],
         "viewMode": [
           {
             "value": "readonly",
@@ -331,7 +351,17 @@
         "dataType": {
           "type": "string"
         },
-        "viewType": "textarea",
+        "viewType": "expansionPanelTextarea",
+        "viewMode": [
+          {
+            "value": "readonly",
+            "condition": {
+              "leftValue": "${responses:prescriptionOriginId}",
+              "operator": "empty",
+              "invert": true
+            }
+          }
+        ],
         "viewMode": [
           {
             "value": "readonly",
@@ -361,7 +391,17 @@
         "dataType": {
           "type": "string"
         },
-        "viewType": "textarea",
+        "viewType": "expansionPanelTextarea",
+        "viewMode": [
+          {
+            "value": "readonly",
+            "condition": {
+              "leftValue": "${responses:prescriptionOriginId}",
+              "operator": "empty",
+              "invert": true
+            }
+          }
+        ],
         "viewMode": [
           {
             "value": "readonly",
