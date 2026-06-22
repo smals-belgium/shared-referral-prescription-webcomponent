@@ -4,7 +4,7 @@ import { TaskService } from '@reuse/code/services/fhir/task.service';
 import { PrescriptionExecutionFinish, PrescriptionExecutionStart } from '@reuse/code/interfaces';
 import { BaseState } from '@reuse/code/states/helpers/base.state';
 import { tap } from 'rxjs/operators';
-import { HealthcareOrganizationResource, HealthcareProResource, ReadRequestResource } from '@reuse/code/openapi';
+import { HealthcareOrganizationResource, ReadRequestResource } from '@reuse/code/openapi';
 
 @Injectable({ providedIn: 'root' })
 export class PrescriptionState extends BaseState<ReadRequestResource> {
@@ -30,17 +30,19 @@ export class PrescriptionState extends BaseState<ReadRequestResource> {
   assignPrescriptionPerformer(
     prescriptionId: string,
     referralTaskId: string,
-    healthcareProvider: HealthcareProResource | HealthcareOrganizationResource,
+    ssinOrNihdi: string,
+    role: string,
+    type: string,
     generatedUUID: string
   ) {
-    if (healthcareProvider.type === 'Professional') {
+    if (type === 'Professional') {
       return this.prescriptionService
         .assignCaregiver(
           prescriptionId,
           referralTaskId,
           {
-            ssin: (healthcareProvider as HealthcareProResource).healthcarePerson?.ssin || '',
-            role: (healthcareProvider as HealthcareProResource).healthcareQualification?.id?.profession || '',
+            ssin: ssinOrNihdi || '',
+            role: role || '',
           },
           generatedUUID
         )
@@ -50,15 +52,13 @@ export class PrescriptionState extends BaseState<ReadRequestResource> {
           })
         );
     } else {
-      const ho = healthcareProvider as HealthcareOrganizationResource;
-      const nihdi = this.getNihdi(ho);
       return this.prescriptionService
         .assignOrganization(
           prescriptionId,
           referralTaskId,
           {
-            nihii: nihdi,
-            institutionTypeCode: ho.typeCode || '',
+            nihii: ssinOrNihdi,
+            institutionTypeCode: type || '',
           },
           generatedUUID
         )

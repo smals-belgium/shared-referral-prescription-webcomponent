@@ -7,8 +7,8 @@ describe('mapLanguageToTranslations', () => {
     const cases: ReadonlyArray<[UserLanguage, FullLang]> = [
       ['nl', Lang.NL.full],
       ['fr', Lang.FR.full],
-      ['de', Lang.NL.full],
-      ['en', Lang.NL.full],
+      ['de', Lang.DE.full],
+      ['en', Lang.EN.full],
     ];
 
     it.each(cases)('should map %s to %s', (input, expected) => {

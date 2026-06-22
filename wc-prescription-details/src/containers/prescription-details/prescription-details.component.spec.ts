@@ -422,7 +422,9 @@ describe('PrescriptionDetailsWebComponent', () => {
         'close',
         'cancel',
         'arrow_forward_ios',
-        'info'
+        'info',
+        'person',
+        'warning'
       );
     });
   });

@@ -2,72 +2,106 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.4] - 16/Jun/26
+
+### Bugfixes
+
+- Caregiver selection - Clicking the radio button in the caregiver search results now correctly selects the caregiver and enables the "Choose" button
+- Caregiver search pagination - Search results in the assign/transfer dialog now correctly load beyond the first 10 entries when scrolling on Android devices
+
+---
+
 ## [1.1.3] - 04/Jun/26
 
-- UHMEP-2958: Feature - Wrapper documentation for wrapper components (README-WRAPPERS.md)
-- UHMEP-2958: Improvement - Updated API contract definitions
-- UHMEP-2958: Improvement - Updated npm dependencies
-- UHMEP-2958: Bugfix - Fix compatibility issues in wrapper components
+### Features
+
+- Wrapper component documentation - Complete documentation for wrapper components
+
+### Improvements
+
+- API contract updates - Updated API contract definitions for better integration
+- Dependency updates - Updated npm dependencies to latest stable versions
+
+### Bugfixes
+
+- Wrapper compatibility - Fixed compatibility issues in wrapper components
 
 ---
 
 ## [1.1.2] - 22/Apr/26
 
-- UHMEP-2861: Bugfix - Privacy log for removing HCP assignation now includes HCP SSIN
-- UHMEP-2872: Bugfix - Fixed patient duplication issue
-- UHMEP-2786: Improvement - Infoboxes are displayed again when consulting a prescription in the web app
+### Improvements
+
+- Infobox visibility - Infoboxes are now properly displayed when consulting prescriptions in the application
+
+### Bugfixes
+
+- Audit logging - Privacy log for HCP assignation removal now includes HCP SSIN for better traceability
+- Data integrity - Fixed patient duplication issue that could occur during prescription management
 
 ---
 
 ## [1.1.1] - 03/Apr/26
 
-- UHMEP-2781: Feature - Session inactivity timeout (automatic disconnection on inactivity)
-- UHMEP-2821: Bugfix - Extension button displayed for templates without validity end date
-- UHMEP-2843: Bugfix - Cancel Prescription button hidden for non-cancelable prescription task states
-- UHMEP-2851: Bugfix - Removed table footer item counter for cleaner UI
+### Features
+
+- Session security - Session inactivity timeout with automatic disconnection for improved security and privacy
+
+### Bugfixes
+
+- Template extension - Extension button properly displayed for templates without validity end date
+- Workflow accuracy - Cancel Prescription button hidden for prescription states that cannot be cancelled
+- User interface - Removed table footer item counter for a cleaner interface
 
 ---
 
 ## [1.1.0] - 03/Apr/26
 
-- UHMEP-2710: Feature - Patient SSIN mutation support (consult old or new SSIN)
-- UHMEP-2711: Feature - Subscribe to patient mutations on creation when patient unknown
-- UHMEP-2729: Feature - Allow caregivers to start a new execution period after completion/interruption/cancellation
-- UHMEP-2627: Improvement - Pre-commit hook to enforce frontend code formatting
-- UHMEP-2681: Improvement - Lazy loading for professionals list (avoid loading hundreds at once)
-- UHMEP-2696: Improvement - Create indexes on Prescription, Proposal and ActivityRequest tables
-- UHMEP-2642: Improvement - Migrated to pseudo lib frontend version 1.1.2
-- UHMEP-2680: Improvement - Removed HTTP cache usage from web components
-- UHMEP-2725: Improvement - Disable radio/physio prescriptions via feature flags
-- UHMEP-2690: Improvement - Adapted logic for treatment validity end date on year boundary (nursing templates)
-- UHMEP-2691: Improvement - TreatmentValidityEndDate logic adapted for three templates
-- UHMEP-2619: Bugfix - Missing prefilled fields when extending/duplicating prescriptions for specific templates
-- UHMEP-2701: Bugfix - Dropdown list shrinking after page scroll in Prescription Creation Form
-- UHMEP-2702: Bugfix - Extend a prescription - field display issues
-- UHMEP-2712: Bugfix - Number of sessions not updated on frequency change for specific templates
-- UHMEP-2794: Bugfix - Validity end date incorrectly displayed for most prescription templates
-- UHMEP-2654: Bugfix - Prescription creation: wrong calendar background color in date picker on hover/focus
-- UHMEP-2707: Bugfix - Execution dialog: date picker icon overflowing input boundary
-- UHMEP-2767: Bugfix - Closure dialog: date picker icon overflowing input boundary
-- UHMEP-2721: Bugfix - Expand/Collapse icon cropped when multiple prescriptions are collapsed
-- UHMEP-2709: Bugfix - Bleeding: bloodQuantity placeholder truncated in Dutch
-- UHMEP-2684: Bugfix - Unable to reassign prescription after rejecting assignment
-- UHMEP-2655: Bugfix - Wrong text translation fixes
-- UHMEP-2694: Bugfix - Added missing translation for DIABETIC_EDUCATION_FOR_PATIENTS_WITH_CARE_PATH
-- UHMEP-2704: Bugfix - Fixed wrong translations for proposal
-- UHMEP-2706: Bugfix - Added intent check on proposal assignation modal + 3 translation keys
-- UHMEP-2738: Bugfix - Missing translation - Back button
-- UHMEP-2740: Bugfix - Missing translation when consulting prescription
-- UHMEP-2736: Bugfix - Missing translations on prescription list component
-- UHMEP-2735: Bugfix - Annex 81 print layout displays selected values correctly
-- UHMEP-2775: Bugfix - Other template type correctly displayed in detail/PDF
-- UHMEP-2500: Improvement - Improved dialog checkbox list & confirmation behavior
-- UHMEP-2545: Improvement - Removed pop-up when saving prescription as model
-- UHMEP-2719: Improvement - Align Frequency and length of treatment with design
-- UHMEP-2792: Bugfix - Require medical reason when frequency >= 2 times per day
-- UHMEP-2743: Improvement - Replace "Cancel" button with "Classified without consequence"
-- UHMEP-2747: Bugfix - Dropdown 'items per page' showing on proposition page
-- UHMEP-2810: Bugfix - Fix `ng serve` for web-components
-- UHMEP-2500: Improvement - Dialog checkbox list and confirmation behavior
-- UHMEP-2688: Improvement - Print layout alignment
-- UHMEP-2787: Improvement - Resize textarea/select/infobox element in creation form
+### Features
+
+- Patient data flexibility - Support for querying prescriptions by old or new patient SSIN during data migrations
+- Patient synchronization - Automatic subscription to patient mutations when patient information is unknown to the system
+- Caregiver workflow enhancement - Allow caregivers to start new execution periods after completion, interruption, or cancellation of current period
+
+### Improvements
+
+- Search performance - Lazy loading for professionals list prevents loading hundreds of records at once
+- Database optimization - Created indexes on Prescription, Proposal, and ActivityRequest tables for improved query performance
+- Library upgrade - Migrated to pseudo lib frontend version 1.1.2
+- Cache removal - Removed HTTP cache usage from web components to ensure fresh data
+- Feature control - Ability to disable radio/physio prescriptions via feature flags for targeted rollouts
+- Calendar logic - Improved treatment validity end date logic for nursing templates on year boundary scenarios
+- Calendar logic - Adapted TreatmentValidityEndDate logic for three additional template types
+- Dialog enhancements - Enhanced dialog checkbox list display and confirmation behavior for better user experience
+- User experience - Removed confirmation pop-up when saving prescription as model for streamlined workflow
+- Visual alignment - Improved frequency and treatment length field design
+- Terminology update - Replaced "Cancel" button with "Classified without consequence" for regulatory clarity
+- Print layout - Enhanced print layout alignment and formatting
+- Form usability - Improved resizing capabilities for textarea, select, and infobox elements in creation forms
+- Code quality - Pre-commit hook implemented to enforce consistent frontend code formatting
+
+### Bugfixes
+
+- Prescription extension - Fixed missing prefilled fields when extending/duplicating prescriptions for specific templates
+- UI rendering - Fixed dropdown list shrinking after page scroll in Prescription Creation Form
+- Form display - Fixed field display issues when extending a prescription
+- Session frequency - Fixed number of sessions not updating on frequency change for specific templates
+- Date display - Fixed validity end date incorrectly displayed for most prescription templates
+- Calendar styling - Fixed wrong background color in date picker on hover/focus states
+- UI overflow - Fixed execution dialog date picker icon overflowing input boundary
+- UI overflow - Fixed closure dialog date picker icon overflowing input boundary
+- Icon display - Fixed expand/collapse icon cropping when multiple prescriptions are collapsed in list view
+- Placeholder text - Fixed blood quantity placeholder truncation in Dutch language
+- Workflow restoration - Fixed inability to reassign prescription after rejecting assignment
+- Language corrections - Fixed multiple incorrect text translations throughout the application
+- Translation additions - Added missing translation for DIABETIC_EDUCATION_FOR_PATIENTS_WITH_CARE_PATH
+- Proposal translations - Fixed incorrect translations for proposal-related text
+- Dialog functionality - Added intent check on proposal assignation modal with additional translation keys
+- Button translations - Added missing translation for Back button
+- Consultation translations - Added missing translation when consulting prescription
+- List translations - Added missing translations on prescription list component
+- Print layout - Fixed Annex 81 print layout to display selected values correctly
+- Template display - Fixed other template type correctly displayed in detail view and PDF output
+- Medical validation - Require medical reason when frequency is 2 times or more per day
+- UI display - Fixed dropdown 'items per page' showing on proposition page inappropriately
+- Development tools - Fixed ng serve command for web-components

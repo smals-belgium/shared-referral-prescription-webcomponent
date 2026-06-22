@@ -1,0 +1,41 @@
+<div class="selected_cities_container">
+  <mat-chip-set>
+    @let citiesControl = formGroup().controls.cities;
+    @let queryControl = formGroup().controls.query;
+    @for (city of citiesControl.value; track city.zipCode) {
+      <mat-chip
+        class="mh-blue"
+        data-cy="prescription-selected-city"
+        [disableRipple]="true"
+        (removed)="removeCity(city)">
+        {{ city.zipCode }} {{ city.cityName | translation }}
+        <button
+          type="button"
+          data-cy="prescription-selected-city-remove"
+          matChipRemove
+          [attr.aria-label]="'prescription.ariaLabel.removeCity' | translate">
+          <mat-icon svgIcon="close" [aria-hidden]="true"></mat-icon>
+        </button>
+      </mat-chip>
+    }
+    @if (queryControl.value && !hideUpdateSearchButton()) {
+      <mat-chip class="mh-blue" data-cy="prescription-selected-query" [disableRipple]="true" (removed)="clearQuery()">
+        {{ queryControl.value }}
+        <button
+          type="button"
+          data-cy="prescription-selected-query-remove"
+          matChipRemove
+          [attr.aria-label]="'prescription.ariaLabel.removeCriteria' | translate">
+          <mat-icon svgIcon="close" [aria-hidden]="true"></mat-icon>
+        </button>
+      </mat-chip>
+    }
+  </mat-chip-set>
+
+  @if (!hideUpdateSearchButton()) {
+    <button class="go_back_search" matButton (click)="backToSearch()">
+      <mat-icon>tune</mat-icon>
+      <span>{{ 'prescription.transferPerformer.updateCriteria' | translate }}</span>
+    </button>
+  }
+</div>
