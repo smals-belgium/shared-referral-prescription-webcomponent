@@ -1,122 +1,122 @@
 {
   "common": {
-    "yes": "",
-    "no": "",
-    "confirm": "",
-    "cancel": "",
-    "close": "",
-    "delete": "",
-    "patient": "",
-    "category": "",
-    "typeOfPrescription": "",
-    "shortCode": "",
-    "chooseFromList": "",
-    "tryAgain": "",
-    "goBack": "",
-    "filter": "",
-    "results": "",
-    "search": "",
-    "start": "",
+    "yes": "Ja",
+    "no": "Nein",
+    "confirm": "Bestätigen",
+    "cancel": "Abbrechen",
+    "close": "Schließen",
+    "delete": "Löschen",
+    "patient": "Patient",
+    "category": "Kategorie",
+    "typeOfPrescription": "Verordnungsart",
+    "shortCode": "Short Code",
+    "chooseFromList": "Wählen Sie aus dieser Liste",
+    "tryAgain": "Erneut versuchen",
+    "goBack": "Zurück",
+    "filter": "Filtern",
+    "results": "{count, plural, one{Ergebnis} other{Ergebnisse}}",
+    "search": "Suchen",
+    "start": "Starten",
     "professions": {
-      "NURSE": "",
-      "PHYSICIAN": "",
+      "NURSE": "Pflegekraft",
+      "PHYSICIAN": "Arzt",
       "PHYSIOTHERAPIST": "",
       "DENTIST": ""
     },
     "professional": {
-      "notFound": "",
-      "tooltip": ""
+      "notFound": "Nicht gefunden",
+      "tooltip": "Leistungserbringer nicht gefunden"
     },
     "organization": {
-      "notFound": "",
-      "tooltip": ""
+      "notFound": "Nicht gefunden",
+      "tooltip": "Pflegeorganisation nicht gefunden."
     },
     "organizations": {
-      "THIRD_PARTY_PAYING_GROUP": "",
-      "GROUP_OF_DOCTORS": "",
-      "GUARD_POST": "",
-      "MEDICAL_HOUSE": "",
-      "HOME_SERVICES": ""
+      "THIRD_PARTY_PAYING_GROUP": "Gruppierung mit einer LIKIV-Drittkostenträgernummer (Pflegekräfte, Hebammen usw.)",
+      "GROUP_OF_DOCTORS": "Gruppierung von Hausärzten am selben Praxisstandort",
+      "GUARD_POST": "Ärztlicher Bereitschaftsdienst",
+      "MEDICAL_HOUSE": "Medizinisches Versorgungszentrum",
+      "HOME_SERVICES": "Integrierter häuslicher Pflegedienst"
     },
-    "lastName": "",
-    "firstName": "",
-    "dateOfBirth": "",
-    "ssin": "",
-    "gender": "",
+    "lastName": "Nachname",
+    "firstName": "Vorname",
+    "dateOfBirth": "Geboren am",
+    "ssin": "ID",
+    "gender": "Geschlecht",
     "genders": {
-      "M": "",
-      "F": "",
-      "null": "",
-      "undefined": ""
+      "M": "M",
+      "F": "W",
+      "null": "Unbekannt",
+      "undefined": "Unbekannt"
     },
     "gendersFull": {
-      "M": "",
-      "F": "",
-      "null": "",
-      "undefined": ""
+      "M": "Männlich",
+      "F": "Weiblich",
+      "null": "Unbekannt",
+      "undefined": "Unbekannt"
     },
-    "somethingWentWrong": "",
-    "somethingWentWrongWithoutRetry": "",
-    "forbiddenAction": "",
-    "forbiddenResource": "",
-    "notFoundResource": "",
-    "mandatory": "",
+    "somethingWentWrong": "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+    "somethingWentWrongWithoutRetry": "Es ist ein Fehler aufgetreten.",
+    "forbiddenAction": "Sie sind nicht berechtigt, diese Aktion auszuführen.",
+    "forbiddenResource": "Sie sind nicht berechtigt, auf diese Seite zuzugreifen.",
+    "notFoundResource": "Die angeforderte Seite existiert nicht.",
+    "mandatory": "Pflichtfeld",
     "ariaLabel": {
-      "loading": ""
+      "loading": "Wird geladen"
     },
     "errors": {
-      "pseudoDisabled": ""
+      "pseudoDisabled": "Es ist nicht möglich, eine Verordnung zu erstellen."
     },
-    "prescriptionModel": "",
+    "prescriptionModel": "Vorlage",
     "error": {
       "default": {
-        "header": "",
-        "subheader": ""
+        "header": "Technisches Problem",
+        "subheader": "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es in wenigen Augenblicken erneut."
       }
     }
   },
   "pagination": {
     "ariaLabel": {
-      "firstPage": "",
-      "lastPage": "",
-      "nextPage": "",
-      "previousPage": ""
+      "firstPage": "Erste Seite",
+      "lastPage": "Letzte Seite",
+      "nextPage": "Nächste Seite",
+      "previousPage": "Vorherige Seite"
     },
-    "itemsPerPage": "",
-    "firstPage": "",
-    "lastPage": "",
-    "nextPage": "",
-    "previousPage": "",
-    "rangePage": ""
+    "itemsPerPage": "Elemente pro Seite",
+    "firstPage": "Erste Seite",
+    "lastPage": "Letzte Seite",
+    "nextPage": "Nächste Seite",
+    "previousPage": "Vorherige Seite",
+    "rangePage": "{startIndex} - {endIndex} von {length}"
   },
   "evf": {
-    "deleteCareGiver": "",
-    "sureDeleteCareGiver": ""
+    "deleteCareGiver": "Leistungserbringer entfernen",
+    "sureDeleteCareGiver": "Möchten Sie diesen Leistungserbringer wirklich entfernen?"
   },
   "prescription": {
-    "beneficiary": "",
-    "creationDate": "",
+    "beneficiary": "Anspruchsberechtigter",
+    "creationDate": "Erstellt am",
     "details": {
-      "link": ""
+      "link": "Details anzeigen"
     },
     "selectTemplate": {
-      "prescriptionModel": "",
-      "pickOptionFromList": "",
-      "noOptions": ""
+      "prescriptionModel": "Verordnungsvorlage",
+      "pickOptionFromList": "Wählen Sie eine Option aus der Liste",
+      "noOptions": "Keine Verordnung"
     },
     "selectModel": {
-      "prescriptionModel": "",
-      "pickOptionFromList": "",
-      "noOptions": ""
+      "prescriptionModel": "Vorlage",
+      "pickOptionFromList": "Wählen Sie eine Option aus der Liste",
+      "noOptions": "Keine Vorlage"
     },
     "create": {
-      "action": "",
-      "success": "",
-      "allSuccess": "",
-      "allFailed": "",
-      "someSuccessSomeFailed": "",
-      "addPrescription": "",
-      "publish": "",
+      "action": "Neue Verordnung",
+      "success": "Die Verordnung wurde erfolgreich erstellt.",
+      "allSuccess": "{count} {count, plural, one{Verordnung} other{Verordnungen}} erfolgreich erstellt.",
+      "allFailed": "Beim Erstellen der Verordnungen ist ein Fehler aufgetreten. Bitte überprüfen Sie Ihre Eingabe und versuchen Sie es erneut.",
+      "someSuccessSomeFailed": "{successCount} {successCount, plural, one{Verordnung} other{Verordnungen}} erfolgreich erstellt. {failedCount} {failedCount, plural, one{Verordnung konnte aufgrund eines Fehlers nicht erstellt werden} other{Verordnungen konnten aufgrund eines Fehlers nicht erstellt werden}}. Bitte überprüfen Sie Ihre Eingabe und versuchen Sie es erneut.",
+      "addPrescription": "Zusatzverordnung",
+      "publish": "Veröffentlichen",
       "control": {
         "title": "",
         "warning": "",
@@ -130,491 +130,664 @@
           "typesOfImagery": "",
           "cost": "",
           "radiationRate": "",
-          "radiationLevel": "",
-          "deselectRow": "",
-          "selectRow": ""
+          "radiationLevel": "Strahlungslevel {level}/5",
+          "deselectRow": "Zeile {row} abwählen",
+          "selectRow": "Zeile {row} auswählen"
         }
       },
       "deletePrescription": {
-        "title": "",
-        "message": ""
+        "title": "Abbruch der Überweisung",
+        "message": "Möchten Sie „{templateName}“ wirklich abbrechen?"
       },
       "cancelPrescriptionsCreation": {
-        "title": "",
-        "cancelAll": "",
-        "noSelectionError": ""
+        "title": "Ausgewählte Überweisungen abbrechen",
+        "cancelAll": "Alles abbrechen",
+        "noSelectionError": "Bitte wählen Sie eine oder mehrere Optionen aus, bevor Sie die Stornierung bestätigen."
       },
-      "cancelCreation": "",
-      "prescription": "",
-      "requiredFields": ""
+      "cancelCreation": "Möchten Sie diese Überweisung wirklich abbrechen?",
+      "prescription": "Überweisung erstellen",
+      "requiredFields": "Pflichtfelder"
     },
-    "allPrescriptionsFetched": "",
+    "allPrescriptionsFetched": "Alle Vorschriften abgerufen",
     "model": {
-      "allModalsFetched": "",
-      "title": "",
+      "allModalsFetched": "Alle Vorlagen abgerufen",
+      "title": "Vorlage",
       "create": {
-        "title": "",
-        "success": "",
+        "title": "Als Vorlage speichern",
+        "success": "Die Vorlage mit dem Namen „{name}“ wurde erfolgreich erstellt.",
         "dialog": {
-          "title": "",
-          "label": "",
-          "labelNotUnique": ""
+          "title": "Möchten Sie die Anweisung als Vorlage speichern?",
+          "label": "Vorlagenname",
+          "labelNotUnique": "Der Name der Vorlage ist nicht eindeutig."
         },
-        "model": ""
+        "model": "Vorlage erstellen"
       },
       "update": {
-        "title": ""
+        "title": "Vorlage aktualisieren"
       },
       "delete": {
-        "title": "",
-        "message": ""
+        "title": "Vorlage löschen",
+        "message": "Sind Sie sicher, dass Sie die Vorlage „{templateName}“ löschen möchten?"
       },
-      "creationDate": "",
-      "label": "",
-      "template": "",
-      "actions": "",
-      "noModels": "",
+      "creationDate": "Erstellt am",
+      "label": "Vorlagenname",
+      "template": "Basierend auf",
+      "actions": "Aktionen",
+      "noModels": "Es sind keine Vorlagen verfügbar.",
       "pagination": {
-        "models": "",
-        "pageSize": ""
+        "models": "{count, plural, one{Vorlage} other{Vorlagen}}",
+        "pageSize": "Anzahl pro Seite"
       },
-      "tableHasRecords": ""
+      "tableHasRecords": "Die Gesamtzahl der Vorlagen beträgt {total}."
     },
     "filter": {
-      "historicToggle": "",
+      "historicToggle": "Geschichte",
       "prescriptionType": {
-        "label": ""
+        "label": "Nach Vorschrift filtern"
       },
       "status": {
-        "label": ""
+        "label": "Nach Status filtern"
       },
-      "submit": "",
-      "clear": ""
+      "submit": "Einreichen",
+      "clear": "Alles löschen"
     },
     "print": {
-      "content-electronic-prescription": "",
-      "guideline": "",
-      "nihdi": "",
-      "niss": "",
-      "patient": "",
-      "prescriber": "",
-      "proof-of-electronic-prescription": "",
-      "remark": "",
-      "date": "",
+      "content-electronic-prescription": "Inhalt der elektronischen Vorschrift",
+      "guideline": "Bitte legen Sie dieses Dokument Ihrem behandelnden Arzt vor. Sie können den QR-Code scannen lassen, um Zugriff auf die Daten in der elektronischen Verschreibung zu erhalten.",
+      "nihdi": "LIKIV-Nr",
+      "niss": "INSS",
+      "patient": "Begünstigter",
+      "prescriber": "verschreibender Arzt",
+      "proof-of-electronic-prescription": "Nachweis einer elektronischen Vorschrift",
+      "remark": "Bitte beachten Sie: Manuelle Ergänzungen in diesem Dokument werden nicht berücksichtigt.",
+      "date": "Gedruckt am {date}",
       "subsection": {
-        "patient": "",
-        "startDate": "",
-        "endDate": "",
-        "header": ""
+        "patient": "Patient",
+        "startDate": "Start",
+        "endDate": "Ende",
+        "header": "Elektronische Identifikationsdaten der Verordnung (gedruckt am {date})"
       },
-      "alert": ""
+      "alert": "Diese Verordnung wurde ohne weitere Bearbeitung abgeschlossen und kann daher nicht mehr verwendet werden."
     },
-    "author": "",
-    "patient": "",
-    "note": "",
-    "shortcode": "",
-    "typeOfCare": "",
-    "services": "",
-    "frequency": "",
-    "start": "",
-    "end": "",
-    "validityPeriod": "",
-    "consultDetails": "",
-    "assign": "",
-    "transfer": "",
-    "assignMe": "",
-    "reject": "",
-    "copy": "",
-    "printAction": "",
-    "duplicate": "",
-    "extend": "",
-    "careGivers": "",
-    "assigned": "",
-    "noPrescriptionsForPatient": "",
-    "noPrescriptionsForUser": "",
+    "author": "Autor",
+    "patient": "Patient",
+    "note": "Notiz",
+    "shortcode": "Short Code",
+    "typeOfCare": "Art der Pflege",
+    "services": "Sitzungen",
+    "frequency": "Frequenz",
+    "start": "Start",
+    "end": "Ende",
+    "validityPeriod": "Gültigkeitsdauer",
+    "consultDetails": "Details anzeigen",
+    "assign": "Zuweisen",
+    "transfer": "Übertragen",
+    "assignMe": "Mir selbst zuweisen",
+    "reject": "Ablehnen",
+    "copy": "Kopieren",
+    "printAction": "Drucken",
+    "duplicate": "Duplizieren",
+    "extend": "Verlängern",
+    "careGivers": "Pflegekräfte",
+    "assigned": "Zugewiesen",
+    "noPrescriptionsForPatient": "Dieser Patient hat noch keine Vorschriften.",
+    "noPrescriptionsForUser": "Sie haben noch keine Vorschriften.",
     "assignPerformer": {
-      "title": "",
-      "success": "",
-      "successOrganization": "",
-      "meSuccess": "",
-      "performer": "",
-      "searchPerformerPlaceHolder": "",
-      "select": "",
-      "locations": "",
-      "zipCodeOrCityName": "",
-      "noResults": "",
-      "organization": "",
+      "title": "Einen Pflegekraft suchen",
+      "success": "{firstName} {lastName} wurde als Pflegekraft zugewiesen.",
+      "successOrganization": "{name} wurde als Organisation zugewiesen.",
+      "meSuccess": "Sie wurden als Pflegekraft zugewiesen.",
+      "performer": "Pflegekraft oder Organisation",
+      "searchPerformerPlaceHolder": "LIKIV Nummer, Name",
+      "select": "Auswählen",
+      "locations": "Ort(e)",
+      "zipCodeOrCityName": "Postleitzahl oder Gemeinde",
+      "noResults": "Keine Gemeinde gefunden",
+      "organization": "Organisation",
       "dialog": {
-        "title": "",
-        "description": ""
+        "title": "Eine Verordnung einem Leistungserbringer oder einer Pflegeorganisation zuweisen",
+        "description": "Wenn Sie dieser Verordnung einen Leistungserbringer hinzufügen, kann dieser die in dieser Verordnung enthaltenen Informationen einsehen."
       },
-      "locationsHint": "",
-      "performerHint": ""
+      "locationsHint": "Nach Postleitzahl oder Gemeindename suchen",
+      "performerHint": "Nach Name oder ID suchen"
     },
     "transferAssignation": {
-      "title": "",
-      "success": "",
-      "performer": "",
-      "searchPerformerPlaceHolder": "",
-      "locations": "",
-      "zipCodeOrCityName": "",
-      "noResults": "",
+      "title": "Zuweisung übertragen",
+      "success": "{firstName} {lastName} wurde als Pflegekraft zugewiesen.",
+      "performer": "Pflegekraft",
+      "searchPerformerPlaceHolder": "LIKIV Nummer, Name",
+      "locations": "Ort(e)",
+      "zipCodeOrCityName": "Postleitzahl oder Gemeinde",
+      "noResults": "Keine Gemeinde gefunden",
       "dialog": {
-        "title": "",
-        "description": ""
+        "title": "Diese Verordnung an einen Leistungserbringer übertragen",
+        "description": "Wenn Sie diese Verordnung an einen anderen Leistungserbringer übertragen, kann dieser die in dieser Verordnung enthaltenen Informationen einsehen."
       }
     },
     "cancel": {
-      "action": "",
-      "title": "",
-      "message": "",
-      "success": "",
-      "reason": ""
+      "action": "Ablegen",
+      "title": "Ablegen",
+      "message": "Sind Sie sicher, dass Sie der Vorschrift „{templateName}“ von {firstName} {lastName} ablegen möchten?",
+      "success": "Der Vorschrift wurde erfolgreich erfasst.",
+      "reason": "Grund",
+      "info": "Falls bereits ein Termin vereinbart wurde, vergessen Sie bitte nicht, sich mit dem Gesundheitsdienstleister in Verbindung zu setzen. So vermeiden Sie, dass Ihnen die Behandlung in Rechnung gestellt wird.",
+      "hint": "Der Grund wird dem Verordner mitgeteilt.",
+      "infoDescription": "Falls bereits ein Termin vereinbart wurde, denken Sie daran, den Leistungserbringer zu kontaktieren. So vermeiden Sie, dass Ihnen die Behandlung in Rechnung gestellt wird."
     },
     "rejectAssignation": {
-      "action": "",
-      "title": "",
-      "message": "",
-      "success": ""
+      "action": "Ablehnen",
+      "title": "Zuweisung ablehnen",
+      "message": "Sind Sie sicher, dass Sie die Zuweisung der Vorschrift „{templateName}“ von {firstName} {lastName} ablehnen möchten?",
+      "success": "Die Zuweisung wurde erfolgreich abgelehnt."
     },
     "cancelExecution": {
-      "action": "",
-      "title": "",
-      "message": "",
-      "success": "",
-      "reason": ""
+      "action": "Abbrechen",
+      "title": "Ausführung abbrechen",
+      "message": "Sind Sie sicher, dass Sie die Ausführung der Vorschrift „{templateName}“ von {firstName} {lastName} abbrechen möchten?",
+      "success": "Die Aufführung wurde abgesagt.",
+      "reason": "Grund"
     },
     "interruptExecution": {
-      "action": "",
-      "title": "",
-      "message": "",
-      "success": ""
+      "action": "Unterbrechen",
+      "title": "Ausführung unterbrechen",
+      "message": "Sind Sie sicher, dass Sie die Ausführung der Vorschrift „{templateName}“ von {firstName} {lastName} abbrechen möchten?",
+      "success": "Ausführung erfolgreich abgeschlossen."
     },
     "startExecution": {
-      "action": "",
-      "title": "",
-      "startDate": "",
-      "success": ""
+      "action": "Ausführen",
+      "title": "Vorschrift ausführen",
+      "startDate": "Startdatum",
+      "success": "Die Ausführung wurde gestartet"
     },
     "restartExecution": {
-      "action": "",
-      "title": "",
-      "message": "",
-      "success": ""
+      "action": "Fortsetzen",
+      "title": "Ausführung fortsetzen",
+      "message": "Sind Sie sicher, dass Sie die Ausführung der Vorschrift „{templateName}“ von {firstName} {lastName} fortsetzen möchten?",
+      "success": "Die Ausführung wurde wieder aufgenommen."
     },
     "finishExecution": {
-      "action": "",
-      "title": "",
-      "endDate": "",
-      "success": ""
+      "action": "abschließen",
+      "title": "Vorschrift abschließen",
+      "endDate": "Enddatum",
+      "success": "Die Vorschrift wurde ausgestellt."
     },
     "frequencyTypes": {
-      "iterative": "",
-      "weekly": ""
+      "iterative": "Iterativ",
+      "weekly": "Wöchentlich"
     },
-    "status": "",
-    "prescriptionDate": "",
+    "status": "Status",
+    "prescriptionDate": "Ausgestellt am",
     "pagination": {
-      "prescriptions": "",
-      "pageSize": ""
+      "prescriptions": "{count, plural, one{Vorschrift} other{Vorschriften}}",
+      "pageSize": "Anzahl pro Seite"
     },
     "statuses": {
-      "DRAFT": "",
-      "BLACKLISTED": "",
-      "PENDING": "",
+      "DRAFT": "Konzept",
+      "BLACKLISTED": "Auf der schwarzen Liste",
+      "PENDING": "in Erwartung",
       "OPEN": "Verfügbar",
-      "CANCELLED": "",
+      "CANCELLED": "Klassifiziert",
       "EXPIRED": "Abgelaufen",
       "IN_PROGRESS": "In bearbeitung",
       "DONE": "Abgeschlossen",
-      "null": "",
-      "APPROVED": "",
-      "REJECTED": "",
+      "CLOSED": "Abgeschlossen",
+      "null": "Unbekannt",
+      "APPROVED": "Genehmigt",
+      "REJECTED": "Abgelehnt",
       "STOPPED": "Gestoppt"
     },
     "errors": {
-      "failedToLoadPrescription": "",
-      "failedToLoadPrescriptions": "",
-      "invalidFhirString": "",
-      "invalidMaxLength": "",
-      "invalidMinLength": "",
-      "invalidNihiiDigitsCount": "",
-      "invalidCaregiverNameCharacters": "",
-      "dateMustBeEarlierOrEqualTo": "",
-      "dateMustBeLaterOrEqualTo": "",
-      "invalidDateFormat": "",
-      "invalidSsinChecksum": "",
-      "invalidShortCode": "",
-      "decryptionFailed": "",
-      "failedToCreateModel": "",
-      "failedToLoadTemplate": "Failed to load prescription form template."
+      "failedToLoadPrescription": "Beim Laden der Vorschrift ist ein Fehler aufgetreten.",
+      "failedToLoadPrescriptions": "Beim Laden der Vorschriften ist ein Fehler aufgetreten.",
+      "invalidFhirString": "Ungültige Zeichen",
+      "invalidMaxLength": "Maximal {requiredLength} Zeichen",
+      "invalidMinLength": "Mindestens {requiredLength} Zeichen",
+      "invalidNihiiDigitsCount": "Die LIKIV-Nummer muss 8 oder 11 Ziffern enthalten",
+      "invalidCaregiverNameCharacters": "Ungültige Zeichen",
+      "dateMustBeEarlierOrEqualTo": "Das Datum darf nicht nach dem {date} liegen",
+      "dateMustBeLaterOrEqualTo": "Das Datum darf nicht vor dem {date} liegen",
+      "invalidDateFormat": "Ungültiges Format: TT/MM/JJJJ",
+      "invalidSsinChecksum": "Die nationale Registernummer / BIS-Nummer ist ungültig. Bitte überprüfen Sie diese und versuchen Sie es erneut.",
+      "invalidShortCode": "Die Rezept-ID ist ungültig. Bitte überprüfen Sie dies und versuchen Sie es erneut.",
+      "decryptionFailed": "Die Dekodierung der Freitextfelder ist fehlgeschlagen. Bitte versuche es erneut.",
+      "failedToCreateModel": "Die Vorlage konnte nicht erstellt werden. Bitte versuche es später erneut.",
+      "failedToLoadTemplate": "Failed to load prescription form template.",
+      "errorsInForm": {
+        "title": "Das Formular enthält noch Fehler.",
+        "subTitle": "Bitte korrigieren Sie Folgendes:"
+      }
     },
     "categories": {
-      "bandagisterie": "",
-      "dentistry": "",
-      "physiotherapy": "",
-      "orthopedics": "",
-      "otolaryngology": "",
-      "radiology": "",
-      "nursingCare": ""
+      "bandagisterie": "Orthopädietechniker",
+      "dentistry": "Zahnarzt",
+      "physiotherapy": "Physiotherapie",
+      "orthopedics": "Orthopädie",
+      "otolaryngology": "Hals-Nasen-Ohren-Heilkunde",
+      "radiology": "Radiologie",
+      "nursingCare": "Pflege"
     },
     "ariaLabel": {
-      "delete": "",
-      "removeCity": "",
-      "print": "",
-      "reject": "",
-      "interrupt": "",
-      "restart": ""
+      "delete": "Löschen",
+      "removeCity": "Die Gemeinde entfernen",
+      "print": "Drucken",
+      "reject": "Zuweisung ablehnen",
+      "interrupt": "Die Ausführung unterbrechen",
+      "restart": "Wiederhole die Ausführung",
+      "removeCriteria": "Suchkriterien löschen"
     },
-    "tableHasRecords": "",
-    "extendedShortId": "",
+    "tableHasRecords": "Die Gesamtzahl der Verordnungen beträgt {total}.",
+    "extendedShortId": "Verlängerung der Verordnung",
     "actions": {
-      "button": "",
-      "assignMe": "",
-      "startExecution": "",
-      "assign": "",
-      "copy": "",
-      "extend": "",
-      "print": "",
-      "cancel": ""
+      "button": "Aktionen",
+      "assignMe": "Mir zuweisen",
+      "startExecution": "Ausführen",
+      "assign": "Zuweisen",
+      "copy": "Kopieren",
+      "extend": "Verlängern",
+      "print": "Drucken",
+      "cancel": "Ohne weitere Bearbeitung abschließen",
+      "autoAssign": "Interne Zuweisung."
     },
     "assignProfessional": {
-      "undefined": ""
+      "undefined": "Bitte wählen Sie zuerst einen Leistungserbringer aus."
     },
     "transferProfessional": {
-      "undefined": ""
+      "undefined": "Bitte wählen Sie zuerst einen Leistungserbringer aus."
     },
     "transferPerformer": {
       "dialog": {
-        "description": "",
-        "title": ""
+        "description": "Wenn Sie diese Verordnung an einen anderen Leistungserbringer übertragen, kann dieser die in dieser Verordnung enthaltenen Informationen einsehen.",
+        "title": "Eine Verordnung an einen anderen Leistungserbringer übertragen"
       },
-      "locations": "",
-      "noResults": "",
-      "performer": "",
-      "searchPerformerPlaceHolder": "",
-      "success": "",
-      "title": "",
-      "zipCodeOrCityName": ""
+      "locations": "Standort(e)",
+      "noResults": "Keine Gemeinde gefunden",
+      "performer": "Leistungserbringer",
+      "searchPerformerPlaceHolder": "LIKIV-Nummer, Name",
+      "success": "{firstName} {lastName} wurde als Leistungserbringer zugewiesen.",
+      "title": "Zuweisung übertragen",
+      "zipCodeOrCityName": "Postleitzahl oder Gemeinde",
+      "updateCriteria": "Kriterien bearbeiten"
     },
-    "validityStartDate": ""
+    "validityStartDate": "Startdatum der Gültigkeit",
+    "autoAssign": {
+      "success": "Die Leistungserbringer wurden erfolgreich hinzugefügt."
+    }
   },
   "proposal": {
-    "creationDate": "",
+    "creationDate": "Erstellt am",
     "details": {
-      "link": ""
+      "link": "Details anzeigen"
     },
     "selectTemplate": {
-      "proposalModel": "",
-      "pickOptionFromList": "",
-      "noOptions": ""
+      "proposalModel": "Vorschlag für eine Vorlage",
+      "pickOptionFromList": "Wähle eine Option aus der Liste aus",
+      "noOptions": "Keine Vorschläge"
     },
     "create": {
-      "action": "",
-      "success": "",
-      "allSuccess": "",
-      "allFailed": "",
-      "someSuccessSomeFailed": "",
-      "addProposal": "",
-      "publish": "",
+      "action": "Neuer Vorschlag",
+      "success": "Der Vorschlag wurde erfolgreich erstellt.",
+      "allSuccess": "{count} {count, plural, one{Vorschlag} other{Vorschläge}} erfolgreich erstellt.",
+      "allFailed": "Fehler beim Erstellen der Vorschläge. Bitte überprüfen Sie Ihre Eingaben und versuchen Sie es erneut.",
+      "someSuccessSomeFailed": "{successCount} {successCount, plural, one{Vorschlag} other{Vorschläge}} wurden erfolgreich erstellt. {failedCount} {failedCount, plural, one{Vorschlag wurde} other{Vorschläge wurden}} konnten aufgrund eines Fehlers nicht erstellt werden. Bitte überprüfen Sie Ihre Eingaben und versuchen Sie es erneut.",
+      "addProposal": "Zusätzlicher Vorschlag",
+      "publish": "Veröffentlichen",
       "deleteProposal": {
-        "title": "",
-        "message": ""
+        "title": "Vorschlag löschen",
+        "message": "Sind Sie sicher, dass Sie den Vorschlag „{templateName}“ löschen möchten?"
       },
       "cancelProposalsCreation": {
-        "title": "",
-        "cancelAll": ""
+        "title": "Einen oder mehrere Vorschläge abbrechen",
+        "cancelAll": "Alles abbrechen"
       },
-      "cancelCreation": "",
-      "proposal": ""
+      "cancelCreation": "Sind Sie sicher, dass Sie die Erstellung dieses Vorschlags abbrechen möchten?",
+      "proposal": "Vorschlag erstellen"
     },
-    "allProposalsFetched": "",
+    "allProposalsFetched": "Alle Vorschläge abgerufen",
     "print": {
-      "content-electronic-proposal": "",
-      "guideline": "",
-      "nihdi": "",
-      "niss": "",
-      "patient": "",
-      "prescriber": "",
-      "proof-of-electronic-proposal": "",
-      "remark": "",
-      "date": "",
-      "content-electronic-prescription": "",
-      "proof-of-electronic-prescription": ""
+      "content-electronic-proposal": "Inhalt des elektronischen Vorschlags",
+      "guideline": "Bitte legen Sie dieses Dokument Ihrem behandelnden Arzt vor. Sie können den QR-Code scannen lassen, um Zugriff auf die Daten in der elektronischen Verschreibung zu erhalten.",
+      "nihdi": "LIKIV",
+      "niss": "INSS",
+      "patient": "Begünstigter",
+      "prescriber": "verschreibende Arzt",
+      "proof-of-electronic-proposal": "Nachweis der elektronischen Vorschlag",
+      "remark": "Bitte beachten Sie: Manuelle Ergänzungen in diesem Dokument werden nicht berücksichtigt.",
+      "date": "Gedruckt am {date}",
+      "content-electronic-prescription": "Inhalt des elektronischen Vorschlags",
+      "proof-of-electronic-prescription": "Nachweis des elektronischen Vorschlags"
     },
-    "author": "",
-    "patient": "",
-    "typeOfCare": "",
-    "services": "",
-    "frequency": "",
-    "start": "",
-    "end": "",
-    "validityPeriod": "",
-    "consultDetails": "",
-    "assign": "",
-    "transfer": "",
-    "assignMe": "",
-    "duplicate": "",
-    "extend": "",
-    "careGivers": "",
-    "assigned": "",
-    "noProposalsForPatient": "",
-    "noProposalsForUser": "",
+    "author": "Autor",
+    "patient": "Patient",
+    "typeOfCare": "Art der Pflege",
+    "services": "Sitzungen",
+    "frequency": "Frequenz",
+    "start": "Start",
+    "end": "Ende",
+    "validityPeriod": "Gültigkeitsdauer",
+    "consultDetails": "Details anzeigen",
+    "assign": "Zuweisen",
+    "transfer": "Übertragen",
+    "assignMe": "Mich selbst zuweisen",
+    "duplicate": "Duplizieren",
+    "extend": "Verlängern",
+    "careGivers": "Pflegekraft(en)",
+    "assigned": "Zugewiesen",
+    "noProposalsForPatient": "Dieser Patient hat noch keine Vorschläge.",
+    "noProposalsForUser": "Sie haben noch keine Vorschläge.",
     "assignPerformer": {
-      "title": "",
-      "success": "",
-      "successOrganization": "",
-      "meSuccess": "",
-      "performer": "",
-      "searchPerformerPlaceHolder": "",
-      "locations": "",
-      "zipCodeOrCityName": "",
-      "noResults": "",
-      "organization": "",
+      "title": "Einen Arzt suchen",
+      "success": "{firstName} {lastName} wurde als Pflegekraft zugewiesen.",
+      "successOrganization": "{name} wurde als Organisation zugewiesen.",
+      "meSuccess": "Sie wurden als Pflegekraft zugewiesen.",
+      "performer": "Pflegekraft",
+      "searchPerformerPlaceHolder": "LIKIV-Nummer, Name",
+      "locations": "Ort(e)",
+      "zipCodeOrCityName": "Postleitzahl oder Gemeinde",
+      "noResults": "Keine Gemeinde gefunden",
+      "organization": "Organisation",
       "dialog": {
-        "title": "",
-        "description": ""
+        "title": "Eine Anlage 81 einem Arzt zuweisen",
+        "description": "Wenn Sie dieser Anlage 81 einen Arzt hinzufügen, kann dieser die in Anlage 81 enthaltenen Informationen einsehen."
       }
     },
     "transferAssignation": {
-      "title": "",
-      "success": "",
-      "performer": "",
-      "searchPerformerPlaceHolder": "",
-      "locations": "",
-      "zipCodeOrCityName": "",
-      "noResults": "",
+      "title": "Übertragung",
+      "success": "{firstName} {lastName} wurde als Pflegekraft zugewiesen.",
+      "performer": "Pflegekraft",
+      "searchPerformerPlaceHolder": "LIKIV-Nummer, Name",
+      "locations": "Ort(e)",
+      "zipCodeOrCityName": "Postleitzahl oder Gemeinde",
+      "noResults": "Keine Gemeinde gefunden",
       "dialog": {
-        "title": "",
-        "description": ""
+        "title": "Diese Anlage 81 an einen anderen Arzt übertragen.",
+        "description": "Wenn Sie diese Anlage 81 an einen anderen Arzt übertragen, kann dieser die in Anlage 81 enthaltenen Informationen einsehen."
       }
     },
     "approve": {
-      "action": "",
-      "success": "",
+      "action": "Genehmigen",
+      "success": "Der Vorschlag wurde angenommen.",
       "dialog": {
-        "title": "",
-        "reason": ""
+        "title": "Begründung für die Genehmigung",
+        "reason": "Anmerkung des Arztes"
       }
     },
     "reject": {
-      "title": "",
-      "action": "",
-      "success": "",
+      "title": "Ablehnen",
+      "action": "Ablehnen",
+      "success": "Der Vorschlag wurde abgelehnt.",
       "dialog": {
-        "title": "",
-        "reason": ""
+        "title": "Grund für die Ablehnung",
+        "reason": "Anmerkung des Arztes"
       }
     },
     "cancel": {
-      "action": "",
-      "title": "",
-      "message": "",
-      "success": "",
-      "reason": ""
+      "action": "Ablehnen",
+      "title": "Vorschlag ablehnen",
+      "message": "Sind Sie sicher, dass Sie den Vorschlag „{templateName}“ von {firstName} {lastName} ablehnen möchten?",
+      "success": "Der Vorschlag wurde erfolgreich abgeschlossen.",
+      "reason": "Grund",
+      "info": "Falls bereits ein Termin vereinbart wurde, vergessen Sie bitte nicht, sich mit dem Gesundheitsdienstleister in Verbindung zu setzen. So vermeiden Sie, dass Ihnen die Behandlung in Rechnung gestellt wird.",
+      "hint": "Der Grund wird dem Verordner mitgeteilt.",
+      "infoDescription": "Falls bereits ein Termin vereinbart wurde, denken Sie daran, den Leistungserbringer zu kontaktieren. So vermeiden Sie, dass Ihnen die Behandlung in Rechnung gestellt wird."
     },
     "rejectAssignation": {
-      "action": "",
-      "title": "",
-      "message": "",
-      "success": ""
+      "action": "Ablehnen",
+      "title": "Zuweisung ablehnen",
+      "message": "Sind Sie sicher, dass Sie den Vorschlag „{templateName}“ von {firstName} {lastName} ablehnen möchten?",
+      "success": "Die Zuweisung wurde erfolgreich abgelehnt."
     },
     "frequencyTypes": {
-      "iterative": "",
-      "weekly": ""
+      "iterative": "Iterativ",
+      "weekly": "Wöchentlich"
     },
-    "status": "",
-    "proposalDate": "",
-    "proposalInfoTitle": "",
+    "status": "Status",
+    "proposalDate": "Ausgestellt am",
+    "proposalInfoTitle": "Beantragt am {date} von {firstName} {lastName}.",
     "pagination": {
-      "proposals": "",
-      "pageSize": ""
+      "proposals": "{count, plural, one{Vorschlag} other{Vorschläge}}",
+      "pageSize": "Anzahl pro Seite"
     },
     "statuses": {
-      "DRAFT": "",
-      "BLACKLISTED": "",
-      "PENDING": "",
-      "OPEN": "",
-      "CANCELLED": "",
-      "EXPIRED": "",
-      "IN_PROGRESS": "",
-      "DONE": "",
-      "null": "",
-      "APPROVED": "",
-      "REJECTED": "",
+      "DRAFT": "Konzept",
+      "BLACKLISTED": "Auf der schwarzen Liste",
+      "PENDING": "in Erwartung",
+      "OPEN": "Öffnen",
+      "CANCELLED": "Abgesagt",
+      "EXPIRED": "Abgelaufen",
+      "IN_PROGRESS": "In Bearbeitung",
+      "DONE": "Abgeschlossen",
+      "CLOSED": "Abgeschlossen",
+      "null": "Unbekannt",
+      "APPROVED": "Genehmigt",
+      "REJECTED": "Abgelehnt",
       "STOPPED": "Gestoppt"
     },
     "errors": {
-      "failedToLoadProposal": "",
-      "failedToLoadProposals": "",
-      "invalidFhirString": "",
-      "invalidMaxLength": "",
-      "invalidMinLength": "",
-      "invalidNihiiDigitsCount": "",
-      "invalidCaregiverNameCharacters": "",
-      "dateMustBeEarlierOrEqualTo": "",
-      "dateMustBeLaterOrEqualTo": "",
-      "invalidDateFormat": "",
-      "invalidUUID": ""
+      "failedToLoadProposal": "Beim Laden des Vorschlags ist ein Fehler aufgetreten.",
+      "failedToLoadProposals": "Beim Laden der Vorschläge ist ein Fehler aufgetreten.",
+      "invalidFhirString": "Ungültige Zeichen",
+      "invalidMaxLength": "Maximal {requiredLength} Zeichen",
+      "invalidMinLength": "Mindestens {requiredLength} Zeichen",
+      "invalidNihiiDigitsCount": "Die LIKIV-Nummer muss 8 oder 11 Ziffern enthalten.",
+      "invalidCaregiverNameCharacters": "Ungültige Zeichen",
+      "dateMustBeEarlierOrEqualTo": "Das Datum darf nicht nach dem {date} liegen",
+      "dateMustBeLaterOrEqualTo": "Das Datum darf nicht vor dem {date} liegen",
+      "invalidDateFormat": "Ungültiges Format: TT/MM/JJJJ",
+      "invalidUUID": "Die ID ist ungültig. Bitte überprüfe dies und versuche es erneut."
     },
     "categories": {
-      "bandagisterie": "",
-      "dentistry": "",
-      "physiotherapy": "",
-      "orthopedics": "",
-      "otolaryngology": "",
-      "radiology": "",
-      "nursingCare": ""
+      "bandagisterie": "Orthopädietechniker",
+      "dentistry": "Zahnarzt",
+      "physiotherapy": "Physiotherapie",
+      "orthopedics": "Orthopädie",
+      "otolaryngology": "Hals-Nasen-Ohren-Heilkunde",
+      "radiology": "Radiologie",
+      "nursingCare": "Pflege"
     },
     "transferPerformer": {
       "dialog": {
-        "description": "",
-        "title": ""
+        "description": "Wenn Sie diesen Vorschlag an einen anderen Leistungserbringer übertragen, kann dieser die in diesem Vorschlag enthaltenen Informationen einsehen.",
+        "title": "Den Vorschlag an einen anderen Leistungserbringer übertragen"
       },
-      "locations": "",
-      "noResults": "",
-      "performer": "",
-      "searchPerformerPlaceHolder": "",
-      "success": "",
-      "title": "",
-      "zipCodeOrCityName": ""
+      "locations": "Standort(e)",
+      "noResults": "Keine Gemeinde gefunden",
+      "performer": "Leistungserbringer",
+      "searchPerformerPlaceHolder": "LIKIV-Nummer, Nachname",
+      "success": "{firstName} {lastName} wurde als Leistungserbringer zugewiesen.",
+      "title": "Übertragung",
+      "zipCodeOrCityName": "Postleitzahl oder Gemeinde"
+    },
+    "autoAssign": {
+      "success": "Der behandelnde Arzt wurde erfolgreich zugewiesen."
     }
   },
   "performerTask": {
     "statuses": {
-      "ONHOLD": "",
-      "READY": "",
-      "CANCELLED": "",
-      "FAILED": "",
-      "INPROGRESS": "",
-      "COMPLETED": "",
-      "null": ""
+      "ONHOLD": "Unterbrochen",
+      "READY": "Zugewiesen",
+      "CANCELLED": "Abgesagt",
+      "FAILED": "Fehlgeschlagen",
+      "INPROGRESS": "Aktiv",
+      "COMPLETED": "Inaktiv",
+      "null": "Unbekannt"
+    },
+    "organization": {
+      "alert": {
+        "title": "Was beinhaltet dieser Abschnitt?",
+        "description": "- Jeder in dieser Liste aufgeführte Leistungserbringer hat Zugriff auf den Inhalt dieser Verordnung.\n- Wird eine Organisation aufgeführt, übernimmt sie die Verordnung und weist sie intern einem Leistungserbringer zu. Sobald dieser zugewiesen wurde, erscheint er ebenfalls in dieser Liste.\n- Das Vorhandensein eines Datums zeigt an, dass der Leistungserbringer im Rahmen dieser Verordnung bereits mindestens eine pflegerische Maßnahme erbracht hat"
+      }
     }
   },
   "models": {
     "errors": {
-      "failedToLoadModels": ""
+      "failedToLoadModels": "Das Laden der Vorlagen ist fehlgeschlagen."
     }
   },
   "pss": {
     "unavailable": {
-      "title": "",
-      "message": ""
+      "title": "Dienst vorübergehend nicht verfügbar",
+      "message": "Der PSS-Dienst (Prescription Search Support) ist derzeit nicht verfügbar.\nSie können die Empfehlungen zur medizinischen Bildgebung derzeit nicht einsehen.\nBitte versuchen Sie es später erneut."
     }
   },
   "professional": {
     "table": {
-      "results": "",
-      "firstname": "",
-      "lastname": "",
-      "address": "",
-      "city": "",
-      "actions": "",
-      "tableHasRecords": "",
-      "noRecords": "",
-      "select": ""
+      "results": "{results} Ergebnisse gefunden",
+      "firstname": "Vorname",
+      "lastname": "Nachname",
+      "address": "Adresse",
+      "city": "Gemeinde",
+      "actions": "Aktionen",
+      "tableHasRecords": "{total} Ergebnisse gefunden",
+      "noRecords": "Es wurde kein Leistungserbringer gefunden, der Ihrer Suche entspricht.",
+      "select": "Auswählen"
     },
-    "noProfessionals": "",
-    "allProfessionalsFetched": ""
+    "noProfessionals": "Es wurde kein Leistungserbringer gefunden, der Ihrer Suche entspricht.",
+    "allProfessionalsFetched": "Alle Leistungserbringer wurden abgerufen."
+  },
+  "error": {
+    "api": {
+      "ACCESS_DENIED": {
+        "default": "Sie sind nicht berechtigt, auf diesen Dienst zuzugreifen."
+      },
+      "APPROVAL_NOT_POSSIBLE": {
+        "default": "Der angegebene Vorschlag kann nicht genehmigt werden."
+      },
+      "CANCEL_EXECUTION_NOT_IN_PROGRESS": {
+        "default": "Die Ausführung muss bereits laufen, bevor sie abgebrochen werden kann."
+      },
+      "CANCELLATION_INVALID_STATUS": {
+        "default": "",
+        "in-progress": "",
+        "completed": ""
+      },
+      "CAREGIVER_NOT_FOUND": {
+        "default": ""
+      },
+      "CAREGIVER_NOT_UNASSIGNABLE": {
+        "default": ""
+      },
+      "CONSULTRN_NOT_AVAILABLE": {
+        "default": ""
+      },
+      "CREATION_DATE_FUTURE": {
+        "default": ""
+      },
+      "DATE_PROVIDED_AFTER_PRESCRIPTION_END_DATE": {
+        "default": ""
+      },
+      "DECISION_ALREADY_TAKEN": {
+        "default": ""
+      },
+      "END_VALIDITY_DATE_PAST": {
+        "default": ""
+      },
+      "EXCLUSION_EXISTS": {
+        "default": ""
+      },
+      "EXCLUSION_EXISTS_CAREGIVER_TO_ASSIGN": {
+        "default": "",
+        "healthcare-provider": "",
+        "patient": ""
+      },
+      "EXECUTION_DATE_FUTURE": {
+        "default": ""
+      },
+      "EXECUTION_NOT_USABLE": {
+        "default": ""
+      },
+      "FINISH_EXECUTION_NOT_IN_PROGRESS": {
+        "default": ""
+      },
+      "HEALTHCARE_PROFESSIONAL_ALREADY_ASSIGNED": {
+        "default": "",
+        "caregiver": "",
+        "prescriber": ""
+      },
+      "HEALTHCARE_PROFESSIONAL_NOT_OWNER": {
+        "default": ""
+      },
+      "HEALTHCARE_PROFESSIONAL_NOT_OWNER_EXECUTION": {
+        "default": ""
+      },
+      "HEALTHCARE_PROFESSIONAL_TO_BE_ASSIGNED_MISSING_RIGHT": {
+        "default": ""
+      },
+      "INCORRECT_VALIDITY_DATE": {
+        "default": ""
+      },
+      "INVALID_PATIENT_REPLACEMENT": {
+        "default": ""
+      },
+      "INVALID_PRESCRIPTION_STATUS": {
+        "default": ""
+      },
+      "INVALID_TOKEN": {
+        "default": ""
+      },
+      "NO_MANDATE_FOR_PATIENT": {
+        "default": ""
+      },
+      "ORGANIZATION_ALREADY_ASSIGNED": {
+        "default": ""
+      },
+      "ORGANIZATION_NOT_ASSIGNABLE": {
+        "default": ""
+      },
+      "ORGANIZATION_NOT_UNASSIGNABLE": {
+        "default": ""
+      },
+      "ORGANIZATION_TASK_NOT_FOUND": {
+        "default": ""
+      },
+      "PATCH_NOT_APPLIED": {
+        "default": ""
+      },
+      "PRESCRIPTION_NOT_ASSIGNABLE": {
+        "default": ""
+      },
+      "PRESCRIPTION_NOT_READABLE": {
+        "default": ""
+      },
+      "REJECTION_NOT_POSSIBLE": {
+        "default": ""
+      },
+      "REQUEST_PARAMETER_NOT_MATCHING_TOKEN": {
+        "default": ""
+      },
+      "RESOURCE_NOT_FOUND": {
+        "default": ""
+      },
+      "SERVICE_REQUEST_NOT_FOUND": {
+        "default": ""
+      },
+      "SERVICE_REQUEST_NOT_OWNED": {
+        "default": ""
+      },
+      "SERVICE_REQUEST_NOT_UNASSIGNABLE": {
+        "default": ""
+      },
+      "SERVICE_UNAVAILABLE_AA": {
+        "default": ""
+      },
+      "SSIN_NOT_FOUND": {
+        "default": ""
+      },
+      "START_EXECUTION_DATE_AFTER_END_EXECUTION_DATE": {
+        "default": ""
+      },
+      "START_VALIDITY_DATE_AFTER_END_VALIDITY_DATE": {
+        "default": ""
+      },
+      "START_VALIDITY_DATE_PAST": {
+        "default": ""
+      },
+      "USER_SUSPENDED": {
+        "default": ""
+      },
+      "USER_SUSPENDED_ON_DATE_PROVIDED": {
+        "default": ""
+      },
+      "unknown": "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es in wenigen Augenblicken erneut."
+    }
   }
 }

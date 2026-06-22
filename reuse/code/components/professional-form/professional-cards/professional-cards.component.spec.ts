@@ -2,11 +2,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProfessionalCardsComponent } from './professional-cards.component';
 import { RequestProfessionalDataService } from '@reuse/code/services/helpers/request-professional-data.service';
-import { signal, SimpleChange, SimpleChanges } from '@angular/core';
+import { SimpleChange, SimpleChanges } from '@angular/core';
 import { MatRadioChange } from '@angular/material/radio';
 import { TranslateModule } from '@ngx-translate/core';
 import { Lang } from '@reuse/code/constants/languages';
 import { ProviderType } from '@reuse/code/openapi';
+import { of } from 'rxjs';
 
 const mockProfessionals = [
   {
@@ -30,9 +31,9 @@ describe('ProfessionalCardsComponent', () => {
 
   beforeEach(async () => {
     dataServiceMock = {
-      data: signal([]),
-      loading: signal(false),
-      initializeCardsDataStream: jest.fn(),
+      data$: of([]),
+      loading$: of(false),
+      initializeDataStream: jest.fn(),
       triggerLoad: jest.fn(),
       reset: jest.fn(),
     } as any;
@@ -79,7 +80,7 @@ describe('ProfessionalCardsComponent', () => {
   });
 
   describe('ngOnChanges', () => {
-    it('should call initializeCardsDataStream when professionals change with data', () => {
+    it('should call initializeDataStream when professionals change with data', () => {
       fixture.componentRef.setInput('professionals', mockProfessionals);
       fixture.detectChanges();
 
@@ -88,11 +89,11 @@ describe('ProfessionalCardsComponent', () => {
       };
       component.ngOnChanges(changes);
 
-      expect(dataServiceMock.initializeCardsDataStream).toHaveBeenCalled();
+      expect(dataServiceMock.initializeDataStream).toHaveBeenCalled();
     });
 
-    it('should not call initializeCardsDataStream when professionals change to empty', () => {
-      dataServiceMock.initializeCardsDataStream.mockClear();
+    it('should not call initializeDataStream when professionals change to empty', () => {
+      dataServiceMock.initializeDataStream.mockClear();
 
       fixture.componentRef.setInput('professionals', []);
       fixture.detectChanges();
@@ -102,18 +103,18 @@ describe('ProfessionalCardsComponent', () => {
       };
       component.ngOnChanges(changes);
 
-      expect(dataServiceMock.initializeCardsDataStream).not.toHaveBeenCalled();
+      expect(dataServiceMock.initializeDataStream).not.toHaveBeenCalled();
     });
 
-    it('should not call initializeCardsDataStream for unrelated changes', () => {
-      dataServiceMock.initializeCardsDataStream.mockClear();
+    it('should not call initializeDataStream for unrelated changes', () => {
+      dataServiceMock.initializeDataStream.mockClear();
 
       const changes: SimpleChanges = {
         loading: new SimpleChange(false, true, false),
       };
       component.ngOnChanges(changes);
 
-      expect(dataServiceMock.initializeCardsDataStream).not.toHaveBeenCalled();
+      expect(dataServiceMock.initializeDataStream).not.toHaveBeenCalled();
     });
   });
 

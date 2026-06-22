@@ -1,136 +1,160 @@
-import { firstValueFrom, of } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { EncryptionService } from './encryption.service';
 
 describe('EncryptionService', () => {
-  let encryptionService: EncryptionService;
-
-  beforeAll(() => {
-    // Mock the crypto.subtle object
-    const mockCryptoSubtle = {
-      generateKey: jest.fn().mockResolvedValue({} as CryptoKey),
-      exportKey: jest.fn().mockResolvedValue(new ArrayBuffer(16)),
-      importKey: jest.fn().mockResolvedValue({} as CryptoKey),
-      encrypt: jest.fn().mockResolvedValue(new ArrayBuffer(16)),
-      decrypt: jest.fn().mockResolvedValue(new ArrayBuffer(16))
-    };
-
-    // Attach mock to window.crypto.subtle
-    Object.defineProperty(global, 'crypto', {
-      value: { subtle: mockCryptoSubtle },
-      configurable: true
-    });
-  });
+  let service: EncryptionService;
 
   beforeEach(() => {
-    encryptionService = new EncryptionService();
+    service = new EncryptionService();
   });
 
-  it('should generate a key', async () => {
-    const key = await encryptionService.generateKey();
-    expect(window.crypto.subtle.generateKey).toHaveBeenCalledWith(
+  it('crypto check', async () => {
+    const data = new Uint8Array([1, 2, 3]);
+
+    expect(data instanceof Uint8Array).toBe(true);
+
+    const key = await crypto.subtle.generateKey(
       {
         name: 'AES-GCM',
-        length: 256
+        length: 256,
       },
       true,
       ['encrypt', 'decrypt']
     );
+
     expect(key).toBeDefined();
   });
 
-  it('should export a key', async () => {
-    const key = {} as CryptoKey;
-    const exportedKey = await encryptionService.exportKey(key);
-    expect(window.crypto.subtle.exportKey).toHaveBeenCalledWith('raw', key);
-    expect(exportedKey).toBeInstanceOf(ArrayBuffer);
+  describe('generateKey', () => {
+    it('should generate AES-256 key', async () => {
+      const key = await service.generateKey();
+
+      expect(key).toBeDefined();
+      expect(key.type).toBe('secret');
+      expect(key.algorithm).toEqual(
+        expect.objectContaining({
+          name: 'AES-GCM',
+          length: 256,
+        })
+      );
+    });
   });
 
-  it('should import a key', async () => {
-    const key = new Uint8Array([
-      1, 2, 3, 4, 5, 6, 7, 8,
-      9, 10, 11, 12, 13, 14, 15, 16,
-      17, 18, 19, 20, 21, 22, 23, 24,
-      25, 26, 27, 28, 29, 30, 31, 32]);
-    const importedKey = await firstValueFrom(encryptionService.importKey(key));
-    expect(window.crypto.subtle.importKey).toHaveBeenCalledWith(
-      'raw',
-      key,
-      'AES-GCM',
-      false,
-      ['encrypt','decrypt']
-    );
-    expect(importedKey).toBeDefined();
+  describe('exportKey', () => {
+    it('should export generated key', async () => {
+      const key = await service.generateKey();
+
+      const exported = await service.exportKey(key);
+
+      expect(exported).toBeDefined();
+      expect(exported.byteLength).toBe(32);
+    });
   });
 
-  it('should encrypt data', async () => {
-    const key = {} as CryptoKey;
-    const data = new ArrayBuffer(16);
-    const encrypted = await firstValueFrom(encryptionService.encrypt(key, data));
-    expect(window.crypto.subtle.encrypt).toHaveBeenCalledWith(
-      {
-        name: 'AES-GCM',
-        iv: new Uint8Array(12).fill(0)
-      },
-      key,
-      data
-    );
-    expect(encrypted).toBeInstanceOf(ArrayBuffer);
+  describe('importKey', () => {
+    it('should import exported key', async () => {
+      const key = await service.generateKey();
+
+      const exported = await service.exportKey(key);
+
+      const imported = await firstValueFrom(service.importKey(new Uint8Array(exported)));
+
+      expect(imported).toBeDefined();
+      expect(imported.type).toBe('secret');
+    });
+
+    it('should reject invalid key length', () => {
+      expect(() => service.importKey(new Uint8Array(16))).toThrow('Invalid key length: Expected 32 bytes for AES-256');
+    });
   });
 
-  it('should decrypt data', async () => {
-    const key = {} as CryptoKey;
-    const data = new ArrayBuffer(16);
-    const iv = new ArrayBuffer(12);
-    const decryptMock = jest.spyOn(window.crypto.subtle, 'decrypt').mockResolvedValue(new ArrayBuffer(16)); // Mocking the decrypted output
+  describe('encrypt/decrypt', () => {
+    it('should encrypt and decrypt bytes 2', async () => {
+      const key = await service.generateKey();
 
-    const decrypted = await firstValueFrom(encryptionService.decrypt(key, data, iv));
+      const plaintext = new TextEncoder().encode('Hello World');
 
-    expect(decryptMock).toHaveBeenCalledWith(
-      {
-        name: 'AES-GCM',
-        iv: iv
-      },
-      key,
-      data
-    );
+      const encrypted = await firstValueFrom(service.encrypt(key, plaintext));
 
-    expect(decrypted).toBeInstanceOf(ArrayBuffer);
-    decryptMock.mockRestore();
+      expect(typeof encrypted).toBe('string');
+
+      const decrypted = await firstValueFrom(service.decrypt(key, encrypted));
+
+      expect(new TextDecoder().decode(decrypted)).toBe('Hello World');
+    });
   });
 
-  it('should encrypt text', async () => {
-    const key = {} as CryptoKey;
-    const plaintext = 'Hello, world!';
-    const spyEncrypt = jest.spyOn(encryptionService, 'encrypt').mockReturnValue(of(new ArrayBuffer(16)));
+  describe('encryptText/decryptText', () => {
+    it('should encrypt and decrypt text', async () => {
+      const key = await service.generateKey();
 
-    const encryptedText = await firstValueFrom(encryptionService.encryptText(key, plaintext));
-    expect(spyEncrypt).toHaveBeenCalled();
-    expect(encryptedText).toBeDefined();
+      const original = 'Hello World';
+
+      const encrypted = await firstValueFrom(service.encryptText(key, original));
+
+      expect(encrypted).toBeTruthy();
+
+      const decrypted = await firstValueFrom(service.decryptText(encrypted, key));
+
+      expect(decrypted).toBe(original);
+    });
+
+    it('should support unicode', async () => {
+      const key = await service.generateKey();
+
+      const original = 'Bonjour 👋 Français éèàçö';
+
+      const encrypted = await firstValueFrom(service.encryptText(key, original));
+
+      const decrypted = await firstValueFrom(service.decryptText(encrypted, key));
+
+      expect(decrypted).toBe(original);
+    });
   });
 
-  it('should decrypt text', async () => {
-    const key = {} as CryptoKey;
-    const encryptedText = 'exampleBase64String';
-    const spyDecrypt = jest.spyOn(encryptionService, 'decrypt').mockReturnValue(of(new ArrayBuffer(16)));
+  describe('legacy decrypt', () => {
+    it('should decrypt legacy AES-GCM payload', async () => {
+      const key = await service.generateKey();
 
-    const decryptedText = await firstValueFrom(encryptionService.decryptText(encryptedText, key));
-    expect(spyDecrypt).toHaveBeenCalled();
-    expect(decryptedText).toBeDefined();
+      const text = 'legacy text';
+
+      const iv = new Uint8Array(12).fill(0);
+
+      const encoded = new TextEncoder().encode(text);
+
+      const encrypted = await crypto.subtle.encrypt(
+        {
+          name: 'AES-GCM',
+          iv,
+        },
+        key,
+        encoded
+      );
+
+      const merged = new Uint8Array(iv.length + encrypted.byteLength);
+
+      merged.set(iv);
+      merged.set(new Uint8Array(encrypted), iv.length);
+
+      const base64 = service.arrayBufferToBase64(merged.buffer);
+
+      const decrypted = await firstValueFrom(service.decryptText(base64, key));
+
+      expect(decrypted).toBe(text);
+    });
   });
 
-  it('should convert ArrayBuffer to Base64', () => {
-    const buffer = new Uint8Array([72, 101, 108, 108, 111]).buffer; // "Hello"
-    const base64 = encryptionService.arrayBufferToBase64(buffer);
-    expect(base64).toBe('SGVsbG8=');
-  });
+  describe('base64 helpers', () => {
+    it('should convert ArrayBuffer to Base64', () => {
+      const buffer = new Uint8Array([72, 101, 108, 108, 111]).buffer;
 
-  it('should convert Base64 to ArrayBuffer', () => {
-    const base64 = 'SGVsbG8='; // Base64 encoded "Hello"
-    const expectedArrayBuffer = new Uint8Array([72, 101, 108, 108, 111]);
-    const result = encryptionService.base64ToCipherText(base64);
+      expect(service.arrayBufferToBase64(buffer)).toBe('SGVsbG8=');
+    });
 
-    const resultArray = new Uint8Array(result);
+    it('should convert Base64 to Uint8Array', () => {
+      const result = service.base64ToCipherText('SGVsbG8=');
 
-    expect(resultArray).toEqual(expectedArrayBuffer);
+      expect(Array.from(result)).toEqual([72, 101, 108, 108, 111]);
+    });
   });
 });

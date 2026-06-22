@@ -1,0 +1,18 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+.selected_cities_container {
+  display: flex;
+
+  .go_back_search {
+    mat-icon {
+      color: mh.$typography-brand-primary-medium;
+      background-color: mh.$surface-brand-primary-lighter;
+      border-radius: mh.$border-radius-round;
+      padding: mh.$spacing-rem-s;
+    }
+    span {
+      @include mh.font-default-medium();
+      font-weight: 500;
+    }
+  }
+}

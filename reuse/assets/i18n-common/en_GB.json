@@ -1,73 +1,73 @@
 {
   "common": {
-    "yes": "",
-    "no": "",
-    "confirm": "",
-    "cancel": "",
-    "close": "",
-    "delete": "",
-    "patient": "",
-    "category": "",
-    "typeOfPrescription": "",
-    "shortCode": "",
-    "chooseFromList": "",
-    "tryAgain": "",
-    "goBack": "",
-    "filter": "",
-    "results": "",
-    "search": "",
-    "start": "",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "close": "Close",
+    "delete": "Delete",
+    "patient": "Patient",
+    "category": "Category",
+    "typeOfPrescription": "Type of prescription",
+    "shortCode": "Short Code",
+    "chooseFromList": "Choose from this list",
+    "tryAgain": "Try again",
+    "goBack": "Back",
+    "filter": "Filter",
+    "results": "{count, plural, one{result} other{results}}",
+    "search": "Search",
+    "start": "Start",
     "professions": {
-      "NURSE": "",
-      "PHYSICIAN": "",
+      "NURSE": "Nurse",
+      "PHYSICIAN": "Physician",
       "PHYSIOTHERAPIST": "",
       "DENTIST": ""
     },
     "professional": {
-      "notFound": "",
-      "tooltip": ""
+      "notFound": "Not found",
+      "tooltip": "Healthcare professional not found."
     },
     "organization": {
-      "notFound": "",
-      "tooltip": ""
+      "notFound": "Not found",
+      "tooltip": "Care organisation not found."
     },
     "organizations": {
-      "THIRD_PARTY_PAYING_GROUP": "",
-      "GROUP_OF_DOCTORS": "",
-      "GUARD_POST": "",
-      "MEDICAL_HOUSE": "",
-      "HOME_SERVICES": ""
+      "THIRD_PARTY_PAYING_GROUP": "Group with a third-party payer NIHII number (nurses, midwives, etc.)",
+      "GROUP_OF_DOCTORS": "Group of general practitioners at the same practice location",
+      "GUARD_POST": "Out-of-hours GP service",
+      "MEDICAL_HOUSE": "Community health centre",
+      "HOME_SERVICES": "Integrated home care service"
     },
-    "lastName": "",
-    "firstName": "",
-    "dateOfBirth": "",
-    "ssin": "",
-    "gender": "",
+    "lastName": "Last name",
+    "firstName": "First name",
+    "dateOfBirth": "Born on",
+    "ssin": "ID",
+    "gender": "Sex",
     "genders": {
-      "M": "",
-      "F": "",
-      "null": "",
-      "undefined": ""
+      "M": "M",
+      "F": "F",
+      "null": "Unknown",
+      "undefined": "Unknown"
     },
     "gendersFull": {
-      "M": "",
-      "F": "",
-      "null": "",
-      "undefined": ""
+      "M": "Man",
+      "F": "Female",
+      "null": "Unknown",
+      "undefined": "Unknown"
     },
-    "somethingWentWrong": "",
-    "somethingWentWrongWithoutRetry": "",
-    "forbiddenAction": "",
-    "forbiddenResource": "",
-    "notFoundResource": "",
-    "mandatory": "",
+    "somethingWentWrong": "An error occurred. Please try again.",
+    "somethingWentWrongWithoutRetry": "An error occurred.",
+    "forbiddenAction": "You are not authorized to perform this action.",
+    "forbiddenResource": "You are not authorized to access this page.",
+    "notFoundResource": "The requested page does not exist.",
+    "mandatory": "Required field",
     "ariaLabel": {
-      "loading": ""
+      "loading": "Loading"
     },
     "errors": {
-      "pseudoDisabled": ""
+      "pseudoDisabled": "It is not possible to create a prescription."
     },
-    "prescriptionModel": "",
+    "prescriptionModel": "Template",
     "error": {
       "default": {
         "header": "Technical issue",
@@ -90,33 +90,33 @@
     "rangePage": "{startIndex} - {endIndex} of {length}"
   },
   "evf": {
-    "deleteCareGiver": "",
-    "sureDeleteCareGiver": ""
+    "deleteCareGiver": "Remove healthcare provider",
+    "sureDeleteCareGiver": "Are you sure you want to remove this healthcare provider?"
   },
   "prescription": {
-    "beneficiary": "",
-    "creationDate": "",
+    "beneficiary": "Beneficiary",
+    "creationDate": "Created on",
     "details": {
-      "link": ""
+      "link": "View details"
     },
     "selectTemplate": {
-      "prescriptionModel": "",
-      "pickOptionFromList": "",
-      "noOptions": ""
+      "prescriptionModel": "Prescription template",
+      "pickOptionFromList": "Choose an option from the list",
+      "noOptions": "No prescription"
     },
     "selectModel": {
-      "prescriptionModel": "",
-      "pickOptionFromList": "",
-      "noOptions": ""
+      "prescriptionModel": "Template",
+      "pickOptionFromList": "Choose an option from the list",
+      "noOptions": "No template"
     },
     "create": {
-      "action": "",
-      "success": "",
-      "allSuccess": "",
-      "allFailed": "",
-      "someSuccessSomeFailed": "",
-      "addPrescription": "",
-      "publish": "",
+      "action": "New prescription",
+      "success": "Prescription created successfully.",
+      "allSuccess": "{count} {count, plural, one{prescription}, other{prescriptions}} created successfully.",
+      "allFailed": "An error occurred while creating the prescriptions. Please check your input and try again.",
+      "someSuccessSomeFailed": "{successCount} {successCount, plural, one{prescription} other{prescriptions}} created successfully. {failedCount} {failedCount, plural, one{prescription} other{prescriptions}} could not be created due to an error. Please check your input and try again.",
+      "addPrescription": "Additional referral",
+      "publish": "Publish",
       "control": {
         "title": "",
         "warning": "",
@@ -130,193 +130,196 @@
           "typesOfImagery": "",
           "cost": "",
           "radiationRate": "",
-          "radiationLevel": "",
-          "deselectRow": "",
-          "selectRow": ""
+          "radiationLevel": "Radiation level {level}/5",
+          "deselectRow": "Deselect row {row}",
+          "selectRow": "Select row {row}"
         }
       },
       "deletePrescription": {
-        "title": "",
-        "message": ""
+        "title": "Referral cancellation",
+        "message": "Are you sure you want to cancel “{templateName}”?"
       },
       "cancelPrescriptionsCreation": {
-        "title": "",
-        "cancelAll": "",
-        "noSelectionError": ""
+        "title": "Cancel selected referrals",
+        "cancelAll": "Annuler tout",
+        "noSelectionError": "Please select one or more options before confirming the cancellation."
       },
-      "cancelCreation": "",
-      "prescription": "",
-      "requiredFields": ""
+      "cancelCreation": "Are you sure you want to cancel the creation of this referral?",
+      "prescription": "Create referral",
+      "requiredFields": "mandatory fields"
     },
-    "allPrescriptionsFetched": "",
+    "allPrescriptionsFetched": "All prescriptions retrieved",
     "model": {
-      "allModalsFetched": "",
-      "title": "",
+      "allModalsFetched": "All models retrieved",
+      "title": "Model",
       "create": {
-        "title": "",
-        "success": "",
+        "title": "Save as model",
+        "success": "Model named ‘{name}’ has been created successfully.",
         "dialog": {
-          "title": "",
-          "label": "",
-          "labelNotUnique": ""
+          "title": "Would you like to save the prescription as a model?",
+          "label": "Model name",
+          "labelNotUnique": "The model name is not unique."
         },
-        "model": ""
+        "model": "Create model"
       },
       "update": {
-        "title": ""
+        "title": "Update model"
       },
       "delete": {
-        "title": "",
-        "message": ""
+        "title": "Delete model",
+        "message": "Are you sure you want to delete the model ‘{templateName}’?"
       },
-      "creationDate": "",
-      "label": "",
-      "template": "",
-      "actions": "",
-      "noModels": "",
+      "creationDate": "Create on",
+      "label": "Model name",
+      "template": "Based on",
+      "actions": "Actions",
+      "noModels": "No models available.",
       "pagination": {
-        "models": "",
-        "pageSize": ""
+        "models": "{count, plural, one{model} other{models}}",
+        "pageSize": "Number per page"
       },
-      "tableHasRecords": ""
+      "tableHasRecords": "The total number of templates is {total}."
     },
     "filter": {
-      "historicToggle": "",
+      "historicToggle": "History",
       "prescriptionType": {
-        "label": ""
+        "label": "Filter on prescription"
       },
       "status": {
-        "label": ""
+        "label": "Filter on status"
       },
-      "submit": "",
-      "clear": ""
+      "submit": "Submit",
+      "clear": "Clear all"
     },
     "print": {
-      "content-electronic-prescription": "",
-      "guideline": "",
-      "nihdi": "",
-      "niss": "",
-      "patient": "",
-      "prescriber": "",
-      "proof-of-electronic-prescription": "",
-      "remark": "",
-      "date": "",
+      "content-electronic-prescription": "Content of the electronic prescription",
+      "guideline": "Please show this document to your treating doctor. You can have the QR code scanned to access the information in the electronic prescription.",
+      "nihdi": "NIHDI-nbr",
+      "niss": "SSIN",
+      "patient": "Beneficiary",
+      "prescriber": "Prescriber",
+      "proof-of-electronic-prescription": "Proof of electronic prescription",
+      "remark": "Please note: any manual additions to this document will not be taken into account.",
+      "date": "Printed on {date}",
       "subsection": {
-        "patient": "",
-        "startDate": "",
-        "endDate": "",
-        "header": ""
+        "patient": "Patient",
+        "startDate": "Start",
+        "endDate": "End",
+        "header": "Electronic identification details of the prescription (printed on {date})"
       },
-      "alert": ""
+      "alert": "This prescription has been classified without consequence and can therefore no longer be used."
     },
-    "author": "",
-    "patient": "",
-    "note": "",
-    "shortcode": "",
-    "typeOfCare": "",
-    "services": "",
-    "frequency": "",
-    "start": "",
-    "end": "",
-    "validityPeriod": "",
-    "consultDetails": "",
-    "assign": "",
-    "transfer": "",
-    "assignMe": "",
-    "reject": "",
-    "copy": "",
-    "printAction": "",
-    "duplicate": "",
-    "extend": "",
-    "careGivers": "",
-    "assigned": "",
-    "noPrescriptionsForPatient": "",
-    "noPrescriptionsForUser": "",
+    "author": "Author",
+    "patient": "Patient",
+    "note": "Note",
+    "shortcode": "Short Code",
+    "typeOfCare": "Type of care",
+    "services": "Sessions",
+    "frequency": "Frequency",
+    "start": "Start",
+    "end": "End",
+    "validityPeriod": "Validity period",
+    "consultDetails": "Show details",
+    "assign": "Assign",
+    "transfer": "Transfer",
+    "assignMe": "Assign myself",
+    "reject": "Reject",
+    "copy": "Copy",
+    "printAction": "Print",
+    "duplicate": "Duplicate",
+    "extend": "Extend",
+    "careGivers": "Care provider(s)",
+    "assigned": "Assigned",
+    "noPrescriptionsForPatient": "This patient does not yet have any prescriptions.",
+    "noPrescriptionsForUser": "You do not have any prescriptions yet.",
     "assignPerformer": {
-      "title": "",
-      "success": "",
-      "successOrganization": "",
-      "meSuccess": "",
-      "performer": "",
-      "searchPerformerPlaceHolder": "",
-      "select": "",
-      "locations": "",
-      "zipCodeOrCityName": "",
-      "noResults": "",
-      "organization": "",
+      "title": "Find a care provider",
+      "success": "{firstName} {lastName} has been assigned as care provider.",
+      "successOrganization": "{name} has been assigned as the organisation.",
+      "meSuccess": "You have been assigned as a care provider.",
+      "performer": "Care provider or organisation",
+      "searchPerformerPlaceHolder": "NIHDI number, name",
+      "select": "Select",
+      "locations": "Location(s)",
+      "zipCodeOrCityName": "Postal code or city",
+      "noResults": "No city found",
+      "organization": "Organisation",
       "dialog": {
-        "title": "",
-        "description": ""
+        "title": "Assign a prescription to a healthcare provider or care organization",
+        "description": "If you add a healthcare provider to this prescription, they will be able to access the information contained in this prescription."
       },
-      "locationsHint": "",
-      "performerHint": ""
+      "locationsHint": "Search by postal code or city name",
+      "performerHint": "Search by name or ID"
     },
     "transferAssignation": {
-      "title": "Transfer assignment",
-      "success": "{firstName} {lastName} has been assigned as provider.",
-      "performer": "Provider",
+      "title": "Transfer assignation",
+      "success": "{firstName} {lastName} has been assigned as care provider.",
+      "performer": "Care provider",
       "searchPerformerPlaceHolder": "INAMI number, name",
       "locations": "Location(s)",
       "zipCodeOrCityName": "Postal code or city",
       "noResults": "No city found",
       "dialog": {
-        "title": "Transfer a healthcare provider to a prescription",
-        "description": "If you transfer a healthcare provider to this prescription, they will be able to view the information contained in this prescription."
+        "title": "Transfer this prescription to a healthcare provider",
+        "description": "If you transfer this prescription to another healthcare provider, they will be able to access the information contained in this prescription."
       }
     },
     "cancel": {
-      "action": "",
-      "title": "",
-      "message": "",
-      "success": "",
-      "reason": ""
+      "action": "Classify",
+      "title": "Classify the prescription",
+      "message": "Are you sure you want to file the prescription ‘{templateName}’ for {firstName} {lastName} ?",
+      "success": "The prescription has been successfully filed.",
+      "reason": "Reason",
+      "info": "If an appointment has already been made, please remember to contact the healthcare provider. This will prevent you from being charged for the treatment.",
+      "hint": "The reason will be communicated to the prescriber.",
+      "infoDescription": "If an appointment has already been scheduled, please remember to contact the healthcare provider. This will help prevent the care from being billed to you."
     },
     "rejectAssignation": {
-      "action": "",
-      "title": "",
-      "message": "",
-      "success": ""
+      "action": "Reject",
+      "title": "Reject assignation",
+      "message": "Are you sure you want to reject the assignation of the prescription ‘{templateName}’ of {firstName} {lastName}?",
+      "success": "Assignment successfully rejected."
     },
     "cancelExecution": {
-      "action": "",
-      "title": "",
-      "message": "",
-      "success": "",
-      "reason": ""
+      "action": "Cancel",
+      "title": "Cancel execution",
+      "message": "Are you sure you want to cancel the execution of the ‘{templateName}’ prescription by {firstName} {lastName}?",
+      "success": "The execution has been cancelled.",
+      "reason": "Reason"
     },
     "interruptExecution": {
-      "action": "",
-      "title": "",
-      "message": "",
-      "success": ""
+      "action": "Interrupt",
+      "title": "Interrupt execution",
+      "message": "Are you sure you want to interrupt the execution of the ‘{templateName}’ prescription for {firstName} {lastName}?",
+      "success": "Execution completed successfully."
     },
     "startExecution": {
-      "action": "",
-      "title": "",
-      "startDate": "",
-      "success": ""
+      "action": "Execute",
+      "title": "Execute prescription",
+      "startDate": "Start date",
+      "success": "The execution has been started"
     },
     "restartExecution": {
-      "action": "",
-      "title": "",
-      "message": "",
-      "success": ""
+      "action": "Restart",
+      "title": "Restart the execution",
+      "message": "Are you sure you want to resume the execution of the ‘{templateName}’ prescription for {firstName} {lastName}?",
+      "success": "The execution has resumed."
     },
     "finishExecution": {
-      "action": "",
-      "title": "",
-      "endDate": "",
-      "success": ""
+      "action": "Close",
+      "title": "Close prescription",
+      "endDate": "End date",
+      "success": "The prescription has been closed."
     },
     "frequencyTypes": {
-      "iterative": "",
-      "weekly": ""
+      "iterative": "Iterative",
+      "weekly": "Weekly"
     },
-    "status": "",
-    "prescriptionDate": "",
+    "status": "Status",
+    "prescriptionDate": "Prescribed on",
     "pagination": {
-      "prescriptions": "",
-      "pageSize": ""
+      "prescriptions": "{count, plural, one{prescription} other{prescriptions}}",
+      "pageSize": "Number per page"
     },
     "statuses": {
       "DRAFT": "Draft",
@@ -327,294 +330,464 @@
       "EXPIRED": "Expired",
       "IN_PROGRESS": "In progress",
       "DONE": "Completed",
+      "CLOSED": "Completed",
       "null": "Unknown",
       "APPROVED": "Approved",
       "REJECTED": "Rejected",
       "STOPPED": "Stopped"
     },
     "errors": {
-      "failedToLoadPrescription": "",
-      "failedToLoadPrescriptions": "",
-      "invalidFhirString": "",
-      "invalidMaxLength": "",
-      "invalidMinLength": "",
-      "invalidNihiiDigitsCount": "",
-      "invalidCaregiverNameCharacters": "",
-      "dateMustBeEarlierOrEqualTo": "",
-      "dateMustBeLaterOrEqualTo": "",
-      "invalidDateFormat": "",
-      "invalidSsinChecksum": "",
-      "invalidShortCode": "",
-      "decryptionFailed": "",
-      "failedToCreateModel": "",
-      "failedToLoadTemplate": "Failed to load prescription form template."
+      "failedToLoadPrescription": "Something went wrong whilst loading the prescription.",
+      "failedToLoadPrescriptions": "Something went wrong whilst loading the prescriptions.",
+      "invalidFhirString": "Invalid characters",
+      "invalidMaxLength": "Maximum {requiredLength} characters",
+      "invalidMinLength": "At least {requiredLength} characters",
+      "invalidNihiiDigitsCount": "The NIHDI number must contain 8 or 11 digits",
+      "invalidCaregiverNameCharacters": "Invalid characters",
+      "dateMustBeEarlierOrEqualTo": "The date must not be later than {date}",
+      "dateMustBeLaterOrEqualTo": "The date must not be earlier than {date}",
+      "invalidDateFormat": "Invalid format: dd/mm/yyyy",
+      "invalidSsinChecksum": "The national registration number / BIS number is invalid. Please check it and try again.",
+      "invalidShortCode": "The prescription ID is invalid. Please check it and try again.",
+      "decryptionFailed": "Decoding the free text fields has failed. Please try again.",
+      "failedToCreateModel": "The model could not be created. Please try again later.",
+      "failedToLoadTemplate": "Failed to load prescription form template.",
+      "errorsInForm": {
+        "title": "There are still errors in the form.",
+        "subTitle": "Please correct the following:"
+      }
     },
     "categories": {
-      "bandagisterie": "",
-      "dentistry": "",
-      "physiotherapy": "",
-      "orthopedics": "",
-      "otolaryngology": "",
-      "radiology": "",
-      "nursingCare": ""
+      "bandagisterie": "Orthopaedic technician",
+      "dentistry": "Dentist",
+      "physiotherapy": "Physiotherapy",
+      "orthopedics": "Orthopaedics",
+      "otolaryngology": "Otorhinolaryngology",
+      "radiology": "Radiology",
+      "nursingCare": "Nursing care"
     },
     "ariaLabel": {
-      "delete": "",
-      "removeCity": "",
-      "print": "",
-      "reject": "",
-      "interrupt": "",
-      "restart": ""
+      "delete": "Delete",
+      "removeCity": "Remove city",
+      "print": "Print",
+      "reject": "Reject the assignation",
+      "interrupt": "Interrupt",
+      "restart": "Restart",
+      "removeCriteria": "Clear search criteria"
     },
-    "tableHasRecords": "",
-    "extendedShortId": "",
+    "tableHasRecords": "The total number of prescriptions is {total}.",
+    "extendedShortId": "Prescription extension",
     "actions": {
-      "button": "",
-      "assignMe": "",
-      "startExecution": "",
-      "assign": "",
-      "copy": "",
-      "extend": "",
-      "print": "",
-      "cancel": ""
+      "button": "Actions",
+      "assignMe": "Assign to myself",
+      "startExecution": "Execute",
+      "assign": "Assign",
+      "copy": "Copy",
+      "extend": "Extend",
+      "print": "Print",
+      "cancel": "Classify without consequence",
+      "autoAssign": "Internal assignment."
     },
     "assignProfessional": {
-      "undefined": ""
+      "undefined": "Please select a healthcare provider first."
     },
     "transferProfessional": {
-      "undefined": ""
+      "undefined": "Please select a healthcare provider first."
     },
     "transferPerformer": {
       "dialog": {
-        "description": "If you transfer a healthcare provider to this prescription, they will be able to view the information contained in this prescription.",
-        "title": "Transfer a healthcare provider to a prescription"
+        "description": "If you transfer this prescription to another healthcare provider, they will be able to access the information contained in this prescription.",
+        "title": "Transfer a prescription to another healthcare provider"
       },
       "locations": "Location(s)",
       "noResults": "No city found",
-      "performer": "Provider",
-      "searchPerformerPlaceHolder": "INAMI number, name",
-      "success": "{firstName} {lastName} has been assigned as provider.",
-      "title": "Transfer assignment",
-      "zipCodeOrCityName": "Postal code or city"
+      "performer": "Healthcare provider",
+      "searchPerformerPlaceHolder": "NIHDI number, name",
+      "success": "{firstName} {lastName} has been assigned as healthcare provider.",
+      "title": "Transfer assignation",
+      "zipCodeOrCityName": "Postal code or city",
+      "updateCriteria": "Edit criteria"
     },
-    "validityStartDate": ""
+    "validityStartDate": "Validity start date",
+    "autoAssign": {
+      "success": "The healthcare providers have been successfully added."
+    }
   },
   "proposal": {
-    "creationDate": "",
+    "creationDate": "Created on",
     "details": {
-      "link": ""
+      "link": "See details"
     },
     "selectTemplate": {
-      "proposalModel": "",
-      "pickOptionFromList": "",
-      "noOptions": ""
+      "proposalModel": "Proposal model",
+      "pickOptionFromList": "Select an option from the list",
+      "noOptions": "No proposals"
     },
     "create": {
-      "action": "",
-      "success": "",
-      "allSuccess": "",
-      "allFailed": "",
-      "someSuccessSomeFailed": "",
-      "addProposal": "",
-      "publish": "",
+      "action": "New proposal",
+      "success": "Proposal successfully created.",
+      "allSuccess": "{count} {count, plural, one{proposal} other{proposals}} created successfully.",
+      "allFailed": "An error occurred whilst generating the proposals. Please check your input and try again.",
+      "someSuccessSomeFailed": "{successCount} {successCount, plural, one{proposal} other{proposals}} created successfully. {failedCount} {failedCount, plural, one{proposal was} other{proposals were}} not created due to error. Please check your input and try again.",
+      "addProposal": "Extra proposal",
+      "publish": "Publish",
       "deleteProposal": {
-        "title": "",
-        "message": ""
+        "title": "Delete proposal",
+        "message": "Are you sure you want to delete the proposal ‘{templateName}’?"
       },
       "cancelProposalsCreation": {
-        "title": "",
-        "cancelAll": ""
+        "title": "Cancel one or more proposals",
+        "cancelAll": "Cancel all"
       },
-      "cancelCreation": "",
-      "proposal": ""
+      "cancelCreation": "Are you sure you want to cancel the creation of this proposal?",
+      "proposal": "Create proposal"
     },
-    "allProposalsFetched": "",
+    "allProposalsFetched": "All proposals have been collected",
     "print": {
-      "content-electronic-proposal": "",
-      "guideline": "",
-      "nihdi": "",
-      "niss": "",
-      "patient": "",
-      "prescriber": "",
-      "proof-of-electronic-proposal": "",
-      "remark": "",
-      "date": "",
-      "content-electronic-prescription": "",
-      "proof-of-electronic-prescription": ""
+      "content-electronic-proposal": "Contents of the electronic proposal",
+      "guideline": "Please show this document to your doctor. You can have the QR code scanned to access the information in the electronic prescription.",
+      "nihdi": "NIHDI",
+      "niss": "SSIN",
+      "patient": "Beneficiary",
+      "prescriber": "Prescriber",
+      "proof-of-electronic-proposal": "Proof of electronic proposal",
+      "remark": "Please note: any manual additions to this document will not be taken into account.",
+      "date": "Printed on {date}",
+      "content-electronic-prescription": "Contents of the electronic proposal",
+      "proof-of-electronic-prescription": "Proof of the electronic proposal"
     },
-    "author": "",
-    "patient": "",
-    "typeOfCare": "",
-    "services": "",
-    "frequency": "",
-    "start": "",
-    "end": "",
-    "validityPeriod": "",
-    "consultDetails": "",
-    "assign": "",
-    "transfer": "",
-    "assignMe": "",
-    "duplicate": "",
-    "extend": "",
-    "careGivers": "",
-    "assigned": "",
-    "noProposalsForPatient": "",
-    "noProposalsForUser": "",
+    "author": "Author",
+    "patient": "Patient",
+    "typeOfCare": "Type of care",
+    "services": "Sessions",
+    "frequency": "Frequency",
+    "start": "Start",
+    "end": "End",
+    "validityPeriod": "Validity period",
+    "consultDetails": "Show details",
+    "assign": "Assign",
+    "transfer": "Transfer",
+    "assignMe": "Assign myself",
+    "duplicate": "Duplicate",
+    "extend": "Extend",
+    "careGivers": "Care provider(s)",
+    "assigned": "Assigned",
+    "noProposalsForPatient": "This patient has not yet received any proposals.",
+    "noProposalsForUser": "You don't have any proposals yet.",
     "assignPerformer": {
-      "title": "",
-      "success": "",
-      "successOrganization": "",
-      "meSuccess": "",
-      "performer": "",
-      "searchPerformerPlaceHolder": "",
-      "locations": "",
-      "zipCodeOrCityName": "",
-      "noResults": "",
-      "organization": "",
+      "title": "Find a doctor",
+      "success": "{firstName} {lastName} has been assigned as your care provider.",
+      "successOrganization": "{name} has been assigned as the organisation.",
+      "meSuccess": "You have been assigned as a care provider.",
+      "performer": "Care provider",
+      "searchPerformerPlaceHolder": "NIHDI number, name",
+      "locations": "Location(s)",
+      "zipCodeOrCityName": "Postal code and city",
+      "noResults": "No city found",
+      "organization": "organization",
       "dialog": {
-        "title": "",
-        "description": ""
+        "title": "Assign an Annex 81 to a physician",
+        "description": "If you add a physician to this Annex 81, they will be able to access the information contained in Annex 81."
       }
     },
     "transferAssignation": {
       "title": "Transfer assignment",
       "success": "{firstName} {lastName} has been assigned as provider.",
-      "performer": "Provider",
-      "searchPerformerPlaceHolder": "INAMI number, name",
+      "performer": "Care provider",
+      "searchPerformerPlaceHolder": "NIHDI number, name",
       "locations": "Location(s)",
       "zipCodeOrCityName": "Postal code or city",
       "noResults": "No city found",
       "dialog": {
-        "title": "Transfer a healthcare provider to a proposal",
-        "description": "If you transfer a healthcare provider to this proposal, they will be able to view the information contained in this proposal."
+        "title": "Transfer this Annex 81 to another physician.",
+        "description": "If you transfer this Annex 81 to another physician, they will be able to access the information contained in Annex 81."
       }
     },
     "approve": {
-      "action": "",
-      "success": "",
+      "action": "Approve",
+      "success": "The proposal was approved.",
       "dialog": {
-        "title": "",
-        "reason": ""
+        "title": "Reason for approval",
+        "reason": "Doctor’s comments"
       }
     },
     "reject": {
-      "title": "",
-      "action": "",
-      "success": "",
+      "title": "Reject",
+      "action": "Reject",
+      "success": "The proposal was rejected.",
       "dialog": {
-        "title": "",
-        "reason": ""
+        "title": "Reason for rejection",
+        "reason": "Doctor’s comments"
       }
     },
     "cancel": {
-      "action": "",
-      "title": "",
-      "message": "",
-      "success": "",
-      "reason": ""
+      "action": "File",
+      "title": "File the proposal",
+      "message": "Are you sure you want to file the proposal ‘{templateName}’ from {firstName} {lastName}?",
+      "success": "The proposal was successfully filed.",
+      "reason": "Reason",
+      "info": "If an appointment has already been made, please remember to contact the healthcare provider. This will prevent you from being charged for the treatment.",
+      "hint": "The reason will be communicated to the prescriber.",
+      "infoDescription": "If an appointment has already been scheduled, please remember to contact the healthcare provider. This will help prevent the care from being billed to you."
     },
     "rejectAssignation": {
-      "action": "",
-      "title": "",
-      "message": "",
-      "success": ""
+      "action": "Reject",
+      "title": "Reject the assignation",
+      "message": "Are you sure you want to reject the proposal ‘{templateName}’ from {firstName} {lastName}?",
+      "success": "Assignment successfully rejected."
     },
     "frequencyTypes": {
-      "iterative": "",
-      "weekly": ""
+      "iterative": "Iterative",
+      "weekly": "Weekly"
     },
-    "status": "",
-    "proposalDate": "",
-    "proposalInfoTitle": "",
+    "status": "Status",
+    "proposalDate": "Prescribed on",
+    "proposalInfoTitle": "Requested on {date} by {firstName} {lastName}.",
     "pagination": {
-      "proposals": "",
-      "pageSize": ""
+      "proposals": "{count, plural, one{proposal} other{proposals}}",
+      "pageSize": "Number per page"
     },
     "statuses": {
-      "DRAFT": "",
-      "BLACKLISTED": "",
-      "PENDING": "",
-      "OPEN": "",
-      "CANCELLED": "",
-      "EXPIRED": "",
-      "IN_PROGRESS": "",
-      "DONE": "",
-      "null": "",
-      "APPROVED": "",
-      "REJECTED": "",
+      "DRAFT": "Draft",
+      "BLACKLISTED": "Blacklisted",
+      "PENDING": "Pending",
+      "OPEN": "Open",
+      "CANCELLED": "Cancelled",
+      "EXPIRED": "Expired",
+      "IN_PROGRESS": "In progress",
+      "DONE": "Done",
+      "CLOSED": "Done",
+      "null": "Unknown",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected",
       "STOPPED": "Stopped"
     },
     "errors": {
-      "failedToLoadProposal": "",
-      "failedToLoadProposals": "",
-      "invalidFhirString": "",
-      "invalidMaxLength": "",
-      "invalidMinLength": "",
-      "invalidNihiiDigitsCount": "",
-      "invalidCaregiverNameCharacters": "",
-      "dateMustBeEarlierOrEqualTo": "",
-      "dateMustBeLaterOrEqualTo": "",
-      "invalidDateFormat": "",
-      "invalidUUID": ""
+      "failedToLoadProposal": "Something went wrong while loading the proposal.",
+      "failedToLoadProposals": "Something went wrong while loading the proposals.",
+      "invalidFhirString": "Invalid characters",
+      "invalidMaxLength": "Maximum {requiredLength} characters",
+      "invalidMinLength": "At least {requiredLength} characters",
+      "invalidNihiiDigitsCount": "The NIHDI number must consist of 8 or 11 digits.",
+      "invalidCaregiverNameCharacters": "Invalid characters",
+      "dateMustBeEarlierOrEqualTo": "The date must not be later than {date}",
+      "dateMustBeLaterOrEqualTo": "The date must not be earlier than {date}",
+      "invalidDateFormat": "Invalid format: dd/mm/yyyy",
+      "invalidUUID": "The ID provided is invalid. Please check it and try again."
     },
     "categories": {
-      "bandagisterie": "",
-      "dentistry": "",
-      "physiotherapy": "",
-      "orthopedics": "",
-      "otolaryngology": "",
-      "radiology": "",
-      "nursingCare": ""
+      "bandagisterie": "Orthopaedic technician",
+      "dentistry": "Dentist",
+      "physiotherapy": "Physiotherapy",
+      "orthopedics": "Orthopaedics",
+      "otolaryngology": "Otorhinolaryngology",
+      "radiology": "Radiology",
+      "nursingCare": "Nursing care"
     },
     "transferPerformer": {
       "dialog": {
-        "description": "If you transfer a healthcare provider to this proposal, they will be able to view the information contained in this proposal.",
-        "title": "Transfer a healthcare provider to a proposal"
+        "description": "If you transfer this proposal to another healthcare provider, they will be able to access the information contained in this proposal.",
+        "title": "Transfer the proposal to another healthcare provider"
       },
       "locations": "Location(s)",
       "noResults": "No city found",
-      "performer": "Provider",
-      "searchPerformerPlaceHolder": "INAMI number, name",
-      "success": "{firstName} {lastName} has been assigned as provider.",
-      "title": "Transfer assignment",
+      "performer": "Healthcare provider",
+      "searchPerformerPlaceHolder": "NIHDI number, name",
+      "success": "{firstName} {lastName} has been assigned as healthcare provider.",
+      "title": "Transfer",
       "zipCodeOrCityName": "Postal code or city"
+    },
+    "autoAssign": {
+      "success": "The attending physician has been successfully assigned."
     }
   },
   "performerTask": {
     "statuses": {
-      "ONHOLD": "",
-      "READY": "",
-      "CANCELLED": "",
-      "FAILED": "",
-      "INPROGRESS": "",
-      "COMPLETED": "",
-      "null": ""
+      "ONHOLD": "Interrupted",
+      "READY": "Assigned",
+      "CANCELLED": "Cancelled",
+      "FAILED": "Failed",
+      "INPROGRESS": "Active",
+      "COMPLETED": "Inactive",
+      "null": "Unknown"
+    },
+    "organization": {
+      "alert": {
+        "title": "What does this section involve?",
+        "description": "- Every healthcare provider listed here has access to the contents of this prescription.\n- When an organization is listed, it takes responsibility for the prescription and assigns it internally to a healthcare provider. Once assigned, the healthcare provider also appears in this list.\n- The presence of a date indicates that the healthcare provider has already performed at least one care activity related to this prescription."
+      }
     }
   },
   "models": {
     "errors": {
-      "failedToLoadModels": ""
+      "failedToLoadModels": "The models failed to load."
     }
   },
   "pss": {
     "unavailable": {
-      "title": "",
-      "message": ""
+      "title": "Service temporarily unavailable",
+      "message": "The PSS (Prescription Search Support) service is currently unavailable.\nYou are currently unable to view the medical imaging recommendations.\nPlease try again later."
     }
   },
   "professional": {
     "table": {
-      "results": "",
-      "firstname": "",
-      "lastname": "",
-      "address": "",
-      "city": "",
-      "actions": "",
-      "tableHasRecords": "",
-      "noRecords": "",
-      "select": ""
+      "results": "{results} results found",
+      "firstname": "First name",
+      "lastname": "Last name",
+      "address": "Address",
+      "city": "City",
+      "actions": "Actions",
+      "tableHasRecords": "{total} results found",
+      "noRecords": "No healthcare provider matching your search was found.",
+      "select": "Choose"
     },
-    "noProfessionals": "",
-    "allProfessionalsFetched": ""
+    "noProfessionals": "No healthcare provider matching your search was found.",
+    "allProfessionalsFetched": "All healthcare providers have been retrieved."
+  },
+  "error": {
+    "api": {
+      "ACCESS_DENIED": {
+        "default": "You are not authorized to access this service."
+      },
+      "APPROVAL_NOT_POSSIBLE": {
+        "default": "The specified proposal cannot be approved."
+      },
+      "CANCEL_EXECUTION_NOT_IN_PROGRESS": {
+        "default": "The execution must be in progress before it can be cancelled."
+      },
+      "CANCELLATION_INVALID_STATUS": {
+        "default": "",
+        "in-progress": "",
+        "completed": ""
+      },
+      "CAREGIVER_NOT_FOUND": {
+        "default": ""
+      },
+      "CAREGIVER_NOT_UNASSIGNABLE": {
+        "default": ""
+      },
+      "CONSULTRN_NOT_AVAILABLE": {
+        "default": ""
+      },
+      "CREATION_DATE_FUTURE": {
+        "default": ""
+      },
+      "DATE_PROVIDED_AFTER_PRESCRIPTION_END_DATE": {
+        "default": ""
+      },
+      "DECISION_ALREADY_TAKEN": {
+        "default": ""
+      },
+      "END_VALIDITY_DATE_PAST": {
+        "default": ""
+      },
+      "EXCLUSION_EXISTS": {
+        "default": ""
+      },
+      "EXCLUSION_EXISTS_CAREGIVER_TO_ASSIGN": {
+        "default": "",
+        "healthcare-provider": "",
+        "patient": ""
+      },
+      "EXECUTION_DATE_FUTURE": {
+        "default": ""
+      },
+      "EXECUTION_NOT_USABLE": {
+        "default": ""
+      },
+      "FINISH_EXECUTION_NOT_IN_PROGRESS": {
+        "default": ""
+      },
+      "HEALTHCARE_PROFESSIONAL_ALREADY_ASSIGNED": {
+        "default": "",
+        "caregiver": "",
+        "prescriber": ""
+      },
+      "HEALTHCARE_PROFESSIONAL_NOT_OWNER": {
+        "default": ""
+      },
+      "HEALTHCARE_PROFESSIONAL_NOT_OWNER_EXECUTION": {
+        "default": ""
+      },
+      "HEALTHCARE_PROFESSIONAL_TO_BE_ASSIGNED_MISSING_RIGHT": {
+        "default": ""
+      },
+      "INCORRECT_VALIDITY_DATE": {
+        "default": ""
+      },
+      "INVALID_PATIENT_REPLACEMENT": {
+        "default": ""
+      },
+      "INVALID_PRESCRIPTION_STATUS": {
+        "default": ""
+      },
+      "INVALID_TOKEN": {
+        "default": ""
+      },
+      "NO_MANDATE_FOR_PATIENT": {
+        "default": ""
+      },
+      "ORGANIZATION_ALREADY_ASSIGNED": {
+        "default": ""
+      },
+      "ORGANIZATION_NOT_ASSIGNABLE": {
+        "default": ""
+      },
+      "ORGANIZATION_NOT_UNASSIGNABLE": {
+        "default": ""
+      },
+      "ORGANIZATION_TASK_NOT_FOUND": {
+        "default": ""
+      },
+      "PATCH_NOT_APPLIED": {
+        "default": ""
+      },
+      "PRESCRIPTION_NOT_ASSIGNABLE": {
+        "default": ""
+      },
+      "PRESCRIPTION_NOT_READABLE": {
+        "default": ""
+      },
+      "REJECTION_NOT_POSSIBLE": {
+        "default": ""
+      },
+      "REQUEST_PARAMETER_NOT_MATCHING_TOKEN": {
+        "default": ""
+      },
+      "RESOURCE_NOT_FOUND": {
+        "default": ""
+      },
+      "SERVICE_REQUEST_NOT_FOUND": {
+        "default": ""
+      },
+      "SERVICE_REQUEST_NOT_OWNED": {
+        "default": ""
+      },
+      "SERVICE_REQUEST_NOT_UNASSIGNABLE": {
+        "default": ""
+      },
+      "SERVICE_UNAVAILABLE_AA": {
+        "default": ""
+      },
+      "SSIN_NOT_FOUND": {
+        "default": ""
+      },
+      "START_EXECUTION_DATE_AFTER_END_EXECUTION_DATE": {
+        "default": ""
+      },
+      "START_VALIDITY_DATE_AFTER_END_VALIDITY_DATE": {
+        "default": ""
+      },
+      "START_VALIDITY_DATE_PAST": {
+        "default": ""
+      },
+      "USER_SUSPENDED": {
+        "default": ""
+      },
+      "USER_SUSPENDED_ON_DATE_PROVIDED": {
+        "default": ""
+      },
+      "unknown": "An error occurred. Please try again in a few moments."
+    }
   }
 }

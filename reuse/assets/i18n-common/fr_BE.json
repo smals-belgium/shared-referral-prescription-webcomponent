@@ -9,7 +9,7 @@
     "patient": "Patient",
     "category": "Catégorie",
     "typeOfPrescription": "Type de prescription",
-    "shortCode": "RefID",
+    "shortCode": "Short Code",
     "chooseFromList": "Choisissez dans cette liste",
     "tryAgain": "Réessayer",
     "goBack": "Retour",
@@ -18,18 +18,18 @@
     "search": "Rechercher",
     "start": "Commencer",
     "professions": {
-      "NURSE": "Infirmier·ère",
+      "NURSE": "Infirmier",
       "PHYSICIAN": "Médecin",
       "PHYSIOTHERAPIST": "Kinésithérapeute",
       "DENTIST": "Dentiste"
     },
     "professional": {
       "notFound": "Non trouvé",
-      "tooltip": "Professionnel référencé non trouvé."
+      "tooltip": "Professionnel de soins non trouvé."
     },
     "organization": {
       "notFound": "Non trouvé",
-      "tooltip": "Organisation référencée non trouvée."
+      "tooltip": "Organisation de soins non trouvée."
     },
     "organizations": {
       "THIRD_PARTY_PAYING_GROUP": "Groupement avec un n° INAMI tiers payant (infirmiers, sages-femmes e.a.)",
@@ -55,7 +55,7 @@
       "null": "Inconnu",
       "undefined": "Inconnu"
     },
-    "somethingWentWrong": "Une erreur s'est produite. Veuillez ré-essayer.",
+    "somethingWentWrong": "Une erreur s'est produite. Veuillez réessayer.",
     "somethingWentWrongWithoutRetry": "Une erreur s'est produite.",
     "forbiddenAction": "Vous n'êtes pas autorisé(e) à effectuer cette action.",
     "forbiddenResource": "Vous n'êtes pas autorisé(e) à consulter cette page.",
@@ -90,8 +90,8 @@
     "rangePage": "{startIndex} - {endIndex} sur {length}"
   },
   "evf": {
-    "deleteCareGiver": "Supprimer prestataire",
-    "sureDeleteCareGiver": "Êtes-vous sûr(e) de vouloir supprimer ce prestataire?"
+    "deleteCareGiver": "Supprimer prestataire de soins",
+    "sureDeleteCareGiver": "Êtes-vous sûr(e) de vouloir supprimer ce prestataire de soins?"
   },
   "prescription": {
     "beneficiary": "Bénéficiaire",
@@ -102,7 +102,7 @@
     "selectTemplate": {
       "prescriptionModel": "Modèle de prescription",
       "pickOptionFromList": "Choisissez une option dans la liste",
-      "noOptions": "Aucune type de prescription"
+      "noOptions": "Aucune prescription"
     },
     "selectModel": {
       "prescriptionModel": "Modèle",
@@ -178,7 +178,7 @@
         "models": "{count, plural, one{modèle} other{modèles}}",
         "pageSize": "Nbr/page"
       },
-      "tableHasRecords": "Le nombre total de modèles est {total}"
+      "tableHasRecords": "Le nombre total de modèles est {total}."
     },
     "filter": {
       "historicToggle": "Historique",
@@ -205,9 +205,9 @@
         "patient": "Patient",
         "startDate": "Début",
         "endDate": "Fin",
-        "header": "Données d'identification de la prescription électronique (imprimé le {date})."
+        "header": "Données d'identification de la prescription électronique (imprimé le {date})"
       },
-      "alert": "Cette prescription a été classée sans suite et ne peut donc plus être utilisée"
+      "alert": "Cette prescription a été classée sans suite et ne peut donc plus être utilisée."
     },
     "author": "Auteur",
     "patient": "Patient",
@@ -245,7 +245,7 @@
       "noResults": "Aucune commune trouvée",
       "organization": "Organisation",
       "dialog": {
-        "title": "Assigner un prestataire de soins à une prescription",
+        "title": "Assigner une prescription à un prestataire ou une organisation de soins",
         "description": "Si vous ajoutez un prestataire de soins à cette prescription, celui-ci pourra consulter les informations contenues dans cette prescription."
       },
       "locationsHint": "Chercher via le code postal ou le nom de la commune",
@@ -260,8 +260,8 @@
       "zipCodeOrCityName": "Code postal ou commune",
       "noResults": "Aucune commune trouvée",
       "dialog": {
-        "title": "Transférer un prestataire de soins à une prescription",
-        "description": "Si vous transférez un prestataire de soins à cette prescription, celui-ci pourra consulter les informations contenues dans cette prescription."
+        "title": "Transférer cette prescription à un prestataire de soins",
+        "description": "Si vous transférez cette prescription à un autre prestataire de soins, celui-ci pourra consulter les informations contenues dans cette prescription."
       }
     },
     "cancel": {
@@ -269,7 +269,10 @@
       "title": "Classer la prescription sans suite",
       "message": "Êtes-vous sûr de vouloir classer la prescription \"{templateName}\" de {firstName} {lastName} sans suite?",
       "success": "Prescription classée sans suite avec succès.",
-      "reason": "Raison"
+      "reason": "Raison",
+      "info": "Si un rendez-vous a déjà été fixé, n’oubliez pas de contacter le prestataire de soins. Vous éviterez ainsi que la prestation vous soit facturée.",
+      "hint": "La raison sera notifiée au prescripteur",
+      "infoDescription": "Si un rendez-vous a déjà été fixé, n'oubliez pas de contacter le prestataire de soins. Vous éviterez ainsi que la prestation vous soit facturée."
     },
     "rejectAssignation": {
       "action": "Rejeter",
@@ -348,7 +351,11 @@
       "invalidShortCode": "L'ID de la prescription n'est pas valide. Veuillez vérifier et essayer à nouveau.",
       "decryptionFailed": "Le décodage des champs de texte libre a échoué. Ré-essayer.",
       "failedToCreateModel": "Le modèle n'a pas pu être créé. Veuillez réessayer plus tard.",
-      "failedToLoadTemplate": "Failed to load prescription form template."
+      "failedToLoadTemplate": "Impossible de charger le formulaire de prescription.",
+      "errorsInForm": {
+        "title": "Il reste des erreurs dans le formulaire.",
+        "subTitle": "Merci de corriger les éléments suivants:"
+      }
     },
     "categories": {
       "bandagisterie": "Bandagisterie",
@@ -365,9 +372,10 @@
       "print": "Imprimer",
       "reject": "Rejeter l'assignation",
       "interrupt": "Interrompre l'exécution",
-      "restart": "Relancer l'exécution"
+      "restart": "Relancer l'exécution",
+      "removeCriteria": "Supprimer les critères de recherche"
     },
-    "tableHasRecords": "Le nombre total d'ordonnances est de {total}.",
+    "tableHasRecords": "Le nombre total de prescriptions est de {total}.",
     "extendedShortId": "Prolongation de la prescription",
     "actions": {
       "button": "Actions",
@@ -377,28 +385,33 @@
       "copy": "Copier",
       "extend": "Étendre",
       "print": "Imprimer",
-      "cancel": "Classer sans suite"
+      "cancel": "Classer sans suite",
+      "autoAssign": "Assignation interne."
     },
     "assignProfessional": {
-      "undefined": "Choisir d'abord un professionnel"
+      "undefined": "Veuillez d'abord sélectionner un prestataire de soins."
     },
     "transferProfessional": {
-      "undefined": "Choisir d'abord un professionnel"
+      "undefined": "Veuillez d'abord sélectionner un prestataire de soins."
     },
     "transferPerformer": {
       "dialog": {
-        "description": "Si vous transférez un prestataire de soins à cette prescription, celui-ci pourra consulter les informations contenues dans cette prescription.",
-        "title": "Transférer un prestataire de soins à une prescription"
+        "description": "Si vous transférez cette prescription à un autre prestataire de soins, celui-ci pourra consulter les informations contenues dans cette prescription.",
+        "title": "Transférer une prescription à un autre prestataire de soins"
       },
       "locations": "Localisation(s)",
       "noResults": "Aucune commune trouvée",
-      "performer": "Prestataire",
-      "searchPerformerPlaceHolder": "N° INAMI, nom",
-      "success": "{firstName} {lastName} a été assigné comme prestataire.",
+      "performer": "Prestataire de soins",
+      "searchPerformerPlaceHolder": "Numéro INAMI, nom",
+      "success": "{firstName} {lastName} a été assigné comme prestataire de soins.",
       "title": "Transférer l'assignation",
-      "zipCodeOrCityName": "Code postal ou commune"
+      "zipCodeOrCityName": "Code postal ou commune",
+      "updateCriteria": "Modifier les critères"
     },
-    "validityStartDate": "Date de début de validité"
+    "validityStartDate": "Date de début de validité",
+    "autoAssign": {
+      "success": "Les prestataires de soins ont été ajoutés avec succès."
+    }
   },
   "proposal": {
     "creationDate": "Créé le",
@@ -473,7 +486,7 @@
       "noResults": "Aucune commune trouvée",
       "organization": "Organisation",
       "dialog": {
-        "title": "Assigner un médecin à une annexe 81.",
+        "title": "Assigner une annexe 81 à un médecin",
         "description": "Si vous ajoutez un médecin à cette annexe 81, celui-ci pourra consulter les informations contenues dans l'annexe 81."
       }
     },
@@ -512,7 +525,10 @@
       "title": "Classer la proposition sans suite",
       "message": "Êtes-vous sûr de vouloir classer la proposition \"{templateName}\" de {firstName} {lastName} sans suite?",
       "success": "Proposition classée sans suite avec succès.",
-      "reason": "Raison"
+      "reason": "Raison",
+      "info": "Si un rendez-vous a déjà été fixé, n’oubliez pas de contacter le prestataire de soins. Vous éviterez ainsi que la prestation vous soit facturée.",
+      "hint": "La raison sera notifiée au prescripteur",
+      "infoDescription": "Si un rendez-vous a déjà été fixé, n'oubliez pas de contacter le prestataire de soins. Vous éviterez ainsi que la prestation vous soit facturée."
     },
     "rejectAssignation": {
       "action": "Rejeter",
@@ -570,16 +586,19 @@
     },
     "transferPerformer": {
       "dialog": {
-        "description": "Si vous transférez un prestataire de soins à cette proposition, celui-ci pourra consulter les informations contenues dans cette proposition.",
-        "title": "Transférer un prestataire de soins à une proposition"
+        "description": "Si vous transférez cette proposition à un autre prestataire de soins, celui-ci pourra consulter les informations contenues dans cette proposition.",
+        "title": "Transférer la proposition à un autre prestataire de soins"
       },
       "locations": "Localisation(s)",
       "noResults": "Aucune commune trouvée",
-      "performer": "Prestataire",
+      "performer": "Prestataire de soins",
       "searchPerformerPlaceHolder": "N° INAMI, nom",
       "success": "{firstName} {lastName} a été assigné comme prestataire.",
-      "title": "Transférer l'assignation",
+      "title": "Transférer",
       "zipCodeOrCityName": "Code postal ou commune"
+    },
+    "autoAssign": {
+      "success": "Le médecin traitant a été assigné avec succès."
     }
   },
   "performerTask": {
@@ -588,9 +607,15 @@
       "READY": "Assigné·e",
       "CANCELLED": "Annulé",
       "FAILED": "Echoué",
-      "INPROGRESS": "En cours",
+      "INPROGRESS": "Actif",
       "COMPLETED": "Inactif",
       "null": "Inconnu"
+    },
+    "organization": {
+      "alert": {
+        "title": "Qu'implique cette partie?",
+        "description": "- Tout prestataire de soins mentionné dans cette liste a accès au contenu de cette prescription.\n- Lorsqu'une organisation est mentionnée, elle prend en charge la prescription et l'attribue en interne à un professionnel de santé. Une fois désigné, celui-ci apparaît également dans cette liste.\n- La présence d'une date indique que le prestataire a déjà exécuté au moins un soin lié à cette prescription."
+      }
     }
   },
   "models": {
@@ -611,12 +636,158 @@
       "lastname": "Nom",
       "address": "Adresse",
       "city": "Commune",
-      "actions": "Action",
+      "actions": "Actions",
       "tableHasRecords": "{total}  résultats trouvé",
       "noRecords": "Aucun professionnel correspondant à cette recherche n'a été trouvé.",
       "select": "Choisir"
     },
     "noProfessionals": "Aucun professionnel correspondant à cette recherche n'a été trouvé.",
-    "allProfessionalsFetched": "Tous les professionnels sont recrutés"
+    "allProfessionalsFetched": "Tous les prestataires de soins ont été récupérés."
+  },
+  "error": {
+    "api": {
+      "ACCESS_DENIED": {
+        "default": "Vous n’avez pas l’autorisation d’accéder à ce service."
+      },
+      "APPROVAL_NOT_POSSIBLE": {
+        "default": "La proposition mentionnée ne peut pas être approuvée."
+      },
+      "CANCEL_EXECUTION_NOT_IN_PROGRESS": {
+        "default": "L'exécution doit être en cours avant de pouvoir l'annuler."
+      },
+      "CANCELLATION_INVALID_STATUS": {
+        "default": "Il est impossible d'annuler la prescription.",
+        "in-progress": "Il est impossible d'annuler la prescription car le soin est en cours.",
+        "completed": "Il est impossible d'annuler la prescription car elle est complétée."
+      },
+      "CAREGIVER_NOT_FOUND": {
+        "default": "Prestataire de soins non reconnu."
+      },
+      "CAREGIVER_NOT_UNASSIGNABLE": {
+        "default": "Le soignant ne peut pas être retiré car il a déjà commencé le soin."
+      },
+      "CONSULTRN_NOT_AVAILABLE": {
+        "default": "Ce service n'est pas disponible."
+      },
+      "CREATION_DATE_FUTURE": {
+        "default": "La date de création ne peut pas être dans le futur."
+      },
+      "DATE_PROVIDED_AFTER_PRESCRIPTION_END_DATE": {
+        "default": "Le soin ne peut plus être fourni car la prescription est expirée."
+      },
+      "DECISION_ALREADY_TAKEN": {
+        "default": "Cette proposition a déjà été traitée."
+      },
+      "END_VALIDITY_DATE_PAST": {
+        "default": "La date de fin de validité ne peut pas être dans le passé."
+      },
+      "EXCLUSION_EXISTS": {
+        "default": "Vous n’avez pas l’autorisation d’accéder à cette prescription."
+      },
+      "EXCLUSION_EXISTS_CAREGIVER_TO_ASSIGN": {
+        "default": "Cette action n'est pas possible.",
+        "healthcare-provider": "Cette action n'est pas possible.",
+        "patient": "Cette action n'est pas possible car le soignant est exclu."
+      },
+      "EXECUTION_DATE_FUTURE": {
+        "default": "La date de fin ne peut pas être dans le futur."
+      },
+      "EXECUTION_NOT_USABLE": {
+        "default": "Cette action n'est pas possible."
+      },
+      "FINISH_EXECUTION_NOT_IN_PROGRESS": {
+        "default": "Le soin doit être en cours avant de pouvoir le terminer."
+      },
+      "HEALTHCARE_PROFESSIONAL_ALREADY_ASSIGNED": {
+        "default": "Cette personne est déjà assignée.",
+        "caregiver": "Ce soignant est déjà assigné.",
+        "prescriber": "Ce prescripteur est déjà assigné."
+      },
+      "HEALTHCARE_PROFESSIONAL_NOT_OWNER": {
+        "default": "Vous ne pouvez pas effectuer cette modification."
+      },
+      "HEALTHCARE_PROFESSIONAL_NOT_OWNER_EXECUTION": {
+        "default": "Cette action n'est pas possible."
+      },
+      "HEALTHCARE_PROFESSIONAL_TO_BE_ASSIGNED_MISSING_RIGHT": {
+        "default": "Le soignant n'a pas le droit d'accéder à la prescription."
+      },
+      "INCORRECT_VALIDITY_DATE": {
+        "default": "La date de validité de la prescription ne peut pas être postérieure à la date de fin de validation du traitement."
+      },
+      "INVALID_PATIENT_REPLACEMENT": {
+        "default": "Le patient doit être le même."
+      },
+      "INVALID_PRESCRIPTION_STATUS": {
+        "default": "Cette action n'est pas possible."
+      },
+      "INVALID_TOKEN": {
+        "default": "Il y a un problème avec l'identification."
+      },
+      "NO_MANDATE_FOR_PATIENT": {
+        "default": "Cette action n'est pas possible."
+      },
+      "ORGANIZATION_ALREADY_ASSIGNED": {
+        "default": "L’organisation est déjà assignée à la prescription."
+      },
+      "ORGANIZATION_NOT_ASSIGNABLE": {
+        "default": "Pas de résultat "
+      },
+      "ORGANIZATION_NOT_UNASSIGNABLE": {
+        "default": "Le soin a déjà commencé."
+      },
+      "ORGANIZATION_TASK_NOT_FOUND": {
+        "default": "Cette action n'est pas possible."
+      },
+      "PATCH_NOT_APPLIED": {
+        "default": "Cette action n'est pas possible."
+      },
+      "PRESCRIPTION_NOT_ASSIGNABLE": {
+        "default": "Cette action n'est pas possible."
+      },
+      "PRESCRIPTION_NOT_READABLE": {
+        "default": "Cette action n'est pas possible."
+      },
+      "REJECTION_NOT_POSSIBLE": {
+        "default": "Cette action n'est pas possible."
+      },
+      "REQUEST_PARAMETER_NOT_MATCHING_TOKEN": {
+        "default": "Cette action n'est pas possible."
+      },
+      "RESOURCE_NOT_FOUND": {
+        "default": "Introuvable."
+      },
+      "SERVICE_REQUEST_NOT_FOUND": {
+        "default": "Prescription introuvable."
+      },
+      "SERVICE_REQUEST_NOT_OWNED": {
+        "default": "Cette action n'est pas possible."
+      },
+      "SERVICE_REQUEST_NOT_UNASSIGNABLE": {
+        "default": "Cette action n'est pas possible."
+      },
+      "SERVICE_UNAVAILABLE_AA": {
+        "default": "Ce service n'est pas disponible."
+      },
+      "SSIN_NOT_FOUND": {
+        "default": "Patient inexistant."
+      },
+      "START_EXECUTION_DATE_AFTER_END_EXECUTION_DATE": {
+        "default": "Le soin ne peut plus être fourni."
+      },
+      "START_VALIDITY_DATE_AFTER_END_VALIDITY_DATE": {
+        "default": "La prescription n'est plus valable."
+      },
+      "START_VALIDITY_DATE_PAST": {
+        "default": "La date de début de validité ne peut pas être antérieure de plus de 5 jours."
+      },
+      "USER_SUSPENDED": {
+        "default": "Cette action n'est pas possible."
+      },
+      "USER_SUSPENDED_ON_DATE_PROVIDED": {
+        "default": "Cette action n'est pas possible."
+      },
+      "unknown": "Une erreur s'est produite. Merci de réessayer dans quelques instants."
+    }
   }
 }

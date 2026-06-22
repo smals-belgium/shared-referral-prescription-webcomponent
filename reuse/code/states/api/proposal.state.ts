@@ -62,7 +62,7 @@ export class ProposalState extends BaseState<ReadRequestResource> {
         proposalId,
         referralTaskId,
         {
-          ssin: professional.ssin!,
+          ssin: professional.ssin,
           role: professional.discipline.toUpperCase(),
         },
         generatedUUID
@@ -73,31 +73,31 @@ export class ProposalState extends BaseState<ReadRequestResource> {
   assignProposalPerformer(
     proposalId: string,
     referralTaskId: string,
-    healthcareProvider: HealthcareProResource | HealthcareOrganizationResource,
+    ssinOrNihdi: string,
+    role: string,
+    type: string,
     generatedUUID: string
   ) {
-    if (isProfessional(healthcareProvider)) {
+    if (type === 'Professional') {
       return this.proposalService
         .assignCaregiver(
           proposalId,
           referralTaskId,
           {
-            ssin: healthcareProvider.healthcarePerson?.ssin ?? '',
-            role: healthcareProvider.id?.profession ?? '',
+            ssin: ssinOrNihdi || '',
+            role: role || '',
           },
           generatedUUID
         )
         .pipe(tap(() => this.loadProposal(proposalId)));
     } else {
-      const nihdi =
-        (healthcareProvider.nihii8 ?? healthcareProvider.nihii8) + (healthcareProvider.qualificationCode ?? '');
       return this.proposalService
         .assignOrganization(
           proposalId,
           referralTaskId,
           {
-            nihii: nihdi,
-            institutionTypeCode: healthcareProvider.typeCode ?? '',
+            nihii: ssinOrNihdi,
+            institutionTypeCode: type || '',
           },
           generatedUUID
         )

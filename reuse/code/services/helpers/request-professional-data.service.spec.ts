@@ -1,12 +1,11 @@
-import { fakeAsync, flush, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { RequestProfessionalDataService } from '@reuse/code/services/helpers/request-professional-data.service';
 import { HealthcareProviderService } from '@reuse/code/services/api/healthcareProvider.service';
 import { provideHttpClient } from '@angular/common/http';
-import { DeviceService } from '@reuse/code/services/helpers/device.service';
 import { SearchProfessionalCriteria } from '@reuse/code/interfaces';
-import { HealthcareOrganizationResource, HealthcareProResource, ProviderType } from '@reuse/code/openapi';
-import { of, throwError } from 'rxjs';
-import { signal } from '@angular/core';
+import { HealthcareProResource, ProviderType } from '@reuse/code/openapi';
+import { of, skip, throwError } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 const mockCriteria: SearchProfessionalCriteria = {
   query: 'doctor',
@@ -33,108 +32,52 @@ const mockProfessional2: HealthcareProResource[] = [
   },
 ];
 
-const mockApiResponse = ({
-  professionals = [],
-  organizations = [],
-  total = professionals.length + organizations.length,
-}: {
-  professionals?: HealthcareProResource[];
-  organizations?: HealthcareOrganizationResource[];
-  total?: number;
-} = {}) => ({
-  healthcareProfessionals: professionals,
-  healthcareOrganizations: organizations,
-  total,
-});
-
-const mockHealthcareProviderService = {
-  findAll: jest.fn(),
-};
-
-const mockDeviceService = {
-  isDesktop: signal(false),
-};
-
 describe('RequestProfessionalDataService', () => {
   let service: RequestProfessionalDataService;
+  let healthcareProviderService: jest.Mocked<any>;
 
   beforeEach(() => {
+    const mockService = {
+      findAll: jest.fn(),
+    };
+
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
         RequestProfessionalDataService,
-        { provide: DeviceService, useValue: mockDeviceService },
-        { provide: HealthcareProviderService, useValue: mockHealthcareProviderService },
+        { provide: HealthcareProviderService, useValue: mockService },
       ],
     });
 
     service = TestBed.inject(RequestProfessionalDataService);
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
+    healthcareProviderService = TestBed.inject(HealthcareProviderService) as any;
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('initializeCardsDataStream', () => {
-    it('should set initial data immediately and subscribe to the cards stream', () => {
-      const dataSpy = jest.spyOn(service['_data'], 'set');
+  describe('initializeDataStream', () => {
+    it('should set initial data immediately', done => {
+      // We skip(1) to ignore the initial BehaviorSubject value ([])
+      service.data$.pipe(skip(1), take(1)).subscribe(data => {
+        expect(data).toEqual(mockProfessional);
+        done();
+      });
 
-      service.initializeCardsDataStream(mockProfessional, mockCriteria);
-
-      expect(dataSpy).toHaveBeenCalledTimes(2);
-      expect(service.data()).toEqual(mockProfessional);
+      service.initializeDataStream(mockProfessional, mockCriteria);
     });
 
-    it('should call handleStreamError when an error occurs', () => {
+    it('should call handleStreamError when an error occurs in the stream', () => {
       const error = new Error('Stream failure');
-
       const handleErrorSpy = jest.spyOn(service as any, 'handleStreamError');
 
-      jest.spyOn(service as any, 'createCardsDataStream').mockReturnValue(throwError(() => error));
+      // Force error on the creation logic
+      jest.spyOn(service as any, 'createDataStream').mockReturnValue(throwError(() => error));
 
-      service.initializeCardsDataStream([], {} as any);
+      service.initializeDataStream([], mockCriteria);
 
-      expect(handleErrorSpy).toHaveBeenCalledTimes(1);
       expect(handleErrorSpy).toHaveBeenCalledWith(error);
-    });
-  });
-
-  describe('initializeTableDataStream', () => {
-    it('should fetch all pages sequentially until the total count is reached', () => {
-      const mockData = { data: mockProfessional, total: 2 };
-
-      service.initializeTableDataStream(mockData, mockCriteria);
-
-      expect(service.data().length).toBeGreaterThanOrEqual(1);
-      expect(mockHealthcareProviderService.findAll).toHaveBeenCalled();
-    });
-
-    it('should call handleStreamError when an error occurs', () => {
-      const error = new Error('Stream failure');
-
-      const handleErrorSpy = jest.spyOn(service as any, 'handleStreamError');
-
-      jest.spyOn(service as any, 'createTableDataStream').mockReturnValue(throwError(() => error));
-
-      service.initializeTableDataStream({ data: [], total: 0 }, {} as any);
-
-      expect(handleErrorSpy).toHaveBeenCalledTimes(1);
-      expect(handleErrorSpy).toHaveBeenCalledWith(error);
-    });
-  });
-
-  describe('triggerLoad', () => {
-    it('should set loading to true and emit with load trigger subject', () => {
-      const nextSpy = jest.spyOn(service['loadTrigger'], 'next');
-
-      service.triggerLoad();
-
-      expect(service.loading()).toBe(true);
-      expect(nextSpy).toHaveBeenCalled();
     });
   });
 
@@ -145,33 +88,42 @@ describe('RequestProfessionalDataService', () => {
 
     it('should call triggerLoad when count > PAGE_SIZE', () => {
       const triggerLoadSpy = jest.spyOn(service, 'triggerLoad');
-
       service.retryLoad(15);
-
       expect(triggerLoadSpy).toHaveBeenCalled();
     });
   });
 
-  describe('createCardsDataStream', () => {});
+  describe('Data Accumulation (createDataStream)', () => {
+    it('should append new data to accumulated data when triggerLoad is called', done => {
+      const apiResponse = {
+        healthcareProfessionals: mockProfessional2,
+        total: 2,
+      };
 
-  describe('fetchRawItems', () => {
-    it('should return empty items and reset loading to false when the API call fails', done => {
-      mockHealthcareProviderService.findAll.mockReturnValue(throwError(() => new Error('API error')));
+      healthcareProviderService.findAll.mockReturnValue(of(apiResponse));
 
-      service['fetchRawItems'](1, mockCriteria).subscribe(result => {
-        expect(result.newItems).toEqual([]);
-        expect(result.total).toBe(0);
-        expect(service.loading()).toBe(false);
-        done();
+      service.initializeDataStream(mockProfessional, mockCriteria);
+
+      // Trigger second page load
+      service.triggerLoad();
+
+      // Check accumulated results
+      service.data$.subscribe(data => {
+        if (data.length === 2) {
+          expect(data).toEqual([...mockProfessional, ...mockProfessional2]);
+          done();
+        }
       });
     });
   });
 
   describe('callServiceMethod', () => {
-    it('should forward all criteria fields and the correct page number to findAll', () => {
+    it('should forward all criteria fields and increment page by 1', () => {
+      healthcareProviderService.findAll.mockReturnValue(of({}));
+
       service['callServiceMethod'](mockCriteria, 0).subscribe();
 
-      expect(mockHealthcareProviderService.findAll).toHaveBeenCalledWith(
+      expect(healthcareProviderService.findAll).toHaveBeenCalledWith(
         mockCriteria.query,
         mockCriteria.zipCodes,
         mockCriteria.disciplines,
@@ -185,69 +137,17 @@ describe('RequestProfessionalDataService', () => {
     });
   });
 
-  describe('createTableDataStream', () => {
-    it('should return empty array immediately if total is 0', () => {
-      const initialTableData = { data: [], total: 0 };
+  describe('reset', () => {
+    it('should clear data and set loading to false', done => {
+      service.reset();
 
-      service.initializeTableDataStream(initialTableData, mockCriteria);
-
-      expect(service.data()).toEqual([]);
-      expect(mockHealthcareProviderService.findAll).not.toHaveBeenCalled();
-    });
-
-    it('should expand and load all pages sequentially until total is reached', fakeAsync(() => {
-      const initialTableData = {
-        data: [{ id: '1' }],
-        total: 3,
-      } as any;
-
-      const page2Response = {
-        healthcareProfessionals: [{ id: '2' }],
-        total: 3,
-      };
-      const page3Response = {
-        healthcareProfessionals: [{ id: '3' }],
-        total: 3,
-      };
-
-      mockHealthcareProviderService.findAll
-        .mockReturnValueOnce(of(page2Response))
-        .mockReturnValueOnce(of(page3Response));
-
-      service.initializeTableDataStream(initialTableData, mockCriteria);
-
-      flush();
-
-      expect(service.data().length).toBe(3);
-      expect(service.data()).toEqual([{ id: '1' }, { id: '2' }, { id: '3' }]);
-      expect(mockHealthcareProviderService.findAll).toHaveBeenCalledTimes(2);
-    }));
-  });
-
-  describe('createCardsDataStream', () => {
-    it('should initialize with initial data and append new data on triggerLoad', () => {
-      const initialData = [...mockProfessional];
-      const apiResponse = mockApiResponse({ professionals: mockProfessional2, total: 2 });
-
-      mockHealthcareProviderService.findAll.mockReturnValue(of(apiResponse));
-
-      service.initializeCardsDataStream(initialData, mockCriteria);
-      expect(service.data()).toEqual(initialData);
-
-      service.triggerLoad();
-      expect(service.data()).toEqual([...mockProfessional, ...mockProfessional2]);
-
-      expect(mockHealthcareProviderService.findAll).toHaveBeenCalledWith(
-        mockCriteria.query,
-        mockCriteria.zipCodes,
-        mockCriteria.disciplines,
-        [],
-        ProviderType.Professional,
-        mockCriteria.prescriptionId,
-        mockCriteria.intent,
-        2,
-        10
-      );
+      service.data$.subscribe(data => {
+        expect(data).toEqual([]);
+        service.loading$.subscribe(loading => {
+          expect(loading).toBe(false);
+          done();
+        });
+      });
     });
   });
 });

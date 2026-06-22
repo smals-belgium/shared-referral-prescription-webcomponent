@@ -4,6 +4,7 @@ import {
   ConfigName,
   IdToken,
   OpenEventDetail,
+  refreshEvent,
   RefreshEvent,
   RefreshEventDetail,
   refreshEventType,
@@ -70,7 +71,7 @@ export abstract class MagsComponent implements WebComponentWithSignals, OnInit {
           catchError(() => of('fail' as const))
         )
       ),
-      tap(status => this.refresh.emit({ status: status as Refresh }))
+      tap(status => this.componentView.nativeElement.dispatchEvent(refreshEvent({ status })))
     )
     .subscribe();
 
@@ -84,7 +85,7 @@ export abstract class MagsComponent implements WebComponentWithSignals, OnInit {
   protected setEnvName(envs?: Record<string, string[]>) {
     if (envs) {
       const [referralPrescriptionEnv] =
-      Object.entries(envs).find(([, configNames]) => configNames.includes(this.hostSettings.configName)) || [];
+        Object.entries(envs).find(([, configNames]) => configNames.includes(this.hostSettings.configName)) || [];
       window.referralPrescriptionEnv = referralPrescriptionEnv as ReferralEnv;
     }
   }

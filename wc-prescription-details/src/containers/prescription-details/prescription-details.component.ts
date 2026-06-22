@@ -319,7 +319,9 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       'close',
       'cancel',
       'arrow_forward_ios',
-      'info'
+      'info',
+      'person',
+      'warning'
     );
 
     this.generatedUUID.set(uuidv4());
