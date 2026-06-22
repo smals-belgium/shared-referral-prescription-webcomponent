@@ -9,7 +9,7 @@
     "patient": "Patiënt",
     "category": "Categorie",
     "typeOfPrescription": "Type voorschrift",
-    "shortCode": "Short code",
+    "shortCode": "Short Code",
     "chooseFromList": "Kies uit deze lijst",
     "tryAgain": "Opnieuw proberen",
     "goBack": "Terug",
@@ -25,20 +25,20 @@
     },
     "professional": {
       "notFound": "Niet gevonden",
-      "tooltip": "Professional niet gevonden."
+      "tooltip": "Zorgverlener niet gevonden."
     },
     "organization": {
       "notFound": "Niet gevonden",
-      "tooltip": "Organisatie niet gevonden."
+      "tooltip": "Zorgorganisatie niet gevonden."
     },
     "organizations": {
       "THIRD_PARTY_PAYING_GROUP": "Groepering met een RIZIV-nr derdebetaler (verpleegkundigen, vroedvrouwen, e.a.)",
       "GROUP_OF_DOCTORS": "Groepering van huisartsen op dezelfde installatieplaats",
       "GUARD_POST": "Wachtpost",
-      "MEDICAL_HOUSE": "Medische huis",
+      "MEDICAL_HOUSE": "Medisch huis",
       "HOME_SERVICES": "Geïntegreerde diensten thuisverzorging"
     },
-    "lastName": "Naam",
+    "lastName": "Achternaam",
     "firstName": "Voornaam",
     "dateOfBirth": "Geboren op",
     "ssin": "ID",
@@ -55,17 +55,17 @@
       "null": "Onbekend",
       "undefined": "Onbekend"
     },
-    "somethingWentWrong": "Er is iets misgegaan. Gelieve opnieuw te proberen.",
-    "somethingWentWrongWithoutRetry": "Er is iets misgegaan.",
-    "forbiddenAction": "U bent niet bevoegd om deze actie uit te voeren.",
-    "forbiddenResource": "U heeft geen toegang tot deze pagina.",
-    "notFoundResource": "De gevraagde pagina bestaat niet.",
+    "somethingWentWrong": "Er is een fout opgetreden. Probeer het opnieuw.",
+    "somethingWentWrongWithoutRetry": "Er is een fout opgetreden.",
+    "forbiddenAction": "U bent niet gemachtigd om deze actie uit te voeren.",
+    "forbiddenResource": "U bent niet gemachtigd om deze pagina te raadplegen.",
+    "notFoundResource": "De opgevraagde pagina bestaat niet.",
     "mandatory": "Verplicht veld",
     "ariaLabel": {
       "loading": "Laden"
     },
     "errors": {
-      "pseudoDisabled": "Het aanmaken van een voorschrift is niet mogelijk."
+      "pseudoDisabled": "Het is niet mogelijk een voorschrift aan te maken."
     },
     "prescriptionModel": "Sjabloon",
     "error": {
@@ -97,12 +97,12 @@
     "beneficiary": "Rechthebbende",
     "creationDate": "Aangemaakt op",
     "details": {
-      "link": "Bekijk details"
+      "link": "Details bekijken"
     },
     "selectTemplate": {
       "prescriptionModel": "Voorschrift sjabloon",
       "pickOptionFromList": "Kies een optie uit de lijst",
-      "noOptions": "Geen voorschriften"
+      "noOptions": "Geen voorschrift"
     },
     "selectModel": {
       "prescriptionModel": "Sjabloon",
@@ -111,10 +111,10 @@
     },
     "create": {
       "action": "Nieuw voorschrift",
-      "success": "Voorschrift succesvol aangemaakt.",
+      "success": "Voorschrift werd succesvol aangemaakt.",
       "allSuccess": "{count} {count, plural, one{voorschrift} other{voorschriften}} successvol aangemaakt.",
-      "allFailed": "Fout tijdens het aanmaken van de voorschriften. Controleer uw invoer en probeer het opnieuw.",
-      "someSuccessSomeFailed": "{successCount} {successCount, plural, one{voorschrift} other{voorschriften}} successvol aangemaakt. {failedCount} {failedCount, plural, one{voorschrift werd} other{voorschriften werden}} niet aangemaakt door een fout. Controleer uw invoer en probeer het opnieuw.",
+      "allFailed": "Er is een fout opgetreden tijdens het aanmaken van de voorschriften. Controleer uw invoer en probeer het opnieuw.",
+      "someSuccessSomeFailed": "{successCount} {successCount, plural, one{voorschrift} other{voorschriften}} successvol aangemaakt. {failedCount} {failedCount, plural, one{voorschrift werd} other{voorschriften werden}} niet aangemaakt als gevolg van een fout. Controleer uw invoer en probeer het opnieuw.",
       "addPrescription": "Extra voorschrift",
       "publish": "Publiceren",
       "control": {
@@ -163,7 +163,7 @@
         "model": "Sjabloon aanmaken"
       },
       "update": {
-        "title": "Update sjabloon"
+        "title": "Sjabloon bijwerken"
       },
       "delete": {
         "title": "Verwijder sjabloon",
@@ -178,7 +178,7 @@
         "models": "{count, plural, one{sjabloon} other{sjablonen}}",
         "pageSize": "Aantal per pagina"
       },
-      "tableHasRecords": "Totaal aantal sjablonen is {total}"
+      "tableHasRecords": "Totaal aantal sjablonen is {total}."
     },
     "filter": {
       "historicToggle": "Historiek",
@@ -202,19 +202,19 @@
       "remark": "Opgelet: met manuele toevoegingen op dit document zal geen rekening gehouden worden.",
       "date": "Afgedrukt op {date}",
       "subsection": {
-        "patient": "Patient",
+        "patient": "Patiënt",
         "startDate": "Start",
         "endDate": "Einde",
-        "header": "Elektronische identificatiegegevens van het voorschrift (afgedrukt op {date})."
+        "header": "Elektronische identificatiegegevens van het voorschrift (afgedrukt op {date})"
       },
-      "alert": "Dit voorschrift is geklasseerd zonder gevolg en kan daarom niet meer worden gebruikt."
+      "alert": "Dit voorschrift werd geklasseerd zonder gevolg en kan daarom niet langer worden gebruikt."
     },
     "author": "Auteur",
     "patient": "Patiënt",
     "note": "Notitie",
-    "shortcode": "RefID",
+    "shortcode": "Short Code",
     "typeOfCare": "Type zorg",
-    "services": "Beurten",
+    "services": "Sessies",
     "frequency": "Frequentie",
     "start": "Start",
     "end": "Einde",
@@ -245,8 +245,8 @@
       "noResults": "Geen gemeente gevonden",
       "organization": "Organisatie",
       "dialog": {
-        "title": "Een zorgverlener toewijzen aan een voorschrift.",
-        "description": "Als u een zorgverlener aan dit voorschrift toevoegt, kan deze de informatie in dit voorschrift inzien."
+        "title": "Een voorschrift toewijzen aan een zorgverlener of zorgorganisatie",
+        "description": "Als u een zorgverlener aan dit voorschrift toevoegt, kan deze de informatie in dit voorschrift raadplegen."
       },
       "locationsHint": "Zoeken op postcode of plaatsnaam",
       "performerHint": "Zoeken op naam of ID"
@@ -260,8 +260,8 @@
       "zipCodeOrCityName": "Postcode of gemeente",
       "noResults": "Geen gemeente gevonden",
       "dialog": {
-        "title": "Een zorgverlener transfereren naar een voorschrift",
-        "description": "Als u dit voorschrift overdraagt naar een andere zorgverlener, kan deze de informatie in dit voorschrift raadplegen."
+        "title": "Dit voorschrift overdragen aan een zorgverlener",
+        "description": "Als u dit voorschrift overdraagt aan een andere zorgverlener, zal deze de informatie in dit voorschrift kunnen raadplegen."
       }
     },
     "cancel": {
@@ -269,7 +269,10 @@
       "title": "Klasseer voorschrift zonder gevolg",
       "message": "Bent u zeker dat u het voorschrift \"{templateName}\" van {firstName} {lastName} wilt klasseren zonder gevolg?",
       "success": "Het voorschrift werd met succes geklasseerd zonder gevolg.",
-      "reason": "Reden"
+      "reason": "Reden",
+      "info": "Als er al een afspraak is gemaakt, vergeet dan niet contact op te nemen met de zorgverlener. Zo voorkomt u dat de behandeling in rekening wordt gebracht.",
+      "hint": "De reden zal aan de voorschrijver meegedeeld worden",
+      "infoDescription": "Als er al een afspraak is gemaakt, vergeet dan niet contact op te nemen met de zorgverlener. Zo voorkomt u dat de zorgverstrekking aan u wordt aangerekend."
     },
     "rejectAssignation": {
       "action": "Weigeren",
@@ -348,7 +351,11 @@
       "invalidShortCode": "Voorschrift ID is ongeldig. Gelieve dit na te kijken en opnieuw te proberen.",
       "decryptionFailed": "Het decoderen van de vrije tekstvelden is mislukt. Probeer het opnieuw.",
       "failedToCreateModel": "Het sjabloon kon niet worden aangemaakt. Probeer het later opnieuw.",
-      "failedToLoadTemplate": "Failed to load prescription form template."
+      "failedToLoadTemplate": "Failed to load prescription form template.",
+      "errorsInForm": {
+        "title": "Er zitten nog steeds fouten in het formulier.",
+        "subTitle": "Corrigeer het volgende:"
+      }
     },
     "categories": {
       "bandagisterie": "Bandagisterie",
@@ -365,7 +372,8 @@
       "print": "Afdrukken",
       "reject": "Toewijzing afwijzen",
       "interrupt": "Onderbreek de uitvoering",
-      "restart": "Herneem de uitvoering"
+      "restart": "Herneem de uitvoering",
+      "removeCriteria": "Verwijder zoekcriteria"
     },
     "tableHasRecords": "Totaal aantal voorschriften is {total}.",
     "extendedShortId": "Verlenging van het voorschrift",
@@ -377,28 +385,33 @@
       "copy": "Kopiëren",
       "extend": "Verlengen",
       "print": "Afdrukken",
-      "cancel": "Klasseren zonder gevolg"
+      "cancel": "Klasseren zonder gevolg",
+      "autoAssign": "Interne toewijzing"
     },
     "assignProfessional": {
-      "undefined": "Kies eerst een zorgverlener"
+      "undefined": "Kies eerst een zorgverlener."
     },
     "transferProfessional": {
       "undefined": "Kies eerst een zorgverlener"
     },
     "transferPerformer": {
       "dialog": {
-        "description": "Als u dit voorschrift overdraagt naar een andere zorgverlener, kan deze de informatie in dit voorschrift raadplegen.",
-        "title": "Een zorgverlener transfereren naar een voorschrift"
+        "description": "Als u dit voorschrift overdraagt aan een andere zorgverlener, zal deze de informatie in dit voorschrift kunnen raadplegen.",
+        "title": "Een voorschrift overdragen aan een andere zorgverlener"
       },
       "locations": "Locatie(s)",
       "noResults": "Geen gemeente gevonden",
       "performer": "Zorgverlener",
-      "searchPerformerPlaceHolder": "RIZIV nummer, naam",
+      "searchPerformerPlaceHolder": "RIZIV-nummer, naam",
       "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
-      "title": "Toewijzing transfereren",
-      "zipCodeOrCityName": "Postcode of gemeente"
+      "title": "Toewijzing overdragen",
+      "zipCodeOrCityName": "Postcode of gemeente",
+      "updateCriteria": "Wijzig criteria"
     },
-    "validityStartDate": "Startdatum geldigheid"
+    "validityStartDate": "Startdatum geldigheid",
+    "autoAssign": {
+      "success": "De zorgverleners zijn succesvol toegevoegd."
+    }
   },
   "proposal": {
     "creationDate": "Aangemaakt op",
@@ -406,7 +419,7 @@
       "link": "Bekijk details"
     },
     "selectTemplate": {
-      "proposalModel": "Sjabloon voorstel",
+      "proposalModel": "Voorstel sjabloon",
       "pickOptionFromList": "Kies een optie uit de lijst",
       "noOptions": "Geen voorstellen"
     },
@@ -446,7 +459,7 @@
     "author": "Auteur",
     "patient": "Patiënt",
     "typeOfCare": "Type zorg",
-    "services": "Beurten",
+    "services": "Sessies",
     "frequency": "Frequentie",
     "start": "Start",
     "end": "Einde",
@@ -473,7 +486,7 @@
       "noResults": "Geen gemeente gevonden",
       "organization": "Organisatie",
       "dialog": {
-        "title": "Een arts toewijzen aan een bijlage 81.",
+        "title": "Een bijlage 81 toewijzen aan een arts",
         "description": "Als u een arts aan deze bijlage 81 toevoegt, kan deze de informatie in de bijlage 81 raadplegen."
       }
     },
@@ -486,8 +499,8 @@
       "zipCodeOrCityName": "Postcode of gemeente",
       "noResults": "Geen gemeente gevonden",
       "dialog": {
-        "title": "Deze bijlage 81 transfereren naar een andere arts.",
-        "description": "Als u deze bijlage 81 transfereert naar een andere arts, kan deze de informatie in de bijlage 81 raadplegen."
+        "title": "Deze bijlage 81 overdragen aan een andere arts.",
+        "description": "Als u deze bijlage 81 overdraagt aan een andere arts, zal deze de informatie in de bijlage 81 kunnen raadplegen."
       }
     },
     "approve": {
@@ -499,7 +512,7 @@
       }
     },
     "reject": {
-      "title": "Afwijzen",
+      "title": "Weigeren",
       "action": "Weigeren",
       "success": "Het voorstel werd geweigerd.",
       "dialog": {
@@ -512,7 +525,10 @@
       "title": "Klasseer voorstel zonder gevolg",
       "message": "Bent u zeker dat u het voorstel \"{templateName}\" van {firstName} {lastName} wilt klasseren zonder gevolg?",
       "success": "Het voorstel werd met succes geklasseerd zonder gevolg.",
-      "reason": "Reden"
+      "reason": "Reden",
+      "info": "Als er al een afspraak is gemaakt, vergeet dan niet contact op te nemen met de zorgverlener. Zo voorkomt u dat de behandeling in rekening wordt gebracht.",
+      "hint": "De reden zal aan de voorschrijver meegedeeld worden",
+      "infoDescription": "Als er al een afspraak is gemaakt, vergeet dan niet contact op te nemen met de zorgverlener. Zo voorkomt u dat de zorgverstrekking aan u wordt aangerekend."
     },
     "rejectAssignation": {
       "action": "Weigeren",
@@ -570,8 +586,8 @@
     },
     "transferPerformer": {
       "dialog": {
-        "description": "Als u dit voorstel overdraagt naar een andere zorgverlener, kan deze de informatie in dit voorstel raadplegen.",
-        "title": "Een zorgverlener transfereren naar een voorstel"
+        "description": "Als u dit voorstel overdraagt aan een andere zorgverlener, zal deze de informatie in dit voorstel kunnen raadplegen.",
+        "title": "Het voorstel overdragen naar een andere zorgverlener"
       },
       "locations": "Locatie(s)",
       "noResults": "Geen gemeente gevonden",
@@ -580,6 +596,9 @@
       "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
       "title": "Transfereren",
       "zipCodeOrCityName": "Postcode of gemeente"
+    },
+    "autoAssign": {
+      "success": "De behandelende arts werd succesvol toegewezen."
     }
   },
   "performerTask": {
@@ -588,9 +607,15 @@
       "READY": "Toegewezen",
       "CANCELLED": "Geannuleerd",
       "FAILED": "Mislukt",
-      "INPROGRESS": "In uitvoering",
+      "INPROGRESS": "Actief",
       "COMPLETED": "Inactief",
       "null": "Niet gekend"
+    },
+    "organization": {
+      "alert": {
+        "title": "Wat houdt dit onderdeel in?",
+        "description": "- Elke zorgverlener die in deze lijst wordt vermeld, heeft toegang tot de inhoud van dit voorschrift.\n- Wanneer een organisatie wordt vermeld, neemt deze het voorschrift in beheer en wijst het intern toe aan een zorgverlener. Zodra deze is aangeduid, verschijnt hij of zij eveneens in deze lijst.\n- De aanwezigheid van een datum geeft aan dat de zorgverlener reeds minstens één verstrekking in het kader van dit voorschrift heeft uitgevoerd."
+      }
     }
   },
   "models": {
@@ -613,10 +638,156 @@
       "city": "Gemeente",
       "actions": "Acties",
       "tableHasRecords": "{total}  gevonden resultaten",
-      "noRecords": "Er zijn geen professionals gevonden die aan deze zoekopdracht voldoen.",
+      "noRecords": "Er werd geen zorgverlener gevonden die overeenkomt met deze zoekopdracht.",
       "select": "Kiezen"
     },
-    "noProfessionals": "Er is geen zorgverlener gevonden die aan deze zoekopdracht voldoet.",
-    "allProfessionalsFetched": "Alle zorgverleners zijn opgehaald"
+    "noProfessionals": "Er werd geen zorgverlener gevonden die overeenkomt met deze zoekopdracht.",
+    "allProfessionalsFetched": "Alle zorgverleners zijn opgehaald."
+  },
+  "error": {
+    "api": {
+      "ACCESS_DENIED": {
+        "default": "U hebt geen toestemming om deze dienst te gebruiken."
+      },
+      "APPROVAL_NOT_POSSIBLE": {
+        "default": "Het vermelde voorstel kan niet worden goedgekeurd."
+      },
+      "CANCEL_EXECUTION_NOT_IN_PROGRESS": {
+        "default": "De uitvoering moet bezig zijn voordat u deze kunt annuleren."
+      },
+      "CANCELLATION_INVALID_STATUS": {
+        "default": "Het is niet mogelijk om het voorschrift te annuleren.",
+        "in-progress": "Het is niet mogelijk om het voorschrift te annuleren omdat de zorg bezig is.",
+        "completed": "Het is niet mogelijk om het voorschrift te annuleren omdat het is voltooid."
+      },
+      "CAREGIVER_NOT_FOUND": {
+        "default": "Zorgverlener niet herkend."
+      },
+      "CAREGIVER_NOT_UNASSIGNABLE": {
+        "default": "De zorgverlener kan niet worden verwijderd omdat hij/zij al met de zorg is begonnen."
+      },
+      "CONSULTRN_NOT_AVAILABLE": {
+        "default": "Deze dienst is niet beschikbaar."
+      },
+      "CREATION_DATE_FUTURE": {
+        "default": "De aanmaakdatum mag niet in de toekomst liggen."
+      },
+      "DATE_PROVIDED_AFTER_PRESCRIPTION_END_DATE": {
+        "default": "De zorg kan niet meer worden geleverd omdat het voorschrift is verlopen."
+      },
+      "DECISION_ALREADY_TAKEN": {
+        "default": "Dit voorstel is al verwerkt."
+      },
+      "END_VALIDITY_DATE_PAST": {
+        "default": "De vervaldatum mag niet in het verleden liggen."
+      },
+      "EXCLUSION_EXISTS": {
+        "default": "U hebt geen toestemming om dit voorschrift te openen."
+      },
+      "EXCLUSION_EXISTS_CAREGIVER_TO_ASSIGN": {
+        "default": "Deze actie is niet mogelijk.",
+        "healthcare-provider": "Deze actie is niet mogelijk.",
+        "patient": "Deze actie is niet mogelijk omdat de zorgverlener is uitgesloten."
+      },
+      "EXECUTION_DATE_FUTURE": {
+        "default": "De einddatum kan niet in de toekomst liggen."
+      },
+      "EXECUTION_NOT_USABLE": {
+        "default": "Deze actie is niet mogelijk."
+      },
+      "FINISH_EXECUTION_NOT_IN_PROGRESS": {
+        "default": "De zorg moet bezig zijn voordat deze kan worden beëindigd."
+      },
+      "HEALTHCARE_PROFESSIONAL_ALREADY_ASSIGNED": {
+        "default": "Deze persoon is al toegewezen.",
+        "caregiver": "Deze zorgverlener is al toegewezen.",
+        "prescriber": "Deze voorschrijver is al toegewezen."
+      },
+      "HEALTHCARE_PROFESSIONAL_NOT_OWNER": {
+        "default": "U kunt deze wijziging niet doorvoeren."
+      },
+      "HEALTHCARE_PROFESSIONAL_NOT_OWNER_EXECUTION": {
+        "default": "Deze actie is niet mogelijk."
+      },
+      "HEALTHCARE_PROFESSIONAL_TO_BE_ASSIGNED_MISSING_RIGHT": {
+        "default": "De zorgverlener heeft geen toegang tot het voorschrift."
+      },
+      "INCORRECT_VALIDITY_DATE": {
+        "default": "De geldigheidsdatum van het voorschrift mag niet later zijn dan de einddatum van de behandeling."
+      },
+      "INVALID_PATIENT_REPLACEMENT": {
+        "default": "De patiënt moet dezelfde zijn."
+      },
+      "INVALID_PRESCRIPTION_STATUS": {
+        "default": "Deze actie is niet mogelijk."
+      },
+      "INVALID_TOKEN": {
+        "default": "Er is een probleem met de identificatie."
+      },
+      "NO_MANDATE_FOR_PATIENT": {
+        "default": "Deze actie is niet mogelijk."
+      },
+      "ORGANIZATION_ALREADY_ASSIGNED": {
+        "default": "De organisatie is al aan het voorschrift toegewezen."
+      },
+      "ORGANIZATION_NOT_ASSIGNABLE": {
+        "default": "Geen resultaat"
+      },
+      "ORGANIZATION_NOT_UNASSIGNABLE": {
+        "default": "De zorg is al begonnen."
+      },
+      "ORGANIZATION_TASK_NOT_FOUND": {
+        "default": "Deze actie is niet mogelijk."
+      },
+      "PATCH_NOT_APPLIED": {
+        "default": "Deze actie is niet mogelijk."
+      },
+      "PRESCRIPTION_NOT_ASSIGNABLE": {
+        "default": "Deze actie is niet mogelijk."
+      },
+      "PRESCRIPTION_NOT_READABLE": {
+        "default": "Deze actie is niet mogelijk."
+      },
+      "REJECTION_NOT_POSSIBLE": {
+        "default": "Deze actie is niet mogelijk."
+      },
+      "REQUEST_PARAMETER_NOT_MATCHING_TOKEN": {
+        "default": "Deze actie is niet mogelijk."
+      },
+      "RESOURCE_NOT_FOUND": {
+        "default": "Niet gevonden."
+      },
+      "SERVICE_REQUEST_NOT_FOUND": {
+        "default": "Voorschrift niet gevonden."
+      },
+      "SERVICE_REQUEST_NOT_OWNED": {
+        "default": "Deze actie is niet mogelijk."
+      },
+      "SERVICE_REQUEST_NOT_UNASSIGNABLE": {
+        "default": "Deze actie is niet mogelijk."
+      },
+      "SERVICE_UNAVAILABLE_AA": {
+        "default": "Deze dienst is niet beschikbaar."
+      },
+      "SSIN_NOT_FOUND": {
+        "default": "Patiënt bestaat niet."
+      },
+      "START_EXECUTION_DATE_AFTER_END_EXECUTION_DATE": {
+        "default": "De zorg kan niet meer worden geleverd."
+      },
+      "START_VALIDITY_DATE_AFTER_END_VALIDITY_DATE": {
+        "default": "Het voorschrift is niet meer geldig."
+      },
+      "START_VALIDITY_DATE_PAST": {
+        "default": "De begindatum van de geldigheid mag niet meer dan 5 dagen in het verleden liggen."
+      },
+      "USER_SUSPENDED": {
+        "default": "Deze actie is niet mogelijk."
+      },
+      "USER_SUSPENDED_ON_DATE_PROVIDED": {
+        "default": "Deze actie is niet mogelijk."
+      },
+      "unknown": "Er is een fout opgetreden. Probeer het over enkele ogenblikken opnieuw."
+    }
   }
 }

@@ -13,7 +13,7 @@
                 [value]="professional"
                 class="no-padding"
                 [aria-label]="'professional.table.select' | translate"
-                (click)="$event.stopPropagation()">
+                (click)="$event.stopPropagation(); changeValue(professional)">
               </mat-radio-button>
             </div>
             @if (isProfessional(professional)) {

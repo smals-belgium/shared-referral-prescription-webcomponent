@@ -8,7 +8,9 @@ export function mapLanguageToTranslations(language?: UserLanguage) {
     case 'fr':
       return Lang.FR.full;
     case 'de':
+      return Lang.DE.full;
     case 'en':
+      return Lang.EN.full;
     default:
       return Lang.NL.full;
   }

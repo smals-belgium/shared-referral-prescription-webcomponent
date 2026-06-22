@@ -48,6 +48,7 @@ a {
 
 .mat-mdc-dialog-inner-container .mat-mdc-dialog-surface {
   max-height: 100vh;
+  overflow-y: unset;
 }
 
 mat-icon {

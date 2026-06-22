@@ -7,7 +7,8 @@
       "welcome": {
         "en": "Diabetes education through a convention centre",
         "nl": "Diabeteseducatie via conventiecentrum",
-        "fr": "Éducation au diabète via un centre de convention"
+        "fr": "Éducation au diabète via un centre de convention",
+        "de": "Diabetesaufklärung über Konventionszentrum"
       }
     },
     "elements": [
@@ -427,15 +428,21 @@
     "translations": {
       "educationType": {
         "nl": "Type educatie",
-        "fr": "Type d'éducation"
+        "fr": "Type d'éducation",
+        "en": "Type of education",
+        "de": "Art der Ausbildung"
       },
       "templateInfo": {
-        "nl": "> **Voorwaarden**\n>De patiënt komt in aanmerking bij:\n>- type 1 of insuline-afhankelijke diabetes\n>- type 2 diabetes met >3 injecties/dag\n>- type 2 diabetes met >2 injecties/dag + ernstige aandoening\n>- andere situaties: verlies pancreasfunctie, monogenetische diabetes, mucoviscidose, zwangerschap, hypoglykemieën, transplantatie of dialyse\n>- EN leeftijd >16 jaar en GMD in orde",
-        "fr": "> **Conditions**\n>Le patient est éligible dans les cas suivants :\n>- diabète de type 1 ou insulinodépendant\n>- diabète de type 2 avec >3 injections/jour\n>- diabète de type 2 avec >2 injections/jour + affection grave\n>- autres situations : perte de la fonction pancréatique, diabète monogénétique, mucoviscidose, grossesse, hypoglycémies, transplantation ou dialyse\n>- ET âge >16 ans et DMG en règle"
+        "nl": "> **Voorwaarden**\n>\n> De patiënt komt in aanmerking bij:\n>- type 1 of insuline-afhankelijke diabetes\n>- type 2 diabetes met >3 injecties/dag\n>- type 2 diabetes met >2 injecties/dag + ernstige aandoening\n>- andere situaties: verlies pancreasfunctie, monogenetische diabetes, mucoviscidose, zwangerschap, hypoglykemieën, transplantatie of dialyse\n>- EN leeftijd >16 jaar en GMD in orde",
+        "fr": "> **Conditions**\n>\n> Le patient est éligible dans les cas suivants :\n>- diabète de type 1 ou insulinodépendant\n>- diabète de type 2 avec >3 injections/jour\n>- diabète de type 2 avec >2 injections/jour + affection grave\n>- autres situations : perte de la fonction pancréatique, diabète monogénétique, mucoviscidose, grossesse, hypoglycémies, transplantation ou dialyse\n>- ET âge >16 ans et DMG en règle",
+        "en": "Conditions\nThe patient is eligible if they have:\n· type 1 or insulin-dependent diabetes\n· type 2 diabetes with >3 injections/day\n· type 2 diabetes with >2 injections/day + serious condition\n· other situations: loss of pancreatic function, monogenic diabetes, cystic fibrosis, pregnancy, hypoglycaemia, transplantation or dialysis\n· AND age >16 years and GMR in order",
+        "de": "Bedingungen\nDer Patient kommt in Betracht bei:\n· typ-1- oder insulinabhängigem Diabetes\n· typ-2-Diabetes mit >3 Injektionen/Tag\n· typ-2-Diabetes mit >2 Injektionen/Tag + schwerer Erkrankung\n· sonstige Situationen: verlust der pankreasfunktion, monogenetischer diabetes, mukoviszidose,schwangerschaft, hypoglykämien, transplantation oder dialyse\n· UND Alter >16 Jahre und GMD in Ordnung"
       },
       "protocolInfo": {
         "nl": "> Zie het protocol van het verwijzend centrum.",
-        "fr": "> Voir le protocole du centre référent."
+        "fr": "> Voir le protocole du centre référent.",
+        "en": "See the referral centre protocol.",
+        "de": "Siehe das Protokoll des überweisenden Zentrums."
       },
       "seeProtocol": {
         "en": "See the referral centre protocol.",
