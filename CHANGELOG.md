@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.5] - 23/Jun/26
+
+### Bugfixes
+
+- Update missing translation DE and EN
+- Dialog styling - Fixed empty white space
+
 ## [1.1.4] - 16/Jun/26
 
 ### Bugfixes

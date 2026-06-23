@@ -235,7 +235,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
         intent: Intent.ORDER,
         mode: 'assign',
       },
-      panelClass: 'mh-dialog-container',
+      panelClass: ['mh-dialog-container', 'mh-assign-dialog'],
       height: '90vh',
     });
   });

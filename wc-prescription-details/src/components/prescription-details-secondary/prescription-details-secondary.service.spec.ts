@@ -146,7 +146,7 @@ describe('PrescriptionDetailsSecondaryService', () => {
         category: mockResponse.category,
         mode: 'transfer',
       },
-      panelClass: 'mh-dialog-container',
+      panelClass: ['mh-dialog-container', 'mh-assign-dialog'],
       maxHeight: '90vh',
     };
 

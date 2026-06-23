@@ -2,6 +2,7 @@
 
 :host {
   font-family: var(--mh-default-font-family, #{mh.$font-stack});
+  --mat-paginator-container-background-color: #{mh.$color-white};
 }
 .dialog-title {
   display: flex;
@@ -43,8 +44,9 @@
 
 .results {
   overflow-y: auto;
-  max-height: calc(100vh - 500px);
+  max-height: calc(90vh - 200px);
   min-height: 60px;
+  height: 100%;
 
   > table {
     width: 100%;

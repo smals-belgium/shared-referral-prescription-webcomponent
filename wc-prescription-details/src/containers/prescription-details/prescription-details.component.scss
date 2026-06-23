@@ -526,3 +526,11 @@ evf-info-detail .infoblock {
     }
   }
 }
+
+@media (min-width: 960px) {
+  .mh-assign-dialog {
+    .mat-mdc-dialog-content {
+      max-height: calc(90vh - 120px);
+    }
+  }
+}
