@@ -53,10 +53,26 @@ jobs:
             "dist/mags-prescription-details/mags"
             "dist/mags-prescription-list/mags"
           )
+          FAILED=()
           for pkg in "${DIST_PACKAGES[@]}"; do
             VERSION=$(node -p "require('./$pkg/package.json').version")
             echo "Publishing $pkg (version $VERSION)..."
-            (cd "$pkg" && npm publish --access public)
+            if (cd "$pkg" && npm publish --access public); then
+              echo "✓ Published $pkg"
+            else
+              if npm view "$(node -p "require('./$pkg/package.json').name")@$VERSION" version >/dev/null 2>&1; then
+                echo "• Skipped $pkg ($VERSION already published)"
+              else
+                echo "✗ Failed to publish $pkg"
+                FAILED+=("$pkg")
+              fi
+            fi
           done
+
+          if [ ${#FAILED[@]} -ne 0 ]; then
+            echo "The following packages failed to publish:"
+            printf ' - %s\n' "${FAILED[@]}"
+            exit 1
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
