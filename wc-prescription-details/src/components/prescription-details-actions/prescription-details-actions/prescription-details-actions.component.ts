@@ -151,7 +151,7 @@ export class PrescriptionDetailsActionsComponent {
         intent: prescription.intent,
         mode: 'assign',
       },
-      panelClass: 'mh-dialog-container',
+      panelClass: ['mh-dialog-container', 'mh-assign-dialog'],
       height: '90vh',
     });
   }
