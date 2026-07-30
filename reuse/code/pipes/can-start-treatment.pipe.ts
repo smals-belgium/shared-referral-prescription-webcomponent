@@ -1,7 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
-import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
-import { isProposal } from '@reuse/code/utils/utils';
+import { FhirR4TaskStatus, ReadRequestResource, RequestStatus, RequestTaskResource } from '@reuse/code/openapi';
+import { isNotOrganizationBasedOnRole, isProposal } from '@reuse/code/utils/utils';
+import { UserInfo } from '@reuse/code/interfaces';
+import TaskTypeEnum = RequestTaskResource.TaskTypeEnum;
 
 /**
  * This pipe determines whether a treatment can start.
@@ -24,7 +26,7 @@ import { isProposal } from '@reuse/code/utils/utils';
 export class CanStartTreatmentPipe implements PipeTransform {
   constructor(private readonly accessMatrixState: AccessMatrixState) {}
 
-  transform(prescription: ReadRequestResource, task?: PerformerTaskResource): boolean {
+  transform(prescription: ReadRequestResource, task?: RequestTaskResource, currentUser?: Partial<UserInfo>): boolean {
     const allowedStatuses: RequestStatus[] = [
       RequestStatus.Draft,
       RequestStatus.Open,
@@ -43,11 +45,16 @@ export class CanStartTreatmentPipe implements PipeTransform {
     const endDate = prescription.treatmentValidityEndDate ? new Date(prescription.treatmentValidityEndDate) : false;
 
     return (
+      isNotOrganizationBasedOnRole(currentUser) &&
       !isProposal(prescription.intent) &&
-      allowedStatuses.includes(prescription.status!) &&
+      !!prescription.status &&
+      allowedStatuses.includes(prescription.status) &&
       this.accessMatrixState.hasAtLeastOnePermission(['executeTreatment'], prescription.templateCode) &&
       (!endDate || endDate > now) &&
-      (!task || (!!task.status && allowedTaskStatuses.includes(task.status)))
+      (!task ||
+        (!!task?.status &&
+          allowedTaskStatuses.includes(task.status) &&
+          task?.taskType === TaskTypeEnum.PerformerTaskResource))
     );
   }
 }

@@ -1,4 +1,4 @@
-import { importProvidersFrom } from '@angular/core';
+import { importProvidersFrom, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
@@ -14,49 +14,55 @@ import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-transl
 import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-compiler';
 import { providePseudonymisation } from '@reuse/code/providers/pseudo.provider';
 import { provideOpenApi } from '@reuse/code/providers/open-api.provider';
-import { OverlayContainer } from '@angular/cdk/overlay';
-import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
 import { provideEvfForm } from '@reuse/code/evf/evf-form.provider';
 import { MARKDOWN_OPTIONS_CONFIG, provideMarkdown } from '@reuse/code/providers/markdown.provider';
 import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
 import { provideEvfFormDetails } from '@reuse/code/evf/evf-form-details.provider';
 import { AppPrescriptionDetails } from './app/app';
+import { provideShadowDom } from '@reuse/code/shadow-dom/shadow-dom.provider';
+import { globalErrorInterceptor } from '@reuse/code/interceptors/global-error.interceptor';
+import { MatDatepickerIntl } from '@angular/material/datepicker';
+import { CustomMatDatePickerIntlService } from '@reuse/code/components/date-picker/custom-mat-date-picker-intl.service';
 
-bootstrapApplication(AppPrescriptionDetails, {
-  providers: [
-    provideCore(),
-    provideHttpClient(withInterceptors([demoHttpInterceptor, apiUrlInterceptor])),
-    providePseudonymisation(),
-    provideEvfForm(),
-    provideEvfFormDetails(),
-    {
-      provide: ConfigurationService,
-      useClass: WcConfigurationService,
-    },
-    {
-      provide: AuthService,
-      useClass: WcAuthService,
-    },
-    {
-      provide: OverlayContainer,
-      useClass: ShadowDomOverlayContainer,
-    },
-    provideOpenApi(),
-    { provide: MARKDOWN_OPTIONS_CONFIG, useValue: { open: false } },
-    provideMarkdown(),
-    importProvidersFrom(
-      BrowserAnimationsModule,
-      MatDialogModule,
-      TranslateModule.forRoot({
-        loader: {
-          provide: TranslateLoader,
-          useClass: WcTranslateLoader,
-        },
-        compiler: {
-          provide: TranslateCompiler,
-          useClass: TranslateMessageFormatCompiler,
-        },
-      })
-    ),
-  ],
-}).catch(err => console.error(err));
+try {
+  await bootstrapApplication(AppPrescriptionDetails, {
+    providers: [
+      provideZonelessChangeDetection(),
+      provideBrowserGlobalErrorListeners(),
+      provideCore(),
+      provideHttpClient(withInterceptors([demoHttpInterceptor, globalErrorInterceptor, apiUrlInterceptor])),
+      providePseudonymisation(),
+      provideEvfForm(),
+      provideEvfFormDetails(),
+      {
+        provide: ConfigurationService,
+        useClass: WcConfigurationService,
+      },
+      {
+        provide: AuthService,
+        useClass: WcAuthService,
+      },
+      provideShadowDom(),
+      provideOpenApi(),
+      { provide: MARKDOWN_OPTIONS_CONFIG, useValue: { open: false } },
+      provideMarkdown(),
+      importProvidersFrom(
+        BrowserAnimationsModule,
+        MatDialogModule,
+        TranslateModule.forRoot({
+          loader: {
+            provide: TranslateLoader,
+            useClass: WcTranslateLoader,
+          },
+          compiler: {
+            provide: TranslateCompiler,
+            useClass: TranslateMessageFormatCompiler,
+          },
+        })
+      ),
+      { provide: MatDatepickerIntl, useClass: CustomMatDatePickerIntlService },
+    ],
+  });
+} catch (err) {
+  console.error(err);
+}

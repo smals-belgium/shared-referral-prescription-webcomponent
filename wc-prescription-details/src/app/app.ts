@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { PrescriptionDetailsWebComponent } from '../containers/prescription-details/prescription-details.component';
+import { PrescriptionDetailsWebComponent } from '../prescription-details/prescription-details.component';
 
 @Component({
   selector: 'app-prescription-details',
@@ -19,7 +19,6 @@ export class AppPrescriptionDetails {
           ssin: '80222700153',
           firstName: 'John',
           lastName: 'Doe',
-          gender: 'M',
         },
       };
     },

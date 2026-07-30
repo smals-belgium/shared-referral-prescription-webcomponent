@@ -1,8 +1,12 @@
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
+  computed,
   ElementRef,
   EventEmitter,
   HostBinding,
+  inject,
   Input,
   OnChanges,
   OnDestroy,
@@ -30,7 +34,6 @@ import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
 import { ProposalsState } from '@reuse/code/states/api/proposals.state';
 import { FormsModule } from '@angular/forms';
 import { PrescriptionModelsTableComponent } from '../components/models/prescription-models-table/prescription-models-table.component';
-import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
 import {
   AccessMatrix,
   Discipline,
@@ -67,6 +70,9 @@ import { Lang } from '@reuse/code/constants/languages';
 import { tap } from 'rxjs/operators';
 import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
 import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
+import { AlertService } from '@reuse/code/services/helpers/alert.service';
+import { ResolvedError } from '@reuse/code/interfaces/error.interface';
+import { ALERT_TARGET, ERROR_CREATE_PRESCRIPTION, ERROR_PRESCRIPTION_LIST } from '@reuse/code/constants/error';
 
 interface ViewState {
   prescriptions?: ReadRequestListResource;
@@ -103,8 +109,16 @@ interface SearchCriteria extends SearchFilter {
     PrescriptionFilterComponent,
     FeatureFlagDirective,
   ],
+  providers: [{ provide: ALERT_TARGET, useFactory: () => `${ERROR_PRESCRIPTION_LIST}-${crypto.randomUUID()}` }],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestroy {
+  private readonly _cdr = inject(ChangeDetectorRef);
+  private readonly alertService = inject(AlertService);
+  private readonly alertTarget = inject(ALERT_TARGET);
+
+  protected readonly error = this.alertService.setTarget(this.alertTarget);
+
   // Protected signals from service
   protected readonly searchCriteria$ = signal<SearchCriteria>({
     historical: false,
@@ -137,9 +151,9 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
 
   private _subscriptions: Subscription = new Subscription();
 
-  isPrescriptionValue = false;
-  isProposalValue = false;
-  isModelValue = false;
+  isPrescriptionValue: WritableSignal<boolean> = signal(false);
+  isProposalValue: WritableSignal<boolean> = signal(false);
+  isModelValue: WritableSignal<boolean> = signal(false);
 
   @HostBinding('attr.lang')
   @Input()
@@ -154,12 +168,6 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
   @Output() clickCreateDetail = new EventEmitter<SelectedTemplate>();
 
   private readonly _languageChange = new BehaviorSubject<string>(this.translate.currentLang ?? Lang.FR.full);
-
-  errorCard: ErrorCard = {
-    show: false,
-    message: '',
-    errorResponse: undefined,
-  };
 
   constructor(
     private readonly translate: TranslateService,
@@ -212,6 +220,7 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
     );
 
     this.activeHostService.set(this.el.nativeElement);
+    this.alertService.setActive(this.alertTarget);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -228,7 +237,8 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
       (changes['patientSsin'] || changes['requesterSsin'] || changes['performerSsin'] || changes['intent']) &&
       this.intent
     ) {
-      this.loadData({ pageIndex: 1 });
+      this.loadData();
+      this._cdr.markForCheck();
     }
   }
 
@@ -236,29 +246,29 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
     const { pageIndex, pageSize } = pageValues ?? {};
 
     if (!this.intent) {
-      this.showErrorCard();
+      this.alertService.showGeneralError(this.alertTarget);
       return;
     }
 
     if (isPrescription(this.intent)) {
       this.resetOutdatedValues();
-      this.isPrescriptionValue = true;
+      this.isPrescriptionValue.set(true);
       this.loadPrescriptions(pageIndex, pageSize);
     } else if (isProposal(this.intent)) {
       this.resetOutdatedValues();
-      this.isProposalValue = true;
+      this.isProposalValue.set(true);
       this.loadProposals(pageIndex, pageSize);
     } else if (isModel(this.intent)) {
       this.resetOutdatedValues();
-      this.isModelValue = true;
+      this.isModelValue.set(true);
       this.loadModels(pageIndex, pageSize);
     }
   }
 
   resetOutdatedValues() {
-    this.isPrescriptionValue = false;
-    this.isProposalValue = false;
-    this.isModelValue = false;
+    this.isPrescriptionValue.set(false);
+    this.isProposalValue.set(false);
+    this.isModelValue.set(false);
   }
 
   loadPrescriptions(page?: number, pageSize?: number) {
@@ -274,11 +284,12 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
             patient: identifier,
           },
           page,
-          pageSize
+          pageSize,
+          this.patientSsin
         );
       });
     } else {
-      this.showErrorCard();
+      this.alertService.showGeneralError(this.alertTarget, 'error.prescription.noPatientSsin');
     }
   }
 
@@ -295,11 +306,12 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
             patient: identifier,
           },
           page,
-          pageSize
+          pageSize,
+          this.patientSsin
         );
       });
     } else {
-      this.showErrorCard();
+      this.alertService.showGeneralError(this.alertTarget, 'error.prescription.noPatientSsin');
     }
   }
 
@@ -309,8 +321,10 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
   }
 
   retryFailedCalls(error: Record<keyof ViewState, unknown> | undefined) {
+    this.dismissError();
+
     if (!error) {
-      this.showErrorCard();
+      this.alertService.showGeneralError(this.alertTarget);
       return;
     }
 
@@ -434,6 +448,26 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
     return this.accessMatrixState.hasAtLeastOnePermissionForAnyTemplate(['createProposal']);
   }
 
+  protected readonly showStandaloneError = computed<ResolvedError | null>(() => {
+    const resolved = this.error();
+    if (!resolved) return null;
+
+    const prescriptionState = this.viewStatePrescriptions$();
+    if (prescriptionState?.status === LoadingStatus.ERROR) return null;
+
+    const proposalState = this.viewStateProposals$();
+    if (proposalState?.status === LoadingStatus.ERROR) return null;
+
+    const modelState = this.viewStateModels$();
+    if (modelState?.status === LoadingStatus.ERROR) return null;
+
+    return resolved;
+  });
+
+  protected dismissError() {
+    this.alertService.clear(this.alertTarget);
+  }
+
   ngOnDestroy() {
     this.searchCriteria$.set({
       historical: false,
@@ -444,12 +478,12 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
     this._subscriptions.unsubscribe();
 
     this.activeHostService.clear(this.el.nativeElement);
+
+    this.clearAlertService();
   }
 
-  showErrorCard() {
-    this.errorCard = {
-      show: true,
-      message: 'common.somethingWentWrongWithoutRetry',
-    };
+  clearAlertService() {
+    this.alertService.resetActive();
+    this.alertService.remove(this.alertTarget);
   }
 }

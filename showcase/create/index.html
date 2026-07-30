@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Testing the News Web Component</title>
+    <title>Testing the News Web Component - Create</title>
     <base href="/" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
@@ -12,25 +12,40 @@
   </head>
   <body>
     <script>
-      // Setting the profile for the target environment
-      window.referralPrescriptionEnv = 'accHcp';
       const params = new URLSearchParams(window.location.search);
+      // Setting the profile for the target environment
+      const env = params.get('env') || 'intExtHcp';
+      globalThis.referralPrescriptionEnv = env;
       // Setting the environment dynamically
-      const keycloak = getKeycloakConfigurationForEnv();
+      const keycloak = getKeycloakConfigurationForEnv(env);
+
       // Initialization of the authentication library
       keycloak
         .init({ onLoad: 'login-required', checkLoginIframe: false })
-        .then(function (authenticated) {
-          // Creation of the custom element
-          const create = document.createElement('nihdi-referral-prescription-create');
+        .then(function () {
+          console.log('id token', keycloak.idTokenParsed);
 
-          create.initialValues = { intent: 'order', initialPrescriptionType: 'ASSISTING_WITH_PERSONAL_HYGIENE' };
-          // Input for the language
-          create.lang =
-            navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'fr-BE';
+          // Creation of the custom element
+          const createComponent = document.createElement('nihdi-referral-prescription-create');
+
+          createComponent.initialValues = {
+            intent: params.get('intent') || 'order',
+            initialPrescriptionType: params.get('prescriptionType') || 'ASSISTING_WITH_PERSONAL_HYGIENE',
+          };
+          // Language: from URL param or browser default
+          const langParam = params.get('lang');
+          createComponent.lang =
+            langParam ||
+            (navigator.language.includes('nl') || navigator.language.includes('fr') ? navigator.language : 'nl-BE');
+
           // Callback method to get a token from the authentication library
           const exchangedToken = async audience => await exchangeToken(keycloak.token, keycloak.clientId, audience);
-          create.services = {
+
+          const hcpSsin = (params.get('hcpSsin') || '').replace(/[.-]/g, '');
+          const hcpDiscipline = params.get('hcpDiscipline') || 'NURSE';
+          const orgNihii = (params.get('orgNihii') || '').replace(/[.-]/g, '');
+
+          createComponent.services = {
             getAccessToken: audience => {
               if (audience) {
                 return Promise.resolve(exchangedToken(audience));
@@ -38,19 +53,35 @@
                 return Promise.resolve(keycloak.token);
               }
             },
+            getIdToken: () => {
+              const userProfileData = {
+                ssin: hcpSsin,
+                firstName: 'John',
+                lastName: 'Doe',
+                gender: 'M',
+              };
+
+              const lowercaseDiscipline = hcpDiscipline.toLowerCase();
+              userProfileData[lowercaseDiscipline] = {
+                recognised: true,
+                nihii11: orgNihii,
+              };
+
+              return { userProfile: userProfileData };
+            },
           };
+
           // Listener function to get feedback from the Web Component after the prescription has been successfully created
-          create.addEventListener('prescriptionsCreated', () => {
+          createComponent.addEventListener('prescriptionsCreated', () => {
             console.log('Prescriptions successfully created');
-            document.body.removeChild(create);
+            document.body.removeChild(createComponent);
             setTimeout(() => {
               alert('Prescription(s) were created. Refresh to start again.');
             }, 100);
           });
+
           // Adding the custom element to the HTML body
-          document.body.append(create);
-          // Input for the patient SSIN
-          create.patientSsin = params.get('ssin');
+          document.body.append(createComponent);
         })
         .catch(function () {
           alert('failed to initialize');
@@ -71,12 +102,26 @@
        *  - `clientId`: "myClientId"
        *
        */
-      function getKeycloakConfigurationForEnv() {
-        return new Keycloak({
-          url: `https://api-acpt.ehealth.fgov.be/auth`,
-          realm: `healthcare`,
-          clientId: `nihdi-uhmep-hcp`,
-        });
+      function getKeycloakConfigurationForEnv(env) {
+        if (env === 'testHcp' || env === 'testPatient') {
+          return new Keycloak({
+            url: 'https://vasiam.test.ext.vascloud.be/auth',
+            realm: 'MOOSE_UHMEP',
+            clientId: 'nihdi-uhmep-hcp',
+          });
+        } else if (env === 'intExtHcp' || env === 'intExtPatient') {
+          return new Keycloak({
+            url: 'https://api-acpt.ehealth.fgov.be/auth',
+            realm: 'healthcare',
+            clientId: 'nihdi-uhmep-hcp-dev',
+          });
+        } else if (env === 'accHcp' || env === 'accPatient') {
+          return new Keycloak({
+            url: 'https://api-acpt.ehealth.fgov.be/auth',
+            realm: 'healthcare',
+            clientId: 'nihdi-uhmep-hcp',
+          });
+        }
       }
 
       /**
@@ -102,6 +147,7 @@
         }
 
         try {
+          //TODO change this for other env
           const response = await fetch(
             'https://api-acpt.ehealth.fgov.be/auth/realms/healthcare/protocol/openid-connect/token',
             {

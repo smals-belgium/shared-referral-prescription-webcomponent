@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { UserInfo } from '@reuse/code/interfaces';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +9,7 @@ import { HealthcareProResource } from '@reuse/code/openapi';
   selector: 'app-professional-display',
   templateUrl: './professional-display.component.html',
   imports: [TranslateModule, MatIconModule, MatTooltipModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfessionalDisplayComponent {
   @Input() professional?: HealthcareProResource;

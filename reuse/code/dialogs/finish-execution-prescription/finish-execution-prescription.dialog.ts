@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { DateTime } from 'luxon';
@@ -13,8 +13,9 @@ import { AlertType, PrescriptionExecutionFinish } from '@reuse/code/interfaces';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { v4 as uuidv4 } from 'uuid';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
-import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
 import { PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
+import { AlertService } from '@reuse/code/services/helpers/alert.service';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   templateUrl: 'finish-execution-prescription.dialog.html',
@@ -31,8 +32,13 @@ import { PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi'
     AlertComponent,
   ],
 })
-export class FinishExecutionPrescriptionDialog extends BaseDialog implements OnInit {
+export class FinishExecutionPrescriptionDialog implements OnInit, OnDestroy {
   protected readonly AlertType = AlertType;
+  private readonly alertService = inject(AlertService);
+
+  private readonly ERROR_FINISH_EXECUTION_DIALOG = 'finish-execution-dialog';
+  protected readonly error = this.alertService.setTarget(this.ERROR_FINISH_EXECUTION_DIALOG);
+
   readonly formGroup = new FormGroup({
     endDate: new FormControl<DateTime>(DateTime.now()),
   });
@@ -44,19 +50,18 @@ export class FinishExecutionPrescriptionDialog extends BaseDialog implements OnI
   constructor(
     private readonly prescriptionStateService: PrescriptionState,
     private readonly toastService: ToastService,
-    dialogRef: MatDialogRef<FinishExecutionPrescriptionDialog>,
+    private readonly dialogRef: MatDialogRef<FinishExecutionPrescriptionDialog>,
     @Inject(MAT_DIALOG_DATA)
     private readonly data: {
       prescription: ReadRequestResource;
       performerTask: PerformerTaskResource;
       startExecutionDate: string;
     }
-  ) {
-    super(dialogRef);
-  }
+  ) {}
 
   ngOnInit() {
     this.generatedUUID = uuidv4();
+    this.alertService.setActive(this.ERROR_FINISH_EXECUTION_DIALOG);
   }
 
   finishExecution(): void {
@@ -68,7 +73,7 @@ export class FinishExecutionPrescriptionDialog extends BaseDialog implements OnI
       };
 
       if (!this.data.prescription.id || !this.data.performerTask.id) {
-        this.showErrorCard('common.somethingWentWrong');
+        this.alertService.showGeneralError(this.ERROR_FINISH_EXECUTION_DIALOG);
         return;
       }
 
@@ -80,17 +85,26 @@ export class FinishExecutionPrescriptionDialog extends BaseDialog implements OnI
           executionFinish,
           this.generatedUUID
         )
+        .pipe(finalize(() => (this.loading = false)))
         .subscribe({
           next: () => {
-            this.closeErrorCard();
             this.toastService.show('prescription.finishExecution.success');
-            this.closeDialog(true);
-          },
-          error: err => {
-            this.loading = false;
-            this.showErrorCard('common.somethingWentWrong', err);
+            this.dialogRef.close(true);
           },
         });
     }
+  }
+
+  protected dismissError() {
+    this.alertService.clear(this.ERROR_FINISH_EXECUTION_DIALOG);
+  }
+
+  ngOnDestroy() {
+    this.clearAlertService();
+  }
+
+  clearAlertService() {
+    this.alertService.resetActive();
+    this.alertService.remove(this.ERROR_FINISH_EXECUTION_DIALOG);
   }
 }

@@ -185,13 +185,31 @@ describe('CanCancelPrescriptionOrProposal', () => {
   it('should return false if caregiverSsin or patientSsin is missing', () => {
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
-    const result = pipe['checkIfCurrentUserIsPatientOrAssignedCaregiver'](requester, undefined, requester.ssin);
+    const result = pipe['checkIfCurrentUserIsPatientOrAssignedCaregiverNotAssignedToOrganization'](
+      requester,
+      undefined,
+      requester.ssin
+    );
+    expect(result).toBe(false);
+  });
+
+  it('should return false when currentUser is caregiver assigned to an organization with matching ssin', () => {
+    const caregiverUser = { ...currentUser, ssin: requester.ssin, role: Role.Organization };
+    const result = pipe['checkIfCurrentUserIsPatientOrAssignedCaregiverNotAssignedToOrganization'](
+      caregiverUser,
+      patient.ssin,
+      requester.ssin
+    );
     expect(result).toBe(false);
   });
 
   it('should return true when currentUser is caregiver (not patient) with matching ssin', () => {
     const caregiverUser = { ...currentUser, ssin: requester.ssin, role: Role.Prescriber };
-    const result = pipe['checkIfCurrentUserIsPatientOrAssignedCaregiver'](caregiverUser, patient.ssin, requester.ssin);
+    const result = pipe['checkIfCurrentUserIsPatientOrAssignedCaregiverNotAssignedToOrganization'](
+      caregiverUser,
+      patient.ssin,
+      requester.ssin
+    );
     expect(result).toBe(true);
   });
 

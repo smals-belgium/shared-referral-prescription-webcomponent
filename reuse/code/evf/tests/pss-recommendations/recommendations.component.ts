@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { EvfDynamicFormComponent } from '@smals-belgium-shared/vas-evaluation-form-ui-material/dynamic-form';
 import { FormTemplate } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 
@@ -6,6 +6,7 @@ import { FormTemplate } from '@smals-belgium-shared/vas-evaluation-form-ui-core'
   selector: 'evf-wrapper-recommendations',
   imports: [EvfDynamicFormComponent],
   templateUrl: './recommendations.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecommendationsComponent {
   @Input() demoTemplate!: FormTemplate;

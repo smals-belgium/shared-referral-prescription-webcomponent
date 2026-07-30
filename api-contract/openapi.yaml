@@ -2,7 +2,7 @@ openapi: "3.0.3"
 info:
   title: "backend API"
   description: "backend API"
-  version: "1.100.0"
+  version: "1.200.0"
 servers:
   - url: "/" # this acts as the “base path”
     description: |
@@ -160,7 +160,7 @@ paths:
       summary: "POST prescriptions/{prescriptionId}/assign/{referralTaskId}"
       tags:
         - Prescription
-      operationId: "assignCareGiverToPrescription"
+      operationId: "assignCareGiversToPrescription"
       security:
         - OAuth2: [ ]
       parameters:
@@ -183,7 +183,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AssignCareGiverResource"
+              type: array
+              minItems: 1
+              items:
+                $ref: "#/components/schemas/AssignCareGiverResource"
         required: true
       responses:
         "200":
@@ -191,7 +194,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PerformerTaskIdResource"
+                type: array
+                items:
+                  $ref: "#/components/schemas/PerformerTaskIdResource"
   /prescriptions/{prescriptionId}/assignOrganization/{referralTaskId}:
     post:
       summary: "POST prescriptions/{prescriptionId}/assignOrganization/{referralTaskId}"
@@ -313,6 +318,12 @@ paths:
           required: true
           schema:
             type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReasonResource"
+        required: true
       responses:
         "200":
           description: "OK"
@@ -914,6 +925,11 @@ paths:
           required: true
           schema:
             type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReasonResource"
       responses:
         "200":
           description: "OK"
@@ -1549,11 +1565,7 @@ components:
           additionalProperties:
             type: array
             items:
-              $ref: "#/components/schemas/PerformerTaskResource"
-        organizationTasks:
-          type: "array"
-          items:
-            $ref: "#/components/schemas/OrganizationTaskResource"
+              $ref: "#/components/schemas/RequestTaskResource"
         templateCode:
           type: string
         authoredOn:
@@ -1598,39 +1610,47 @@ components:
       properties:
         id:
           type: "string"
+    RequestTaskResource:
+      type: "object"
+      properties:
+        status:
+          $ref: "#/components/schemas/FhirR4TaskStatus"
+        id:
+          type: "string"
+        executionPeriod:
+          $ref: "#/components/schemas/PeriodResource"
+        taskType:
+          type: "string"
+          enum:
+            - "PerformerTaskResource"
+            - "OrganizationTaskResource"
+      discriminator:
+        propertyName: taskType
     PerformerTaskResource:
-      type: "object"
-      properties:
-        careGiverSsin:
-          type: "string"
-        careGiver:
-          $ref: "#/components/schemas/HealthcareProResource"
-        status:
-          $ref: "#/components/schemas/FhirR4TaskStatus"
-        id:
-          type: "string"
-        executionPeriod:
-          $ref: "#/components/schemas/PeriodResource"
+      allOf:
+        - $ref: "#/components/schemas/RequestTaskResource"
+        - type: "object"
+          properties:
+            careGiverSsin:
+              type: "string"
+            careGiver:
+              $ref: "#/components/schemas/HealthcareProResource"
     OrganizationTaskResource:
-      type: "object"
-      properties:
-        organizationNihii:
-          type: "string"
-        organization:
-          $ref: "#/components/schemas/HealthcareOrganizationResource"
-        performerTasks:
-          type: "array"
-          items:
-            $ref: "#/components/schemas/PerformerTaskResource"
-        status:
-          $ref: "#/components/schemas/FhirR4TaskStatus"
-        id:
-          type: "string"
-        executionPeriod:
-          $ref: "#/components/schemas/PeriodResource"
-        lastModified:
-          type: "string"
-          format: "date-time"
+      allOf:
+        - $ref: "#/components/schemas/RequestTaskResource"
+        - type: "object"
+          properties:
+            organizationNihii:
+              type: "string"
+            organization:
+              $ref: "#/components/schemas/HealthcareOrganizationResource"
+            performerTasks:
+              type: "array"
+              items:
+                $ref: "#/components/schemas/PerformerTaskResource"
+            lastModified:
+              type: "string"
+              format: "date-time"
     CreateRequestResource:
       type: object
       required:
@@ -1645,6 +1665,19 @@ components:
           type: object
           additionalProperties: true # → keys can be any string, and values can be any type (any)
         pseudonymizedKey:
+          type: string
+        prescriber:
+          $ref: "#/components/schemas/PrescriberResource"
+    PrescriberResource:
+      required:
+        - ssin
+        - discipline
+      properties:
+        ssin:
+          type: string
+        discipline:
+          type: string
+        organizationNihii11: 
           type: string
     AssignCareGiverResource:
       type: "object"
@@ -1754,10 +1787,14 @@ components:
     InstitutionTypeResource:
       type: string
       enum:
-        - THIRD_PARTY_PAYING_GROUP
-        - GROUP_OF_DOCTORS
+        - OTD_PHARMACY
+        - OFFICE_DOCTORS
+        - GROUPOFDOCTORS
         - GUARD_POST
         - MEDICAL_HOUSE
+        - HOSPITAL
+        - REEDUCATION
+        - GROUPOFNURSES
         - HOME_SERVICES
     CityResource:
       type: "object"
@@ -1782,11 +1819,6 @@ components:
     AccessMatrix:
       type: "object"
       properties:
-        id:
-          type: "string"
-          format: "uuid"
-        discipline:
-          $ref: "#/components/schemas/Discipline"
         templateName:
           type: "string"
         assignPrescription:
@@ -1825,10 +1857,20 @@ components:
         - "DENTIST"
         - "NURSE"
         - "MIDWIFE"
-        - "HEAD"
-        - "ADMINISTRATIVE"
-        - "PATIENT"
         - "PHYSIOTHERAPIST"
+        - "PATIENT"
+    OIDC:
+      type: "string"
+      enum:
+        - "otdpharmacy"
+        - "officedoctors"
+        - "groupofdoctors"
+        - "guardpost"
+        - "medicalhouse"
+        - "hospital"
+        - "reeducation"
+        - "groupofnurses"
+        - "homecareservices"        
     HealthcareOrganizationResource:
       type: "object"
       properties:
@@ -2029,6 +2071,8 @@ components:
           type: string
         pseudonymizedKey:
           type: string
+        prescriber:
+          $ref: "#/components/schemas/PrescriberResource"
     Translation:
       type: "object"
       required:
@@ -2125,8 +2169,7 @@ components:
         - pharmacist
         - dentist
         - midwife
-        - administrative
-        - head
+        - organization
     PageModelEntityDto:
       type: object
       properties:

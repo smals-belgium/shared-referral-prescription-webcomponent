@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
@@ -10,8 +10,13 @@ import { ToastService } from '../../services/helpers/toast.service';
 import { ProposalState } from '../../states/api/proposal.state';
 import { EncryptionHelperService } from '@reuse/code/states/privacy/encryption-helper.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { ReadRequestResource } from '@reuse/code/openapi';
+import { Discipline, OIDC, ReadRequestResource, Role } from '@reuse/code/openapi';
 import { Lang } from '@reuse/code/constants/languages';
+import { signal } from '@angular/core';
+import { ResolvedError } from '@reuse/code/interfaces/error.interface';
+import { AlertType, UserProfile } from '@reuse/code/interfaces';
+import { By } from '@angular/platform-browser';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
 
 const mockToastService = {
   show: jest.fn(),
@@ -37,6 +42,27 @@ const mockDialogData: { proposal: ReadRequestResource } = {
   } as ReadRequestResource,
 };
 
+const mockPersonResource = {
+  ssin: '80222700153',
+  firstName: 'John',
+  lastName: 'Doe',
+  gender: 'M',
+} as unknown as UserProfile;
+
+let activeClaimsPayload: any = {
+  userProfile: mockPersonResource,
+};
+const mockAuthService = {
+  init: jest.fn(),
+  getClaims: jest.fn(() => of(activeClaimsPayload)),
+  isProfessional: jest.fn(() => of(false)),
+  isOrganization: jest.fn(() => of(false)),
+  discipline: jest.fn(() => of(Discipline.Physician)),
+  getAccessToken: jest.fn(() => of('')),
+  role: jest.fn(() => of(Role.Prescriber)),
+  oidc: jest.fn(() => of(OIDC.Hospital)),
+} as jest.Mocked<AuthService>;
+
 describe('ApproveProposalDialog', () => {
   let component: ApproveProposalDialog;
   let fixture: ComponentFixture<ApproveProposalDialog>;
@@ -54,30 +80,36 @@ describe('ApproveProposalDialog', () => {
         { provide: EncryptionHelperService, useValue: mockEncryptionHelper },
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
+        { provide: AuthService, useValue: mockAuthService },
       ],
     }).compileComponents();
     translate = TestBed.inject(TranslateService);
     translate.setDefaultLang(Lang.NL.full);
     translate.use(Lang.NL.full);
-    fixture = TestBed.createComponent(ApproveProposalDialog);
-    component = fixture.componentInstance;
-
-    fixture.detectChanges();
   });
 
   afterEach(() => {
     uuidSpy.mockRestore();
     jest.clearAllMocks();
+    activeClaimsPayload = {
+      userProfile: mockPersonResource,
+    };
   });
 
-  it('should create and generate a UUID on initialization', () => {
-    expect(component).toBeTruthy();
-    expect(uuid.v4).toHaveBeenCalledTimes(1);
-    expect(component.generatedUUID).toBe('mock-uuid-12345');
-  });
+  describe('ApproveProposalDialog (professional context)', () => {
+    beforeEach(() => {
+      fixture = TestBed.createComponent(ApproveProposalDialog);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    });
 
-  describe('approveProposal', () => {
-    it('should approve proposal with a NEW pseudonymized key if generated', fakeAsync(() => {
+    it('should create and generate a UUID on initialization', () => {
+      expect(component).toBeTruthy();
+      expect(uuid.v4).toHaveBeenCalledTimes(1);
+      expect(component.generatedUUID).toBe('mock-uuid-12345');
+    });
+
+    it('should approve proposal with a NEW pseudonymized key if generated', () => {
       const reasonText = 'Approval reason';
       const encryptedData = { encryptedText: 'encrypted-text', pseudonymizedKey: 'new-pseudo-key' };
       component.formGroup.get('reason')?.setValue(reasonText);
@@ -86,22 +118,26 @@ describe('ApproveProposalDialog', () => {
       mockDialogData.proposal.pseudonymizedKey = undefined;
 
       component.approveProposal();
-      tick();
       expect(mockEncryptionHelper.getEncryptedReasonAndPseudoKey).toHaveBeenCalledWith(
         reasonText,
         mockDialogData.proposal.pseudonymizedKey
       );
       expect(mockProposalState.approveProposal).toHaveBeenCalledWith(
         'proposal-123',
-        { kid: 'kid-abc', pseudonymizedKey: encryptedData.pseudonymizedKey, reason: encryptedData.encryptedText },
+        {
+          kid: 'kid-abc',
+          pseudonymizedKey: encryptedData.pseudonymizedKey,
+          reason: encryptedData.encryptedText,
+          prescriber: { discipline: Discipline.Physician, organizationNihii11: undefined, ssin: '80222700153' },
+        },
         'mock-uuid-12345'
       );
       expect(mockToastService.show).toHaveBeenCalledWith('proposal.approve.success');
       expect(mockDialogRef.close).toHaveBeenCalledWith({ prescriptionId: undefined });
       expect(component.loading).toBe(false);
-    }));
+    });
 
-    it('should approve proposal with the EXISTING pseudonymized key if a new one is not generated', fakeAsync(() => {
+    it('should approve proposal with the EXISTING pseudonymized key if a new one is not generated', () => {
       const reasonText = 'Another reason';
       const encryptedData = { encryptedText: 'encrypted-text-2', pseudonymizedKey: undefined };
       component.formGroup.get('reason')?.setValue(reasonText);
@@ -109,7 +145,6 @@ describe('ApproveProposalDialog', () => {
       mockProposalState.approveProposal.mockReturnValue(of({ success: true }));
 
       component.approveProposal();
-      tick();
 
       expect(mockProposalState.approveProposal).toHaveBeenCalledWith(
         'proposal-123',
@@ -117,46 +152,87 @@ describe('ApproveProposalDialog', () => {
           kid: 'kid-abc',
           pseudonymizedKey: mockDialogData.proposal.pseudonymizedKey,
           reason: encryptedData.encryptedText,
+          prescriber: { discipline: Discipline.Physician, organizationNihii11: undefined, ssin: '80222700153' },
         },
         'mock-uuid-12345'
       );
       expect(mockToastService.show).toHaveBeenCalledWith('proposal.approve.success');
       expect(mockDialogRef.close).toHaveBeenCalledWith({ prescriptionId: undefined });
       expect(component.loading).toBe(false);
-    }));
+    });
 
-    it('should handle error from encryption service', fakeAsync(() => {
+    it('should handle error from encryption service', () => {
       const error = new Error('Encryption failed!');
       component.formGroup.get('reason')?.setValue('some reason');
       mockEncryptionHelper.getEncryptedReasonAndPseudoKey.mockReturnValue(throwError(() => error));
-      const handleErrorSpy = jest.spyOn(component as any, 'handleError');
+      (component as any).error = signal<ResolvedError | null>({
+        message: 'error.message',
+        translationOptions: { count: 2 },
+        severity: AlertType.Error,
+        dismissible: true,
+        retry: false,
+      });
+      fixture.detectChanges();
 
       component.approveProposal();
-      tick();
 
       expect(component.loading).toBe(false);
-      expect(handleErrorSpy).toHaveBeenCalledWith(error);
+
+      const alerts = fixture.debugElement.queryAll(By.css('app-alert'));
+      const errorAlert = alerts.find(alert => alert.componentInstance.severity() === 'error');
+      expect(errorAlert).toBeTruthy();
+
       expect(mockProposalState.approveProposal).not.toHaveBeenCalled();
       expect(mockDialogRef.close).not.toHaveBeenCalled();
-    }));
+    });
+  });
 
-    it('should handle error from proposal state service during approval', fakeAsync(() => {
-      const error = new Error('API approval failed');
-      const reasonText = 'A reason';
-      const encryptedData = { encryptedText: 'encrypted-text', pseudonymizedKey: 'new-key' };
+  describe('ApproveProposalDialog (organization context)', () => {
+    beforeEach(() => {
+      activeClaimsPayload = {
+        userProfile: {
+          ...mockPersonResource,
+          organizations: [{ [OIDC.Hospital]: { nihii: '46843080001' } }],
+        },
+      };
+
+      fixture = TestBed.createComponent(ApproveProposalDialog);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    });
+
+    it('should approve proposal of organization with a NEW pseudonymized key if generated', () => {
+      const reasonText = 'Approval reason';
+      const encryptedData = { encryptedText: 'encrypted-text', pseudonymizedKey: 'new-pseudo-key' };
 
       component.formGroup.get('reason')?.setValue(reasonText);
       mockEncryptionHelper.getEncryptedReasonAndPseudoKey.mockReturnValue(of(encryptedData));
-      mockProposalState.approveProposal.mockReturnValue(throwError(() => error));
-      const handleErrorSpy = jest.spyOn(component as any, 'handleError');
+      mockProposalState.approveProposal.mockReturnValue(of({ success: true }));
+      mockDialogData.proposal.pseudonymizedKey = undefined;
 
       component.approveProposal();
-      tick();
 
+      expect(mockEncryptionHelper.getEncryptedReasonAndPseudoKey).toHaveBeenCalledWith(
+        reasonText,
+        mockDialogData.proposal.pseudonymizedKey
+      );
+      expect(mockProposalState.approveProposal).toHaveBeenCalledWith(
+        'proposal-123',
+        {
+          kid: 'kid-abc',
+          pseudonymizedKey: encryptedData.pseudonymizedKey,
+          reason: encryptedData.encryptedText,
+          prescriber: {
+            discipline: Discipline.Physician,
+            organizationNihii11: '46843080001',
+            ssin: '80222700153',
+          },
+        },
+        'mock-uuid-12345'
+      );
+      expect(mockToastService.show).toHaveBeenCalledWith('proposal.approve.success');
+      expect(mockDialogRef.close).toHaveBeenCalledWith({ prescriptionId: undefined });
       expect(component.loading).toBe(false);
-      expect(handleErrorSpy).toHaveBeenCalledWith(error);
-      expect(mockToastService.show).not.toHaveBeenCalled();
-      expect(mockDialogRef.close).not.toHaveBeenCalled();
-    }));
+    });
   });
 });

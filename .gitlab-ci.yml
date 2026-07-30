@@ -23,6 +23,7 @@ stages:
   - open-api
   - test
   - report
+  - sonar
 
 generate-api-client:
   image: common-docker-central-remote.repo.gcloud.belgium.be/openapitools/openapi-generator-cli:v7.14.0
@@ -56,21 +57,92 @@ validate-generated-api:
     - merge_requests
     - develop
 
-test:
+.test_base:
   extends: .npm
   stage: test
+  variables:
+    NODE_OPTIONS: "--max-old-space-size=3072"
+    CI: "true"
   needs:
     - job: generate-api-client
       optional: true
   script:
-    - echo "Running the install step"
     - npm install
-    - echo "Running test step"
-    - npm run test:coverage
+    - npm run $TEST_SCRIPT
+  only:
+    - merge_requests
+    - develop
+
+test:reuse:
+  extends: .test_base
+  variables:
+    TEST_SCRIPT: "test:wc:reuse"
+  artifacts:
+    paths:
+      - reuse/coverage/
+    expire_in: 1h
+
+test:list:
+  extends: .test_base
+  variables:
+    TEST_SCRIPT: "test:wc:list"
+  artifacts:
+    paths:
+      - wc-prescription-list/coverage/
+    expire_in: 1h
+
+test:details:
+  extends: .test_base
+  variables:
+    TEST_SCRIPT: "test:wc:details"
+  artifacts:
+    paths:
+      - wc-prescription-details/coverage/
+    expire_in: 1h
+
+test:create:
+  extends: .test_base
+  variables:
+    TEST_SCRIPT: "test:wc:create"
+  artifacts:
+    paths:
+      - wc-prescription-create/coverage/
+    expire_in: 1h
+
+test:mags:list:
+  extends: .test_base
+  variables:
+    TEST_SCRIPT: "test:mags:list"
+  artifacts:
+    paths:
+      - wrappers/components/mags-prescription-list/coverage/
+    expire_in: 1h
+
+test:mags:details:
+  extends: .test_base
+  variables:
+    TEST_SCRIPT: "test:mags:details"
+  artifacts:
+    paths:
+      - wrappers/components/mags-prescription-details/coverage/
+    expire_in: 1h
+
+merge:coverage:
+  extends: .npm
+  stage: report
+  needs:
+    - test:reuse
+    - test:list
+    - test:create
+    - test:details
+    - test:mags:list
+    - test:mags:details
+  script:
+    - npm run merge:coverage
+    - npm run merge:report
   artifacts:
     paths:
       - coverage/
-      - .nyc_output/
     expire_in: 1h
   only:
     - merge_requests
@@ -79,8 +151,8 @@ test:
 sonar-report:
   extends: .sonar
   needs:
-    - test
-  stage: report
+    - merge:coverage
+  stage: sonar
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
   script:

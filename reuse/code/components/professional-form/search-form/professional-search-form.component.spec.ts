@@ -174,19 +174,24 @@ describe('ProfessionalSearchFormComponent', () => {
     });
 
     it('should remove name validators for numeric input and restore them for text input', () => {
+      // numeric input → name validators removed → valid (no pattern/minlength error)
       component.onInput(createInputEvent('12345'));
       expect(component.queryIsNumeric).toBe(true);
-
       component.queryControl.updateValueAndValidity();
-      const validWhileNumeric = component.queryControl.valid;
+      expect(component.queryControl.hasError('pattern')).toBe(false);
+      expect(component.queryControl.hasError('minlength')).toBe(false);
 
+      // text input → name validators restored → invalid if too short
+      component.onInput(createInputEvent('A'));
+      expect(component.queryIsNumeric).toBe(false);
+      component.queryControl.updateValueAndValidity();
+      expect(component.queryControl.hasError('minlength')).toBe(true);
+
+      // text input → name validators → valid
       component.onInput(createInputEvent('AB'));
       expect(component.queryIsNumeric).toBe(false);
-
       component.queryControl.updateValueAndValidity();
-      const validAfterSwitch = component.queryControl.valid;
-
-      expect(validWhileNumeric).not.toEqual(validAfterSwitch);
+      expect(component.queryControl.hasError('minlength')).toBe(false);
     });
   });
 });

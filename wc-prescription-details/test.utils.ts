@@ -1,9 +1,26 @@
-import { Discipline, FhirR4TaskStatus, PerformerTaskResource, Role, TemplateVersion } from '@reuse/code/openapi';
+import {
+  Discipline,
+  FhirR4TaskStatus,
+  OIDC,
+  OrganizationTaskResource,
+  PerformerTaskResource,
+  ReadRequestResource,
+  RequestTaskResource,
+  Role,
+  TemplateVersion,
+} from '@reuse/code/openapi';
 import { TranslateLoader } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
 import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
 import { UserInfo } from '@reuse/code/interfaces';
 import { signal } from '@angular/core';
+import {
+  asOrganizationTask,
+  asPerformerTask,
+  isOrganizationTask,
+  isPerformerTask,
+} from '@reuse/code/utils/task-type.util';
+import TaskTypeEnum = RequestTaskResource.TaskTypeEnum;
 
 export const mockPro: UserInfo = {
   ssin: '10000000003',
@@ -19,8 +36,8 @@ export const mockPerson = {
   ssin: '10000000003',
   name: 'name of patient',
 };
-
 export const mockPerformerTask: PerformerTaskResource = {
+  id: 'performerTask',
   status: FhirR4TaskStatus.Ready,
   careGiverSsin: '10000000005',
   careGiver: {
@@ -29,9 +46,14 @@ export const mockPerformerTask: PerformerTaskResource = {
       profession: 'NURSE',
     },
   },
+  taskType: TaskTypeEnum.PerformerTaskResource,
 };
 
-export const organisationTask = { organizationNihii: '10000000009' };
+export const mockOrganisationTask: OrganizationTaskResource = {
+  organizationNihii: '10000000009',
+  status: FhirR4TaskStatus.Ready,
+  taskType: TaskTypeEnum.OrganizationTaskResource,
+};
 
 export const referralTask = {
   id: '455',
@@ -40,16 +62,27 @@ export const referralTask = {
 export const id = 'DEAD0000-0000-4000-A000-000000000021';
 
 export function prescriptionResponse(
-  organisationTasks: any = null,
   referralTask: any = null,
-  performerTask: PerformerTaskResource[] | null = null
-) {
+  performerTask: RequestTaskResource[] | null = null
+): ReadRequestResource {
   const performerTasks: Record<string, PerformerTaskResource[]> = {};
 
   performerTask?.forEach(p => {
-    if (!p?.careGiverSsin) return;
+    if (isPerformerTask(p)) {
+      const task = asPerformerTask(p);
+      if (!task?.careGiverSsin) return;
 
-    (performerTasks[p.careGiverSsin] ??= []).push(p);
+      performerTasks[task.careGiverSsin] ??= [];
+      performerTasks[task.careGiverSsin].push(p);
+    }
+    if (isOrganizationTask(p)) {
+      const task = asOrganizationTask(p);
+      if (!task?.organizationNihii) return;
+
+      performerTasks[task.organizationNihii] ??= [];
+
+      performerTasks[task.organizationNihii].push(p);
+    }
   });
 
   return {
@@ -58,7 +91,6 @@ export function prescriptionResponse(
     patientIdentifier: mockPerson.ssin,
     referralTask: referralTask,
     performerTasks: performerTasks,
-    organizationTasks: organisationTasks,
     templateCode: 'GENERIC',
     authoredOn: '2024-09-04T22:00:00.000+00:00',
     requester: {},
@@ -69,7 +101,7 @@ export function prescriptionResponse(
       hideEndDate: false,
     },
     responses: {},
-    intent: null,
+    intent: undefined,
     category: 'nursing',
     shortCode: 'CAF4FE',
   };
@@ -96,8 +128,10 @@ export const mockAuthService = {
     })
   ),
   isProfessional: jest.fn(() => of(false)),
+  isOrganization: jest.fn(() => of(false)),
   discipline: jest.fn(() => of(Discipline.Nurse)),
   role: jest.fn(() => of(Role.Prescriber)),
+  oidc: jest.fn(() => of(OIDC.Homecareservices)),
 };
 
 export const mockPersonService = {
@@ -112,7 +146,7 @@ export const prescriptionDetailsSecondaryMockService = {
   getCurrentUser: jest.fn().mockReturnValue({
     data: {},
   }),
-  getPerformerTask: jest.fn().mockReturnValue({
+  getRequestTask: jest.fn().mockReturnValue({
     data: {},
   }),
   getTemplateVersion: jest.fn().mockReturnValue({

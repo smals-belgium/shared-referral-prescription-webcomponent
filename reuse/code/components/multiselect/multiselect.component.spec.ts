@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Component, ViewChild } from '@angular/core';
@@ -9,6 +9,7 @@ import { MultiselectComponent } from './multiselect.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { By } from '@angular/platform-browser';
 import { TranslateModule } from '@ngx-translate/core';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 @Component({
   imports: [ReactiveFormsModule, MultiselectComponent],
@@ -47,6 +48,7 @@ describe('MultiselectComponent', () => {
         MatFormFieldModule,
         NoopAnimationsModule,
         TranslateModule.forRoot(),
+        MatIconTestingModule,
       ],
       providers: [LiveAnnouncer],
     }).compileComponents();
@@ -131,14 +133,13 @@ describe('MultiselectComponent', () => {
     expect(input.value).toBe('');
   });
 
-  it('should update filtered options when input changes', fakeAsync(() => {
+  it('should update filtered options when input changes', () => {
     multiselect.formControl?.setValue('Option 2');
-    tick(100);
     fixture.detectChanges();
 
     expect(multiselect.filteredItems().length).toBe(1);
     expect(multiselect.filteredItems()[0].value).toBe('value2');
-  }));
+  });
 
   it('should handle ngOnChanges correctly', () => {
     const setupSpy = jest.spyOn(multiselect, 'setupAutocompleteOptions');

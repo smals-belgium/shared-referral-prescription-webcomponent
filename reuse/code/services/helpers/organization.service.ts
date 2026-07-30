@@ -4,11 +4,15 @@ import { InstitutionTypeResource } from '@reuse/code/openapi';
 @Injectable({ providedIn: 'root' })
 export class OrganizationService {
   private readonly groups = [
-    { name: InstitutionTypeResource.ThirdPartyPayingGroup, code: '940' },
-    { name: InstitutionTypeResource.GroupOfDoctors, code: '212' },
-    { name: InstitutionTypeResource.GuardPost, code: '115' },
-    { name: InstitutionTypeResource.MedicalHouse, code: '947' },
-    { name: InstitutionTypeResource.HomeServices, code: '61' },
+    { name: InstitutionTypeResource.OtdPharmacy, code: '210' },
+    { name: InstitutionTypeResource.OfficeDoctors, code: '212' },
+    { name: InstitutionTypeResource.Groupofdoctors, code: '214' },
+    { name: InstitutionTypeResource.GuardPost, code: '678' },
+    { name: InstitutionTypeResource.MedicalHouse, code: '805' },
+    { name: InstitutionTypeResource.Hospital, code: '710' },
+    { name: InstitutionTypeResource.Reeducation, code: '786' },
+    { name: InstitutionTypeResource.Groupofnurses, code: '940' },
+    { name: InstitutionTypeResource.HomeServices, code: '947' },
   ];
 
   constructor() {}

@@ -1,5 +1,7 @@
 import type { Config } from 'jest';
 
+const isCI = process.env['CI'] === 'true';
+
 export const config: Config = {
   // Automatically clear mock calls, instances, contexts and results before every test
   clearMocks: true,
@@ -16,9 +18,5 @@ export const config: Config = {
   preset: 'jest-preset-angular',
   modulePathIgnorePatterns: ['./dist'],
 
-  maxWorkers: 2,
-
-  globals: {
-    runInBand: true,
-  },
+  maxWorkers: isCI ? 2 : '50%',
 };

@@ -8,13 +8,20 @@ import { ReadRequestListResource } from '@reuse/code/openapi';
 export class ProposalsState extends BaseState<ReadRequestListResource> {
   private readonly proposalService = inject(ProposalService);
 
-  loadProposals(criteria?: SearchPrescriptionCriteria, page?: number, pageSize?: number): void {
+  loadProposals(
+    criteria?: SearchPrescriptionCriteria,
+    page?: number,
+    pageSize?: number,
+    rawPatientSsin?: string
+  ): void {
     const currentParams = this.state().params;
     pageSize = pageSize || currentParams?.['pageSize'] || 10;
     page =
-      criteria?.patient === currentParams?.['criteria']?.['patient'] ? page || currentParams?.['page'] || 1 : page || 1;
+      rawPatientSsin && rawPatientSsin === currentParams?.['rawPatientSsin']
+        ? page || currentParams?.['page'] || 1
+        : page || 1;
 
-    const params = { page, pageSize, criteria };
+    const params = { page, pageSize, criteria, rawPatientSsin };
     this.load(this.proposalService.findAll(params.criteria, params.page, params.pageSize), params);
   }
 }

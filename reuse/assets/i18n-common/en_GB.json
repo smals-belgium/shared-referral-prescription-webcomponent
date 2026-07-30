@@ -330,7 +330,6 @@
       "EXPIRED": "Expired",
       "IN_PROGRESS": "In progress",
       "DONE": "Completed",
-      "CLOSED": "Completed",
       "null": "Unknown",
       "APPROVED": "Approved",
       "REJECTED": "Rejected",
@@ -556,7 +555,6 @@
       "EXPIRED": "Expired",
       "IN_PROGRESS": "In progress",
       "DONE": "Done",
-      "CLOSED": "Done",
       "null": "Unknown",
       "APPROVED": "Approved",
       "REJECTED": "Rejected",
@@ -789,5 +787,18 @@
       },
       "unknown": "An error occurred. Please try again in a few moments."
     }
+  },
+  "datepicker": {
+    "calendar": "Calendar",
+    "openCalendar": "Open calendar",
+    "closeCalendar": "Close calendar",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "prevYear": "Previous year",
+    "nextYear": "Next year",
+    "prevMultiYear": "Previous 24 years",
+    "nextMultiYear": "Next 24 years",
+    "switchToMonthView": "Choose date",
+    "switchToMultiYearView": "Choose month and year"
   }
 }

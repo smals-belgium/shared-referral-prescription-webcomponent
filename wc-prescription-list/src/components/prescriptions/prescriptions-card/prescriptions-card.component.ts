@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   EventEmitter,
@@ -24,7 +25,6 @@ import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
 import { ProfessionalDisplayComponent } from '@reuse/code/components/professional-display/professional-display.component';
 import { MatCardModule } from '@angular/material/card';
 import { DatePipe } from '@reuse/code/pipes/date.pipe';
-import { HttpErrorResponse } from '@angular/common/http';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { MatIcon } from '@angular/material/icon';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -33,6 +33,7 @@ import { DataLoadConfig, RequestSummaryDataService } from '@reuse/code/services/
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { mapDisplayStatusToColor } from '@reuse/code/utils/request-status-display-map.utils';
 import { isPrescription, isProposal } from '@reuse/code/utils/utils';
+import { ResolvedError } from '@reuse/code/interfaces/error.interface';
 
 @Component({
   selector: 'app-prescriptions-card',
@@ -51,6 +52,7 @@ import { isPrescription, isProposal } from '@reuse/code/utils/utils';
   templateUrl: './prescriptions-card.component.html',
   styleUrls: ['./prescriptions-card.component.scss'],
   providers: [RequestSummaryDataService],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrescriptionsCardComponent implements OnChanges, AfterViewInit, OnDestroy {
   // Input properties
@@ -65,13 +67,12 @@ export class PrescriptionsCardComponent implements OnChanges, AfterViewInit, OnD
   @Input() patientSsin?: string;
   @Input() requesterSsin?: string;
   @Input() performerSsin?: string;
-  @Input() error: boolean = false;
-  @Input() errorMsg: string = '';
-  @Input() errorResponse?: HttpErrorResponse;
+  @Input() error?: ResolvedError | null;
 
   // Output events
   @Output() clickPrescription = new EventEmitter<RequestSummaryResource>();
   @Output() retryOnError = new EventEmitter<void>();
+  @Output() dismissOnError = new EventEmitter<void>();
 
   @ViewChild('anchor', { static: true }) anchor!: ElementRef<HTMLElement>;
   @ViewChild('scrollframe', { static: true }) scrollframe!: ElementRef<HTMLElement>;
@@ -185,7 +186,7 @@ export class PrescriptionsCardComponent implements OnChanges, AfterViewInit, OnD
   }
 
   private clearErrorState(): void {
-    this.error = false;
+    this.dismissOnError.emit();
   }
 
   trackById(item: RequestSummaryResource): number | string {

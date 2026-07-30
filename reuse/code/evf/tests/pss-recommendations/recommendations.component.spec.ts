@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
   AutocompleteOption,
   evfElementConfigFeature,
@@ -124,7 +124,7 @@ describe('AutocompleteMultiselectComponent', () => {
     expect(recommendationFormDebugElement.componentInstance.isLoading()).toBe(false);
   });
 
-  it('should call API when valid clinical indications provided', fakeAsync(() => {
+  it('should call API when valid clinical indications provided', () => {
     const mockResult: SupportResponseRadiology = {
       exchangeId: '',
       supportOptions: [
@@ -145,14 +145,13 @@ describe('AutocompleteMultiselectComponent', () => {
     pssServiceMock.getPssRecommendations.mockReturnValue(of(mockResult));
 
     recommendationFormDebugElement.componentInstance.pssControl();
-    tick();
 
     fixture.detectChanges();
 
     expect(pssServiceMock.getPssRecommendations).toHaveBeenCalled();
     expect(recommendationFormDebugElement.componentInstance.controlIndications()).toEqual(mockResult.supportOptions);
     expect(recommendationFormDebugElement.componentInstance.isLoading()).toBe(false);
-  }));
+  });
 
   it('should handle API error', () => {
     const recommendationFormDebugElement = fixture.debugElement.query(By.directive(RecommendationsComponent));
@@ -382,7 +381,7 @@ describe('AutocompleteMultiselectComponent', () => {
       expect(recommendationFormDebugElement.componentInstance.isLoading()).toBe(false);
     });
 
-    it('should not show error when all required fields are filled', fakeAsync(() => {
+    it('should not show error when all required fields are filled', () => {
       elementGroupMock.get = (field: string) => ({
         value: field === 'age' ? 35 : field === 'gender' ? 'M' : [indicationMock],
         markAsTouched: jest.fn(),
@@ -398,11 +397,10 @@ describe('AutocompleteMultiselectComponent', () => {
       );
 
       recommendationFormDebugElement.componentInstance.pssControl();
-      tick();
 
       expect(toastServiceMock.show).not.toHaveBeenCalled();
       expect(recommendationFormDebugElement.componentInstance.isLoading()).toBe(false);
       expect(pssServiceMock.getPssRecommendations).toHaveBeenCalled();
-    }));
+    });
   });
 });

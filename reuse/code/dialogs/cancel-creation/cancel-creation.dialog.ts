@@ -7,7 +7,6 @@ import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 import { CreatePrescriptionForm } from '@reuse/code/interfaces';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors } from '@angular/forms';
 import { MatError } from '@angular/material/form-field';
-import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
 import { DialogLayoutComponent } from '@reuse/code/dialogs/dialog-layout/dialog-layout.component';
 
 export interface CancelCreationDialogData {
@@ -37,7 +36,7 @@ function atLeastOneSelected(group: AbstractControl): ValidationErrors | null {
     DialogLayoutComponent,
   ],
 })
-export class CancelCreationDialog extends BaseDialog<CancelCreationDialog> {
+export class CancelCreationDialog {
   readonly prescriptionForms = this.data.prescriptionForms;
 
   readonly checkboxesGroup = new FormGroup(
@@ -46,11 +45,9 @@ export class CancelCreationDialog extends BaseDialog<CancelCreationDialog> {
   );
 
   constructor(
-    dialogRef: MatDialogRef<CancelCreationDialog, CancelCreationDialogResult>,
+    private readonly dialogRef: MatDialogRef<CancelCreationDialog, CancelCreationDialogResult>,
     @Inject(MAT_DIALOG_DATA) private readonly data: CancelCreationDialogData
-  ) {
-    super(dialogRef);
-  }
+  ) {}
 
   get formsToDelete(): number[] {
     return Object.entries(this.checkboxesGroup.controls)
@@ -75,6 +72,6 @@ export class CancelCreationDialog extends BaseDialog<CancelCreationDialog> {
   cancelPrescriptions(): void {
     this.checkboxesGroup.markAllAsTouched();
     if (this.checkboxesGroup.invalid) return;
-    this.closeDialog({ formsToDelete: this.formsToDelete });
+    this.dialogRef.close({ formsToDelete: this.formsToDelete });
   }
 }

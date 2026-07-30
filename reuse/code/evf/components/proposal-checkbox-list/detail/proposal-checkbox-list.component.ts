@@ -1,4 +1,4 @@
-import { Component, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnChanges, SimpleChanges } from '@angular/core';
 import {
   BaseElementControl,
   EvfFormDetailGroupComponent,
@@ -39,6 +39,7 @@ interface SelectedResponse {
   standalone: true,
   styleUrl: 'proposal-checkbox-list.component.scss',
   templateUrl: './proposal-checkbox-list.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProposalCheckboxListComponent extends EvfBaseFormDetailComponent implements OnChanges {
   protected readonly Intent = Intent;
