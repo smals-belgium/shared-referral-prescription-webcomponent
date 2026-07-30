@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
   EvfBaseFormDetailComponent,
   EvfDetailLabelComponent,
@@ -11,5 +11,6 @@ import { OccurrenceFrequencyPipe } from '@reuse/code/pipes/occurrence-frequency.
   imports: [EvfDetailLabelComponent, EvfFormDetailLayoutComponent, OccurrenceFrequencyPipe],
   standalone: true,
   templateUrl: './occurrences.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OccurrencesComponent extends EvfBaseFormDetailComponent {}

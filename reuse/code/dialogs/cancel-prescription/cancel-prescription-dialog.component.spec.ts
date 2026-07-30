@@ -1,23 +1,30 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Component, Pipe, PipeTransform } from '@angular/core';
+import { Component, Pipe, PipeTransform, signal } from '@angular/core';
 import * as uuid from 'uuid';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-
 import { CancelPrescriptionDialog } from './cancel-prescription-dialog.component';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import { PersonResource, ReadRequestResource } from '@reuse/code/openapi';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Intent } from '@reuse/code/interfaces';
-import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
-import { TranslateByIntentPipe } from '@reuse/code/pipes/translate-by-intent.pipe';
-import { AlertComponent } from '@myhealth-belgium/myhealth-additional-ui-components';
-import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
+import { AlertType, Intent } from '@reuse/code/interfaces';
 import { Lang } from '@reuse/code/constants/languages';
+import { EncryptionHelperService } from '@reuse/code/states/privacy/encryption-helper.service';
+import { DialogLayoutComponent } from '@reuse/code/dialogs/dialog-layout/dialog-layout.component';
+import { MatButtonModule } from '@angular/material/button';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
+import { AlertService } from '@reuse/code/services/helpers/alert.service';
+import { mockTestAlertService } from '@reuse/code/utils/test.utils';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
+import { ResolvedError } from '@reuse/code/interfaces/error.interface';
+import { By } from '@angular/platform-browser';
 
 @Pipe({
   name: 'templateName',
@@ -46,13 +53,6 @@ class MockTranslateByIntentPipe implements PipeTransform {
 })
 class MockOverlaySpinnerComponent {}
 
-@Component({
-  selector: 'app-alert',
-  template: '',
-  standalone: true,
-})
-class MockAlertComponent {}
-
 const mockToastService = {
   show: jest.fn(),
 };
@@ -74,6 +74,8 @@ const mockDialogRef = {
 const mockDialogData = {
   prescription: {
     id: 'prescription-123',
+    kid: 'kid-abc',
+    pseudonymizedKey: 'existing-pseudo-key-xyz',
     intent: Intent.ORDER,
   } as ReadRequestResource,
   patient: {
@@ -81,15 +83,20 @@ const mockDialogData = {
   } as PersonResource,
 };
 
+const mockEncryptionHelper = {
+  getEncryptedReasonAndPseudoKey: jest.fn(),
+};
+
 describe('CancelPrescriptionDialog', () => {
   let component: CancelPrescriptionDialog;
   let fixture: ComponentFixture<CancelPrescriptionDialog>;
   let uuidSpy: jest.SpyInstance;
   let translate: TranslateService;
+  let mockAlertService: jest.Mocked<Partial<AlertService>>;
 
   beforeEach(async () => {
     uuidSpy = jest.spyOn(uuid, 'v4').mockReturnValue('mock-uuid-12345' as unknown as Uint8Array);
-
+    mockAlertService = mockTestAlertService;
     await TestBed.configureTestingModule({
       imports: [
         CancelPrescriptionDialog,
@@ -98,7 +105,6 @@ describe('CancelPrescriptionDialog', () => {
         MockTemplateNamePipe,
         MockTranslateByIntentPipe,
         MockOverlaySpinnerComponent,
-        MockAlertComponent,
       ],
       providers: [
         { provide: ToastService, useValue: mockToastService },
@@ -106,14 +112,27 @@ describe('CancelPrescriptionDialog', () => {
         { provide: ProposalState, useValue: mockProposalState },
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
+        { provide: EncryptionHelperService, useValue: mockEncryptionHelper },
+        { provide: AlertService, useValue: mockAlertService },
       ],
     })
       .overrideComponent(CancelPrescriptionDialog, {
-        remove: {
-          imports: [TemplateNamePipe, TranslateByIntentPipe, OverlaySpinnerComponent, AlertComponent],
-        },
-        add: {
-          imports: [MockTemplateNamePipe, MockTranslateByIntentPipe, MockOverlaySpinnerComponent, MockAlertComponent],
+        set: {
+          imports: [
+            TranslateModule,
+            MatDialogModule,
+            MatButtonModule,
+            MockOverlaySpinnerComponent,
+            MockTemplateNamePipe,
+            MockTranslateByIntentPipe,
+            FormsModule,
+            MatFormFieldModule,
+            MatInputModule,
+            ReactiveFormsModule,
+            DialogLayoutComponent,
+            MatIconTestingModule,
+            AlertComponent,
+          ],
         },
       })
       .compileComponents();
@@ -134,53 +153,127 @@ describe('CancelPrescriptionDialog', () => {
   });
 
   describe('cancelPrescription', () => {
-    it('should cancel prescription and show success toast', fakeAsync(() => {
+    it('should NOT cancel prescription when reason is not filled', () => {
       mockPrescriptionState.cancelPrescription.mockReturnValue(of(void 0));
 
       component.cancelPrescription();
-      tick();
 
-      expect(mockPrescriptionState.cancelPrescription).toHaveBeenCalledWith('prescription-123', 'mock-uuid-12345');
+      expect(mockPrescriptionState.cancelPrescription).not.toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
+
+    it('should cancel prescription and show success toast with a NEW pseudonymized key if generated', () => {
+      const reasonText = 'Approval reason';
+      const encryptedData = { encryptedText: 'encrypted-text', pseudonymizedKey: 'new-pseudo-key' };
+      component.formGroup.get('reason')?.setValue(reasonText);
+      mockEncryptionHelper.getEncryptedReasonAndPseudoKey.mockReturnValue(of(encryptedData));
+
+      mockPrescriptionState.cancelPrescription.mockReturnValue(of(void 0));
+      mockDialogData.prescription.pseudonymizedKey = undefined;
+
+      component.cancelPrescription();
+
+      expect(mockPrescriptionState.cancelPrescription).toHaveBeenCalledWith(
+        'prescription-123',
+        { kid: 'kid-abc', pseudonymizedKey: encryptedData.pseudonymizedKey, reason: encryptedData.encryptedText },
+        'mock-uuid-12345'
+      );
       expect(mockPrescriptionState.loadPrescription).toHaveBeenCalledWith('prescription-123');
       expect(mockToastService.show).toHaveBeenCalledWith('prescription.cancel.success');
       expect(mockDialogRef.close).toHaveBeenCalledWith(true);
-    }));
+    });
 
-    it('should cancel proposal and show success toast', fakeAsync(() => {
+    it('should cancel prescription and show success toast with the EXISTING pseudonymized key if a new one is not generated', () => {
+      const reasonText = 'Another reason';
+      const encryptedData = { encryptedText: 'encrypted-text-2', pseudonymizedKey: undefined };
+      component.formGroup.get('reason')?.setValue(reasonText);
+      mockEncryptionHelper.getEncryptedReasonAndPseudoKey.mockReturnValue(of(encryptedData));
+
+      mockPrescriptionState.cancelPrescription.mockReturnValue(of(void 0));
+
+      component.cancelPrescription();
+
+      expect(mockPrescriptionState.cancelPrescription).toHaveBeenCalledWith(
+        'prescription-123',
+        {
+          kid: 'kid-abc',
+          pseudonymizedKey: mockDialogData.prescription.pseudonymizedKey,
+          reason: encryptedData.encryptedText,
+        },
+        'mock-uuid-12345'
+      );
+      expect(mockPrescriptionState.loadPrescription).toHaveBeenCalledWith('prescription-123');
+      expect(mockToastService.show).toHaveBeenCalledWith('prescription.cancel.success');
+      expect(mockDialogRef.close).toHaveBeenCalledWith(true);
+    });
+
+    it('should cancel proposal and show success toast', () => {
       component['prescription'].intent = Intent.PROPOSAL;
+      const reasonText = 'Another reason';
+      const encryptedData = { encryptedText: 'encrypted-text-2', pseudonymizedKey: undefined };
+      component.formGroup.get('reason')?.setValue(reasonText);
+      mockEncryptionHelper.getEncryptedReasonAndPseudoKey.mockReturnValue(of(encryptedData));
+
       mockProposalState.cancelProposal.mockReturnValue(of(void 0));
 
       component.cancelPrescription();
-      tick();
 
-      expect(mockProposalState.cancelProposal).toHaveBeenCalledWith('prescription-123', 'mock-uuid-12345');
+      expect(mockProposalState.cancelProposal).toHaveBeenCalledWith(
+        'prescription-123',
+        {
+          kid: 'kid-abc',
+          pseudonymizedKey: mockDialogData.prescription.pseudonymizedKey,
+          reason: encryptedData.encryptedText,
+        },
+        'mock-uuid-12345'
+      );
       expect(mockProposalState.loadProposal).toHaveBeenCalledWith('prescription-123');
       expect(mockToastService.show).toHaveBeenCalledWith('proposal.cancel.success');
       expect(mockDialogRef.close).toHaveBeenCalledWith(true);
-    }));
+    });
 
-    it('should show error card when prescription id is missing', () => {
-      component['prescription'].id = undefined;
-      const showErrorCardSpy = jest.spyOn(component as any, 'showErrorCard');
+    it('should handle error from backend', () => {
+      component.formGroup.get('reason')?.setValue('some reason');
+      (component as any).error = signal<ResolvedError | null>({
+        message: 'error.message',
+        translationOptions: { count: 2 },
+        severity: AlertType.Error,
+        dismissible: true,
+        retry: false,
+      });
 
+      fixture.detectChanges();
       component.cancelPrescription();
 
-      expect(component.errorCard.show).toBe(true);
-      expect(showErrorCardSpy).toHaveBeenCalledWith('common.somethingWentWrong');
+      expect(component.loading).toBe(false);
+
+      const alerts = fixture.debugElement.queryAll(By.css('app-alert'));
+
+      const errorAlert = alerts.find(alert => alert.componentInstance.severity() === 'error');
+      expect(errorAlert).toBeTruthy();
+
       expect(mockPrescriptionState.cancelPrescription).not.toHaveBeenCalled();
     });
 
-    it('should handle error during prescription cancellation', fakeAsync(() => {
+    it('should show error card when prescription id is missing', () => {
+      component.formGroup.get('reason')?.setValue('Approval reason');
+      component['prescription'].id = undefined;
+      const alertServiceSpy = jest.spyOn(mockAlertService, 'showGeneralError');
+      component.cancelPrescription();
+      expect(alertServiceSpy).toHaveBeenCalledTimes(1);
+      expect(alertServiceSpy).toHaveBeenCalledWith('cancel-dialog');
+    });
+
+    it('should handle error during prescription cancellation', () => {
       mockPrescriptionState.cancelPrescription.mockReturnValue(
         throwError(() => new HttpErrorResponse({ status: 500 }))
       );
 
       component.cancelPrescription();
-      tick();
 
       expect(component.loading).toBe(false);
       expect(mockToastService.show).not.toHaveBeenCalled();
       expect(mockDialogRef.close).not.toHaveBeenCalled();
-    }));
+    });
   });
 });

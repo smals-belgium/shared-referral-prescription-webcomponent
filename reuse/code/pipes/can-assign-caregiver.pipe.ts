@@ -3,6 +3,20 @@ import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
 import { isProposal } from '@reuse/code/utils/utils';
 
+/**
+ * This pipe determines whether the user can assign a caregiver.
+ *
+ * The access matrix needs to have assignPrescription or assignProposal depending on the intent
+ * The status of the prescription needs to be DRAFT, PENDING, OPEN, IN PROGRESS
+ *
+ * Example usage:
+ * ```html
+ * <button *ngIf="prescription | canAssignCaregiver>Assign Caregiver</button>
+ * ```
+ *
+ * @pipe
+ * @name canAssignCaregiver
+ */
 @Pipe({ name: 'canAssignCaregiver', standalone: true })
 export class CanAssignCaregiverPipe implements PipeTransform {
   constructor(private readonly accessMatrixState: AccessMatrixState) {}

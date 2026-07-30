@@ -117,14 +117,16 @@ export class ProfessionalSearchFormComponent implements OnInit {
     const filteredCities = cities.filter((c): c is typeof c & { zipCode: number } => c.zipCode !== undefined);
 
     this.searchCriteria.emit({
-      query: this.queryControl.value,
+      // remove leading and trailing spaces
+      query: this.queryControl.value.trim(),
       cities: filteredCities,
     });
   }
 
   onInput(event: Event): void {
+    const domValue = (event.target as HTMLInputElement).value;
     this.citiesControl.updateValueAndValidity();
-    this.updateQueryTypeAndValidators(event);
+    this.updateQueryTypeAndValidators(domValue);
   }
 
   addCity(event: MatAutocompleteSelectedEvent, searchInput: HTMLInputElement): void {
@@ -148,11 +150,15 @@ export class ProfessionalSearchFormComponent implements OnInit {
     this.queryControl.updateValueAndValidity();
   }
 
-  private updateQueryTypeAndValidators(event: Event): void {
+  private updateQueryTypeAndValidators(inputValue: string): void {
     const previouslyNumeric = this.queryIsNumeric;
-    const inputValue = (event.target as HTMLInputElement).value;
 
-    this.queryIsNumeric = !!inputValue && !Number.isNaN(Number(inputValue[0]));
+    this.queryIsNumeric = !!inputValue && /^[\d-]+$/.test(inputValue);
+
+    // force sync the DOM value into the form control
+    if (this.queryControl.value !== inputValue && !this.queryIsNumeric) {
+      this.queryControl.setValue(inputValue, { emitEvent: false });
+    }
 
     if (this.queryIsNumeric) {
       const sanitized = inputValue.replace(/-/g, '');
@@ -167,7 +173,7 @@ export class ProfessionalSearchFormComponent implements OnInit {
       } else {
         this.queryControl.addValidators(this.nameValidators);
       }
-      this.queryControl.updateValueAndValidity({ emitEvent: false });
+      this.queryControl.updateValueAndValidity();
     }
   }
 }

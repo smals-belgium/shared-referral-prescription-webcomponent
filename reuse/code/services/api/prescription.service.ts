@@ -5,7 +5,10 @@ import {
   AssignOrganizationResource,
   CreateRequestResource,
   PrescriptionService as ApiPrescriptionService,
+  ReasonResource,
+  PerformerTaskIdResource,
 } from '@reuse/code/openapi';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class PrescriptionService {
@@ -34,17 +37,30 @@ export class PrescriptionService {
     return this.api.getPrescriptionByShortCode(ssin, shortCode);
   }
 
-  cancel(prescriptionId: string, generatedUUID: string) {
-    return this.api.cancelPrescription(prescriptionId, generatedUUID);
+  cancel(prescriptionId: string, reason: ReasonResource, generatedUUID: string) {
+    return this.api.cancelPrescription(prescriptionId, generatedUUID, reason);
   }
 
-  assignCaregiver(
+  assignCaregivers(
     prescriptionId: string,
     referralTaskId: string,
     caregiver: AssignCareGiverResource,
     generatedUUID: string
+  ): Observable<PerformerTaskIdResource[]>;
+  assignCaregivers(
+    prescriptionId: string,
+    referralTaskId: string,
+    caregiver: AssignCareGiverResource[],
+    generatedUUID: string
+  ): Observable<PerformerTaskIdResource[]>;
+  assignCaregivers(
+    prescriptionId: string,
+    referralTaskId: string,
+    caregiver: AssignCareGiverResource | AssignCareGiverResource[],
+    generatedUUID: string
   ) {
-    return this.api.assignCareGiverToPrescription(prescriptionId, referralTaskId, generatedUUID, caregiver);
+    const caregivers = Array.isArray(caregiver) ? caregiver : [caregiver];
+    return this.api.assignCareGiversToPrescription(prescriptionId, referralTaskId, generatedUUID, caregivers);
   }
 
   assignOrganization(

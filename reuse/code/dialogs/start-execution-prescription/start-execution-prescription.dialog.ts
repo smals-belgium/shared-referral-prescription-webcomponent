@@ -1,4 +1,4 @@
-import { Component, inject, Inject, OnInit } from '@angular/core';
+import { Component, inject, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { DateTime } from 'luxon';
@@ -16,9 +16,10 @@ import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { v4 as uuidv4 } from 'uuid';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
-import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
 import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
 import { SSIN_CLAIM_KEY, USER_PROFILE_CLAIM_KEY } from '@reuse/code/services/auth/auth-constants';
+import { AlertService } from '@reuse/code/services/helpers/alert.service';
+import { finalize } from 'rxjs/operators';
 
 interface StartExecutionPrescriptionDialogData {
   prescription: ReadRequestResource;
@@ -42,10 +43,15 @@ interface StartExecutionPrescriptionDialogData {
     AlertComponent,
   ],
 })
-export class StartExecutionPrescriptionDialog extends BaseDialog implements OnInit {
+export class StartExecutionPrescriptionDialog implements OnInit, OnDestroy {
   private readonly _prescriptionStateService = inject(PrescriptionState);
   private readonly _authService = inject(AuthService);
   private readonly _toastService = inject(ToastService);
+
+  private readonly alertService = inject(AlertService);
+
+  private readonly ERROR_START_EXECUTION_DIALOG = 'start-execution-dialog';
+  protected readonly error = this.alertService.setTarget(this.ERROR_START_EXECUTION_DIALOG);
 
   protected readonly AlertType = AlertType;
   readonly prescription: ReadRequestResource;
@@ -60,10 +66,9 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
   generatedUUID = '';
 
   constructor(
-    dialogRef: MatDialogRef<StartExecutionPrescriptionDialog>,
+    private readonly dialogRef: MatDialogRef<StartExecutionPrescriptionDialog>,
     @Inject(MAT_DIALOG_DATA) private readonly data: StartExecutionPrescriptionDialogData
   ) {
-    super(dialogRef);
     this.prescription = data.prescription;
     this.performerTask = data.performerTask;
 
@@ -72,6 +77,7 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
 
   ngOnInit() {
     this.generatedUUID = uuidv4();
+    this.alertService.setActive(this.ERROR_START_EXECUTION_DIALOG);
   }
 
   startExecution(): void {
@@ -101,28 +107,24 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
 
   private startExecutionForTask(task: PerformerTaskResource, executionStart: PrescriptionExecutionStart): void {
     if (!this.prescription.id || !task.id) {
-      this.showErrorCard('common.somethingWentWrong');
+      this.alertService.showGeneralError(this.ERROR_START_EXECUTION_DIALOG);
       return;
     }
 
     this._prescriptionStateService
       .startPrescriptionExecution(this.prescription.id, task.id, executionStart, this.generatedUUID)
+      .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: () => {
-          this.closeErrorCard();
           this._toastService.show('prescription.startExecution.success');
-          this.closeDialog(true);
-        },
-        error: err => {
-          this.loading = false;
-          this.showErrorCard('common.somethingWentWrong', err);
+          this.dialogRef.close(true);
         },
       });
   }
 
   private assignAndStartExecution(executionStart: PrescriptionExecutionStart): void {
     if (!this.prescription.id || !this.prescription.referralTask?.id) {
-      this.showErrorCard('common.somethingWentWrong');
+      this.alertService.showGeneralError(this.ERROR_START_EXECUTION_DIALOG);
       return;
     }
 
@@ -140,17 +142,13 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
             this.generatedUUID,
             executionStart
           )
-        )
+        ),
+        finalize(() => (this.loading = false))
       )
       .subscribe({
         next: () => {
-          this.closeErrorCard();
           this._toastService.show('prescription.startExecution.success');
-          this.closeDialog(true);
-        },
-        error: err => {
-          this.loading = false;
-          this.showErrorCard('common.somethingWentWrong', err);
+          this.dialogRef.close(true);
         },
       });
   }
@@ -170,5 +168,18 @@ export class StartExecutionPrescriptionDialog extends BaseDialog implements OnIn
         this.minDate = authoredOn;
       }
     }
+  }
+
+  protected dismissError() {
+    this.alertService.clear(this.ERROR_START_EXECUTION_DIALOG);
+  }
+
+  ngOnDestroy() {
+    this.clearAlertService();
+  }
+
+  clearAlertService() {
+    this.alertService.resetActive();
+    this.alertService.remove(this.ERROR_START_EXECUTION_DIALOG);
   }
 }

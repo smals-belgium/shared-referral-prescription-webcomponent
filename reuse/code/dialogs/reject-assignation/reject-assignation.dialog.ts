@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
@@ -7,19 +7,19 @@ import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { v4 as uuidv4 } from 'uuid';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
-import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
-import { PerformerTaskResource, PersonResource, ReadRequestResource } from '@reuse/code/openapi';
+import { PersonResource, ReadRequestResource, RequestTaskResource } from '@reuse/code/openapi';
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import { isProposal } from '@reuse/code/utils/utils';
 import { Observable } from 'rxjs';
 import { TranslateByIntentPipe } from '@reuse/code/pipes/translate-by-intent.pipe';
-import { HttpErrorResponse } from '@angular/common/http';
 import { AlertType } from '@reuse/code/interfaces';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
+import { AlertService } from '@reuse/code/services/helpers/alert.service';
+import { finalize } from 'rxjs/operators';
 
 interface RejectAssignationDialogData {
   prescription: ReadRequestResource;
-  performerTask: PerformerTaskResource;
+  requestTask: RequestTaskResource;
   patient: PersonResource;
 }
 
@@ -36,11 +36,16 @@ interface RejectAssignationDialogData {
     TranslateByIntentPipe,
   ],
 })
-export class RejectAssignationDialog extends BaseDialog implements OnInit {
+export class RejectAssignationDialog implements OnInit, OnDestroy {
+  private readonly alertService = inject(AlertService);
+
+  private readonly ERROR_REJECT_ASSIGNATION_DIALOG = 'reject-assignation-dialog';
+  protected readonly error = this.alertService.setTarget(this.ERROR_REJECT_ASSIGNATION_DIALOG);
+
   protected readonly AlertType = AlertType;
   readonly prescription: ReadRequestResource;
   readonly patient?: PersonResource;
-  readonly performerTask: PerformerTaskResource;
+  readonly requestTask: RequestTaskResource;
   loading = false;
   generatedUUID = '';
 
@@ -48,22 +53,22 @@ export class RejectAssignationDialog extends BaseDialog implements OnInit {
     private readonly prescriptionStateService: PrescriptionState,
     private readonly proposalStateService: ProposalState,
     private readonly toastService: ToastService,
-    dialogRef: MatDialogRef<RejectAssignationDialog>,
+    private readonly dialogRef: MatDialogRef<RejectAssignationDialog>,
     @Inject(MAT_DIALOG_DATA) private readonly data: RejectAssignationDialogData
   ) {
-    super(dialogRef);
     this.prescription = data.prescription;
     this.patient = data.patient;
-    this.performerTask = data.performerTask;
+    this.requestTask = data.requestTask;
   }
 
   ngOnInit() {
     this.generatedUUID = uuidv4();
+    this.alertService.setActive(this.ERROR_REJECT_ASSIGNATION_DIALOG);
   }
 
   onReject(): void {
-    if (!this.prescription.id || !this.performerTask.id) {
-      this.showErrorCard('common.somethingWentWrong');
+    if (!this.prescription.id || !this.requestTask.id) {
+      this.alertService.showGeneralError(this.ERROR_REJECT_ASSIGNATION_DIALOG);
       return;
     }
 
@@ -71,11 +76,7 @@ export class RejectAssignationDialog extends BaseDialog implements OnInit {
     if (isProposal(this.prescription.intent)) {
       this.rejectAssignment(
         () =>
-          this.proposalStateService.rejectAssignation(
-            this.prescription.id!,
-            this.performerTask.id!,
-            this.generatedUUID
-          ),
+          this.proposalStateService.rejectAssignation(this.prescription.id!, this.requestTask.id!, this.generatedUUID),
         'proposal'
       );
     } else {
@@ -83,7 +84,7 @@ export class RejectAssignationDialog extends BaseDialog implements OnInit {
         () =>
           this.prescriptionStateService.rejectAssignation(
             this.prescription.id!,
-            this.performerTask.id!,
+            this.requestTask.id!,
             this.generatedUUID
           ),
         'prescription'
@@ -92,17 +93,26 @@ export class RejectAssignationDialog extends BaseDialog implements OnInit {
   }
 
   private rejectAssignment(serviceCall: () => Observable<void>, successPrefix: string) {
-    serviceCall().subscribe({
-      next: () => {
-        this.loading = false;
-        this.closeErrorCard();
-        this.toastService.show(successPrefix + '.rejectAssignation.success');
-        this.closeDialog(true);
-      },
-      error: (err: HttpErrorResponse) => {
-        this.loading = false;
-        this.showErrorCard('common.somethingWentWrong', err);
-      },
-    });
+    serviceCall()
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: () => {
+          this.toastService.show(successPrefix + '.rejectAssignation.success');
+          this.dialogRef.close(true);
+        },
+      });
+  }
+
+  protected dismissError() {
+    this.alertService.clear(this.ERROR_REJECT_ASSIGNATION_DIALOG);
+  }
+
+  ngOnDestroy() {
+    this.clearAlertService();
+  }
+
+  clearAlertService() {
+    this.alertService.resetActive();
+    this.alertService.remove(this.ERROR_REJECT_ASSIGNATION_DIALOG);
   }
 }

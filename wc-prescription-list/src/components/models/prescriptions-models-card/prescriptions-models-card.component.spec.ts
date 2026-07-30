@@ -12,8 +12,9 @@ import { BehaviorSubject, of } from 'rxjs';
 import { Discipline, ModelEntityDto, PageModelEntityDto } from '@reuse/code/openapi';
 import { FormatEnum } from '@reuse/code/components/progress-indicators/skeleton/skeleton.component';
 import { ElementRef, SimpleChanges } from '@angular/core';
-import { Intent } from '@reuse/code/interfaces';
-import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
+import { AlertType, Intent } from '@reuse/code/interfaces';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
+import { ResolvedError } from '@reuse/code/interfaces/error.interface';
 
 const mockConfigService = {
   getEnvironment: jest.fn(),
@@ -97,6 +98,7 @@ describe('PrescriptionsModelsCardComponent', () => {
         TranslateModule.forRoot({
           loader: { provide: TranslateLoader, useClass: FakeLoader },
         }),
+        MatIconTestingModule,
       ],
       providers: [
         provideHttpClient(),
@@ -125,8 +127,7 @@ describe('PrescriptionsModelsCardComponent', () => {
   it('should create and initialize with default values', () => {
     expect(component).toBeTruthy();
     expect(component.loading).toBe(false);
-    expect(component.error).toBe(false);
-    expect(component.errorMsg).toBe('');
+    expect(component.error).toBe(undefined);
     expect((component as any).FormatEnum).toBe(FormatEnum);
   });
 
@@ -162,7 +163,7 @@ describe('PrescriptionsModelsCardComponent', () => {
   it('should trigger loadMore when anchor element intersects', () => {
     component.modelEntityPage = mockModelEntityPage10;
     component.loading = false;
-    component.error = false;
+    component.error = undefined;
     expect(component.itemsLength).toBe(10);
 
     jest.spyOn(component, 'loadMore');
@@ -187,7 +188,7 @@ describe('PrescriptionsModelsCardComponent', () => {
   it('should not trigger loadMore when conditions are not met', () => {
     component.modelEntityPage = mockModelEntityPage10;
     component.loading = true;
-    component.error = false;
+    component.error = undefined;
     expect(component.itemsLength).toBe(10);
 
     jest.spyOn(component, 'loadMore');
@@ -210,7 +211,7 @@ describe('PrescriptionsModelsCardComponent', () => {
   it('should not trigger loadMore when not intersecting', () => {
     component.modelEntityPage = mockModelEntityPage10;
     component.loading = false;
-    component.error = false;
+    component.error = undefined;
     expect(component.itemsLength).toBe(10);
 
     jest.spyOn(component, 'loadMore');
@@ -270,7 +271,7 @@ describe('PrescriptionsModelsCardComponent', () => {
 
     component.onErrorRetryClick();
 
-    expect(component.error).toBe(false);
+    expect(component.error).toBe(undefined);
     expect(mockDataService.retryLoad).toHaveBeenCalledWith(1);
   });
 
@@ -312,7 +313,7 @@ describe('PrescriptionsModelsCardComponent', () => {
   describe('Template Rendering', () => {
     beforeEach(() => {
       // Set up component with test data
-      component.modelEntityPage = mockModelEntityPage;
+      fixture.componentRef.setInput('modelEntityPage', mockModelEntityPage);
       mockDataService.modelEntityData$.next([mockModelEntityDto]);
       mockAuthService.isProfessional.mockReturnValue(of(true));
       fixture.detectChanges();
@@ -324,7 +325,7 @@ describe('PrescriptionsModelsCardComponent', () => {
     });
 
     it('should display no models, but alert when no items available', () => {
-      component.modelEntityPage = { content: [], numberOfElements: 0 };
+      fixture.componentRef.setInput('modelEntityPage', { content: [], numberOfElements: 0 });
       mockDataService.modelEntityData$.next([]);
       fixture.detectChanges();
 
@@ -333,7 +334,7 @@ describe('PrescriptionsModelsCardComponent', () => {
     });
 
     it('should display skeleton loader when loading', () => {
-      component.loading = true;
+      fixture.componentRef.setInput('loading', true);
       fixture.detectChanges();
 
       const skeletonElement = fixture.debugElement.nativeElement.querySelector('app-skeleton');
@@ -341,8 +342,13 @@ describe('PrescriptionsModelsCardComponent', () => {
     });
 
     it('should display error alert when in error state', () => {
-      component.error = true;
-      component.errorMsg = 'Test error message';
+      const errorObj: ResolvedError = {
+        severity: AlertType.Error,
+        dismissible: true,
+        retry: false,
+        title: 'title',
+      };
+      fixture.componentRef.setInput('error', errorObj);
       fixture.detectChanges();
 
       const errorAlert = fixture.debugElement.nativeElement.querySelector('app-alert');

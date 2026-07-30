@@ -3,6 +3,7 @@ import {
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
   EventEmitter,
+  inject,
   Input,
   OnChanges,
   OnDestroy,
@@ -31,8 +32,10 @@ import {
 } from '@reuse/code/directives/unique-model-name.directive';
 import { isOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
 import { FormDataType, FormElement, TemplateVersion } from '@reuse/code/openapi';
-import TypeEnum = FormDataType.TypeEnum;
 import { EvfFormWebComponent } from '../evf-form/evf-form.component';
+import TypeEnum = FormDataType.TypeEnum;
+import { AlertService } from '@reuse/code/services/helpers/alert.service';
+import { ALERT_TARGET } from '@reuse/code/constants/error';
 
 @Component({
   selector: 'app-create-prescription-model',
@@ -58,12 +61,15 @@ import { EvfFormWebComponent } from '../evf-form/evf-form.component';
 export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
   protected readonly LoadingStatus = LoadingStatus;
   protected readonly AlertType = AlertType;
+  private readonly alertService = inject(AlertService);
+  private readonly alertTarget = inject(ALERT_TARGET);
 
   @Input() lang!: string;
   @Input() prescriptionForm!: CreatePrescriptionForm;
   @Output() modelSaved = new EventEmitter<void>();
 
   originalName = signal<string>('');
+  protected readonly pageError = this.alertService.setTarget(this.alertTarget);
 
   titleControl = new FormControl<string>('', {
     validators: [control => Validators.required(control)],
@@ -272,7 +278,17 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
     return this.prescriptionModelState.getModalState(trackById);
   }
 
+  protected dismissError() {
+    this.alertService.clear(this.alertTarget);
+  }
+
   ngOnDestroy() {
     this.prescriptionModelState.resetAll();
+    this.clearAlertService();
+  }
+
+  clearAlertService() {
+    this.alertService.resetActive();
+    this.alertService.clear(this.alertTarget);
   }
 }

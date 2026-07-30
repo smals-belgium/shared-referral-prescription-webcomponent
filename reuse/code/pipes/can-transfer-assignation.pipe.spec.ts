@@ -43,7 +43,8 @@ describe('CanTransferAssignationPipe', () => {
     const prescription = { status: RequestStatus.Blacklisted } as ReadRequestResource;
     const task = {
       status: FhirR4TaskStatus.Ready,
-      careGiverSsin: currentUser.ssin
+      careGiverSsin: currentUser.ssin,
+      taskType: 'PerformerTaskResource',
     } as PerformerTaskResource;
 
     const result = pipe.transform(prescription, task, currentUser);
@@ -62,7 +63,8 @@ describe('CanTransferAssignationPipe', () => {
     const prescription = { status: RequestStatus.Open } as ReadRequestResource;
     const task = {
       status: FhirR4TaskStatus.Completed,
-      careGiverSsin: currentUser.ssin
+      careGiverSsin: currentUser.ssin,
+      taskType: 'PerformerTaskResource',
     } as PerformerTaskResource;
 
     const result = pipe.transform(prescription, task, currentUser);
@@ -74,7 +76,8 @@ describe('CanTransferAssignationPipe', () => {
     const prescription = { status: RequestStatus.InProgress } as ReadRequestResource;
     const task = {
       status: FhirR4TaskStatus.Ready,
-      careGiverSsin: careGiverSsin
+      careGiverSsin: careGiverSsin,
+      taskType: 'PerformerTaskResource',
     } as PerformerTaskResource;
 
     const result = pipe.transform(prescription, task, currentUser);
@@ -92,11 +95,12 @@ describe('CanTransferAssignationPipe', () => {
     const task = {
       status: FhirR4TaskStatus.Ready,
       careGiverSsin: currentUser.ssin,
+      taskType: 'PerformerTaskResource',
       careGiver: {
         id: {
-          profession: Discipline.Nurse
-        }
-      }
+          profession: Discipline.Nurse,
+        },
+      },
     } as PerformerTaskResource;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
@@ -116,11 +120,12 @@ describe('CanTransferAssignationPipe', () => {
     const task = {
       status: FhirR4TaskStatus.Inprogress,
       careGiverSsin: currentUser.ssin,
+      taskType: 'PerformerTaskResource',
       careGiver: {
         id: {
-          profession: Discipline.Nurse
-        }
-      }
+          profession: Discipline.Nurse,
+        },
+      },
     } as PerformerTaskResource;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
@@ -140,12 +145,12 @@ describe('CanTransferAssignationPipe', () => {
     const task = {
       status: FhirR4TaskStatus.Ready,
       careGiverSsin: currentUser.ssin,
+      taskType: 'PerformerTaskResource',
       careGiver: {
         id: {
-          profession: Discipline.Nurse
-        }
-      }
-
+          profession: Discipline.Nurse,
+        },
+      },
     } as PerformerTaskResource;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
@@ -163,7 +168,8 @@ describe('CanTransferAssignationPipe', () => {
 
     const task = {
       status: FhirR4TaskStatus.Inprogress,
-      careGiverSsin: currentUser.ssin
+      careGiverSsin: currentUser.ssin,
+      taskType: 'PerformerTaskResource',
     } as PerformerTaskResource;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(false);
@@ -183,7 +189,8 @@ describe('CanTransferAssignationPipe', () => {
 
     const task = {
       status: FhirR4TaskStatus.Ready,
-      careGiverSsin: nonProfessionalUser.ssin
+      careGiverSsin: nonProfessionalUser.ssin,
+      taskType: 'PerformerTaskResource',
     } as PerformerTaskResource;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
@@ -192,5 +199,45 @@ describe('CanTransferAssignationPipe', () => {
     expect(result).toBe(false);
   });
 
+  it('should return false if currentUser is a professional, assigned to an organization', () => {
+    const nonProfessionalUser = { ...currentUser, role: Role.Organization };
 
+    const prescription = {
+      intent: Intent.ORDER,
+      templateCode: 'template3',
+      status: RequestStatus.Open,
+    } as ReadRequestResource;
+
+    const task = {
+      status: FhirR4TaskStatus.Ready,
+      careGiverSsin: currentUser.ssin,
+      taskType: 'PerformerTaskResource',
+    } as PerformerTaskResource;
+
+    mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
+
+    const result = pipe.transform(prescription, task, nonProfessionalUser);
+    expect(result).toBe(false);
+  });
+
+  it('should return false taskType is organizationTask', () => {
+    const nonProfessionalUser = { ...currentUser, role: Role.Patient };
+
+    const prescription = {
+      intent: Intent.ORDER,
+      templateCode: 'template3',
+      status: RequestStatus.Open,
+    } as ReadRequestResource;
+
+    const task = {
+      status: FhirR4TaskStatus.Ready,
+      careGiverSsin: nonProfessionalUser.ssin,
+      taskType: 'OrganizationTaskResource',
+    } as PerformerTaskResource;
+
+    mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
+
+    const result = pipe.transform(prescription, task, currentUser);
+    expect(result).toBe(false);
+  });
 });

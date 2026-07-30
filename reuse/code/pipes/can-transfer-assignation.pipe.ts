@@ -1,12 +1,13 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { UserInfo } from '@reuse/code/interfaces';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
-import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
+import { FhirR4TaskStatus, ReadRequestResource, RequestStatus, RequestTaskResource } from '@reuse/code/openapi';
 import {
   checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline,
-  isProfesionalBasedOnRole,
+  isProfesionalNotOrganizationBasedOnRole,
   isProposal,
 } from '@reuse/code/utils/utils';
+import TaskTypeEnum = RequestTaskResource.TaskTypeEnum;
 
 /**
  * This pipe determines whether an assignation can be transferred.
@@ -29,20 +30,21 @@ import {
 export class CanTransferAssignationPipe implements PipeTransform {
   constructor(private readonly accessMatrixState: AccessMatrixState) {}
 
-  transform(prescription: ReadRequestResource, task?: PerformerTaskResource, currentUser?: Partial<UserInfo>): boolean {
+  transform(prescription: ReadRequestResource, task?: RequestTaskResource, currentUser?: Partial<UserInfo>): boolean {
     if (currentUser == undefined) return false;
 
     const allowedStatuses: RequestStatus[] = [RequestStatus.Pending, RequestStatus.Open, RequestStatus.InProgress];
     const allowedTaskStatuses: FhirR4TaskStatus[] = [FhirR4TaskStatus.Ready, FhirR4TaskStatus.Inprogress];
 
     return (
+      task?.taskType === TaskTypeEnum.PerformerTaskResource &&
       this.hasAssignPermissions(prescription) &&
       !!prescription.status &&
       allowedStatuses.includes(prescription.status) &&
       !!task &&
       !!task.status &&
       allowedTaskStatuses.includes(task.status) &&
-      isProfesionalBasedOnRole(currentUser.role) &&
+      isProfesionalNotOrganizationBasedOnRole(currentUser.role) &&
       checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline(task, currentUser)
     );
   }

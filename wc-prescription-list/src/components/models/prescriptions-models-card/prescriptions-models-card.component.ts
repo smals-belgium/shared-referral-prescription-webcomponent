@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   EventEmitter,
@@ -15,7 +16,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ModelEntityDto, PageModelEntityDto, RequestSummaryResource } from '@reuse/code/openapi';
 import { AlertType, Intent } from '@reuse/code/interfaces';
-import { HttpErrorResponse } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DataLoadConfig, RequestSummaryDataService } from '@reuse/code/services/helpers/request-summary-data.service';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
@@ -24,6 +24,7 @@ import { DatePipe } from '@reuse/code/pipes/date.pipe';
 import { FormatEnum, SkeletonComponent } from '@reuse/code/components/progress-indicators/skeleton/skeleton.component';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { ResolvedError } from '@reuse/code/interfaces/error.interface';
 
 @Component({
   selector: 'app-prescriptions-models-card',
@@ -41,6 +42,7 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
   templateUrl: './prescriptions-models-card.component.html',
   styleUrls: ['./prescriptions-models-card.component.scss'],
   providers: [RequestSummaryDataService],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrescriptionsModelsCardComponent implements OnChanges, AfterViewInit, OnDestroy {
   // Input properties
@@ -50,14 +52,13 @@ export class PrescriptionsModelsCardComponent implements OnChanges, AfterViewIni
     return this.modelEntityPage?.numberOfElements ?? -1;
   }
   @Input() loading: boolean = false;
-  @Input() error: boolean = false;
-  @Input() errorMsg: string = '';
-  @Input() errorResponse?: HttpErrorResponse;
+  @Input() error?: ResolvedError | null;
 
   // Output events
   @Output() openPrescriptionModel = new EventEmitter<ModelEntityDto>();
   @Output() deletePrescriptionModel = new EventEmitter<ModelEntityDto>();
   @Output() retryOnError = new EventEmitter<void>();
+  @Output() dismissOnError = new EventEmitter<void>();
 
   protected readonly FormatEnum = FormatEnum;
   protected readonly AlertType = AlertType;
@@ -152,7 +153,7 @@ export class PrescriptionsModelsCardComponent implements OnChanges, AfterViewIni
   }
 
   private clearErrorState(): void {
-    this.error = false;
+    this.dismissOnError.emit();
   }
 
   trackById(item: ModelEntityDto | RequestSummaryResource): number | string {

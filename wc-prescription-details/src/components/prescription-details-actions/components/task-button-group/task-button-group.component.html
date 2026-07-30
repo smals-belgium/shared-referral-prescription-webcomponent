@@ -1,0 +1,74 @@
+@if (currentUserData && patientData && requestTaskData && prescriptionData) {
+  @let prescription = prescriptionData;
+  @let patient = patientData;
+  @let currentUser = currentUserData;
+
+  @if (checkAndConvertToPerformerTask(requestTaskData); as performerTask) {
+    @if (prescription | canStartTreatment: performerTask : currentUser) {
+      <button
+        (click)="service.openStartExecutionDialog(alertTarget, prescription, performerTask)"
+        mat-menu-item
+        type="button"
+        data-cy="prescription-start-execution-button">
+        {{ 'prescription.startExecution.action' | translate }}
+      </button>
+    }
+    @if (prescription | canFinishTreatment: performerTask) {
+      <button
+        (click)="service.openFinishExecutionDialog(alertTarget, prescription, performerTask)"
+        mat-menu-item
+        type="button"
+        data-cy="prescription-finish-execution-button">
+        {{ 'prescription.finishExecution.action' | translate }}
+      </button>
+    }
+    @if (prescription | canCancelTreatment: performerTask : currentUser) {
+      <button
+        (click)="service.openCancelExecutionDialog(alertTarget, prescription, performerTask, patient)"
+        mat-menu-item
+        type="button"
+        data-cy="prescription-cancel-execution-button">
+        {{ 'prescription.cancelExecution.action' | translate }}
+      </button>
+    }
+    @if (prescription | canTransferAssignation: performerTask : currentUser) {
+      <button
+        (click)="service.openTransferAssignationDialog(alertTarget, prescription, performerTask)"
+        mat-menu-item
+        type="button"
+        data-cy="prescription-transfer-assignation-button">
+        {{ 'prescription.transfer' | translate }}
+      </button>
+    }
+
+    @if (prescription | canRestartTreatment: performerTask : performerTask?.careGiverSsin) {
+      <button
+        type="button"
+        (click)="service.openRestartExecutionDialog(alertTarget, prescriptionData, performerTask, patientData)"
+        mat-menu-item
+        data-cy="prescription-restart-execution-button">
+        {{ 'prescription.ariaLabel.restart' | translate }}
+      </button>
+    }
+
+    @if (prescription | canInterruptTreatment: performerTask : currentUserData) {
+      <button
+        type="button"
+        (click)="service.openInterruptExecutionDialog(alertTarget, prescriptionData, performerTask, patient)"
+        mat-menu-item
+        data-cy="prescription-interrupt-execution-button">
+        {{ 'prescription.ariaLabel.interrupt' | translate }}
+      </button>
+    }
+  }
+
+  @if (prescription | canRejectAssignation: requestTaskData : patient.ssin : currentUserData) {
+    <button
+      type="button"
+      (click)="service.openRejectAssignationDialog(alertTarget, prescriptionData, requestTaskData, patient)"
+      mat-menu-item
+      data-cy="prescription-reject-assignation-button">
+      {{ 'prescription.ariaLabel.reject' | translate }}
+    </button>
+  }
+}

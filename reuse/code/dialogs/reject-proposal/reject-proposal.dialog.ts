@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, Inject, OnDestroy, OnInit } from '@angular/core';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
@@ -10,12 +10,15 @@ import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { v4 as uuidv4 } from 'uuid';
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
-import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
 import { ReadRequestResource } from '@reuse/code/openapi';
-import { catchError, switchMap } from 'rxjs';
+import { catchError, EMPTY, switchMap } from 'rxjs';
 import { EncryptionHelperService } from '@reuse/code/states/privacy/encryption-helper.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { AlertType } from '@reuse/code/interfaces';
+import { AlertService } from '@reuse/code/services/helpers/alert.service';
+import { finalize } from 'rxjs/operators';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { mapIdTokenToPrescriber } from '@reuse/code/utils/idToken.utils';
 
 @Component({
   imports: [
@@ -33,7 +36,16 @@ import { AlertType } from '@reuse/code/interfaces';
   templateUrl: './reject-proposal.dialog.html',
   styleUrl: './reject-proposal.dialog.scss',
 })
-export class RejectProposalDialog extends BaseDialog implements OnInit {
+export class RejectProposalDialog implements OnInit, OnDestroy {
+  private readonly _authService = inject(AuthService);
+  protected readonly discipline$ = toSignal(this._authService.discipline());
+  protected readonly oidc$ = toSignal(this._authService.oidc());
+  protected readonly claims$ = toSignal(this._authService.getClaims());
+  private readonly alertService = inject(AlertService);
+
+  private readonly ERROR_REJECT_PROPOSAL_DIALOG = 'reject-proposal-dialog';
+  protected readonly error = this.alertService.setTarget(this.ERROR_REJECT_PROPOSAL_DIALOG);
+
   protected readonly AlertType = AlertType;
   readonly formGroup = new FormGroup({
     reason: new FormControl<string>(''),
@@ -46,17 +58,16 @@ export class RejectProposalDialog extends BaseDialog implements OnInit {
     private readonly toastService: ToastService,
     private readonly proposalStateService: ProposalState,
     private readonly encryptionHelperService: EncryptionHelperService,
-    dialogRef: MatDialogRef<RejectProposalDialog>,
+    private readonly dialogRef: MatDialogRef<RejectProposalDialog>,
     @Inject(MAT_DIALOG_DATA)
     private readonly data: {
       proposal: ReadRequestResource;
     }
-  ) {
-    super(dialogRef);
-  }
+  ) {}
 
   ngOnInit() {
     this.generatedUUID = uuidv4();
+    this.alertService.setActive(this.ERROR_REJECT_PROPOSAL_DIALOG);
   }
 
   rejectProposal(): void {
@@ -68,7 +79,7 @@ export class RejectProposalDialog extends BaseDialog implements OnInit {
     const reason = this.formGroup.get('reason')?.value ?? undefined;
 
     if (!this.data.proposal.id) {
-      this.showErrorCard('common.somethingWentWrong');
+      this.alertService.showGeneralError(this.ERROR_REJECT_PROPOSAL_DIALOG);
       return;
     }
 
@@ -76,43 +87,46 @@ export class RejectProposalDialog extends BaseDialog implements OnInit {
     this.encryptionHelperService
       .getEncryptedReasonAndPseudoKey(reason, this.data.proposal?.pseudonymizedKey)
       .pipe(
+        catchError(() => {
+          this.alertService.showGeneralError(this.ERROR_REJECT_PROPOSAL_DIALOG);
+          return EMPTY;
+        }),
         switchMap(result =>
-          this.proposalStateService
-            .rejectProposal(
-              this.data.proposal.id!,
-              {
-                reason: result?.encryptedText,
-                kid: this.data.proposal?.kid,
-                pseudonymizedKey: result?.pseudonymizedKey,
-              },
-              this.generatedUUID
-            )
-            .pipe(
-              catchError(error => {
-                throw new Error('API rejection failed', error.message);
-              })
-            )
-        )
+          this.proposalStateService.rejectProposal(
+            this.data.proposal.id!,
+            {
+              reason: result?.encryptedText,
+              kid: this.data.proposal?.kid,
+              pseudonymizedKey: result?.pseudonymizedKey,
+              prescriber: mapIdTokenToPrescriber(this.claims$(), this.discipline$(), this.oidc$()),
+            },
+            this.generatedUUID
+          )
+        ),
+        finalize(() => (this.loading = false))
       )
       .subscribe({
         next: () => {
           this.handleSuccess();
         },
-        error: error => {
-          this.handleError(error);
-        },
       });
   }
 
   private handleSuccess(): void {
-    this.loading = false;
-    this.closeErrorCard();
     this.toastService.show('proposal.reject.success');
-    this.closeDialog(true);
+    this.dialogRef.close(true);
   }
 
-  private handleError(error?: HttpErrorResponse): void {
-    this.loading = false;
-    this.showErrorCard('common.somethingWentWrong', error);
+  protected dismissError() {
+    this.alertService.clear(this.ERROR_REJECT_PROPOSAL_DIALOG);
+  }
+
+  ngOnDestroy() {
+    this.clearAlertService();
+  }
+
+  clearAlertService() {
+    this.alertService.resetActive();
+    this.alertService.remove(this.ERROR_REJECT_PROPOSAL_DIALOG);
   }
 }

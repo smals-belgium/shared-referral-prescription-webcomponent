@@ -4,6 +4,7 @@ import {
   ElementRef,
   EventEmitter,
   HostBinding,
+  inject,
   Input,
   OnChanges,
   OnDestroy,
@@ -31,7 +32,7 @@ import {
   Subscription,
   switchMap,
 } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { finalize, map, tap } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { DateAdapter } from '@angular/material/core';
 import { DateTime } from 'luxon';
@@ -45,6 +46,7 @@ import {
   CreatePrescriptionForm,
   CreatePrescriptionInitialValues,
   DataState,
+  IdToken,
   LoadingStatus,
 } from '@reuse/code/interfaces';
 import { CreateMultiplePrescriptionsComponent } from '../components/create-multiple-prescriptions/create-multiple-prescriptions.component';
@@ -65,7 +67,6 @@ import { EncryptionService } from '@reuse/code/services/privacy/encryption.servi
 import { v4 as uuidv4 } from 'uuid';
 import { CreatePrescriptionModelComponent } from '../components/create-prescription-model/create-prescription-model.component';
 import { PrescriptionModelService } from '@reuse/code/services/api/prescriptionModel.service';
-import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { HttpErrorResponse } from '@angular/common/http';
 import { setOccurrenceTimingResponses } from '@reuse/code/utils/occurrence-timing.utils';
@@ -86,6 +87,9 @@ import { handleMissingTranslationFile } from '@reuse/code/utils/translation.util
 import { FullLang, Lang } from '@reuse/code/constants/languages';
 import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
 import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
+import { AlertService } from '@reuse/code/services/helpers/alert.service';
+import { ALERT_TARGET, ERROR_CREATE_PRESCRIPTION } from '@reuse/code/constants/error';
+import { mapIdTokenToPrescriber } from '@reuse/code/utils/idToken.utils';
 
 @Component({
   selector: 'uhmep-prescription-create',
@@ -102,11 +106,17 @@ import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-ho
     CreatePrescriptionModelComponent,
     AlertComponent,
   ],
+  providers: [{ provide: ALERT_TARGET, useFactory: () => `${ERROR_CREATE_PRESCRIPTION}-${crypto.randomUUID()}` }],
 })
 export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDestroy {
+  private readonly alertService = inject(AlertService);
+  private readonly alertTarget = inject(ALERT_TARGET);
+
   protected readonly LoadingStatus = LoadingStatus;
   protected readonly AlertType = AlertType;
   protected readonly discipline$ = toSignal(this.authService.discipline());
+  protected readonly oidc$ = toSignal(this.authService.oidc());
+  protected readonly claims$ = toSignal(this.authService.getClaims());
 
   private trackId = 0;
   public readonly errorResponseBadGateway = new HttpErrorResponse({
@@ -114,11 +124,6 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
     statusText: 'Bad Gateway',
   });
   public isModelValue: boolean = false;
-  public errorCard: ErrorCard = {
-    show: false,
-    message: '',
-    errorResponse: undefined,
-  };
 
   // OBSERVABLES & SIGNALS & SUBJECTS
   public readonly isEnabled$: Observable<boolean>;
@@ -132,6 +137,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
   public readonly langAlertData: WritableSignal<{ title: string; body: string } | null> = signal(null);
   private readonly _subscriptions: Subscription = new Subscription();
 
+  protected readonly generalError = this.alertService.getGeneralError();
+
   // INPUTS
   @HostBinding('attr.lang')
   @Input()
@@ -140,6 +147,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
   @Input() patientSsin?: string;
   @Input() services!: {
     getAccessToken: (audience?: string) => Promise<string | null>;
+    getIdToken: () => IdToken;
   };
   @Input() extend?: boolean = false;
 
@@ -195,7 +203,12 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
       'info',
       'do_not_disturb_on',
       'add_circle',
-      'close'
+      'close',
+      'keyboard_arrow_up',
+      'keyboard_arrow_down',
+      'warning',
+      'emergency_home',
+      'notifications'
     );
 
     this._subscriptions.add(
@@ -221,6 +234,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
     );
 
     this.activeHostService.set(this.el.nativeElement);
+    this.alertService.setActive(this.alertTarget);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -273,7 +287,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
   }
 
   private handleTokenChange(): void {
-    this.authService.init(this.services.getAccessToken);
+    this.authService.init(this.services.getAccessToken, this.services.getIdToken);
     this.accessMatrixStateService.loadAccessMatrix();
     this.templatesStateService.loadTemplates();
   }
@@ -391,6 +405,9 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
     }
 
     initialPrescription.responses['prescriptionOriginId'] = initialPrescription.id;
+
+    initialPrescription.responses['prescriptionOriginMedicalReason'] = initialPrescription?.responses['medicalReason'];
+
     return initialPrescription;
   }
 
@@ -426,7 +443,22 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
       return;
     }
     this.prescriptionForms().forEach(f => f.elementGroup?.markAllAsTouched());
-    this.prescriptionForms.update(prescriptionForms => prescriptionForms.map(t => ({ ...t, submitted: true })));
+    this.prescriptionForms.update(prescriptionForms =>
+      prescriptionForms.map(t => {
+        const validationObject = t.elementGroup?.getAllValidationErrors() || null;
+        const hasErrors = validationObject && Object.keys(validationObject).length > 0;
+        if (hasErrors) {
+          return { ...t, errors: validationObject, submitted: true };
+        }
+
+        return { ...t, errors: undefined, submitted: true };
+      })
+    );
+
+    const hasErrors = this.prescriptionForms().some(f => f.errors);
+
+    if (hasErrors) return;
+
     if (this.prescriptionForms().every(f => f.elementGroup!.valid)) {
       this.loading.set(true);
       if (this.prescriptionForms().length === 1) {
@@ -454,8 +486,9 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
             switchMap(identifier =>
               this.toCreatePrescriptionRequest(
                 prescriptionForm.templateCode,
-                prescriptionForm.elementGroup!.getOutputValue(),
-                identifier
+                prescriptionForm.elementGroup!.getOutputValue() as Record<string, unknown>,
+                identifier,
+                this.claims$()
               )
             ),
             switchMap(createPrescriptionRequest => {
@@ -466,27 +499,19 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
               }
             })
           )
-        )
+        ),
+        finalize(() => this.loading.set(false))
       )
       .subscribe({
         next: readRequestIdResource => {
-          this.closeErrorCard();
           this.toastService.show(
             isPrescription(this.initialValues?.intent) ? 'prescription.create.success' : 'proposal.create.success'
           );
           const ids = readRequestIdResource.id ? [readRequestIdResource.id] : [];
           this.prescriptionsCreated.emit(ids);
         },
-        error: (err: HttpErrorResponse) => {
-          const errorBody = err.error as { detail?: string };
-
-          this.errorCard = {
-            show: true,
-            message: errorBody.detail || 'common.somethingWentWrong',
-            errorResponse: err,
-          };
+        error: () => {
           this.generateNewUuid();
-          this.loading.set(false);
         },
       });
   }
@@ -526,7 +551,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
         const createPrescriptionRequest$ = this.toCreatePrescriptionRequest(
           f.templateCode,
           f.elementGroup!.getOutputValue() as Record<string, unknown>,
-          identifier
+          identifier,
+          this.claims$()
         );
 
         return createPrescriptionRequest$.pipe(
@@ -662,7 +688,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
   protected toCreatePrescriptionRequest(
     templateCode: string,
     responses: Record<string, unknown>,
-    subject: string
+    subject: string,
+    idToken?: IdToken | null
   ): Observable<CreateRequestResource> {
     if (templateCode === 'ANNEX_82') {
       const pssSessionId = this.pssService.getPssSessionId();
@@ -670,6 +697,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
         responses['exchangeId'] = pssSessionId;
       }
     }
+
     return this.encryptFreeTextInResponses(templateCode, responses).pipe(
       map(encryptedResponses => {
         if (!this.encryptionKeyInitializer.getPseudonymizedKey()) {
@@ -681,7 +709,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
           responses: encryptedResponses,
           pseudonymizedKey: this.encryptionKeyInitializer.getPseudonymizedKey(),
           subject,
-        };
+          prescriber: mapIdTokenToPrescriber(idToken, this.discipline$(), this.oidc$()),
+        } as CreateRequestResource;
       }),
       catchError(error => {
         console.error('Failed to create prescription request:', error);
@@ -703,21 +732,16 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
       const ids = results.map(r => r.responseId).filter((id): id is string => !!id);
       this.prescriptionsCreated.emit(ids);
     } else if (successCount === 0) {
-      if (isPrescription(this.initialValues?.intent)) {
-        this.errorCard = {
-          show: true,
-          message: 'prescription.create.allFailed',
-          translationOptions: { count: failedCount },
-          errorResponse: undefined,
-        };
-      } else {
-        this.errorCard = {
-          show: true,
-          message: 'proposal.create.allFailed',
-          translationOptions: { count: failedCount },
-          errorResponse: undefined,
-        };
-      }
+      this.alertService.showCurrentActiveAlert({
+        message: isPrescription(this.initialValues?.intent)
+          ? 'prescription.create.allFailed'
+          : 'proposal.create.allFailed',
+        translationOptions: { count: failedCount },
+        severity: AlertType.Error,
+        dismissible: true,
+        retry: false,
+      });
+
       this.prescriptionForms.update(prescriptionForms =>
         prescriptionForms.map(t => ({
           ...t,
@@ -727,21 +751,15 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
       results.forEach((t, i) => console.error(i, t.error));
       this.loading.set(false);
     } else {
-      if (isPrescription(this.initialValues?.intent)) {
-        this.errorCard = {
-          show: true,
-          message: 'prescription.create.someSuccessSomeFailed',
-          translationOptions: { successCount, failedCount },
-          errorResponse: undefined,
-        };
-      } else {
-        this.errorCard = {
-          show: true,
-          message: 'proposal.create.someSuccessSomeFailed',
-          translationOptions: { successCount, failedCount },
-          errorResponse: undefined,
-        };
-      }
+      this.alertService.showCurrentActiveAlert({
+        message: isPrescription(this.initialValues?.intent)
+          ? 'prescription.create.someSuccessSomeFailed'
+          : 'proposal.create.someSuccessSomeFailed',
+        translationOptions: { successCount, failedCount },
+        severity: AlertType.Error,
+        dismissible: true,
+        retry: false,
+      });
 
       this.prescriptionForms.update(prescriptionForms =>
         prescriptionForms.map(t => ({
@@ -801,14 +819,6 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
 
   modelSaved() {
     this.modelCreated.emit();
-  }
-
-  closeErrorCard(): void {
-    this.errorCard = {
-      show: false,
-      message: '',
-      errorResponse: undefined,
-    };
   }
 
   private generateNewUuid() {

@@ -18,7 +18,7 @@
     "search": "Rechercher",
     "start": "Commencer",
     "professions": {
-      "NURSE": "Infirmier",
+      "NURSE": "Infirmier.e",
       "PHYSICIAN": "Médecin",
       "PHYSIOTHERAPIST": "Kinésithérapeute",
       "DENTIST": "Dentiste"
@@ -229,7 +229,7 @@
     "duplicate": "Dupliquer",
     "extend": "Étendre",
     "careGivers": "Prestataire(s) de soins",
-    "assigned": "Assignée",
+    "assigned": "Assigné",
     "noPrescriptionsForPatient": "Ce patient ne possède pas encore de prescription.",
     "noPrescriptionsForUser": "Vous ne possèdez pas encore de prescription.",
     "assignPerformer": {
@@ -330,7 +330,6 @@
       "EXPIRED": "Expiré",
       "IN_PROGRESS": "En cours",
       "DONE": "Clôturée",
-      "CLOSED": "Clôturée",
       "null": "Inconnu",
       "APPROVED": "Approuvé",
       "REJECTED": "Refusé",
@@ -471,7 +470,7 @@
     "duplicate": "Dupliquer",
     "extend": "Étendre",
     "careGivers": "Prestataire(s) de soins",
-    "assigned": "Assignée",
+    "assigned": "Assigné",
     "noProposalsForPatient": "Ce patient ne possède pas encore de proposition.",
     "noProposalsForUser": "Vous ne possèdez pas encore de proposition.",
     "assignPerformer": {
@@ -556,7 +555,6 @@
       "EXPIRED": "Expiré",
       "IN_PROGRESS": "En cours",
       "DONE": "Clôturé",
-      "CLOSED": "Clôturée",
       "null": "Inconnu",
       "APPROVED": "Approuvé",
       "REJECTED": "Refusé",
@@ -604,7 +602,7 @@
   "performerTask": {
     "statuses": {
       "ONHOLD": "Interrompu",
-      "READY": "Assigné·e",
+      "READY": "Assigné",
       "CANCELLED": "Annulé",
       "FAILED": "Echoué",
       "INPROGRESS": "Actif",
@@ -789,5 +787,18 @@
       },
       "unknown": "Une erreur s'est produite. Merci de réessayer dans quelques instants."
     }
+  },
+  "datepicker": {
+    "calendar": "Calendrier",
+    "openCalendar": "Ouvrir le calendrier",
+    "closeCalendar": "Fermer le calendrier",
+    "prevMonth": "Mois précédent",
+    "nextMonth": "Mois suivant",
+    "prevYear": "Année précédente",
+    "nextYear": "Année suivante",
+    "prevMultiYear": "24 années précédentes",
+    "nextMultiYear": "24 années suivantes",
+    "switchToMonthView": "Choisir une date",
+    "switchToMultiYearView": "Choisir le mois et l'année"
   }
 }

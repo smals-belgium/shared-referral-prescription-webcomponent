@@ -1,6 +1,9 @@
 @use '@myhealth-belgium/design-kit' as mh;
 
 :host {
+  ::ng-deep .highlight {
+    font-weight: mh.$font-weight-bold;
+  }
   table.mat-mdc-table {
     margin-bottom: unset;
   }

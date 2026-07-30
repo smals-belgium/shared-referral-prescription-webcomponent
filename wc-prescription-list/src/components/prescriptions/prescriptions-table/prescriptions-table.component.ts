@@ -5,7 +5,7 @@ import {
   Input,
   OnChanges,
   Output,
-  SimpleChanges
+  SimpleChanges,
 } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
@@ -36,8 +36,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProfessionalDisplayComponent } from '@reuse/code/components/professional-display/professional-display.component';
 import { ReadRequestListResource, ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
 import { FormatEnum, SkeletonComponent } from '@reuse/code/components/progress-indicators/skeleton/skeleton.component';
-import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
-import { HttpErrorResponse } from '@angular/common/http';
 import { AlertType, Intent } from '@reuse/code/interfaces';
 import { MatChip } from '@angular/material/chips';
 import { mapDisplayStatusToColor } from '@reuse/code/utils/request-status-display-map.utils';
@@ -71,7 +69,6 @@ import { isPrescription, isProposal } from '@reuse/code/utils/utils';
     MatTooltipModule,
     ProfessionalDisplayComponent,
     SkeletonComponent,
-    AlertComponent,
     MatChip,
     MatFooterCell,
     MatFooterRow,
@@ -80,7 +77,6 @@ import { isPrescription, isProposal } from '@reuse/code/utils/utils';
   ],
 })
 export class PrescriptionsTableComponent implements OnChanges {
-
   // Input properties
   @Input() intent?: Intent;
 
@@ -90,11 +86,6 @@ export class PrescriptionsTableComponent implements OnChanges {
   }
   @Input() loading: boolean = false;
   @Output() clickPrescription = new EventEmitter<ReadRequestResource>();
-
-  @Input() error: boolean = false;
-  @Input() errorMsg: string = '';
-  @Input() errorResponse?: HttpErrorResponse;
-  @Output() retryOnError = new EventEmitter<void>();
 
   protected readonly FormatEnum = FormatEnum;
   protected readonly AlertType = AlertType;

@@ -13,7 +13,7 @@
       </th>
       <td data-cy="professional-lastname-cell" mat-cell *matCellDef="let healthcareProvider">
         @if (healthcareProvider.healthcarePerson; as person) {
-          <b>{{ person.lastName || '' }}</b>
+          <span [innerHTML]="person.lastName || '' | highlightFilter: query()"></span>
         }
         <div class="nihii">
           {{
@@ -31,7 +31,7 @@
       <td data-cy="professional-firstname-cell" mat-cell *matCellDef="let healthcareProvider">
         <div>
           @if (healthcareProvider.healthcarePerson; as person) {
-            <b>{{ person.firstName || '' }}</b>
+            <span [innerHTML]="person.firstName || '' | highlightFilter: query()"></span>
           }
         </div>
       </td>

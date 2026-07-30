@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { CreateMultiplePrescriptionsComponent } from './create-multiple-prescriptions.component';
 import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionModel.state';
-import { CreatePrescriptionForm, Intent, LoadingStatus } from '@reuse/code/interfaces';
+import { AlertType, CreatePrescriptionForm, Intent, LoadingStatus } from '@reuse/code/interfaces';
 import { ElementGroup } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatAccordion, MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
@@ -15,6 +15,10 @@ import { QueryList } from '@angular/core';
 import { EvfFormWebComponent } from '../evf-form/evf-form.component';
 import { Lang } from '@reuse/code/constants/languages';
 import { MatIconTestingModule } from '@angular/material/icon/testing';
+import { AlertService } from '@reuse/code/services/helpers/alert.service';
+import { mockTestAlertService } from '@reuse/code/utils/test.utils';
+import { ResolvedError } from '@reuse/code/interfaces/error.interface';
+import { ALERT_TARGET, ERROR_CREATE_PRESCRIPTION } from '@reuse/code/constants/error';
 
 @Component({
   selector: 'evf-form',
@@ -28,6 +32,7 @@ describe('CreateMultiplePrescriptionsComponent', () => {
   let fixture: ComponentFixture<CreateMultiplePrescriptionsComponent>;
   let mockModelState: any;
   let translate: TranslateService;
+  let mockAlertService: jest.Mocked<Partial<AlertService>>;
 
   beforeEach(async () => {
     jest.useFakeTimers(); // to control setTimeout
@@ -39,6 +44,8 @@ describe('CreateMultiplePrescriptionsComponent', () => {
       getModalState: jest.fn(),
       resetAll: jest.fn(),
     };
+
+    mockAlertService = mockTestAlertService;
 
     await TestBed.configureTestingModule({
       imports: [
@@ -53,6 +60,8 @@ describe('CreateMultiplePrescriptionsComponent', () => {
         { provide: PrescriptionModelState, useValue: mockModelState },
         provideHttpClient(),
         provideHttpClientTesting(),
+        { provide: AlertService, useValue: mockAlertService },
+        { provide: ALERT_TARGET, useValue: ERROR_CREATE_PRESCRIPTION },
       ],
     })
       .overrideComponent(CreateMultiplePrescriptionsComponent, {
@@ -80,12 +89,6 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     const spy = jest.spyOn(component.clickAddPrescription, 'emit');
     component.clickAddPrescription.emit();
     expect(spy).toHaveBeenCalled();
-  });
-
-  it('should return correct value from trackByFn', () => {
-    fixture.detectChanges();
-    const mockItem = { trackId: 'trackId_01' } as unknown as CreatePrescriptionForm;
-    expect(component.trackByFn(mockItem)).toBe('trackId_01');
   });
 
   it('should compute numberOfPrescriptionsToCreate correctly', () => {
@@ -192,12 +195,15 @@ describe('CreateMultiplePrescriptionsComponent', () => {
   });
 
   it('should show error card when errorCard.show is true', () => {
-    component.errorCard = {
-      show: true,
+    const errorSignal = signal<ResolvedError | null>({
       message: 'error.message',
-      errorResponse: { status: 500 } as unknown as HttpErrorResponse,
-      translationOptions: {},
-    };
+      translationOptions: { count: 2 },
+      severity: AlertType.Error,
+      dismissible: true,
+      retry: false,
+    });
+    jest.spyOn(mockAlertService, 'setTarget').mockReturnValue(errorSignal);
+
     fixture.detectChanges();
 
     const errorCard = fixture.nativeElement.querySelector('app-alert');
@@ -421,6 +427,124 @@ describe('CreateMultiplePrescriptionsComponent', () => {
 
     expect(component.isChecked(1)).toBe(true);
     expect(component.isChecked(99)).toBe(false);
+  });
+
+  describe('Display error summary', () => {
+    it('should scroll to element when target exists', () => {
+      const target = document.createElement('div');
+      target.setAttribute('data-evf-element-id', 'frequency');
+      const shadow = document.createElement('div');
+      shadow.appendChild(target);
+
+      (component as any)['host'] = new ElementRef(shadow);
+      target.scrollIntoView = jest.fn();
+
+      component.scrollTo('frequency');
+
+      expect(target.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+    });
+
+    it('should scroll to element with trackId when target exists', () => {
+      const target = document.createElement('div');
+      target.setAttribute('data-evf-element-id', 'frequency');
+      const wrapper = document.createElement('div');
+      wrapper.setAttribute('id', 'mat-expension-panel-123');
+      wrapper.appendChild(target);
+      const shadow = document.createElement('div');
+      shadow.appendChild(wrapper);
+
+      (component as any)['host'] = new ElementRef(shadow);
+      target.scrollIntoView = jest.fn();
+
+      component.scrollTo('frequency', 123);
+
+      expect(target.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+    });
+
+    it('should scroll to top when multiple errors exist', () => {
+      const mockTemplateVersionState = jest.fn().mockReturnValue({
+        data: {
+          id: '1',
+          templateId: 'A',
+        },
+        status: LoadingStatus.INITIAL,
+      });
+      const mockForm = {
+        errors: {
+          frequency: {
+            required: true,
+          },
+          validityDate: {
+            required: true,
+          },
+        },
+        formTemplateState$: mockTemplateVersionState,
+      } as unknown as CreatePrescriptionForm;
+
+      const target = document.createElement('div');
+      target.setAttribute('data-evf-element-id', 'frequency');
+      const shadow = document.createElement('div');
+      shadow.appendChild(target);
+
+      (component as any)['host'] = new ElementRef(shadow);
+      target.scrollIntoView = jest.fn();
+      shadow.scrollIntoView = jest.fn();
+
+      jest.spyOn(component as any, 'getFirstPrescriptionWithErrors').mockReturnValue(mockForm);
+      const scrollToSpy = jest.spyOn(component, 'scrollTo');
+
+      component.scrollToTop();
+
+      expect(scrollToSpy).toHaveBeenCalledWith();
+      expect(target.scrollIntoView).not.toHaveBeenCalled();
+      expect(shadow.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+    });
+
+    it('should scroll to target when only 1 error exist', () => {
+      const mockTemplateVersionState = jest.fn().mockReturnValue({
+        data: {
+          id: '1',
+          templateId: 'A',
+        },
+        status: LoadingStatus.INITIAL,
+      });
+      const mockForm = {
+        errors: {
+          frequency: {
+            required: true,
+          },
+        },
+        trackId: 123,
+        formTemplateState$: mockTemplateVersionState,
+      } as unknown as CreatePrescriptionForm;
+
+      const target = document.createElement('div');
+      target.setAttribute('data-evf-element-id', 'frequency');
+      const wrapper = document.createElement('div');
+      wrapper.setAttribute('id', 'mat-expension-panel-123');
+      wrapper.appendChild(target);
+      const shadow = document.createElement('div');
+      shadow.appendChild(wrapper);
+
+      (component as any)['host'] = new ElementRef(shadow);
+      target.scrollIntoView = jest.fn();
+      shadow.scrollIntoView = jest.fn();
+
+      jest.spyOn(component as any, 'getFirstPrescriptionWithErrors').mockReturnValue(mockForm);
+      jest.spyOn((component as any).getErrorMessagesPipe, 'transform').mockReturnValue([
+        {
+          label: 'frequency',
+          id: 'frequency',
+        },
+      ]);
+      const scrollToSpy = jest.spyOn(component, 'scrollTo');
+
+      component.scrollToTop();
+
+      expect(scrollToSpy).toHaveBeenCalledWith('frequency', 123);
+      expect(target.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+      expect(shadow.scrollIntoView).not.toHaveBeenCalled();
+    });
   });
 
   function setForms(forms: any[]) {

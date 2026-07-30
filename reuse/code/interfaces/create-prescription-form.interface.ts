@@ -15,4 +15,5 @@ export interface CreatePrescriptionForm {
   modelResponses?: Record<string, unknown>;
   modelName?: string;
   modelId?: number;
+  errors?: Record<string, unknown>;
 }

@@ -25,6 +25,18 @@ export class AppPrescriptionDetails {
           firstName: 'John',
           lastName: 'Doe',
           gender: 'M',
+          physician: {
+            recognised: true,
+            nihii11: '46843080001',
+          },
+          organizations: [
+            {
+              otdpharmacy: {
+                nihii: '21345678210',
+                name: 'Test Hospital',
+              },
+            },
+          ],
         },
       };
     },

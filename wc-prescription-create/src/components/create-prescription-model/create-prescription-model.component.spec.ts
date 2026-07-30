@@ -1,10 +1,16 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CreatePrescriptionModelComponent } from './create-prescription-model.component';
 import { Component, signal } from '@angular/core';
 import { of, throwError } from 'rxjs';
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { PrescriptionModelState } from '@reuse/code/states/helpers/prescriptionModel.state';
-import { CreatePrescriptionForm, DataState, LoadingStatus, PrescriptionModelStatus } from '@reuse/code/interfaces';
+import {
+  AlertType,
+  CreatePrescriptionForm,
+  DataState,
+  LoadingStatus,
+  PrescriptionModelStatus,
+} from '@reuse/code/interfaces';
 import { ElementGroup } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,8 +22,13 @@ import { PrescriptionModelService } from '@reuse/code/services/api/prescriptionM
 import { UniqueModelNameValidator } from '@reuse/code/directives/unique-model-name.directive';
 import { ReactiveFormsModule } from '@angular/forms';
 import { EvfFormWebComponent } from '../evf-form/evf-form.component';
-import TypeEnum = FormDataType.TypeEnum;
 import { Lang } from '@reuse/code/constants/languages';
+import TypeEnum = FormDataType.TypeEnum;
+import { MatIconTestingModule } from '@angular/material/icon/testing';
+import { AlertService } from '@reuse/code/services/helpers/alert.service';
+import { mockTestAlertService } from '@reuse/code/utils/test.utils';
+import { ResolvedError } from '@reuse/code/interfaces/error.interface';
+import { ALERT_TARGET, ERROR_CREATE_PRESCRIPTION } from '@reuse/code/constants/error';
 
 @Component({
   selector: 'evf-form',
@@ -33,6 +44,7 @@ describe('CreatePrescriptionModelComponent', () => {
   let mockPrescriptionModelService: Partial<PrescriptionModelService>;
   let mockNameValidator: Partial<UniqueModelNameValidator>;
   let translate: TranslateService;
+  let mockAlertService: jest.Mocked<Partial<AlertService>>;
 
   beforeEach(async () => {
     mockModelState = {
@@ -59,6 +71,8 @@ describe('CreatePrescriptionModelComponent', () => {
       validate: jest.fn().mockReturnValue(of(null)),
     };
 
+    mockAlertService = mockTestAlertService;
+
     await TestBed.configureTestingModule({
       imports: [
         CreatePrescriptionModelComponent,
@@ -66,6 +80,7 @@ describe('CreatePrescriptionModelComponent', () => {
         MatIconModule,
         NoopAnimationsModule,
         ReactiveFormsModule,
+        MatIconTestingModule,
       ],
       providers: [
         { provide: PrescriptionModelState, useValue: mockModelState },
@@ -73,6 +88,8 @@ describe('CreatePrescriptionModelComponent', () => {
         { provide: UniqueModelNameValidator, useValue: mockNameValidator },
         provideHttpClient(),
         provideHttpClientTesting(),
+        { provide: AlertService, useValue: mockAlertService },
+        { provide: ALERT_TARGET, useValue: ERROR_CREATE_PRESCRIPTION },
       ],
     })
       .overrideComponent(CreatePrescriptionModelComponent, {
@@ -193,11 +210,16 @@ describe('CreatePrescriptionModelComponent', () => {
 
   describe('Model State Alerts', () => {
     it('should show error alert when modelState is ERROR', () => {
-      mockModelState.getModalState = jest.fn().mockReturnValue({
-        state: LoadingStatus.ERROR,
-        error: new HttpErrorResponse({ error: 'Test error', status: 500 }),
-        prescriptionTrackById: 0,
+      const errorSignal = signal<ResolvedError | null>({
+        message: 'error.message',
+        translationOptions: { count: 2 },
+        severity: AlertType.Error,
+        dismissible: true,
+        retry: false,
       });
+      jest.spyOn(mockAlertService, 'setTarget').mockReturnValue(errorSignal);
+      fixture = TestBed.createComponent(CreatePrescriptionModelComponent);
+      component = fixture.componentInstance;
 
       component.prescriptionForm = createMockPrescriptionForm();
 
@@ -205,9 +227,7 @@ describe('CreatePrescriptionModelComponent', () => {
 
       const alerts = fixture.debugElement.queryAll(By.css('app-alert'));
 
-      const errorAlert = alerts.find(alert =>
-        alert.nativeElement.textContent.includes('prescription.errors.failedToCreateModel')
-      );
+      const errorAlert = alerts.find(alert => alert.componentInstance.severity() === 'error');
       expect(errorAlert).toBeTruthy();
     });
 
@@ -221,9 +241,9 @@ describe('CreatePrescriptionModelComponent', () => {
       fixture.detectChanges();
 
       const alerts = fixture.debugElement.queryAll(By.css('app-alert'));
-      const successAlert = alerts.find(alert => alert.componentInstance.alert === 'success');
+      const successAlert = alerts.find(alert => alert.componentInstance.severity() === 'success');
       expect(successAlert).toBeTruthy();
-      expect(successAlert?.componentInstance.message).toBe('prescription.model.create.success');
+      expect(successAlert?.componentInstance.message()).toBe('prescription.model.create.success');
     });
 
     it('should show spinner when modelState is LOADING', () => {
@@ -239,12 +259,17 @@ describe('CreatePrescriptionModelComponent', () => {
     });
 
     it('should not show alerts when modelState is INITIAL', () => {
+      const errorSignal = signal<ResolvedError | null>(null);
+      jest.spyOn(mockAlertService, 'setTarget').mockReturnValue(errorSignal);
+
       mockModelState.modalStates.set([
         {
           state: LoadingStatus.INITIAL,
           prescriptionTrackById: 0,
         },
       ]);
+      fixture = TestBed.createComponent(CreatePrescriptionModelComponent);
+      component = fixture.componentInstance;
       component.prescriptionForm = createMockPrescriptionForm();
       fixture.detectChanges();
 
@@ -280,29 +305,6 @@ describe('CreatePrescriptionModelComponent', () => {
 
       const spinners = fixture.debugElement.queryAll(By.css('app-overlay-spinner'));
       expect(spinners.length).toBe(1);
-    });
-
-    it('should show error message when formTemplateState is ERROR', () => {
-      component.prescriptionForm = createMockPrescriptionForm({
-        formTemplateState$: signal(
-          createMockDataState({
-            status: LoadingStatus.ERROR,
-          })
-        ),
-      });
-      fixture.detectChanges();
-
-      // const errorDiv = fixture.nativeElement.textContent;
-      // expect(errorDiv).toContain('Failed to load prescription form template');
-
-      //prescription.errors.failedToLoadTemplate
-
-      const alerts = fixture.debugElement.queryAll(By.css('app-alert'));
-
-      const errorAlert = alerts.find(alert =>
-        alert.nativeElement.textContent.includes('prescription.errors.failedToLoadTemplate')
-      );
-      expect(errorAlert).toBeTruthy();
     });
 
     it('should render evf-form when formTemplateState is SUCCESS', () => {
@@ -378,7 +380,7 @@ describe('CreatePrescriptionModelComponent', () => {
       expect(errorElement.nativeElement.textContent).toContain('common.mandatory');
     });
 
-    it('should show unique name error when name is not unique', fakeAsync(() => {
+    it('should show unique name error when name is not unique', async () => {
       mockNameValidator.validate = jest.fn().mockReturnValue(of({ uniqueName: true }));
 
       component.prescriptionForm = createMockPrescriptionForm({
@@ -404,12 +406,12 @@ describe('CreatePrescriptionModelComponent', () => {
       component.titleControl.setValue('Duplicate Name');
       component.titleControl.markAsTouched();
 
-      tick(100);
       fixture.detectChanges();
+      await fixture.whenStable();
 
       const errorElement = fixture.debugElement.query(By.css('mat-error'));
       expect(errorElement).toBeTruthy();
-    }));
+    });
 
     it('should set originalName signal on ngOnChanges', () => {
       component.prescriptionForm = createMockPrescriptionForm({

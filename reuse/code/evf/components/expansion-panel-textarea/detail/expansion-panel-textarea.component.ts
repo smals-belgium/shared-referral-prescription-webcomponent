@@ -1,4 +1,12 @@
-import { AfterViewInit, Component, inject, signal, ViewChild, WritableSignal } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+  ViewChild,
+  WritableSignal,
+} from '@angular/core';
 import {
   EvfBaseFormElementComponent,
   EvfElementLabelComponent,
@@ -15,6 +23,7 @@ import { EvfActiveValidationPipe, Validation } from '@smals-belgium-shared/vas-e
   templateUrl: './expansion-panel-textarea.component.html',
   styleUrl: './expansion-panel-textarea.component.scss',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExpansionPanelTextareaComponent extends EvfBaseFormElementComponent implements AfterViewInit {
   @ViewChild('matExpansionPanel') matExpansionPanel!: MatExpansionPanel;

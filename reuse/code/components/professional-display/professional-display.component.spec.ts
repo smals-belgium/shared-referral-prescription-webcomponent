@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Discipline, ProviderType, Role } from '@reuse/code/openapi';
 import { By } from '@angular/platform-browser';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 describe('ProfessionalDisplayComponent', () => {
   let component: ProfessionalDisplayComponent;
@@ -19,6 +20,7 @@ describe('ProfessionalDisplayComponent', () => {
         }),
         MatIconModule,
         MatTooltipModule,
+        MatIconTestingModule,
       ],
     }).compileComponents();
 

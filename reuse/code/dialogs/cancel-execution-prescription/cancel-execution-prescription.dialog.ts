@@ -1,17 +1,17 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { v4 as uuidv4 } from 'uuid';
-import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { PerformerTaskResource, PersonResource, ReadRequestResource } from '@reuse/code/openapi';
-import { HttpErrorResponse } from '@angular/common/http';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { AlertType } from '@reuse/code/interfaces';
+import { AlertService } from '@reuse/code/services/helpers/alert.service';
+import { finalize } from 'rxjs/operators';
 
 interface CancelExecutionPrescriptionDialogData {
   prescription: ReadRequestResource;
@@ -31,19 +31,18 @@ interface CancelExecutionPrescriptionDialogData {
     AlertComponent,
   ],
 })
-export class CancelExecutionPrescriptionDialog implements OnInit {
+export class CancelExecutionPrescriptionDialog implements OnInit, OnDestroy {
   protected readonly AlertType = AlertType;
+  private readonly alertService = inject(AlertService);
+
+  private readonly ERROR_CANCEL_EXECUTION_DIALOG = 'cancel-execution-dialog';
+  protected readonly error = this.alertService.setTarget(this.ERROR_CANCEL_EXECUTION_DIALOG);
 
   prescription: ReadRequestResource;
   patient?: PersonResource;
   performerTask: PerformerTaskResource;
   loading = false;
   generatedUUID = '';
-  errorCard: ErrorCard = {
-    show: false,
-    message: '',
-    errorResponse: undefined,
-  };
 
   constructor(
     private readonly prescriptionStateService: PrescriptionState,
@@ -58,42 +57,37 @@ export class CancelExecutionPrescriptionDialog implements OnInit {
 
   ngOnInit() {
     this.generatedUUID = uuidv4();
+    this.alertService.setActive(this.ERROR_CANCEL_EXECUTION_DIALOG);
   }
 
   cancelPrescriptionExecution(): void {
     if (!this.prescription.id || !this.performerTask.id) {
-      this.errorCard = {
-        show: true,
-        message: 'common.somethingWentWrong',
-      };
+      this.alertService.showGeneralError(this.ERROR_CANCEL_EXECUTION_DIALOG);
       return;
     }
 
     this.loading = true;
     this.prescriptionStateService
       .cancelPrescriptionExecution(this.prescription.id, this.performerTask.id, this.generatedUUID)
+      .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: () => {
-          this.closeErrorCard();
           this.toastService.show('prescription.cancelExecution.success');
           this.dialogRef.close(true);
-        },
-        error: (err: HttpErrorResponse) => {
-          this.loading = false;
-          this.errorCard = {
-            show: true,
-            message: 'common.somethingWentWrong',
-            errorResponse: err,
-          };
         },
       });
   }
 
-  private closeErrorCard(): void {
-    this.errorCard = {
-      show: false,
-      message: '',
-      errorResponse: undefined,
-    };
+  protected dismissError() {
+    this.alertService.clear(this.ERROR_CANCEL_EXECUTION_DIALOG);
+  }
+
+  ngOnDestroy() {
+    this.clearAlertService();
+  }
+
+  clearAlertService() {
+    this.alertService.resetActive();
+    this.alertService.remove(this.ERROR_CANCEL_EXECUTION_DIALOG);
   }
 }

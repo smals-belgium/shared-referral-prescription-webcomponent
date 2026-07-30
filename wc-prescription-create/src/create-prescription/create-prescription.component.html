@@ -1,6 +1,6 @@
 @if (langAlertData()) {
   @let langValue = langAlertData()!;
-  <app-alert [title]="langValue.title" [message]="langValue.body" [alert]="AlertType.Info" [showRetry]="false">
+  <app-alert [title]="langValue.title" [message]="langValue.body" [severity]="AlertType.Info" [retry]="false">
   </app-alert>
 } @else {
   @if (!displaySelectDialog$()) {
@@ -15,7 +15,6 @@
           <app-create-multiple-prescriptions
             [createPrescriptionForms]="prescriptionForms()"
             [intent]="initialValues!.intent"
-            [errorCard]="errorCard"
             [patient]="patientState$().data"
             [status]="status$.getValue()"
             [lang]="lang"
@@ -32,10 +31,11 @@
       }
     } @else {
       <app-alert
-        [alert]="AlertType.Error"
-        [message]="'common.errors.pseudoDisabled' | translate"
-        [error]="errorResponseBadGateway"
-        [showRetry]="false"></app-alert>
+        [severity]="generalError.severity"
+        [title]="generalError.title"
+        [subTitle]="generalError.subTitle"
+        [dismissible]="false"
+        [retry]="false"></app-alert>
     }
   }
 }

@@ -20,7 +20,8 @@
               <div class="row">
                 <p class="professional-name">
                   @if (professional.healthcarePerson; as person) {
-                    {{ person.lastName || '' }} {{ person.firstName || '' }}
+                    @let name = (person.lastName || '') + ' ' + (person.firstName || '');
+                    <span [innerHTML]="name | highlightFilter: query()"></span>
                   }
                 </p>
               </div>
@@ -54,19 +55,16 @@
     </div>
   } @else if (itemsLength === 0) {
     <div class="mh-margin-top-bottom">
-      <app-alert
-        [alert]="AlertType.Info"
-        [message]="'professional.noProfessionals' | translate"
-        [showRetry]="false"></app-alert>
+      <app-alert [severity]="AlertType.Info" [message]="'professional.noProfessionals'" [retry]="false"></app-alert>
     </div>
   }
 
   @if (!canLoadMore()) {
     <div class="mh-margin-bottom">
       <app-alert
-        [alert]="AlertType.Info"
-        [message]="'professional.allProfessionalsFetched' | translate"
-        [showRetry]="false"></app-alert>
+        [severity]="AlertType.Info"
+        [message]="'professional.allProfessionalsFetched'"
+        [retry]="false"></app-alert>
     </div>
   }
 

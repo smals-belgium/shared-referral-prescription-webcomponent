@@ -12,6 +12,7 @@ import { By } from '@angular/platform-browser';
 import { MarkdownModule } from 'ngx-markdown';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { EvfDynamicFormComponent } from '@smals-belgium-shared/vas-evaluation-form-ui-material/dynamic-form';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 const formTemplate: FormTemplate = {
   elements: [
@@ -64,7 +65,7 @@ describe('ExpansionPanelTextareaComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Wrapper, MarkdownModule.forRoot(), NoopAnimationsModule, EvfDynamicFormComponent],
+      imports: [Wrapper, MarkdownModule.forRoot(), NoopAnimationsModule, EvfDynamicFormComponent, MatIconTestingModule],
       providers: [
         provideEvfCore(
           evfElementConfigFeature({
@@ -87,7 +88,8 @@ describe('ExpansionPanelTextareaComponent', () => {
     });
 
     it('should initialize isExpanded signal with false when not required', () => {
-      component.demoTemplate = formTemplateWithoutValidation;
+      fixture.componentRef.setInput('demoTemplate', formTemplateWithoutValidation);
+
       fixture.detectChanges();
 
       const componentInstance = getComponentInstance();
@@ -95,7 +97,8 @@ describe('ExpansionPanelTextareaComponent', () => {
       expect(componentInstance.isExpanded()).toBe(false);
     });
     it('should initialize isExpanded signal with true when required', () => {
-      component.demoTemplate = formTemplate;
+      fixture.componentRef.setInput('demoTemplate', formTemplate);
+
       fixture.detectChanges();
 
       const componentInstance = getComponentInstance();
@@ -106,7 +109,8 @@ describe('ExpansionPanelTextareaComponent', () => {
 
   describe('ngAfterViewInit', () => {
     it('should call activeValidationPipe.transform with correct parameters', () => {
-      component.demoTemplate = formTemplate;
+      fixture.componentRef.setInput('demoTemplate', formTemplate);
+
       fixture.detectChanges();
 
       const componentInstance = getComponentInstance();
@@ -118,7 +122,8 @@ describe('ExpansionPanelTextareaComponent', () => {
     });
 
     it('should open panel when elementControl has value', () => {
-      component.demoTemplate = formTemplate;
+      fixture.componentRef.setInput('demoTemplate', formTemplate);
+
       fixture.detectChanges();
 
       const componentInstance = getComponentInstance();
@@ -132,7 +137,8 @@ describe('ExpansionPanelTextareaComponent', () => {
     });
 
     it('should open panel when required validation exists even with empty string value', () => {
-      component.demoTemplate = formTemplate;
+      fixture.componentRef.setInput('demoTemplate', formTemplate);
+
       fixture.detectChanges();
 
       const componentInstance = getComponentInstance();
@@ -147,7 +153,8 @@ describe('ExpansionPanelTextareaComponent', () => {
     });
 
     it('should not open panel when elementControl.value is null and no required validation', () => {
-      component.demoTemplate = formTemplateWithoutValidation;
+      fixture.componentRef.setInput('demoTemplate', formTemplateWithoutValidation);
+
       fixture.detectChanges();
 
       const componentInstance = getComponentInstance();
@@ -162,7 +169,8 @@ describe('ExpansionPanelTextareaComponent', () => {
     });
 
     it('should not open panel when elementControl.value is undefined and no required validation', () => {
-      component.demoTemplate = formTemplateWithoutValidation;
+      fixture.componentRef.setInput('demoTemplate', formTemplateWithoutValidation);
+
       fixture.detectChanges();
 
       const componentInstance = getComponentInstance();
@@ -177,7 +185,8 @@ describe('ExpansionPanelTextareaComponent', () => {
     });
 
     it('should handle empty string value correctly and no required validation', () => {
-      component.demoTemplate = formTemplateWithoutValidation;
+      fixture.componentRef.setInput('demoTemplate', formTemplateWithoutValidation);
+
       fixture.detectChanges();
 
       const componentInstance = getComponentInstance();

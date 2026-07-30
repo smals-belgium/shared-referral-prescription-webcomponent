@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { EvfBaseFormElementComponent } from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/shared';
 import { ResponsiveWrapperComponent } from '@reuse/code/components/responsive-wrapper/responsive-wrapper.component';
 import { RadioComponent } from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/radio';
@@ -9,6 +9,7 @@ import { CheckboxListComponent } from '@smals-belgium-shared/vas-evaluation-form
   selector: 'toggle-responsive-wrapper',
   imports: [ResponsiveWrapperComponent, RadioComponent, SelectComponent, CheckboxListComponent],
   templateUrl: './toggle-responsive-wrapper.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ToggleResponsiveWrapperComponent extends EvfBaseFormElementComponent {
   getElementControl() {

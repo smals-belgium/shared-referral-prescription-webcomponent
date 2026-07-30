@@ -1,20 +1,22 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Component, Pipe, PipeTransform } from '@angular/core';
+import { Component, Pipe, PipeTransform, signal } from '@angular/core';
 import * as uuid from 'uuid';
 import { TranslateModule } from '@ngx-translate/core';
 import { RejectAssignationDialog } from './reject-assignation.dialog';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
-import { PerformerTaskResource, PersonResource, ReadRequestResource } from '@reuse/code/openapi';
+import { PersonResource, ReadRequestResource, RequestTaskResource } from '@reuse/code/openapi';
 import { Intent } from '@reuse/code/interfaces';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 import { TranslateByIntentPipe } from '@reuse/code/pipes/translate-by-intent.pipe';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
+import { AlertService } from '@reuse/code/services/helpers/alert.service';
+import { mockTestAlertService } from '@reuse/code/utils/test.utils';
 
 @Pipe({ name: 'templateName', standalone: true })
 class MockTemplateNamePipe implements PipeTransform {
@@ -42,12 +44,14 @@ describe('RejectAssignationDialog', () => {
   const mockDialogRef = { close: jest.fn() };
   const mockDialogData = {
     prescription: { id: 'prescriptionId', intent: Intent.ORDER } as ReadRequestResource,
-    performerTask: { id: 'performerTaskId' } as PerformerTaskResource,
+    requestTask: { id: 'requestTaskId' } as RequestTaskResource,
     patient: { id: 'patientId' } as PersonResource,
   };
+  let mockAlertService: jest.Mocked<Partial<AlertService>>;
 
   beforeEach(async () => {
     jest.spyOn(uuid, 'v4').mockReturnValue('uuid-123' as any);
+    mockAlertService = { ...mockTestAlertService, setTarget: jest.fn().mockReturnValue(signal(null)) };
     await TestBed.configureTestingModule({
       imports: [
         RejectAssignationDialog,
@@ -64,6 +68,7 @@ describe('RejectAssignationDialog', () => {
         { provide: ProposalState, useValue: mockProposalState },
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
+        { provide: AlertService, useValue: mockAlertService },
       ],
     })
       .overrideComponent(RejectAssignationDialog, {
@@ -82,46 +87,30 @@ describe('RejectAssignationDialog', () => {
     jest.clearAllMocks();
   });
 
-  it('should reject prescription assignment successfully', fakeAsync(() => {
+  it('should reject prescription assignment successfully', () => {
     mockPrescriptionState.rejectAssignation.mockReturnValue(of(void 0));
     component.onReject();
-    tick();
-    expect(mockPrescriptionState.rejectAssignation).toHaveBeenCalledWith(
-      'prescriptionId',
-      'performerTaskId',
-      'uuid-123'
-    );
+    expect(mockPrescriptionState.rejectAssignation).toHaveBeenCalledWith('prescriptionId', 'requestTaskId', 'uuid-123');
     expect(mockToastService.show).toHaveBeenCalledWith('prescription.rejectAssignation.success');
     expect(mockDialogRef.close).toHaveBeenCalledWith(true);
-  }));
+  });
 
-  it('should reject proposal assignment successfully', fakeAsync(() => {
+  it('should reject proposal assignment successfully', () => {
     component['prescription'].intent = Intent.PROPOSAL;
     mockProposalState.rejectAssignation.mockReturnValue(of(void 0));
     component.onReject();
-    tick();
-    expect(mockProposalState.rejectAssignation).toHaveBeenCalledWith('prescriptionId', 'performerTaskId', 'uuid-123');
+    expect(mockProposalState.rejectAssignation).toHaveBeenCalledWith('prescriptionId', 'requestTaskId', 'uuid-123');
     expect(mockToastService.show).toHaveBeenCalledWith('proposal.rejectAssignation.success');
-  }));
+  });
 
   it('should show error when required ids are missing', () => {
-    const showErrorSpy = jest.spyOn(component as any, 'showErrorCard');
+    const alertServiceSpy = jest.spyOn(mockAlertService, 'showGeneralError');
 
     component.prescription.id = undefined;
     component.onReject();
 
-    expect(showErrorSpy).toHaveBeenCalledWith('common.somethingWentWrong');
-    expect(mockPrescriptionState.rejectAssignation).not.toHaveBeenCalled();
-    expect(mockProposalState.rejectAssignation).not.toHaveBeenCalled();
-    expect(component.loading).toBe(false);
-
-    showErrorSpy.mockClear();
-
-    component.prescription.id = 'prescriptionId';
-    component.performerTask.id = undefined;
-    component.onReject();
-
-    expect(showErrorSpy).toHaveBeenCalledWith('common.somethingWentWrong');
+    expect(alertServiceSpy).toHaveBeenCalledTimes(1);
+    expect(alertServiceSpy).toHaveBeenCalledWith('reject-assignation-dialog');
     expect(mockPrescriptionState.rejectAssignation).not.toHaveBeenCalled();
     expect(mockProposalState.rejectAssignation).not.toHaveBeenCalled();
     expect(component.loading).toBe(false);

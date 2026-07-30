@@ -89,13 +89,6 @@
       *matFooterRowDef="['tableStatus']"></tr>
   </table>
 }
-@if (error) {
-  <app-alert
-    [alert]="AlertType.Error"
-    data-cy="alert"
-    [message]="errorMsg"
-    [error]="errorResponse"
-    (clickRetry)="retryOnError.emit()"></app-alert>
-} @else if (loading) {
+@if (loading) {
   <app-skeleton data-cy="skeleton" [items]="3" [format]="FormatEnum.LINE"></app-skeleton>
 }

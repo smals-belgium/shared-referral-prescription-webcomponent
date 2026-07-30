@@ -1,11 +1,12 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { UserInfo } from '@reuse/code/interfaces';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
-import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
+import { FhirR4TaskStatus, ReadRequestResource, RequestTaskResource } from '@reuse/code/openapi';
 import {
   checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline,
-  isProfesionalBasedOnRole,
+  isProfesionalNotOrganizationBasedOnRole,
 } from '@reuse/code/utils/utils';
+import TaskTypeEnum = RequestTaskResource.TaskTypeEnum;
 
 /**
  * This pipe determines whether an assignation can be interrupted.
@@ -27,13 +28,14 @@ import {
 export class CanInterruptTreatmentPipe implements PipeTransform {
   constructor(private readonly accessMatrixState: AccessMatrixState) {}
 
-  transform(prescription: ReadRequestResource, task: PerformerTaskResource, currentUser?: Partial<UserInfo>): boolean {
+  transform(prescription: ReadRequestResource, task: RequestTaskResource, currentUser?: Partial<UserInfo>): boolean {
     if (currentUser == undefined) return false;
 
     const allowedStatuses: FhirR4TaskStatus[] = [FhirR4TaskStatus.Inprogress];
 
     return (
-      isProfesionalBasedOnRole(currentUser.role) &&
+      task?.taskType === TaskTypeEnum.PerformerTaskResource &&
+      isProfesionalNotOrganizationBasedOnRole(currentUser.role) &&
       checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline(task, currentUser) &&
       this.accessMatrixState.hasAtLeastOnePermission(['interruptTreatment'], prescription.templateCode) &&
       !!task.status &&
