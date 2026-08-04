@@ -59,27 +59,30 @@
     <div class="mh-margin-top-bottom">
       @if (isPrescriptionIntent) {
         <app-alert
-          [alert]="AlertType.Info"
+          [severity]="AlertType.Info"
           [message]="
-            (isProfessional$() ? 'prescription.noPrescriptionsForPatient' : 'prescription.noPrescriptionsForUser')
-              | translate
+            isProfessional$() ? 'prescription.noPrescriptionsForPatient' : 'prescription.noPrescriptionsForUser'
           "
-          [showRetry]="false"></app-alert>
+          [retry]="false"></app-alert>
       } @else if (isProposalIntent) {
         <app-alert
-          [alert]="AlertType.Info"
-          [message]="(isProfessional$() ? 'proposal.noProposalsForPatient' : 'proposal.noProposalsForUser') | translate"
-          [showRetry]="false"></app-alert>
+          [severity]="AlertType.Info"
+          [message]="isProfessional$() ? 'proposal.noProposalsForPatient' : 'proposal.noProposalsForUser'"
+          [retry]="false"></app-alert>
       }
     </div>
   }
 
   @if (!canLoadMore()) {
     <div class="mh-margin-bottom">
-      <app-alert
-        [alert]="AlertType.Info"
-        [message]="'prescription.allPrescriptionsFetched' | translate"
-        [showRetry]="false"></app-alert>
+      @if (isPrescriptionIntent) {
+        <app-alert
+          [severity]="AlertType.Info"
+          [message]="'prescription.allPrescriptionsFetched'"
+          [retry]="false"></app-alert>
+      } @else if (isProposalIntent) {
+        <app-alert [severity]="AlertType.Info" [message]="'proposal.allProposalsFetched'" [retry]="false"></app-alert>
+      }
     </div>
   }
 
@@ -90,9 +93,14 @@
   } @else if (error) {
     <div class="mh-margin-top-bottom">
       <app-alert
-        [alert]="AlertType.Error"
-        [message]="errorMsg"
-        [error]="errorResponse"
+        [severity]="error.severity"
+        [title]="error.title"
+        [subTitle]="error.subTitle"
+        [message]="error.message"
+        [dismissible]="error.dismissible"
+        [retry]="error.retry"
+        [errorId]="error.errorId"
+        (clickClose)="dismissOnError.emit()"
         (clickRetry)="onErrorRetryClick()"></app-alert>
     </div>
   }

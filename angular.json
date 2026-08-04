@@ -20,7 +20,7 @@
             "outputPath": "dist/wc-prescription-details",
             "index": "wc-prescription-details/src/index.html",
             "browser": "wc-prescription-details/src/main.ts",
-            "polyfills": ["zone.js"],
+            "polyfills": [],
             "tsConfig": "wc-prescription-details/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "ssr": false,
@@ -49,7 +49,8 @@
               "outputHashing": "all",
               "optimization": {
                 "fonts": false
-              }
+              },
+              "sourceMap": true
             },
             "development": {
               "optimization": false,
@@ -75,7 +76,7 @@
         "test": {
           "builder": "@angular-builders/jest:run",
           "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
+            "polyfills": [],
             "configPath": "jest.config.ts",
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": ["scss"],
@@ -109,7 +110,7 @@
             "outputPath": "dist/wc-prescription-details/serve",
             "index": "wc-prescription-details/src/index.html",
             "browser": "wc-prescription-details/src/main-serve.ts",
-            "polyfills": ["zone.js"],
+            "polyfills": [],
             "tsConfig": "wc-prescription-details/tsconfig-serve.app.json",
             "outputHashing": "all",
             "inlineStyleLanguage": "scss",
@@ -180,7 +181,7 @@
             "outputPath": "dist/wc-prescription-list",
             "index": "wc-prescription-list/src/index.html",
             "browser": "/wc-prescription-list/src/main.ts",
-            "polyfills": ["zone.js"],
+            "polyfills": [],
             "tsConfig": "wc-prescription-list/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "ssr": false,
@@ -227,7 +228,7 @@
         "test": {
           "builder": "@angular-builders/jest:run",
           "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
+            "polyfills": [],
             "configPath": "jest.config.ts",
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": ["scss"],
@@ -261,7 +262,7 @@
             "outputPath": "dist/wc-prescription-list/serve",
             "index": "wc-prescription-list/src/index.html",
             "browser": "wc-prescription-list/src/main-serve.ts",
-            "polyfills": ["zone.js"],
+            "polyfills": [],
             "tsConfig": "wc-prescription-list/tsconfig-serve.app.json",
             "outputHashing": "all",
             "inlineStyleLanguage": "scss",
@@ -336,7 +337,7 @@
             "outputPath": "dist/wc-prescription-create",
             "index": "wc-prescription-create/src/index.html",
             "browser": "wc-prescription-create/src/main.ts",
-            "polyfills": ["zone.js"],
+            "polyfills": [],
             "tsConfig": "wc-prescription-create/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "ssr": false,
@@ -376,7 +377,7 @@
         "test": {
           "builder": "@angular-builders/jest:run",
           "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
+            "polyfills": [],
             "configPath": "jest.config.ts",
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": ["scss"],
@@ -410,7 +411,7 @@
             "outputPath": "dist/wc-prescription-create/serve",
             "index": "wc-prescription-create/src/index.html",
             "browser": "wc-prescription-create/src/main-serve.ts",
-            "polyfills": ["zone.js"],
+            "polyfills": [],
             "tsConfig": "wc-prescription-create/tsconfig-serve.app.json",
             "outputHashing": "all",
             "inlineStyleLanguage": "scss",
@@ -467,7 +468,7 @@
         "test": {
           "builder": "@angular-builders/jest:run",
           "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
+            "polyfills": [],
             "configPath": "jest.config.ts",
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": ["scss"],
@@ -552,7 +553,7 @@
         "test": {
           "builder": "@angular-builders/jest:run",
           "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
+            "polyfills": [],
             "configPath": "jest.config.ts",
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": ["scss"],
@@ -629,7 +630,7 @@
         "test": {
           "builder": "@angular-builders/jest:run",
           "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
+            "polyfills": [],
             "configPath": "jest.config.ts",
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": ["scss"],
@@ -706,7 +707,7 @@
         "test": {
           "builder": "@angular-builders/jest:run",
           "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
+            "polyfills": [],
             "configPath": "jest.config.ts",
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": ["scss"],
@@ -783,7 +784,7 @@
         "test": {
           "builder": "@angular-builders/jest:run",
           "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
+            "polyfills": [],
             "configPath": "jest.config.ts",
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": ["scss"],

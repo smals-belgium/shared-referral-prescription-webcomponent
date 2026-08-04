@@ -1,24 +1,27 @@
 <mh-alert
-  [usage]="alert"
+  [usage]="severity()"
   [backgroundColor]="'color'"
-  [alertTitle]="title | translate"
-  [alertSubtitle]="subTitle | translate"
-  [dismissMode]="'pinned'"
-  [actionButton]="showRetry"
+  [alertTitle]="title() ? (title()! | translate) : undefined"
+  [alertSubtitle]="subTitle() ? (subTitle()! | translate) : undefined"
+  [dismissMode]="dismissMode()"
+  [actionButton]="retry()"
   [buttonLabel]="'common.tryAgain' | translate"
   [buttonDisabled]="false"
   (actionButtonClicked)="clickRetry.emit()"
->
-  @if (showBody()){
+  (closeButtonClicked)="clickClose.emit()">
+  @if (resolvedMessage(); as message) {
     <div alert-details>
-      @if(genericErrorMsgKey) {
-        {{ genericErrorMsgKey | translate }}
-      }
-      @else if(message) {
-        {{ message }}
+      @if (message.isTranslated) {
+        {{ message.value }}
       } @else {
-        {{ 'somethingWentWrong' | translate }}
+        {{ message.value | translate }}
       }
+    </div>
+  }
+
+  @if (hasContent()) {
+    <div alert-details>
+      <ng-content></ng-content>
     </div>
   }
 </mh-alert>

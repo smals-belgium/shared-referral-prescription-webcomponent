@@ -30,7 +30,8 @@
             "executionPeriod": {
               "start": null,
               "end": null
-            }
+            },
+            "taskType": "PerformerTaskResource"
           }
         ]
       },
@@ -85,7 +86,8 @@
             "executionPeriod": {
               "start": null,
               "end": null
-            }
+            },
+            "taskType": "PerformerTaskResource"
           }
         ]
       },
@@ -140,7 +142,8 @@
             "executionPeriod": {
               "start": null,
               "end": null
-            }
+            },
+            "taskType": "PerformerTaskResource"
           }
         ]
       },
@@ -245,7 +248,8 @@
             "executionPeriod": {
               "start": "2025-09-14T22:00:00.000+00:00",
               "end": null
-            }
+            },
+            "taskType": "PerformerTaskResource"
           }
         ]
       },
@@ -300,7 +304,8 @@
             "executionPeriod": {
               "start": "2025-09-01T22:00:00.000+00:00",
               "end": "2025-09-13T22:00:00.000+00:00"
-            }
+            },
+            "taskType": "PerformerTaskResource"
           }
         ]
       },
@@ -357,7 +362,8 @@
             "executionPeriod": {
               "start": "2025-09-01T22:00:00.000+00:00",
               "end": "2025-09-13T22:00:00.000+00:00"
-            }
+            },
+            "taskType": "PerformerTaskResource"
           }
         ]
       },
@@ -413,7 +419,8 @@
             "executionPeriod": {
               "start": "2025-08-18T22:00:00.000+00:00",
               "end": null
-            }
+            },
+            "taskType": "PerformerTaskResource"
           },
           {
             "careGiverSsin": "10000000009",
@@ -423,7 +430,8 @@
             "executionPeriod": {
               "start": "2025-08-15T22:00:00.000+00:00",
               "end": "2025-08-18T22:00:00.000+00:00"
-            }
+            },
+            "taskType": "PerformerTaskResource"
           }
         ]
       },
@@ -585,7 +593,8 @@
             "executionPeriod": {
               "start": null,
               "end": null
-            }
+            },
+            "taskType": "PerformerTaskResource"
           }
         ]
       },
@@ -685,7 +694,8 @@
             "executionPeriod": {
               "start": null,
               "end": null
-            }
+            },
+            "taskType": "PerformerTaskResource"
           }
         ]
       },

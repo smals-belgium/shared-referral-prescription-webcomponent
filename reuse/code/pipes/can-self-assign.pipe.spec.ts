@@ -1,5 +1,6 @@
 import { CanSelfAssignPipe } from './can-self-assign.pipe';
-import { PerformerTaskResource, ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
+import { Discipline, ReadRequestResource, RequestStatus, Role } from '@reuse/code/openapi';
+import { UserInfo } from '@reuse/code/interfaces';
 
 describe('CanSelfAssignPipe', () => {
   let pipe: CanSelfAssignPipe;
@@ -14,7 +15,7 @@ describe('CanSelfAssignPipe', () => {
     templateCode: 'templateCode',
   } as ReadRequestResource;
 
-  it('should return true when status allowed, permission granted, and no task provided', () => {
+  it('should return true when status allowed and permission granted', () => {
     mockAccess.hasAtLeastOnePermission.mockReturnValue(true);
 
     const prescription = {
@@ -22,9 +23,8 @@ describe('CanSelfAssignPipe', () => {
       status: RequestStatus.Open,
     };
 
-    expect(pipe.transform(prescription, undefined)).toBe(true);
-    expect(mockAccess.hasAtLeastOnePermission)
-      .toHaveBeenCalledWith(['executeTreatment'], 'templateCode');
+    expect(pipe.transform(prescription)).toBe(true);
+    expect(mockAccess.hasAtLeastOnePermission).toHaveBeenCalledWith(['assignPrescription'], 'templateCode');
   });
 
   it('should return false when permission is missing', () => {
@@ -49,19 +49,6 @@ describe('CanSelfAssignPipe', () => {
     expect(pipe.transform(prescription)).toBe(false);
   });
 
-  it('should return false when a task is provided', () => {
-    mockAccess.hasAtLeastOnePermission.mockReturnValue(true);
-
-    const prescription = {
-      ...basePrescription,
-      status: RequestStatus.Pending,
-    };
-
-    const task = { id: 'taskId' } as PerformerTaskResource;
-
-    expect(pipe.transform(prescription, task)).toBe(false);
-  });
-
   it('should return false when status is undefined', () => {
     mockAccess.hasAtLeastOnePermission.mockReturnValue(true);
 
@@ -71,5 +58,67 @@ describe('CanSelfAssignPipe', () => {
     };
 
     expect(pipe.transform(prescription)).toBe(false);
+  });
+
+  it('should return false when status is proposal and user is caregiver', () => {
+    mockAccess.hasAtLeastOnePermission.mockReturnValue(true);
+
+    const prescription = {
+      ...basePrescription,
+      intent: 'proposal',
+      status: RequestStatus.Open,
+    };
+
+    const currentUser: UserInfo = {
+      discipline: Discipline.Nurse,
+      firstName: '',
+      lastName: '',
+      professional: true,
+      ssin: '789',
+      role: Role.Caregiver,
+    };
+
+    expect(pipe.transform(prescription, currentUser)).toBe(false);
+  });
+
+  it('should return false when status is proposal and user is patient', () => {
+    mockAccess.hasAtLeastOnePermission.mockReturnValue(true);
+
+    const prescription = {
+      ...basePrescription,
+      intent: 'proposal',
+      status: RequestStatus.Open,
+    };
+
+    const currentUser: Partial<UserInfo> = {
+      discipline: Discipline.Patient,
+      firstName: '',
+      lastName: '',
+      ssin: '789',
+      role: Role.Patient,
+    };
+
+    expect(pipe.transform(prescription, currentUser)).toBe(false);
+  });
+
+  it('should return true when status is proposal and user is prescriber', () => {
+    mockAccess.hasAtLeastOnePermission.mockReturnValue(true);
+
+    const prescription = {
+      ...basePrescription,
+      intent: 'proposal',
+      status: RequestStatus.Open,
+    };
+
+    const currentUser: UserInfo = {
+      discipline: Discipline.Physician,
+      firstName: '',
+      lastName: '',
+      professional: true,
+      ssin: '789',
+      role: Role.Prescriber,
+    };
+
+    expect(pipe.transform(prescription, currentUser)).toBe(true);
   });
 });

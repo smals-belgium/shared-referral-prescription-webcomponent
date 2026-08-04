@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AssignOrTransferDialog, AssignOrTransferDialogData } from './assign-or-transfer-dialog';
 
@@ -237,7 +237,7 @@ describe('AssignOrTransferDialog', () => {
   });
 
   describe('healthcareProvidersState$', () => {
-    it('should call healthcareProviderService.findAll when searchCriteria is set', fakeAsync(() => {
+    it('should call healthcareProviderService.findAll when searchCriteria is set', () => {
       const response = {
         healthcareProfessionals: [{ id: { ssin: '123' } }],
         total: 1,
@@ -254,13 +254,11 @@ describe('AssignOrTransferDialog', () => {
 
       fixture.detectChanges();
 
-      tick(); // flush signal observable pipeline
-
       const state = component.healthcareProvidersState$();
 
       expect(healthcareProviderServiceMock.findAll).toHaveBeenCalled();
       expect(state?.data?.items.length).toBe(1);
-    }));
+    });
 
     it('should return empty list when criteria is null', () => {
       component.searchCriteria$.set(null);

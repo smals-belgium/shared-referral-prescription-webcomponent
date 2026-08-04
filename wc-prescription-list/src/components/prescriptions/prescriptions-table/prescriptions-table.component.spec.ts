@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PrescriptionsTableComponent } from './prescriptions-table.component';
 import { HealthcareProResource, ReadRequestListResource, RequestStatus } from '@reuse/code/openapi';
 import { Intent } from '@reuse/code/interfaces';
@@ -7,11 +7,11 @@ import { AlertComponent } from '@myhealth-belgium/myhealth-additional-ui-compone
 import { MatTableModule } from '@angular/material/table';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { By } from '@angular/platform-browser';
-import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { SimpleChange } from '@angular/core';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 const requester: HealthcareProResource = {
   healthcarePerson: {
@@ -71,6 +71,7 @@ describe('PrescriptionsTableComponent', () => {
         TranslateModule.forRoot({
           loader: { provide: TranslateLoader, useClass: FakeLoader },
         }),
+        MatIconTestingModule,
       ],
       providers: [{ provide: AuthService, useValue: mockAuthService }],
     }).compileComponents();
@@ -82,7 +83,6 @@ describe('PrescriptionsTableComponent', () => {
   it('should create component with correct default values', () => {
     expect(component).toBeTruthy();
     expect(component.loading).toBe(false);
-    expect(component.error).toBe(false);
     expect(component.displayedColumns).toEqual(['creationDate', 'status', 'author', 'typeOfCare', 'start', 'end']);
   });
 
@@ -108,31 +108,9 @@ describe('PrescriptionsTableComponent', () => {
     expect(skeletonComponent.format()).toBe(FormatEnum.LINE);
   });
 
-  it('should show alert when error is true and emit retry event', () => {
-    const retryEmitSpy = jest.spyOn(component.retryOnError, 'emit');
-    const mockError = new HttpErrorResponse({ status: 500 });
-
-    component.error = true;
-    component.errorMsg = 'Test error';
-    component.errorResponse = mockError;
-    fixture.detectChanges();
-
-    const alert = fixture.debugElement.query(By.css('[data-cy="alert"]'));
-    const alertComponent = fixture.debugElement.query(By.css('app-alert'));
-
-    expect(alert).toBeTruthy();
-    expect(alertComponent.componentInstance.alert).toBe('error');
-    expect(alertComponent.componentInstance.message).toBe('Test error');
-    expect(alertComponent.componentInstance.error).toBe(mockError);
-
-    alertComponent.triggerEventHandler('clickRetry', null);
-    expect(retryEmitSpy).toHaveBeenCalledWith();
-  });
-
-  it('should show table when not loading and no error', () => {
+  it('should show table when not loading', () => {
     component.prescriptions = mockPrescriptions;
     component.loading = false;
-    component.error = false;
     fixture.detectChanges();
 
     const table = fixture.debugElement.query(By.css('table'));
@@ -159,26 +137,9 @@ describe('PrescriptionsTableComponent', () => {
     expect(clickEmitSpy).toHaveBeenCalledWith(testPrescription);
   });
 
-  it('should handle all input properties correctly', () => {
-    const errorResponse = new HttpErrorResponse({ status: 404 });
-
-    component.prescriptions = mockPrescriptions;
-    component.loading = true;
-    component.error = true;
-    component.errorMsg = 'Error message';
-    component.errorResponse = errorResponse;
-
-    expect(component.prescriptions).toBe(mockPrescriptions);
-    expect(component.loading).toBe(true);
-    expect(component.error).toBe(true);
-    expect(component.errorMsg).toBe('Error message');
-    expect(component.errorResponse).toBe(errorResponse);
-  });
-
   it('should display correct table structure with data', () => {
     component.prescriptions = mockPrescriptions;
     component.loading = false;
-    component.error = false;
     fixture.detectChanges();
 
     const headerCells = fixture.debugElement.queryAll(By.css('th'));
@@ -219,23 +180,11 @@ describe('PrescriptionsTableComponent', () => {
     expect(items[0]?.period?.hideEndDate).toBe(true);
   });
 
-  it('should display the alert card AND the table', () => {
-    component.loading = true;
-    component.error = true;
-    fixture.detectChanges();
-
-    expect(fixture.debugElement.query(By.css('[data-cy="skeleton"]'))).toBeFalsy();
-    expect(fixture.debugElement.query(By.css('[data-cy="alert"]'))).toBeTruthy();
-    expect(fixture.debugElement.query(By.css('table'))).toBeTruthy();
-  });
-
   it('display the skeleton card AND the table', () => {
     component.loading = true;
-    component.error = false;
     fixture.detectChanges();
 
     expect(fixture.debugElement.query(By.css('[data-cy="skeleton"]'))).toBeTruthy();
-    expect(fixture.debugElement.query(By.css('[data-cy="alert"]'))).toBeFalsy();
     expect(fixture.debugElement.query(By.css('table'))).toBeTruthy();
   });
 

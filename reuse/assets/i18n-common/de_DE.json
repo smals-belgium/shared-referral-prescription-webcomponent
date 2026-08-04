@@ -330,7 +330,6 @@
       "EXPIRED": "Abgelaufen",
       "IN_PROGRESS": "In bearbeitung",
       "DONE": "Abgeschlossen",
-      "CLOSED": "Abgeschlossen",
       "null": "Unbekannt",
       "APPROVED": "Genehmigt",
       "REJECTED": "Abgelehnt",
@@ -386,7 +385,8 @@
       "extend": "Verlängern",
       "print": "Drucken",
       "cancel": "Ohne weitere Bearbeitung abschließen",
-      "autoAssign": "Interne Zuweisung."
+      "autoAssign": "Zuweisen - intern",
+      "assignExternal": "Zuweisen - extern"
     },
     "assignProfessional": {
       "undefined": "Bitte wählen Sie zuerst einen Leistungserbringer aus."
@@ -556,7 +556,6 @@
       "EXPIRED": "Abgelaufen",
       "IN_PROGRESS": "In Bearbeitung",
       "DONE": "Abgeschlossen",
-      "CLOSED": "Abgeschlossen",
       "null": "Unbekannt",
       "APPROVED": "Genehmigt",
       "REJECTED": "Abgelehnt",
@@ -789,5 +788,18 @@
       },
       "unknown": "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es in wenigen Augenblicken erneut."
     }
+  },
+  "datepicker": {
+    "calendar": "Kalender",
+    "openCalendar": "Kalender öffnen",
+    "closeCalendar": "Kalender schließen",
+    "prevMonth": "Vorheriger Monat",
+    "nextMonth": "Nächster Monat",
+    "prevYear": "Vorheriges Jahr",
+    "nextYear": "Nächstes Jahr",
+    "prevMultiYear": "Vorherige 24 Jahre",
+    "nextMultiYear": "Nächste 24 Jahre",
+    "switchToMonthView": "Datum auswählen",
+    "switchToMultiYearView": "Monat und Jahr auswählen"
   }
 }

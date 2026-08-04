@@ -4,9 +4,26 @@ import { PerformerTaskResource, Role } from '@reuse/code/openapi';
 const UuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SsinRegex = /^\d{11}$/i;
 const ShortCodeRegex = /^[a-zA-Z0-9]{4}[a-fA-F0-9]{2}$/;
+const NihiiRegex = /^\d{11}$/i;
 
 export function isSsin(value: string): boolean {
   return SsinRegex.test(value.replace(/[\s-.]/g, ''));
+}
+
+export function isNihii(value: string): boolean {
+  return NihiiRegex.test(value.replace(/[\s-.]/g, ''));
+}
+
+export function isPerformerTaskWithinOrganization(value: string): boolean {
+  const valueSplit = value.split(':');
+  const nihii = valueSplit[0];
+  const ssin = valueSplit[1];
+  if (!nihii || !ssin) {
+    return false;
+  }
+  const isValueSsin = isSsin(ssin);
+  const isValueNihii = isNihii(nihii);
+  return isValueNihii && isValueSsin;
 }
 
 export function isPrescriptionId(value: string): boolean {
@@ -48,6 +65,7 @@ export function toSearchString(str: string): string {
   return str
     ? str
         .toString()
+        .normalize('NFC')
         .toLowerCase()
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
@@ -66,7 +84,8 @@ export function isModel(intent: string | undefined): boolean {
   return intent?.toLowerCase() === Intent.MODEL;
 }
 
-export const getTranslationKeyPrefixForPrescriptionOrProposal = (intent: string | undefined) => isPrescription(intent) ? "prescription" : "proposal";
+export const getTranslationKeyPrefixForPrescriptionOrProposal = (intent: string | undefined) =>
+  isPrescription(intent) ? 'prescription' : 'proposal';
 
 export function isEmptyValue(value: any): boolean {
   if (value == null) {
@@ -88,9 +107,15 @@ export function isEmptyValue(value: any): boolean {
   return false;
 }
 
-export function isProfesionalBasedOnRole(role?: Role): boolean {
+export function isProfesionalNotOrganizationBasedOnRole(role?: Role): boolean {
   if (!role) return false;
-  return role !== Role.Patient;
+  return role !== Role.Patient && role !== Role.Organization;
+}
+
+export function isNotOrganizationBasedOnRole(currentUser?: Partial<UserInfo>): boolean {
+  if (!currentUser?.role) return false;
+  if (currentUser.role === Role.Organization && (!currentUser.discipline || !currentUser.ssin)) return false;
+  return true;
 }
 
 export const checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline = (
@@ -99,3 +124,16 @@ export const checkCareGiverSsinAndProfessionAgainstCurrentUserSsinAndDiscipline 
 ) => {
   return task.careGiverSsin == currentUser.ssin && task.careGiver?.id?.profession == currentUser.discipline;
 };
+
+export function normalizePromiseRejectReason(reason: unknown): string {
+  // Normalize and display unknown reason types
+  if (typeof reason === 'string') {
+    return reason;
+  } else if (reason instanceof Error) {
+    return reason.message;
+  } else if (reason && typeof reason === 'object') {
+    return JSON.stringify(reason);
+  } else {
+    return String(reason);
+  }
+}

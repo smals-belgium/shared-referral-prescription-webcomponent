@@ -1,18 +1,18 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  signal,
-  SimpleChanges,
-  WritableSignal,
-} from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
+import { ChangeDetectionStrategy, Component, computed, contentChild, input, output } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { AlertComponent as MhAlertComponent } from '@myhealth-belgium/myhealth-additional-ui-components';
+import { ResolvedError } from '@reuse/code/interfaces/error.interface';
 import { AlertType } from '@reuse/code/interfaces';
+
+export const defaultError: ResolvedError = {
+  title: 'common.somethingWentWrong',
+  message: undefined,
+  severity: AlertType.Error,
+  dismissible: true,
+  retry: false,
+};
+
+type MessageInput = string | { value: string; isTranslated: boolean };
 
 @Component({
   selector: 'app-alert',
@@ -21,37 +21,26 @@ import { AlertType } from '@reuse/code/interfaces';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TranslateModule, MhAlertComponent],
 })
-export class AlertComponent implements OnChanges {
-  readonly genericErrors: Record<number, string> = { 403: 'common.forbiddenResource', 404: 'common.notFoundResource' };
-  genericErrorMsgKey?: string;
+export class AlertComponent {
+  severity = input<AlertType>(AlertType.Error);
+  title = input<string | undefined>('');
+  subTitle = input<string | undefined>('');
+  errorId = input<string | undefined>();
+  dismissible = input<boolean>(true);
+  retry = input<boolean>(true);
 
-  @Input() alert: AlertType = AlertType.Error;
-  @Input() title: string = '';
-  @Input() subTitle = '';
-  @Input() message?: string;
-  @Input() showRetry = true;
-  @Input() error?: HttpErrorResponse;
+  message = input<MessageInput | undefined>();
 
-  @Output() clickRetry = new EventEmitter<void>();
+  protected readonly resolvedMessage = computed(() => {
+    const messageInput = this.message();
+    if (messageInput == null) return null;
+    return typeof messageInput === 'string' ? { value: messageInput, isTranslated: false } : messageInput;
+  });
 
-  showBody: WritableSignal<boolean> = signal(false);
+  protected readonly dismissMode = computed(() => (this.dismissible() ? 'closable' : 'pinned'));
+  readonly contentRef = contentChild('content');
+  readonly hasContent = computed(() => !!this.contentRef());
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['error'] || changes['message']) {
-      this.setGenericErrorMsgKey();
-    }
-  }
-
-  private setGenericErrorMsgKey(): void {
-    if (this.error && !this.message && !(this.error.status.toString() in this.genericErrors)) {
-      this.title = 'common.error.default.header';
-      this.subTitle = 'common.error.default.subheader';
-      this.alert = AlertType.Warning;
-      this.showRetry = false;
-      this.showBody.set(false);
-    } else {
-      this.genericErrorMsgKey = this.error ? this.genericErrors[this.error.status] : undefined;
-      this.showBody.set(true);
-    }
-  }
+  clickRetry = output<void>();
+  clickClose = output<void>();
 }

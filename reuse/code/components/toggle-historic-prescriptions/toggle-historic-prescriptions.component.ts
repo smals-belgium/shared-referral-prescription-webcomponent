@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
   imports: [MatSlideToggleModule, TranslateModule, FormsModule],
   templateUrl: './toggle-historic-prescriptions.component.html',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ToggleHistoricPrescriptionsComponent {
   @Input() isChecked: boolean = false;

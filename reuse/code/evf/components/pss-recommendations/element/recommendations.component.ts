@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, signal } from '@angular/core';
 import {
   EvfBaseFormElementComponent,
   EvfElementBodyComponent,
@@ -55,6 +55,7 @@ import { SupportedLanguages } from '@reuse/code/evf/utils/evf-utils';
     AlertComponent,
   ],
   templateUrl: './recommendations.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecommendationsComponent extends EvfBaseFormElementComponent {
   protected readonly AlertType = AlertType;

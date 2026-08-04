@@ -8,22 +8,26 @@
 </div>
 
 <div mat-dialog-content class="dialog-content">
-  @if (data.prescriptionId) { @if (errorCard.show) {
+  @if (data.prescriptionId) { @if (error(); as resolvedError) {
   <app-alert
-    [alert]="AlertType.Error"
-    [message]="errorCard.message | translate : errorCard.translationOptions"
-    [error]="errorCard.errorResponse"
-    [showRetry]="false"></app-alert>
+    [severity]="resolvedError.severity"
+    [title]="resolvedError.title"
+    [subTitle]="resolvedError.subTitle"
+    [message]="resolvedError.message"
+    [dismissible]="resolvedError.dismissible"
+    [retry]="false"
+    [errorId]="resolvedError.errorId"
+    (clickClose)="dismissError()"></app-alert>
   } @if (healthcareProvidersState$(); as healthcareProviderState; ) {
   <app-responsive-wrapper>
     <ng-template #desktopTemplate>
       @if (isSearchMode()){
       <section class="search-form">
         <app-alert
-          [alert]="AlertType.Info"
-          [title]="translationKeyPrefixIntent + '.' + modeKey + '.dialog.title' | translate"
-          [message]="translationKeyPrefixIntent + '.' + modeKey + '.dialog.description' | translate"
-          [showRetry]="false"></app-alert>
+          [severity]="AlertType.Info"
+          [title]="translationKeyPrefixIntent + '.' + modeKey + '.dialog.title'"
+          [message]="translationKeyPrefixIntent + '.' + modeKey + '.dialog.description'"
+          [retry]="false"></app-alert>
         <professional-search-form
           (searchCriteria)="onSearch($event)"
           [formGroup]="formGroup"></professional-search-form>
@@ -42,6 +46,7 @@
         <professional-table
           [requestData]="isLoading() ? [] : healthcareProvidersState$()?.data?.items ?? []"
           [total]="isLoading() ? undefined : healthcareProvidersState$()?.data?.total ?? 0"
+          [query]="searchCriteria$()?.query ?? ''"
           [page]="pageable().page"
           [pageSize]="pageable().pageSize"
           [loading]="isLoading()"
@@ -55,10 +60,10 @@
     <ng-template #mobileTemplate>
       <section class="search-form">
         <app-alert
-          [alert]="AlertType.Info"
-          [title]="translationKeyPrefixIntent + '.' + modeKey + '.dialog.title' | translate"
-          [message]="translationKeyPrefixIntent + '.' + modeKey + '.dialog.description' | translate"
-          [showRetry]="false"></app-alert>
+          [severity]="AlertType.Info"
+          [title]="translationKeyPrefixIntent + '.' + modeKey + '.dialog.title'"
+          [message]="translationKeyPrefixIntent + '.' + modeKey + '.dialog.description'"
+          [retry]="false"></app-alert>
 
         <professional-search-form (searchCriteria)="onSearch($event)" [formGroup]="formGroup">
         </professional-search-form>
@@ -76,7 +81,7 @@
           [intent]="data.intent"
           [query]="searchCriteria$()?.query ?? ''"
           [zipCodes]="zipCodes() ?? []"
-          [error]="errorCard.show"
+          [error]="!!error()"
           (selectProfessional)="selectProfessional($event)"></professional-cards>
       </section>
     </ng-template>
@@ -85,10 +90,10 @@
   <app-overlay-spinner mode="dialog"></app-overlay-spinner>
   } } @else {
   <app-alert
-    [alert]="AlertType.Warning"
-    [message]="'common.somethingWentWrong' | translate"
-    [showRetry]="true"
-    (clickRetry)="dialogRef.close()"></app-alert>
+    [severity]="AlertType.Warning"
+    [message]="'common.somethingWentWrong'"
+    [retry]="true"
+    (clickRetry)="retry()"></app-alert>
   } @if (loading) {
   <app-overlay-spinner mode="dialog"></app-overlay-spinner>
   }

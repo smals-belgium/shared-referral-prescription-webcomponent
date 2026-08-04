@@ -34,7 +34,7 @@
 
   @if (!hideUpdateSearchButton()) {
     <button class="go_back_search" matButton (click)="backToSearch()">
-      <mat-icon>tune</mat-icon>
+      <mat-icon svgIcon="tune" [aria-hidden]="true"></mat-icon>
       <span>{{ 'prescription.transferPerformer.updateCriteria' | translate }}</span>
     </button>
   }

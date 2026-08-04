@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
   EvfBaseFormDetailComponent,
   EvfDetailLabelComponent,
@@ -11,5 +11,6 @@ import { OccurrenceDurationPipe } from '@reuse/code/pipes/occurrence-duration.pi
   imports: [EvfDetailLabelComponent, EvfFormDetailLayoutComponent, OccurrenceDurationPipe],
   standalone: true,
   templateUrl: './bounds-duration.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BoundsDurationComponent extends EvfBaseFormDetailComponent {}

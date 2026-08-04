@@ -1,0 +1,41 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+$chipHeight: var(--mat-chip-container-height, 32px);
+
+.professional_row {
+  padding-bottom: mh.$spacing-rem-s;
+  padding-top: mh.$spacing-rem-s;
+  border-bottom: var(--mh-caregiver-row-border-bottom, 1px solid mh.$border-brand-primary-light);
+}
+
+.professional_info {
+  .professional_info_fullName:not(.info) {
+    @include mh.font-default-semibold();
+  }
+
+  .professional_info_nihii {
+    @include mh.font-label-small();
+  }
+  .professional_info_profession {
+    @include mh.font-small-regular();
+    color: mh.$typography-brand-neutral-dark;
+  }
+}
+
+.performer_task_status {
+  margin-bottom: mh.$spacing-2xs;
+  margin-top: mh.$spacing-2xs;
+}
+
+.performer_tasks {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  &.without-period {
+    .button-group {
+      &:has(button) {
+        margin-top: calc(-1 * (2 * #{mh.$spacing-2xs} + #{$chipHeight}));
+      }
+    }
+  }
+}

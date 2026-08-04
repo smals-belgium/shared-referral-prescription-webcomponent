@@ -24,6 +24,9 @@ describe('MagsPrescriptionDetails', () => {
       lang: Lang.NL.full,
       setAttribute: jest.fn(),
       addEventListener: jest.fn(),
+      classList: {
+        add: jest.fn(),
+      },
     };
 
     mockHostServices = {
@@ -125,7 +128,7 @@ describe('MagsPrescriptionDetails', () => {
       fixture.componentRef.setInput('prescriptionId', 'uuid-123');
       component.initWebComponent();
 
-      expect(mockWebComponent.setAttribute).toHaveBeenCalledWith('lang', Lang.NL.short);
+      expect(mockWebComponent.setAttribute).toHaveBeenCalledWith('lang', Lang.NL.full);
       expect(mockWebComponent.setAttribute).toHaveBeenCalledWith('prescription-id', 'uuid-123');
       expect(mockWebComponent.setAttribute).toHaveBeenCalledWith('intent', Intent.ORDER);
     });
@@ -144,8 +147,7 @@ describe('MagsPrescriptionDetails', () => {
       await clickPrintHandler({ detail: new Blob(['pdf']) } as CustomEvent);
 
       expect(printSpy).toHaveBeenCalledWith({
-        prescriptionId: 'uuid-123',
-        lang: Lang.NL.full,
+        title: 'uuid-123',
         content: 'base64content',
         mimeType: PrintMimeType.BASE64,
         orientation: PrintOrientation.PORTRAIT,

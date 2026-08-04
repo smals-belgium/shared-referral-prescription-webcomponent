@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class ActiveOverlayHostService {
-  private activeHost = signal<HTMLElement | null>(null);
+  private readonly activeHost = signal<HTMLElement | null>(null);
 
   set(el: HTMLElement): void {
     el.addEventListener('focusin', this.onActivate);
@@ -21,7 +21,7 @@ export class ActiveOverlayHostService {
     }
   }
 
-  private onActivate = (event: Event): void => {
+  private readonly onActivate = (event: Event): void => {
     const el = event.currentTarget as HTMLElement;
     if (this.activeHost() === el) return;
 

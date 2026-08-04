@@ -12,7 +12,7 @@
   <body>
     <script>
       // Setting the profile for the target environment
-      window.referralPrescriptionEnv = 'accHcp';
+      globalThis.referralPrescriptionEnv = 'accHcp';
       const params = new URLSearchParams(window.location.search);
       // Setting the environment dynamically
       const keycloak = getKeycloakConfigurationForEnv();
@@ -23,7 +23,6 @@
           // Creation of the custom element
           const list = document.createElement('nihdi-referral-prescription-list');
 
-          //list.initialValues = {'intent': 'order', 'initialPrescriptionType': 'ASSISTING_WITH_PERSONAL_HYGIENE'};
           list.intent = 'order';
           // Input for the language
           list.lang =

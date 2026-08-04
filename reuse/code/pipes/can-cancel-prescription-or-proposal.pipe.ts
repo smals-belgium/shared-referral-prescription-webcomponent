@@ -38,7 +38,7 @@ export class CanCancelPrescriptionOrProposalPipe implements PipeTransform {
     return (
       this.hasCancelPermissions(prescription) &&
       checkStatus &&
-      this.checkIfCurrentUserIsPatientOrAssignedCaregiver(
+      this.checkIfCurrentUserIsPatientOrAssignedCaregiverNotAssignedToOrganization(
         currentUser,
         patientSsin,
         prescription.requester?.healthcarePerson?.ssin
@@ -54,11 +54,13 @@ export class CanCancelPrescriptionOrProposalPipe implements PipeTransform {
     return this._accessMatrixState.hasAtLeastOnePermission(['cancelPrescription'], prescription.templateCode);
   }
 
-  private checkIfCurrentUserIsPatientOrAssignedCaregiver(
+  private checkIfCurrentUserIsPatientOrAssignedCaregiverNotAssignedToOrganization(
     currentUser: Partial<UserInfo>,
     patientSsin?: string,
     caregiverSsin?: string
   ): boolean {
+    if (currentUser.role === Role.Organization) return false;
+
     if (!caregiverSsin || !patientSsin) return false;
 
     const isPatient = currentUser.role === Role.Patient && currentUser.ssin === patientSsin;

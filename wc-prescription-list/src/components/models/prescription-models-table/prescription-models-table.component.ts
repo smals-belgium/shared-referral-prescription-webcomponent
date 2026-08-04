@@ -22,8 +22,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ModelEntityDto, RequestStatus } from '@reuse/code/openapi';
 import { FormatEnum, SkeletonComponent } from '@reuse/code/components/progress-indicators/skeleton/skeleton.component';
-import { HttpErrorResponse } from '@angular/common/http';
-import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { AlertType } from '@reuse/code/interfaces';
 
@@ -47,7 +45,6 @@ import { AlertType } from '@reuse/code/interfaces';
     MatHeaderCellDef,
     MatCellDef,
     SkeletonComponent,
-    AlertComponent,
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
@@ -65,11 +62,6 @@ export class PrescriptionModelsTableComponent {
 
   @Output() openPrescriptionModel = new EventEmitter<ModelEntityDto>();
   @Output() deletePrescriptionModel = new EventEmitter<ModelEntityDto>();
-
-  @Input() error: boolean = false;
-  @Input() errorMsg: string = '';
-  @Input() errorResponse?: HttpErrorResponse;
-  @Output() retryOnError = new EventEmitter<void>();
 
   protected readonly FormatEnum = FormatEnum;
   protected readonly RequestStatus = RequestStatus;

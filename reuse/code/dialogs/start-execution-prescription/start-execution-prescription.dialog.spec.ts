@@ -13,6 +13,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { DateTime } from 'luxon';
 import { provideLuxonDateAdapter } from '@angular/material-luxon-adapter';
 import { SSIN_CLAIM_KEY, USER_PROFILE_CLAIM_KEY } from '@reuse/code/services/auth/auth-constants';
+import { AlertService } from '@reuse/code/services/helpers/alert.service';
+import { mockTestAlertService } from '@reuse/code/utils/test.utils';
+import { signal } from '@angular/core';
+import { ResolvedError } from '@reuse/code/interfaces/error.interface';
+import { AlertType } from '@reuse/code/interfaces';
+import { By } from '@angular/platform-browser';
 
 describe('StartExecutionPrescriptionDialog', () => {
   let component: StartExecutionPrescriptionDialog;
@@ -21,6 +27,7 @@ describe('StartExecutionPrescriptionDialog', () => {
   let mockPrescriptionState: jest.Mocked<any>;
   let mockAuthService: jest.Mocked<any>;
   let mockDialogRef: jest.Mocked<any>;
+  let mockAlertService: jest.Mocked<Partial<AlertService>>;
 
   const createMockDialogData = (overrides = {}) => ({
     prescription: {
@@ -35,6 +42,7 @@ describe('StartExecutionPrescriptionDialog', () => {
   });
 
   beforeEach(async () => {
+    mockAlertService = mockTestAlertService;
     mockToastService = { show: jest.fn() };
     mockPrescriptionState = {
       startPrescriptionExecution: jest.fn(),
@@ -49,11 +57,7 @@ describe('StartExecutionPrescriptionDialog', () => {
     jest.spyOn(uuid, 'v4').mockReturnValue('uuid-123' as any);
 
     await TestBed.configureTestingModule({
-      imports: [
-        StartExecutionPrescriptionDialog,
-        NoopAnimationsModule,
-        TranslateModule.forRoot()
-      ],
+      imports: [StartExecutionPrescriptionDialog, NoopAnimationsModule, TranslateModule.forRoot()],
       providers: [
         provideLuxonDateAdapter(),
         { provide: ToastService, useValue: mockToastService },
@@ -61,6 +65,7 @@ describe('StartExecutionPrescriptionDialog', () => {
         { provide: AuthService, useValue: mockAuthService },
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: createMockDialogData() },
+        { provide: AlertService, useValue: mockAlertService },
       ],
     }).compileComponents();
 
@@ -87,9 +92,9 @@ describe('StartExecutionPrescriptionDialog', () => {
   });
 
   describe('computeMinDate', () => {
-    beforeEach(()=> {
+    beforeEach(() => {
       component.minDate = '';
-    })
+    });
 
     it('should set minDate to validityStartDate when it is before authoredOn', () => {
       const data = {
@@ -138,7 +143,6 @@ describe('StartExecutionPrescriptionDialog', () => {
       (component as any).computeMinDate(data);
       expect(component.minDate).toBe('');
     });
-
   });
 
   describe('startExecution', () => {
@@ -146,7 +150,7 @@ describe('StartExecutionPrescriptionDialog', () => {
       it('should mark all fields as touched', () => {
         const spy = jest.spyOn(component.formGroup, 'markAllAsTouched');
 
-        mockPrescriptionState.startPrescriptionExecution.mockReturnValue(of(''))
+        mockPrescriptionState.startPrescriptionExecution.mockReturnValue(of(''));
         component.startExecution();
 
         expect(spy).toHaveBeenCalled();
@@ -162,7 +166,7 @@ describe('StartExecutionPrescriptionDialog', () => {
       });
 
       it('should proceed when form is valid', () => {
-        mockPrescriptionState.startPrescriptionExecution.mockReturnValue(of(""));
+        mockPrescriptionState.startPrescriptionExecution.mockReturnValue(of(''));
         component.formGroup.patchValue({
           startDate: DateTime.fromISO('2024-01-20'),
         });
@@ -187,13 +191,13 @@ describe('StartExecutionPrescriptionDialog', () => {
       });
 
       it('should call assignAndStartExecution when performerTask is null', () => {
-        (component as any).performerTask = null ;
+        (component as any).performerTask = null;
         mockAuthService.discipline.mockReturnValue(of('NURSING'));
         mockAuthService.getClaims.mockReturnValue(
           of({
             [USER_PROFILE_CLAIM_KEY]: {
-              [SSIN_CLAIM_KEY]: '12345678901'
-            }
+              [SSIN_CLAIM_KEY]: '12345678901',
+            },
           })
         );
 
@@ -208,7 +212,6 @@ describe('StartExecutionPrescriptionDialog', () => {
         expect(mockPrescriptionState.startPrescriptionExecution).not.toHaveBeenCalled();
       });
     });
-
   });
 
   describe('startExecutionForTask', () => {
@@ -218,31 +221,25 @@ describe('StartExecutionPrescriptionDialog', () => {
       });
     });
 
-
     it('should show error when prescription id is missing', () => {
       component.prescription.id = undefined;
-      const spy = jest.spyOn(component as any, 'showErrorCard');
+      const alertServiceSpy = jest.spyOn(mockAlertService, 'showGeneralError');
 
       component.startExecution();
-
-      expect(spy).toHaveBeenCalledWith('common.somethingWentWrong');
-      expect(mockPrescriptionState.startPrescriptionExecution).not.toHaveBeenCalled();
+      expect(alertServiceSpy).toHaveBeenCalledTimes(1);
+      expect(alertServiceSpy).toHaveBeenCalledWith('start-execution-dialog');
     });
 
     it('should show error when task id is missing', () => {
       component.performerTask.id = undefined;
-      const spy = jest.spyOn(component as any, 'showErrorCard');
+      const alertServiceSpy = jest.spyOn(mockAlertService, 'showGeneralError');
 
       component.startExecution();
-
-      expect(spy).toHaveBeenCalledWith('common.somethingWentWrong');
-      expect(mockPrescriptionState.startPrescriptionExecution).not.toHaveBeenCalled();
+      expect(alertServiceSpy).toHaveBeenCalledTimes(1);
+      expect(alertServiceSpy).toHaveBeenCalledWith('start-execution-dialog');
     });
 
-    it('should format startDate correctly, start execution, display success toast call, close error card and close dialog when successful execution',() => {
-
-      const closeErrorSpy = jest.spyOn(component as any, 'closeErrorCard');
-
+    it('should format startDate correctly, start execution, display success toast call, close dialog when successful execution', () => {
       component.formGroup.patchValue({
         startDate: DateTime.fromISO('2024-03-15'),
       });
@@ -259,31 +256,37 @@ describe('StartExecutionPrescriptionDialog', () => {
       );
 
       expect(mockToastService.show).toHaveBeenCalledWith('prescription.startExecution.success');
-      expect(closeErrorSpy).toHaveBeenCalled();
       expect(mockDialogRef.close).toHaveBeenCalledWith(true);
     });
 
     it('should handle API error', () => {
       const error = new HttpErrorResponse({ status: 500, statusText: 'Server Error' });
-      const spy = jest.spyOn(component as any, 'showErrorCard');
-      mockPrescriptionState.startPrescriptionExecution.mockReturnValue(
-        throwError(() => error)
-      );
+      mockPrescriptionState.startPrescriptionExecution.mockReturnValue(throwError(() => error));
+      (component as any).error = signal<ResolvedError | null>({
+        message: 'error.message',
+        translationOptions: { count: 2 },
+        severity: AlertType.Error,
+        dismissible: true,
+        retry: false,
+      });
 
+      fixture.detectChanges();
       component.startExecution();
 
-      expect(spy).toHaveBeenCalledWith('common.somethingWentWrong', error);
-    });
+      const alerts = fixture.debugElement.queryAll(By.css('app-alert'));
 
+      const errorAlert = alerts.find(alert => alert.componentInstance.severity() === 'error');
+      expect(errorAlert).toBeTruthy();
+    });
   });
 
   describe('getCurrentUserSsin', () => {
-    it('should extract SSIN from claims', (done) => {
+    it('should extract SSIN from claims', done => {
       mockAuthService.getClaims.mockReturnValue(
         of({
           [USER_PROFILE_CLAIM_KEY]: {
-            [SSIN_CLAIM_KEY]: '12345678901'
-          }
+            [SSIN_CLAIM_KEY]: '12345678901',
+          },
         })
       );
 
@@ -293,7 +296,7 @@ describe('StartExecutionPrescriptionDialog', () => {
       });
     });
 
-    it('should return empty string when claims are null', (done) => {
+    it('should return empty string when claims are null', done => {
       mockAuthService.getClaims.mockReturnValue(of(null));
 
       (component as any).getCurrentUserSsin().subscribe((ssin: string) => {

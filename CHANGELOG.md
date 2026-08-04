@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0] - 14/Jul/26
+
+### Features
+
+- M2M (Machine-to-Machine) auto-assignment - New `wcDetailsEvent` output on the Prescription details Web Component. In the context of M2M integration, the component now delegates the retrieval of caregiver data to the host application: when the auto-assignment flow is started, the component emits a `FETCH_PROFESSIONAL_DATA` event that the host must fulfil (resolve) with the list of caregivers to assign, or reject if it cannot be provided.
+
+### Improvements
+
+- M2M token structure - The ID token (`getIdToken`) `userProfile` can now carry the organization NIHDI/NIHII identifier, required for M2M scenarios. The entry in the `organizations` array (only one is supported) exposes its NIHII in the **11-digit format (NIHII-11)**; the 8-digit format (NIHII-8) is not accepted. The connected organization's NIHII is used to identify the requester and for (self-)assignment of prescriptions.
+
+---
+
+## [1.2.0] - 10/Jun/26
+
+### Features
+
+- Automatic prescription completion - Prescriptions now automatically switch to "COMPLETED" status when treatment validity end date is reached
+- Machine-to-Machine (M2M) API integration - System-to-system integration for prescription creation, consultation, and assignment to your organization
+- Backend prescription creation - Healthcare professionals can now create prescriptions programmatically via API
+- Independent caregiver assignment - New workflow for assigning prescriptions to independent caregivers with proper authorization checks
+- Template management - Empty state display when professionals haven't set up any templates yet
+- Enhanced professional search - Improved search and ordering capabilities with pagination support for managing large result sets
+- Professional search highlighting - Matching text in search results is now highlighted for better visibility
+- Improved UI layout - Create prescription/proposal button repositioned for better workflow usability
+
+### Improvements
+
+- Extended prescription workflow - Medical reason field can now be properly edited when extending prescriptions
+- Support for cancellation reasons - Backend now supports providing and tracking reasons when cancelling prescriptions or proposals
+- Standardized translations - Reviewed and standardized all translation keys across web app and web components for consistency
+- Performance optimization - Removed zone.js dependency from web components for improved performance
+- Improved code quality - Cleaned up and refactored web component codebase
+- Updated dependencies - Evaluated and updated all dependencies in web-component project
+- Fixed style isolation - Prevented Material Design styles from leaking to host application
+- Streamlined development workflow - Removed pre-commit hook for faster development cycles
+
+### Bugfixes
+
+- Corrected Dutch translations - Fixed misleading status translations that were confusing users
+- Privacy compliance logging - Added privacy logs when searching by SSIN and shortcode
+- Medical reason validation - Required medical reason field when prescription frequency is 2 times or more per day
+- Text wrapping in details - Added proper text wrapping for long fields in prescription consultation view
+- Eliminated duplicate API calls - Resolved repeated API requests when consulting prescription details
+- Enhanced error messaging - Improved alert functionality for form summary errors
+- Search criteria preservation - Fixed search query criteria being unexpectedly lost during lazy loading in dialogs
+- Extended prescription links - Fixed broken links when accessing extended prescriptions
+- Prescription from model crash - Resolved application crash when consulting prescriptions created from models with frequency settings
+- Mobile rendering - Fixed prescription detail view layout issues on mobile devices
+
+---
+
 ## [1.1.5] - 23/Jun/26
 
 ### Bugfixes

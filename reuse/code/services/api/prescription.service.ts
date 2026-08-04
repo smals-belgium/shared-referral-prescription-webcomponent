@@ -1,11 +1,15 @@
 import { inject, Injectable } from '@angular/core';
 import { SearchPrescriptionCriteria } from '@reuse/code/interfaces';
 import {
+  AssignationType,
   AssignCareGiverResource,
   AssignOrganizationResource,
   CreateRequestResource,
+  PerformerTaskIdResource,
   PrescriptionService as ApiPrescriptionService,
+  ReasonResource,
 } from '@reuse/code/openapi';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class PrescriptionService {
@@ -34,17 +38,39 @@ export class PrescriptionService {
     return this.api.getPrescriptionByShortCode(ssin, shortCode);
   }
 
-  cancel(prescriptionId: string, generatedUUID: string) {
-    return this.api.cancelPrescription(prescriptionId, generatedUUID);
+  cancel(prescriptionId: string, reason: ReasonResource, generatedUUID: string) {
+    return this.api.cancelPrescription(prescriptionId, generatedUUID, reason);
   }
 
-  assignCaregiver(
+  assignCaregivers(
     prescriptionId: string,
     referralTaskId: string,
     caregiver: AssignCareGiverResource,
-    generatedUUID: string
+    generatedUUID: string,
+    assignationType?: AssignationType
+  ): Observable<PerformerTaskIdResource[]>;
+  assignCaregivers(
+    prescriptionId: string,
+    referralTaskId: string,
+    caregiver: AssignCareGiverResource[],
+    generatedUUID: string,
+    assignationType?: AssignationType
+  ): Observable<PerformerTaskIdResource[]>;
+  assignCaregivers(
+    prescriptionId: string,
+    referralTaskId: string,
+    caregiver: AssignCareGiverResource | AssignCareGiverResource[],
+    generatedUUID: string,
+    assignationType?: AssignationType
   ) {
-    return this.api.assignCareGiverToPrescription(prescriptionId, referralTaskId, generatedUUID, caregiver);
+    const caregivers = Array.isArray(caregiver) ? caregiver : [caregiver];
+    return this.api.assignCareGiversToPrescription(
+      prescriptionId,
+      referralTaskId,
+      generatedUUID,
+      caregivers,
+      assignationType
+    );
   }
 
   assignOrganization(

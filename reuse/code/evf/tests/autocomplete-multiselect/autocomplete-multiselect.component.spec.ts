@@ -18,6 +18,7 @@ import { MatFormField } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { NgControl } from '@angular/forms';
 import { MatChipRow } from '@angular/material/chips';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 const mockAutocompleteOptions: AutocompleteOption[] = [
   { label: { en: 'Option 1', fr: 'Option 1', nl: 'Option 1', de: 'Option 1' }, value: 'opt1' },
@@ -60,16 +61,8 @@ describe('AutocompleteMultiselectComponent', () => {
   let component: Wrapper;
   let fixture: ComponentFixture<Wrapper>;
   let evfExternalSourceServiceMock: jest.Mocked<EvfExternalSourceService>;
-  let consoleSpy: jest.SpyInstance;
 
   beforeEach(async () => {
-    consoleSpy = jest.spyOn(global.console, 'error').mockImplementation(message => {
-      //remove material overlay error
-      if (!message?.message?.includes('Could not parse CSS stylesheet')) {
-        global.console.warn(message);
-      }
-    });
-
     evfExternalSourceServiceMock = {
       handleAutocomplete: jest.fn().mockReturnValue(of(mockAutocompleteOptions)),
       handleValidation: jest.fn(),
@@ -82,6 +75,7 @@ describe('AutocompleteMultiselectComponent', () => {
         BrowserModule,
         BrowserAnimationsModule.withConfig({ disableAnimations }),
         MarkdownModule.forRoot(),
+        MatIconTestingModule,
       ],
       providers: [
         provideEvfCore(
@@ -99,14 +93,12 @@ describe('AutocompleteMultiselectComponent', () => {
     fixture.detectChanges();
   });
 
-  afterAll(() => consoleSpy.mockRestore());
-
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
   it('should render the form fields', () => {
-    component.demoTemplate = formTemplate;
+    fixture.componentRef.setInput('demoTemplate', formTemplate);
     fixture.detectChanges();
 
     // Check that mat-form-field exists
@@ -136,7 +128,7 @@ describe('AutocompleteMultiselectComponent', () => {
   });
 
   it('should type in input and update form control value', () => {
-    component.demoTemplate = formTemplate;
+    fixture.componentRef.setInput('demoTemplate', formTemplate);
     fixture.detectChanges();
 
     const input = fixture.debugElement.query(By.css('input[matInput]'));
@@ -152,7 +144,7 @@ describe('AutocompleteMultiselectComponent', () => {
   });
 
   it('should simulate typing character by character', () => {
-    component.demoTemplate = formTemplate;
+    fixture.componentRef.setInput('demoTemplate', formTemplate);
     fixture.detectChanges();
 
     const autocompleteFormDebugElement = fixture.debugElement.query(By.directive(AutocompleteMultiselectComponent));
@@ -185,7 +177,7 @@ describe('AutocompleteMultiselectComponent', () => {
   });
 
   it('should simulate selecting option from autocomplete and add chip', async () => {
-    component.demoTemplate = formTemplate;
+    fixture.componentRef.setInput('demoTemplate', formTemplate);
     fixture.detectChanges();
 
     const autocompleteFormDebugElement = fixture.debugElement.query(By.directive(AutocompleteMultiselectComponent));
@@ -218,7 +210,7 @@ describe('AutocompleteMultiselectComponent', () => {
   });
 
   it('should call updateQuery on keyup event', () => {
-    component.demoTemplate = formTemplate;
+    fixture.componentRef.setInput('demoTemplate', formTemplate);
 
     fixture.detectChanges();
 
@@ -234,7 +226,7 @@ describe('AutocompleteMultiselectComponent', () => {
   });
 
   it('should display autocomplete options', async () => {
-    component.demoTemplate = formTemplate;
+    fixture.componentRef.setInput('demoTemplate', formTemplate);
     fixture.detectChanges();
 
     const autocompleteFormDebugElement = fixture.debugElement.query(By.directive(AutocompleteMultiselectComponent));
@@ -252,7 +244,7 @@ describe('AutocompleteMultiselectComponent', () => {
   });
 
   it('should call selected method when option is selected', async () => {
-    component.demoTemplate = formTemplate;
+    fixture.componentRef.setInput('demoTemplate', formTemplate);
     fixture.detectChanges();
 
     const autocompleteFormDebugElement = fixture.debugElement.query(By.directive(AutocompleteMultiselectComponent));

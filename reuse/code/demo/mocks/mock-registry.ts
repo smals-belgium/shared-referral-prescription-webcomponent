@@ -143,7 +143,7 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
         demoStorage.set('demoPrescription', newPrescription);
 
         if (newPrescription.performerTasks) {
-          Object.values(newPrescription.performerTasks).map(performerTasks =>
+          Object.values(newPrescription.performerTasks).forEach(performerTasks =>
             performerTasks.forEach((performerTask: PerformerTaskResourceExtended) => {
               const index = performerTask.careGiverIndex as number;
               if (index != null) {
@@ -186,7 +186,7 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
         demoStorage.set('demoProposal', newProposal);
 
         if (newProposal.performerTasks) {
-          Object.values(newProposal.performerTasks).map(performerTasks =>
+          Object.values(newProposal.performerTasks).forEach(performerTasks =>
             performerTasks.forEach((performerTask: PerformerTaskResourceExtended) => {
               const index = performerTask.careGiverIndex as number;
               if (index != null) {
@@ -231,7 +231,7 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
         demoStorage.set('demoPrescription', newPrescription);
 
         if (newPrescription.performerTasks) {
-          Object.values(newPrescription.performerTasks).map(performerTasks =>
+          Object.values(newPrescription.performerTasks).forEach(performerTasks =>
             performerTasks.forEach((performerTask: PerformerTaskResourceExtended) => {
               const index = performerTask.careGiverIndex as number;
               if (index != null) {
@@ -484,11 +484,17 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
 
         const savedPrescription = demoStorage.get<ReadRequestResourceExtended>('demoPrescription') || {};
 
-        if (!savedPrescription.organizationTasks) {
-          savedPrescription.organizationTasks = [];
+        if (!savedPrescription.performerTasks) {
+          savedPrescription.performerTasks = {};
         }
 
-        savedPrescription.organizationTasks.unshift(organizationTaskResource);
+        const organizationNihii = organizationTaskResource.organizationNihii;
+        if (organizationNihii) {
+          if (!savedPrescription.performerTasks[organizationNihii]) {
+            savedPrescription.performerTasks[organizationNihii] = [];
+          }
+          savedPrescription.performerTasks[organizationNihii].unshift(organizationTaskResource);
+        }
 
         demoStorage.set('demoPrescription', savedPrescription);
 
@@ -520,11 +526,17 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
 
         const savedProposal = demoStorage.get<ReadRequestResourceExtended>('demoProposal') || {};
 
-        if (!savedProposal.organizationTasks) {
-          savedProposal.organizationTasks = [];
+        if (!savedProposal.performerTasks) {
+          savedProposal.performerTasks = {};
         }
 
-        savedProposal.organizationTasks.unshift(organizationTaskResource);
+        const organizationNihii = organizationTaskResource.organizationNihii;
+        if (organizationNihii) {
+          if (!savedProposal.performerTasks[organizationNihii]) {
+            savedProposal.performerTasks[organizationNihii] = [];
+          }
+          savedProposal.performerTasks[organizationNihii].unshift(organizationTaskResource);
+        }
 
         demoStorage.set('demoProposal', savedProposal);
 
