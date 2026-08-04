@@ -2,14 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { BaseState } from '@reuse/code/states/helpers/base.state';
 import { ProposalService } from '@reuse/code/services/api/proposal.service';
 import { tap } from 'rxjs/operators';
-import {
-  AssignCareGiverResource,
-  HealthcareOrganizationResource,
-  HealthcareProResource,
-  ReadRequestResource,
-  ReasonResource,
-} from '@reuse/code/openapi';
-import { isProfessional } from '@reuse/code/utils/assignment-disciplines.utils';
+import { AssignCareGiverResource, ReadRequestResource, ReasonResource } from '@reuse/code/openapi';
 
 @Injectable({ providedIn: 'root' })
 export class ProposalState extends BaseState<ReadRequestResource> {
@@ -23,19 +16,13 @@ export class ProposalState extends BaseState<ReadRequestResource> {
     return this.proposalService.approveProposal(proposalId, reason, generatedUUID);
   }
 
-  cancelProposal(proposalId: string, generatedUUID: string) {
-    return this.proposalService.cancelProposal(proposalId, generatedUUID);
+  cancelProposal(proposalId: string, reason: ReasonResource, generatedUUID: string) {
+    return this.proposalService.cancelProposal(proposalId, reason, generatedUUID);
   }
 
   rejectProposal(proposalId: string, reason: ReasonResource, generatedUUID: string) {
     return this.proposalService
       .rejectProposal(proposalId, reason, generatedUUID)
-      .pipe(tap(() => this.loadProposal(proposalId)));
-  }
-
-  rejectProposalTask(proposalId: string, performerTaskId: string, reason: ReasonResource, generatedUUID: string) {
-    return this.proposalService
-      .rejectProposalTask(performerTaskId, reason, generatedUUID)
       .pipe(tap(() => this.loadProposal(proposalId)));
   }
 
@@ -46,28 +33,6 @@ export class ProposalState extends BaseState<ReadRequestResource> {
     generatedUUID: string
   ) {
     return this.proposalService.assignCaregiver(prescriptionId, referralTaskId, caregiver, generatedUUID);
-  }
-
-  assignProposalToMe(
-    proposalId: string,
-    referralTaskId: string,
-    professional: {
-      ssin: string;
-      discipline: string;
-    },
-    generatedUUID: string
-  ) {
-    return this.proposalService
-      .assignCaregiver(
-        proposalId,
-        referralTaskId,
-        {
-          ssin: professional.ssin,
-          role: professional.discipline.toUpperCase(),
-        },
-        generatedUUID
-      )
-      .pipe(tap(() => this.loadProposal(proposalId)));
   }
 
   assignProposalPerformer(

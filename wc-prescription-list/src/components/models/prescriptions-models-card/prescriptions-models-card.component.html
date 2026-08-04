@@ -52,18 +52,18 @@
   } @else if (itemsLength === 0) {
     <div class="mh-margin-top-bottom">
       <app-alert
-        [alert]="AlertType.Info"
+        [severity]="AlertType.Info"
         [message]="'prescription.model.noModels' | translate"
-        [showRetry]="false"></app-alert>
+        [retry]="false"></app-alert>
     </div>
   }
 
   @if (!canLoadMore()) {
     <div class="mh-margin-bottom">
       <app-alert
-        [alert]="AlertType.Info"
+        [severity]="AlertType.Info"
         [message]="'prescription.model.allModelsFetched' | translate"
-        [showRetry]="false"></app-alert>
+        [retry]="false"></app-alert>
     </div>
   }
 
@@ -74,9 +74,14 @@
   } @else if (error) {
     <div class="mh-margin-top-bottom">
       <app-alert
-        [alert]="AlertType.Error"
-        [message]="errorMsg"
-        [error]="errorResponse"
+        [severity]="error.severity"
+        [title]="error.title"
+        [subTitle]="error.subTitle"
+        [message]="error.message"
+        [dismissible]="error.dismissible"
+        [retry]="error.retry"
+        [errorId]="error.errorId"
+        (clickClose)="dismissOnError.emit()"
         (clickRetry)="onErrorRetryClick()"></app-alert>
     </div>
   }

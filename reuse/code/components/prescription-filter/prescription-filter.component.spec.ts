@@ -8,6 +8,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { By } from '@angular/platform-browser';
 import { RequestStatus } from '@reuse/code/openapi';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 describe('PrescriptionFilterComponent', () => {
   let component: PrescriptionFilterComponent;
@@ -31,6 +32,7 @@ describe('PrescriptionFilterComponent', () => {
         MatButtonModule,
         NoopAnimationsModule,
         TranslateModule.forRoot(),
+        MatIconTestingModule,
       ],
     }).compileComponents();
 
@@ -38,8 +40,8 @@ describe('PrescriptionFilterComponent', () => {
     component = fixture.componentInstance;
 
     // Set up component with initial data
-    component.statusOptions = mockStatusOptions;
-    component.templateOptions = mockTemplateOptions;
+    component.statusOptions.set(mockStatusOptions);
+    component.templateOptions.set(mockTemplateOptions);
     component.initialFilter = {
       status: undefined,
       prescriptionType: undefined,
@@ -78,7 +80,7 @@ describe('PrescriptionFilterComponent', () => {
     expect(fixture.debugElement.query(By.css('[data-form="status"]'))).toBeTruthy();
     expect(fixture.debugElement.query(By.css('[data-form="prescriptionType"]'))).toBeTruthy();
 
-    component.statusOptions = undefined;
+    component.statusOptions.set([]);
     fixture.detectChanges();
     expect(fixture.debugElement.query(By.css('[data-form="status"]'))).toBeFalsy();
     expect(fixture.debugElement.query(By.css('[data-form="prescriptionType"]'))).toBeTruthy();

@@ -1,4 +1,4 @@
-import { importProvidersFrom } from '@angular/core';
+import { importProvidersFrom, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { createApplication } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideCore } from '@reuse/code/providers/core.provider';
@@ -18,14 +18,18 @@ import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { WcAuthService } from '@reuse/code/services/auth/wc-auth.service';
 import { providePseudonymisation } from '@reuse/code/providers/pseudo.provider';
 import { provideOpenApi } from '@reuse/code/providers/open-api.provider';
-import { OverlayContainer } from '@angular/cdk/overlay';
-import { ShadowDomOverlayContainer } from '@reuse/code/containers/shadow-dom-overlay/shadow-dom-overlay.container';
+import { provideShadowDom } from '@reuse/code/shadow-dom/shadow-dom.provider';
 import { CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_CREATE } from '@reuse/code/constants/common.constants';
+import { globalErrorInterceptor } from '@reuse/code/interceptors/global-error.interceptor';
+import { MatDatepickerIntl } from '@angular/material/datepicker';
+import { CustomMatDatePickerIntlService } from '@reuse/code/components/date-picker/custom-mat-date-picker-intl.service';
 
-(async () => {
+void (async () => {
   const app = createApplication({
     providers: [
-      provideHttpClient(withInterceptors([apiUrlInterceptor])),
+      provideZonelessChangeDetection(),
+      provideBrowserGlobalErrorListeners(),
+      provideHttpClient(withInterceptors([globalErrorInterceptor, apiUrlInterceptor])),
       providePseudonymisation(),
       provideCore(),
       provideEvfForm(),
@@ -39,10 +43,7 @@ import { CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_CREATE } from '@reuse/c
         provide: AuthService,
         useClass: WcAuthService,
       },
-      {
-        provide: OverlayContainer,
-        useClass: ShadowDomOverlayContainer,
-      },
+      provideShadowDom(),
       provideOpenApi(),
       importProvidersFrom(
         BrowserAnimationsModule,
@@ -58,6 +59,7 @@ import { CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_CREATE } from '@reuse/c
           },
         })
       ),
+      { provide: MatDatepickerIntl, useClass: CustomMatDatePickerIntlService },
     ],
   });
   const createPrescriptionElement = createCustomElement(CreatePrescriptionWebComponent, {

@@ -1,9 +1,9 @@
-import { Component, computed, inject, Inject, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, computed, inject, Inject, OnDestroy, OnInit, signal, WritableSignal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { combineLatest, Observable, of, switchMap } from 'rxjs';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -20,7 +20,6 @@ import { HealthcareProviderService } from '@reuse/code/services/api/healthcarePr
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { v4 as uuidv4 } from 'uuid';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
-import { BaseDialog } from '@reuse/code/dialogs/base.dialog';
 import { CityResource, HealthcareOrganizationResource, HealthcareProResource, ProviderType } from '@reuse/code/openapi';
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import { getAssignableProfessionalDisciplines, isProfessional } from '@reuse/code/utils/assignment-disciplines.utils';
@@ -37,6 +36,7 @@ import { ResponsiveWrapperComponent } from '@reuse/code/components/responsive-wr
 import { ProfessionalCardsComponent } from '@reuse/code/components/professional-form/professional-cards/professional-cards.component';
 import { DeviceService } from '@reuse/code/services/helpers/device.service';
 import { ProfessionalSearchChipListComponent } from '@reuse/code/components/professional-form/city-chip-list/professional-search-chip-list.component';
+import { AlertService } from '@reuse/code/services/helpers/alert.service';
 
 export type AssignOrTransferDialogMode = 'assign' | 'transfer';
 
@@ -45,8 +45,6 @@ export interface AssignOrTransferDialogData {
   prescriptionId?: string;
   referralTaskId?: string;
   performerTaskId?: string; // only used for transfer
-  assignedCareGivers?: string[];
-  assignedOrganizations?: string[];
   category: string;
   intent: Intent;
 }
@@ -76,13 +74,17 @@ export interface AssignOrTransferDialogData {
   templateUrl: './assign-or-transfer-dialog.html',
   styleUrl: './assign-or-transfer-dialog.scss',
 })
-export class AssignOrTransferDialog extends BaseDialog implements OnInit {
+export class AssignOrTransferDialog implements OnInit, OnDestroy {
   private readonly deviceService = inject(DeviceService);
   private readonly _prescriptionStateService = inject(PrescriptionState);
   private readonly _proposalStateService = inject(ProposalState);
   private readonly _healthcareProviderService = inject(HealthcareProviderService);
   private readonly _toastService = inject(ToastService);
   private readonly _translate = inject(TranslateService);
+  private readonly alertService = inject(AlertService);
+
+  private readonly ERROR_ASSIGN_TRANSFER_DIALOG = 'assign-transfer-dialog';
+  protected readonly error = this.alertService.setTarget(this.ERROR_ASSIGN_TRANSFER_DIALOG);
 
   protected readonly isDesktop = this.deviceService.isDesktop;
 
@@ -168,10 +170,9 @@ export class AssignOrTransferDialog extends BaseDialog implements OnInit {
   currentLang?: TranslationType;
 
   constructor(
-    dialogRef: MatDialogRef<AssignOrTransferDialog>,
+    protected dialogRef: MatDialogRef<AssignOrTransferDialog>,
     @Inject(MAT_DIALOG_DATA) protected data: AssignOrTransferDialogData
   ) {
-    super(dialogRef);
     this.currentLang = this._translate.currentLang as TranslationType;
   }
 
@@ -190,6 +191,7 @@ export class AssignOrTransferDialog extends BaseDialog implements OnInit {
 
   ngOnInit() {
     this.generatedUUID = uuidv4();
+    this.alertService.setActive(this.ERROR_ASSIGN_TRANSFER_DIALOG);
     this.translationKeyPrefixIntent = getTranslationKeyPrefixForPrescriptionOrProposal(this.data?.intent);
   }
 
@@ -216,22 +218,19 @@ export class AssignOrTransferDialog extends BaseDialog implements OnInit {
 
   private executeService(serviceCall: () => Observable<any>, successKey: string, professional: any) {
     this.loading = true;
-    serviceCall().subscribe({
-      next: () => {
-        this.closeErrorCard();
-        this._toastService.show(successKey, { interpolation: professional.healthcarePerson });
-        this.closeDialog(professional);
-      },
-      error: err => {
-        this.loading = false;
-        this.showErrorCard('common.somethingWentWrong', err);
-      },
-    });
+    serviceCall()
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: () => {
+          this._toastService.show(successKey, { interpolation: professional.healthcarePerson });
+          this.dialogRef.close(professional);
+        },
+      });
   }
 
   private executeAssign(professional: HealthcareProResource) {
     if (!this.data.prescriptionId || !isProfessional(professional)) {
-      return this.closeDialog(professional);
+      return this.dialogRef.close(professional);
     }
 
     let ssinOrNihdi: string | undefined;
@@ -272,7 +271,7 @@ export class AssignOrTransferDialog extends BaseDialog implements OnInit {
 
   private executeTransfer(professional: HealthcareProResource) {
     if (!this.data.prescriptionId || !isProfessional(professional)) {
-      return this.closeDialog(professional);
+      return this.dialogRef.close(professional);
     }
     const ssinObject = { ssin: professional.id?.ssin || '', discipline: professional.id?.profession || '' };
     const serviceCall = isProposal(this.data?.intent)
@@ -302,7 +301,7 @@ export class AssignOrTransferDialog extends BaseDialog implements OnInit {
     if (pageIndex && pageSize) {
       this.pageable.set({ page: pageIndex, pageSize: pageSize });
     } else {
-      this.showErrorCard('common.somethingWentWrong');
+      this.alertService.showGeneralError(this.ERROR_ASSIGN_TRANSFER_DIALOG);
     }
   }
 
@@ -328,5 +327,24 @@ export class AssignOrTransferDialog extends BaseDialog implements OnInit {
     this.queryControl.setValue('');
     this.queryControl.markAsUntouched();
     this.isSearchMode.set(true);
+    this.clearAlertService();
+  }
+
+  protected retry() {
+    this.clearAlertService();
+    this.dialogRef.close();
+  }
+
+  protected dismissError() {
+    this.alertService.clear(this.ERROR_ASSIGN_TRANSFER_DIALOG);
+  }
+
+  ngOnDestroy() {
+    this.clearAlertService();
+  }
+
+  clearAlertService() {
+    this.alertService.resetActive();
+    this.alertService.remove(this.ERROR_ASSIGN_TRANSFER_DIALOG);
   }
 }

@@ -1,0 +1,248 @@
+@if (prescriptionServiceData && currentUserServiceData && patientServiceData()) {
+  @let prescriptionData = prescriptionServiceData;
+  @let currentUserData = currentUserServiceData;
+  @let patientData = patientServiceData();
+
+  @for (entry of performerTaskEntries; track entry[0]; let first = $first) {
+    @let performerTask = entry[1][0];
+    @let performerTasks = entry[1];
+    @let isFirstOrgWithoutPerf =
+      first && isOrganizationTask(performerTask) && organizationTaskHasNoPerformerTask(performerTask);
+
+    <div class="professional_row">
+      <div class="professional_container_row" data-cy="prescription-assign-to">
+        <div class="professional_info">
+          @if (performerTask) {
+            <ng-container
+              [ngTemplateOutlet]="performerIdentity"
+              [ngTemplateOutletContext]="{
+                performerTask,
+                currentUserData,
+                isFirstOrgWithoutPerf,
+                prescriptionData,
+                patientData,
+              }">
+            </ng-container>
+          }
+
+          @if (isPerformerTask(performerTask)) {
+            <ng-container
+              [ngTemplateOutlet]="taskInfo"
+              [ngTemplateOutletContext]="{
+                performerTask,
+                performerTasks,
+                currentUserData,
+                prescriptionData,
+                patientData,
+              }">
+            </ng-container>
+          }
+        </div>
+      </div>
+    </div>
+  }
+}
+
+<!-- Identity block: caregiver or organization -->
+<ng-template
+  #performerIdentity
+  let-performerTask="performerTask"
+  let-currentUserData="currentUserData"
+  let-prescriptionData="prescriptionData"
+  let-patientData="patientData"
+  let-isFirstOrgWithoutPerf="isFirstOrgWithoutPerf">
+  @if (isPerformerTask(performerTask)) {
+    @let caregiver = asPerformerTask(performerTask).careGiver;
+    <ng-container [ngTemplateOutlet]="caregiverIdentity" [ngTemplateOutletContext]="{ caregiver, currentUserData }">
+    </ng-container>
+  } @else if (isOrganizationTask(performerTask)) {
+    <ng-container
+      [ngTemplateOutlet]="organizationIdentity"
+      [ngTemplateOutletContext]="{
+        org: asOrganizationTask(performerTask),
+        showAlert: isFirstOrgWithoutPerf,
+        currentUserData,
+        prescriptionData,
+        patientData,
+      }">
+    </ng-container>
+  }
+</ng-template>
+
+<!-- Caregiver name, NIHII, and profession -->
+<ng-template #caregiverIdentity let-caregiver="caregiver" let-currentUserData="currentUserData">
+  <div class="professional_info_fullName">
+    @if (caregiver?.healthcarePerson?.ssin === currentUserData?.ssin) {
+      <span> {{ currentUserData.firstName }} {{ currentUserData.lastName }} </span>
+    } @else if (caregiver?.healthcarePerson?.lastName) {
+      <span> {{ caregiver.healthcarePerson.firstName }} {{ caregiver.healthcarePerson.lastName }} </span>
+    } @else {
+      <span>{{ 'common.professional.notFound' | translate }}</span>
+      <mat-icon
+        svgIcon="error"
+        aria-hidden="true"
+        matTooltip="{{ 'common.professional.tooltip' | translate }}"
+        matTooltipPosition="right"
+        style="color: grey; cursor: pointer">
+      </mat-icon>
+    }
+  </div>
+
+  @if (caregiver?.nihii8 || caregiver?.nihii11; as nihii) {
+    <div class="professional_info_nihii">
+      {{ nihii | formatNihdi: caregiver.healthcareQualification?.id?.code }}
+    </div>
+  }
+
+  @if (caregiver?.healthcareQualification?.id?.profession; as profession) {
+    <div class="professional_info_profession">
+      {{ 'common.professions.' + profession | translate }}
+    </div>
+  }
+</ng-template>
+
+<!-- Organization info and  caregiver name -->
+<ng-template
+  #organizationIdentity
+  let-org="org"
+  let-user="currentUserData"
+  let-showAlert="showAlert"
+  let-prescriptionData="prescriptionData"
+  let-patientData="patientData">
+  @if (showAlert) {
+    <div class="infoblock evf-infoblock-summary" aria-label="Info">
+      <details open>
+        <summary class="title">{{ 'performerTask.organization.alert.title' | translate }}</summary>
+        <div class="body">
+          @let listItems = formatString('performerTask.organization.alert.description' | translate);
+          <ul class="info-list">
+            @for (item of listItems; track item) {
+              <li [innerHTML]="item"></li>
+            }
+          </ul>
+        </div>
+      </details>
+    </div>
+  }
+
+  @let perfTasks = getPerformerTaskFromOrganizationTask(org);
+
+  @if (perfTasks && perfTasks.length > 0) {
+    @let caregiver = asPerformerTask(perfTasks[0]).careGiver;
+    <ng-container [ngTemplateOutlet]="caregiverIdentity" [ngTemplateOutletContext]="{ caregiver, user }">
+    </ng-container>
+
+    <ng-container [ngTemplateOutlet]="organizationName" [ngTemplateOutletContext]="{ org, bold: false }"></ng-container>
+
+    <ng-container
+      [ngTemplateOutlet]="taskInfo"
+      [ngTemplateOutletContext]="{
+        performerTask: perfTasks[0],
+        performerTasks: perfTasks,
+        currentUserData: user,
+        prescriptionData,
+        patientData,
+      }">
+    </ng-container>
+  } @else {
+    <ng-container [ngTemplateOutlet]="organizationName" [ngTemplateOutletContext]="{ org, bold: true }"> </ng-container>
+    <ng-container [ngTemplateOutlet]="status" [ngTemplateOutletContext]="{ performerTask: org }"> </ng-container>
+
+    <ng-container
+      [ngTemplateOutlet]="rejectButton"
+      [ngTemplateOutletContext]="{
+        task: org,
+        prescriptionData: prescriptionData,
+        patientData: patientData,
+        currentUserData: user,
+      }"></ng-container>
+  }
+</ng-template>
+
+<!-- Organization name -->
+<ng-template #organizationName let-org="org" let-bold="bold">
+  <div class="professional_info_fullName" [className]="bold ? '' : 'info'">
+    @if (org.organization?.organizationName; as name) {
+      <span>
+        {{ name | formatMultilingualObject: currentLang() }}
+      </span>
+    } @else {
+      <span>{{ 'common.organization.notFound' | translate }}</span>
+      <mat-icon
+        svgIcon="error"
+        aria-hidden="true"
+        matTooltip="{{ 'common.organization.tooltip' | translate }}"
+        matTooltipPosition="right"
+        style="color: grey; cursor: pointer">
+      </mat-icon>
+    }
+  </div>
+</ng-template>
+
+<!-- Execution period dates -->
+<ng-template #executionPeriod let-task="task">
+  <div class="performer_task_periods">
+    @if (task.executionPeriod?.start) {
+      <span>{{ task.executionPeriod.start | date: 'dd/MM/yyyy' }} - </span>
+    }
+    @if (task.executionPeriod?.end) {
+      <span>{{ task.executionPeriod.end | date: 'dd/MM/yyyy' }}</span>
+    }
+  </div>
+</ng-template>
+
+<!-- Reject assignation button -->
+<ng-template
+  #rejectButton
+  let-task="task"
+  let-prescriptionData="prescriptionData"
+  let-patientData="patientData"
+  let-currentUserData="currentUserData">
+  <div class="button-group">
+    @if (
+      currentUserData?.role === Role.Patient &&
+      patientData?.ssin &&
+      (prescriptionData | canRejectAssignation: task : patientData.ssin : currentUserData)
+    ) {
+      <button
+        type="button"
+        mat-icon-button
+        data-cy="prescription-reject-assignation-button"
+        [attr.aria-label]="'prescription.ariaLabel.reject' | translate"
+        (click)="service.openRejectAssignationDialog(alertTarget, prescriptionData, task, patientData)">
+        <mat-icon svgIcon="cancel" aria-hidden="true"></mat-icon>
+      </button>
+    }
+  </div>
+</ng-template>
+
+<ng-template
+  #taskInfo
+  let-performerTask="performerTask"
+  let-performerTasks="performerTasks"
+  let-currentUserData="currentUserData"
+  let-prescriptionData="prescriptionData"
+  let-patientData="patientData">
+  <ng-container [ngTemplateOutlet]="status" [ngTemplateOutletContext]="{ performerTask }"> </ng-container>
+
+  @for (task of performerTasks; track task.id) {
+    <div [className]="!task.executionPeriod?.start ? 'performer_tasks without-period' : 'performer_tasks'">
+      <ng-container [ngTemplateOutlet]="executionPeriod" [ngTemplateOutletContext]="{ task }"></ng-container>
+
+      <ng-container
+        [ngTemplateOutlet]="rejectButton"
+        [ngTemplateOutletContext]="{ task, prescriptionData, patientData, currentUserData }">
+      </ng-container>
+    </div>
+  }
+</ng-template>
+
+<ng-template #status let-performerTask="performerTask">
+  @if (getReadableStatus(performerTask.status)) {
+    <div class="performer_task_status">
+      <mat-chip [disableRipple]="true" [class]="getStatusColor(performerTask.status!)">
+        {{ 'performerTask.statuses.' + performerTask.status | translate }}
+      </mat-chip>
+    </div>
+  }
+</ng-template>

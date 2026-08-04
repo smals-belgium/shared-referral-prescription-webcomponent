@@ -5,6 +5,10 @@
 /tmp
 /out-tsc
 /bazel-out
+docker/showcases
+
+# Generated at runtime by docker/start-dev.sh (machine-specific host IP)
+docker/.env
 
 # Node
 /node_modules

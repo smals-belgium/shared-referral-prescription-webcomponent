@@ -1,10 +1,10 @@
 {
   "referralLists": {
     "prescription": {
-      "tabLabel": "prescriptions"
+      "tabLabel": "Prescriptions"
     },
     "proposal": {
-      "tabLabel": "proposals"
+      "tabLabel": "Proposals"
     }
   }
 }

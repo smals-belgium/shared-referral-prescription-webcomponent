@@ -1,13 +1,13 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
-import { PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
+import { ReadRequestResource, RequestTaskResource } from '@reuse/code/openapi';
 
 @Pipe({ name: 'canRestartTreatment', standalone: true })
 export class CanRestartTreatmentPipe implements PipeTransform {
   constructor(private readonly _accessMatrixState: AccessMatrixState) {}
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  transform(_prescription: ReadRequestResource, _task: PerformerTaskResource, _currentUserSsin?: string): boolean {
+  transform(_prescription: ReadRequestResource, _task: RequestTaskResource, _currentUserSsin?: string): boolean {
     return false;
     //TODO: Uncomment following code when UHMEP BE accepts "Restart" action on "On Hold" PerformerTask
     /*

@@ -7,32 +7,32 @@ describe('CanFinishTreatmentPipe', () => {
 
   beforeEach(() => {
     accessMatrixStateMock = {
-      hasAtLeastOnePermission: jest.fn()
+      hasAtLeastOnePermission: jest.fn(),
     };
 
     pipe = new CanFinishTreatmentPipe(accessMatrixStateMock as any);
   });
 
   const prescription = {
-    templateCode: 'templateCode'
+    templateCode: 'templateCode',
   } as ReadRequestResource;
 
   it('should return true when permission is granted and task is InProgress', () => {
     accessMatrixStateMock.hasAtLeastOnePermission.mockReturnValue(true);
 
     const task = {
-      status: FhirR4TaskStatus.Inprogress
+      status: FhirR4TaskStatus.Inprogress,
+      taskType: 'PerformerTaskResource',
     } as PerformerTaskResource;
 
     expect(pipe.transform(prescription, task)).toBe(true);
-    expect(accessMatrixStateMock.hasAtLeastOnePermission)
-      .toHaveBeenCalledWith(['executeTreatment'], 'templateCode');
+    expect(accessMatrixStateMock.hasAtLeastOnePermission).toHaveBeenCalledWith(['executeTreatment'], 'templateCode');
   });
 
   it('should return false when permission is missing', () => {
     accessMatrixStateMock.hasAtLeastOnePermission.mockReturnValue(false);
 
-    const task = { status: FhirR4TaskStatus.Inprogress } as PerformerTaskResource;
+    const task = { status: FhirR4TaskStatus.Inprogress, taskType: 'PerformerTaskResource' } as PerformerTaskResource;
 
     expect(pipe.transform(prescription, task)).toBe(false);
   });
@@ -40,7 +40,7 @@ describe('CanFinishTreatmentPipe', () => {
   it('should return false when task status is not InProgress', () => {
     accessMatrixStateMock.hasAtLeastOnePermission.mockReturnValue(true);
 
-    const task = { status: FhirR4TaskStatus.Completed } as PerformerTaskResource;
+    const task = { status: FhirR4TaskStatus.Completed, taskType: 'PerformerTaskResource' } as PerformerTaskResource;
 
     expect(pipe.transform(prescription, task)).toBe(false);
   });
@@ -48,7 +48,7 @@ describe('CanFinishTreatmentPipe', () => {
   it('should return false when task has no status', () => {
     accessMatrixStateMock.hasAtLeastOnePermission.mockReturnValue(true);
 
-    const task = { status: undefined } as PerformerTaskResource;
+    const task = { status: undefined, taskType: 'PerformerTaskResource' } as PerformerTaskResource;
 
     expect(pipe.transform(prescription, task)).toBe(false);
   });

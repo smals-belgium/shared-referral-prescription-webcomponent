@@ -1,5 +1,6 @@
 import {
   AfterViewChecked,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   inject,
@@ -24,6 +25,7 @@ import { FormatMultilingualObjectPipe } from '@reuse/code/pipes/format-multiling
 import { TranslationType } from '@reuse/code/components/professional-form/table/professional-table.component';
 import { MatRadioModule } from '@angular/material/radio';
 import { v4 as uuidv4 } from 'uuid';
+import { HighlightFilterPipe } from '@reuse/code/pipes/highlight-filter.pipe';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -38,9 +40,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
     TranslatePipe,
     FormatMultilingualObjectPipe,
     MatRadioModule,
+    HighlightFilterPipe,
   ],
   templateUrl: './professional-cards.component.html',
   styleUrl: './professional-cards.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, OnDestroy {
   private readonly dataService = inject(RequestProfessionalDataService);

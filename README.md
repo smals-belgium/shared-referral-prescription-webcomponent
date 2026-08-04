@@ -132,6 +132,7 @@ interface CreatePrescriptionInitialValues {
  * getAccessToken (required) : the method expects to retrieve the access token related to specified audience.
  * getIdToken (optional) : the method expects to retrieve the id token related to the current user. Only required
  *                         when using the details web component.
+ *                         ⚠️ See "Organization-specific requirements" below for stricter rules.
  */
 interface ComponentServices {
   getAccessToken: (audience: string) => Promise<string | null>;
@@ -178,6 +179,144 @@ The following value can be provided along with the _**proposal**_ intent :
 
 - ANNEX_81
 
+##### Organization-specific requirements
+
+When logged in as an **organization**, `getIdToken` is **required** for
+all components (`create`, `list`, and `details`) and must return an
+`IdToken` matching the following structure:
+
+```typescript
+type LowercaseOIDCKeys = keyof LowercaseEnumKeys<typeof OIDC>;
+
+/**
+ * NIHII identifier in the **11-digit** format (NIHII-11).
+ * The 8-digit format (NIHII-8) is not accepted.
+ *
+ * @example "12345678901"
+ */
+type Organization = {
+  [K in LowercaseOIDCKeys]?: {
+    nihii: string;
+    name?: string;
+  };
+};
+
+interface Organizations {
+  organizations?: Organization[];
+}
+
+export type UserProfile = Personal & Professional & Organizations;
+
+interface IdToken {
+  userProfile: UserProfile;
+}
+```
+
+Example:
+
+```json
+interface IdToken {
+  userProfile: {
+    ssin: '00000000097',
+    firstName: 'John',
+    lastName: 'Doe',
+    gender: 'M',
+    physician: {
+      recognised: true,
+      nihii11: '00000080001'
+    },
+    organizations: [
+      {
+        hospital: {
+          nihii: '12345678901',
+          name: 'Hospital Name'
+        }
+      }
+    ]
+  }
+}
+```
+
+> **Note:** Omitting `getIdToken` for organizations, or returning a
+> token that doesn't match this shape, will cause the component to fail.
+
+### M2M (Machine-to-Machine) integration
+
+The Web Components can be integrated in a **Machine-to-Machine (M2M)** context, where an
+**organization** (e.g. a hospital) drives the flow through a system account rather than an
+individual healthcare professional. In this mode the components act
+**on behalf of the connected organization**, identified by its NIHDI/NIHII number.
+
+M2M is not a separate build or a dedicated input flag: the components automatically switch to the
+**organization** behaviour based on the token you provide. The determining factor is that the
+`userProfile` returned by `getIdToken` contains an `organizations` array (and **no** professional
+discipline key).
+
+#### Prerequisites
+
+- Complete the eHealth onboarding for your organization, including the **token exchange**
+  configuration (see [Prerequisite](#-prerequisite)).
+- Obtain a valid access token for your organization's system account and be able to exchange it for
+  the audiences requested by the components (via the `getAccessToken(audience)` callback).
+
+#### Providing the organization identity
+
+In M2M mode, `getIdToken` is **required** and its `userProfile` **must** expose the connected
+organization through the `organizations` array. The organization NIHII **must** be provided in the
+**11-digit format (NIHII-11)**; the 8-digit format (NIHII-8) is not accepted. Only a single
+organization entry is supported.
+
+```typescript
+interface ComponentServices {
+  // Returns the (exchanged) access token for the requested audience.
+  getAccessToken: (audience: string) => Promise<string | null>;
+  // In M2M mode, MUST return the organization identity (NIHII-11).
+  getIdToken?: () => IdToken;
+}
+```
+
+Example of an organization `IdToken` suitable for M2M:
+
+```json
+{
+  "userProfile": {
+    "ssin": "00000000097",
+    "firstName": "John",
+    "lastName": "Doe",
+    "gender": "M",
+    "organizations": [
+      {
+        "hospital": {
+          "nihii": "12345678901",
+          "name": "Hospital Name"
+        }
+      }
+    ]
+  }
+}
+```
+
+> ⚠️ Because the presence of a professional discipline key (e.g. `physician`, `nurse`, …) makes the
+> component behave as an individual professional, an M2M/organization token **must not** include a
+> professional discipline key alongside `organizations`.
+
+#### Component behaviour in M2M
+
+- **Create** and **Details**: the connected organization (NIHII-11) is used as the requester /
+  assignee where applicable.
+- **List**: use the `requesterSsin` and/or `performerSsin` inputs to scope the prescriptions or
+  proposals to the relevant party, together with the `intent` input (`order` / `proposal`).
+
+#### Auto-assignment of caregivers
+
+In an M2M context, the **Prescription details** component does not embed its own professional search
+UI for auto-assignment. Instead it delegates the retrieval of caregivers to the host application
+through the [`wcDetailsEvent`](#the-wcdetailsevent-output) output. When the auto-assignment flow is
+started, the component emits a `FETCH_PROFESSIONAL_DATA` event; the host **must** `resolve` the
+payload with the list of caregivers to assign (`AssignCareGiverResource[]`), or `reject` it if the
+data cannot be provided. See [The `wcDetailsEvent` output](#the-wcdetailsevent-output) for the full
+data structures and an example.
+
 #### Outputs
 
 Here are the output data structures emitted by the Web Components :
@@ -191,9 +330,105 @@ Here are the output data structures emitted by the Web Components :
 |                                    |                                                             | **clickOpenExtendedDetail**: string            |
 |                                    |                                                             | **proposalApproved**: {prescriptionId: string} |
 |                                    |                                                             | **proposalRejected**: boolean                  |
+|                                    |                                                             | **wcDetailsEvent**: WcDetailsEvent             |
 
 ℹ️ Upon successful prescription creation, the Web Component triggers the prescriptionsCreated event and provides the list of identifiers for the prescriptions that were just created.
 A list of one element will be returned in case of a single prescription creation.
+
+##### The `wcDetailsEvent` output
+
+The **Prescription details** Web Component emits a `wcDetailsEvent` custom event whenever it needs the
+host application to provide data that only the host can supply. This is a **request/response** event: the
+Web Component asks a question, and the host **must** answer by calling either `resolve` or `reject` on the
+callbacks contained in the event payload.
+
+⚠️ The event payload is delivered inside the standard `event.detail` property of the custom event. The host
+**must** call exactly one of `resolve` or `reject`. If neither is called, the Web Component stays in a
+loading state and the corresponding action never completes.
+
+Currently a single event type is emitted:
+
+- **`FETCH_PROFESSIONAL_DATA`**: triggered when the user starts the auto-assignment flow and the Web
+  Component needs the list of professionals (caregivers) to assign. The host is expected to present its own
+  selection UI and then `resolve` the payload with the selected caregivers, or `reject` it if the user
+  cancels or the data cannot be retrieved. This event type is only valid in the context of **M2M**
+
+###### Data structures
+
+```typescript
+/**
+ * The standard payload emitted by the Web Component.
+ * This structure is found inside the `event.detail` property of the custom event.
+ */
+type WcDetailsEvent = FetchDataEvent;
+
+interface FetchDataEvent {
+  /** Triggered when the Web Component requires a list of professionals. */
+  type: 'FETCH_PROFESSIONAL_DATA';
+  /**
+   * Contains the promise callbacks. The host MUST call either resolve or reject,
+   * otherwise the internal request will keep waiting.
+   */
+  payload: {
+    /** Call this with an array of AssignCareGiverResource objects to fulfill the request. */
+    resolve: (data: AssignCareGiverResource[]) => void;
+    /**
+     * Call this with a reason if the data cannot be fetched.
+     * This will cancel the loading state.
+     */
+    reject: (reason?: unknown) => void;
+  };
+}
+
+/**
+ * A caregiver to be assigned to the prescription.
+ * ssin (required) : the SSIN of the caregiver to assign.
+ * role (required) : the role/discipline of the caregiver.
+ * executionStartDate (optional) : the start date of the execution, in ISO date format (YYYY-MM-DD).
+ */
+interface AssignCareGiverResource {
+  ssin: string;
+  role: string;
+  executionStartDate?: string;
+}
+```
+
+###### Example
+
+```html
+<html>
+  <head>
+    ...
+  </head>
+  <body>
+    <script>
+      ...
+      // Creation of the custom element
+      const details = document.createElement('nihdi-referral-prescription-details');
+      ...
+      // Listener answering the Web Component's data request
+      details.addEventListener('wcDetailsEvent', event => {
+        // The payload is delivered inside event.detail
+        const { type, payload } = event.detail;
+
+        if (type === 'FETCH_PROFESSIONAL_DATA') {
+          try {
+            // Provide the caregivers selected by the host application
+            const caregivers = [
+              { ssin: '00000000000', role: 'nurse', executionStartDate: '2026-01-01' },
+            ];
+            // The host MUST resolve...
+            payload.resolve(caregivers);
+          } catch (error) {
+            // ...or reject, otherwise the component stays in a loading state
+            payload.reject('User cancelled caregiver assignment');
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
+```
 
 #### Data structures
 

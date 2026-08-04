@@ -1,7 +1,14 @@
 import { CanCancelTreatmentPipe } from './can-cancel-treatment.pipe';
 import { AccessMatrixState } from '../states/api/access-matrix.state';
 import { UserInfo } from '../interfaces';
-import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource, Role } from '@reuse/code/openapi';
+import {
+  FhirR4TaskStatus,
+  PerformerTaskResource,
+  ReadRequestResource,
+  RequestTaskResource,
+  Role,
+} from '@reuse/code/openapi';
+import TaskTypeEnum = RequestTaskResource.TaskTypeEnum;
 
 describe('CanCancelTreatmentPipe', () => {
   let pipe: CanCancelTreatmentPipe;
@@ -26,7 +33,7 @@ describe('CanCancelTreatmentPipe', () => {
 
   it('should return false if currentUser role is not professional', () => {
     const prescription = {} as ReadRequestResource;
-    const task = { careGiverSsin: '123' } as PerformerTaskResource;
+    const task = { careGiverSsin: '123', taskType: TaskTypeEnum.PerformerTaskResource } as PerformerTaskResource;
     const currentUser = { role: Role.Patient, ssin: '123' } as UserInfo;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
@@ -38,7 +45,7 @@ describe('CanCancelTreatmentPipe', () => {
 
   it('should return false if task careGiver does not match currentUser', () => {
     const prescription = {} as ReadRequestResource;
-    const task = { careGiverSsin: '123' } as PerformerTaskResource;
+    const task = { careGiverSsin: '123', taskType: TaskTypeEnum.PerformerTaskResource } as PerformerTaskResource;
     const currentUser = { role: Role.Prescriber, ssin: '456' } as UserInfo;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
@@ -50,7 +57,11 @@ describe('CanCancelTreatmentPipe', () => {
 
   it('should return false if user lacks required permission', () => {
     const prescription = { templateCode: 'TEMPLATE_1' } as ReadRequestResource;
-    const task = { careGiverSsin: '123', status: FhirR4TaskStatus.Inprogress } as PerformerTaskResource;
+    const task = {
+      careGiverSsin: '123',
+      status: FhirR4TaskStatus.Inprogress,
+      taskType: TaskTypeEnum.PerformerTaskResource,
+    } as PerformerTaskResource;
     const currentUser = { role: Role.Prescriber, ssin: '123' } as UserInfo;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(false); // Permission denied
@@ -66,7 +77,27 @@ describe('CanCancelTreatmentPipe', () => {
 
   it('should return false if task status is not INPROGRESS', () => {
     const prescription = { templateCode: 'TEMPLATE_1' } as ReadRequestResource;
-    const task = { careGiverSsin: '123', status: FhirR4TaskStatus.Completed } as PerformerTaskResource; // Status not INPROGRESS
+    const task = {
+      careGiverSsin: '123',
+      status: FhirR4TaskStatus.Completed,
+      taskType: TaskTypeEnum.PerformerTaskResource,
+    } as PerformerTaskResource; // Status not INPROGRESS
+    const currentUser = { role: Role.Prescriber, ssin: '123' } as UserInfo;
+
+    mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
+
+    const result = pipe.transform(prescription, task, currentUser);
+
+    expect(result).toBe(false);
+  });
+
+  it('should return false if task is OrganizationTask', () => {
+    const prescription = { templateCode: 'TEMPLATE_1' } as ReadRequestResource;
+    const task = {
+      careGiverSsin: '123',
+      status: FhirR4TaskStatus.Inprogress,
+      taskType: TaskTypeEnum.OrganizationTaskResource,
+    } as PerformerTaskResource;
     const currentUser = { role: Role.Prescriber, ssin: '123' } as UserInfo;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
@@ -78,7 +109,11 @@ describe('CanCancelTreatmentPipe', () => {
 
   it('should return true if all conditions are satisfied', () => {
     const prescription = { templateCode: 'TEMPLATE_1' } as ReadRequestResource;
-    const task = { careGiverSsin: '123', status: FhirR4TaskStatus.Inprogress } as PerformerTaskResource;
+    const task = {
+      careGiverSsin: '123',
+      status: FhirR4TaskStatus.Inprogress,
+      taskType: TaskTypeEnum.PerformerTaskResource,
+    } as PerformerTaskResource;
     const currentUser = { role: Role.Prescriber, ssin: '123' } as UserInfo;
 
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);

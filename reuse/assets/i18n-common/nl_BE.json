@@ -330,7 +330,6 @@
       "EXPIRED": "Vervallen",
       "IN_PROGRESS": "In uitvoering",
       "DONE": "Afgesloten",
-      "CLOSED": "Afgesloten",
       "null": "Niet gekend",
       "APPROVED": "Goedgekeurd",
       "REJECTED": "Geweigerd",
@@ -386,7 +385,8 @@
       "extend": "Verlengen",
       "print": "Afdrukken",
       "cancel": "Klasseren zonder gevolg",
-      "autoAssign": "Interne toewijzing"
+      "autoAssign": "Toewijzen - intern",
+      "assignExternal": "Toewijzen - extern"
     },
     "assignProfessional": {
       "undefined": "Kies eerst een zorgverlener."
@@ -556,7 +556,6 @@
       "EXPIRED": "Niet meer geldig",
       "IN_PROGRESS": "In uitvoering",
       "DONE": "Afgesloten",
-      "CLOSED": "Afgesloten",
       "null": "Niet gekend",
       "APPROVED": "Goedgekeurd",
       "REJECTED": "Geweigerd",
@@ -789,5 +788,18 @@
       },
       "unknown": "Er is een fout opgetreden. Probeer het over enkele ogenblikken opnieuw."
     }
+  },
+  "datepicker": {
+    "calendar": "Calendar",
+    "openCalendar": "Open calendar",
+    "closeCalendar": "Sluit calendar",
+    "prevMonth": "Vorige maand",
+    "nextMonth": "Volgende maand",
+    "prevYear": "Vorig jaar",
+    "nextYear": "Volgend jaar",
+    "prevMultiYear": "Vorige 24 jaren",
+    "nextMultiYear": "Volgende 24 jaren",
+    "switchToMonthView": "Kies een datum",
+    "switchToMultiYearView": "Kies maand en jaar"
   }
 }

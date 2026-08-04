@@ -1,4 +1,13 @@
-import { Component, effect, input, output, OnInit, SimpleChanges, OnChanges } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  input,
+  OnChanges,
+  OnInit,
+  output,
+  SimpleChanges,
+} from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LoadingStatus } from '@reuse/code/interfaces';
 import { MatError, MatFormField } from '@angular/material/form-field';
@@ -20,6 +29,7 @@ import TypeEnum = FormDataType.TypeEnum;
   providers: [TemplateNamePipe],
   templateUrl: './create-prescription-model.component.html',
   styleUrl: './create-prescription-model.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreatePrescriptionModelComponent implements OnInit, OnChanges {
   protected readonly LoadingStatus = LoadingStatus;

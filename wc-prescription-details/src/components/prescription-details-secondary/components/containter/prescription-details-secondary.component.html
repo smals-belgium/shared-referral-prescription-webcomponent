@@ -1,0 +1,11 @@
+@if (prescriptionServiceData) {
+  <div class="secondary_details_container">
+    <h3 data-cy="prescription-assign-to-label">{{ 'prescription.careGivers' | translate }}</h3>
+
+    @if (performerTaskEntries.length > 0) {
+      <div data-cy="prescription-assign-to-list">
+        <app-prescription-details-professional-list></app-prescription-details-professional-list>
+      </div>
+    }
+  </div>
+}

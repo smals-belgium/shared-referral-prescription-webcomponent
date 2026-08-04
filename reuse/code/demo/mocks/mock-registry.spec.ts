@@ -526,9 +526,8 @@ describe('Demo mode', () => {
       mock.handler!(req, null);
 
       const saved = demoStorage.get('demoPrescription') as ReadRequestResourceExtended;
-      if (saved && saved.organizationTasks) {
-        expect(Array.isArray(saved.organizationTasks)).toBe(true);
-        expect(saved.organizationTasks.length).toBe(1);
+      if (saved && saved.performerTasks) {
+        expect(Object.keys(saved.performerTasks).length).toBe(1);
       }
     });
   });

@@ -21,9 +21,18 @@ describe('CanDuplicatePrescriptionPipe', () => {
     expect(result).toBe(false);
   });
 
-  it('should return false if currentUser is not a professional', () => {
+  it('should return false if currentUser is a patient', () => {
     const prescription = { templateCode: 'template1', intent: Intent.ORDER } as any;
     const currentUser = { role: Role.Patient } as any;
+    mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
+
+    const result = pipe.transform(prescription, currentUser);
+    expect(result).toBe(false);
+  });
+
+  it('should return false if currentUser is an organization', () => {
+    const prescription = { templateCode: 'template1', intent: Intent.ORDER } as any;
+    const currentUser = { role: Role.Organization } as any;
     mockAccessMatrixState.hasAtLeastOnePermission.mockReturnValue(true);
 
     const result = pipe.transform(prescription, currentUser);

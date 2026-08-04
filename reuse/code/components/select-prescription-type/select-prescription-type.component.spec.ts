@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { Subject, of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { SelectPrescriptionTypeComponent } from './select-prescription-type.component';
 import { ModelEntityDto, Template } from '@reuse/code/openapi';
 import { By } from '@angular/platform-browser';
@@ -94,8 +94,16 @@ describe('SelectPrescriptionTypeComponent', () => {
     fixture = TestBed.createComponent(SelectPrescriptionTypeComponent);
     component = fixture.componentInstance;
 
-    component.templates = allTemplates;
-    component.formGroup = new FormGroup({});
+    fixture.componentRef.setInput('templates', allTemplates);
+    fixture.componentRef.setInput(
+      'formGroup',
+      new FormGroup({
+        category: new FormControl(null),
+        template: new FormControl(null),
+        model: new FormControl(null),
+      })
+    );
+
     fixture.detectChanges();
   });
 
@@ -118,7 +126,7 @@ describe('SelectPrescriptionTypeComponent', () => {
   });
 
   it('should hide radiology category if no templates for radiology', done => {
-    component.templates = [nursingTemplate, physiotherapyTemplate];
+    fixture.componentRef.setInput('templates', [nursingTemplate, physiotherapyTemplate]);
     component.ngOnInit();
 
     createFormAndTriggerOnChange();
@@ -131,15 +139,16 @@ describe('SelectPrescriptionTypeComponent', () => {
     });
   });
 
-  it('should hide category selection if only 1 category available', done => {
-    component.templates = [nursingTemplate];
-    createFormAndTriggerOnChange();
+  it('should hide category selection if only 1 category available', () => {
+    fixture.componentRef.setInput('templates', [nursingTemplate]);
 
-    component.categoryOptions$.subscribe(() => {
-      fixture.detectChanges();
-      expect(fixture.debugElement.query(By.css('[data-cy="prescriptionCategory-label"]'))).toBeFalsy();
-      done();
-    });
+    component.ngOnInit();
+
+    expect(component.categories()).toHaveLength(1);
+    expect(component.categories()[0].code).toBe('nursingCare');
+    fixture.detectChanges();
+
+    expect(fixture.debugElement.query(By.css('[data-cy="prescriptionCategory-label"]'))).toBeFalsy();
   });
 
   it('should add validators to form controls on form group change', () => {
@@ -151,8 +160,8 @@ describe('SelectPrescriptionTypeComponent', () => {
     const categoryValidatorSpy = jest.spyOn(formGroup.get('category')!, 'addValidators');
     const templateValidatorSpy = jest.spyOn(formGroup.get('template')!, 'addValidators');
 
-    component.formGroup = formGroup;
-    component.templates = allTemplates;
+    fixture.componentRef.setInput('formGroup', formGroup);
+    fixture.componentRef.setInput('templates', allTemplates);
 
     component.ngOnChanges({
       formGroup: { currentValue: formGroup, previousValue: undefined, firstChange: true, isFirstChange: () => true },
@@ -201,7 +210,8 @@ describe('SelectPrescriptionTypeComponent', () => {
   });
 
   it('should setup model options when models are provided', done => {
-    component.models = mockModels;
+    fixture.componentRef.setInput('models', mockModels);
+
     createFormAndTriggerOnChange();
 
     let emissionCount = 0;
@@ -260,7 +270,7 @@ describe('SelectPrescriptionTypeComponent', () => {
       category: new FormControl(null),
       template: new FormControl(null),
     });
-    component.formGroup = formGroup;
+    fixture.componentRef.setInput('formGroup', formGroup);
 
     // Mock a validator that returns required error
     const mockValidator = () => ({ required: true });
@@ -306,13 +316,14 @@ describe('SelectPrescriptionTypeComponent', () => {
   });
 
   const createFormAndTriggerOnChange = () => {
-    component.ngOnInit();
-
-    component.formGroup = new FormGroup({
-      category: new FormControl(null),
-      template: new FormControl(null),
-      model: new FormControl(null),
-    });
+    fixture.componentRef.setInput(
+      'formGroup',
+      new FormGroup({
+        category: new FormControl(null),
+        template: new FormControl(null),
+        model: new FormControl(null),
+      })
+    );
 
     component.ngOnChanges({
       formGroup: {

@@ -1,0 +1,554 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  CUSTOM_ELEMENTS_SCHEMA,
+  effect,
+  ElementRef,
+  EventEmitter,
+  HostBinding,
+  inject,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  signal,
+  Signal,
+  SimpleChanges,
+  untracked,
+  ViewEncapsulation,
+  WritableSignal,
+} from '@angular/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { DateAdapter } from '@angular/material/core';
+import { DateTime } from 'luxon';
+import { AlertType, DataState, LoadingStatus, UserInfo } from '@reuse/code/interfaces';
+import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
+import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
+import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
+import { TemplatesState } from '@reuse/code/states/api/templates.state';
+import { TemplateVersionsState } from '@reuse/code/states/api/template-versions.state';
+import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
+import { PatientState } from '@reuse/code/states/api/patient.state';
+import { IdentifyState } from '@reuse/code/states/privacy/identify.state';
+import { ProposalState } from '@reuse/code/states/api/proposal.state';
+import {
+  isPrescriptionId,
+  isPrescriptionShortCode,
+  isProposal,
+  isSsin,
+  validateSsinChecksum,
+} from '@reuse/code/utils/utils';
+import { EncryptionService } from '@reuse/code/services/privacy/encryption.service';
+import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
+import {
+  BehaviorSubject,
+  catchError,
+  concatMap,
+  EMPTY,
+  from,
+  map,
+  Observable,
+  of,
+  Subscription,
+  switchMap,
+  throwError,
+} from 'rxjs';
+import { EncryptionState } from '@reuse/code/states/privacy/encryption.state';
+import { v4 as uuidv4 } from 'uuid';
+import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-responses-state.interface';
+import { PssService } from '@reuse/code/services/api/pss.service';
+import {
+  FormElement,
+  PerformerTaskResource,
+  PersonResource,
+  ReadRequestResource,
+  Template,
+  TemplateVersion,
+} from '@reuse/code/openapi';
+import { HttpErrorResponse } from '@angular/common/http';
+import { EvfTranslateService, FormTranslations } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
+import { PrescriptionDetailsMainComponent } from '../components/prescription-details-main/container/prescription-details-main.component';
+import { PrescriptionDetailsSecondaryComponent } from '../components/prescription-details-secondary/components/containter/prescription-details-secondary.component';
+import {
+  DetailsServices,
+  PrescriptionDetailsSecondaryService,
+} from '../components/prescription-details-secondary/services/prescription-details-secondary.service';
+import { PrescriptionDetailsBottomComponent } from '../components/prescription-details-bottom/prescription-details-bottom.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
+import { Lang } from '@reuse/code/constants/languages';
+import { tap } from 'rxjs/operators';
+import { PrescriptionDetailsActionsComponent } from '../components/prescription-details-actions/container/prescription-details-actions.component';
+import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
+import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
+import { formatToEvfLangCode } from '@reuse/code/evf/utils/evf-utils';
+import { AlertService } from '@reuse/code/services/helpers/alert.service';
+import { ALERT_TARGET, ERROR_PRESCRIPTION_DETAILS } from '@reuse/code/constants/error';
+import { WcDetailsEvent } from '@reuse/code/interfaces/events.interface';
+
+export interface ViewState {
+  prescription: ReadRequestResource;
+  decryptedResponses?: Record<string, unknown>;
+  patient: PersonResource;
+  performerTask?: PerformerTaskResource;
+  template?: Template;
+  templateVersion: TemplateVersion;
+  currentUser: Partial<UserInfo>;
+}
+
+@Component({
+  selector: 'uhmep-prescription-details',
+  templateUrl: './prescription-details.component.html',
+  styleUrls: ['./prescription-details.component.scss'],
+  encapsulation: ViewEncapsulation.ShadowDom,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [
+    OverlaySpinnerComponent,
+    AlertComponent,
+    MatButtonModule,
+    MatIconModule,
+    TranslateModule,
+    TemplateNamePipe,
+    PrescriptionDetailsMainComponent,
+    PrescriptionDetailsSecondaryComponent,
+    PrescriptionDetailsBottomComponent,
+    MatMenuModule,
+    PrescriptionDetailsActionsComponent,
+  ],
+  providers: [
+    EvfTranslateService,
+    { provide: ALERT_TARGET, useFactory: () => `${ERROR_PRESCRIPTION_DETAILS}-${crypto.randomUUID()}` },
+  ],
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDestroy {
+  private readonly _translate = inject(TranslateService);
+  private readonly _dateAdapter = inject(DateAdapter<DateTime>);
+  private readonly _authService = inject(AuthService);
+  private readonly _accessMatrixStateService = inject(AccessMatrixState);
+  private readonly _prescriptionStateService = inject(PrescriptionState);
+  private readonly _proposalSateService = inject(ProposalState);
+  private readonly _patientStateService = inject(PatientState);
+  private readonly _templatesStateService = inject(TemplatesState);
+  private readonly _templateVersionsStateService = inject(TemplateVersionsState);
+  private readonly _identifyState = inject(IdentifyState);
+  private readonly _encryptionService = inject(EncryptionService);
+  private readonly _pseudoService = inject(PseudoService);
+  private readonly _pssService = inject(PssService);
+  private readonly _encryptionStateService = inject(EncryptionState);
+  private readonly _iconRegistryService = inject(IconRegistryService);
+
+  private readonly _prescriptionSecondaryService = inject(PrescriptionDetailsSecondaryService);
+  protected readonly evfTranslateService = inject(EvfTranslateService);
+  private readonly _activeHostService = inject(ActiveOverlayHostService);
+  private readonly _alertService = inject(AlertService);
+
+  private readonly _alertTarget = inject(ALERT_TARGET);
+  protected readonly error = this._alertService.setTarget(this._alertTarget);
+
+  @HostBinding('attr.lang')
+  @Input()
+  lang: string = Lang.FR.full;
+  @Input() initialPrescriptionType?: string;
+  @Input() prescriptionId!: string;
+  @Input() patientSsin?: string;
+  @Input() intent!: string;
+  @Input() services!: DetailsServices;
+
+  @Output() clickDuplicate = new EventEmitter<ReadRequestResource>();
+  @Output() clickExtend = new EventEmitter<ReadRequestResource>();
+
+  @Output() clickPrint = new EventEmitter<Blob>();
+  @Output() clickDownload = new EventEmitter<Blob>();
+
+  @Output() proposalApproved = this._prescriptionSecondaryService.proposalApproved;
+  @Output() proposalRejected = this._prescriptionSecondaryService.proposalsRejected;
+  @Output() clickOpenExtendedDetail = new EventEmitter<string>();
+  @Output() wcDetailsEvent = new EventEmitter<WcDetailsEvent>();
+
+  protected readonly LoadingStatus = LoadingStatus;
+
+  private readonly templateCode$ = this._prescriptionSecondaryService.templateCode$;
+  protected readonly isProfessional$ = this._prescriptionSecondaryService.isProfessional$;
+  protected readonly isOrganization$ = this._prescriptionSecondaryService.isOrganization$;
+  private readonly decryptedResponses$: WritableSignal<DecryptedResponsesState> =
+    this._prescriptionSecondaryService.decryptedResponses$;
+
+  readonly viewState$: Signal<DataState<ViewState>> = combineSignalDataState({
+    cryptoKey: computed(() => this._prescriptionSecondaryService.getCryptoKey()),
+    prescription: computed(() => this._prescriptionSecondaryService.getPrescription()),
+    decryptedResponses: computed(() => this._prescriptionSecondaryService.getDecryptedResponses()),
+    patient: computed(() => this._prescriptionSecondaryService.getPatient()),
+    requestTask: computed(() => this._prescriptionSecondaryService.getRequestTask()),
+    template: computed(() => this._prescriptionSecondaryService.getTemplate()),
+    templateVersion: computed(() => this._prescriptionSecondaryService.getTemplateVersion()),
+    currentUser: computed(() => this._prescriptionSecondaryService.getCurrentUser()),
+  });
+
+  loading: WritableSignal<boolean> = this._prescriptionSecondaryService.loading;
+  generatedUUID = this._prescriptionSecondaryService.generatedUUID;
+  currentLang: WritableSignal<string> = this._prescriptionSecondaryService.currentLang;
+  protected langAlertData: WritableSignal<{ title: string; body: string } | null> = signal(null);
+
+  private readonly _subscriptions: Subscription = new Subscription();
+  private readonly _languageChange = new BehaviorSubject<string>(this._translate.currentLang ?? Lang.FR.full);
+
+  protected readonly AlertType = AlertType;
+
+  isProposalValue = false;
+  infoElements: FormElement[] = [];
+
+  constructor(private readonly el: ElementRef<HTMLElement>) {
+    this.currentLang.set(this._translate.currentLang);
+    this._translate.setDefaultLang(Lang.FR.full);
+
+    if (!this.currentLang()) {
+      this._translate.use(Lang.FR.full);
+      this._dateAdapter.setLocale(Lang.FR.full);
+      this.currentLang.set(this._translate.currentLang);
+    }
+
+    // Register a new effect based on prescription state changes
+    effect(() => {
+      const intent = this._prescriptionSecondaryService.intent();
+      const prescription =
+        intent && isProposal(intent)
+          ? this._proposalSateService.state()?.data
+          : this._prescriptionStateService.state()?.data;
+
+      untracked(() => {
+        if (prescription) {
+          if (prescription.patientIdentifier) {
+            this._identifyState.loadSSIN(prescription.patientIdentifier);
+          }
+
+          if (prescription.pseudonymizedKey) {
+            void this.getPrescriptionKey(prescription.pseudonymizedKey);
+          }
+
+          const instanceId = prescription.id || uuidv4();
+          this._templateVersionsStateService
+            .loadTemplateVersionForInstance(instanceId, 'READ_' + prescription.templateCode)
+            .subscribe({
+              next: template => {
+                this.infoElements = [];
+                this.getInfoElemnts(template);
+              },
+            });
+        }
+      });
+    });
+
+    // Register a new effect based on identify state changes
+    effect(() => {
+      const ssin = this._identifyState.state()?.data;
+
+      untracked(() => {
+        if (ssin) {
+          const professional = this.isProfessional$();
+          const organization = this.isOrganization$();
+          if (professional || organization) {
+            this._patientStateService.loadPatient(ssin.toString());
+          }
+        }
+      });
+    });
+
+    // Register a new effect based on prescription, template and key state changes
+    effect(() => {
+      const intent = this._prescriptionSecondaryService.intent();
+      const prescription =
+        intent && isProposal(intent)
+          ? this._proposalSateService.state()?.data
+          : this._prescriptionStateService.state()?.data;
+      const templateCode = this.templateCode$();
+      const cryptoKey = this._encryptionStateService.state().data;
+      const template = this._templateVersionsStateService.getState('READ_' + templateCode)()?.data;
+
+      untracked(() => {
+        //Futur improvment :  make more generic for proposal with free text (physio) - https://jira.smals.be/browse/UHMEP-2166
+        const missingCryptoKey = !cryptoKey;
+        const isAnnex81 = templateCode === 'ANNEX_81';
+        const hasNoteResponse = Boolean(prescription?.responses?.['note']);
+
+        if (!template || (missingCryptoKey && (!isAnnex81 || hasNoteResponse))) {
+          return;
+        }
+        if (prescription?.responses) {
+          this.decryptResponses(prescription.responses, template, cryptoKey).subscribe({
+            next: decryptedResponses => {
+              this.decryptedResponses$.set({ data: decryptedResponses, error: undefined });
+            },
+            error: () => {
+              this.decryptedResponses$.set({ data: undefined, error: { decryptedResponses: 'Decryption failed' } });
+            },
+          });
+        }
+        if (template) {
+          this.evfTranslateService.addTranslations(template.translations as FormTranslations);
+        }
+      });
+    });
+
+    // Register a new effect based templateCode
+    effect(() => {
+      const templateCode = this.templateCode$();
+      if (templateCode) {
+        this.loadPssStatus(templateCode);
+      }
+    });
+  }
+
+  ngOnInit() {
+    this._iconRegistryService.init(
+      'keyboard_arrow_up',
+      'keyboard_arrow_down',
+      'more_vert',
+      'delete',
+      'error',
+      'done',
+      'close',
+      'cancel',
+      'arrow_forward_ios',
+      'info',
+      'person',
+      'warning',
+      'tune'
+    );
+
+    this.generatedUUID.set(uuidv4());
+    this.evfTranslateService.setDefaultLang(Lang.FR.short);
+
+    this._subscriptions.add(
+      this._languageChange
+        .pipe(
+          tap(lang => this._dateAdapter.setLocale(lang)),
+          switchMap(lang => {
+            return this._translate.use(lang).pipe(
+              catchError(() => {
+                handleMissingTranslationFile(this.langAlertData, lang);
+                return EMPTY;
+              })
+            );
+          })
+        )
+        .subscribe({
+          next: () => {
+            this.langAlertData.set(null);
+            this._translate.use(this.lang);
+            const formattedLang = formatToEvfLangCode(this.lang);
+            this.evfTranslateService.setCurrentLang(formattedLang);
+            this._prescriptionSecondaryService.currentLang.set(formattedLang);
+          },
+        })
+    );
+
+    this._activeHostService.set(this.el.nativeElement);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    this._alertService.setActive(this._alertTarget);
+
+    // Set intent first, independently — don't block on other inputs
+    if (changes['intent']) this._prescriptionSecondaryService.intent.set(this.intent);
+
+    if (changes['services'] && this.services) this.handleServicesChange();
+    if (changes['lang']) this._languageChange.next(this.lang ?? '');
+
+    if ((changes['prescriptionId'] || changes['patientSsin']) && this.prescriptionId && this.intent) {
+      this.handlePrescriptionOrSsinChange(changes);
+    }
+  }
+
+  private handleServicesChange(): void {
+    this._authService.init(this.services.getAccessToken, this.services.getIdToken);
+    this._accessMatrixStateService.loadAccessMatrix();
+    this._templatesStateService.loadTemplates();
+    this._prescriptionSecondaryService.services = this.services;
+  }
+
+  private handlePrescriptionOrSsinChange(changes: SimpleChanges): void {
+    this.dismissError();
+    const hasValidPrescriptionId = isPrescriptionId(this.prescriptionId);
+    const hasValidShortCode = isPrescriptionShortCode(this.prescriptionId) && !!this.patientSsin;
+
+    const shouldHandlePrescriptionChange = changes['prescriptionId'] && (hasValidPrescriptionId || hasValidShortCode);
+    const shouldHandleSsinChange = changes['patientSsin'] && !hasValidPrescriptionId;
+
+    if (shouldHandlePrescriptionChange || shouldHandleSsinChange) {
+      this._encryptionStateService.resetCryptoKey();
+      this.loadPrescriptionOrProposal();
+    }
+  }
+
+  private getInfoElemnts(template: TemplateVersion) {
+    template.elements?.forEach(element => {
+      if (element.viewType === 'info') {
+        this.infoElements.push(element);
+      }
+    });
+  }
+
+  private loadPssStatus(templateCode: string) {
+    if (templateCode === 'ANNEX_82') {
+      this._pssService.getPssStatus().subscribe({
+        next: status => {
+          this._prescriptionSecondaryService.pssStatus.set(status);
+        },
+        error: () => {
+          this._pssService.setStatus(false);
+        },
+      });
+    }
+  }
+
+  loadProposal() {
+    if (isPrescriptionId(this.prescriptionId)) {
+      this._proposalSateService.loadProposal(this.prescriptionId);
+    } else if (this.patientSsin && isSsin(this.patientSsin)) {
+      this._alertService.showGeneralError(this._alertTarget, 'proposals.errors.invalidUUID');
+    }
+  }
+
+  loadPrescription(): void {
+    if (isPrescriptionId(this.prescriptionId)) {
+      this._prescriptionStateService.loadPrescription(this.prescriptionId);
+    } else if (this.patientSsin && isSsin(this.patientSsin)) {
+      if (!validateSsinChecksum(this.patientSsin)) {
+        this._alertService.showGeneralError(this._alertTarget, 'prescription.errors.invalidSsinChecksum');
+        return;
+      }
+
+      if (!isPrescriptionShortCode(this.prescriptionId)) {
+        this._alertService.showGeneralError(this._alertTarget, 'prescription.errors.invalidShortCode');
+        return;
+      }
+
+      void this.getPatientIdentifier(this.patientSsin).then(identifier => {
+        this._prescriptionStateService.loadPrescriptionByShortCode(this.prescriptionId, identifier);
+      });
+    }
+  }
+
+  clickRetry() {
+    this.dismissError();
+    this.loadPrescriptionOrProposal();
+  }
+
+  loadPrescriptionOrProposal(): void {
+    this.isProposalValue = isProposal(this.intent);
+    if (this.isProposalValue) {
+      this.loadProposal();
+    } else {
+      this.loadPrescription();
+    }
+  }
+
+  private decryptResponses(
+    responses: Record<string, unknown>,
+    template: TemplateVersion,
+    cryptoKey?: CryptoKey
+  ): Observable<Record<string, unknown>> {
+    const decryptedResponses: Record<string, unknown> = {};
+
+    return new Observable(observer => {
+      const entries = Object.entries(responses);
+
+      from(entries)
+        .pipe(
+          concatMap(([key, value]) => {
+            const formElement = template.elements?.find(e => e.id === key);
+
+            const isFreeText = formElement?.tags?.includes('freeText');
+
+            if (!isFreeText) {
+              decryptedResponses[key] = value;
+              return of(decryptedResponses);
+            }
+
+            if (!cryptoKey) {
+              return throwError(() => new Error(`Pseudo key is missing for key "${key}"`));
+            }
+
+            return this._encryptionService.decryptText(value as string, cryptoKey).pipe(
+              map(decrypted => {
+                decryptedResponses[key] = decrypted;
+                return decryptedResponses;
+              }),
+              catchError((error: HttpErrorResponse) => {
+                return throwError(() => new Error(`Decryption failed for key "${key}": ${error.message}`));
+              })
+            );
+          })
+        )
+        .subscribe({
+          next: updatedResponses => {
+            if (Object.keys(updatedResponses).length === entries.length) {
+              observer.next(updatedResponses);
+              observer.complete();
+            }
+          },
+          error: err => {
+            observer.error(err);
+          },
+        });
+    });
+  }
+
+  async getPrescriptionKey(pseudonymizedKey: string): Promise<void> {
+    try {
+      const pseudoInTransit = this._pseudoService.toPseudonymInTransit(pseudonymizedKey);
+      if (pseudoInTransit) {
+        const uint8Array = await this._pseudoService.identifyPseudonymInTransit(pseudoInTransit);
+        this._encryptionStateService.loadCryptoKey(uint8Array);
+      }
+    } catch (error) {
+      const errorMsg = new Error('Error loading prescription key', { cause: error });
+      this._encryptionStateService.setCryptoKeyError(errorMsg);
+    }
+  }
+
+  showRetryButton() {
+    const error = this.viewState$().error;
+
+    // Check if error is an object and only has the key "decryptedResponses" and then return false
+    return !(
+      error &&
+      typeof error === 'object' &&
+      Object.keys(error).length === 1 &&
+      Object.prototype.hasOwnProperty.call(error, 'decryptedResponses')
+    );
+  }
+
+  private getPatientIdentifier(identifier: string): Promise<string> {
+    return this._pseudoService.pseudonymize(identifier);
+  }
+
+  ngOnDestroy() {
+    this._encryptionStateService.resetCryptoKey();
+    if (isProposal(this.intent)) {
+      this._proposalSateService.resetProposal();
+    } else {
+      this._prescriptionStateService.resetPrescription();
+    }
+    this._activeHostService.clear(this.el.nativeElement);
+    this.clearAlertService();
+  }
+
+  protected dismissError() {
+    this._alertService.clear(this._alertTarget);
+  }
+
+  clearAlertService(): void {
+    this._alertService.resetActive();
+    this._alertService.remove(this._alertTarget);
+  }
+}

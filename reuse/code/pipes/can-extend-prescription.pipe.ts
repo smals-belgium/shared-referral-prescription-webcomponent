@@ -2,12 +2,12 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { UserInfo } from '@reuse/code/interfaces';
 import { ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
-import { isProfesionalBasedOnRole, isProposal } from '@reuse/code/utils/utils';
+import { isProfesionalNotOrganizationBasedOnRole, isProposal } from '@reuse/code/utils/utils';
 
 /**
  * This pipe determines whether a prescription can be extended.
  *
- * The current user needs to be logged in as a professional
+ * The current user needs to be logged in as a professional, not assigned to an organization
  * The access matrix needs to have createPrescription
  * The intent needs to be order
  * The status of the prescription can be OPEN or IN_PROGRESS
@@ -34,7 +34,7 @@ export class CanExtendPrescriptionPipe implements PipeTransform {
     const allowedStatuses: RequestStatus[] = [RequestStatus.Open, RequestStatus.InProgress];
 
     return (
-      isProfesionalBasedOnRole(currentUser.role) &&
+      isProfesionalNotOrganizationBasedOnRole(currentUser.role) &&
       this.accessMatrixState.hasAtLeastOnePermission(['createPrescription'], prescription.templateCode) &&
       !!prescription.status &&
       allowedStatuses.includes(prescription.status) &&

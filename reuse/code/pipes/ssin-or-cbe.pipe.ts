@@ -1,20 +1,17 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { HealthcareOrganizationResource, HealthcareProResource, ProviderType } from '@reuse/code/openapi';
+import { HealthcareOrganizationResource, HealthcareProResource } from '@reuse/code/openapi';
+import { isProfessional } from '@reuse/code/utils/assignment-disciplines.utils';
 
 @Pipe({ name: 'ssinOrOrganizationId', standalone: true })
 export class SsinOrOrganizationIdPipe implements PipeTransform {
   transform(healthcareProvider: HealthcareProResource | HealthcareOrganizationResource): string | undefined {
     let ssinOrCbe;
-    if (this.isProfessional(healthcareProvider)) {
+    if (isProfessional(healthcareProvider)) {
       ssinOrCbe = healthcareProvider.id?.ssin;
     } else {
       ssinOrCbe = healthcareProvider.id?.organizationId;
     }
 
     return ssinOrCbe?.toString();
-  }
-
-  isProfessional(object: HealthcareProResource | HealthcareOrganizationResource): object is HealthcareProResource {
-    return object.type?.toLowerCase() === ProviderType.Professional.toLowerCase();
   }
 }

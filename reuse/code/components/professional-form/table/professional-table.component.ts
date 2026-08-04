@@ -24,6 +24,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { AlertType } from '@reuse/code/interfaces';
 import { MatButtonModule } from '@angular/material/button';
 import { PaginatorComponent } from '@reuse/code/components/paginator/paginator.component';
+import { HighlightFilterPipe } from '@reuse/code/pipes/highlight-filter.pipe';
 
 export type TranslationType = keyof Translation;
 
@@ -50,6 +51,7 @@ export type TranslationType = keyof Translation;
     MatFooterCellDef,
     TranslatePipe,
     MatButtonModule,
+    HighlightFilterPipe,
     PaginatorComponent,
   ],
   templateUrl: './professional-table.component.html',
@@ -65,6 +67,7 @@ export class ProfessionalTableComponent {
   readonly total = input<number | undefined>(undefined);
   readonly page = input<number>(0);
   readonly pageSize = input<number>(0);
+  readonly query = input<string>('');
   readonly loading = input<boolean>(false);
   readonly currentLang = input.required<TranslationType | undefined>();
 

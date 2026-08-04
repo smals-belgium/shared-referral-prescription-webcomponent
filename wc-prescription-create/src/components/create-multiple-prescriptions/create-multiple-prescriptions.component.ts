@@ -2,7 +2,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
+  ElementRef,
   EventEmitter,
+  inject,
   Input,
   OnChanges,
   OnDestroy,
@@ -27,10 +29,14 @@ import { CreatePrescriptionModelComponent } from '@reuse/code/components/create-
 import { isOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
 import { isPrescription, isProposal } from '@reuse/code/utils/utils';
 import { PersonResource } from '@reuse/code/openapi';
-import { ErrorCard } from '@reuse/code/interfaces/error-card.interface';
 import { PatientInfoBarComponent } from '../patient-info-bar/patient-info-bar.component';
 import { EvfFormWebComponent } from '../evf-form/evf-form.component';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { TranslateByElementPipe } from '@reuse/code/pipes/translate-by-element.pipe';
+import { MarkdownModule } from 'ngx-markdown';
+import { GetErrorMessagesFromFormPipe } from '@reuse/code/pipes/get-error-messages-from-form.pipe';
+import { AlertService } from '@reuse/code/services/helpers/alert.service';
+import { ALERT_TARGET } from '@reuse/code/constants/error';
 
 @Component({
   selector: 'app-create-multiple-prescriptions',
@@ -50,13 +56,22 @@ import { MatCheckbox } from '@angular/material/checkbox';
     PatientInfoBarComponent,
     MatCheckbox,
     CreatePrescriptionModelComponent,
+    TranslateByElementPipe,
+    MarkdownModule,
+    GetErrorMessagesFromFormPipe,
   ],
+  providers: [GetErrorMessagesFromFormPipe],
 })
 export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestroy {
+  private readonly getErrorMessagesPipe = inject(GetErrorMessagesFromFormPipe);
+  private readonly alertService = inject(AlertService);
+  private readonly alertTarget = inject(ALERT_TARGET);
+
+  protected readonly pageError = this.alertService.setTarget(this.alertTarget);
+
   protected readonly LoadingStatus = LoadingStatus;
   protected readonly AlertType = AlertType;
 
-  readonly trackByFn = (item: CreatePrescriptionForm) => item.trackId;
   modelStates = this.prescriptionModelState.modalStates;
   checkedPrescriptions = signal<Set<number>>(new Set());
 
@@ -67,11 +82,6 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
   @Input() patient?: PersonResource;
   @Input() status: boolean = false;
   @Input() createPrescriptionForms: CreatePrescriptionForm[] = [];
-  @Input() errorCard: ErrorCard = {
-    show: false,
-    message: '',
-    errorResponse: undefined,
-  };
 
   @Output() clickAddPrescription = new EventEmitter<void>();
   @Output() clickDeletePrescription = new EventEmitter<{ form: CreatePrescriptionForm; templateName: string }>();
@@ -83,15 +93,21 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
 
   @ViewChild(MatAccordion, { static: true }) accordion!: MatAccordion;
   @ViewChildren(MatExpansionPanel) panels!: QueryList<MatExpansionPanel>;
-  constructor(private readonly prescriptionModelState: PrescriptionModelState) {}
+  constructor(
+    private readonly prescriptionModelState: PrescriptionModelState,
+    private readonly host: ElementRef<HTMLElement>
+  ) {}
 
   get numberOfPrescriptionsToCreate(): number {
     return this.createPrescriptionForms.filter(f => f.status !== LoadingStatus.SUCCESS).length;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['createPrescriptionForms'] && this.createPrescriptionForms?.length === 1) {
-      queueMicrotask(() => this.panels?.first?.open());
+    if (changes['createPrescriptionForms']) {
+      if (this.createPrescriptionForms?.length === 1) {
+        queueMicrotask(() => this.panels?.first?.open());
+      }
+      this.scrollToTop();
     }
     this.isPrescriptionValue = isPrescription(this.intent);
   }
@@ -186,15 +202,56 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
     return this.checkedPrescriptions().has(prescriptionTrackById);
   }
 
-  ngOnDestroy() {
-    this.prescriptionModelState.resetAll();
-  }
-
   isPrescription(intent: string): boolean {
     return isPrescription(intent);
   }
 
   isProposal(intent: string): boolean {
     return isProposal(intent);
+  }
+
+  private getFirstPrescriptionWithErrors() {
+    return this.createPrescriptionForms.find(form => form.errors && Object.keys(form.errors).length);
+  }
+
+  scrollToTop() {
+    const firstFormWithErrors = this.getFirstPrescriptionWithErrors();
+
+    if (firstFormWithErrors && firstFormWithErrors.errors) {
+      const messages = this.getErrorMessagesPipe.transform(
+        firstFormWithErrors.errors,
+        firstFormWithErrors.formTemplateState$().data
+      );
+      if (messages.length === 1) {
+        const id = messages[0].id;
+        if (id) this.scrollTo(id, firstFormWithErrors.trackId);
+      } else {
+        this.scrollTo();
+      }
+    }
+  }
+
+  scrollTo(elementId?: string, trackId?: number) {
+    const shadow = this.host.nativeElement;
+    const wrapper = trackId ? shadow?.querySelector(`#mat-expension-panel-${trackId}`) : shadow;
+    const target = elementId ? wrapper?.querySelector(`[data-evf-element-id="${elementId}"]`) : shadow;
+
+    if (!target) return;
+
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  protected dismissError() {
+    this.alertService.clear(this.alertTarget);
+  }
+
+  ngOnDestroy() {
+    this.prescriptionModelState.resetAll();
+    this.clearAlertService();
+  }
+
+  clearAlertService() {
+    this.alertService.resetActive();
+    this.alertService.remove(this.alertTarget);
   }
 }
