@@ -44,11 +44,12 @@ those changes. ⚠️
 
 ## ✅ Prerequisite
 
-Before you start using the Web Components, you must first complete the onboarding process with eHealth. The Web
+Before you start using the Web Components, you must first complete the onboarding process with eHealth https://www.ehealth.fgov.be/ehealthplatform/fr/service-ereferral. The Web
 Components require a valid access token issued specifically for your personal **public Client ID**.
 
-In addition, the components rely on token exchange operations to function properly. As such, this part of the onboarding
-process is mandatory and **must** also be completed.
+In addition, if you want to be authenticated as an individual healthcare provider using IAM Healthcare realm client, the components rely on token exchange operations to function properly. As such, this part of the onboarding process is mandatory and **must** also be completed.
+
+The token exchange service used in the individual Healthcare client flow DOES NOT exist in the M2M procedure
 
 ## 🧩 Available Web Component
 
@@ -242,8 +243,8 @@ interface IdToken {
 
 ### M2M (Machine-to-Machine) integration
 
-The Web Components can be integrated in a **Machine-to-Machine (M2M)** context, where an
-**organization** (e.g. a hospital) drives the flow through a system account rather than an
+The Web Components can be integrated in a Machine-to-Machine (M2M) context, where an
+organization (e.g. a hospital) drives the flow through a system account rather than an
 individual healthcare professional. In this mode the components act
 **on behalf of the connected organization**, identified by its NIHDI/NIHII number.
 
@@ -254,10 +255,9 @@ discipline key).
 
 #### Prerequisites
 
-- Complete the eHealth onboarding for your organization, including the **token exchange**
-  configuration (see [Prerequisite](#-prerequisite)).
-- Obtain a valid access token for your organization's system account and be able to exchange it for
-  the audiences requested by the components (via the `getAccessToken(audience)` callback).
+- Complete the eHealth onboarding for your organization (see https://www.ehealth.fgov.be/ehealthplatform/fr/service-ereferral).
+- The token exchange service used in the individual Healthcare client flow DOES NOT exist in the M2M procedure
+- therefore, integrator must explicitly select the appropriate scopes and audience when requesting a token to call pseudonymization service or the one requested by the components (via the `getAccessToken(audience)` callback).
 
 #### Providing the organization identity
 
@@ -268,7 +268,7 @@ organization entry is supported.
 
 ```typescript
 interface ComponentServices {
-  // Returns the (exchanged) access token for the requested audience.
+  // Returns the access token for the requested audience.
   getAccessToken: (audience: string) => Promise<string | null>;
   // In M2M mode, MUST return the organization identity (NIHII-11).
   getIdToken?: () => IdToken;
