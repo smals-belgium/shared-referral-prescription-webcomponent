@@ -1,6 +1,6 @@
 {
   "name": "@smals-belgium-shared/uhmep-prescription-create",
-  "version": "2.1.0-SNAPSHOT",
+  "version": "2.1.0",
   "description": "Prescription create web component",
   "main": "build/wc-prescription-create.js",
   "files": [
