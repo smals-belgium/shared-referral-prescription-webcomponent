@@ -1,8 +1,7 @@
 <div class="selected_cities_container">
   <mat-chip-set>
-    @let citiesControl = formGroup().controls.cities;
     @let queryControl = formGroup().controls.query;
-    @for (city of citiesControl.value; track city.zipCode) {
+    @for (city of cities(); track city.zipCode) {
       <mat-chip
         class="mh-blue"
         data-cy="prescription-selected-city"
@@ -18,7 +17,7 @@
         </button>
       </mat-chip>
     }
-    @if (queryControl.value && !hideUpdateSearchButton()) {
+    @if (query() && !hideUpdateSearchButton()) {
       <mat-chip class="mh-blue" data-cy="prescription-selected-query" [disableRipple]="true" (removed)="clearQuery()">
         {{ queryControl.value }}
         <button

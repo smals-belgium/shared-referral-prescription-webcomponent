@@ -7,7 +7,7 @@
           class="mh-mat-card"
           (click)="radioButton.checked = true; changeValue(professional)">
           <mat-card-content>
-            <div class="row">
+            <div class="row row-header">
               <mat-radio-button
                 #radioButton
                 [value]="professional"
@@ -15,40 +15,48 @@
                 [aria-label]="'professional.table.select' | translate"
                 (click)="$event.stopPropagation(); changeValue(professional)">
               </mat-radio-button>
+              <mat-icon
+                class="type-icon"
+                [svgIcon]="isProfessional(professional) ? 'person' : 'apartment'"
+                [aria-hidden]="true"></mat-icon>
             </div>
-            @if (isProfessional(professional)) {
-              <div class="row">
-                <p class="professional-name">
-                  @if (professional.healthcarePerson; as person) {
-                    @let name = (person.lastName || '') + ' ' + (person.firstName || '');
-                    <span [innerHTML]="name | highlightFilter: query()"></span>
-                  }
-                </p>
-              </div>
-
-              <div class="row">
-                <span class="info">
-                  {{
-                    professional.nihii8 ?? professional.nihii11
-                      | formatNihdi: professional.healthcareQualification?.id?.code
-                  }}
-                </span>
-              </div>
-
-              <div class="row">
-                @if (professional.address) {
-                  {{ professional.address.street | formatMultilingualObject: currentLang() }}
-                  {{ professional.address.houseNumber || '' }} {{ professional.address.box || '' }}
+            <div class="row">
+              <p class="professional-name">
+                @if (isProfessional(professional) && professional.healthcarePerson; as person) {
+                  @let name = (person.lastName || '') + ' ' + (person.firstName || '');
+                  <span [innerHTML]="name | highlightFilter: query()"></span>
+                } @else if (!isProfessional(professional) && professional.organizationName; as org) {
+                  @let orgName = org | formatMultilingualObject: currentLang();
+                  <span [innerHTML]="orgName | highlightFilter: query()"></span>
                 }
-              </div>
+              </p>
+            </div>
 
-              <div class="row">
-                @if (professional.address) {
-                  {{ professional.address.zipCode + ' ' || '' }}
-                  {{ professional.address.municipality | formatMultilingualObject: currentLang() }}
-                }
-              </div>
-            }
+            <div class="row">
+              <span class="info">
+                {{
+                  professional.nihii8 ?? professional.nihii11
+                    | formatNihdi
+                      : (isProfessional(professional)
+                          ? professional.healthcareQualification?.id?.code
+                          : professional.qualificationCode)
+                }}
+              </span>
+            </div>
+
+            <div class="row">
+              @if (professional.address) {
+                {{ professional.address.street | formatMultilingualObject: currentLang() }}
+                {{ professional.address.houseNumber || '' }} {{ professional.address.box || '' }}
+              }
+            </div>
+
+            <div class="row">
+              @if (professional.address) {
+                {{ professional.address.zipCode + ' ' || '' }}
+                {{ professional.address.municipality | formatMultilingualObject: currentLang() }}
+              }
+            </div>
           </mat-card-content>
         </mat-card>
       }

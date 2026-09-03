@@ -161,7 +161,7 @@ export class ProfessionalSearchFormComponent implements OnInit {
     }
 
     if (this.queryIsNumeric) {
-      const sanitized = inputValue.replace(/-/g, '');
+      const sanitized = inputValue.replaceAll('-', '');
       if (this.queryControl.value !== sanitized) {
         this.queryControl.setValue(sanitized, { emitEvent: false });
       }

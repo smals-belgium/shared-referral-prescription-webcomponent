@@ -139,7 +139,7 @@ export class PrescriptionsCardComponent implements OnChanges, AfterViewInit, OnD
     let current: HTMLElement | null = el.parentElement;
 
     while (current) {
-      const style = window.getComputedStyle(current);
+      const style = globalThis.getComputedStyle(current);
       const overflowY = style.overflowY;
       const canScroll = (overflowY === 'auto' || overflowY === 'scroll') && current.scrollHeight > current.clientHeight;
 

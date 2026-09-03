@@ -1,0 +1,10 @@
+**
+!Dockerfile
+!index.html
+!dist/wc-prescription-create/build/**
+!dist/wc-prescription-details/build/**
+!dist/wc-prescription-list/build/**
+!showcase/**
+!contrib/showcase/form/**
+!contrib/etc/nginx/nginx.default.d/**
+!contrib/etc/nginx/nginx.d/**

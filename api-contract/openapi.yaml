@@ -2,14 +2,14 @@ openapi: "3.0.3"
 info:
   title: "backend API"
   description: "backend API"
-  version: "1.200.0"
+  version: "2.100.2"
 servers:
   - url: "/" # this acts as the “base path”
     description: |
       this acts as the “base path” for generator tools.
       => primary server => only this url is being used by the generator and will add /frontend/api in requestmapping in the generated controllers
       => servers[0].url is used by code generators (like openapi-generator) as the base URL for @RequestMapping in Spring.
-  - url: "http://localhost:8080/frontend/api"
+  - url: "http://localhost:9090/frontend/api"
     description: "LOCAL env"
   # Additional servers are mainly for documentation or client SDKs.
   - url: "https://referral-prescription.test.ext.vascloud.be/frontend/api"
@@ -50,6 +50,8 @@ tags:
     description: User related operations
   - name: Pss
     description: Pss related operations
+  - name: FeatureFlag
+    description: Feature flag related operations
 paths:
   /prescriptions:
     get:
@@ -148,6 +150,12 @@ paths:
           required: true
           schema:
             type: "string"
+        - name: "X-Actor-Caregiver-Ssin"
+          in: "header"
+          required: false
+          description: "Optional caregiver SSIN used to resolve currentTask for organization users."
+          schema:
+              type: string
       responses:
         "200":
           description: "OK"
@@ -184,6 +192,12 @@ paths:
           required: true
           schema:
             type: "string"
+        - name: "X-Actor-Organization-nihii11"
+          in: "header"
+          required: false
+          description: "Optional organization NIHII 11 used to assign caregivers within organization."
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
@@ -273,6 +287,44 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/AssignCareGiverResource"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /prescriptions/{prescriptionId}/{referralTaskId}/transferOrganization/{performerTaskId}:
+    post:
+      summary: "POST prescriptions/{prescriptionId}/{referralTaskId}/transferOrganization/{performerTaskId}"
+      tags:
+        - Prescription
+      operationId: "transferAssignOrganizationToPrescription"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "prescriptionId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "referralTaskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "performerTaskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignOrganizationResource"
         required: true
       responses:
         "200":
@@ -451,6 +503,56 @@ paths:
           required: true
           schema:
             type: "string"
+      responses:
+        "200":
+          description: "OK"
+  /prescriptions/{prescriptionId}/close:
+    patch:
+      summary: "PATCH prescriptions/{prescriptionId}/close"
+      tags:
+        - Prescription
+      operationId: "closePrescription"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "prescriptionId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+  /prescriptions/{prescriptionId}/complete:
+    post:
+      summary: "POST prescriptions/{prescriptionId}/complete"
+      tags:
+        - Prescription
+      operationId: "completePrescription"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "prescriptionId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompletePrescriptionResource"
+        required: true
       responses:
         "200":
           description: "OK"
@@ -732,6 +834,12 @@ paths:
           required: true
           schema:
             type: "string"
+        - name: "X-Actor-Caregiver-Ssin"
+          in: "header"
+          required: false
+          description: "Optional caregiver SSIN used to resolve currentTask for organization users."
+          schema:
+            type: string
       responses:
         "200":
           description: "OK"
@@ -847,6 +955,44 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/AssignCareGiverResource"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /proposals/{proposalId}/{referralTaskId}/transferOrganization/{performerTaskId}:
+    post:
+      summary: "POST proposals/{proposalId}/{referralTaskId}/transferOrganization/{performerTaskId}"
+      tags:
+        - Proposal
+      operationId: "transferAssignOrganizationToProposal"
+      security:
+        - OAuth2: [ ]
+      parameters:
+        - name: "proposalId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "referralTaskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "performerTaskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "X-If-None-Match"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignOrganizationResource"
         required: true
       responses:
         "200":
@@ -1069,6 +1215,12 @@ paths:
           required: true
           schema:
             type: "string"
+        - name: "X-Actor-Caregiver-Ssin"
+          in: "header"
+          required: false
+          description: "Optional caregiver SSIN used to resolve currentTask for organization users."
+          schema:
+            type: string
       responses:
         "200":
           description: "OK"
@@ -1212,6 +1364,34 @@ paths:
           required: false
           schema:
             type: "string"
+        - name: "sort"
+          in: "query"
+          required: false
+          description: |
+            ONLY NAME AND PROVIDERTYPE IS AVAILABLE
+            Each value is `property,direction`, direction is optional and defaults to `asc`.
+            Repeat for multi-column sorting.
+            Examples:
+              - `sort=name,asc`
+              - `sort=name,asc&sort=firstName,desc`
+          schema:
+            type: "array"
+            items:
+              type: "string"
+              pattern: '^(name|providerType|firstName|address|zipCode)(,(asc|desc))?$'
+              enum:
+                - name
+                - name,asc
+                - name,desc
+                - providerType
+                - providerType,asc
+                - providerType,desc
+        - name: "language"
+          in: "query"
+          required: false
+          description: Language used to resolve translated names. Defaults to `nl`.
+          schema:
+            $ref: '#/components/schemas/LanguageCode'
         - name: "page"
           in: "query"
           required: false
@@ -1483,6 +1663,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SupportResponseRadiology"
+  /feature-flags:
+    get:
+      summary: "GET feature-flags"
+      tags:
+        - FeatureFlag
+      operationId: "getFeatureFlags"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  type: string
   /users/connected:
     get:
       summary: "GET users/connected"
@@ -1505,6 +1700,25 @@ components:
           authorizationUrl: https://auth.example.com/oauth/authorize
           tokenUrl: https://api-acpt.ehealth.fgov.be/auth/realms/healthcare/protocol/openid-connect/token
           scopes: { }
+  parameters:
+    ImpersonationContextHeader:
+      name: X-Impersonation-Context
+      in: header
+      required: false
+      description: |
+        Optional impersonation context.
+
+        The value must be a Base64-encoded JSON object with this structure:
+        `{ "ssin": "string", "discipline": "string" }`
+
+        Example JSON payload before Base64 encoding:
+        `{ "ssin": "00000000097", "discipline": "PHYSICIAN" }`
+      schema:
+        type: string
+      examples:
+        encodedPayload:
+          summary: Base64 encoded impersonation context
+          value: JTdCJTIyc3NpbiUyMiUzQSUyMjAwMDAwMDAwMDk3JTIyJTJDJTIyZGlzY2lwbGluZSUyMiUzQSUyMlBIWVNJQ0lBTiUyMiU3RA==
   schemas:
     PrescriptionResource:
       type: "object"
@@ -1554,6 +1768,58 @@ components:
       properties:
         id:
           type: "string"
+    AllowedActionsResource:
+      type: object
+      properties:
+        canAssignCaregiver:
+          type: boolean
+        canAutoAssignCaregivers:
+          type: boolean
+        canSelfAssign:
+          type: boolean
+        canDuplicatePrescription:
+          type: boolean
+        canExtendPrescription:
+          type: boolean
+        canCancelPrescriptionOrProposal:
+          type: boolean
+        canApproveProposal:
+          type: boolean
+        canCreatePrescription:
+          type: boolean
+        canRejectProposal:
+          type: boolean
+        canPrintPrescriptionOrProposal:
+          type: boolean
+    CurrentTaskAllowedActionsResource:
+      type: object
+      properties:
+        canStartTreatment:
+          type: boolean
+        canFinishTreatment:
+          type: boolean
+        canCancelTreatment:
+          type: boolean
+        canTransferAssignation:
+          type: boolean
+        canInterruptTreatment:
+          type: boolean
+        canRestartTreatment:
+          type: boolean
+        canRejectAssignation:
+          type: boolean
+    CurrentTaskContextResource:
+      type: object
+      properties:
+        taskId:
+          type: string
+        taskType:
+          type: string
+          enum:
+            - PerformerTaskResource
+            - OrganizationTaskResource
+        allowedActions:
+          $ref: "#/components/schemas/CurrentTaskAllowedActionsResource"
     ReadRequestResource:
       type: "object"
       properties:
@@ -1600,6 +1866,10 @@ components:
           type: string
         extendedShortId:
           type: string
+        allowedActions:
+          $ref: "#/components/schemas/AllowedActionsResource"
+        currentTask:
+          $ref: "#/components/schemas/CurrentTaskContextResource"
     ReadRequestListResource:
       type: "object"
       properties:
@@ -1682,7 +1952,7 @@ components:
           type: string
         discipline:
           type: string
-        organizationNihii11: 
+        organizationNihii11:
           type: string
     AssignCareGiverResource:
       type: "object"
@@ -1875,7 +2145,7 @@ components:
         - "hospital"
         - "reeducation"
         - "groupofnurses"
-        - "homecareservices"        
+        - "homecareservices"
     HealthcareOrganizationResource:
       type: "object"
       properties:
@@ -1956,6 +2226,13 @@ components:
         - PROFESSIONAL: only individual professionals
         - ORGANIZATION: only organizations
         - ALL: both
+    LanguageCode:
+      type: string
+      enum:
+        - nl
+        - fr
+        - de
+        - en
     PhoneNumbers:
       type: "object"
       properties:
@@ -2047,17 +2324,22 @@ components:
           type: "string"
         qualificationCode:
           type: "string"
+    HealthCareProviderResource:
+      oneOf:
+        - $ref: "#/components/schemas/HealthcareProResource"
+        - $ref: "#/components/schemas/HealthcareOrganizationResource"
+      discriminator:
+        propertyName: type
+        mapping:
+          Professional: "#/components/schemas/HealthcareProResource"
+          Organization: "#/components/schemas/HealthcareOrganizationResource"
     HealthCareProviderRequestResource:
       type: "object"
       properties:
-        healthcareProfessionals:
+        healthcarePro:
           type: "array"
           items:
-            $ref: "#/components/schemas/HealthcareProResource"
-        healthcareOrganizations:
-          type: "array"
-          items:
-            $ref: "#/components/schemas/HealthcareOrganizationResource"
+            $ref: "#/components/schemas/HealthCareProviderResource"
         total:
           type: "integer"
           format: "int64"
@@ -2711,6 +2993,14 @@ components:
         - "COMPLETED"
         - "ENTEREDINERROR"
         - "NULL"
+    CompletePrescriptionResource:
+      type: object
+      properties:
+        performerTaskId:
+          type: "string"
+        executionEndDate:
+          type: "string"
+          format: "date"
     AssignationType:
       type: string
       enum:

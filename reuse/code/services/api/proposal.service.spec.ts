@@ -94,7 +94,16 @@ describe('ProposalService', () => {
 
       service.findOne(proposalId);
 
-      expect(apiProposalServiceMock.getProposal).toHaveBeenCalledWith(proposalId);
+      expect(apiProposalServiceMock.getProposal).toHaveBeenCalledWith(proposalId, undefined);
+    });
+
+    it('should call api.getProposal with proposalId', () => {
+      const proposalId = 'proposal-123';
+      const xActorCaregiverSsin = 'xActorCaregiverSsin';
+
+      service.findOne(proposalId, xActorCaregiverSsin);
+
+      expect(apiProposalServiceMock.getProposal).toHaveBeenCalledWith(proposalId, xActorCaregiverSsin);
     });
   });
 

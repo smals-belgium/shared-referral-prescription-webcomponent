@@ -116,8 +116,19 @@ export class FakeLoader implements TranslateLoader {
 export const mockTemplate = {} as TemplateVersion;
 
 export const mockConfigService = {
-  getEnvironment: jest.fn(),
-  getEnvironmentVariable: jest.fn(),
+  getEnvironment: jest.fn().mockReturnValue('test'),
+  getEnvironmentVariable: jest.fn().mockImplementation((key: string) => {
+    switch (key) {
+      case 'pseudoApiUrl':
+        return 'https://pseudo-api.test';
+
+      case 'enablePseudo':
+        return false;
+
+      default:
+        return false;
+    }
+  }),
 };
 
 export const mockAuthService = {
@@ -148,6 +159,9 @@ export const prescriptionDetailsSecondaryMockService = {
   }),
   getRequestTask: jest.fn().mockReturnValue({
     data: {},
+  }),
+  getAllConnectedUserPerformerTasks: jest.fn().mockReturnValue({
+    data: [{}],
   }),
   getTemplateVersion: jest.fn().mockReturnValue({
     data: {},
@@ -203,4 +217,20 @@ export const markdownServiceMock = {
   compile: jest.fn((src: string) => src),
   render: jest.fn(),
   reload$: of(void 0),
+};
+
+export const mockEnvironmentVariables = (mockConfigService: any) => {
+  mockConfigService.getEnvironment?.mockReturnValue?.('test');
+  mockConfigService.getEnvironmentVariable.mockImplementation((key: string) => {
+    switch (key) {
+      case 'pseudoApiUrl':
+        return 'https://pseudo-api.test';
+
+      case 'enablePseudo':
+        return false;
+
+      default:
+        return false;
+    }
+  });
 };

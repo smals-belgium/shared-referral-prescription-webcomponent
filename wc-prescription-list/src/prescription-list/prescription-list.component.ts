@@ -72,7 +72,7 @@ import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.
 import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
 import { AlertService } from '@reuse/code/services/helpers/alert.service';
 import { ResolvedError } from '@reuse/code/interfaces/error.interface';
-import { ALERT_TARGET, ERROR_CREATE_PRESCRIPTION, ERROR_PRESCRIPTION_LIST } from '@reuse/code/constants/error';
+import { ALERT_TARGET, ERROR_PRESCRIPTION_LIST } from '@reuse/code/constants/error';
 
 interface ViewState {
   prescriptions?: ReadRequestListResource;
@@ -191,7 +191,6 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
       this.translate.use(Lang.FR.full);
       this.dateAdapter.setLocale(Lang.FR.full);
     }
-    this.featureFlagService.getFeatureFlags();
   }
 
   ngOnInit(): void {

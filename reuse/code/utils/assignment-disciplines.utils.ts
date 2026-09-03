@@ -1,6 +1,6 @@
 import { Intent } from '@reuse/code/interfaces';
+import { Discipline, HealthcareProResource, HealthCareProviderResource, ProviderType } from '@reuse/code/openapi';
 import { isProposal } from '@reuse/code/utils/utils';
-import { Discipline, HealthcareOrganizationResource, HealthcareProResource, ProviderType } from '@reuse/code/openapi';
 
 export function getAssignableProfessionalDisciplines(category: string, intent: Intent): string[] {
   switch (category) {
@@ -48,8 +48,6 @@ export function getAssignableOrganizationInstitutionTypes(category: string, inte
   }
 }
 
-export function isProfessional(
-  object: HealthcareProResource | HealthcareOrganizationResource
-): object is HealthcareProResource {
+export function isProfessional(object: HealthCareProviderResource): object is HealthcareProResource {
   return object.type?.toLowerCase() === ProviderType.Professional.toLowerCase();
 }

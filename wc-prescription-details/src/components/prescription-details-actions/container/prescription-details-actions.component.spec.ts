@@ -15,6 +15,7 @@ import {
   PersonResource,
   ReadRequestResource,
   RequestTaskResource,
+  Role,
 } from '@reuse/code/openapi';
 import { DeviceService } from '@reuse/code/services/helpers/device.service';
 import { PrescriptionDetailsSecondaryService } from '../../prescription-details-secondary/services/prescription-details-secondary.service';
@@ -30,9 +31,10 @@ import { By } from '@angular/platform-browser';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { FakeLoader } from '../../../../test.utils';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
+import { WcAuthService } from '@reuse/code/services/auth/wc-auth.service';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
 import MockInstance = jest.MockInstance;
 import TaskTypeEnum = RequestTaskResource.TaskTypeEnum;
-import anything = jasmine.anything;
 
 jest.mock('uuid', () => ({
   v4: jest.fn(() => 'mocked-uuid'),
@@ -53,6 +55,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
   let mockDeviceService: { isDesktop: WritableSignal<boolean> };
   let mockSecondaryService: jest.Mocked<PrescriptionDetailsSecondaryService>;
   let mockConfigurationService: jest.Mocked<ConfigurationService>;
+  let mockAuthService: jest.Mocked<Partial<WcAuthService>>;
 
   const mockLoadingSignal = signal(false);
   const mockGeneratedUUID = signal('test-uuid-123');
@@ -88,6 +91,9 @@ describe('PrescriptionDetailsActionsComponent', () => {
       getRequestTask: jest
         .fn()
         .mockReturnValue({ data: { id: 'performer-task-1', taskType: TaskTypeEnum.PerformerTaskResource } }),
+      getAllConnectedUserPerformerTasks: jest
+        .fn()
+        .mockReturnValue({ data: [{ id: 'performer-task-1', taskType: TaskTypeEnum.PerformerTaskResource }] }),
       getPrescription: jest.fn().mockReturnValue(createMockPrescription()),
       getPatient: jest.fn().mockReturnValue(createMockPatient()),
       loading: mockLoadingSignal as MockInstance<boolean, [], unknown> & WritableSignal<boolean>,
@@ -123,6 +129,11 @@ describe('PrescriptionDetailsActionsComponent', () => {
       isDesktop: signal(true),
     };
 
+    mockAuthService = {
+      getConnectedOrganizationNihii: jest.fn().mockReturnValue(of('ORG-123')),
+      isOrganizationAndActingForProfessional: jest.fn(() => of(false)),
+    } as jest.Mocked<Partial<AuthService>>;
+
     await TestBed.configureTestingModule({
       imports: [
         PrescriptionDetailsActionsComponent,
@@ -143,6 +154,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
         { provide: AccessMatrixService, useValue: accessMatrixServiceMock },
         { provide: ALERT_TARGET, useValue: ERROR_PRESCRIPTION_DETAILS },
         { provide: ConfigurationService, useValue: mockConfigurationService },
+        { provide: AuthService, useValue: mockAuthService },
       ],
     }).compileComponents();
 
@@ -177,9 +189,12 @@ describe('PrescriptionDetailsActionsComponent', () => {
     expect(component.currentUser).toBeUndefined();
   });
 
-  it('should not display the print button when user is organization', () => {
+  it('should not display the print button when print action is not allowed', () => {
     component.data = createMockViewState({
-      currentUser: { ssin: 'user-ssin', discipline: 'nursing', role: 'organization' } as Partial<PersonResource>,
+      prescription: {
+        ...createMockPrescription(),
+        allowedActions: { canPrintPrescriptionOrProposal: false },
+      } as ReadRequestResource,
     });
     component.currentLang = Lang.EN.short;
 
@@ -194,8 +209,13 @@ describe('PrescriptionDetailsActionsComponent', () => {
     expect(printButton).toBeNull();
   });
 
-  it('should display the print button when user is Not an organization', () => {
-    component.data = createMockViewState();
+  it('should display the print button when print action is allowed', () => {
+    component.data = createMockViewState({
+      prescription: {
+        ...createMockPrescription(),
+        allowedActions: { canPrintPrescriptionOrProposal: true },
+      } as ReadRequestResource,
+    });
     component.currentLang = Lang.EN.short;
 
     fixture.detectChanges();
@@ -325,118 +345,200 @@ describe('PrescriptionDetailsActionsComponent', () => {
         category: 'physiotherapy',
         intent: Intent.ORDER,
         mode: 'assign',
+        connectedUser: {
+          data: {
+            ssin: 'current-user-ssin',
+          },
+        },
       },
       panelClass: ['mh-dialog-container', 'mh-assign-dialog'],
       maxHeight: '90vh',
     });
   });
 
-  it('should show error when onSelfAssign validation fails', () => {
-    const validUser = UserNurse;
+  describe('onSelfAssign', () => {
+    beforeEach(() => {
+      mockGeneratedUUID.set('test-uuid-123');
+    });
+    it('should show error when onSelfAssign validation fails', () => {
+      const validUser = UserNurse;
 
-    const invalidCases = [
-      {
-        prescription: { referralTask: { id: 'referral-task-id' }, intent: Intent.ORDER } as ReadRequestResource,
-        user: validUser,
-      },
-      { prescription: { id: 'prescription-id', intent: Intent.ORDER } as ReadRequestResource, user: validUser },
-      {
-        prescription: {
-          id: 'prescription-id',
-          referralTask: { id: 'referral-task-id' },
-          intent: Intent.ORDER,
-        } as ReadRequestResource,
-        user: undefined,
-      },
-      {
-        prescription: {
-          id: 'prescription-id',
-          referralTask: { id: 'referral-task-id' },
-          intent: Intent.ORDER,
-        } as ReadRequestResource,
-        user: {},
-      },
-    ];
+      const invalidCases = [
+        {
+          prescription: { referralTask: { id: 'referral-task-id' }, intent: Intent.ORDER } as ReadRequestResource,
+          user: validUser,
+        },
+        { prescription: { id: 'prescription-id', intent: Intent.ORDER } as ReadRequestResource, user: validUser },
+        {
+          prescription: {
+            id: 'prescription-id',
+            referralTask: { id: 'referral-task-id' },
+            intent: Intent.ORDER,
+          } as ReadRequestResource,
+          user: undefined,
+        },
+        {
+          prescription: {
+            id: 'prescription-id',
+            referralTask: { id: 'referral-task-id' },
+            intent: Intent.ORDER,
+          } as ReadRequestResource,
+          user: {},
+        },
+      ];
 
-    invalidCases.forEach(({ prescription, user }) => {
-      component.onSelfAssign(prescription, user);
+      invalidCases.forEach(({ prescription, user }) => {
+        component.onSelfAssign(prescription, user);
+      });
+
+      expect(mockToastService.showSomethingWentWrong).toHaveBeenCalledTimes(4);
+      expect(mockPrescriptionState.assignPrescriptionPerformer).not.toHaveBeenCalled();
     });
 
-    expect(mockToastService.showSomethingWentWrong).toHaveBeenCalledTimes(4);
-    expect(mockPrescriptionState.assignPrescriptionPerformer).not.toHaveBeenCalled();
-  });
+    it('should assign prescription successfully and show success toast', () => {
+      const generatedUUIDSetSpy = jest.spyOn(mockSecondaryService.generatedUUID, 'set');
+      const prescription = {
+        id: 'prescription-id',
+        referralTask: { id: 'referral-task-id' },
+        intent: Intent.ORDER,
+      } as ReadRequestResource;
+      const user = UserNurse;
+      mockPrescriptionState.assignPrescriptionPerformer.mockReturnValue(of({ id: 'task-1' }));
 
-  it('should assign prescription successfully and show success toast', () => {
-    const generatedUUIDSetSpy = jest.spyOn(mockSecondaryService.generatedUUID, 'set');
-    const prescription = {
-      id: 'prescription-id',
-      referralTask: { id: 'referral-task-id' },
-      intent: Intent.ORDER,
-    } as ReadRequestResource;
-    const user = UserNurse;
-    mockPrescriptionState.assignPrescriptionPerformer.mockReturnValue(of({ id: 'task-1' }));
+      component.onSelfAssign(prescription, user);
 
-    component.onSelfAssign(prescription, user);
+      expect(mockPrescriptionState.assignPrescriptionPerformer).toHaveBeenCalledWith(
+        'prescription-id',
+        'referral-task-id',
+        'user-ssin',
+        'NURSE',
+        'Professional',
+        'test-uuid-123',
+        undefined,
+        undefined
+      );
 
-    expect(mockPrescriptionState.assignPrescriptionPerformer).toHaveBeenCalledWith(
-      'prescription-id',
-      'referral-task-id',
-      'user-ssin',
-      'NURSE',
-      'Professional',
-      'test-uuid-123'
-    );
+      expect(generatedUUIDSetSpy).toHaveBeenCalledWith('mocked-uuid');
+      expect(mockToastService.show).toHaveBeenCalledWith('prescription.assignPerformer.meSuccess');
+      expect(component.loading()).toBe(false);
+    });
 
-    expect(generatedUUIDSetSpy).toHaveBeenCalledWith('mocked-uuid');
-    expect(mockToastService.show).toHaveBeenCalledWith('prescription.assignPerformer.meSuccess');
-    expect(component.loading()).toBe(false);
-  });
+    it('should assign proposal successfully and show success toast', () => {
+      const generatedUUIDSetSpy = jest.spyOn(mockSecondaryService.generatedUUID, 'set');
+      const prescription = {
+        id: 'prescription-id',
+        referralTask: { id: 'referral-task-id' },
+        intent: Intent.PROPOSAL,
+      } as ReadRequestResource;
+      const user = UserNurse;
+      mockProposalState.assignProposalPerformer.mockReturnValue(of({ id: 'task-1' }));
 
-  it('should assign proposal successfully and show success toast', () => {
-    const generatedUUIDSetSpy = jest.spyOn(mockSecondaryService.generatedUUID, 'set');
-    const prescription = {
-      id: 'prescription-id',
-      referralTask: { id: 'referral-task-id' },
-      intent: Intent.PROPOSAL,
-    } as ReadRequestResource;
-    const user = UserNurse;
-    mockProposalState.assignProposalPerformer.mockReturnValue(of({ id: 'task-1' }));
+      component.onSelfAssign(prescription, user);
 
-    component.onSelfAssign(prescription, user);
+      expect(mockProposalState.assignProposalPerformer).toHaveBeenCalledWith(
+        'prescription-id',
+        'referral-task-id',
+        'user-ssin',
+        'NURSE',
+        'Professional',
+        expect.any(String)
+      );
+      expect(generatedUUIDSetSpy).toHaveBeenCalledWith('mocked-uuid');
+      expect(mockToastService.show).toHaveBeenCalledWith('proposal.assignPerformer.meSuccess');
+    });
+    it('should handle assignment error and show error toast', () => {
+      const generatedUUIDSetSpy = jest.spyOn(mockSecondaryService.generatedUUID, 'set');
 
-    expect(mockProposalState.assignProposalPerformer).toHaveBeenCalledWith(
-      'prescription-id',
-      'referral-task-id',
-      'user-ssin',
-      'NURSE',
-      'Professional',
-      expect.any(String)
-    );
-    expect(generatedUUIDSetSpy).toHaveBeenCalledWith('mocked-uuid');
-    expect(mockToastService.show).toHaveBeenCalledWith('proposal.assignPerformer.meSuccess');
-  });
+      const prescription = {
+        id: 'prescription-id',
+        referralTask: { id: 'referral-task-id' },
+        intent: Intent.ORDER,
+      } as ReadRequestResource;
+      const user = UserNurse;
+      mockPrescriptionState.assignPrescriptionPerformer.mockReturnValue(throwError(() => new Error('API Error')));
 
-  it('should handle assignment error and show error toast', () => {
-    const generatedUUIDSetSpy = jest.spyOn(mockSecondaryService.generatedUUID, 'set');
+      component.onSelfAssign(prescription, user);
 
-    const prescription = {
-      id: 'prescription-id',
-      referralTask: { id: 'referral-task-id' },
-      intent: Intent.ORDER,
-    } as ReadRequestResource;
-    const user = UserNurse;
-    mockPrescriptionState.assignPrescriptionPerformer.mockReturnValue(throwError(() => new Error('API Error')));
+      expect(generatedUUIDSetSpy).toHaveBeenCalledWith('mocked-uuid');
+      expect(mockToastService.showSomethingWentWrong).toHaveBeenCalled();
+      expect(component.loading()).toBe(false);
+    });
 
-    component.onSelfAssign(prescription, user);
+    it('should assign with internal assignation type when organization is acting for a professional', () => {
+      (component as any)._isOrganizationAndActingForProfessional = signal(true);
 
-    expect(generatedUUIDSetSpy).toHaveBeenCalledWith('mocked-uuid');
-    expect(mockToastService.showSomethingWentWrong).toHaveBeenCalled();
-    expect(component.loading()).toBe(false);
+      const prescription: ReadRequestResource = {
+        id: 'prescription-id',
+        referralTask: { id: 'referral-task-id' },
+        intent: Intent.ORDER,
+      };
+      const user = UserNurse;
+
+      mockPrescriptionState.assignPrescriptionPerformer.mockReturnValue(of({ id: 'task-1' }));
+
+      component.onSelfAssign(prescription, user);
+
+      expect(mockPrescriptionState.assignPrescriptionPerformer).toHaveBeenCalledWith(
+        'prescription-id',
+        'referral-task-id',
+        'user-ssin',
+        'NURSE',
+        'Professional',
+        'test-uuid-123',
+        AssignationType.Internal,
+        'ORG-123'
+      );
+    });
+
+    it('should extract organization details when currentUser has organizations and is not acting for professional', () => {
+      const prescription: ReadRequestResource = {
+        id: 'prescription-id',
+        referralTask: { id: 'referral-task-id' },
+        intent: Intent.ORDER,
+      };
+
+      const user: Partial<UserInfo> = {
+        organizations: [{ hospital: { nihii: '12345678910' } }],
+      };
+
+      mockPrescriptionState.assignPrescriptionPerformer.mockReturnValue(of({ id: 'task-1' }));
+
+      component.onSelfAssign(prescription, user);
+
+      expect(mockPrescriptionState.assignPrescriptionPerformer).toHaveBeenCalledWith(
+        'prescription-id',
+        'referral-task-id',
+        '12345678910',
+        '',
+        'hospital',
+        'test-uuid-123',
+        undefined,
+        undefined
+      );
+    });
+
+    it('should stop loading and show error if ssinOrNihii resolves to empty after checking organizations', () => {
+      const prescription: ReadRequestResource = {
+        id: 'prescription-id',
+        referralTask: { id: 'referral-task-id' },
+        intent: Intent.ORDER,
+      };
+
+      const user: Partial<UserInfo> = {
+        organizations: [{ hospital: { nihii: '' } }], // Missing NIHII
+      };
+
+      component.onSelfAssign(prescription, user);
+
+      expect(component.loading()).toBe(false);
+      expect(mockToastService.showSomethingWentWrong).toHaveBeenCalled();
+      expect(mockPrescriptionState.assignPrescriptionPerformer).not.toHaveBeenCalled();
+    });
   });
 
   describe('assignCaregivers', () => {
     it('should show a general error and returns early when prescription has no id', async () => {
-      const prescription = { referralTask: { id: 'task-1' } } as ReadRequestResource;
+      const prescription: ReadRequestResource = { referralTask: { id: 'task-1' } };
 
       await component.openAutoAssign(prescription);
 
@@ -445,7 +547,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
     });
 
     it('should show a general error and returns early when referralTask has no id', async () => {
-      const prescription = { id: 'prescription-1', referralTask: {} } as ReadRequestResource;
+      const prescription: ReadRequestResource = { id: 'prescription-1', referralTask: {} };
 
       await component.openAutoAssign(prescription);
 
@@ -453,13 +555,13 @@ describe('PrescriptionDetailsActionsComponent', () => {
       expect(component.loadingActions()).toBe(false);
     });
 
-    it('should call assignMultipleCaregivers with correct args after a successful FETCH_PROFESSIONAL_DATA dispatch', async () => {
-      const assignees: AssignCareGiverResource[] = [{ id: 'caregiver-1' } as unknown as AssignCareGiverResource];
+    it('should call assignMultipleCaregivers with correct arguments after a successful FETCH_PROFESSIONAL_DATA dispatch', async () => {
+      const assignees: AssignCareGiverResource[] = [{ ssin: 'mock_ssin', role: Role.Caregiver }];
       const prescription: ReadRequestResource = {
-        id: 'prescritpion-1',
+        id: 'prescription-1',
         referralTask: { id: 'task-1' },
         intent: 'proposal',
-      } as ReadRequestResource;
+      };
 
       jest.spyOn(component.handleAutoAssign, 'emit').mockImplementation((event: any) => {
         event.payload.resolve(assignees);
@@ -469,19 +571,50 @@ describe('PrescriptionDetailsActionsComponent', () => {
       await component.openAutoAssign(prescription);
 
       expect(mockPrescriptionState.assignMultipleCaregivers).toHaveBeenCalledWith(
-        'prescritpion-1',
+        'prescription-1',
         'task-1',
         assignees,
         expect.any(String),
-        AssignationType.Internal
+        AssignationType.Internal,
+        'ORG-123'
       );
       expect(component.loadingActions()).toBe(false);
       expect(mockToastService.show).toHaveBeenCalledWith('proposal.autoAssign.success');
     });
 
+    it('should pass undefined for xActorOrganizationNihii11 when connected organization NIHII is undefined', async () => {
+      jest.spyOn(mockAuthService, 'getConnectedOrganizationNihii').mockReturnValue(of(undefined));
+
+      fixture = TestBed.createComponent(PrescriptionDetailsActionsComponent);
+      component = fixture.componentInstance;
+
+      const assignees: AssignCareGiverResource[] = [{ ssin: 'mock_ssin', role: Role.Caregiver }];
+      const prescription: ReadRequestResource = {
+        id: 'prescription-1',
+        referralTask: { id: 'task-1' },
+        intent: 'prescription',
+      };
+
+      jest.spyOn(component.handleAutoAssign, 'emit').mockImplementation((event: any) => {
+        event.payload.resolve(assignees);
+      });
+      mockPrescriptionState.assignMultipleCaregivers.mockReturnValue(of([]));
+
+      await component.openAutoAssign(prescription);
+
+      expect(mockPrescriptionState.assignMultipleCaregivers).toHaveBeenCalledWith(
+        'prescription-1',
+        'task-1',
+        assignees,
+        expect.any(String),
+        AssignationType.Internal,
+        undefined
+      );
+    });
+
     it('should show a general error (no retry) when the host rejects the dispatch promise', async () => {
       const prescription: ReadRequestResource = {
-        id: 'prescritpion-1',
+        id: 'prescription-1',
         referralTask: { id: 'task-1' },
       } as ReadRequestResource;
 
@@ -500,10 +633,10 @@ describe('PrescriptionDetailsActionsComponent', () => {
     it('should reset loadingActions on assignMultipleCaregivers error and does not show a success toast', async () => {
       const assignees: AssignCareGiverResource[] = [];
       const prescription: ReadRequestResource = {
-        id: 'prescritpion-1',
+        id: 'prescription-1',
         referralTask: { id: 'task-1' },
         intent: 'prescription',
-      } as ReadRequestResource;
+      };
 
       jest.spyOn(component.handleAutoAssign, 'emit').mockImplementation((event: any) => {
         event.payload.resolve(assignees);

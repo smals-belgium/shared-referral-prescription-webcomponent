@@ -63,6 +63,11 @@ Use the custom element in your HTML:
 
 Ensure the bundle is loaded only once in the application lifecycle.
 
+> ⚠️ **Deprecation notice**: loading the Web Component directly from the acceptance URL
+> (`https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/...`) is deprecated and will be
+> decommissioned as from **version 3.0.0**.
+> Install this npm package and serve the bundle from your own application instead.
+
 ## Framework Compatibility
 
 This component is implemented as a standard Web Component and can be integrated into:

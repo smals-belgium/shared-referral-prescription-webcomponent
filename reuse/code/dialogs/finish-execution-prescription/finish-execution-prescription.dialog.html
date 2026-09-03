@@ -1,58 +1,80 @@
-<form (ngSubmit)="finishExecution()" [formGroup]="formGroup">
-  <h1 mat-dialog-title>{{'prescription.finishExecution.title' | translate}}</h1>
-  <div mat-dialog-content>
-    @if (error(); as resolvedError) {
-    <app-alert
-      [severity]="resolvedError.severity"
-      [title]="resolvedError.title"
-      [subTitle]="resolvedError.subTitle"
-      [message]="resolvedError.message"
-      [dismissible]="resolvedError.dismissible"
-      [retry]="false"
-      [errorId]="resolvedError.errorId"
-      (clickClose)="dismissError()"></app-alert>
-    } @if (formGroup.get('endDate'); as control){
-    <div class="mh-form-field">
-      <label for="end-date-execution-prescription">{{ 'prescription.finishExecution.endDate' | translate }}</label>
-      <mat-form-field appearance="outline">
-        <input
-          id="end-date-execution-prescription"
-          [formControlName]="'endDate'"
-          [matDatepicker]="picker"
-          [max]="maxDate"
-          [min]="minDate"
-          matInput
-          type="text"
-          data-cy="end-date-execution-prescription" />
-        <mat-datepicker-toggle [for]="picker" matSuffix></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-        @if (control.hasError('matDatepickerMin')){
-        <mat-error>{{ 'prescription.errors.dateMustBeLaterOrEqualTo' | translate:{date: (minDate | date)} }}</mat-error>
-        } @if (control.hasError('matDatepickerMax')){
-        <mat-error
-          >{{ 'prescription.errors.dateMustBeEarlierOrEqualTo' | translate: {date: (maxDate | date)} }}</mat-error
+<app-dialog-layout
+  [title]="title() | translate : {templateName: data?.prescription?.templateCode | templateName }"
+  (confirm)="finishExecution()"
+  [cancelData]="closeDialogData"
+  [requiredSubTitle]="true">
+  <div dialog-content>
+    <form [formGroup]="formGroup" (ngSubmit)="finishExecution()">
+      @if (error(); as resolvedError) {
+      <app-alert
+        [severity]="resolvedError.severity"
+        [title]="resolvedError.title"
+        [subTitle]="resolvedError.subTitle"
+        [message]="resolvedError.message"
+        [dismissible]="resolvedError.dismissible"
+        [retry]="false"
+        [errorId]="resolvedError.errorId"
+        (clickClose)="dismissError()"></app-alert>
+      } @if (patient){
+      <div class="patient_container">
+        <span class="patient_label">{{'common.patient' | translate}}</span>
+        <span class="patient_full_name">{{patient.lastName}} {{patient.firstName}}</span>
+        <span>{{patient.ssin | formatSsin}}</span>
+      </div>
+
+      } @if (finishExecutionContext() !== FinishExecutionScenario.CLOSE_PRESCRIPTION){ @if (formGroup.get('endDate'); as
+      control){
+      <div class="mh-form-field">
+        <label for="end-date-execution-prescription"
+          >{{ 'prescription.finishExecution.dialog.datepicker.label' | translate }}
+          <span aria-hidden="true" class="mh-label-required">*</span></label
         >
-        } @if (control.hasError('matDatepickerParse')){
-        <mat-error>{{ 'prescription.errors.invalidDateFormat' | translate }}</mat-error>
-        }
-      </mat-form-field>
-    </div>
+        <mat-form-field appearance="outline">
+          <input
+            id="end-date-execution-prescription"
+            [formControlName]="'endDate'"
+            [matDatepicker]="picker"
+            [max]="maxDate"
+            [min]="minDate"
+            matInput
+            type="text"
+            data-cy="end-date-execution-prescription" />
+          <mat-datepicker-toggle [for]="picker" matSuffix></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          @if (control.hasError('matDatepickerMin')){
+          <mat-error
+            >{{ 'prescription.errors.dateMustBeLaterOrEqualTo' | translate:{date: (minDate | date)} }}</mat-error
+          >
+          } @if (control.hasError('matDatepickerMax')){
+          <mat-error
+            >{{ 'prescription.errors.dateMustBeEarlierOrEqualTo' | translate: {date: (maxDate | date)} }}</mat-error
+          >
+          } @if (control.hasError('matDatepickerParse')){
+          <mat-error>{{ 'prescription.errors.invalidDateFormat' | translate }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+      } } @if (finishExecutionContext() === FinishExecutionScenario.CLOSE_PRESCRIPTION_OR_FINISH_TASKS){ @if
+      (formGroup.get('executionType'); as control){
+      <div class="radio_group_container">
+        <label for="prescription-radio-group"
+          >{{'prescription.finishExecution.dialog.radioGroup.label' |translate}}</label
+        >
+        <mat-radio-group id="prescription-radio-group" [formControlName]="'executionType'">
+          <mat-radio-button [value]="ExecutionType.FINISH"
+            >{{'prescription.finishExecution.dialog.radioGroup.finishTasks' |translate}}</mat-radio-button
+          >
+          <mat-radio-button [value]="ExecutionType.COMPLETE"
+            >{{'prescription.finishExecution.dialog.radioGroup.closePrescription' |translate}}</mat-radio-button
+          >
+        </mat-radio-group>
+      </div>
+
+      } }
+    </form>
+
+    @if (loading()){
+    <app-overlay-spinner mode="dialog"></app-overlay-spinner>
     }
   </div>
-  <mat-dialog-actions align="end">
-    <button
-      type="submit"
-      mat-raised-button
-      [disabled]="formGroup.get('endDate')?.invalid"
-      data-cy="dialog-confirm-button">
-      {{'common.confirm' | translate}}
-    </button>
-    <button type="button" mat-flat-button [mat-dialog-close]="undefined" data-cy="dialog-cancel-button">
-      {{'common.cancel' | translate}}
-    </button>
-  </mat-dialog-actions>
-</form>
-
-@if (loading){
-<app-overlay-spinner mode="dialog"></app-overlay-spinner>
-}
+</app-dialog-layout>

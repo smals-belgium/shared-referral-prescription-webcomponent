@@ -14,7 +14,6 @@ import { PrescriptionDetailsSecondaryService } from '../../services/prescription
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { MatIconTestingModule } from '@angular/material/icon/testing';
-import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { ALERT_TARGET, ERROR_PRESCRIPTION_DETAILS } from '@reuse/code/constants/error';
 
 describe('PrescriptionDetailsCaregiverListComponent', () => {
@@ -29,7 +28,6 @@ describe('PrescriptionDetailsCaregiverListComponent', () => {
     openInterruptExecutionDialog: jest.Mock;
     openRestartExecutionDialog: jest.Mock;
   };
-  let mockAccessMatrixState: jest.Mocked<AccessMatrixState>;
 
   const createMockPerformerTask = (overrides = {}) =>
     ({
@@ -79,10 +77,6 @@ describe('PrescriptionDetailsCaregiverListComponent', () => {
   };
 
   beforeEach(async () => {
-    mockAccessMatrixState = {
-      hasAtLeastOnePermission: jest.fn().mockReturnValue(true),
-    } as unknown as jest.Mocked<AccessMatrixState>;
-
     mockService = {
       getPrescription: jest.fn(),
       getPatient: jest.fn(),
@@ -104,7 +98,6 @@ describe('PrescriptionDetailsCaregiverListComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: PrescriptionDetailsSecondaryService, useValue: mockService },
-        { provide: AccessMatrixState, useValue: mockAccessMatrixState },
         { provide: ALERT_TARGET, useValue: ERROR_PRESCRIPTION_DETAILS },
       ],
     }).compileComponents();
@@ -298,6 +291,7 @@ describe('PrescriptionDetailsCaregiverListComponent', () => {
         setupServiceMock({
           prescription: {
             status: RequestStatus.Open,
+            currentTask: { allowedActions: { canRejectAssignation: true } },
             performerTasks: {
               '12345': [task],
             },

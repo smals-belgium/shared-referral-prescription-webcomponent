@@ -74,6 +74,7 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
 
   modelStates = this.prescriptionModelState.modalStates;
   checkedPrescriptions = signal<Set<number>>(new Set());
+  expandedTrackId?: number;
 
   isPrescriptionValue = false;
 
@@ -104,10 +105,22 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['createPrescriptionForms']) {
+      const previousForms = changes['createPrescriptionForms'].previousValue as CreatePrescriptionForm[] | undefined;
+      const newFormWasAdded = (previousForms?.length ?? 0) < this.createPrescriptionForms.length;
+
       if (this.createPrescriptionForms?.length === 1) {
+        this.expandedTrackId = this.createPrescriptionForms[0].trackId;
         queueMicrotask(() => this.panels?.first?.open());
+        this.scrollToTop();
+      } else if (newFormWasAdded) {
+        this.expandedTrackId = this.createPrescriptionForms.at(-1)?.trackId;
+        if (this.expandedTrackId !== undefined) {
+          this.openPanelByTrackId(this.expandedTrackId);
+        }
+      } else {
+        this.expandedTrackId = this.getExpandedTrackId();
+        this.scrollToTop();
       }
-      this.scrollToTop();
     }
     this.isPrescriptionValue = isPrescription(this.intent);
   }
@@ -178,7 +191,7 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
 
   handleModelSaved(modelId?: string) {
     if (modelId) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      globalThis.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
 
@@ -210,35 +223,83 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
     return isProposal(intent);
   }
 
-  private getFirstPrescriptionWithErrors() {
-    return this.createPrescriptionForms.find(form => form.errors && Object.keys(form.errors).length);
+  isPanelExpanded(trackId: number, last: boolean): boolean {
+    return this.expandedTrackId !== undefined ? this.expandedTrackId === trackId : last;
+  }
+
+  private getLastPrescriptionWithErrors() {
+    for (let index = this.createPrescriptionForms.length - 1; index >= 0; index--) {
+      const form = this.createPrescriptionForms[index];
+      if (form.errors && Object.keys(form.errors).length) {
+        return form;
+      }
+    }
+    return undefined;
+  }
+
+  private getExpandedTrackId(): number | undefined {
+    const lastPrescriptionWithErrors = this.getLastPrescriptionWithErrors();
+    if (lastPrescriptionWithErrors) {
+      return lastPrescriptionWithErrors.trackId;
+    }
+    return this.createPrescriptionForms.at(-1)?.trackId;
+  }
+
+  private openPanelByTrackId(trackId: number) {
+    const panelIndex = this.createPrescriptionForms.findIndex(form => form.trackId === trackId);
+    if (panelIndex < 0) return;
+
+    queueMicrotask(() => this.panels?.get(panelIndex)?.open());
+  }
+
+  private getPanelByTrackId(trackId: number): MatExpansionPanel | undefined {
+    const panelIndex = this.createPrescriptionForms.findIndex(form => form.trackId === trackId);
+    if (panelIndex < 0) return undefined;
+
+    return this.panels?.get(panelIndex);
   }
 
   scrollToTop() {
-    const firstFormWithErrors = this.getFirstPrescriptionWithErrors();
-
-    if (firstFormWithErrors && firstFormWithErrors.errors) {
+    const lastFormWithErrors = this.getLastPrescriptionWithErrors();
+    if (lastFormWithErrors && lastFormWithErrors.errors) {
+      this.openPanelByTrackId(lastFormWithErrors.trackId);
       const messages = this.getErrorMessagesPipe.transform(
-        firstFormWithErrors.errors,
-        firstFormWithErrors.formTemplateState$().data
+        lastFormWithErrors.errors,
+        lastFormWithErrors.formTemplateState$().data
       );
       if (messages.length === 1) {
         const id = messages[0].id;
-        if (id) this.scrollTo(id, firstFormWithErrors.trackId);
+        if (id) this.scrollTo(id, lastFormWithErrors.trackId);
       } else {
-        this.scrollTo();
+        this.scrollTo(undefined, lastFormWithErrors.trackId);
       }
     }
   }
 
   scrollTo(elementId?: string, trackId?: number) {
     const shadow = this.host.nativeElement;
-    const wrapper = trackId ? shadow?.querySelector(`#mat-expension-panel-${trackId}`) : shadow;
-    const target = elementId ? wrapper?.querySelector(`[data-evf-element-id="${elementId}"]`) : shadow;
+    const scrollToTarget = () => {
+      const wrapper = trackId ? shadow?.querySelector(`#mat-expension-panel-${trackId}`) : shadow;
+      const target = elementId ? wrapper?.querySelector(`[data-evf-element-id="${elementId}"]`) : wrapper;
 
-    if (!target) return;
+      if (!target) return;
 
-    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    if (trackId !== undefined) {
+      const panel = this.getPanelByTrackId(trackId);
+      if (panel && !panel.expanded) {
+        const subscription = panel.afterExpand.subscribe(() => {
+          subscription.unsubscribe();
+          scrollToTarget();
+        });
+        panel.open();
+        return;
+      }
+    }
+
+    scrollToTarget();
   }
 
   protected dismissError() {

@@ -17,17 +17,37 @@
 }
 
 .dialog-header {
+  box-sizing: border-box;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   padding-left: mh.$spacing-m;
   padding-top: mh.$spacing-xs;
 
-  p{
-    margin: 0 0 10px;
-    .required {
-      color: var(--mh-label-invalid-color, mh.$typography-semantic-error-medium);
+  .dialog-title-wrapper {
+    width: 100%;
+    .dialog-tittle-inner-container {
+      display: flex;
+      align-items: center;
+      .dialog-title {
+        padding-left: 0;
+      }
     }
+
+    p {
+      margin: 0 0 10px;
+      .required {
+        color: var(--mh-label-invalid-color, mh.$typography-semantic-error-medium);
+      }
+    }
+  }
+
+  button {
+    background: unset;
+    border: none;
+    cursor: pointer;
+    box-sizing: unset;
+    width: min-content;
   }
 }
 

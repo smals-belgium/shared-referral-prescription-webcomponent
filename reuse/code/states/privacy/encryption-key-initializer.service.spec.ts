@@ -10,8 +10,7 @@ const mockEncryptionService = {
 };
 
 const mockPseudoService = {
-  byteArrayToValue: jest.fn(),
-  pseudonymizeValue: jest.fn(),
+  pseudonymizeByteArray: jest.fn(),
 };
 
 describe('EncryptionKeyInitializerService', () => {
@@ -19,10 +18,11 @@ describe('EncryptionKeyInitializerService', () => {
 
   const mockCryptoKey = { type: 'secret' } as CryptoKey;
   const mockExportedKey = new ArrayBuffer(8);
-  const mockNumericValue = 12345;
   const mockPseudonym = 'pseudonymized-string-abc';
 
   beforeEach(() => {
+    jest.resetAllMocks();
+
     TestBed.configureTestingModule({
       providers: [
         EncryptionKeyInitializerService,
@@ -30,13 +30,14 @@ describe('EncryptionKeyInitializerService', () => {
         { provide: PseudoService, useValue: mockPseudoService },
       ],
     });
+
     service = TestBed.inject(EncryptionKeyInitializerService);
 
     jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   it('should be created', () => {
@@ -52,8 +53,7 @@ describe('EncryptionKeyInitializerService', () => {
     it('should successfully generate and pseudonymize a key', async () => {
       mockEncryptionService.generateKey.mockResolvedValue(mockCryptoKey);
       mockEncryptionService.exportKey.mockResolvedValue(mockExportedKey);
-      mockPseudoService.byteArrayToValue.mockReturnValue(mockNumericValue);
-      mockPseudoService.pseudonymizeValue.mockReturnValue(mockPseudonym);
+      mockPseudoService.pseudonymizeByteArray.mockResolvedValue(mockPseudonym);
 
       await firstValueFrom(service.initialize());
 
@@ -62,13 +62,19 @@ describe('EncryptionKeyInitializerService', () => {
 
       expect(mockEncryptionService.generateKey).toHaveBeenCalledTimes(1);
       expect(mockEncryptionService.exportKey).toHaveBeenCalledWith(mockCryptoKey);
-      expect(mockPseudoService.byteArrayToValue).toHaveBeenCalledWith(new Uint8Array(mockExportedKey));
-      expect(mockPseudoService.pseudonymizeValue).toHaveBeenCalledWith(mockNumericValue);
+
+      expect(mockPseudoService.pseudonymizeByteArray).toHaveBeenCalledTimes(1);
+
+      const [byteArray] = mockPseudoService.pseudonymizeByteArray.mock.calls[0];
+
+      expect(byteArray).toBeInstanceOf(Uint8Array);
+      expect(Array.from(byteArray)).toEqual(Array.from(new Uint8Array(mockExportedKey)));
       expect(console.error).not.toHaveBeenCalled();
     });
 
     it('should handle failure during key generation', async () => {
       const generationError = new Error('Key generation failed');
+
       mockEncryptionService.generateKey.mockRejectedValue(generationError);
 
       await firstValueFrom(service.initialize());
@@ -79,10 +85,12 @@ describe('EncryptionKeyInitializerService', () => {
       expect(console.error).toHaveBeenCalledWith('Failed to initialize encryption key:', generationError);
 
       expect(mockEncryptionService.exportKey).not.toHaveBeenCalled();
+      expect(mockPseudoService.pseudonymizeByteArray).not.toHaveBeenCalled();
     });
 
     it('should handle failure during key export', async () => {
       const exportError = new Error('Key export failed');
+
       mockEncryptionService.generateKey.mockResolvedValue(mockCryptoKey);
       mockEncryptionService.exportKey.mockRejectedValue(exportError);
 
@@ -92,19 +100,42 @@ describe('EncryptionKeyInitializerService', () => {
       expect(service.getPseudonymizedKey()).toBeUndefined();
 
       expect(console.error).toHaveBeenCalledWith('Failed to pseudonymize encryption key:', exportError);
+      expect(mockPseudoService.pseudonymizeByteArray).not.toHaveBeenCalled();
     });
 
-    it('should result in an undefined pseudonymized key if byteArrayToValue returns null', async () => {
+    it('should handle failure during key pseudonymization', async () => {
+      const pseudonymizationError = new Error('Pseudonymization failed');
+
       mockEncryptionService.generateKey.mockResolvedValue(mockCryptoKey);
       mockEncryptionService.exportKey.mockResolvedValue(mockExportedKey);
-      mockPseudoService.byteArrayToValue.mockReturnValue(null);
+      mockPseudoService.pseudonymizeByteArray.mockRejectedValue(pseudonymizationError);
+
+      await firstValueFrom(service.initialize());
+
+      expect(service.getCryptoKey()).toBeUndefined();
+      expect(service.getPseudonymizedKey()).toBeUndefined();
+
+      expect(console.error).toHaveBeenCalledWith('Failed to initialize encryption key:', pseudonymizationError);
+    });
+
+    it('should keep the pseudonymized key undefined when pseudonymization returns undefined', async () => {
+      const emptyExportedKey = new ArrayBuffer(0);
+
+      mockEncryptionService.generateKey.mockResolvedValue(mockCryptoKey);
+      mockEncryptionService.exportKey.mockResolvedValue(emptyExportedKey);
+      mockPseudoService.pseudonymizeByteArray.mockResolvedValue(undefined);
 
       await firstValueFrom(service.initialize());
 
       expect(service.getCryptoKey()).toBe(mockCryptoKey);
       expect(service.getPseudonymizedKey()).toBeUndefined();
 
-      expect(mockPseudoService.pseudonymizeValue).not.toHaveBeenCalled();
+      expect(mockPseudoService.pseudonymizeByteArray).toHaveBeenCalledTimes(1);
+
+      const [byteArray] = mockPseudoService.pseudonymizeByteArray.mock.calls[0];
+
+      expect(byteArray).toBeInstanceOf(Uint8Array);
+      expect(Array.from(byteArray)).toEqual([]);
       expect(console.error).not.toHaveBeenCalled();
     });
   });

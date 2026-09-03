@@ -32,6 +32,10 @@ describe('MagsPrescriptionDetails', () => {
     mockHostServices = {
       getAccessToken: jest.fn().mockResolvedValue('access-token'),
       getIdToken: jest.fn().mockResolvedValue({ userProfile: { ssin: '12345' } }),
+      events: {
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+      },
     };
 
     mockHostSettings = {

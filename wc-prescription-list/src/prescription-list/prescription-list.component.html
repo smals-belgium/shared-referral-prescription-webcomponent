@@ -31,7 +31,7 @@
               {{ 'prescription.create.prescription' | translate }}
             </button>
           }
-          <div *featureFlag="'filters'">
+          <div *featureFlag="'ui-filters'">
             @if (prescriptionState.data?.templates) {
               <app-responsive-wrapper>
                 <ng-template #desktopTemplate>
@@ -131,7 +131,7 @@
             {{ 'proposal.create.proposal' | translate }}
           </button>
         }
-        <div *featureFlag="'filters'">
+        <div *featureFlag="'ui-filters'">
           @if (proposalState.data?.templates) {
             <app-responsive-wrapper>
               <ng-template #desktopTemplate>

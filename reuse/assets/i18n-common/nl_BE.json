@@ -124,7 +124,6 @@
           "required": "Indicaties zijn verplicht."
         },
         "table": {
-          "title": "Resultaten PSS",
           "select": "Selecteer de rij {row}",
           "relevance": "Relevantie",
           "typesOfImagery": "Type medische beeldvorming",
@@ -133,6 +132,12 @@
           "radiationLevel": "Stralingsgraad {level}/5",
           "deselectRow": "Rij {row} deselecteren",
           "selectRow": "Rij {row} selecteren"
+        },
+        "alert": {
+          "relevantInfo": "Elementen niet door PSS in rekening gebracht",
+          "chosenExam": "Het voorgeschreven onderzoek voldoet niet aan de huidige aanbevelingen",
+          "chosenExamScore": "behaalt slechts een score van {score}/9",
+          "noDefaultExam": "Geen enkele voorgeschreven onderzoek voldoet aan de PSS-aanbevelingen."
         }
       },
       "deletePrescription": {
@@ -146,7 +151,15 @@
       },
       "cancelCreation": "Bent u zeker dat u het aanmaken van dit voorschrift wilt annuleren?",
       "prescription": "Voorschrift aanmaken",
-      "requiredFields": "Verplichte velden"
+      "requiredFields": "Verplichte velden",
+      "indication": {
+        "selected": "Gekozen:",
+        "name": "Naam",
+        "criteria": "Criteria"
+      },
+      "infoSummary": {
+        "description": "Basisgegevens"
+      }
     },
     "allPrescriptionsFetched": "Alle voorschriften opgehaald",
     "model": {
@@ -245,8 +258,11 @@
       "noResults": "Geen gemeente gevonden",
       "organization": "Organisatie",
       "dialog": {
-        "title": "Een voorschrift toewijzen aan een zorgverlener of zorgorganisatie",
-        "description": "Als u een zorgverlener aan dit voorschrift toevoegt, kan deze de informatie in dit voorschrift raadplegen."
+        "title": "Een zorgverlener of organisatie toewijzen: wat zijn de gevolgen?",
+        "description": {
+          "other": "Zodra u uw zoekopdracht hebt uitgevoerd, kunt u de persoon of organisatie van uw keuze <b>toewijzen</b>.",
+          "patient": "Zodra u uw zoekopdracht hebt uitgevoerd, kunt u de persoon of organisatie van uw keuze <b>toewijzen</b>.\n\nVolgende stappen:\n<ul>\n<li>Neem contact op met de zorgverlener of organisatie om een afspraak te maken.</li>\n<li>Door de toewijzing krijgt de zorgverlener of organisatie toegang tot het voorschrift om uw behoeften te beoordelen.</li>\n<li>Hebt u voor een organisatie gekozen? Deze zal de zorgverlener(s) aanduiden die u zullen begeleiden. Hun namen worden aan het voorschrift toegevoegd.</li>\n</ul>"
+        }
       },
       "locationsHint": "Zoeken op postcode of plaatsnaam",
       "performerHint": "Zoeken op naam of ID"
@@ -304,12 +320,6 @@
       "title": "Uitvoering hervatten",
       "message": "Bent u zeker dat u de uitvoering van het voorschrift \"{templateName}\" van {firstName} {lastName} wilt hervatten?",
       "success": "De uitvoering is hervat."
-    },
-    "finishExecution": {
-      "action": "Afsluiten",
-      "title": "Voorschrift afsluiten",
-      "endDate": "Einddatum",
-      "success": "Het voorschrift werd afgesloten."
     },
     "frequencyTypes": {
       "iterative": "Iteratief",
@@ -396,21 +406,44 @@
     },
     "transferPerformer": {
       "dialog": {
-        "description": "Als u dit voorschrift overdraagt aan een andere zorgverlener, zal deze de informatie in dit voorschrift kunnen raadplegen.",
-        "title": "Een voorschrift overdragen aan een andere zorgverlener"
+        "description": "Na de overdracht krijgt de nieuwe zorgverlener toegang tot het voorschrift en kan hij of zij de behandeling voortzetten.",
+        "title": "Toegang van de nieuwe zorgverlener tot het voorschrift"
       },
       "locations": "Locatie(s)",
       "noResults": "Geen gemeente gevonden",
       "performer": "Zorgverlener",
       "searchPerformerPlaceHolder": "RIZIV-nummer, naam",
       "success": "{firstName} {lastName} werd toegewezen als zorgverlener.",
-      "title": "Toewijzing overdragen",
+      "title": "Voorschrift overdragen",
       "zipCodeOrCityName": "Postcode of gemeente",
       "updateCriteria": "Wijzig criteria"
     },
     "validityStartDate": "Startdatum geldigheid",
     "autoAssign": {
       "success": "De zorgverleners zijn succesvol toegevoegd."
+    },
+    "finishExecution": {
+      "dialog": {
+        "title": {
+          "close": "Afsluiten {templateName}",
+          "finishTasks": "Mijn sessies afsluiten van {templateName}",
+          "closePrescription": "Voorschrift afsluiten van {templateName}"
+        },
+        "patient": "Patiënt",
+        "radioGroup": {
+          "label": "Type afsluitingen",
+          "finishTasks": "Mijn sessies afsluiten",
+          "closePrescription": "Mijn voorschrift aflsuiten"
+        },
+        "datepicker": {
+          "label": "Sluitingsdatum"
+        },
+        "success": {
+          "closePrescription": "Het voorschrift werd succesvol afgesloten.",
+          "finishTasks": "Sessie succesvol afgesloten."
+        }
+      },
+      "action": "Afsluiten"
     }
   },
   "proposal": {
@@ -586,7 +619,7 @@
     "transferPerformer": {
       "dialog": {
         "description": "Als u dit voorstel overdraagt aan een andere zorgverlener, zal deze de informatie in dit voorstel kunnen raadplegen.",
-        "title": "Het voorstel overdragen naar een andere zorgverlener"
+        "title": "Het voorstel overdragen aan een zorgverlener of organisatie: wat zijn de gevolgen?"
       },
       "locations": "Locatie(s)",
       "noResults": "Geen gemeente gevonden",
@@ -626,7 +659,8 @@
     "unavailable": {
       "title": "Service tijdelijk niet beschikbaar",
       "message": "De PSS (Prescription Search Support) service is momenteel niet beschikbaar.\nU kunt de aanbevelingen voor medische beeldvorming onderzoeken op dit moment niet raadplegen.\nProbeer het later opnieuw."
-    }
+    },
+    "link": "Lees bijkomende uitleg"
   },
   "professional": {
     "table": {
@@ -638,7 +672,13 @@
       "actions": "Acties",
       "tableHasRecords": "{total}  gevonden resultaten",
       "noRecords": "Er werd geen zorgverlener gevonden die overeenkomt met deze zoekopdracht.",
-      "select": "Kiezen"
+      "select": "Kiezen",
+      "type": {
+        "professional": "Individueel",
+        "organization": "Organisatie",
+        "label": "Type",
+        "all": "Alles"
+      }
     },
     "noProfessionals": "Er werd geen zorgverlener gevonden die overeenkomt met deze zoekopdracht.",
     "allProfessionalsFetched": "Alle zorgverleners zijn opgehaald."
@@ -786,7 +826,10 @@
       "USER_SUSPENDED_ON_DATE_PROVIDED": {
         "default": "Deze actie is niet mogelijk."
       },
-      "unknown": "Er is een fout opgetreden. Probeer het over enkele ogenblikken opnieuw."
+      "unknown": "Er is een fout opgetreden. Probeer het over enkele ogenblikken opnieuw.",
+      "PRESCRIPTION_NOT_COMPLETED": {
+        "default": "Voorschrift kan niet worden afgesloten."
+      }
     }
   },
   "datepicker": {

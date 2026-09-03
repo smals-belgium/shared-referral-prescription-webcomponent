@@ -1,18 +1,41 @@
 import { inject, Injectable } from '@angular/core';
 import { PrescriptionService } from '@reuse/code/services/api/prescription.service';
 import { TaskService } from '@reuse/code/services/fhir/task.service';
-import { PrescriptionExecutionFinish, PrescriptionExecutionStart } from '@reuse/code/interfaces';
+import { PrescriptionExecutionComplete, PrescriptionExecutionStart, TaskExecutionFinish } from '@reuse/code/interfaces';
 import { BaseState } from '@reuse/code/states/helpers/base.state';
-import { tap } from 'rxjs/operators';
-import { AssignationType, AssignCareGiverResource, ReadRequestResource, ReasonResource } from '@reuse/code/openapi';
+import { switchMap, tap } from 'rxjs/operators';
+import {
+  AssignationType,
+  AssignCareGiverResource,
+  PerformerTaskIdResource,
+  ReadRequestResource,
+  ReasonResource,
+} from '@reuse/code/openapi';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
+import { USER_PROFILE_CLAIM_KEY } from '@reuse/code/services/auth/auth-constants';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class PrescriptionState extends BaseState<ReadRequestResource> {
   private readonly prescriptionService = inject(PrescriptionService);
   private readonly performerTaskService = inject(TaskService);
+  private readonly authService = inject(AuthService);
 
   loadPrescription(id: string) {
-    this.load(this.prescriptionService.findOne(id));
+    // Lazily fetch auth context only when loading
+    const prescription$ = this.authService.isOrganization().pipe(
+      switchMap(isOrganization =>
+        this.authService.getClaims().pipe(
+          switchMap(claims => {
+            const token = claims?.[USER_PROFILE_CLAIM_KEY];
+            const xActorCaregiverSsin = isOrganization ? token?.ssin : undefined;
+            return this.prescriptionService.findOne(id, xActorCaregiverSsin);
+          })
+        )
+      )
+    );
+
+    this.load(prescription$);
   }
 
   resetPrescription() {
@@ -20,7 +43,19 @@ export class PrescriptionState extends BaseState<ReadRequestResource> {
   }
 
   loadPrescriptionByShortCode(shortCode: string, ssin: string): void {
-    this.load(this.prescriptionService.findOneByShortCode(shortCode, ssin));
+    const prescription$ = this.authService.isOrganization().pipe(
+      switchMap(isOrganization =>
+        this.authService.getClaims().pipe(
+          switchMap(claims => {
+            const token = claims?.[USER_PROFILE_CLAIM_KEY];
+            const xActorCaregiverSsin = isOrganization ? token?.ssin : undefined;
+            return this.prescriptionService.findOneByShortCode(shortCode, ssin, xActorCaregiverSsin);
+          })
+        )
+      )
+    );
+
+    this.load(prescription$);
   }
 
   assignPrescriptionPerformer(
@@ -29,9 +64,11 @@ export class PrescriptionState extends BaseState<ReadRequestResource> {
     ssinOrNihdi: string,
     role: string,
     type: string,
-    generatedUUID: string
-  ) {
-    if (type === 'Professional') {
+    generatedUUID: string,
+    assignationType?: AssignationType,
+    xActorOrganizationNihii11?: string
+  ): Observable<PerformerTaskIdResource | PerformerTaskIdResource[]> {
+    if (type.toLowerCase() === 'professional' || type.toLowerCase() === 'internal') {
       return this.prescriptionService
         .assignCaregivers(
           prescriptionId,
@@ -40,11 +77,12 @@ export class PrescriptionState extends BaseState<ReadRequestResource> {
             ssin: ssinOrNihdi || '',
             role: role || '',
           },
-          generatedUUID
+          generatedUUID,
+          assignationType,
+          xActorOrganizationNihii11
         )
         .pipe(
-          tap(value => {
-            console.log(value);
+          tap(() => {
             return this.loadPrescription(prescriptionId);
           })
         );
@@ -71,7 +109,9 @@ export class PrescriptionState extends BaseState<ReadRequestResource> {
       discipline: string;
     },
     generatedUUID: string,
-    executionStart: PrescriptionExecutionStart
+    executionStart: PrescriptionExecutionStart,
+    assignationType: AssignationType,
+    xActorOrganization: string | undefined
   ) {
     return this.prescriptionService
       .assignCaregivers(
@@ -82,7 +122,9 @@ export class PrescriptionState extends BaseState<ReadRequestResource> {
           role: professional.discipline.toUpperCase(),
           executionStartDate: executionStart.startDate,
         },
-        generatedUUID
+        generatedUUID,
+        assignationType,
+        xActorOrganization
       )
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
@@ -92,10 +134,11 @@ export class PrescriptionState extends BaseState<ReadRequestResource> {
     referralTaskId: string,
     caregivers: AssignCareGiverResource[],
     generatedUUID: string,
-    assignationType: AssignationType
+    assignationType: AssignationType,
+    xActorOrganization: string | undefined
   ) {
     return this.prescriptionService
-      .assignCaregivers(prescriptionId, referralTaskId, caregivers, generatedUUID, assignationType)
+      .assignCaregivers(prescriptionId, referralTaskId, caregivers, generatedUUID, assignationType, xActorOrganization)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
@@ -103,24 +146,38 @@ export class PrescriptionState extends BaseState<ReadRequestResource> {
     prescriptionId: string,
     referralTaskId: string,
     performerTaskId: string,
-    professional: {
-      ssin: string;
-      discipline: string;
-    },
+    ssinOrNihdi: string,
+    role: string,
+    type: string,
     generatedUUID: string
   ) {
-    return this.prescriptionService
-      .transferAssignation(
-        prescriptionId,
-        referralTaskId,
-        performerTaskId,
-        {
-          ssin: professional.ssin,
-          role: professional.discipline.toUpperCase(),
-        },
-        generatedUUID
-      )
-      .pipe(tap(() => this.loadPrescription(prescriptionId)));
+    if (type.toLocaleLowerCase() === 'professional') {
+      return this.prescriptionService
+        .transferAssignation(
+          prescriptionId,
+          referralTaskId,
+          performerTaskId,
+          {
+            ssin: ssinOrNihdi || '',
+            role: role || '',
+          },
+          generatedUUID
+        )
+        .pipe(tap(() => this.loadPrescription(prescriptionId)));
+    } else {
+      return this.prescriptionService
+        .transferAssignationToOrganization(
+          prescriptionId,
+          referralTaskId,
+          performerTaskId,
+          {
+            nihii: ssinOrNihdi || '',
+            institutionTypeCode: type || '',
+          },
+          generatedUUID
+        )
+        .pipe(tap(() => this.loadPrescription(prescriptionId)));
+    }
   }
 
   cancelPrescription(prescriptionId: string, reason: ReasonResource, generatedUUID: string) {
@@ -150,10 +207,10 @@ export class PrescriptionState extends BaseState<ReadRequestResource> {
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 
-  finishPrescriptionExecution(
+  finishTaskExecution(
     prescriptionId: string,
     performerTaskId: string,
-    executionFinish: PrescriptionExecutionFinish,
+    executionFinish: TaskExecutionFinish,
     generatedUUID: string
   ) {
     return this.performerTaskService
@@ -170,6 +227,22 @@ export class PrescriptionState extends BaseState<ReadRequestResource> {
   interruptPrescriptionExecution(prescriptionId: string, performerTaskId: string, generatedUUID: string) {
     return this.performerTaskService
       .interruptExecution(performerTaskId, generatedUUID)
+      .pipe(tap(() => this.loadPrescription(prescriptionId)));
+  }
+
+  completePrescriptionExecution(
+    prescriptionId: string,
+    executionComplete: PrescriptionExecutionComplete,
+    generatedUUID: string
+  ) {
+    return this.prescriptionService
+      .completePrescription(prescriptionId, executionComplete, generatedUUID)
+      .pipe(tap(() => this.loadPrescription(prescriptionId)));
+  }
+
+  closePrescription(prescriptionId: string, generatedUUID: string) {
+    return this.prescriptionService
+      .closePrescription(prescriptionId, generatedUUID)
       .pipe(tap(() => this.loadPrescription(prescriptionId)));
   }
 }

@@ -1,17 +1,68 @@
 {
-  "rewrites": [{ "source": "/", "destination": "showcase/details/index.html" }],
+  "cleanUrls": false,
+  "rewrites": [
+    {
+      "source": "/frontend/app/hcp/showcases/form/details",
+      "destination": "/contrib/showcase/form/details/index.html"
+    },
+    {
+      "source": "/frontend/app/hcp/showcases/form/details/",
+      "destination": "/contrib/showcase/form/details/index.html"
+    },
+    {
+      "source": "/frontend/app/hcp/showcases/form/details/index.html",
+      "destination": "/contrib/showcase/form/details/index.html"
+    },
+    {
+      "source": "/frontend/app/hcp/showcases/form/create/**",
+      "destination": "/contrib/showcase/form/create/index.html"
+    },
+    { "source": "/frontend/app/hcp/showcases/form/list/**", "destination": "/contrib/showcase/form/list/index.html" }
+  ],
   "redirects": [
     {
-      "source": "/lib/keycloak.js",
-      "destination": "showcase/lib/keycloak.js"
+      "source": "/showcases/lib/keycloak.js",
+      "destination": "/showcase/lib/keycloak.js"
     },
     {
-      "source": "/main.js",
-      "destination": "showcase/details/main.js"
+      "source": "/showcases/form/showcase-utils.js",
+      "destination": "/contrib/showcase/form/showcase-utils.js"
     },
     {
-      "source": "/wc-prescription-details/build/wc-prescription-details.js",
-      "destination": "dist/wc-prescription-details/build/wc-prescription-details.js"
+      "source": "/showcases/form/style/global.css",
+      "destination": "/contrib/showcase/form/style/global.css"
+    },
+    {
+      "source": "/showcases/form/style/dialog.css",
+      "destination": "/contrib/showcase/form/style/dialog.css"
+    },
+    {
+      "source": "/frontend/app/hcp/showcases/lib/keycloak.js",
+      "destination": "/showcase/lib/keycloak.js"
+    },
+    {
+      "source": "/frontend/app/hcp/showcases/form/showcase-utils.js",
+      "destination": "/contrib/showcase/form/showcase-utils.js"
+    },
+    {
+      "source": "/frontend/app/hcp/showcases/form/style/global.css",
+      "destination": "/contrib/showcase/form/style/global.css"
+    },
+    {
+      "source": "/frontend/app/hcp/showcases/form/style/dialog.css",
+      "destination": "/contrib/showcase/form/style/dialog.css"
+    },
+    {
+      "source": "/@smals-belgium-shared/uhmep-prescription-details/build/uhmep-prescription-details.js",
+      "destination": "/dist/wc-prescription-details/build/wc-prescription-details.js"
+    },
+    {
+      "source": "/@smals-belgium-shared/uhmep-prescription-create/build/uhmep-prescription-create.js",
+      "destination": "/dist/wc-prescription-create/build/wc-prescription-create.js"
+    },
+    {
+      "source": "/@smals-belgium-shared/uhmep-prescription-list/build/uhmep-prescription-list.js",
+      "destination": "/dist/wc-prescription-list/build/wc-prescription-list.js"
     }
   ]
 }

@@ -1,10 +1,10 @@
-@if (currentUserData && patientData && requestTaskData && prescriptionData) {
+@if (patientData && requestTaskData && prescriptionData) {
   @let prescription = prescriptionData;
   @let patient = patientData;
-  @let currentUser = currentUserData;
+  @let currentTaskAllowedActions = prescription.currentTask?.allowedActions;
 
   @if (checkAndConvertToPerformerTask(requestTaskData); as performerTask) {
-    @if (prescription | canStartTreatment: performerTask : currentUser) {
+    @if (currentTaskAllowedActions?.canStartTreatment) {
       <button
         (click)="service.openStartExecutionDialog(alertTarget, prescription, performerTask)"
         mat-menu-item
@@ -13,7 +13,7 @@
         {{ 'prescription.startExecution.action' | translate }}
       </button>
     }
-    @if (prescription | canFinishTreatment: performerTask) {
+    @if (currentTaskAllowedActions?.canFinishTreatment) {
       <button
         (click)="service.openFinishExecutionDialog(alertTarget, prescription, performerTask)"
         mat-menu-item
@@ -22,7 +22,7 @@
         {{ 'prescription.finishExecution.action' | translate }}
       </button>
     }
-    @if (prescription | canCancelTreatment: performerTask : currentUser) {
+    @if (currentTaskAllowedActions?.canCancelTreatment) {
       <button
         (click)="service.openCancelExecutionDialog(alertTarget, prescription, performerTask, patient)"
         mat-menu-item
@@ -31,7 +31,7 @@
         {{ 'prescription.cancelExecution.action' | translate }}
       </button>
     }
-    @if (prescription | canTransferAssignation: performerTask : currentUser) {
+    @if (currentTaskAllowedActions?.canTransferAssignation) {
       <button
         (click)="service.openTransferAssignationDialog(alertTarget, prescription, performerTask)"
         mat-menu-item
@@ -41,7 +41,7 @@
       </button>
     }
 
-    @if (prescription | canRestartTreatment: performerTask : performerTask?.careGiverSsin) {
+    @if (currentTaskAllowedActions?.canRestartTreatment) {
       <button
         type="button"
         (click)="service.openRestartExecutionDialog(alertTarget, prescriptionData, performerTask, patientData)"
@@ -51,7 +51,7 @@
       </button>
     }
 
-    @if (prescription | canInterruptTreatment: performerTask : currentUserData) {
+    @if (currentTaskAllowedActions?.canInterruptTreatment) {
       <button
         type="button"
         (click)="service.openInterruptExecutionDialog(alertTarget, prescriptionData, performerTask, patient)"
@@ -62,7 +62,7 @@
     }
   }
 
-  @if (prescription | canRejectAssignation: requestTaskData : patient.ssin : currentUserData) {
+  @if (currentTaskAllowedActions?.canRejectAssignation) {
     <button
       type="button"
       (click)="service.openRejectAssignationDialog(alertTarget, prescriptionData, requestTaskData, patient)"

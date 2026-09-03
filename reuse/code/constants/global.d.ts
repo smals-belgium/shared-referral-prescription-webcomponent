@@ -1,9 +1,5 @@
 import { ReferralEnv } from '@reuse/code/interfaces/environment.interface';
 
 declare global {
-  interface Window {
-    referralPrescriptionEnv?: ReferralEnv;
-  }
+  var referralPrescriptionEnv: ReferralEnv | undefined;
 }
-
-export {};

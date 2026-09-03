@@ -1,6 +1,7 @@
 @if (prescriptionServiceData && currentUserServiceData) {
   @let prescription = prescriptionServiceData;
   @let currentUser = currentUserServiceData;
+  @let allowedActions = prescription.allowedActions;
 
   <div class="bottom_details_container">
     <div class="prescriber_details">
@@ -51,7 +52,7 @@
       </p>
     </div>
     <div class="prescriber_actions">
-      @if (prescription | canApproveProposal) {
+      @if (allowedActions?.canApproveProposal) {
         <button
           (click)="service.openApproveProposalDialog(alertTarget, prescription)"
           mat-raised-button
@@ -62,7 +63,7 @@
           {{ 'proposal.approve.action' | translate }}
         </button>
       }
-      @if (prescription | canRejectProposal) {
+      @if (allowedActions?.canRejectProposal) {
         <button
           (click)="service.openRejectProposalDialog(alertTarget, prescription)"
           mat-raised-button

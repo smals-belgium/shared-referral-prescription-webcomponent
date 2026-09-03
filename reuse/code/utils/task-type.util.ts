@@ -38,16 +38,3 @@ export function checkAndConvertToPerformerTask(
     return undefined;
   }
 }
-
-export function checkAndConvertToOrganizationTask(
-  task: RequestTaskResource | undefined
-): OrganizationTaskResource | undefined {
-  if (!task) return undefined;
-  const isOrganization = isOrganizationTask(task);
-
-  if (isOrganization) {
-    return asOrganizationTask(task);
-  } else {
-    return undefined;
-  }
-}

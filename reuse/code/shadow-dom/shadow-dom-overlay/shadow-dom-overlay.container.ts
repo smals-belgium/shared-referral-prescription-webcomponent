@@ -1,4 +1,4 @@
-import { inject, Inject, Injectable, OnDestroy } from '@angular/core';
+import { inject, Injectable, OnDestroy } from '@angular/core';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { DOCUMENT } from '@angular/common';
 import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
@@ -6,9 +6,10 @@ import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-ho
 @Injectable({ providedIn: 'root' })
 export class ShadowDomOverlayContainer extends OverlayContainer implements OnDestroy {
   private readonly activeHostService = inject(ActiveOverlayHostService);
+  override readonly _document = inject(DOCUMENT) as Document;
 
-  constructor(@Inject(DOCUMENT) _document: Document) {
-    super(_document);
+  constructor() {
+    super();
   }
 
   override ngOnDestroy() {
@@ -23,11 +24,14 @@ export class ShadowDomOverlayContainer extends OverlayContainer implements OnDes
     const host = this.activeHostService.get();
     const expectedRoot = host?.shadowRoot ?? this._document.body;
 
-    if (!this._containerElement?.isConnected || !expectedRoot.contains(this._containerElement)) {
+    if (
+      !this._containerElement?.isConnected ||
+      (this._containerElement && !expectedRoot.contains(this._containerElement))
+    ) {
       this._createContainer();
     }
 
-    return this._containerElement;
+    return this._containerElement!;
   }
 
   protected override _createContainer(): void {

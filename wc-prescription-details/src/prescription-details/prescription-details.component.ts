@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -20,24 +21,45 @@ import {
   ViewEncapsulation,
   WritableSignal,
 } from '@angular/core';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DateAdapter } from '@angular/material/core';
-import { DateTime } from 'luxon';
-import { AlertType, DataState, LoadingStatus, UserInfo } from '@reuse/code/interfaces';
-import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
-import { AuthService } from '@reuse/code/services/auth/auth.service';
-import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
+import { DateAdapter } from '@angular/material/core';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
-import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
-import { TemplatesState } from '@reuse/code/states/api/templates.state';
-import { TemplateVersionsState } from '@reuse/code/states/api/template-versions.state';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
+import { ALERT_TARGET, ERROR_PRESCRIPTION_DETAILS } from '@reuse/code/constants/error';
+import { Lang } from '@reuse/code/constants/languages';
+import { formatToEvfLangCode } from '@reuse/code/evf/utils/evf-utils';
+import { AlertType, DataState, LoadingStatus, UserInfo } from '@reuse/code/interfaces';
+import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-responses-state.interface';
+import { WcDetailsEvent } from '@reuse/code/interfaces/events.interface';
+import {
+  FormElement,
+  PerformerTaskResource,
+  PersonResource,
+  ReadRequestResource,
+  Template,
+  TemplateVersion,
+} from '@reuse/code/openapi';
+import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
+import { PssService } from '@reuse/code/services/api/pss.service';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
+import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
+import { AlertService } from '@reuse/code/services/helpers/alert.service';
+import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
+import { EncryptionService } from '@reuse/code/services/privacy/encryption.service';
+import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { PatientState } from '@reuse/code/states/api/patient.state';
-import { IdentifyState } from '@reuse/code/states/privacy/identify.state';
+import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
+import { TemplateVersionsState } from '@reuse/code/states/api/template-versions.state';
+import { TemplatesState } from '@reuse/code/states/api/templates.state';
+import { EncryptionState } from '@reuse/code/states/privacy/encryption.state';
+import { IdentifyState } from '@reuse/code/states/privacy/identify.state';
+import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
+import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
 import {
   isPrescriptionId,
   isPrescriptionShortCode,
@@ -45,8 +67,8 @@ import {
   isSsin,
   validateSsinChecksum,
 } from '@reuse/code/utils/utils';
-import { EncryptionService } from '@reuse/code/services/privacy/encryption.service';
-import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
+import { EvfTranslateService, FormTranslations } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
+import { DateTime } from 'luxon';
 import {
   BehaviorSubject,
   catchError,
@@ -60,38 +82,16 @@ import {
   switchMap,
   throwError,
 } from 'rxjs';
-import { EncryptionState } from '@reuse/code/states/privacy/encryption.state';
+import { tap } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
-import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-responses-state.interface';
-import { PssService } from '@reuse/code/services/api/pss.service';
-import {
-  FormElement,
-  PerformerTaskResource,
-  PersonResource,
-  ReadRequestResource,
-  Template,
-  TemplateVersion,
-} from '@reuse/code/openapi';
-import { HttpErrorResponse } from '@angular/common/http';
-import { EvfTranslateService, FormTranslations } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
+import { PrescriptionDetailsActionsComponent } from '../components/prescription-details-actions/container/prescription-details-actions.component';
+import { PrescriptionDetailsBottomComponent } from '../components/prescription-details-bottom/prescription-details-bottom.component';
 import { PrescriptionDetailsMainComponent } from '../components/prescription-details-main/container/prescription-details-main.component';
 import { PrescriptionDetailsSecondaryComponent } from '../components/prescription-details-secondary/components/containter/prescription-details-secondary.component';
 import {
   DetailsServices,
   PrescriptionDetailsSecondaryService,
 } from '../components/prescription-details-secondary/services/prescription-details-secondary.service';
-import { PrescriptionDetailsBottomComponent } from '../components/prescription-details-bottom/prescription-details-bottom.component';
-import { MatMenuModule } from '@angular/material/menu';
-import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
-import { Lang } from '@reuse/code/constants/languages';
-import { tap } from 'rxjs/operators';
-import { PrescriptionDetailsActionsComponent } from '../components/prescription-details-actions/container/prescription-details-actions.component';
-import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
-import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
-import { formatToEvfLangCode } from '@reuse/code/evf/utils/evf-utils';
-import { AlertService } from '@reuse/code/services/helpers/alert.service';
-import { ALERT_TARGET, ERROR_PRESCRIPTION_DETAILS } from '@reuse/code/constants/error';
-import { WcDetailsEvent } from '@reuse/code/interfaces/events.interface';
 
 export interface ViewState {
   prescription: ReadRequestResource;
@@ -321,7 +321,8 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       'info',
       'person',
       'warning',
-      'tune'
+      'tune',
+      'apartment'
     );
 
     this.generatedUUID.set(uuidv4());
@@ -505,11 +506,8 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
 
   async getPrescriptionKey(pseudonymizedKey: string): Promise<void> {
     try {
-      const pseudoInTransit = this._pseudoService.toPseudonymInTransit(pseudonymizedKey);
-      if (pseudoInTransit) {
-        const uint8Array = await this._pseudoService.identifyPseudonymInTransit(pseudoInTransit);
-        this._encryptionStateService.loadCryptoKey(uint8Array);
-      }
+      const uint8Array = await this._pseudoService.identifyByteArray(pseudonymizedKey);
+      this._encryptionStateService.loadCryptoKey(uint8Array);
     } catch (error) {
       const errorMsg = new Error('Error loading prescription key', { cause: error });
       this._encryptionStateService.setCryptoKeyError(errorMsg);

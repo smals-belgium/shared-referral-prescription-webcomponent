@@ -71,30 +71,73 @@ export class WcAuthService extends AuthService {
     return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
   }
 
-  private readonly isProfessional$Internal = combineLatest([
+  private readonly isProfessional$ = combineLatest([
     this.getClaims(),
     this.getResourceAccess(this.exchangeToClientId),
   ]).pipe(
-    map(([claims, access]) => this.userProfileHasProfessionalKey(claims?.userProfile, access?.resource_access)),
+    map(([claims, access]) => {
+      const isProfessional = this.userProfileHasProfessionalKey(claims?.userProfile, access?.resource_access);
+      const isOrganization = this.userProfileHasOrganizationKey(claims?.userProfile, access?.resource_access);
+      return isProfessional && !isOrganization;
+    }),
     shareReplay(1)
   );
 
-  private readonly isOrganization$ = combineLatest([
+  private readonly isOrganizationAndNotActingForProfessional$ = combineLatest([
     this.getClaims(),
     this.getResourceAccess(this.exchangeToClientId),
   ]).pipe(
-    map(([claims, access]) =>
-      this.userProfileHasOrganizationKeyAndNoProfessionalKey(claims?.userProfile, access?.resource_access)
-    ),
+    map(([claims, access]) => {
+      const isProfessional = this.userProfileHasProfessionalKey(claims?.userProfile, access?.resource_access);
+      const isOrganization = this.userProfileHasOrganizationKey(claims?.userProfile, access?.resource_access);
+      return !isProfessional && isOrganization;
+    }),
+    shareReplay(1)
+  );
+
+  private readonly isOrganizationAndActingForProfessional$ = combineLatest([
+    this.getClaims(),
+    this.getResourceAccess(this.exchangeToClientId),
+  ]).pipe(
+    map(([claims, access]) => {
+      const isProfessional = this.userProfileHasProfessionalKey(claims?.userProfile, access?.resource_access);
+      const isOrganization = this.userProfileHasOrganizationKey(claims?.userProfile, access?.resource_access);
+      return isProfessional && isOrganization;
+    }),
+    shareReplay(1)
+  );
+
+  private readonly isOrganizationPossiblyActingForProfessional$ = combineLatest([
+    this.getClaims(),
+    this.getResourceAccess(this.exchangeToClientId),
+  ]).pipe(
+    map(([claims, access]) => this.userProfileHasOrganizationKey(claims?.userProfile, access?.resource_access)),
+    shareReplay(1)
+  );
+
+  private readonly isPatient$ = this.getClaims().pipe(
+    map(claims => !claims?.userProfile),
     shareReplay(1)
   );
 
   override isProfessional(): Observable<boolean> {
-    return this.isProfessional$Internal;
+    return this.isProfessional$;
   }
 
   override isOrganization(): Observable<boolean> {
-    return this.isOrganization$;
+    return this.isOrganizationPossiblyActingForProfessional$;
+  }
+
+  override isOrganizationAndNotActingForProfessional(): Observable<boolean> {
+    return this.isOrganizationAndNotActingForProfessional$;
+  }
+
+  override isOrganizationAndActingForProfessional(): Observable<boolean> {
+    return this.isOrganizationAndActingForProfessional$;
+  }
+
+  override isPatient(): Observable<boolean> {
+    return this.isPatient$;
   }
 
   override discipline(): Observable<Discipline> {
@@ -160,17 +203,8 @@ export class WcAuthService extends AuthService {
     return false;
   }
 
-  private userProfileHasOrganizationKeyAndNoProfessionalKey(
-    userProfile?: UserProfile,
-    resourceAccess?: ResourceAccess
-  ): boolean {
+  private userProfileHasOrganizationKey(userProfile?: UserProfile, resourceAccess?: ResourceAccess): boolean {
     if (userProfile) {
-      const hasProfessionalKey = Object.values(Discipline).some(discipline =>
-        Object.hasOwn(userProfile, discipline.toLowerCase())
-      );
-
-      if (hasProfessionalKey) return false;
-
       const organizations = userProfile?.[ORGANIZATIONS_CLAIM_KEY];
 
       if ((organizations?.length ?? 0) > 0) return true;
@@ -184,5 +218,16 @@ export class WcAuthService extends AuthService {
     }
 
     return false;
+  }
+
+  override getConnectedOrganizationNihii(): Observable<string | undefined> {
+    return combineLatest([this.getClaims(), this.oidc()]).pipe(
+      map(([claims, oidc]) => {
+        if (!claims || !oidc) {
+          return undefined;
+        }
+        return claims.userProfile?.organizations?.[0]?.[oidc]?.nihii;
+      })
+    );
   }
 }

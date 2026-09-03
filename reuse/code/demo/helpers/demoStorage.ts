@@ -4,8 +4,8 @@ const memoryStorage: Record<string, object> = {};
 
 try {
   const testKey = '__demo_test__';
-  window.localStorage.setItem(testKey, testKey);
-  window.localStorage.removeItem(testKey);
+  globalThis.localStorage.setItem(testKey, testKey);
+  globalThis.localStorage.removeItem(testKey);
   storageAvailable = true;
 } catch {
   storageAvailable = false;

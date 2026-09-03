@@ -56,6 +56,10 @@ export abstract class MagsComponent implements WebComponentWithSignals, OnInit {
     this.setEnvName(this.envs);
   }
 
+  private get envHost(): typeof globalThis & { referralPrescriptionEnv?: ReferralEnv } {
+    return globalThis as typeof globalThis & { referralPrescriptionEnv?: ReferralEnv };
+  }
+
   ngOnInit() {
     this.initWebComponent();
     this.hostServices.events.addEventListener('settings-change', this.onSettingsChanged);
@@ -86,7 +90,7 @@ export abstract class MagsComponent implements WebComponentWithSignals, OnInit {
     if (envs) {
       const [referralPrescriptionEnv] =
         Object.entries(envs).find(([, configNames]) => configNames.includes(this.hostSettings.configName)) || [];
-      window.referralPrescriptionEnv = referralPrescriptionEnv as ReferralEnv;
+      this.envHost.referralPrescriptionEnv = referralPrescriptionEnv as ReferralEnv;
     }
   }
 

@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ConfirmDialog, ConfirmDialogData } from './confirm.dialog';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -51,7 +51,7 @@ describe('ConfirmDialog (with real TranslateModule)', () => {
     fixture.detectChanges();
   };
 
-  it('should render translated title and message', waitForAsync(async () => {
+  it('should render translated title and message', async () => {
     await createComponent({
       titleLabel: 'TITLE_KEY',
       messageLabel: 'MESSAGE_KEY',
@@ -62,9 +62,9 @@ describe('ConfirmDialog (with real TranslateModule)', () => {
 
     expect(title.nativeElement.textContent).toContain('Translated Title');
     expect(message.nativeElement.textContent).toContain('Translated Message');
-  }));
+  });
 
-  it('should render translated buttons', waitForAsync(async () => {
+  it('should render translated buttons', async () => {
     await createComponent({
       okLabel: 'OK_KEY',
       cancelLabel: 'CANCEL_KEY',
@@ -74,9 +74,9 @@ describe('ConfirmDialog (with real TranslateModule)', () => {
 
     expect(buttons[0].nativeElement.textContent).toContain('Confirm');
     expect(buttons[1].nativeElement.textContent).toContain('Abort');
-  }));
+  });
 
-  it('should close dialog when translated OK button clicked', waitForAsync(async () => {
+  it('should close dialog when translated OK button clicked', async () => {
     await createComponent({
       okLabel: 'OK_KEY',
     });
@@ -85,5 +85,5 @@ describe('ConfirmDialog (with real TranslateModule)', () => {
     okButton.nativeElement.click();
 
     expect(dialogRef.close).toHaveBeenCalledWith(true);
-  }));
+  });
 });

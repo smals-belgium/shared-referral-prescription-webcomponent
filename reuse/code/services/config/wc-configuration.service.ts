@@ -8,14 +8,20 @@ import { ReferralEnv } from '@reuse/code/interfaces/environment.interface';
   providedIn: 'root',
 })
 export class WcConfigurationService implements ConfigurationService {
+  private get envHost(): typeof globalThis & { referralPrescriptionEnv?: ReferralEnv } {
+    return globalThis as typeof globalThis & { referralPrescriptionEnv?: ReferralEnv };
+  }
+
   get referralPrescriptionEnvironment(): ReferralEnv {
-    return window.referralPrescriptionEnv || 'prodHcp';
+    return this.envHost.referralPrescriptionEnv || 'prodHcp';
   }
 
   private get configVariables() {
-    if (!window.referralPrescriptionEnv) return EMPTY_OBJECT;
+    const currentEnv = this.envHost.referralPrescriptionEnv;
 
-    return APP_CONFIG.variables[window.referralPrescriptionEnv] || EMPTY_OBJECT;
+    if (!currentEnv) return EMPTY_OBJECT;
+
+    return APP_CONFIG.variables[currentEnv] || EMPTY_OBJECT;
   }
 
   getEnvironment() {

@@ -4,27 +4,32 @@
  */
 
 import type { Config } from 'jest';
+import { resolve } from 'node:path';
 import { config as jestBaseConfig } from '../../../jest.base.config';
+
+const workspaceRoot = resolve(__dirname, '../../..').replace(/\\/g, '/');
 
 const config: Config = {
   ...jestBaseConfig,
 
   // The directory where Jest should output its coverage files
-  coverageDirectory: '<rootDir>/wrappers/components/mags-prescription-list/coverage',
+  coverageDirectory: `${workspaceRoot}/wrappers/components/mags-prescription-list/coverage`,
 
-  setupFilesAfterEnv: ['./setup-jest.ts'],
+  setupFilesAfterEnv: [`${workspaceRoot}/wrappers/components/mags-prescription-list/setup-jest.ts`],
 
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   moduleNameMapper: {
-    '@reuse/(.*)': '<rootDir>/reuse/$1',
+    '^@reuse/(.*)$': `${workspaceRoot}/reuse/$1`,
     '^jose': require.resolve('jose'),
   },
   collectCoverageFrom: ['wrappers/components/mags-prescription-list/src/app/components/mags/**/*.ts'],
   transform: {
-    '^.+\\.(ts|html)$': [
-      'ts-jest',
+    '^.+\\.(ts|js|mjs|html|svg)$': [
+      'jest-preset-angular',
       {
-        tsconfig: '<rootDir>/wrappers/components/mags-prescription-list/tsconfig.spec.json',
+        isolatedModules: false,
+        stringifyContentPathRegex: '\\.(html|svg)$',
+        tsconfig: `${workspaceRoot}/wrappers/components/mags-prescription-list/tsconfig.spec.json`,
       },
     ],
   },

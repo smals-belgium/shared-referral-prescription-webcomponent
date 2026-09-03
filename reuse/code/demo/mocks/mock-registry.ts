@@ -1,13 +1,3 @@
-import readTemplates from './read-templates.json';
-import accessMatrix from './access-matrix.json';
-import persons from './persons.json';
-import templateVersionsLatest from './templates-versions-latest.json';
-import commonTranslations from './common-translations.json';
-import cities from './cities.json';
-import prescriptions from './list-prescriptions.json';
-import proposals from './list-proposals.json';
-import professionals from './professionals.json';
-import healthCareProviderRequestResource from './HealthCareProviderRequestResource.json';
 import { HttpRequest } from '@angular/common/http';
 import {
   AssignCareGiverResource,
@@ -19,16 +9,28 @@ import {
   OrganizationTaskResource,
   PerformerTaskResource,
   ReadRequestResource,
+  RequestTaskResource,
 } from '@reuse/code/openapi';
-import { demoStorage } from '../helpers/demoStorage';
 import { of } from 'rxjs';
+import { demoStorage } from '../helpers/demoStorage';
+import accessMatrix from './access-matrix.json';
+import cities from './cities.json';
+import commonTranslations from './common-translations.json';
+import healthCareProviderRequestResource from './HealthCareProviderRequestResource.json';
+import prescriptions from './list-prescriptions.json';
+import proposals from './list-proposals.json';
+import persons from './persons.json';
+import professionals from './professionals.json';
+import readTemplates from './read-templates.json';
+import templateVersionsLatest from './templates-versions-latest.json';
 
-interface PerformerTaskResourceExtended extends PerformerTaskResource {
+interface PerformerTaskResourceExtended extends RequestTaskResource {
   careGiverIndex?: number;
+  organizationIndex?: number;
 }
 
 export interface ReadRequestResourceExtended extends ReadRequestResource {
-  performerTasks?: { [key: string]: Array<PerformerTaskResource> };
+  performerTasks?: { [key: string]: Array<RequestTaskResource> };
   requesterIndex?: number;
 }
 
@@ -145,10 +147,17 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
         if (newPrescription.performerTasks) {
           Object.values(newPrescription.performerTasks).forEach(performerTasks =>
             performerTasks.forEach((performerTask: PerformerTaskResourceExtended) => {
-              const index = performerTask.careGiverIndex as number;
-              if (index != null) {
-                const requester = professionals[index];
-                performerTask.careGiver = requester as unknown as HealthcareProResource;
+              const careIndex = performerTask.careGiverIndex as number;
+              const orgIndex = performerTask.organizationIndex as number;
+              if (careIndex != null) {
+                const requester = professionals[careIndex];
+                (performerTask as PerformerTaskResource).careGiver = requester as unknown as HealthcareProResource;
+              }
+
+              if (orgIndex != null) {
+                const requester = professionals[orgIndex];
+                (performerTask as OrganizationTaskResource).organization =
+                  requester as unknown as HealthcareOrganizationResource;
               }
             })
           );
@@ -188,10 +197,17 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
         if (newProposal.performerTasks) {
           Object.values(newProposal.performerTasks).forEach(performerTasks =>
             performerTasks.forEach((performerTask: PerformerTaskResourceExtended) => {
-              const index = performerTask.careGiverIndex as number;
-              if (index != null) {
-                const requester = professionals[index];
-                performerTask.careGiver = requester as unknown as HealthcareProResource;
+              const careIndex = performerTask.careGiverIndex as number;
+              const orgIndex = performerTask.organizationIndex as number;
+              if (careIndex != null) {
+                const requester = professionals[careIndex];
+                (performerTask as PerformerTaskResource).careGiver = requester as unknown as HealthcareProResource;
+              }
+
+              if (orgIndex != null) {
+                const requester = professionals[orgIndex];
+                (performerTask as OrganizationTaskResource).organization =
+                  requester as unknown as HealthcareOrganizationResource;
               }
             })
           );
@@ -233,10 +249,17 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
         if (newPrescription.performerTasks) {
           Object.values(newPrescription.performerTasks).forEach(performerTasks =>
             performerTasks.forEach((performerTask: PerformerTaskResourceExtended) => {
-              const index = performerTask.careGiverIndex as number;
-              if (index != null) {
-                const requester = professionals[index];
-                performerTask.careGiver = requester as unknown as HealthcareProResource;
+              const careIndex = performerTask.careGiverIndex as number;
+              const orgIndex = performerTask.organizationIndex as number;
+              if (careIndex != null) {
+                const requester = professionals[careIndex];
+                (performerTask as PerformerTaskResource).careGiver = requester as unknown as HealthcareProResource;
+              }
+
+              if (orgIndex != null) {
+                const requester = professionals[orgIndex];
+                (performerTask as OrganizationTaskResource).organization =
+                  requester as unknown as HealthcareOrganizationResource;
               }
             })
           );
@@ -295,14 +318,21 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
     handler: (req: HttpRequest<unknown>) => {
       const params = req.params;
 
-      const institutionType = params.get('institutionType');
+      const providerType = params.get('providerType');
       const discipline = params.get('discipline');
       const page = parseInt(params.get('page') || '1', 10);
       const pageSize = parseInt(params.get('pageSize') || '10', 10);
 
+      let pros: (HealthcareOrganizationResource | HealthcareProResource)[] = [];
+
       // Handle organization search
-      if (institutionType) {
-        let orgs = healthCareProviderRequestResource.healthcareOrganizations || [];
+      if (!Array.isArray(healthCareProviderRequestResource?.healthcarePro)) return { healthcarePro: [], total: 0 };
+
+      if (providerType !== 'PROFESSIONAL') {
+        let orgs: HealthcareOrganizationResource[] | [] =
+          (healthCareProviderRequestResource.healthcarePro as HealthcareOrganizationResource[]).filter(
+            value => value?.type === 'Organization'
+          ) || [];
 
         const query = params.get('query');
         if (query) {
@@ -310,37 +340,25 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
 
           orgs = orgs.filter(o => {
             return (
-              o.nihii8.includes(query) ||
-              o.nihii11.includes(query) ||
-              o.organizationName.nl.toLowerCase().includes(q) ||
-              o.organizationName.fr.toLowerCase().includes(q) ||
-              o.organizationName.de.toLowerCase().includes(q) ||
-              o.organizationName.en.toLowerCase().includes(q)
+              o?.nihii8?.includes(query) ||
+              o?.nihii11?.includes(query) ||
+              o?.organizationName?.nl.toLowerCase().includes(q) ||
+              o?.organizationName?.fr.toLowerCase().includes(q) ||
+              o?.organizationName?.de.toLowerCase().includes(q) ||
+              o?.organizationName?.en?.toLowerCase().includes(q)
             );
           });
         }
 
-        const zipCode = params.get('zipCode');
-        if (zipCode) {
-          const z = zipCode.toLowerCase();
-
-          orgs = orgs.filter(o => {
-            return o.address.zipCode.includes(z);
-          });
-        }
-
-        const start = (page - 1) * pageSize;
-
-        return {
-          healthcareOrganizations: orgs.slice(start, start + pageSize),
-          healthcareProfessionals: [],
-          total: orgs.length,
-        };
+        pros.push(...orgs);
       }
 
       // Handle professional search
-      if (discipline) {
-        let profs = healthCareProviderRequestResource.healthcareProfessionals || [];
+      if (providerType !== 'ORGANIZATION') {
+        let profs: HealthcareProResource[] | [] =
+          (healthCareProviderRequestResource.healthcarePro as HealthcareProResource[]).filter(
+            value => value?.type === 'Professional'
+          ) || [];
 
         if (discipline !== 'ALL') {
           profs = profs.filter(p => p.id?.profession === discipline);
@@ -353,33 +371,32 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
 
           profs = profs.filter(p => {
             const hp = p.healthcarePerson;
-            const fullName = `${hp.firstName} ${hp.lastName}`.toLowerCase();
+            const fullName = `${hp?.firstName} ${hp?.lastName}`.toLowerCase();
 
             return (
-              p.nihii8.includes(query) ||
-              p.nihii11.includes(query) ||
-              hp.firstName.toLowerCase().includes(q) ||
-              hp.lastName.toLowerCase().includes(q) ||
+              p?.nihii8?.includes(query) ||
+              p?.nihii11?.includes(query) ||
+              hp?.firstName?.toLowerCase().includes(q) ||
+              hp?.lastName?.toLowerCase().includes(q) ||
               fullName.includes(q)
             );
           });
         }
 
-        const zipCodes = params.getAll('zipCode');
-
-        if (zipCodes?.length) {
-          profs = profs.filter(p => zipCodes.some(z => z && p.address.zipCode.toLowerCase().includes(z.toLowerCase())));
-        }
-
-        const start = (page - 1) * pageSize;
-        return {
-          healthcareOrganizations: [],
-          healthcareProfessionals: profs.slice(start, start + pageSize),
-          total: profs.length,
-        };
+        pros.push(...profs);
       }
 
-      return healthCareProviderRequestResource;
+      const zipCodes = params.getAll('zipCode');
+
+      if (zipCodes?.length) {
+        pros = pros.filter(p => zipCodes.some(z => z && p?.address?.zipCode?.toLowerCase().includes(z.toLowerCase())));
+      }
+
+      const start = (page - 1) * pageSize;
+      return {
+        healthcarePro: pros.slice(start, start + pageSize),
+        total: pros.length,
+      };
     },
   },
   {
@@ -389,14 +406,15 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
       const body = req.body as AssignCareGiverResource;
       const professionalSsin = body.ssin;
 
-      const professional = healthCareProviderRequestResource.healthcareProfessionals.find(
-        e => e.healthcarePerson.ssin === professionalSsin
-      );
+      const professional = healthCareProviderRequestResource.healthcarePro
+        .filter(value => value.type === 'Professional')
+        .map(value => value as HealthcareProResource)
+        .find(e => e.healthcarePerson?.ssin === professionalSsin);
 
       if (professional) {
         const performerTaskResource: PerformerTaskResource = {
           careGiverSsin: professionalSsin,
-          careGiver: professional as unknown as HealthcareProResource,
+          careGiver: professional,
           status: FhirR4TaskStatus.Ready,
         };
 
@@ -429,14 +447,15 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
       const body = req.body as AssignCareGiverResource;
       const professionalSsin = body.ssin;
 
-      const professional = healthCareProviderRequestResource.healthcareProfessionals.find(
-        e => e.healthcarePerson.ssin === professionalSsin
-      );
+      const professional = healthCareProviderRequestResource.healthcarePro
+        .filter(value => value.type === 'Professional')
+        .map(value => value as HealthcareProResource)
+        .find(e => e.healthcarePerson?.ssin === professionalSsin);
 
       if (professional) {
         const performerTaskResource: PerformerTaskResource = {
           careGiverSsin: professionalSsin,
-          careGiver: professional as unknown as HealthcareProResource,
+          careGiver: professional,
           status: FhirR4TaskStatus.Ready,
         };
 
@@ -470,9 +489,9 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
       const nihii = body.nihii;
       const institutionTypeCode = body.institutionTypeCode;
 
-      const organization = healthCareProviderRequestResource.healthcareOrganizations.find(
+      const organization = healthCareProviderRequestResource.healthcarePro.find(
         e => (e.nihii8 + e.qualificationCode === nihii || e.nihii11 === nihii) && e.typeCode === institutionTypeCode
-      );
+      ) as HealthcareOrganizationResource;
 
       if (organization) {
         const organizationTaskResource: OrganizationTaskResource = {
@@ -512,7 +531,7 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
       const nihii = body.nihii;
       const institutionTypeCode = body.institutionTypeCode;
 
-      const organization = healthCareProviderRequestResource.healthcareOrganizations.find(
+      const organization = healthCareProviderRequestResource.healthcarePro.find(
         e => (e.nihii8 + e.qualificationCode === nihii || e.nihii11 === nihii) && e.typeCode === institutionTypeCode
       );
 

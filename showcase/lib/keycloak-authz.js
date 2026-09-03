@@ -11,7 +11,7 @@
   var commonjsGlobal =
     typeof globalThis !== 'undefined'
       ? globalThis
-      : typeof window !== 'undefined'
+      : typeof globalThis !== 'undefined'
         ? window
         : typeof global !== 'undefined'
           ? global

@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
-import { HealthcareProResource, HealthCareProviderRequestResource, ProviderType } from '@reuse/code/openapi';
-import { BehaviorSubject, catchError, map, mergeScan, Observable, of, scan, startWith, Subject, tap } from 'rxjs';
 import { SearchProfessionalCriteria } from '@reuse/code/interfaces';
+import { HealthCareProviderRequestResource, HealthCareProviderResource, ProviderType } from '@reuse/code/openapi';
 import { HealthcareProviderService } from '@reuse/code/services/api/healthcareProvider.service';
+import { BehaviorSubject, catchError, map, mergeScan, Observable, of, scan, startWith, Subject, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class RequestProfessionalDataService {
@@ -11,13 +11,13 @@ export class RequestProfessionalDataService {
   private static readonly PAGE_SIZE = 10;
 
   private readonly loadTrigger = new Subject<void>();
-  private readonly dataSubject = new BehaviorSubject<HealthcareProResource[]>([]);
+  private readonly dataSubject = new BehaviorSubject<HealthCareProviderResource[]>([]);
   private readonly loadingSubject = new BehaviorSubject<boolean>(false);
 
   readonly data$ = this.dataSubject.asObservable();
   readonly loading$ = this.loadingSubject.asObservable();
 
-  initializeDataStream(initialData: HealthcareProResource[], loadConfig: SearchProfessionalCriteria): void {
+  initializeDataStream(initialData: HealthCareProviderResource[], loadConfig: SearchProfessionalCriteria): void {
     this.dataSubject.next(initialData);
 
     const dataStream$ = this.createDataStream(loadConfig);
@@ -45,13 +45,13 @@ export class RequestProfessionalDataService {
     this.loadingSubject.next(false);
   }
 
-  private createDataStream(params: SearchProfessionalCriteria): Observable<HealthcareProResource[]> {
+  private createDataStream(params: SearchProfessionalCriteria): Observable<HealthCareProviderResource[]> {
     return this.loadTrigger.pipe(
       startWith(null),
       scan(this.calculateNextPage, -1),
       mergeScan(
         (accumulatedData, page) => this.loadDataForPage(accumulatedData, page, params),
-        [] as HealthcareProResource[]
+        [] as HealthCareProviderResource[]
       )
     );
   }
@@ -61,10 +61,10 @@ export class RequestProfessionalDataService {
   };
 
   private loadDataForPage(
-    accumulatedData: HealthcareProResource[],
+    accumulatedData: HealthCareProviderResource[],
     page: number,
     params: SearchProfessionalCriteria
-  ): Observable<HealthcareProResource[]> {
+  ): Observable<HealthCareProviderResource[]> {
     this.setLoadingState(true);
 
     const dataObservable$ =
@@ -84,19 +84,19 @@ export class RequestProfessionalDataService {
   private fetchData(
     page: number,
     params: SearchProfessionalCriteria,
-    accumulatedData: HealthcareProResource[]
-  ): Observable<HealthcareProResource[]> {
+    accumulatedData: HealthCareProviderResource[]
+  ): Observable<HealthCareProviderResource[]> {
     const serviceCall$ = this.fetchDataDirectly(params, page);
 
     return serviceCall$.pipe(
       map(response => {
-        let newItems: HealthcareProResource[] = [];
-        if (response && 'healthcareProfessionals' in response) {
-          newItems = [...(response.healthcareProfessionals ?? [])];
+        let newItems: HealthCareProviderResource[] = [];
+        if (response && 'healthcarePro' in response) {
+          newItems = response.healthcarePro ?? [];
         }
 
-        if (!newItems) return accumulatedData;
-        return newItems.length > 0 ? [...accumulatedData, ...newItems] : accumulatedData;
+        if (!newItems || newItems.length === 0) return accumulatedData;
+        return [...accumulatedData, ...newItems];
       })
     );
   }
@@ -120,6 +120,7 @@ export class RequestProfessionalDataService {
       ProviderType.Professional,
       criteria.prescriptionId,
       criteria.intent,
+      criteria.language,
       page + 1,
       RequestProfessionalDataService.PAGE_SIZE
     );

@@ -11,22 +11,27 @@ import {
 import { By } from '@angular/platform-browser';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { FhirR4TaskStatus, Role } from '@reuse/code/openapi';
+import { FhirR4TaskStatus, ReadRequestResource, Role } from '@reuse/code/openapi';
 import { TaskButtonGroupComponent } from './task-button-group.component';
 import { ALERT_TARGET, ERROR_PRESCRIPTION_DETAILS } from '@reuse/code/constants/error';
 
 describe('PrescriptionButtonGroupComponent', () => {
   let component: TaskButtonGroupComponent;
   let fixture: ComponentFixture<TaskButtonGroupComponent>;
-  let mockAccessMatrixState: jest.Mocked<AccessMatrixState>;
+
+  const withTaskAllowedActions = (
+    prescription: ReadRequestResource,
+    allowedActions: NonNullable<ReadRequestResource['currentTask']>['allowedActions']
+  ): ReadRequestResource => ({
+    ...prescription,
+    currentTask: {
+      ...prescription.currentTask,
+      allowedActions,
+    },
+  });
 
   beforeEach(async () => {
-    mockAccessMatrixState = {
-      hasAtLeastOnePermission: jest.fn().mockReturnValue(true),
-    } as unknown as jest.Mocked<AccessMatrixState>;
-
     await TestBed.configureTestingModule({
       imports: [
         TaskButtonGroupComponent,
@@ -38,7 +43,6 @@ describe('PrescriptionButtonGroupComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: PrescriptionDetailsSecondaryService, useValue: prescriptionDetailsSecondaryMockService },
-        { provide: AccessMatrixState, useValue: mockAccessMatrixState },
         { provide: ALERT_TARGET, useValue: ERROR_PRESCRIPTION_DETAILS },
       ],
     }).compileComponents();
@@ -64,12 +68,16 @@ describe('PrescriptionButtonGroupComponent', () => {
     expect(buttons.length).toBe(0);
   });
 
-  it('should display the start excecution button when there is a current user, prescription data and the performertask is ready', () => {
-    prescriptionDetailsSecondaryMockService.getCurrentUser.mockReturnValue({ data: mockPro });
+  it('should display the start execution button when current task allows start treatment', () => {
     prescriptionDetailsSecondaryMockService.getPatient.mockReturnValue({ data: mockPro });
 
-    prescriptionDetailsSecondaryMockService.getPrescription.mockReturnValue({ data: prescriptionResponse() });
+    prescriptionDetailsSecondaryMockService.getPrescription.mockReturnValue({
+      data: withTaskAllowedActions(prescriptionResponse(), { canStartTreatment: true }),
+    });
     prescriptionDetailsSecondaryMockService.getRequestTask.mockReturnValue({ data: mockPerformerTask });
+    prescriptionDetailsSecondaryMockService.getAllConnectedUserPerformerTasks.mockReturnValue({
+      data: [mockPerformerTask],
+    });
 
     const fixture = TestBed.createComponent(TaskButtonGroupComponent);
     fixture.detectChanges();
@@ -80,14 +88,13 @@ describe('PrescriptionButtonGroupComponent', () => {
     expect(buttons[0].nativeElement.textContent).toContain('prescription.startExecution.action');
   });
 
-  it('should display the finish excecution button when there is a current user, prescription data and the performertask is in progress, but current user ssin is NOT the same as task caregiver ssin', () => {
-    prescriptionDetailsSecondaryMockService.getCurrentUser.mockReturnValue({ data: mockPro });
+  it('should display the finish execution button when current task allows finish treatment', () => {
     prescriptionDetailsSecondaryMockService.getPatient.mockReturnValue({ data: mockPro });
 
     mockPerformerTask.status = FhirR4TaskStatus.Inprogress;
 
     prescriptionDetailsSecondaryMockService.getPrescription.mockReturnValue({
-      data: prescriptionResponse(null, [mockPerformerTask]),
+      data: withTaskAllowedActions(prescriptionResponse(null, [mockPerformerTask]), { canFinishTreatment: true }),
     });
     prescriptionDetailsSecondaryMockService.getRequestTask.mockReturnValue({ data: mockPerformerTask });
 
@@ -100,15 +107,19 @@ describe('PrescriptionButtonGroupComponent', () => {
     expect(buttons[0].nativeElement.textContent).toContain('prescription.finishExecution.action');
   });
 
-  it('should display the finish execution, cancel execution, transfer button and interrupt button when the current user is a professional and current user ssin is the same as task caregiver ssin and the performertask is in progress', () => {
-    prescriptionDetailsSecondaryMockService.getCurrentUser.mockReturnValue({ data: mockPro });
+  it('should display task action buttons based on current task allowedActions', () => {
     prescriptionDetailsSecondaryMockService.getPatient.mockReturnValue({ data: mockPro });
 
     mockPerformerTask.status = FhirR4TaskStatus.Inprogress;
     mockPerformerTask.careGiverSsin = mockPro.ssin;
 
     prescriptionDetailsSecondaryMockService.getPrescription.mockReturnValue({
-      data: prescriptionResponse(null, [mockPerformerTask]),
+      data: withTaskAllowedActions(prescriptionResponse(null, [mockPerformerTask]), {
+        canFinishTreatment: true,
+        canCancelTreatment: true,
+        canTransferAssignation: true,
+        canInterruptTreatment: true,
+      }),
     });
     prescriptionDetailsSecondaryMockService.getRequestTask.mockReturnValue({ data: mockPerformerTask });
 
@@ -125,17 +136,18 @@ describe('PrescriptionButtonGroupComponent', () => {
   });
 
   describe('canRejectAssignation', () => {
-    it('should display reject assignation button when user is an organization with own task', () => {
+    it('should display reject assignation button when current task allows rejecting assignation', () => {
       const userOrg = {
         role: Role.Organization,
         ssin: '10022500123',
         organizations: [{ otdpharmacy: { nihii: '10000000009' } }],
       };
-      prescriptionDetailsSecondaryMockService.getCurrentUser.mockReturnValue({ data: userOrg });
       prescriptionDetailsSecondaryMockService.getPatient.mockReturnValue({ data: userOrg });
 
       prescriptionDetailsSecondaryMockService.getPrescription.mockReturnValue({
-        data: prescriptionResponse(null, [mockOrganisationTask]),
+        data: withTaskAllowedActions(prescriptionResponse(null, [mockOrganisationTask]), {
+          canRejectAssignation: true,
+        }),
       });
 
       prescriptionDetailsSecondaryMockService.getRequestTask.mockReturnValue({ data: mockOrganisationTask });

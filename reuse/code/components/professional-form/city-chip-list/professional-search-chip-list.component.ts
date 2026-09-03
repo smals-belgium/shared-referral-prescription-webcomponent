@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, effect, input, output, signal } from '@angular/core';
 import { MatChipsModule } from '@angular/material/chips';
 import { TranslationPipe } from '@reuse/code/pipes/translation.pipe';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -20,18 +20,38 @@ export class ProfessionalSearchChipListComponent {
       cities: FormControl<CityResource[]>;
     }>
   >();
+
   readonly hideUpdateSearchButton = input<boolean>(true);
   readonly searchCriteriaRemoval = output<void>();
   readonly goBackToSearch = output<void>();
 
+  protected readonly cities = signal<CityResource[]>([]);
+  protected readonly query = signal<string>('');
+
+  constructor() {
+    effect(onCleanup => {
+      const { cities: citiesControl, query: queryControl } = this.formGroup().controls;
+
+      this.cities.set(citiesControl.value ?? []);
+      this.query.set(queryControl.value ?? '');
+
+      const citySubscription = citiesControl.valueChanges.subscribe(v => this.cities.set(v ?? []));
+      const querySubscription = queryControl.valueChanges.subscribe(v => this.query.set(v ?? ''));
+
+      onCleanup(() => {
+        citySubscription.unsubscribe();
+        querySubscription.unsubscribe();
+      });
+    });
+  }
+
   removeCity(city: CityResource) {
     const citiesControl = this.formGroup().controls.cities;
-    const currentCities = citiesControl.value || [];
+    const currentCities = citiesControl.value ?? [];
     const updatedCities = currentCities.filter(c => c.zipCode !== city.zipCode);
 
     if (updatedCities.length !== currentCities.length) {
       citiesControl.setValue(updatedCities);
-
       this.formGroup().controls.query.updateValueAndValidity();
       this.searchCriteriaRemoval.emit();
     }

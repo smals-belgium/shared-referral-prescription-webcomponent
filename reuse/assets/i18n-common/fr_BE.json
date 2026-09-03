@@ -124,7 +124,6 @@
           "required": "Indications sont obligatoire."
         },
         "table": {
-          "title": "Résultat PSS",
           "select": "Sélectionner la ligne {row}",
           "relevance": "Pertinence",
           "typesOfImagery": "Types d'imagerie",
@@ -133,6 +132,12 @@
           "radiationLevel": "Taux de radiation {level}/5",
           "deselectRow": "Désélectionner la ligne {row}",
           "selectRow": "Sélectionner la ligne {row}"
+        },
+        "alert": {
+          "relevantInfo": "Elément non pris en compte par PSS",
+          "chosenExam": "L'examen prescrit ne suit pas les recommandations en vigueur",
+          "chosenExamScore": "n'obtient qu'un score de {score}/9",
+          "noDefaultExam": "Aucun examen prescrit correspond aux recommandations de PSS"
         }
       },
       "deletePrescription": {
@@ -146,7 +151,15 @@
       },
       "cancelCreation": "Êtes-vous sûr(e) de vouloir annuler la création de cette prescription ?",
       "prescription": "Créer prescription",
-      "requiredFields": "Champs obligatoires"
+      "requiredFields": "Champs obligatoires",
+      "indication": {
+        "selected": "Sélectionné(s):",
+        "name": "Nom",
+        "criteria": "Criteria"
+      },
+      "infoSummary": {
+        "description": "Informations de base"
+      }
     },
     "allPrescriptionsFetched": "Toutes les prescriptions récupérées",
     "model": {
@@ -237,7 +250,7 @@
       "success": "{firstName} {lastName} a été assigné comme prestataire.",
       "successOrganization": "{name} a été assigné comme organisation.",
       "meSuccess": "Vous avez été assigné comme prestataire.",
-      "performer": "Prestataire",
+      "performer": "Prestataire / organisation",
       "searchPerformerPlaceHolder": "N° INAMI, nom",
       "select": "Sélectionner",
       "locations": "Localisation(s)",
@@ -245,8 +258,11 @@
       "noResults": "Aucune commune trouvée",
       "organization": "Organisation",
       "dialog": {
-        "title": "Assigner une prescription à un prestataire ou une organisation de soins",
-        "description": "Si vous ajoutez un prestataire de soins à cette prescription, celui-ci pourra consulter les informations contenues dans cette prescription."
+        "title": "Assigner un prestataire ou une organisation : quels impacts ?",
+        "description": {
+          "other": "Une fois votre recherche effectuée, vous pourrez <b>assigner</b> la personne ou l’organisation de votre choix.",
+          "patient": "Une fois votre recherche effectuée, vous pourrez <b>assigner</b> la personne ou l’organisation de votre choix.\nProchaines étapes:\n<ul>\n<li>Contactez le prestataire ou l'organisation pour fixer un rendez-vous.</li>\n<li>L’assignation donne accès à la prescription pour évaluer vos besoins.</li>\n<li>Vous avez opté pour une organisation ? elle désignera le ou les prestataires qui vous prendront en charge — leurs noms seront ajoutés à la prescription.</li>\n</ul>"
+        }
       },
       "locationsHint": "Chercher via le code postal ou le nom de la commune",
       "performerHint": "Chercher via nom ou identifiant"
@@ -304,12 +320,6 @@
       "title": "Reprendre l'exécution",
       "message": "Êtes-vous sûr de vouloir reprendre l'exécution de la prescription \"{templateName}\" de {firstName} {lastName} ?",
       "success": "L'exécution a repris."
-    },
-    "finishExecution": {
-      "action": "Clôturer",
-      "title": "Clôturer la prescription",
-      "endDate": "Date de fin",
-      "success": "Prescription clôturée avec succès."
     },
     "frequencyTypes": {
       "iterative": "Itérative",
@@ -396,21 +406,44 @@
     },
     "transferPerformer": {
       "dialog": {
-        "description": "Si vous transférez cette prescription à un autre prestataire de soins, celui-ci pourra consulter les informations contenues dans cette prescription.",
-        "title": "Transférer une prescription à un autre prestataire de soins"
+        "description": "Après le transfert, le nouveau prestataire de soins aura accès à la prescription et pourra en assurer le suivi.",
+        "title": "Accès du nouveau prestataire à la prescription"
       },
       "locations": "Localisation(s)",
       "noResults": "Aucune commune trouvée",
       "performer": "Prestataire de soins",
       "searchPerformerPlaceHolder": "Numéro INAMI, nom",
       "success": "{firstName} {lastName} a été assigné comme prestataire de soins.",
-      "title": "Transférer l'assignation",
+      "title": "Transférer la prescription",
       "zipCodeOrCityName": "Code postal ou commune",
       "updateCriteria": "Modifier les critères"
     },
     "validityStartDate": "Date de début de validité",
     "autoAssign": {
       "success": "Les prestataires de soins ont été ajoutés avec succès."
+    },
+    "finishExecution": {
+      "dialog": {
+        "title": {
+          "close": "Clôturer {templateName}",
+          "finishTasks": "Clôturer mes prestations de {templateName}",
+          "closePrescription": "Clôturer la prescription de {templateName}"
+        },
+        "patient": "Patient",
+        "radioGroup": {
+          "label": "Type de clôture",
+          "finishTasks": "Clôturer mes prestations",
+          "closePrescription": "Clôturer la prescription"
+        },
+        "datepicker": {
+          "label": "Date de clôture"
+        },
+        "success": {
+          "closePrescription": "Prescription clôturée avec succès.",
+          "finishTasks": "Prestations clôturées avec succès."
+        }
+      },
+      "action": "Clôturer"
     }
   },
   "proposal": {
@@ -626,7 +659,8 @@
     "unavailable": {
       "title": "Service temporairement indisponible",
       "message": "Le service PSS (Prescription Search Support) est momentanément indisponible.\nVous ne pouvez plus consulter les recommandations d'examens en imagerie médicale pour l'instant.\nMerci de réessayer dans quelques minutes."
-    }
+    },
+    "link": "Read literacy"
   },
   "professional": {
     "table": {
@@ -638,7 +672,13 @@
       "actions": "Actions",
       "tableHasRecords": "{total}  résultats trouvé",
       "noRecords": "Aucun professionnel correspondant à cette recherche n'a été trouvé.",
-      "select": "Choisir"
+      "select": "Choisir",
+      "type": {
+        "professional": "Individu",
+        "organization": "Organisation",
+        "label": "Type",
+        "all": "Tout"
+      }
     },
     "noProfessionals": "Aucun professionnel correspondant à cette recherche n'a été trouvé.",
     "allProfessionalsFetched": "Tous les prestataires de soins ont été récupérés."
@@ -786,7 +826,10 @@
       "USER_SUSPENDED_ON_DATE_PROVIDED": {
         "default": "Cette action n'est pas possible."
       },
-      "unknown": "Une erreur s'est produite. Merci de réessayer dans quelques instants."
+      "unknown": "Une erreur s'est produite. Merci de réessayer dans quelques instants.",
+      "PRESCRIPTION_NOT_COMPLETED": {
+        "default": "La prescription ne peut pas être complétée"
+      }
     }
   },
   "datepicker": {
