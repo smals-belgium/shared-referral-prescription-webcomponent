@@ -44,12 +44,11 @@ those changes. ⚠️
 
 ## ✅ Prerequisite
 
-Before you start using the Web Components, you must first complete the onboarding process with eHealth https://www.ehealth.fgov.be/ehealthplatform/fr/service-ereferral. The Web
+Before you start using the Web Components, you must first complete the onboarding process with eHealth. The Web
 Components require a valid access token issued specifically for your personal **public Client ID**.
 
-In addition, if you want to be authenticated as an individual healthcare provider using IAM Healthcare realm client, the components rely on token exchange operations to function properly. As such, this part of the onboarding process is mandatory and **must** also be completed.
-
-The token exchange service used in the individual Healthcare client flow DOES NOT exist in the M2M procedure
+In addition, the components rely on token exchange operations to function properly. As such, this part of the onboarding
+process is mandatory and **must** also be completed.
 
 ## 🧩 Available Web Component
 
@@ -62,13 +61,25 @@ Three Web Components are available :
 3. **List of prescriptions** : this Web Component is presenting the available prescriptions for a specific patient in a
    paginated list.
 
-The webcomponents are available through npm install and an example can be viewed on our acceptance url.
+The webcomponents are available through npm install. The acceptance URLs below are only provided to
+view a running example and must not be used to load the components in your application (see the
+deprecation notice below the table).
 
 |      Component       | Component name                      | npm package                                                                    |                                                                 Acceptance URL                                                                 |
 | :------------------: | ----------------------------------- | ------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------: |
 | Create prescription  | nihdi-referral-prescription-create  | https://www.npmjs.com/package/@smals-belgium-shared/uhmep-prescription-create  |  [wc-create-prescription](https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/prescription-create/wc-prescription-create.js)   |
 | Prescription details | nihdi-referral-prescription-details | https://www.npmjs.com/package/@smals-belgium-shared/uhmep-prescription-details | [wc-prescription-details](https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/prescription-details/wc-prescription-details.js) |
 |  List prescriptions  | nihdi-referral-prescription-list    | https://www.npmjs.com/package/@smals-belgium-shared/uhmep-prescription-list    |     [wc-list-prescriptions](https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/prescription-list/wc-prescription-list.js)     |
+
+> ⚠️ **Deprecation notice — direct loading from the acceptance URL**
+>
+> Referencing the Web Components directly from the acceptance URL
+> (`https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/...`) is **deprecated**.
+> This way of consuming the Web Components will be **decommissioned as from version 3.0.0**.
+>
+> As from that version, the only supported integration is the **npm package**: install the package,
+> bundle it with your application and serve the resulting files from your own infrastructure. Please
+> plan this migration before upgrading to version 3.0.0.
 
 ### 🔌 Wrapper Integration
 
@@ -85,27 +96,30 @@ Here are the detailed input data structures expected by the Web Components :
 
 | Create prescription                                | Allowed values                                   | Mandatory | Default | Description                                                                                        |
 | -------------------------------------------------- | ------------------------------------------------ | :-------: | ------- | -------------------------------------------------------------------------------------------------- |
-| **lang**: string                                   | 'fr-BE' / 'nl-BE'                                |    ❎     | 'fr-BE' | The lang parameter can be used to control the rendering language of the component.                 |
+| **lang**: string                                   | 'fr-BE' / 'nl-BE' / 'de-BE' / 'en-GB'            |    ❎     | 'fr-BE' | The lang parameter can be used to control the rendering language of the component.                 |
 | **patientSsin**: string                            | Any valid SSIN                                   |    ❎     | N/A     | The SSIN of the patient for which the prescription should be created.                              |
 | **initialValues**: CreatePrescriptionInitialValues | See the [data structure table](#data-structures) |    ❎     | N/A     | Give the initial context to the component. More details are given below the related data structure |
-| **services**: ComponentServices                    | See the [data structure table](#data-structures) |    ✅     | N/A     | Provide methods to retrieve the access or id tokens.                                               |
+| **services**: ComponentServices                    | See the [data structure table](#data-structures) |    ✅     | N/A     | Provide the methods to retrieve the access and id tokens. `getIdToken` is required.                |
 
 | List prescriptions              | Allowed values                                   | Mandatory | Default | Description                                                                        |
 | ------------------------------- | ------------------------------------------------ | :-------: | ------- | ---------------------------------------------------------------------------------- |
-| **lang**: string                | 'fr-BE' / 'nl-BE'                                |    ❎     | 'fr-BE' | The lang parameter can be used to control the rendering language of the component. |
+| **lang**: string                | 'fr-BE' / 'nl-BE' / 'de-BE' / 'en-GB'            |    ❎     | 'fr-BE' | The lang parameter can be used to control the rendering language of the component. |
 | **patientSsin**: string         | Any valid SSIN                                   |    ❎     | N/A     | The SSIN of the patient for which the prescription should be listed.               |
 | **requesterSsin**: string       | Any valid SSIN                                   |    ❎     | N/A     | The requestor SSIN for which the prescriptions/proposals should be loaded.         |
 | **performerSsin**: string       | Any valid SSIN                                   |    ❎     | N/A     | The performer SSIN for which the prescriptions/proposals should be loaded.         |
-| **services**: ComponentServices | See the [data structure table](#data-structures) |    ✅     | N/A     | Provide methods to retrieve the access or id tokens.                               |
+| **services**: ComponentServices | See the [data structure table](#data-structures) |    ✅     | N/A     | Provide the method to retrieve the access token.                                   |
 | **intent**: string              | order / proposal                                 |    ✅     | N/A     | Indicates if the list should display the proposals or the prescriptions.           |
 
 | Prescription details            | Allowed values                                   | Mandatory | Default | Description                                                                         |
 | ------------------------------- | ------------------------------------------------ | :-------: | ------- | ----------------------------------------------------------------------------------- |
-| **lang**: string                | 'fr-BE' / 'nl-BE'                                |    ❎     | 'fr-BE' | The lang parameter can be used to control the rendering language of the component.  |
+| **lang**: string                | 'fr-BE' / 'nl-BE' / 'de-BE' / 'en-GB'            |    ❎     | 'fr-BE' | The lang parameter can be used to control the rendering language of the component.  |
 | **patientSsin**: string         | Any valid SSIN                                   |    ❎     | N/A     | The SSIN of the patient for which the prescription should be listed.                |
 | **prescriptionId**: string      | Any valid prescription/proposal identifier       |    ✅     | N/A     | The prescription/proposal identifier for which the details should be displayed.     |
-| **services**: ComponentServices | See the [data structure table](#data-structures) |    ✅     | N/A     | Provide methods to retrieve the access or id tokens.                                |
+| **services**: ComponentServices | See the [data structure table](#data-structures) |    ✅     | N/A     | Provide the methods to retrieve the access and id tokens. `getIdToken` is required. |
 | **intent**: string              | order / proposal                                 |    ✅     | N/A     | Indicates the nature of the loaded resource, either a proposals or a prescriptions. |
+
+ℹ️ When a translation file is not available for the requested `lang`, the component displays an informative
+message and keeps the content available in the other languages.
 
 #### Data structures
 
@@ -123,8 +137,8 @@ Here are the detailed input data structures expected by the Web Components :
 interface CreatePrescriptionInitialValues {
   intent: string;
   initialPrescriptionType?: string;
-  initialPrescription?: ReadPrescription;
-  initialModelId?: string;
+  initialPrescription?: ReadRequestResource;
+  initialModelId?: number;
   extend?: boolean;
 }
 
@@ -136,7 +150,7 @@ interface CreatePrescriptionInitialValues {
  *                         ⚠️ See "Organization-specific requirements" below for stricter rules.
  */
 interface ComponentServices {
-  getAccessToken: (audience: string) => Promise<string | null>;
+  getAccessToken: (audience?: string) => Promise<string | null>;
   getIdToken?: () => IdToken;
 }
 
@@ -241,23 +255,27 @@ interface IdToken {
 > **Note:** Omitting `getIdToken` for organizations, or returning a
 > token that doesn't match this shape, will cause the component to fail.
 
+> **Note:** Since version 2.1.0, the `userProfile` may contain **both** an `organizations` entry and a
+> professional discipline key. In that case the components act **on behalf of that professional within
+> the connected organization** (see [M2M integration](#m2m-machine-to-machine-integration)).
+
 ### M2M (Machine-to-Machine) integration
 
-The Web Components can be integrated in a Machine-to-Machine (M2M) context, where an
-organization (e.g. a hospital) drives the flow through a system account rather than an
+The Web Components can be integrated in a **Machine-to-Machine (M2M)** context, where an
+**organization** (e.g. a hospital) drives the flow through a system account rather than an
 individual healthcare professional. In this mode the components act
 **on behalf of the connected organization**, identified by its NIHDI/NIHII number.
 
 M2M is not a separate build or a dedicated input flag: the components automatically switch to the
 **organization** behaviour based on the token you provide. The determining factor is that the
-`userProfile` returned by `getIdToken` contains an `organizations` array (and **no** professional
-discipline key).
+`userProfile` returned by `getIdToken` contains an `organizations` array.
 
 #### Prerequisites
 
-- Complete the eHealth onboarding for your organization (see https://www.ehealth.fgov.be/ehealthplatform/fr/service-ereferral).
-- The token exchange service used in the individual Healthcare client flow DOES NOT exist in the M2M procedure
-- therefore, integrator must explicitly select the appropriate scopes and audience when requesting a token to call pseudonymization service or the one requested by the components (via the `getAccessToken(audience)` callback).
+- Complete the eHealth onboarding for your organization, including the **token exchange**
+  configuration (see [Prerequisite](#-prerequisite)).
+- Obtain a valid access token for your organization's system account and be able to exchange it for
+  the audiences requested by the components (via the `getAccessToken(audience)` callback).
 
 #### Providing the organization identity
 
@@ -268,8 +286,8 @@ organization entry is supported.
 
 ```typescript
 interface ComponentServices {
-  // Returns the access token for the requested audience.
-  getAccessToken: (audience: string) => Promise<string | null>;
+  // Returns the (exchanged) access token for the requested audience.
+  getAccessToken: (audience?: string) => Promise<string | null>;
   // In M2M mode, MUST return the organization identity (NIHII-11).
   getIdToken?: () => IdToken;
 }
@@ -296,9 +314,53 @@ Example of an organization `IdToken` suitable for M2M:
 }
 ```
 
-> ⚠️ Because the presence of a professional discipline key (e.g. `physician`, `nurse`, …) makes the
-> component behave as an individual professional, an M2M/organization token **must not** include a
-> professional discipline key alongside `organizations`.
+> ℹ️ Since version 2.1.0, two organization modes are supported, both detected from the ID token:
+>
+> - **Organization only** (`organizations`, no professional discipline key): the components act as the
+>   organization itself. The organization NIHII-11 is used as requester / assignee.
+> - **Organization acting for a professional** (`organizations` **and** a professional discipline key such
+>   as `physician` or `nurse`): the components act on behalf of that professional **within** the connected
+>   organization. The professional SSIN is used to resolve the tasks of that professional, while the
+>   organization NIHII-11 is used to qualify the assignments as internal (see below).
+
+Example of an `IdToken` for an organization acting on behalf of one of its professionals:
+
+```json
+{
+  "userProfile": {
+    "ssin": "00000000097",
+    "firstName": "John",
+    "lastName": "Doe",
+    "gender": "M",
+    "nurse": {
+      "recognised": true,
+      "nihii11": "00000080001"
+    },
+    "organizations": [
+      {
+        "hospital": {
+          "nihii": "12345678901",
+          "name": "Hospital Name"
+        }
+      }
+    ]
+  }
+}
+```
+
+#### Internal and external assignments
+
+Assignments performed while an organization is connected are qualified automatically:
+
+- **Internal**: the caregiver belongs to the connected organization. This is the case for the
+  auto-assignment flow, for the self-assignment of a professional acting within its organization and
+  for the start of an execution period in that context. The organization NIHII-11 taken from the ID
+  token is transmitted along with the request.
+- **External**: any other assignment, typically the assignment or transfer to a caregiver searched
+  outside of the organization.
+
+No additional input or output is required from the host application: the qualification is entirely
+derived from the ID token described above.
 
 #### Component behaviour in M2M
 
@@ -317,14 +379,14 @@ payload with the list of caregivers to assign (`AssignCareGiverResource[]`), or 
 data cannot be provided. See [The `wcDetailsEvent` output](#the-wcdetailsevent-output) for the full
 data structures and an example.
 
-#### Outputs
+### Outputs
 
 Here are the output data structures emitted by the Web Components :
 
 | Create prescription                | List prescriptions                                          | Prescription details                           |
 | ---------------------------------- | ----------------------------------------------------------- | ---------------------------------------------- |
-| **prescriptionsCreated**: string[] | **clickOpenDetail** : ReadRequestResource OR ModelEntityDto | **clickDuplicate**: ReadPrescription           |
-| **clickCancel**: void              | **clickCreateDetail** : SelectedTemplate                    | **clickExtend**: ReadPrescription              |
+| **prescriptionsCreated**: string[] | **clickOpenDetail** : ReadRequestResource OR ModelEntityDto | **clickDuplicate**: ReadRequestResource        |
+| **clickCancel**: void              | **clickCreateDetail** : SelectedTemplate                    | **clickExtend**: ReadRequestResource           |
 | **modelCreated**: void             |                                                             | **clickPrint**: Blob                           |
 |                                    |                                                             | **clickDownload**: Blob                        |
 |                                    |                                                             | **clickOpenExtendedDetail**: string            |
@@ -335,7 +397,7 @@ Here are the output data structures emitted by the Web Components :
 ℹ️ Upon successful prescription creation, the Web Component triggers the prescriptionsCreated event and provides the list of identifiers for the prescriptions that were just created.
 A list of one element will be returned in case of a single prescription creation.
 
-##### The `wcDetailsEvent` output
+#### The `wcDetailsEvent` output
 
 The **Prescription details** Web Component emits a `wcDetailsEvent` custom event whenever it needs the
 host application to provide data that only the host can supply. This is a **request/response** event: the
@@ -353,7 +415,7 @@ Currently a single event type is emitted:
   selection UI and then `resolve` the payload with the selected caregivers, or `reject` it if the user
   cancels or the data cannot be retrieved. This event type is only valid in the context of **M2M**
 
-###### Data structures
+##### Data structures
 
 ```typescript
 /**
@@ -393,7 +455,7 @@ interface AssignCareGiverResource {
 }
 ```
 
-###### Example
+##### Example
 
 ```html
 <html>
@@ -463,27 +525,6 @@ interface ModelEntityDto {
   templateVersionId?: number;
   templateId?: number;
   templateCode?: string;
-}
-
-interface ReadRequestResource {
-  id?: string;
-  shortCode?: string;
-  patientIdentifier?: string;
-  referralTask?: ReferralTaskResource;
-  performerTasks?: Array<PerformerTaskResource>;
-  organizationTasks?: Array<OrganizationTaskResource>;
-  templateCode?: string;
-  authoredOn?: string;
-  requester?: HealthcareProResource;
-  status?: RequestStatus;
-  category?: string;
-  period?: PeriodResource;
-  responses?: { [key: string]: any };
-  intent?: string;
-  pseudonymizedKey?: string;
-  kid?: string;
-  note?: string;
-  extendedShortId?: string;
 }
 ```
 
@@ -571,6 +612,10 @@ are shown in the following sample code) :
 </html>
 ```
 
+ℹ️ The script **must** be served by your own application, from the bundle installed through the npm
+package. Pointing the `src` attribute to the acceptance URL is deprecated and will no longer be
+possible as from version 3.0.0 (see the [deprecation notice](#-available-web-component)).
+
 ### Web Component creation
 
 ```html
@@ -623,7 +668,9 @@ are shown in the following sample code) :
               } else {
                 return Promise.resolve(keycloak.token);
               }
-            }
+            },
+            // Required: the id token describing the connected user (professional and/or organization)
+            'getIdToken': () => keycloak.idTokenParsed
           };
           // Listener function to get feedback from the Web Component after the prescription has been successfully created
           create.addEventListener('prescriptionsCreated', () => {
@@ -638,7 +685,7 @@ are shown in the following sample code) :
 
 ## Compatibility
 
-The Web Components are built Angular, so their browser compatibility follows the [Angular's official support](https://angular.dev/reference/versions#browser-support), which is the two most recent browser versions. The Web components currently use **Angular 20**.
+The Web Components are built Angular, so their browser compatibility follows the [Angular's official support](https://angular.dev/reference/versions#browser-support), which is the two most recent browser versions. The Web components currently use **Angular 22**.
 
 ## Styles and override
 
@@ -1101,12 +1148,11 @@ Below is a complete list of the variables that can be overridden:
 
 ## 🚀 Getting started
 
-```
-cd existing_repo
-git remote add origin https://github.com/smals-belgium/shared-referral-prescription-webcomponent.git
-git branch -M master
-git push -uf origin master
-```
+1. Install the Web Component you need from npm (see the [table above](#-available-web-component)), or
+   reference the bundle directly from the acceptance URL.
+2. Complete the eHealth onboarding, including the token exchange (see [Prerequisite](#-prerequisite)).
+3. Provide the required inputs, in particular the `services` object returning the access and id tokens.
+4. Start from the [showcase examples](#showcase) and adapt them to your own stack.
 
 ## Visuals
 

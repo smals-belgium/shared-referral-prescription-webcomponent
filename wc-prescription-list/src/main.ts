@@ -18,6 +18,7 @@ import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
 import { provideShadowDom } from '@reuse/code/shadow-dom/shadow-dom.provider';
 import { CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_LIST } from '@reuse/code/constants/common.constants';
 import { globalErrorInterceptor } from '@reuse/code/interceptors/global-error.interceptor';
+import { impersonationHeaderInterceptor } from '@reuse/code/interceptors/impersonation-header.interceptor';
 
 void (async () => {
   const app = createApplication({
@@ -25,7 +26,14 @@ void (async () => {
       provideZonelessChangeDetection(),
       provideBrowserGlobalErrorListeners(),
       provideCore(),
-      provideHttpClient(withInterceptors([demoHttpInterceptor, globalErrorInterceptor, apiUrlInterceptor])),
+      provideHttpClient(
+        withInterceptors([
+          demoHttpInterceptor,
+          globalErrorInterceptor,
+          apiUrlInterceptor,
+          impersonationHeaderInterceptor,
+        ])
+      ),
       providePseudonymisation(),
       {
         provide: ConfigurationService,

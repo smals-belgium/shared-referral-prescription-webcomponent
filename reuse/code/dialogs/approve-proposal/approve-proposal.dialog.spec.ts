@@ -57,10 +57,14 @@ const mockAuthService = {
   getClaims: jest.fn(() => of(activeClaimsPayload)),
   isProfessional: jest.fn(() => of(false)),
   isOrganization: jest.fn(() => of(false)),
+  isOrganizationAndNotActingForProfessional: jest.fn(() => of(false)),
+  isPatient: jest.fn(() => of(false)),
   discipline: jest.fn(() => of(Discipline.Physician)),
   getAccessToken: jest.fn(() => of('')),
   role: jest.fn(() => of(Role.Prescriber)),
   oidc: jest.fn(() => of(OIDC.Hospital)),
+  getConnectedOrganizationNihii: jest.fn(() => of(undefined)),
+  isOrganizationAndActingForProfessional: jest.fn(() => of(false)),
 } as jest.Mocked<AuthService>;
 
 describe('ApproveProposalDialog', () => {

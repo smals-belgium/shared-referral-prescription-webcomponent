@@ -20,7 +20,7 @@ import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-comp
 import { CUSTOM_ELEMENT_NAME_UHMEP_PRESCRIPTION_LIST } from '@reuse/code/constants/common.constants';
 
 export const manifest: MyHealthModuleManifest = {
-  specVersion: { major: 4, minor: 0, patch: 1 },
+  specVersion: { major: 5, minor: 0, patch: 7 },
   family: family('uhmep-prescription'),
   components: [
     {

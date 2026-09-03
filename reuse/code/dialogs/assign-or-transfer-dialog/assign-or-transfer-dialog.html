@@ -26,7 +26,10 @@
         <app-alert
           [severity]="AlertType.Info"
           [title]="translationKeyPrefixIntent + '.' + modeKey + '.dialog.title'"
-          [message]="translationKeyPrefixIntent + '.' + modeKey + '.dialog.description'"
+          [message]="infoAlertDescription()"
+          [dismissible]="false"
+          [expandable]="true"
+          [startExpanded]="true"
           [retry]="false"></app-alert>
         <professional-search-form
           (searchCriteria)="onSearch($event)"
@@ -51,6 +54,8 @@
           [pageSize]="pageable().pageSize"
           [loading]="isLoading()"
           [currentLang]="currentLang"
+          [providerTypeOptions]="providerTypeOptions"
+          [(selectedType)]="providerType"
           (selectProfessional)="executeAction($event)"
           (changePage)="loadData($event)"></professional-table>
       </section>
@@ -62,15 +67,28 @@
         <app-alert
           [severity]="AlertType.Info"
           [title]="translationKeyPrefixIntent + '.' + modeKey + '.dialog.title'"
-          [message]="translationKeyPrefixIntent + '.' + modeKey + '.dialog.description'"
+          [message]="infoAlertDescription()"
+          [dismissible]="false"
+          [expandable]="true"
+          [startExpanded]="true"
           [retry]="false"></app-alert>
-
         <professional-search-form (searchCriteria)="onSearch($event)" [formGroup]="formGroup">
         </professional-search-form>
       </section>
 
       <section class="search-results">
         <h2>{{ 'professional.table.results' | translate:{ results: healthcareProviderState.data?.total ?? 0 } }}</h2>
+
+        <mat-form-field appearance="outline">
+          <mat-select [(value)]="providerType">
+            @for (provider of providerTypeOptions; track provider) {
+            <mat-option [value]="provider"
+              >{{ ('professional.table.type.'+provider.toLocaleLowerCase()) | translate }}</mat-option
+            >
+            }
+          </mat-select>
+        </mat-form-field>
+
         <professional-cards
           [professionals]="isLoading() ? [] : healthcareProvidersState$()?.data?.items ?? []"
           [total]="healthcareProvidersState$()?.data?.total || null"

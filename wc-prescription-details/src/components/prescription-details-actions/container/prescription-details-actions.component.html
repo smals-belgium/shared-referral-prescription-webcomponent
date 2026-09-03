@@ -30,18 +30,21 @@
 
     <mat-menu #prescriptionMenu="matMenu" class="mh-action-menu" xPosition="before">
       @let task = checkAndConvertToPerformerTask(requestTaskServiceData);
-      @if (!task?.careGiverSsin) {
-        @if (prescription | canSelfAssign: currentUser) {
-          <button
-            (click)="onSelfAssign(prescription, currentUser)"
-            mat-menu-item
-            type="button"
-            data-cy="prescription-self-assign-button">
-            {{ 'prescription.actions.assignMe' | translate }}
-          </button>
-        }
+      @let allowedActions = prescription.allowedActions;
+      @let currentTaskAllowedActions = prescription.currentTask?.allowedActions;
 
-        @if (prescription | canStartTreatment: undefined : currentUser) {
+      @if (allowedActions?.canSelfAssign) {
+        <button
+          (click)="onSelfAssign(prescription, currentUser)"
+          mat-menu-item
+          type="button"
+          data-cy="prescription-self-assign-button">
+          {{ 'prescription.actions.assignMe' | translate }}
+        </button>
+      }
+
+      @if (!task?.careGiverSsin) {
+        @if (currentTaskAllowedActions?.canStartTreatment) {
           <button
             (click)="prescriptionSecondaryService.openStartExecutionDialog(alertTarget, prescription)"
             mat-menu-item
@@ -52,11 +55,11 @@
         }
       }
 
-      @if (!!requestTaskServiceData) {
+      @if (currentUser?.role !== Role.Patient && !!requestTaskServiceData) {
         <app-task-button-group> </app-task-button-group>
       }
 
-      @if (prescription | canAssignCaregiver) {
+      @if (allowedActions?.canAssignCaregiver) {
         <button
           mat-menu-item
           type="button"
@@ -71,7 +74,7 @@
         </button>
       }
 
-      @if (prescription | canAutoAssignCaregivers: currentUser) {
+      @if (allowedActions?.canAutoAssignCaregivers) {
         <button
           mat-menu-item
           type="button"
@@ -82,19 +85,19 @@
         </button>
       }
 
-      @if (prescription | canDuplicatePrescription: currentUser) {
+      @if (allowedActions?.canDuplicatePrescription) {
         <button mat-menu-item type="button" (click)="handleDuplicateClick()" data-cy="prescription-duplicate-button">
           {{ 'prescription.actions.copy' | translate }}
         </button>
       }
 
-      @if (prescription | canExtendPrescription: currentUser) {
+      @if (allowedActions?.canExtendPrescription) {
         <button mat-menu-item type="button" (click)="handleExtendClick()" data-cy="prescription-extend-button">
           {{ 'prescription.actions.extend' | translate }}
         </button>
       }
 
-      @if (currentUser | canPrintPrescription) {
+      @if (allowedActions?.canPrintPrescriptionOrProposal) {
         <button
           mat-menu-item
           data-cy="prescription-print-button"
@@ -105,7 +108,7 @@
         </button>
       }
 
-      @if (prescription | canCancelPrescriptionOrProposal: patient?.ssin : currentUser) {
+      @if (allowedActions?.canCancelPrescriptionOrProposal) {
         <mat-divider></mat-divider>
         <button
           mat-menu-item

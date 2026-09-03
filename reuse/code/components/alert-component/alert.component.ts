@@ -27,6 +27,8 @@ export class AlertComponent {
   subTitle = input<string | undefined>('');
   errorId = input<string | undefined>();
   dismissible = input<boolean>(true);
+  expandable = input<boolean>(false);
+  startExpanded = input<boolean>(false);
   retry = input<boolean>(true);
 
   message = input<MessageInput | undefined>();
@@ -37,7 +39,15 @@ export class AlertComponent {
     return typeof messageInput === 'string' ? { value: messageInput, isTranslated: false } : messageInput;
   });
 
-  protected readonly dismissMode = computed(() => (this.dismissible() ? 'closable' : 'pinned'));
+  protected readonly dismissMode = computed(() => {
+    if (this.dismissible()) {
+      return 'closable';
+    } else if (this.expandable()) {
+      return 'expandable';
+    } else {
+      return 'pinned';
+    }
+  });
   readonly contentRef = contentChild('content');
   readonly hasContent = computed(() => !!this.contentRef());
 

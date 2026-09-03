@@ -1,7 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { HealthcareProviderService } from './healthcareProvider.service';
-import { HealthCareProviderService as ApiHealthCareProviderService, ProviderType } from '@reuse/code/openapi';
+import {
+  HealthCareProviderService as ApiHealthCareProviderService,
+  LanguageCode,
+  ProviderType,
+} from '@reuse/code/openapi';
+import { Intent } from '@reuse/code/interfaces';
 
 describe('HealthcareProviderService', () => {
   let service: HealthcareProviderService;
@@ -33,6 +38,8 @@ describe('HealthcareProviderService', () => {
       undefined,
       undefined,
       undefined,
+      ['name'],
+      undefined,
       undefined,
       undefined
     );
@@ -48,7 +55,8 @@ describe('HealthcareProviderService', () => {
       ['HOSPITAL'],
       ProviderType.Professional,
       'presc-1',
-      'search',
+      Intent.ORDER,
+      LanguageCode.Nl,
       1,
       20
     );
@@ -61,7 +69,9 @@ describe('HealthcareProviderService', () => {
       ['CARDIO'],
       ['HOSPITAL'],
       'presc-1',
-      'search',
+      Intent.ORDER,
+      ['name'],
+      LanguageCode.Nl,
       1,
       20
     );
@@ -80,6 +90,8 @@ describe('HealthcareProviderService', () => {
       undefined,
       undefined,
       undefined,
+      undefined,
+      ['name'],
       undefined,
       undefined,
       undefined

@@ -3,23 +3,12 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "../../out-tsc/spec",
-    "types": [
-      "jest",
-      "node"
-    ],
-    "emitDecoratorMetadata": true,
-    "typeRoots": [
-      "../node_modules/@types",
-      "../node_modules/@types/node"
-    ],
+    "isolatedModules": true,
+    "types": ["jest", "node"],
+    "typeRoots": ["../node_modules/@types", "../node_modules/@types/node"],
     "paths": {
-      "@reuse/*": [
-        "reuse/*"
-      ]
+      "@reuse/*": ["reuse/*"]
     }
   },
-  "include": [
-    "**/*.spec.ts",
-    "**/*.d.ts"
-  ]
+  "include": ["**/*.spec.ts", "**/*.d.ts"]
 }

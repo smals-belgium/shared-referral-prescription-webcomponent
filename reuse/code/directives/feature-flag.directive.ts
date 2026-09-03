@@ -1,26 +1,27 @@
-import { Directive, inject, Input, TemplateRef, ViewContainerRef } from '@angular/core';
-import { FeatureFlagKeys } from '@reuse/app.config';
+import { computed, Directive, effect, inject, input, TemplateRef, ViewContainerRef } from '@angular/core';
+import { FeatureFlag } from '@reuse/app.config';
 import { FeatureFlagService } from '../services/helpers/feature-flag.service';
 
 @Directive({ selector: '[featureFlag]', standalone: true })
 export class FeatureFlagDirective {
-  templateRef = inject(TemplateRef);
-  viewContainer = inject(ViewContainerRef);
-  featureFlagService = inject(FeatureFlagService);
+  featureFlag = input.required<FeatureFlag>();
+  featureFlagElse = input<TemplateRef<unknown> | null>(null);
 
-  private elseTemplateRef: TemplateRef<unknown> | null = null;
+  private readonly featureFlagService = inject(FeatureFlagService);
+  private readonly templateRef = inject(TemplateRef<unknown>);
+  private readonly viewContainer = inject(ViewContainerRef);
 
-  @Input() set featureFlag(feature: FeatureFlagKeys) {
+  private readonly featureFlagValue = computed(() => this.featureFlagService.getFeature(this.featureFlag())());
+
+  private readonly syncViewWithFeatureFlagEffect = effect(() => {
+    const elseTemplate = this.featureFlagElse();
+
     this.viewContainer.clear();
 
-    if (this.featureFlagService.getFeature(feature)) {
+    if (this.featureFlagValue()) {
       this.viewContainer.createEmbeddedView(this.templateRef);
-    } else if (this.elseTemplateRef) {
-      this.viewContainer.createEmbeddedView(this.elseTemplateRef);
+    } else if (elseTemplate) {
+      this.viewContainer.createEmbeddedView(elseTemplate);
     }
-  }
-
-  @Input() set featureFlagElse(elseTemplateRef: TemplateRef<unknown>) {
-    this.elseTemplateRef = elseTemplateRef;
-  }
+  });
 }

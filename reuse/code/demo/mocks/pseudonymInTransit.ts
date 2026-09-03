@@ -4,10 +4,7 @@ export const pseudonymInTransitMock = {
   identify() {
     return {
       asBytes() {
-        return new Uint8Array([
-          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-          31, 32,
-        ]);
+        return Uint8ArrayMock;
       },
     };
   },
@@ -15,3 +12,7 @@ export const pseudonymInTransitMock = {
     return 'pseudo-by-demo';
   },
 } as unknown as PseudonymInTransit;
+
+export const Uint8ArrayMock = new Uint8Array([
+  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+]);

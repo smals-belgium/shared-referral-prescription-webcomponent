@@ -8,7 +8,8 @@
               proposal: 'proposal.cancel.title',
             }
     "
-    [requiredSubTitle]="true">
+    [requiredSubTitle]="true"
+    (confirm)="cancelPrescription()">
     <div dialog-content class="dialog-layout-content">
       @if (error(); as resolvedError) {
         <app-alert
@@ -67,20 +68,11 @@
           </mat-form-field>
         </div>
       </form>
+      @if (loading) {
+        <app-overlay-spinner mode="dialog"></app-overlay-spinner>
+      }
     </div>
-
-    <ng-container dialog-actions>
-      <button type="submit" data-cy="dialog-confirm-button" mat-flat-button form="cancelPrescriptionForm">
-        {{ 'common.confirm' | translate }}
-      </button>
-      <button type="button" data-cy="dialog-cancel-button" matButton="outlined" [mat-dialog-close]="undefined">
-        {{ 'common.cancel' | translate }}
-      </button>
-    </ng-container>
   </app-dialog-layout>
-  @if (loading) {
-    <app-overlay-spinner mode="dialog"></app-overlay-spinner>
-  }
 } @else {
   <app-alert
     [severity]="AlertType.Error"

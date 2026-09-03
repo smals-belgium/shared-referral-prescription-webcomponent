@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { ConfigurationService } from '../services/config/configuration.service';
-import { map, retry, take } from 'rxjs/operators';
+import { retry, take } from 'rxjs/operators';
 import { lastValueFrom } from 'rxjs';
 import { PseudonymisationClient } from '@smals-belgium-shared/pseudo-helper';
 import { Injectable } from '@angular/core';
@@ -15,56 +15,39 @@ export class PseudoClient implements PseudonymisationClient {
   ) {}
 
   getDomain(domainKey: string): Promise<string> {
-    const request$ = this.http.get<string>(this.pseudoApiUrl + '/domains/' + domainKey).pipe(
-      take(1),
-      map(response => JSON.stringify(response))
-    );
+    const request$ = this.http.get(this.pseudoApiUrl + '/domains/' + domainKey, { responseType: 'text' }).pipe(take(1));
 
     return lastValueFrom(request$);
   }
 
   identify(domainKey: string, payload: string): Promise<string> {
     const request$ = this.http
-      .post<{ data: any }>(this.pseudoApiUrl + '/domains/' + domainKey + '/identify', payload)
-      .pipe(
-        take(1),
-        retry(1),
-        map(response => JSON.stringify(response))
-      );
+      .post(this.pseudoApiUrl + '/domains/' + domainKey + '/identify', payload, { responseType: 'text' })
+      .pipe(take(1), retry(1));
 
     return lastValueFrom(request$);
   }
 
   identifyMultiple(domainKey: string, payload: string): Promise<string> {
     const request$ = this.http
-      .post<{ data: any }>(this.pseudoApiUrl + '/domains/' + domainKey + '/identifyMultiple', payload)
-      .pipe(
-        take(1),
-        retry(1),
-        map(response => JSON.stringify(response.data))
-      );
+      .post(this.pseudoApiUrl + '/domains/' + domainKey + '/identifyMultiple', payload, { responseType: 'text' })
+      .pipe(take(1), retry(1));
 
     return lastValueFrom(request$);
   }
 
   pseudonymize(domainKey: string, payload: string): Promise<string> {
     const request$ = this.http
-      .post<{ data: any }>(this.pseudoApiUrl + '/domains/' + domainKey + '/pseudonymize', payload)
-      .pipe(
-        take(1),
-        map(response => JSON.stringify(response))
-      );
+      .post(this.pseudoApiUrl + '/domains/' + domainKey + '/pseudonymize', payload, { responseType: 'text' })
+      .pipe(take(1));
 
     return lastValueFrom(request$);
   }
 
   pseudonymizeMultiple(domainKey: string, payload: string): Promise<string> {
     const request$ = this.http
-      .post<{ data: any }>(this.pseudoApiUrl + '/domains/' + domainKey + '/pseudonymizeMultiple', payload)
-      .pipe(
-        take(1),
-        map(response => JSON.stringify(response.data))
-      );
+      .post(this.pseudoApiUrl + '/domains/' + domainKey + '/pseudonymizeMultiple', payload, { responseType: 'text' })
+      .pipe(take(1));
 
     return lastValueFrom(request$);
   }

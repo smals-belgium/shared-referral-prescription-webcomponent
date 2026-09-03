@@ -20,8 +20,8 @@
     "professions": {
       "NURSE": "Nurse",
       "PHYSICIAN": "Physician",
-      "PHYSIOTHERAPIST": "",
-      "DENTIST": ""
+      "PHYSIOTHERAPIST": "Physiotherapist",
+      "DENTIST": "Dentist"
     },
     "professional": {
       "notFound": "Not found",
@@ -118,21 +118,26 @@
       "addPrescription": "Additional referral",
       "publish": "Publish",
       "control": {
-        "title": "",
-        "warning": "",
+        "title": "Check",
+        "warning": "The relevant information below is not taken into account in these results:",
         "error": {
-          "required": ""
+          "required": "Indications are mandatory."
         },
         "table": {
-          "title": "",
-          "select": "",
-          "relevance": "",
-          "typesOfImagery": "",
-          "cost": "",
-          "radiationRate": "",
+          "select": "Select row {row}",
+          "relevance": "Relevance",
+          "typesOfImagery": "Imaging types",
+          "cost": "Cost",
+          "radiationRate": "Radiation level",
           "radiationLevel": "Radiation level {level}/5",
           "deselectRow": "Deselect row {row}",
           "selectRow": "Select row {row}"
+        },
+        "alert": {
+          "relevantInfo": "Element not taken into account by PSS",
+          "chosenExam": "The prescribed examination does not follow the current recommendations",
+          "chosenExamScore": "only achieves a score of {score}/9",
+          "noDefaultExam": "No prescribed examination complies with the PSS recommendations."
         }
       },
       "deletePrescription": {
@@ -146,7 +151,15 @@
       },
       "cancelCreation": "Are you sure you want to cancel the creation of this referral?",
       "prescription": "Create referral",
-      "requiredFields": "mandatory fields"
+      "requiredFields": "mandatory fields",
+      "indication": {
+        "selected": "Selected:",
+        "name": "Name",
+        "criteria": "Criteria"
+      },
+      "infoSummary": {
+        "description": "Basic information"
+      }
     },
     "allPrescriptionsFetched": "All prescriptions retrieved",
     "model": {
@@ -245,8 +258,11 @@
       "noResults": "No city found",
       "organization": "Organisation",
       "dialog": {
-        "title": "Assign a prescription to a healthcare provider or care organization",
-        "description": "If you add a healthcare provider to this prescription, they will be able to access the information contained in this prescription."
+        "title": "Assigning a healthcare provider or an organization: what are the impacts?",
+        "description": {
+          "other": "Once you have completed your search, you can <b>assign</b> the person or organization of your choice.",
+          "patient": "Once you have completed your search, you can <b>assign</b> the person or organization of your choice.\n\nNext steps:\n<ul>\n<li>Contact the healthcare provider or organization to schedule an appointment.</li>\n<li>The assignment gives the healthcare provider or organization access to the prescription so that they can assess your needs.</li>\n<li>Have you chosen an organization? It will appoint the healthcare provider or providers who will take care of you. Their names will be added to the prescription.</li>\n</ul>"
+        }
       },
       "locationsHint": "Search by postal code or city name",
       "performerHint": "Search by name or ID"
@@ -304,12 +320,6 @@
       "title": "Restart the execution",
       "message": "Are you sure you want to resume the execution of the ‘{templateName}’ prescription for {firstName} {lastName}?",
       "success": "The execution has resumed."
-    },
-    "finishExecution": {
-      "action": "Close",
-      "title": "Close prescription",
-      "endDate": "End date",
-      "success": "The prescription has been closed."
     },
     "frequencyTypes": {
       "iterative": "Iterative",
@@ -411,6 +421,29 @@
     "validityStartDate": "Validity start date",
     "autoAssign": {
       "success": "The healthcare providers have been successfully added."
+    },
+    "finishExecution": {
+      "dialog": {
+        "title": {
+          "close": "Close {templateName}",
+          "finishTasks": "Close my {templateName} sessions",
+          "closePrescription": "Close the {templateName} prescription"
+        },
+        "patient": "Patient",
+        "radioGroup": {
+          "label": "Closure type",
+          "finishTasks": "Close my sessions",
+          "closePrescription": "Close the prescription"
+        },
+        "datepicker": {
+          "label": "Closure date"
+        },
+        "success": {
+          "closePrescription": "Prescription successfully closed.",
+          "finishTasks": "Sessions successfully closed."
+        }
+      },
+      "action": "Close"
     }
   },
   "proposal": {
@@ -626,7 +659,8 @@
     "unavailable": {
       "title": "Service temporarily unavailable",
       "message": "The PSS (Prescription Search Support) service is currently unavailable.\nYou are currently unable to view the medical imaging recommendations.\nPlease try again later."
-    }
+    },
+    "link": "Read additional information"
   },
   "professional": {
     "table": {
@@ -638,7 +672,13 @@
       "actions": "Actions",
       "tableHasRecords": "{total} results found",
       "noRecords": "No healthcare provider matching your search was found.",
-      "select": "Choose"
+      "select": "Choose",
+      "type": {
+        "professional": "Individual",
+        "organization": "Organization",
+        "label": "Type",
+        "all": "All"
+      }
     },
     "noProfessionals": "No healthcare provider matching your search was found.",
     "allProfessionalsFetched": "All healthcare providers have been retrieved."
@@ -655,138 +695,141 @@
         "default": "The execution must be in progress before it can be cancelled."
       },
       "CANCELLATION_INVALID_STATUS": {
-        "default": "",
-        "in-progress": "",
-        "completed": ""
+        "default": "It is not possible to cancel the prescription.",
+        "in-progress": "It is not possible to cancel the prescription because the care is in progress.",
+        "completed": "It is not possible to cancel the prescription because it has been completed."
       },
       "CAREGIVER_NOT_FOUND": {
-        "default": ""
+        "default": "Healthcare provider not recognised."
       },
       "CAREGIVER_NOT_UNASSIGNABLE": {
-        "default": ""
+        "default": "The healthcare provider cannot be removed because they have already started the care."
       },
       "CONSULTRN_NOT_AVAILABLE": {
-        "default": ""
+        "default": "This service is not available."
       },
       "CREATION_DATE_FUTURE": {
-        "default": ""
+        "default": "The creation date cannot be in the future."
       },
       "DATE_PROVIDED_AFTER_PRESCRIPTION_END_DATE": {
-        "default": ""
+        "default": "The care can no longer be provided because the prescription has expired."
       },
       "DECISION_ALREADY_TAKEN": {
-        "default": ""
+        "default": "This proposal has already been processed."
       },
       "END_VALIDITY_DATE_PAST": {
-        "default": ""
+        "default": "The validity end date cannot be in the past."
       },
       "EXCLUSION_EXISTS": {
-        "default": ""
+        "default": "You are not authorised to access this prescription."
       },
       "EXCLUSION_EXISTS_CAREGIVER_TO_ASSIGN": {
-        "default": "",
-        "healthcare-provider": "",
-        "patient": ""
+        "default": "This action is not possible.",
+        "healthcare-provider": "This action is not possible.",
+        "patient": "This action is not possible because the healthcare provider is excluded."
       },
       "EXECUTION_DATE_FUTURE": {
-        "default": ""
+        "default": "The end date cannot be in the future."
       },
       "EXECUTION_NOT_USABLE": {
-        "default": ""
+        "default": "This action is not possible."
       },
       "FINISH_EXECUTION_NOT_IN_PROGRESS": {
-        "default": ""
+        "default": "The care must be in progress before it can be completed."
       },
       "HEALTHCARE_PROFESSIONAL_ALREADY_ASSIGNED": {
-        "default": "",
-        "caregiver": "",
-        "prescriber": ""
+        "default": "This person is already assigned.",
+        "caregiver": "This healthcare provider is already assigned.",
+        "prescriber": "This prescriber is already assigned."
       },
       "HEALTHCARE_PROFESSIONAL_NOT_OWNER": {
-        "default": ""
+        "default": "You cannot make this change."
       },
       "HEALTHCARE_PROFESSIONAL_NOT_OWNER_EXECUTION": {
-        "default": ""
+        "default": "This action is not possible."
       },
       "HEALTHCARE_PROFESSIONAL_TO_BE_ASSIGNED_MISSING_RIGHT": {
-        "default": ""
+        "default": "The healthcare provider is not authorised to access the prescription."
       },
       "INCORRECT_VALIDITY_DATE": {
-        "default": ""
+        "default": "The validity date of the prescription cannot be later than the treatment end date."
       },
       "INVALID_PATIENT_REPLACEMENT": {
-        "default": ""
+        "default": "The patient must be the same."
       },
       "INVALID_PRESCRIPTION_STATUS": {
-        "default": ""
+        "default": "This action is not possible."
       },
       "INVALID_TOKEN": {
-        "default": ""
+        "default": "There is a problem with the identification."
       },
       "NO_MANDATE_FOR_PATIENT": {
-        "default": ""
+        "default": "This action is not possible."
       },
       "ORGANIZATION_ALREADY_ASSIGNED": {
-        "default": ""
+        "default": "The organisation is already assigned to the prescription."
       },
       "ORGANIZATION_NOT_ASSIGNABLE": {
-        "default": ""
+        "default": "No results"
       },
       "ORGANIZATION_NOT_UNASSIGNABLE": {
-        "default": ""
+        "default": "The care has already started."
       },
       "ORGANIZATION_TASK_NOT_FOUND": {
-        "default": ""
+        "default": "This action is not possible."
       },
       "PATCH_NOT_APPLIED": {
-        "default": ""
+        "default": "This action is not possible."
       },
       "PRESCRIPTION_NOT_ASSIGNABLE": {
-        "default": ""
+        "default": "This action is not possible."
       },
       "PRESCRIPTION_NOT_READABLE": {
-        "default": ""
+        "default": "This action is not possible."
       },
       "REJECTION_NOT_POSSIBLE": {
-        "default": ""
+        "default": "This action is not possible."
       },
       "REQUEST_PARAMETER_NOT_MATCHING_TOKEN": {
-        "default": ""
+        "default": "This action is not possible."
       },
       "RESOURCE_NOT_FOUND": {
-        "default": ""
+        "default": "Not found."
       },
       "SERVICE_REQUEST_NOT_FOUND": {
-        "default": ""
+        "default": "Prescription not found."
       },
       "SERVICE_REQUEST_NOT_OWNED": {
-        "default": ""
+        "default": "This action is not possible."
       },
       "SERVICE_REQUEST_NOT_UNASSIGNABLE": {
-        "default": ""
+        "default": "This action is not possible."
       },
       "SERVICE_UNAVAILABLE_AA": {
-        "default": ""
+        "default": "This service is not available."
       },
       "SSIN_NOT_FOUND": {
-        "default": ""
+        "default": "Patient does not exist."
       },
       "START_EXECUTION_DATE_AFTER_END_EXECUTION_DATE": {
-        "default": ""
+        "default": "The care can no longer be provided."
       },
       "START_VALIDITY_DATE_AFTER_END_VALIDITY_DATE": {
-        "default": ""
+        "default": "The prescription is no longer valid."
       },
       "START_VALIDITY_DATE_PAST": {
-        "default": ""
+        "default": "The validity start date cannot be more than 5 days in the past."
       },
       "USER_SUSPENDED": {
-        "default": ""
+        "default": "This action is not possible."
       },
       "USER_SUSPENDED_ON_DATE_PROVIDED": {
-        "default": ""
+        "default": "This action is not possible."
       },
-      "unknown": "An error occurred. Please try again in a few moments."
+      "unknown": "An error occurred. Please try again in a few moments.",
+      "PRESCRIPTION_NOT_COMPLETED": {
+        "default": "Prescription cannot be closed"
+      }
     }
   },
   "datepicker": {

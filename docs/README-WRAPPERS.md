@@ -12,17 +12,20 @@ Web Components are designed to take input values and provide output events as fe
 
 | List prescriptions              | Allowed values                                   | Mandatory | Default | Description                                                                        |
 | ------------------------------- | ------------------------------------------------ | :-------: | ------- | ---------------------------------------------------------------------------------- |
-| **userLanguage**: string        | 'fr' / 'nl'                                      |    ❎     | 'nl'    | The lang parameter can be used to control the rendering language of the component. |
+| **userLanguage**: string        | 'fr' / 'nl' / 'de' / 'en'                        |    ❎     | 'nl'    | The lang parameter can be used to control the rendering language of the component. |
 | **configName**: string          | Any valid ConfigName                             |    ❎     | N/A     | The configName is used to set the profile for the target environment.              |
 | **services**: ComponentServices | See the [data structure table](#data-structures) |    ✅     | N/A     | Provide methods to retrieve the access or id tokens.                               |
 
 | Prescription details            | Allowed values                                   | Mandatory | Default | Description                                                                         |
 | ------------------------------- | ------------------------------------------------ | :-------: | ------- | ----------------------------------------------------------------------------------- |
-| **userLanguage**: string        | 'fr' / 'nl'                                      |    ❎     | 'nl'    | The lang parameter can be used to control the rendering language of the component.  |
+| **userLanguage**: string        | 'fr' / 'nl' / 'de' / 'en'                        |    ❎     | 'nl'    | The lang parameter can be used to control the rendering language of the component.  |
 | **configName**: string          | Any valid ConfigName                             |    ❎     | N/A     | The configName is used to set the profile for the target environment.               |
 | **services**: ComponentServices | See the [data structure table](#data-structures) |    ✅     | N/A     | Provide methods to retrieve the access or id tokens.                                |
 | **prescriptionId**: string      | Any valid prescription/proposal identifier       |    ✅     | N/A     | The prescription/proposal identifier for which the details should be displayed.     |
 | **intent**: string              | order / proposal                                 |    ✅     | 'order' | Indicates the nature of the loaded resource, either a proposals or a prescriptions. |
+
+ℹ️ The `userLanguage` values are mapped to the languages of the underlying Web Components
+(`nl` → `nl-BE`, `fr` → `fr-BE`, `de` → `de-BE`, `en` → `en-GB`). Any other value falls back to `nl-BE`.
 
 ```typescript
 /** The possible configuration values are:
@@ -43,11 +46,11 @@ declare const ConfigName: {
 
 /**
  * The services allowing the retrieval of the access and id tokens.
- * getAccessToken (required) : the method expects to retrieve the access token related to specified audience.
+ * getAccessToken (required) : the method expects to retrieve the access token related to the specified audience.
  * getIdToken (required) : the method expects to retrieve the id token related to the current user.
  */
 interface ComponentServices {
-  getAccessToken: (audience: string) => Promise<string | null>;
+  getAccessToken: (audience?: string) => Promise<string | null>;
   getIdToken: () => IdToken;
 }
 ```

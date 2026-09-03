@@ -23,6 +23,7 @@ import { provideShadowDom } from '@reuse/code/shadow-dom/shadow-dom.provider';
 import { globalErrorInterceptor } from '@reuse/code/interceptors/global-error.interceptor';
 import { MatDatepickerIntl } from '@angular/material/datepicker';
 import { CustomMatDatePickerIntlService } from '@reuse/code/components/date-picker/custom-mat-date-picker-intl.service';
+import { impersonationHeaderInterceptor } from '@reuse/code/interceptors/impersonation-header.interceptor';
 
 try {
   await bootstrapApplication(AppPrescriptionDetails, {
@@ -30,7 +31,14 @@ try {
       provideZonelessChangeDetection(),
       provideBrowserGlobalErrorListeners(),
       provideCore(),
-      provideHttpClient(withInterceptors([demoHttpInterceptor, globalErrorInterceptor, apiUrlInterceptor])),
+      provideHttpClient(
+        withInterceptors([
+          demoHttpInterceptor,
+          globalErrorInterceptor,
+          apiUrlInterceptor,
+          impersonationHeaderInterceptor,
+        ])
+      ),
       providePseudonymisation(),
       provideEvfForm(),
       provideEvfFormDetails(),

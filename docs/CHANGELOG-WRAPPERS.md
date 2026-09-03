@@ -2,6 +2,15 @@
 
 All notable changes to the wrapper components in this project will be documented in this file.
 
+## [2.1.0] - 03/Sep/26
+
+### Improvements
+
+- Language mapping - `userLanguage` now maps `de` and `en` to the German (`de-BE`) and English (`en-GB`) translations of the underlying Web Components, instead of falling back to Dutch. Unknown values still fall back to `nl-BE`.
+- Version alignment - The wrapper packages follow the versioning of the Web Components they embed.
+
+---
+
 ## [1.2.0] - 10/Jun/26
 
 ### Bugfixes

@@ -11,7 +11,7 @@
   var commonjsGlobal =
     typeof globalThis !== 'undefined'
       ? globalThis
-      : typeof window !== 'undefined'
+      : typeof globalThis !== 'undefined'
         ? window
         : typeof global !== 'undefined'
           ? global
@@ -1128,7 +1128,7 @@
     );
   }
   function base64UrlDecode(str) {
-    let output = str.replace(/-/g, '+').replace(/_/g, '/');
+    let output = str.replaceAll(/-/g, '+').replace(/_/g, '/');
     switch (output.length % 4) {
       case 0:
         break;

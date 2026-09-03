@@ -1,6 +1,7 @@
-import { ProviderType } from '@reuse/code/openapi';
+import { LanguageCode, ProviderType } from '@reuse/code/openapi';
 
 export interface SearchProfessionalCriteria {
+  language?: LanguageCode;
   query: string;
   zipCodes: number[];
   disciplines: string[];

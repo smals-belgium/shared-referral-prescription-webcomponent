@@ -30,7 +30,7 @@ npm run build:wc:mags-list
 
 ## Serve
 
-Run `ng serve:wc:mags-details` or `ng serve:wc:mags-list` to serve the wc prescription component. It builds and serves your application, rebuilding on file changes.
+Run `npm run serve:wc:mags-details` or `npm run serve:wc:mags-list` to serve the wc prescription component. It builds and serves your application, rebuilding on file changes.
 
 ## Running unit tests
 

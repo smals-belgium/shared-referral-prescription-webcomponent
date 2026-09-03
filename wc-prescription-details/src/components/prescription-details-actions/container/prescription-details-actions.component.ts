@@ -8,9 +8,6 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { CanCancelPrescriptionOrProposalPipe } from '@reuse/code/pipes/can-cancel-prescription-or-proposal.pipe';
-import { CanDuplicatePrescriptionPipe } from '@reuse/code/pipes/can-duplicate-prescription.pipe';
-import { CanExtendPrescriptionPipe } from '@reuse/code/pipes/can-extend-prescription.pipe';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
@@ -26,9 +23,6 @@ import {
   RequestTaskResource,
   Role,
 } from '@reuse/code/openapi';
-import { CanAssignCaregiverPipe } from '@reuse/code/pipes/can-assign-caregiver.pipe';
-import { CanSelfAssignPipe } from '@reuse/code/pipes/can-self-assign.pipe';
-import { CanStartTreatmentPipe } from '@reuse/code/pipes/can-start-treatment.pipe';
 import { Intent, UserInfo } from '@reuse/code/interfaces';
 import { isPrescription, normalizePromiseRejectReason } from '@reuse/code/utils/utils';
 import { Observable } from 'rxjs';
@@ -44,19 +38,16 @@ import { CancelPrescriptionDialog } from '@reuse/code/dialogs/cancel-prescriptio
 import { TaskButtonGroupComponent } from '../components/task-button-group/task-button-group.component';
 import { AssignOrTransferDialog } from '@reuse/code/dialogs/assign-or-transfer-dialog/assign-or-transfer-dialog';
 import { AlertService } from '@reuse/code/services/helpers/alert.service';
-import { CanAutoAssignCaregiversPipe } from '@reuse/code/pipes/can-auto-assign-caregivers.pipe';
 import { WcDetailsEvent } from '@reuse/code/interfaces/events.interface';
 import { v4 as uuidv4 } from 'uuid';
-import { CanPrintPrescriptionPipe } from '@reuse/code/pipes/can-print-prescription.pipe';
 import { checkAndConvertToPerformerTask } from '@reuse/code/utils/task-type.util';
 import { ALERT_TARGET } from '@reuse/code/constants/error';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
 
 @Component({
   selector: 'app-prescription-details-actions',
   imports: [
-    CanCancelPrescriptionOrProposalPipe,
-    CanDuplicatePrescriptionPipe,
-    CanExtendPrescriptionPipe,
     MatButton,
     MatIconButton,
     MatDivider,
@@ -65,12 +56,7 @@ import { ALERT_TARGET } from '@reuse/code/constants/error';
     MatMenuItem,
     TranslatePipe,
     MatMenuTrigger,
-    CanAssignCaregiverPipe,
-    CanSelfAssignPipe,
-    CanStartTreatmentPipe,
     TaskButtonGroupComponent,
-    CanAutoAssignCaregiversPipe,
-    CanPrintPrescriptionPipe,
   ],
   templateUrl: './prescription-details-actions.component.html',
   styleUrl: './prescription-details-actions.component.scss',
@@ -87,6 +73,7 @@ export class PrescriptionDetailsActionsComponent {
   private readonly _prescriptionStateService = inject(PrescriptionState);
   private readonly _proposalStateService = inject(ProposalState);
   private readonly alertService = inject(AlertService);
+  private readonly _authService = inject(AuthService);
   protected readonly alertTarget = inject(ALERT_TARGET);
 
   readonly currentUserServiceData: Partial<UserInfo> | undefined = this._service.getCurrentUser().data;
@@ -95,8 +82,15 @@ export class PrescriptionDetailsActionsComponent {
   readonly loading: WritableSignal<boolean> = this._service.loading;
   readonly generatedUUID = this._service.generatedUUID;
   readonly loadingActions: WritableSignal<boolean> = signal(false);
+  protected readonly xActorOrganizationNihii11 = toSignal(this._authService.getConnectedOrganizationNihii());
+  private readonly _isOrganizationAndActingForProfessional = toSignal(
+    this._authService.isOrganizationAndActingForProfessional()
+  );
+  private readonly _connectedOrganizationNihii = toSignal(this._authService.getConnectedOrganizationNihii());
+
   protected readonly Intent = Intent;
   protected readonly checkAndConvertToPerformerTask = checkAndConvertToPerformerTask;
+  protected readonly Role = Role;
 
   @Input({ required: true }) data: ViewState | undefined;
   get prescription() {
@@ -190,6 +184,7 @@ export class PrescriptionDetailsActionsComponent {
           referralTaskId: prescription.referralTask?.id,
           category: prescription.category,
           intent: prescription.intent,
+          connectedUser: this.prescriptionSecondaryService.getCurrentUser(),
           mode: 'assign',
         },
         panelClass: ['mh-dialog-container', 'mh-assign-dialog'],
@@ -213,11 +208,13 @@ export class PrescriptionDetailsActionsComponent {
     try {
       // We just ask for data and trust the host to respond eventually
       const assignees = await this.dispatchToHost<AssignCareGiverResource[]>('FETCH_PROFESSIONAL_DATA');
+
       this.assignCaregivers(
         prescription.id,
         prescription.referralTask.id,
         assignees,
         uuid,
+        this.xActorOrganizationNihii11(),
         prescription.intent,
         AssignationType.Internal
       );
@@ -233,13 +230,14 @@ export class PrescriptionDetailsActionsComponent {
     taskId: string,
     assignees: AssignCareGiverResource[],
     uuid: string,
+    xActorOrganizationNihii11: string | undefined,
     intent?: string,
     assignationType?: AssignationType
   ) {
     const successPrefix = isPrescription(intent) ? 'prescription' : 'proposal';
     const _assignationType = assignationType ?? AssignationType.External;
     this._prescriptionStateService
-      .assignMultipleCaregivers(prescriptionId, taskId, assignees, uuid, _assignationType)
+      .assignMultipleCaregivers(prescriptionId, taskId, assignees, uuid, _assignationType, xActorOrganizationNihii11)
       .subscribe({
         next: () => {
           this.loadingActions.set(false);
@@ -261,7 +259,12 @@ export class PrescriptionDetailsActionsComponent {
     let ssinOrNihii = currentUser.ssin;
     let discipline = currentUser.discipline || '';
     let type = 'Professional';
-    if (currentUser.organizations) {
+    let assignationType: AssignationType | undefined = undefined;
+    let xActorOrganizationNihii11 = undefined;
+    if (this._isOrganizationAndActingForProfessional()) {
+      assignationType = AssignationType.Internal;
+      xActorOrganizationNihii11 = this._connectedOrganizationNihii();
+    } else if (currentUser.organizations) {
       const organizationEntry = Object.entries(currentUser.organizations[0])[0];
       ssinOrNihii = organizationEntry[1].nihii;
       type = organizationEntry[0];
@@ -283,7 +286,9 @@ export class PrescriptionDetailsActionsComponent {
             ssinOrNihii,
             discipline,
             type,
-            this.generatedUUID()
+            this.generatedUUID(),
+            assignationType,
+            xActorOrganizationNihii11
           ),
         'prescription'
       );
@@ -320,6 +325,4 @@ export class PrescriptionDetailsActionsComponent {
       },
     });
   }
-
-  protected readonly Role = Role;
 }

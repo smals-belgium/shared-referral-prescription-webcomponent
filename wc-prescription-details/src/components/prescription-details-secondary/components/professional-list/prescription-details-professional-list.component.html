@@ -72,7 +72,11 @@
 <!-- Caregiver name, NIHII, and profession -->
 <ng-template #caregiverIdentity let-caregiver="caregiver" let-currentUserData="currentUserData">
   <div class="professional_info_fullName">
-    @if (caregiver?.healthcarePerson?.ssin === currentUserData?.ssin) {
+    @if (
+      caregiver?.healthcarePerson?.ssin === currentUserData?.ssin &&
+      currentUserData?.firstName &&
+      currentUserData?.lastName
+    ) {
       <span> {{ currentUserData.firstName }} {{ currentUserData.lastName }} </span>
     } @else if (caregiver?.healthcarePerson?.lastName) {
       <span> {{ caregiver.healthcarePerson.firstName }} {{ caregiver.healthcarePerson.lastName }} </span>
@@ -145,8 +149,8 @@
       }">
     </ng-container>
   } @else {
-    <ng-container [ngTemplateOutlet]="organizationName" [ngTemplateOutletContext]="{ org, bold: true }"> </ng-container>
-    <ng-container [ngTemplateOutlet]="status" [ngTemplateOutletContext]="{ performerTask: org }"> </ng-container>
+    <ng-container [ngTemplateOutlet]="organizationName" [ngTemplateOutletContext]="{ org, bold: true }"></ng-container>
+    <ng-container [ngTemplateOutlet]="status" [ngTemplateOutletContext]="{ performerTask: org }"></ng-container>
 
     <ng-container
       [ngTemplateOutlet]="rejectButton"
@@ -202,7 +206,7 @@
     @if (
       currentUserData?.role === Role.Patient &&
       patientData?.ssin &&
-      (prescriptionData | canRejectAssignation: task : patientData.ssin : currentUserData)
+      prescriptionData.currentTask?.allowedActions?.canRejectAssignation
     ) {
       <button
         type="button"
@@ -223,7 +227,7 @@
   let-currentUserData="currentUserData"
   let-prescriptionData="prescriptionData"
   let-patientData="patientData">
-  <ng-container [ngTemplateOutlet]="status" [ngTemplateOutletContext]="{ performerTask }"> </ng-container>
+  <ng-container [ngTemplateOutlet]="status" [ngTemplateOutletContext]="{ performerTask }"></ng-container>
 
   @for (task of performerTasks; track task.id) {
     <div [className]="!task.executionPeriod?.start ? 'performer_tasks without-period' : 'performer_tasks'">

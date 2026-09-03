@@ -1,7 +1,6 @@
 import {
   asOrganizationTask,
   asPerformerTask,
-  checkAndConvertToOrganizationTask,
   checkAndConvertToPerformerTask,
   getPerformerTaskFromOrganizationTask,
   isOrganizationTask,
@@ -81,26 +80,6 @@ describe('TaskTypeUtils', () => {
 
     it('should return undefined when task has no taskType set', () => {
       expect(checkAndConvertToPerformerTask(notTypedTask)).toBeUndefined();
-    });
-  });
-
-  describe('checkAndConvertToOrganizationTask', () => {
-    it('should return undefined when task is undefined', () => {
-      expect(checkAndConvertToOrganizationTask(undefined)).toBeUndefined();
-    });
-
-    it('should return the task as OrganizationTaskResource when taskType is OrganizationTaskResource', () => {
-      const result = checkAndConvertToOrganizationTask(organizationTask);
-      expect(result).toBe(organizationTask);
-      expect(result?.taskType).toBe('OrganizationTaskResource');
-    });
-
-    it('should return undefined when task is a PerformerTaskResource', () => {
-      expect(checkAndConvertToOrganizationTask(performerTask)).toBeUndefined();
-    });
-
-    it('should return undefined when task has no taskType set', () => {
-      expect(checkAndConvertToOrganizationTask(notTypedTask)).toBeUndefined();
     });
   });
 });

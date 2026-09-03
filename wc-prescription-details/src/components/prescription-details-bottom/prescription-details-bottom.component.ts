@@ -1,6 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { CanApproveProposalPipe } from '@reuse/code/pipes/can-approve-proposal.pipe';
-import { CanRejectProposalPipe } from '@reuse/code/pipes/can-reject-proposal.pipe';
 import { DatePipe } from '@reuse/code/pipes/date.pipe';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -13,7 +11,7 @@ import { ALERT_TARGET } from '@reuse/code/constants/error';
 
 @Component({
   selector: 'app-prescription-details-bottom',
-  imports: [CanApproveProposalPipe, CanRejectProposalPipe, DatePipe, MatButton, MatIcon, MatTooltip, TranslatePipe],
+  imports: [DatePipe, MatButton, MatIcon, MatTooltip, TranslatePipe],
   templateUrl: './prescription-details-bottom.component.html',
   standalone: true,
   styleUrl: './prescription-details-bottom.component.scss',

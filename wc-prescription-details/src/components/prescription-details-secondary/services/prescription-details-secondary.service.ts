@@ -22,8 +22,8 @@ import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { PatientState } from '@reuse/code/states/api/patient.state';
 import { IdentifyState } from '@reuse/code/states/privacy/identify.state';
 import { EncryptionState } from '@reuse/code/states/privacy/encryption.state';
-import { isPerformerTaskWithinOrganization, isProposal } from '@reuse/code/utils/utils';
-import { DataState, IdToken, LoadingStatus, Params, UserInfo } from '@reuse/code/interfaces';
+import { isProposal } from '@reuse/code/utils/utils';
+import { DataState, IdToken, LoadingStatus, UserInfo } from '@reuse/code/interfaces';
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { TemplateVersionsState } from '@reuse/code/states/api/template-versions.state';
@@ -31,12 +31,12 @@ import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-respon
 import { TemplatesState } from '@reuse/code/states/api/templates.state';
 import { ApproveProposalDialog } from '@reuse/code/dialogs/approve-proposal/approve-proposal.dialog';
 import { RejectProposalDialog } from '@reuse/code/dialogs/reject-proposal/reject-proposal.dialog';
-import { SSIN_CLAIM_KEY, USER_PROFILE_CLAIM_KEY } from '@reuse/code/services/auth/auth-constants';
+import { USER_PROFILE_CLAIM_KEY } from '@reuse/code/services/auth/auth-constants';
 import { v4 as uuidv4 } from 'uuid';
 import { AssignOrTransferDialog } from '@reuse/code/dialogs/assign-or-transfer-dialog/assign-or-transfer-dialog';
 import { Lang } from '@reuse/code/constants/languages';
 import { AlertService } from '@reuse/code/services/helpers/alert.service';
-import { getConnectedOrganizationNihii } from '@reuse/code/utils/idToken.utils';
+import { isPerformerTask } from '@reuse/code/utils/task-type.util';
 
 export interface DetailsServices {
   getAccessToken: (audience?: string) => Promise<string | null>;
@@ -201,109 +201,55 @@ export class PrescriptionDetailsSecondaryService {
     }
 
     const state = isProposal(intent) ? this.proposalStateService.state() : this.prescriptionStateService.state();
-    const claims = this.tokenClaims$();
-    const ssin = (claims?.[USER_PROFILE_CLAIM_KEY] as PersonResource)?.[SSIN_CLAIM_KEY];
-    const oidc = this.oidc$();
-    const orgNihii = getConnectedOrganizationNihii(claims, oidc);
+    const prescription = state.data;
+    const currentTaskId = prescription?.currentTask?.taskId;
 
-    const tasksMap = this.generateTaskMap(state, orgNihii, ssin);
-
-    const firstTaskKey = tasksMap ? Object.keys(tasksMap)[0] : undefined;
-
-    if ((!ssin && !orgNihii) || state.status !== LoadingStatus.SUCCESS || !firstTaskKey) {
+    if (!currentTaskId || state.status !== LoadingStatus.SUCCESS) {
       return {
         status: state.status,
-        data: {} as PerformerTaskResource,
+        data: {},
       };
     }
 
-    const matchedTask = this.resolveTargetTask(tasksMap, firstTaskKey, ssin, orgNihii);
-
-    if (matchedTask) {
-      return {
-        status: state.status,
-        data: matchedTask,
-      };
+    const performerTasks = prescription?.performerTasks;
+    if (!performerTasks) {
+      return { status: state.status };
     }
 
-    return { status: state.status };
-  }
-
-  private resolveTargetTask(
-    tasksMap: { [key: string]: Array<RequestTaskResource> } | undefined,
-    firstTaskKey: string,
-    ssin?: string,
-    orgNihii?: string
-  ): RequestTaskResource | undefined {
-    // If the first method returns undefined, it tries the next and so on.
-    if (!tasksMap) return undefined;
-    return (
-      this.getPerformerTaskWithinOrganization(tasksMap, firstTaskKey, orgNihii) ??
-      this.getDirectOrganizationTask(tasksMap, firstTaskKey, orgNihii) ??
-      this.getDirectPerformerTask(tasksMap, ssin)
-    );
-  }
-
-  private getPerformerTaskWithinOrganization(
-    tasksMap: { [key: string]: Array<RequestTaskResource> },
-    firstTaskKey: string,
-    orgNihii?: string
-  ): RequestTaskResource | undefined {
-    if (!isPerformerTaskWithinOrganization(firstTaskKey) || !orgNihii) {
-      return undefined;
-    }
-    if (this.isOrganization$() && orgNihii) {
-      return tasksMap[orgNihii]?.[0];
+    for (const taskArray of Object.values(performerTasks)) {
+      const values = this.collectAllPerformerTasks(taskArray);
+      for (const task of values) {
+        if (task.id === currentTaskId) {
+          return {
+            status: state.status,
+            data: task,
+          };
+        }
+      }
     }
 
-    const orgTasks = tasksMap[firstTaskKey] as OrganizationTaskResource[];
-    return orgTasks?.[0]?.performerTasks?.[0];
+    // Fallback: if task not found by id, return empty
+    return {
+      status: state.status,
+      data: {},
+    };
   }
 
-  private getDirectOrganizationTask(
-    tasksMap: { [key: string]: Array<RequestTaskResource> },
-    firstTaskKey: string,
-    orgNihii?: string
-  ): RequestTaskResource | undefined {
-    if (!orgNihii) return undefined;
+  collectAllPerformerTasks(tasks: RequestTaskResource[]): PerformerTaskResource[] {
+    let result: PerformerTaskResource[] = [];
+    for (const task of tasks) {
+      if (isPerformerTask(task)) {
+        result.push(task);
+      } else {
+        const organizationTask = task as OrganizationTaskResource;
+        if (organizationTask.performerTasks) {
+          const parsedPerformerTasks = this.collectAllPerformerTasks(organizationTask.performerTasks);
 
-    if (!tasksMap[orgNihii] && tasksMap[firstTaskKey]) {
-      return tasksMap[firstTaskKey] as RequestTaskResource;
+          result = [...result, ...parsedPerformerTasks];
+        }
+      }
     }
-    return tasksMap[orgNihii]?.[0];
-  }
-
-  private getDirectPerformerTask(
-    tasksMap: { [key: string]: Array<RequestTaskResource> },
-    ssin?: string
-  ): RequestTaskResource | undefined {
-    if (!ssin) return undefined;
-    return tasksMap[ssin]?.[0];
-  }
-
-  private generateTaskMap(
-    state: DataState<ReadRequestResource, unknown, Params>,
-    orgNihii: string | undefined,
-    ssin: string | undefined
-  ) {
-    let tasks = state.data?.performerTasks;
-    if (!tasks) return undefined;
-    if (orgNihii && ssin) {
-      const key = `${orgNihii}:${ssin}`;
-      type Entry = [string, RequestTaskResource[]];
-
-      const compareEntries = ([a]: Entry, [b]: Entry) => {
-        if (a === key) return -1;
-        if (b === key) return 1;
-        return 0;
-      };
-
-      tasks = Object.fromEntries(Object.entries(tasks).sort(compareEntries));
-
-      return tasks;
-    }
-
-    return tasks;
+    return result;
   }
 
   getTemplate(): DataState<Template | undefined> {
@@ -425,11 +371,16 @@ export class PrescriptionDetailsSecondaryService {
           prescription: prescription,
           performerTask: task,
           startExecutionDate: task.executionPeriod?.start,
+          connectedUser: this.getCurrentUser().data,
         },
         panelClass: 'mh-dialog-container',
+        minWidth: 'fit-content',
       })
       .beforeClosed()
-      .subscribe(() => {
+      .subscribe((data: { reload: boolean }) => {
+        if (data.reload) {
+          this.prescriptionStateService.loadPrescription(prescription.id!);
+        }
         this.alertService.setActive(alertTarget);
       });
   }

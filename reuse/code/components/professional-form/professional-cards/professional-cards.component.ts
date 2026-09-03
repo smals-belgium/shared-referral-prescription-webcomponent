@@ -11,22 +11,22 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
-import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatCard, MatCardContent } from '@angular/material/card';
-import { FormatEnum, SkeletonComponent } from '@reuse/code/components/progress-indicators/skeleton/skeleton.component';
-import { TranslatePipe } from '@ngx-translate/core';
-import { HealthcareProResource, ProviderType } from '@reuse/code/openapi';
 import { MatIconModule } from '@angular/material/icon';
+import { MatRadioModule } from '@angular/material/radio';
+import { TranslatePipe } from '@ngx-translate/core';
+import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
+import { TranslationType } from '@reuse/code/components/professional-form/table/professional-table.component';
+import { FormatEnum, SkeletonComponent } from '@reuse/code/components/progress-indicators/skeleton/skeleton.component';
+import { AlertType, Intent, SearchProfessionalCriteria } from '@reuse/code/interfaces';
+import { HealthCareProviderResource, ProviderType } from '@reuse/code/openapi';
+import { FormatMultilingualObjectPipe } from '@reuse/code/pipes/format-multilingual-object.pipe';
+import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
+import { HighlightFilterPipe } from '@reuse/code/pipes/highlight-filter.pipe';
 import { RequestProfessionalDataService } from '@reuse/code/services/helpers/request-professional-data.service';
 import { getAssignableProfessionalDisciplines, isProfessional } from '@reuse/code/utils/assignment-disciplines.utils';
-import { AlertType, Intent, SearchProfessionalCriteria } from '@reuse/code/interfaces';
-import { FormatMultilingualObjectPipe } from '@reuse/code/pipes/format-multilingual-object.pipe';
-import { TranslationType } from '@reuse/code/components/professional-form/table/professional-table.component';
-import { MatRadioModule } from '@angular/material/radio';
 import { v4 as uuidv4 } from 'uuid';
-import { HighlightFilterPipe } from '@reuse/code/pipes/highlight-filter.pipe';
-import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'professional-cards',
@@ -53,7 +53,7 @@ export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, 
   protected readonly FormatEnum = FormatEnum;
   protected readonly isProfessional = isProfessional;
 
-  readonly professionals = input<HealthcareProResource[]>([]);
+  readonly professionals = input<HealthCareProviderResource[]>([]);
   readonly total = input<number | null>(null);
   readonly prescriptionId = input.required<string>();
   readonly category = input.required<string>();
@@ -64,7 +64,7 @@ export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, 
   readonly error = input<boolean>(false);
   readonly currentLang = input.required<TranslationType | undefined>();
 
-  readonly selectProfessional = output<HealthcareProResource | undefined>();
+  readonly selectProfessional = output<HealthCareProviderResource | undefined>();
 
   get itemsLength() {
     if (this.total() === undefined) return -1;
@@ -132,6 +132,7 @@ export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, 
     const initialData = this.professionals() ?? [];
     const disciplines: string[] = getAssignableProfessionalDisciplines(this.category(), this.intent());
     const config: SearchProfessionalCriteria = {
+      language: this.currentLang(),
       query: this.query(),
       zipCodes: this.zipCodes(),
       disciplines,
@@ -148,7 +149,7 @@ export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, 
     let resultsParent = el.closest<HTMLElement>('.search-results');
 
     while (resultsParent) {
-      const style = window.getComputedStyle(resultsParent);
+      const style = globalThis.getComputedStyle(resultsParent);
       const overflowY = style.overflowY;
       const canScroll =
         (overflowY === 'auto' || overflowY === 'scroll') && resultsParent.scrollHeight > resultsParent.clientHeight;
@@ -171,11 +172,11 @@ export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, 
     this.dataService.triggerLoad();
   }
 
-  changeValue(professional: HealthcareProResource): void {
+  changeValue(professional: HealthCareProviderResource): void {
     this.selectProfessional.emit(professional);
   }
 
-  trackById(profession: HealthcareProResource) {
+  trackById(profession: HealthCareProviderResource) {
     if (isProfessional(profession) && profession.id?.ssin && profession.id?.qualificationCode) {
       return profession.id.ssin + profession.id.qualificationCode;
     } else {

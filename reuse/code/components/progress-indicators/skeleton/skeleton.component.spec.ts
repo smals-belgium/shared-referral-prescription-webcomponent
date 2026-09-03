@@ -1,32 +1,27 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
 import { NgxSkeletonLoaderComponent, NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
-import { Component } from '@angular/core';
 import { FormatEnum, SkeletonComponent } from './skeleton.component';
 import { By } from '@angular/platform-browser';
 
-@Component({
-  template: `<app-skeleton [items]="items" [format]="format"></app-skeleton>`,
-  imports: [SkeletonComponent],
-})
-class TestHostComponent {
-  items = 3;
-  format = FormatEnum.LINE;
-}
-
 describe('SkeletonComponent', () => {
   let component: SkeletonComponent;
-  let fixture: ComponentFixture<TestHostComponent>;
-  let hostComponent: TestHostComponent;
+  let fixture: ComponentFixture<SkeletonComponent>;
+
+  const setSkeletonInput = (name: 'items' | 'format', value: number | FormatEnum) => {
+    fixture.componentRef.setInput(name, value);
+    fixture.detectChanges();
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SkeletonComponent, TestHostComponent, MatCardModule, NgxSkeletonLoaderModule],
+      imports: [SkeletonComponent, MatCardModule, NgxSkeletonLoaderModule],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TestHostComponent);
-    hostComponent = fixture.componentInstance;
-    component = fixture.debugElement.children[0].componentInstance;
+    fixture = TestBed.createComponent(SkeletonComponent);
+    component = fixture.componentInstance;
+    fixture.componentRef.setInput('items', 3);
+    fixture.componentRef.setInput('format', FormatEnum.LINE);
     fixture.detectChanges();
   });
 
@@ -37,27 +32,22 @@ describe('SkeletonComponent', () => {
   });
 
   it('should generate correct number of skeleton items in skeletons getter', () => {
-    hostComponent.items = 5;
-    fixture.detectChanges();
+    setSkeletonInput('items', 5);
 
     const skeletons = component.skeletons;
     expect(skeletons).toHaveLength(5);
 
-    hostComponent.items = 1;
-    fixture.detectChanges();
+    setSkeletonInput('items', 1);
 
     expect(component.skeletons).toHaveLength(1);
   });
 
   it('should render LINE format with correct ngx-skeleton-loader configuration', () => {
-    hostComponent.format = FormatEnum.LINE;
-    hostComponent.items = 2;
-    fixture.detectChanges();
+    setSkeletonInput('format', FormatEnum.LINE);
+    setSkeletonInput('items', 2);
 
     // Check ngx-skeleton-loader is present
-    const loaderDebug = fixture.debugElement.query(
-      By.directive(NgxSkeletonLoaderComponent)
-    );
+    const loaderDebug = fixture.debugElement.query(By.directive(NgxSkeletonLoaderComponent));
     expect(loaderDebug).toBeTruthy();
 
     const loaderInstance = loaderDebug.componentInstance as NgxSkeletonLoaderComponent;
@@ -66,16 +56,13 @@ describe('SkeletonComponent', () => {
     expect(loaderInstance.count()).toBe(2);
 
     // Should not render card format
-    const cardContainer = fixture.debugElement.query(
-      By.css('.skeleton-grid-container')
-    );
+    const cardContainer = fixture.debugElement.query(By.css('.skeleton-grid-container'));
     expect(cardContainer).toBeFalsy();
   });
 
   it('should render CARD format with correct number of mat-cards', () => {
-    hostComponent.format = FormatEnum.CARD;
-    hostComponent.items = 3;
-    fixture.detectChanges();
+    setSkeletonInput('format', FormatEnum.CARD);
+    setSkeletonInput('items', 3);
 
     const cardContainer = fixture.nativeElement.querySelector('.skeleton-grid-container');
     expect(cardContainer).toBeTruthy();

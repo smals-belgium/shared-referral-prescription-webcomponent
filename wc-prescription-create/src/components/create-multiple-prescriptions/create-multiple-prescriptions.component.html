@@ -23,7 +23,9 @@
 
   <mat-accordion [hideToggle]="createPrescriptionForms.length === 1" togglePosition="after">
     @for (prescriptionForm of createPrescriptionForms; track prescriptionForm.trackId; let last = $last) {
-      <mat-expansion-panel [expanded]="last" [id]="`mat-expension-panel-${prescriptionForm.trackId}`">
+      <mat-expansion-panel
+        [expanded]="isPanelExpanded(prescriptionForm.trackId, last)"
+        [id]="`mat-expension-panel-${prescriptionForm.trackId}`">
         <mat-expansion-panel-header
           [class.no-toggle]="createPrescriptionForms.length === 1"
           [tabIndex]="createPrescriptionForms.length === 1 ? -1 : 0">

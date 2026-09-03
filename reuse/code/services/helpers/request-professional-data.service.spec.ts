@@ -3,7 +3,7 @@ import { RequestProfessionalDataService } from '@reuse/code/services/helpers/req
 import { HealthcareProviderService } from '@reuse/code/services/api/healthcareProvider.service';
 import { provideHttpClient } from '@angular/common/http';
 import { SearchProfessionalCriteria } from '@reuse/code/interfaces';
-import { HealthcareProResource, ProviderType } from '@reuse/code/openapi';
+import { HealthcareProResource, HealthCareProviderRequestResource, ProviderType } from '@reuse/code/openapi';
 import { of, skip, throwError } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -95,8 +95,8 @@ describe('RequestProfessionalDataService', () => {
 
   describe('Data Accumulation (createDataStream)', () => {
     it('should append new data to accumulated data when triggerLoad is called', done => {
-      const apiResponse = {
-        healthcareProfessionals: mockProfessional2,
+      const apiResponse: HealthCareProviderRequestResource = {
+        healthcarePro: mockProfessional2,
         total: 2,
       };
 
@@ -131,6 +131,7 @@ describe('RequestProfessionalDataService', () => {
         ProviderType.Professional,
         mockCriteria.prescriptionId,
         mockCriteria.intent,
+        mockCriteria.language,
         1,
         10
       );

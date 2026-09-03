@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 03/Sep/26
+
+Only changes impacting the integration of the Web Components (inputs, outputs, token contract, runtime requirements) are listed below.
+
+### Features
+
+- Organization acting on behalf of a healthcare professional - The ID token returned by `getIdToken` may now contain **both** an `organizations` entry and a professional discipline key (e.g. `nurse`, `physician`). In that case the components act **on behalf of that professional within the connected organization**, instead of acting as the organization itself. A token containing only `organizations` keeps the previous organization (M2M) behaviour.
+- Internal vs external assignment - Assignment, self-assignment and the start of an execution period are now qualified as **internal** when they are performed within the connected organization (the organization NIHII-11 taken from the ID token is transmitted), and as **external** otherwise. This is fully derived from the token, no new input or output is required from the host application.
+
+### Improvements
+
+- Angular 22 runtime - The Web Components are now built with Angular 22 (TypeScript 6). Browser compatibility keeps following the Angular support policy (the two most recent versions of each browser). No change is required in the host application, the bundles are still loaded as ES modules.
+- Documentation of the input/output contract - The README has been aligned with the effective contract: `getIdToken` is **mandatory** for the create and details components, `getAccessToken` accepts an **optional** audience, `clickDuplicate`/`clickExtend` emit a `ReadRequestResource`, `CreatePrescriptionInitialValues.initialPrescription` is a `ReadRequestResource` and `initialModelId` a number, and the supported values of the `lang` input are `nl-BE`, `fr-BE`, `de-BE` and `en-GB`.
+
+### Deprecations
+
+- ⚠️ Loading the Web Components from the acceptance URL (`https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/...`) is **deprecated** and will be **decommissioned as from version 3.0.0**. Integrators must install and ship the Web Components through their **npm packages** (`@smals-belgium-shared/uhmep-prescription-create`, `@smals-belgium-shared/uhmep-prescription-list`, `@smals-belgium-shared/uhmep-prescription-details`) and serve the bundles from their own application. Please plan this migration before upgrading to version 3.0.0.
+
+---
+
 ## [2.0.0] - 14/Jul/26
 
 ### Features

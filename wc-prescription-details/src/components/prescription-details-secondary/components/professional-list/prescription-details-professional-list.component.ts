@@ -3,7 +3,6 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
-import { CanRejectAssignationPipe } from '@reuse/code/pipes/can-reject-assignation.pipe';
 import { MatIconButton } from '@angular/material/button';
 import { UserInfo } from '@reuse/code/interfaces';
 import { FhirR4TaskStatus, ReadRequestResource, RequestTaskResource, Role } from '@reuse/code/openapi';
@@ -29,7 +28,6 @@ import { ALERT_TARGET } from '@reuse/code/constants/error';
     MatIcon,
     MatTooltip,
     DatePipe,
-    CanRejectAssignationPipe,
     MatIconButton,
     FormatNihdiPipe,
     MatChip,

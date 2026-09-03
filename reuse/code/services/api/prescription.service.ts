@@ -1,9 +1,10 @@
 import { inject, Injectable } from '@angular/core';
-import { SearchPrescriptionCriteria } from '@reuse/code/interfaces';
+import { PrescriptionExecutionComplete, SearchPrescriptionCriteria } from '@reuse/code/interfaces';
 import {
   AssignationType,
   AssignCareGiverResource,
   AssignOrganizationResource,
+  CompletePrescriptionResource,
   CreateRequestResource,
   PerformerTaskIdResource,
   PrescriptionService as ApiPrescriptionService,
@@ -30,12 +31,12 @@ export class PrescriptionService {
     );
   }
 
-  findOne(prescriptionId: string) {
-    return this.api.getPrescription(prescriptionId);
+  findOne(prescriptionId: string, xActorCaregiverSsin?: string) {
+    return this.api.getPrescription(prescriptionId, xActorCaregiverSsin);
   }
 
-  findOneByShortCode(shortCode: string, ssin: string) {
-    return this.api.getPrescriptionByShortCode(ssin, shortCode);
+  findOneByShortCode(shortCode: string, ssin: string, xActorCaregiverSsin?: string) {
+    return this.api.getPrescriptionByShortCode(ssin, shortCode, xActorCaregiverSsin);
   }
 
   cancel(prescriptionId: string, reason: ReasonResource, generatedUUID: string) {
@@ -47,21 +48,24 @@ export class PrescriptionService {
     referralTaskId: string,
     caregiver: AssignCareGiverResource,
     generatedUUID: string,
-    assignationType?: AssignationType
+    assignationType?: AssignationType,
+    xActorOrganizationNihii11?: string
   ): Observable<PerformerTaskIdResource[]>;
   assignCaregivers(
     prescriptionId: string,
     referralTaskId: string,
     caregiver: AssignCareGiverResource[],
     generatedUUID: string,
-    assignationType?: AssignationType
+    assignationType?: AssignationType,
+    xActorOrganizationNihii11?: string
   ): Observable<PerformerTaskIdResource[]>;
   assignCaregivers(
     prescriptionId: string,
     referralTaskId: string,
     caregiver: AssignCareGiverResource | AssignCareGiverResource[],
     generatedUUID: string,
-    assignationType?: AssignationType
+    assignationType?: AssignationType,
+    xActorOrganizationNihii11?: string
   ) {
     const caregivers = Array.isArray(caregiver) ? caregiver : [caregiver];
     return this.api.assignCareGiversToPrescription(
@@ -69,7 +73,8 @@ export class PrescriptionService {
       referralTaskId,
       generatedUUID,
       caregivers,
-      assignationType
+      assignationType,
+      xActorOrganizationNihii11
     );
   }
 
@@ -98,7 +103,34 @@ export class PrescriptionService {
     );
   }
 
+  transferAssignationToOrganization(
+    prescriptionId: string,
+    referralTaskId: string,
+    performerTaskId: string,
+    organization: AssignOrganizationResource,
+    generatedUUID: string
+  ) {
+    return this.api.transferAssignOrganizationToPrescription(
+      prescriptionId,
+      referralTaskId,
+      performerTaskId,
+      generatedUUID,
+      organization
+    );
+  }
+
   rejectAssignation(prescriptionId: string, performerTaskId: string, generatedUUID: string) {
     return this.api.rejectAssignationToPrescription(prescriptionId, performerTaskId, generatedUUID);
+  }
+  completePrescription(prescriptionId: string, executionFinish: PrescriptionExecutionComplete, generatedUUID: string) {
+    const completePrescriptionResource: CompletePrescriptionResource = {
+      performerTaskId: executionFinish.performerTaskId,
+      executionEndDate: executionFinish.endDate,
+    };
+
+    return this.api.completePrescription(prescriptionId, generatedUUID, completePrescriptionResource);
+  }
+  closePrescription(prescriptionId: string, generatedUUID: string) {
+    return this.api.closePrescription(prescriptionId, generatedUUID);
   }
 }

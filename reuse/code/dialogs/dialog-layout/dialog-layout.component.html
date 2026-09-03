@@ -1,15 +1,15 @@
 <div class="dialog-header">
   <div class="dialog-title-wrapper">
-    <h4 mat-dialog-title class="dialog-title">{{ title() }}</h4>
-    @if(requiredSubTitle()){
+    <div class="dialog-tittle-inner-container">
+      <h4 mat-dialog-title class="dialog-title">{{ title() }}</h4>
+      <button mat-dialog-close [aria-label]="'common.close' | translate">
+        <mat-icon svgIcon="close" [aria-hidden]="true"></mat-icon>
+      </button>
+    </div>
+    @if (requiredSubTitle()) {
       <p><span class="required">*</span>{{ 'common.mandatory' | translate }}</p>
     }
   </div>
-  <button mat-icon-button mat-dialog-close [aria-label]="'common.close' | translate">
-    <mat-icon svgIcon="close" [aria-hidden]="true"></mat-icon>
-  </button>
-
-
 </div>
 
 <div mat-dialog-content class="mat-dialog-content">
@@ -17,5 +17,20 @@
 </div>
 
 <mat-dialog-actions align="start">
-  <ng-content select="[dialog-actions]"></ng-content>
+  <ng-content select="[dialog-actions-override]"></ng-content>
+
+  @if (!hasOverride) {
+    <button
+      type="submit"
+      matButton="filled"
+      [disabled]="confirmDisabled()"
+      (click)="onConfirm()"
+      data-cy="dialog-confirm-button">
+      {{ confirmText() | translate }}
+    </button>
+
+    <button type="button" matButton="outlined" [mat-dialog-close]="cancelData()" data-cy="dialog-cancel-button">
+      {{ cancelText() | translate }}
+    </button>
+  }
 </mat-dialog-actions>

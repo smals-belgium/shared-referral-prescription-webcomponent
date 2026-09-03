@@ -8,7 +8,7 @@ import { StartExecutionPrescriptionDialog } from './start-execution-prescription
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
-import { PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
+import { AssignationType, PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
 import { HttpErrorResponse } from '@angular/common/http';
 import { DateTime } from 'luxon';
 import { provideLuxonDateAdapter } from '@angular/material-luxon-adapter';
@@ -51,6 +51,7 @@ describe('StartExecutionPrescriptionDialog', () => {
     mockAuthService = {
       discipline: jest.fn(),
       getClaims: jest.fn(),
+      getConnectedOrganizationNihii: jest.fn(),
     };
     mockDialogRef = { close: jest.fn() };
 
@@ -190,7 +191,38 @@ describe('StartExecutionPrescriptionDialog', () => {
         expect(mockPrescriptionState.assignAndStartPrescriptionExecution).not.toHaveBeenCalled();
       });
 
-      it('should call assignAndStartExecution when performerTask is null', () => {
+      it('should call assignAndStartExecution when performerTask caregiver SSIN differs from current user SSIN', () => {
+        component.performerTask.careGiverSsin = '11111111111';
+        mockAuthService.getClaims.mockReturnValue(
+          of({
+            [USER_PROFILE_CLAIM_KEY]: {
+              [SSIN_CLAIM_KEY]: '22222222222',
+            },
+          })
+        );
+        mockAuthService.discipline.mockReturnValue(of('NURSING'));
+        mockAuthService.getConnectedOrganizationNihii.mockReturnValue(of(undefined));
+        mockPrescriptionState.assignAndStartPrescriptionExecution.mockReturnValue(of(void 0));
+
+        component.formGroup.patchValue({
+          startDate: DateTime.fromISO('2024-01-20'),
+        });
+
+        component.startExecution();
+
+        expect(mockPrescriptionState.assignAndStartPrescriptionExecution).toHaveBeenCalledWith(
+          'prescription-123',
+          'referral-task-456',
+          { ssin: '22222222222', discipline: 'NURSING' },
+          'uuid-123',
+          { startDate: '2024-01-20' },
+          AssignationType.External,
+          undefined
+        );
+        expect(mockPrescriptionState.startPrescriptionExecution).not.toHaveBeenCalled();
+      });
+
+      it('should call assignAndStartExecution external caregiver when performerTask is null and user not organization', () => {
         (component as any).performerTask = null;
         mockAuthService.discipline.mockReturnValue(of('NURSING'));
         mockAuthService.getClaims.mockReturnValue(
@@ -200,6 +232,7 @@ describe('StartExecutionPrescriptionDialog', () => {
             },
           })
         );
+        mockAuthService.getConnectedOrganizationNihii.mockReturnValue(of(undefined));
 
         mockPrescriptionState.assignAndStartPrescriptionExecution.mockReturnValue(of(void 0));
         component.formGroup.patchValue({
@@ -208,7 +241,46 @@ describe('StartExecutionPrescriptionDialog', () => {
 
         component.startExecution();
 
-        expect(mockPrescriptionState.assignAndStartPrescriptionExecution).toHaveBeenCalled();
+        expect(mockPrescriptionState.assignAndStartPrescriptionExecution).toHaveBeenCalledWith(
+          'prescription-123',
+          'referral-task-456',
+          { ssin: '12345678901', discipline: 'NURSING' },
+          'uuid-123',
+          { startDate: '2024-01-20' },
+          AssignationType.External,
+          undefined
+        );
+        expect(mockPrescriptionState.startPrescriptionExecution).not.toHaveBeenCalled();
+      });
+
+      it('should call assignAndStartExecution internal caregiver when performerTask is null and user organization', () => {
+        (component as any).performerTask = null;
+        mockAuthService.discipline.mockReturnValue(of('NURSING'));
+        mockAuthService.getClaims.mockReturnValue(
+          of({
+            [USER_PROFILE_CLAIM_KEY]: {
+              [SSIN_CLAIM_KEY]: '12345678901',
+            },
+          })
+        );
+        mockAuthService.getConnectedOrganizationNihii.mockReturnValue(of('12345678901'));
+
+        mockPrescriptionState.assignAndStartPrescriptionExecution.mockReturnValue(of(void 0));
+        component.formGroup.patchValue({
+          startDate: DateTime.fromISO('2024-01-20'),
+        });
+
+        component.startExecution();
+
+        expect(mockPrescriptionState.assignAndStartPrescriptionExecution).toHaveBeenCalledWith(
+          'prescription-123',
+          'referral-task-456',
+          { ssin: '12345678901', discipline: 'NURSING' },
+          'uuid-123',
+          { startDate: '2024-01-20' },
+          AssignationType.Internal,
+          '12345678901'
+        );
         expect(mockPrescriptionState.startPrescriptionExecution).not.toHaveBeenCalled();
       });
     });

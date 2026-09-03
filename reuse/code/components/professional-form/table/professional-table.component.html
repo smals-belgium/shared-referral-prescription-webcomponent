@@ -1,9 +1,17 @@
 <div class="table_container">
   <table mat-table [dataSource]="requestData()" class="mat-elevation-z8">
     <ng-container matColumnDef="icon">
-      <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let row" class="icon-cell">
-        <mat-icon svgIcon="person" [aria-hidden]="true"></mat-icon>
+      <th mat-header-cell *matHeaderCellDef>
+        {{ 'professional.table.type.label' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let healthcareProvider" class="icon-cell">
+        @let isProfessionalProvider = isProfessional(healthcareProvider);
+        <div class="icon-content">
+          <mat-icon [svgIcon]="isProfessionalProvider ? 'person' : 'apartment'" [aria-hidden]="true"></mat-icon>
+          <span>{{
+            'professional.table.type.' + (isProfessionalProvider ? 'professional' : 'organization') | translate
+          }}</span>
+        </div>
       </td>
     </ng-container>
 
@@ -14,11 +22,15 @@
       <td data-cy="professional-lastname-cell" mat-cell *matCellDef="let healthcareProvider">
         @if (healthcareProvider.healthcarePerson; as person) {
           <span [innerHTML]="person.lastName || '' | highlightFilter: query()"></span>
+        } @else if (healthcareProvider.organizationName; as org) {
+          @let orgName = org | formatMultilingualObject: currentLang();
+          <span [innerHTML]="orgName | highlightFilter: query()"></span>
         }
         <div class="nihii">
           {{
             healthcareProvider.nihii8 ?? healthcareProvider.nihii11
-              | formatNihdi: healthcareProvider.healthcareQualification?.id?.code
+              | formatNihdi
+                : healthcareProvider.healthcareQualification?.id?.code ?? healthcareProvider.qualificationCode
           }}
         </div>
       </td>
@@ -67,6 +79,40 @@
       </td>
     </ng-container>
 
+    <ng-container matColumnDef="iconFilter">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-form-field appearance="outline">
+          <mat-select [(value)]="selectedType">
+            @for (provider of providerTypeOptions(); track provider) {
+              <mat-option [value]="provider">{{
+                'professional.table.type.' + provider.toLocaleLowerCase() | translate
+              }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </th>
+    </ng-container>
+
+    <ng-container matColumnDef="lastnameFilter">
+      <th mat-header-cell *matHeaderCellDef></th>
+    </ng-container>
+
+    <ng-container matColumnDef="firstnameFilter">
+      <th mat-header-cell *matHeaderCellDef></th>
+    </ng-container>
+
+    <ng-container matColumnDef="addressFilter">
+      <th mat-header-cell *matHeaderCellDef></th>
+    </ng-container>
+
+    <ng-container matColumnDef="cityFilter">
+      <th mat-header-cell *matHeaderCellDef></th>
+    </ng-container>
+
+    <ng-container matColumnDef="actionsFilter">
+      <th mat-header-cell *matHeaderCellDef></th>
+    </ng-container>
+
     <ng-container matColumnDef="tableStatus">
       <td mat-footer-cell *matFooterCellDef colspan="6">
         @if (total() === undefined) {
@@ -80,6 +126,7 @@
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+    <tr mat-header-row *matHeaderRowDef="filterColumns"></tr>
     <tr [attr.data-cy]="'professional-row-' + row.id" mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     <tr
       [class]="total() === undefined ? 'no-data' : 'no-professionals'"

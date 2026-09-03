@@ -19,11 +19,26 @@ export class AuthService {
     throw new Error('Not implemented');
   }
 
+  getConnectedOrganizationNihii(): Observable<string | undefined> {
+    throw new Error('Not implemented');
+  }
+
   isProfessional(): Observable<boolean> {
     throw new Error('Not implemented');
   }
 
   isOrganization(): Observable<boolean> {
+    throw new Error('Not implemented');
+  }
+
+  isOrganizationAndNotActingForProfessional(): Observable<boolean> {
+    throw new Error('Not implemented');
+  }
+  isOrganizationAndActingForProfessional(): Observable<boolean> {
+    throw new Error('Not implemented');
+  }
+
+  isPatient(): Observable<boolean> {
     throw new Error('Not implemented');
   }
 

@@ -8,7 +8,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { TranslateModule } from '@ngx-translate/core';
 import { DatePipe } from '@reuse/code/pipes/date.pipe';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
-import { map, Observable, switchMap } from 'rxjs';
+import { combineLatest, map, Observable, switchMap, of, EMPTY } from 'rxjs';
 import { AlertType, PrescriptionExecutionStart } from '@reuse/code/interfaces';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
@@ -16,10 +16,10 @@ import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { v4 as uuidv4 } from 'uuid';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
-import { FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
+import { AssignationType, FhirR4TaskStatus, PerformerTaskResource, ReadRequestResource } from '@reuse/code/openapi';
 import { SSIN_CLAIM_KEY, USER_PROFILE_CLAIM_KEY } from '@reuse/code/services/auth/auth-constants';
 import { AlertService } from '@reuse/code/services/helpers/alert.service';
-import { finalize } from 'rxjs/operators';
+import { finalize, tap } from 'rxjs/operators';
 
 interface StartExecutionPrescriptionDialogData {
   prescription: ReadRequestResource;
@@ -94,63 +94,72 @@ export class StartExecutionPrescriptionDialog implements OnInit, OnDestroy {
         startDate: values.startDate?.toFormat('yyyy-MM-dd'),
       };
       this.loading = true;
-      if (
-        !this.performerTask ||
-        (!!this.performerTask.status && allowedTaskStatuses.includes(this.performerTask.status))
-      ) {
-        this.assignAndStartExecution(executionStart);
-      } else {
-        this.startExecutionForTask(this.performerTask, executionStart);
-      }
+      this.shouldAssignAndStartExecution(allowedTaskStatuses)
+        .pipe(
+          switchMap(shouldAssign =>
+            shouldAssign
+              ? this.assignAndStartExecution(executionStart)
+              : this.startExecutionForTask(this.performerTask, executionStart)
+          ),
+          finalize(() => (this.loading = false))
+        )
+        .subscribe(() => this.dialogRef.close(true));
     }
   }
 
-  private startExecutionForTask(task: PerformerTaskResource, executionStart: PrescriptionExecutionStart): void {
+  private shouldAssignAndStartExecution(allowedTaskStatuses: FhirR4TaskStatus[]): Observable<boolean> {
+    if (
+      !this.performerTask ||
+      (!!this.performerTask.status && allowedTaskStatuses.includes(this.performerTask.status))
+    ) {
+      return of(true);
+    }
+    if (!this.performerTask.careGiverSsin) {
+      return of(false);
+    }
+    return this.getCurrentUserSsin().pipe(
+      map(currentUserSsin => !!currentUserSsin && currentUserSsin !== this.performerTask.careGiverSsin)
+    );
+  }
+
+  private startExecutionForTask(
+    task: PerformerTaskResource,
+    executionStart: PrescriptionExecutionStart
+  ): Observable<any> {
     if (!this.prescription.id || !task.id) {
       this.alertService.showGeneralError(this.ERROR_START_EXECUTION_DIALOG);
-      return;
+      return EMPTY;
     }
 
-    this._prescriptionStateService
+    return this._prescriptionStateService
       .startPrescriptionExecution(this.prescription.id, task.id, executionStart, this.generatedUUID)
-      .pipe(finalize(() => (this.loading = false)))
-      .subscribe({
-        next: () => {
-          this._toastService.show('prescription.startExecution.success');
-          this.dialogRef.close(true);
-        },
-      });
+      .pipe(tap(() => this._toastService.show('prescription.startExecution.success')));
   }
 
-  private assignAndStartExecution(executionStart: PrescriptionExecutionStart): void {
+  private assignAndStartExecution(executionStart: PrescriptionExecutionStart): Observable<any> {
     if (!this.prescription.id || !this.prescription.referralTask?.id) {
       this.alertService.showGeneralError(this.ERROR_START_EXECUTION_DIALOG);
-      return;
+      return EMPTY;
     }
 
-    let discipline: string;
-    this._authService.discipline().subscribe(disc => {
-      discipline = disc;
-    });
-    this.getCurrentUserSsin()
-      .pipe(
-        switchMap(ssin =>
-          this._prescriptionStateService.assignAndStartPrescriptionExecution(
-            this.prescription.id!,
-            this.prescription.referralTask!.id!,
-            { ssin, discipline },
-            this.generatedUUID,
-            executionStart
-          )
-        ),
-        finalize(() => (this.loading = false))
-      )
-      .subscribe({
-        next: () => {
-          this._toastService.show('prescription.startExecution.success');
-          this.dialogRef.close(true);
-        },
-      });
+    return combineLatest({
+      ssin: this.getCurrentUserSsin(),
+      discipline: this._authService.discipline(),
+      organizationNihii: this._authService.getConnectedOrganizationNihii(),
+    }).pipe(
+      switchMap(({ ssin, discipline, organizationNihii }) =>
+        this._prescriptionStateService.assignAndStartPrescriptionExecution(
+          this.prescription.id!,
+          this.prescription.referralTask!.id!,
+          { ssin, discipline },
+          this.generatedUUID,
+          executionStart,
+          organizationNihii ? AssignationType.Internal : AssignationType.External,
+          organizationNihii
+        )
+      ),
+      tap(() => this._toastService.show('prescription.startExecution.success'))
+    );
   }
 
   private getCurrentUserSsin(): Observable<string> {

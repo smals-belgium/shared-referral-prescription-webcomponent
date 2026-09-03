@@ -1,76 +1,77 @@
 import { TestBed } from '@angular/core/testing';
 import { FeatureFlagService } from './feature-flag.service';
-import { ConfigurationService } from '../config/configuration.service';
-
-type EnabledFeatures = { filters: boolean };
+import { FeatureFlagService as FeatureFlagHttpService } from '@reuse/code/openapi';
+import { Subject } from 'rxjs';
 
 describe('FeatureFlagService', () => {
   let service: FeatureFlagService;
+  let featureFlagsSource$: Subject<string[]>;
 
-  const mockConfigurationService = {
-    getEnvironmentVariable: jest.fn<unknown, [string]>(),
+  const mockFeatureFlagHttpService = {
+    getFeatureFlags: jest.fn(),
   };
 
   beforeEach(() => {
+    featureFlagsSource$ = new Subject<string[]>();
+    mockFeatureFlagHttpService.getFeatureFlags.mockReturnValue(featureFlagsSource$.asObservable());
+
     TestBed.configureTestingModule({
-      providers: [FeatureFlagService, { provide: ConfigurationService, useValue: mockConfigurationService }],
+      providers: [FeatureFlagService, { provide: FeatureFlagHttpService, useValue: mockFeatureFlagHttpService }],
     });
 
     service = TestBed.inject(FeatureFlagService);
-    jest.clearAllMocks();
   });
 
-  describe('getFeatureFlags', () => {
-    it('should return defaults and set signal when env variable is missing', () => {
-      mockConfigurationService.getEnvironmentVariable.mockReturnValue(undefined);
+  describe('features', () => {
+    it('maps enabled flags from API payload', () => {
+      featureFlagsSource$.next(['ui-filters']);
 
-      const result = service.getFeatureFlags();
-
-      expect(result).toEqual({ filters: false });
-      expect(service.features()).toEqual({ filters: false });
-      expect(mockConfigurationService.getEnvironmentVariable).toHaveBeenCalledWith('enabledFeatures');
+      expect(service.features()).toEqual(['ui-filters']);
     });
 
-    it('should return defaults and set signal when env variable is invalid', () => {
-      mockConfigurationService.getEnvironmentVariable.mockReturnValue({
-        filters: 'not-a-boolean',
-      });
+    it('returns disabled flags when API payload is empty', () => {
+      featureFlagsSource$.next([]);
 
-      const result = service.getFeatureFlags();
-
-      expect(result).toEqual({ filters: false });
-      expect(service.features()).toEqual({ filters: false });
+      expect(service.features()).toEqual([]);
     });
 
-    it('should return provided features and set signal when env variable is valid', () => {
-      const validFeatures: EnabledFeatures = { filters: true };
-      mockConfigurationService.getEnvironmentVariable.mockReturnValue(validFeatures);
+    it('falls back to disabled flags when API call fails', () => {
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+      featureFlagsSource$.error(new Error('network failure'));
 
-      const result = service.getFeatureFlags();
-
-      expect(result).toEqual(validFeatures);
-      expect(service.features()).toEqual(validFeatures);
+      expect(service.features()).toEqual([]);
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      consoleErrorSpy.mockRestore();
     });
   });
 
   describe('getFeature', () => {
-    it('should return false if feature not set in signal', () => {
-      service.features.set({ filters: false });
+    it('returns a signal that is true when feature exists', () => {
+      featureFlagsSource$.next(['ui-filters']);
 
-      expect(service.getFeature('filters')).toBe(false);
+      expect(service.getFeature('ui-filters')()).toBe(true);
     });
 
-    it('should return true if feature set to true in signal', () => {
-      service.features.set({ filters: true });
+    it('returns a signal that is false when feature is absent', () => {
+      featureFlagsSource$.next([]);
 
-      expect(service.getFeature('filters')).toBe(true);
+      expect(service.getFeature('ui-filters')()).toBe(false);
     });
 
-    it('should default to false if feature key is missing', () => {
-      // @ts-expect-error forcing missing property
-      service.features.set({});
+    it('defaults to false when feature key is undefined', () => {
+      featureFlagsSource$.next([]);
+      expect(service.getFeature(undefined)()).toBe(false);
+    });
 
-      expect(service.getFeature('filters')).toBe(false);
+    it('reacts to subsequent API emissions', () => {
+      const filtersFlag = service.getFeature('ui-filters');
+      expect(filtersFlag()).toBe(false);
+
+      featureFlagsSource$.next(['ui-filters']);
+      expect(filtersFlag()).toBe(true);
+
+      featureFlagsSource$.next([]);
+      expect(filtersFlag()).toBe(false);
     });
   });
 });

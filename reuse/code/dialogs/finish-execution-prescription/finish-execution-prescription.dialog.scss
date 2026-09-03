@@ -1,11 +1,44 @@
+@use '@myhealth-belgium/design-kit' as mh;
 :host {
   ::ng-deep {
-    .mat-mdc-dialog-actions {
-      padding: 0 24px 20px 24px;
-    }
     .mat-mdc-form-field-icon-suffix,
     .mat-mdc-form-field-icon-prefix {
       padding: 0 4px 0 4px;
+    }
+  }
+}
+.mh-form-field {
+  label {
+    font-weight: mh.$font-weight-semibold;
+    color: var(--mh-dialog-font-semi-bold-color, #000000);
+    font-family: var(--mh-default-font-family, mh.$font-stack);
+  }
+  mat-form-field {
+    width: fit-content;
+  }
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: mh.$spacing-rem-m;
+
+  .patient_container {
+    .patient_label {
+      color: mh.$typography-brand-neutral-dark;
+    }
+    .patient_full_name {
+      @include mh.font-default-semibold();
+    }
+
+    display: flex;
+    gap: mh.$spacing-xs;
+    flex-direction: column;
+  }
+  .radio_group_container {
+    mat-radio-group {
+      display: flex;
+      flex-direction: column;
     }
   }
 }

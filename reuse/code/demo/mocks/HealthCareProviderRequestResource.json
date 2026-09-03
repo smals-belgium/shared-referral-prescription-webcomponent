@@ -1,5 +1,5 @@
 {
-  "healthcareProfessionals": [
+  "healthcarePro": [
     {
       "id": {
         "profession": "NURSE",
@@ -203,9 +203,7 @@
       "nihii8": "12345670",
       "nihii11": "10000000027",
       "type": "Professional"
-    }
-  ],
-  "healthcareOrganizations": [
+    },
     {
       "id": {
         "organizationId": "0000007",

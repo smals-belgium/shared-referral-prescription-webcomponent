@@ -15,7 +15,7 @@
       const params = new URLSearchParams(window.location.search);
 
       // Setting the profile for the target environment
-      globalThis.referralPrescriptionEnv = 'accHcp';
+      globalThis.window.referralPrescriptionEnv = 'accHcp';
 
       // Setting the environment dynamically
       const keycloak = getKeycloakConfiguration();

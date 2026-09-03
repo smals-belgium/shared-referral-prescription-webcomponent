@@ -12,12 +12,24 @@ import { MatIconTestingModule } from '@angular/material/icon/testing';
   template: `
     <app-dialog-layout title="Projected Title">
       <p dialog-content class="main-content">Main content</p>
-      <button dialog-actions class="action-button">Action</button>
     </app-dialog-layout>
   `,
   imports: [DialogLayoutComponent],
 })
 class TestHostComponent {}
+
+@Component({
+  template: `
+    <app-dialog-layout title="Projected Title">
+      <p dialog-content class="main-content">Main content</p>
+      <div #overrideActions dialog-actions-override>
+        <button>test1</button>
+      </div>
+    </app-dialog-layout>
+  `,
+  imports: [DialogLayoutComponent],
+})
+class TestHostFullComponent {}
 
 const mockDialogRef = { close: jest.fn() };
 
@@ -51,6 +63,32 @@ describe('DialogLayoutComponent', () => {
       closeButton.nativeElement.click();
       expect(mockDialogRef.close).toHaveBeenCalled();
     });
+
+    it('should close the dialog without data when not defined', () => {
+      const mockCancelData = undefined;
+
+      fixture.componentRef.setInput('cancelData', mockCancelData);
+
+      fixture.detectChanges();
+      const cancelButton = fixture.debugElement.query(By.css('[data-cy="dialog-cancel-button"]'));
+
+      cancelButton.nativeElement.click();
+
+      expect(mockDialogRef.close).toHaveBeenCalledWith(mockCancelData);
+    });
+
+    it('should close the dialog with cancelData data when defined', () => {
+      const mockCancelData = { reload: true };
+
+      fixture.componentRef.setInput('cancelData', mockCancelData);
+
+      fixture.detectChanges();
+      const cancelButton = fixture.debugElement.query(By.css('[data-cy="dialog-cancel-button"]'));
+
+      cancelButton.nativeElement.click();
+
+      expect(mockDialogRef.close).toHaveBeenCalledWith(mockCancelData);
+    });
   });
 });
 
@@ -80,9 +118,34 @@ describe('DialogLayoutComponent - content projection', () => {
     expect(content.nativeElement.textContent).toContain('Main content');
   });
 
-  it('should project dialog-actions content into the actions area', () => {
-    const actionButton = fixture.debugElement.query(By.css('mat-dialog-actions .action-button'));
-    expect(actionButton).toBeTruthy();
-    expect(actionButton.nativeElement.textContent).toContain('Action');
+  it('should project display default buttons if nothing overrides it', () => {
+    const elements = fixture.debugElement.queryAll(By.css('mat-dialog-actions button'));
+    expect(elements).toBeTruthy();
+    expect(elements).toHaveLength(2);
+    expect(elements[0]?.nativeElement?.textContent).toContain('common.confirm');
+    expect(elements[1]?.nativeElement?.textContent).toContain('common.cancel');
+  });
+
+  describe('Custom implementation of actions', () => {
+    let overrideFixture: ComponentFixture<TestHostFullComponent>;
+    beforeEach(async () => {
+      TestBed.resetTestingModule();
+
+      await TestBed.configureTestingModule({
+        imports: [TestHostFullComponent, NoopAnimationsModule, TranslateModule.forRoot(), MatIconTestingModule],
+        providers: [
+          { provide: MatDialogRef, useValue: mockDialogRef },
+          { provide: MAT_DIALOG_DATA, useValue: {} },
+        ],
+      }).compileComponents();
+
+      overrideFixture = TestBed.createComponent(TestHostFullComponent);
+      overrideFixture.detectChanges();
+    });
+    it('should project display override content if something is defined', () => {
+      const elements = overrideFixture.debugElement.query(By.css('mat-dialog-actions button'));
+      expect(elements).toBeTruthy();
+      expect(elements.nativeElement.textContent.trim()).toBe('test1');
+    });
   });
 });

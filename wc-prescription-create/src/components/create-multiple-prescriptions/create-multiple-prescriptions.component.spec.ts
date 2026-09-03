@@ -1,4 +1,4 @@
-import { Component, ElementRef, signal } from '@angular/core';
+import { Component, ElementRef, EventEmitter, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { CreateMultiplePrescriptionsComponent } from './create-multiple-prescriptions.component';
@@ -237,6 +237,45 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     expect(panels[1].componentInstance.expanded).toBe(true);
   });
 
+  it('should expand the last prescription with errors', () => {
+    const mockTemplateVersionState = jest.fn().mockReturnValue({
+      data: {
+        id: '1',
+        templateId: 'A',
+      },
+      status: LoadingStatus.SUCCESS,
+    });
+
+    setForms([
+      {
+        templateCode: 'A',
+        status: LoadingStatus.ERROR,
+        errors: { frequency: { required: true } },
+        formTemplateState$: mockTemplateVersionState,
+        trackId: 1,
+      },
+      {
+        templateCode: 'B',
+        status: LoadingStatus.INITIAL,
+        formTemplateState$: mockTemplateVersionState,
+        trackId: 2,
+      },
+      {
+        templateCode: 'C',
+        status: LoadingStatus.ERROR,
+        errors: { validityDate: { required: true } },
+        formTemplateState$: mockTemplateVersionState,
+        trackId: 3,
+      },
+    ]);
+
+    const panels = fixture.debugElement.queryAll(By.css('mat-expansion-panel'));
+    expect(panels.length).toBe(3);
+    expect(panels[0].componentInstance.expanded).toBe(false);
+    expect(panels[1].componentInstance.expanded).toBe(false);
+    expect(panels[2].componentInstance.expanded).toBe(true);
+  });
+
   it('should apply no-toggle class and tabindex -1 on header if only one form', () => {
     setOneTemplate();
     const header = fixture.debugElement.query(By.css('mat-expansion-panel-header'));
@@ -387,7 +426,7 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     component.panels = {
       first: mockPanel,
     } as unknown as QueryList<MatExpansionPanel>;
-    component.createPrescriptionForms = [{ status: LoadingStatus.SUCCESS }] as CreatePrescriptionForm[];
+    component.createPrescriptionForms = [{ status: LoadingStatus.SUCCESS, trackId: 0 }] as CreatePrescriptionForm[];
 
     component.ngOnChanges({
       createPrescriptionForms: {
@@ -401,6 +440,48 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     jest.runAllTimers();
 
     expect(mockPanel.open).toHaveBeenCalled();
+  });
+
+  it('should expand newly added form even when a previous form has errors', () => {
+    fixture.detectChanges();
+
+    const existingForms: CreatePrescriptionForm[] = [
+      {
+        trackId: 1,
+        status: LoadingStatus.INITIAL,
+        errors: { frequency: { required: true } },
+        formTemplateState$: jest.fn().mockReturnValue({ data: null, status: LoadingStatus.SUCCESS }),
+      } as unknown as CreatePrescriptionForm,
+    ];
+
+    const newForm: CreatePrescriptionForm = {
+      trackId: 2,
+      status: LoadingStatus.INITIAL,
+      formTemplateState$: jest.fn().mockReturnValue({ data: null, status: LoadingStatus.SUCCESS }),
+    } as unknown as CreatePrescriptionForm;
+
+    const allForms = [...existingForms, newForm];
+    component.createPrescriptionForms = allForms;
+
+    const panelForNewForm = { open: jest.fn() } as unknown as MatExpansionPanel;
+    component.panels = {
+      get: jest.fn().mockImplementation((index: number) => (index === 1 ? panelForNewForm : { open: jest.fn() })),
+      findIndex: jest.fn(),
+    } as unknown as QueryList<MatExpansionPanel>;
+
+    component.ngOnChanges({
+      createPrescriptionForms: {
+        currentValue: allForms,
+        previousValue: existingForms,
+        firstChange: false,
+        isFirstChange: () => false,
+      },
+    });
+
+    jest.runAllTimers();
+
+    expect(component.expandedTrackId).toBe(2);
+    expect(panelForNewForm.open).toHaveBeenCalled();
   });
 
   it('should delegate getModelState to prescriptionModelState', () => {
@@ -461,6 +542,36 @@ describe('CreateMultiplePrescriptionsComponent', () => {
       expect(target.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
     });
 
+    it('should expand collapsed panel before scrolling to target', () => {
+      const target = document.createElement('div');
+      target.setAttribute('data-evf-element-id', 'frequency');
+      const wrapper = document.createElement('div');
+      wrapper.setAttribute('id', 'mat-expension-panel-123');
+      wrapper.appendChild(target);
+      const shadow = document.createElement('div');
+      shadow.appendChild(wrapper);
+
+      (component as any)['host'] = new ElementRef(shadow);
+      target.scrollIntoView = jest.fn();
+
+      const afterExpand = new EventEmitter<void>();
+      const mockPanel = {
+        expanded: false,
+        open: jest.fn(() => afterExpand.emit()),
+        afterExpand,
+      } as unknown as MatExpansionPanel;
+
+      component.createPrescriptionForms = [{ trackId: 123 }] as CreatePrescriptionForm[];
+      component.panels = {
+        get: jest.fn().mockReturnValue(mockPanel),
+      } as unknown as QueryList<MatExpansionPanel>;
+
+      component.scrollTo('frequency', 123);
+
+      expect(mockPanel.open).toHaveBeenCalled();
+      expect(target.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+    });
+
     it('should scroll to top when multiple errors exist', () => {
       const mockTemplateVersionState = jest.fn().mockReturnValue({
         data: {
@@ -478,26 +589,32 @@ describe('CreateMultiplePrescriptionsComponent', () => {
             required: true,
           },
         },
+        trackId: 123,
         formTemplateState$: mockTemplateVersionState,
       } as unknown as CreatePrescriptionForm;
 
       const target = document.createElement('div');
       target.setAttribute('data-evf-element-id', 'frequency');
+      const wrapper = document.createElement('div');
+      wrapper.setAttribute('id', 'mat-expension-panel-123');
+      wrapper.appendChild(target);
       const shadow = document.createElement('div');
-      shadow.appendChild(target);
+      shadow.appendChild(wrapper);
 
       (component as any)['host'] = new ElementRef(shadow);
       target.scrollIntoView = jest.fn();
+      wrapper.scrollIntoView = jest.fn();
       shadow.scrollIntoView = jest.fn();
 
-      jest.spyOn(component as any, 'getFirstPrescriptionWithErrors').mockReturnValue(mockForm);
+      jest.spyOn(component as any, 'getLastPrescriptionWithErrors').mockReturnValue(mockForm);
       const scrollToSpy = jest.spyOn(component, 'scrollTo');
 
       component.scrollToTop();
 
-      expect(scrollToSpy).toHaveBeenCalledWith();
+      expect(scrollToSpy).toHaveBeenCalledWith(undefined, 123);
       expect(target.scrollIntoView).not.toHaveBeenCalled();
-      expect(shadow.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+      expect(wrapper.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+      expect(shadow.scrollIntoView).not.toHaveBeenCalled();
     });
 
     it('should scroll to target when only 1 error exist', () => {
@@ -530,7 +647,7 @@ describe('CreateMultiplePrescriptionsComponent', () => {
       target.scrollIntoView = jest.fn();
       shadow.scrollIntoView = jest.fn();
 
-      jest.spyOn(component as any, 'getFirstPrescriptionWithErrors').mockReturnValue(mockForm);
+      jest.spyOn(component as any, 'getLastPrescriptionWithErrors').mockReturnValue(mockForm);
       jest.spyOn((component as any).getErrorMessagesPipe, 'transform').mockReturnValue([
         {
           label: 'frequency',

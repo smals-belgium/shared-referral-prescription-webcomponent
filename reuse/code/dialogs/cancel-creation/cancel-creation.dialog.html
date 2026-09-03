@@ -1,4 +1,6 @@
-<app-dialog-layout [title]="'prescription.create.cancelPrescriptionsCreation.title' | translate">
+<app-dialog-layout
+  [title]="'prescription.create.cancelPrescriptionsCreation.title' | translate"
+  (confirm)="cancelPrescriptions()">
   <div dialog-content [formGroup]="checkboxesGroup">
     @if (checkboxesGroup.invalid && checkboxesGroup.touched) {
     <div class="mat-mdc-form-field checkbox-validation-error">
@@ -25,9 +27,4 @@
       </div>
     </div>
   </div>
-
-  <ng-container dialog-actions>
-    <button type="button" mat-flat-button (click)="cancelPrescriptions()">{{ 'common.confirm' | translate }}</button>
-    <button type="button" mat-stroked-button [mat-dialog-close]="undefined">{{ 'common.close' | translate }}</button>
-  </ng-container>
 </app-dialog-layout>

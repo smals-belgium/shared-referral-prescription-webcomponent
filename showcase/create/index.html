@@ -15,7 +15,7 @@
       const params = new URLSearchParams(window.location.search);
       // Setting the profile for the target environment
       const env = params.get('env') || 'intExtHcp';
-      globalThis.referralPrescriptionEnv = env;
+      globalThis.window.referralPrescriptionEnv = env;
       // Setting the environment dynamically
       const keycloak = getKeycloakConfigurationForEnv(env);
 

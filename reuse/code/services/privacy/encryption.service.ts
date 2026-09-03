@@ -22,8 +22,8 @@ export class EncryptionService {
     return globalThis.crypto.subtle.exportKey('raw', key);
   }
 
-  importKey(key: Uint8Array<ArrayBuffer>) {
-    if (key.length !== 32) {
+  importKey(key: BufferSource) {
+    if (!(key instanceof Uint8Array) || key.length !== 32) {
       throw new Error('Invalid key length: Expected 32 bytes for AES-256');
     }
 

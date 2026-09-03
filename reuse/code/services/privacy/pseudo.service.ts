@@ -1,108 +1,68 @@
 import { Injectable } from '@angular/core';
-import {
-  Curve,
-  Domain,
-  EHealthProblem,
-  PseudonymInTransit,
-  PseudonymisationHelper,
-  Value,
-} from '@smals-belgium-shared/pseudo-helper';
+import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
-import { pseudonymInTransitMock } from '@reuse/code/demo/mocks/pseudonymInTransit';
-import { pseudonymValue } from '@reuse/code/demo/mocks/pseudonymValue';
+import { PseudonymizationService } from './pseudo.service.abstract';
+import { PseudoService as EnhancedPseudoService } from '@smals-belgium/shared-pseudo-tools-js';
+import { firstValueFrom } from 'rxjs';
+import { pseudonymInTransitMock, Uint8ArrayMock } from '@reuse/code/demo/mocks/pseudonymInTransit';
 
 @Injectable({ providedIn: 'root' })
-export class PseudoService {
-  private readonly pseudonymizationDomain: Domain | undefined;
-  private readonly pseudoApiUrl = this.configService.getEnvironmentVariable('pseudoApiUrl') as string;
+export class PseudoService implements PseudonymizationService {
+  private readonly enhancedPseudoService?: EnhancedPseudoService;
   private readonly env = this.configService.getEnvironment();
+
+  private readonly pseudoApiUrl = this.configService.getEnvironmentVariable('pseudoApiUrl') as string;
+  private readonly pseudoEnabled = this.configService.getEnvironmentVariable('enablePseudo');
 
   constructor(
     private readonly configService: ConfigurationService,
     private readonly pseudonymizationHelper: PseudonymisationHelper
   ) {
-    if (this.configService.getEnvironmentVariable('enablePseudo')) {
-      this.pseudonymizationDomain = this.pseudonymizationHelper.createDomain(
-        'uhmep_v1',
-        <Curve>'p521',
-        this.pseudoApiUrl,
-        8
-      );
+    if (this.pseudoEnabled && this.pseudoApiUrl) {
+      this.enhancedPseudoService = new EnhancedPseudoService(this.pseudonymizationHelper, {
+        domain: 'uhmep_v1',
+        curve: 'p521',
+        endpoint: this.pseudoApiUrl,
+        audience: '',
+        bufferSize: 8,
+      });
     }
   }
 
   async pseudonymize(value: string): Promise<string> {
-    if (!this.pseudonymizationDomain) {
-      return value;
-    }
-
-    return await this.pseudonymizationDomain.valueFactory
-      .fromString(value)
-      .pseudonymize()
-      .then((res: PseudonymInTransit | EHealthProblem) => {
-        if (res instanceof EHealthProblem) {
-          throw new Error(res.detail);
-        }
-        return res.asString();
-      });
+    return this.pseudoEnabled && this.enhancedPseudoService
+      ? firstValueFrom(this.enhancedPseudoService.toAsn1Compressed(value))
+      : value;
   }
 
   async identify(value: string): Promise<string> {
-    if (!this.pseudonymizationDomain) {
+    if (!this.enhancedPseudoService) {
       return value;
     }
-
-    return await this.pseudonymizationDomain.pseudonymInTransitFactory
-      .fromSec1AndTransitInfo(value)
-      .identify()
-      .then((res: Value | EHealthProblem) => {
-        if (res instanceof EHealthProblem) {
-          throw new Error(res.detail);
-        }
-        return res.asString();
-      });
+    return firstValueFrom(this.enhancedPseudoService.fromAsn1Compressed(value));
   }
 
-  async pseudonymizeValue(val: Value) {
-    return val.pseudonymize().then(res => {
-      if (res instanceof EHealthProblem) {
-        throw new Error(res.title, { cause: res.detail });
-      }
-      return res.asShortString();
-    });
-  }
-
-  byteArrayToValue(str: Uint8Array) {
-    if (!this.pseudonymizationDomain) {
+  async pseudonymizeByteArray(array: Uint8Array<ArrayBufferLike>): Promise<string> {
+    if (!this.enhancedPseudoService) {
       if (this.env === 'demo') {
-        return pseudonymValue;
+        return pseudonymInTransitMock.sec1Compressed();
       }
       this.handlePseudomizationNotEnabled();
-      return null;
     }
-    return this.pseudonymizationDomain.valueFactory.fromArray(str);
+    return firstValueFrom(this.enhancedPseudoService.byteArraytoAsn1Compressed(array));
   }
 
-  async identifyPseudonymInTransit(pseudonymInTransit: PseudonymInTransit) {
-    const res = await pseudonymInTransit.identify();
-    if (res instanceof EHealthProblem) {
-      throw new Error(res.title, { cause: res.detail });
-    }
-    return res.asBytes();
-  }
-
-  toPseudonymInTransit(asn1Compressed: string) {
-    if (!this.pseudonymizationDomain) {
+  async identifyByteArray(value: string): Promise<Uint8Array<ArrayBufferLike>> {
+    if (!this.enhancedPseudoService) {
       if (this.env === 'demo') {
-        return pseudonymInTransitMock;
+        return Uint8ArrayMock;
       }
       this.handlePseudomizationNotEnabled();
-      return null;
     }
-    return this.pseudonymizationDomain.pseudonymInTransitFactory.fromSec1AndTransitInfo(asn1Compressed);
+    return firstValueFrom(this.enhancedPseudoService.byteArrayFromAsn1Compressed(value));
   }
 
-  private handlePseudomizationNotEnabled() {
+  private handlePseudomizationNotEnabled(): never {
     throw new Error('Pseudomization not enabled.');
   }
 }

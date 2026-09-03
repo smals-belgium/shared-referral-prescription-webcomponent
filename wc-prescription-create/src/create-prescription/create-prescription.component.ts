@@ -785,16 +785,21 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
         .subscribe(result => {
           if (!result) {
             return;
-          } else if (result.formsToDelete.length === this.prescriptionForms().length) {
-            this.templateVersionsStateService.cleanupAllInstances();
-            this.clickCancel.emit();
-          } else if (result.formsToDelete.length > 0) {
-            this.prescriptionForms.update(forms => forms.filter(f => !result.formsToDelete.includes(f.trackId)));
+          }
 
-            const formsToDelete = this.prescriptionForms().filter(f => result.formsToDelete.includes(f.trackId));
-
-            formsToDelete.forEach(f =>
-              this.templateVersionsStateService.cleanupInstance(f.generatedUUID, f.templateCode)
+          if (result.formsToDelete.length === 0) {
+            return;
+          }
+          const formsToDelete = this.prescriptionForms().filter(f => result.formsToDelete.includes(f.trackId));
+          this.prescriptionForms.update(forms => forms.filter(f => !result.formsToDelete.includes(f.trackId)));
+          if (result.formsToDelete.length === formsToDelete.length) {
+            if (this.prescriptionForms().length === 0) {
+              this.templateVersionsStateService.cleanupAllInstances();
+              this.clickCancel.emit();
+              return;
+            }
+            formsToDelete.forEach(form =>
+              this.templateVersionsStateService.cleanupInstance(form.generatedUUID, form.templateCode)
             );
           }
         });

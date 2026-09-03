@@ -17,7 +17,7 @@ export function mapIdTokenToPrescriber(
 
   if (oidc) {
     const organization = idToken.userProfile?.organizations?.[0];
-    const oidcValue = organization?.[oidc as keyof typeof organization];
+    const oidcValue = organization?.[oidc];
 
     prescriber = {
       ...prescriber,
@@ -26,15 +26,4 @@ export function mapIdTokenToPrescriber(
   }
 
   return prescriber;
-}
-
-export function getConnectedOrganizationNihii(
-  idToken: IdToken | null | undefined,
-  oidc: OIDC | null | undefined
-): string | undefined {
-  if (!idToken || !oidc) {
-    return undefined;
-  }
-  const organization = idToken.userProfile?.organizations?.[0];
-  return organization?.[oidc as keyof typeof organization]?.nihii;
 }

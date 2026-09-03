@@ -9,8 +9,13 @@ export interface PrescriptionExecutionStart {
   startDate?: string;
 }
 
-export interface PrescriptionExecutionFinish {
+export interface TaskExecutionFinish {
   endDate?: string;
+}
+
+export interface PrescriptionExecutionComplete {
+  endDate?: string;
+  performerTaskId?: string;
 }
 
 export interface SearchPrescriptionCriteria {

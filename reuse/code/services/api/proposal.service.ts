@@ -1,10 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { SearchPrescriptionCriteria } from '@reuse/code/interfaces';
 import {
+  ProposalService as ApiProposalService,
   AssignCareGiverResource,
   AssignOrganizationResource,
   CreateRequestResource,
-  ProposalService as ApiProposalService,
   ReasonResource,
 } from '@reuse/code/openapi';
 
@@ -27,8 +27,8 @@ export class ProposalService {
     );
   }
 
-  findOne(proposalId: string) {
-    return this.api.getProposal(proposalId);
+  findOne(proposalId: string, xActorCaregiverSsin?: string) {
+    return this.api.getProposal(proposalId, xActorCaregiverSsin);
   }
 
   assignCaregiver(
@@ -62,6 +62,22 @@ export class ProposalService {
       performerTaskId,
       generatedUUID,
       caregiver
+    );
+  }
+
+  transferAssignationOrganization(
+    prescriptionId: string,
+    referralTaskId: string,
+    performerTaskId: string,
+    organization: AssignOrganizationResource,
+    generatedUUID: string
+  ) {
+    return this.api.transferAssignOrganizationToProposal(
+      prescriptionId,
+      referralTaskId,
+      performerTaskId,
+      generatedUUID,
+      organization
     );
   }
 

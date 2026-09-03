@@ -20,11 +20,7 @@ interface AppConfig extends IConfiguration {
   };
 }
 
-export type FeatureFlagKeys = keyof EnabledFeatures;
-
-export interface EnabledFeatures {
-  filters: boolean;
-}
+export type FeatureFlag = 'ui-filters';
 
 interface AppConfigVariables {
   env: ReferralEnv;
@@ -33,7 +29,6 @@ interface AppConfigVariables {
   apiUrl: string;
   pseudoApiUrl?: string;
   enablePseudo?: boolean;
-  enabledFeatures?: EnabledFeatures;
 }
 
 export const APP_CONFIG: AppConfig = {
@@ -41,29 +36,23 @@ export const APP_CONFIG: AppConfig = {
   variables: {
     demo: {
       env: 'demo',
-      fhirGatewayUrl: 'http://demo-mode:8080',
-      apiUrl: 'http://demo-mode:8080/frontend/api',
+      fhirGatewayUrl: 'http://demo-mode:9090',
+      apiUrl: 'http://demo-mode:9090/frontend/api',
       enablePseudo: false,
     },
     localPatient: {
       env: 'localPatient',
       fhirGatewayUrl: 'http://referral-prescription-fakeapi-v4.test.paas.vasdc.be',
-      apiUrl: 'http://localhost:8080/frontend/api',
+      apiUrl: 'http://localhost:9090/frontend/api',
       enablePseudo: true,
       pseudoApiUrl: 'https://uhmep-mockingbird.test.ext.vascloud.be/pseudo/v1',
-      enabledFeatures: {
-        filters: true,
-      },
     },
     localHcp: {
       env: 'localHcp',
       fhirGatewayUrl: 'http://referral-prescription-fakeapi-v4.test.paas.vasdc.be',
-      apiUrl: 'http://localhost:8080/frontend/api',
+      apiUrl: 'http://localhost:9090/frontend/api',
       enablePseudo: true,
       pseudoApiUrl: 'http://uhmep-mockingbird.test.paas.vasdc.be/pseudo/v1',
-      enabledFeatures: {
-        filters: false,
-      },
     },
     testHcp: {
       env: 'testHcp',

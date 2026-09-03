@@ -51,6 +51,12 @@
 
   .icon-cell {
     color: mh.$typography-brand-primary-medium;
+
+    .icon-content {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
   }
 
   .mat-column-lastname {

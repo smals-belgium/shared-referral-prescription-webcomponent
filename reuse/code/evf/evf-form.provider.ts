@@ -36,6 +36,7 @@ import { ToggleResponsiveWrapperComponent } from '@reuse/code/evf/components/tog
 import { withNbSessionsSideEffect } from '@reuse/code/evf/side-effects/effects/nb-sessions.side-effect';
 import { withElementIdBasedOnValueEffect } from '@reuse/code/evf/side-effects/effects/element-id-based-on-value.side-effect';
 import { ExpansionPanelTextareaComponent } from '@reuse/code/evf/components/expansion-panel-textarea/detail/expansion-panel-textarea.component';
+import { withStepperElement } from '@smals-belgium-shared/vas-evaluation-form-ui-material/elements/stepper';
 
 export function provideEvfForm() {
   return [
@@ -56,6 +57,7 @@ export function provideEvfForm() {
       withSlideToggleElement(),
       withInfoElement(),
       withRepeatableElement(),
+      withStepperElement(),
       evfElementConfigFeature(
         {
           name: 'autocompleteMultiselect',

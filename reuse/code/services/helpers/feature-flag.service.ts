@@ -1,34 +1,27 @@
-import { inject, Injectable, signal } from '@angular/core';
-import { EnabledFeatures, FeatureFlagKeys } from '@reuse/app.config';
-import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
+import { computed, inject, Injectable, Signal } from '@angular/core';
+import { FeatureFlag } from '@reuse/app.config';
+import { FeatureFlagService as FeatureFlagHttpService } from '@reuse/code/openapi';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { catchError, Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class FeatureFlagService {
-  configurationService = inject(ConfigurationService);
-  features = signal<EnabledFeatures>({
-    filters: false,
-  });
+  private readonly _featureFlagHttpService = inject(FeatureFlagHttpService);
 
-  getFeatureFlags() {
-    const raw: unknown = this.configurationService.getEnvironmentVariable('enabledFeatures');
+  public features: Signal<FeatureFlag[]> = toSignal(this.fetchFeatures(), { initialValue: [] });
 
-    if (!this.isEnabledFeatures(raw)) {
-      const defaults: EnabledFeatures = {
-        filters: false,
-      };
-      this.features.set(defaults);
-      return defaults;
-    }
-
-    this.features.set(raw);
-    return raw;
+  public getFeature(feature?: FeatureFlag): Signal<boolean> {
+    return computed(() => feature !== undefined && this.features().includes(feature));
   }
 
-  getFeature(feature: FeatureFlagKeys): boolean {
-    return this.features()[feature] ?? false;
-  }
-
-  private isEnabledFeatures(value: unknown): value is EnabledFeatures {
-    return typeof value === 'object' && value !== null && typeof (value as { filters: unknown }).filters === 'boolean';
+  private fetchFeatures(): Observable<FeatureFlag[]> {
+    return this._featureFlagHttpService.getFeatureFlags().pipe(
+      catchError(err => {
+        console.error('failed to load feature flags', err);
+        return of([]);
+      }),
+      map(stringFlags => stringFlags as FeatureFlag[])
+    );
   }
 }

@@ -12,7 +12,7 @@
   <body>
     <script>
       // Setting the profile for the target environment
-      globalThis.referralPrescriptionEnv = 'accHcp';
+      globalThis.window.referralPrescriptionEnv = 'accHcp';
       const params = new URLSearchParams(window.location.search);
       // Setting the environment dynamically
       const keycloak = getKeycloakConfigurationForEnv();

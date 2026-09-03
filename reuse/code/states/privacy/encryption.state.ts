@@ -9,8 +9,8 @@ export class EncryptionState extends BaseState<CryptoKey> {
     super();
   }
 
-  loadCryptoKey(unit8Array: Uint8Array): void {
-    this.load(this.encryptionService.importKey(unit8Array));
+  loadCryptoKey(unit8Array: Uint8Array | ArrayBufferLike): void {
+    this.load(this.encryptionService.importKey(unit8Array as BufferSource));
   }
 
   resetCryptoKey() {

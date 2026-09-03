@@ -85,10 +85,14 @@ const mockAuthService = {
   ),
   isProfessional: jest.fn(() => of(false)),
   isOrganization: jest.fn(() => of(false)),
+  isOrganizationAndNotActingForProfessional: jest.fn(() => of(false)),
+  isPatient: jest.fn(() => of(false)),
   discipline: jest.fn(() => of(Discipline.Physician)),
   getAccessToken: jest.fn(() => of('')),
   role: jest.fn(() => of(Role.Prescriber)),
   oidc: jest.fn(() => of(OIDC.Hospital)),
+  getConnectedOrganizationNihii: jest.fn(() => of('12345678910')),
+  isOrganizationAndActingForProfessional: jest.fn(() => of(false)),
 } as jest.Mocked<AuthService>;
 
 const mockPssService = {
@@ -109,7 +113,6 @@ function MockPseudoHelperFactory() {
   return new PseudonymisationHelper(mockPseudoClient);
 }
 
-// Mock the 'uuid' module
 jest.mock('uuid', () => ({
   v4: jest.fn(),
 }));
@@ -120,11 +123,16 @@ class MockDateAdapter {
 
 const BASE_URL = 'http://localhost';
 
+type MockPseudoService = jest.Mocked<
+  Pick<PseudoService, 'pseudonymize' | 'identify' | 'pseudonymizeByteArray' | 'identifyByteArray'>
+>;
+
 describe('CreatePrescriptionWebComponent', () => {
   let component: CreatePrescriptionExtendedWebComponent;
   let fixture: ComponentFixture<CreatePrescriptionExtendedWebComponent>;
   let httpMock: HttpTestingController;
-  let pseudoService: PseudoService;
+  let pseudoService: MockPseudoService;
+  let mockPseudoService: MockPseudoService;
   let dialog: MatDialog;
   let toaster: ToastService;
   let translate: TranslateService;
@@ -134,17 +142,21 @@ describe('CreatePrescriptionWebComponent', () => {
 
   beforeAll(() => {
     Object.defineProperty(window, 'crypto', {
+      configurable: true,
       value: {
+        getRandomValues: jest.fn((array: Uint8Array) => array),
+        randomUUID: jest.fn(() => 'mock-alert-target'),
         subtle: {
-          importKey: jest.fn(), // Mock the `importKey` function
+          importKey: jest.fn(),
           decrypt: jest.fn(),
-          getRandomValues: jest.fn(),
         },
       },
     });
   });
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+
     jest.spyOn(MatDialog.prototype, 'open').mockImplementation(
       () =>
         ({
@@ -160,7 +172,18 @@ describe('CreatePrescriptionWebComponent', () => {
 
     mockAlertService = mockTestAlertService;
 
-    await TestBed.configureTestingModule({
+    configureMockConfigService();
+
+    mockPseudoService = {
+      pseudonymize: jest.fn(async (value: string) => value),
+      identify: jest.fn(async (value: string) => value),
+      pseudonymizeByteArray: jest.fn(async (_array: Uint8Array<ArrayBufferLike>) => 'mockPseudomizedKey'),
+      identifyByteArray: jest.fn(async (_value: string) => new Uint8Array([1, 2, 3, 4]) as Uint8Array<ArrayBufferLike>),
+    };
+
+    pseudoService = mockPseudoService;
+
+    TestBed.configureTestingModule({
       imports: [
         CreatePrescriptionExtendedWebComponent,
         TranslateModule.forRoot({
@@ -178,11 +201,13 @@ describe('CreatePrescriptionWebComponent', () => {
         { provide: DateAdapter, useClass: MockDateAdapter },
         { provide: ConfigurationService, useValue: mockConfigService },
         { provide: AuthService, useValue: mockAuthService },
+        { provide: ALERT_TARGET, useValue: ERROR_CREATE_PRESCRIPTION },
         MatDialog,
         {
           provide: PseudonymisationHelper,
           useValue: MockPseudoHelperFactory(),
         },
+        { provide: PseudoService, useValue: mockPseudoService },
         { provide: EncryptionService, useValue: mockEncryptionService },
         {
           provide: EncryptionKeyInitializerService,
@@ -199,16 +224,20 @@ describe('CreatePrescriptionWebComponent', () => {
         { provide: IconRegistryService, useValue: mockIconRegistryService },
         { provide: AlertService, useValue: mockAlertService },
       ],
-    })
-      .overrideComponent(CreatePrescriptionExtendedWebComponent, {
-        set: {
-          providers: [{ provide: ALERT_TARGET, useValue: ERROR_CREATE_PRESCRIPTION }],
-        },
-      })
-      .compileComponents();
+    });
+
+    TestBed.overrideProvider(PseudoService, { useValue: mockPseudoService });
+
+    TestBed.overrideComponent(CreatePrescriptionExtendedWebComponent, {
+      add: {
+        providers: [{ provide: PseudoService, useValue: mockPseudoService }],
+        viewProviders: [{ provide: PseudoService, useValue: mockPseudoService }],
+      },
+    });
+
+    await TestBed.compileComponents();
 
     httpMock = TestBed.inject(HttpTestingController);
-    pseudoService = TestBed.inject(PseudoService);
     dialog = TestBed.inject(MatDialog);
     toaster = TestBed.inject(ToastService);
     translate = TestBed.inject(TranslateService);
@@ -271,7 +300,6 @@ describe('CreatePrescriptionWebComponent', () => {
     it('should call publishOnePrescription when one prescription form is present and valid', () => {
       createFixture('mockPseudomizedKey');
 
-      //1 form
       setOnePrescription();
 
       const mockUpdate = jest.fn(updateFn => updateFn([{ submitted: true }]));
@@ -291,10 +319,10 @@ describe('CreatePrescriptionWebComponent', () => {
 
       expect(emitPrescriptionCreated).toHaveBeenCalledWith(['123']);
     });
+
     it('should call publishMultiplePrescriptions when more then one prescription form is present and valid', () => {
       createFixture('mockPseudomizedKey');
 
-      //2 forms
       setMultiplePrescriptions();
 
       const mockUpdate = jest.fn(updateFn => updateFn([{ submitted: true }]));
@@ -310,6 +338,7 @@ describe('CreatePrescriptionWebComponent', () => {
       expect(mockPublish).toHaveBeenCalled();
       expect(mockPublishMultiplePrescriptions).toHaveBeenCalled();
     });
+
     it('should not publish and not emit when prescription form has validation errors', () => {
       createFixture('mockPseudomizedKey');
       const mockValidationErrors = { someField: ['required'] };
@@ -413,9 +442,11 @@ describe('CreatePrescriptionWebComponent', () => {
         panelClass: 'mh-dialog-container',
       });
     });
+
     it('should open CancelCreationDialog when prescriptionForms length is greater than 1', () => {
       createFixture('mockPseudomizedKey');
       setMultiplePrescriptions();
+      const prescriptionForms = component.prescriptionForms();
 
       const openDialogSpy = jest.spyOn(dialog, 'open');
       const dialogRefMock = {
@@ -427,11 +458,58 @@ describe('CreatePrescriptionWebComponent', () => {
 
       expect(openDialogSpy).toHaveBeenCalledWith(CancelCreationDialog, {
         data: {
-          prescriptionForms: component.prescriptionForms(),
+          prescriptionForms,
         },
         panelClass: 'mh-dialog-container',
       });
     });
+
+    it('should delete only selected prescription forms when confirming the cancel dialog', () => {
+      createFixture('mockPseudomizedKey');
+      setMultiplePrescriptions();
+
+      const cleanupAllSpy = jest.spyOn(component['templateVersionsStateService'], 'cleanupAllInstances');
+      const cleanupInstanceSpy = jest.spyOn(component['templateVersionsStateService'], 'cleanupInstance');
+      const componentClickCancelEmitSpy = jest.spyOn(component.clickCancel, 'emit');
+
+      const openDialogSpy = jest.spyOn(dialog, 'open');
+      const dialogRefMock = {
+        beforeClosed: jest.fn().mockReturnValue(of({ formsToDelete: [1] })),
+      } as unknown as MatDialogRef<unknown, unknown>;
+      openDialogSpy.mockReturnValue(dialogRefMock);
+
+      component.cancelCreation();
+
+      expect(component.prescriptionForms()).toHaveLength(1);
+      expect(component.prescriptionForms()[0].trackId).toBe(2);
+      expect(cleanupInstanceSpy).toHaveBeenCalledTimes(1);
+      expect(cleanupInstanceSpy).toHaveBeenCalledWith('uuid-1', 'TEMPLATE_1');
+      expect(cleanupAllSpy).not.toHaveBeenCalled();
+      expect(componentClickCancelEmitSpy).not.toHaveBeenCalled();
+    });
+
+    it('should delete all prescription forms and emit clickCancel when all are selected in the cancel dialog', () => {
+      createFixture('mockPseudomizedKey');
+      setMultiplePrescriptions();
+
+      const cleanupAllSpy = jest.spyOn(component['templateVersionsStateService'], 'cleanupAllInstances');
+      const cleanupInstanceSpy = jest.spyOn(component['templateVersionsStateService'], 'cleanupInstance');
+      const componentClickCancelEmitSpy = jest.spyOn(component.clickCancel, 'emit');
+
+      const openDialogSpy = jest.spyOn(dialog, 'open');
+      const dialogRefMock = {
+        beforeClosed: jest.fn().mockReturnValue(of({ formsToDelete: [1, 2] })),
+      } as unknown as MatDialogRef<unknown, unknown>;
+      openDialogSpy.mockReturnValue(dialogRefMock);
+
+      component.cancelCreation();
+
+      expect(component.prescriptionForms()).toHaveLength(0);
+      expect(cleanupAllSpy).toHaveBeenCalledTimes(1);
+      expect(cleanupInstanceSpy).not.toHaveBeenCalled();
+      expect(componentClickCancelEmitSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('should open ConfirmDialog and emit clickCancel when prescriptionForms length is 1', () => {
       createFixture('mockPseudomizedKey');
       const componentClickCancelEmitSpy = jest.spyOn(component.clickCancel, 'emit');
@@ -469,13 +547,11 @@ describe('CreatePrescriptionWebComponent', () => {
       const { debugElement } = fixture;
       let createMultiplePrescriptionsComponent = debugElement.query(By.css('app-create-multiple-prescriptions'));
 
-      //no patient loaded => no form
       expect(component.patientState$()).toStrictEqual({
         status: LoadingStatus.INITIAL,
       });
       expect(createMultiplePrescriptionsComponent).toBeNull();
 
-      //load patient => display form
       jest.spyOn(component['patientStateService'], 'state').mockReturnValue({
         data: person,
         status: LoadingStatus.SUCCESS,
@@ -501,6 +577,7 @@ describe('CreatePrescriptionWebComponent', () => {
       ).nativeElement;
       expect(createMultiplePrescriptionsComponent).toBeTruthy();
     });
+
     it('should call addPrescriptionForm when a valid templateCode is returned', () => {
       createFixture('mockPseudomizedKey');
       const openDialogSpy = jest.spyOn(dialog, 'open');
@@ -516,6 +593,7 @@ describe('CreatePrescriptionWebComponent', () => {
 
       getTemplate(templateCode);
     });
+
     it('should not call addPrescriptionForm when result is null', () => {
       createFixture('mockPseudomizedKey');
       const openDialogSpy = jest.spyOn(dialog, 'open');
@@ -549,6 +627,7 @@ describe('CreatePrescriptionWebComponent', () => {
 
       expect(prescriptionFormUpdateSpy).not.toHaveBeenCalled();
     });
+
     it('should delete the form if user confirms (true)', () => {
       createFixture('mockPseudomizedKey');
       const openDialogSpy = jest.spyOn(dialog, 'open');
@@ -564,6 +643,7 @@ describe('CreatePrescriptionWebComponent', () => {
 
       expect(prescriptionFormUpdateSpy).toHaveBeenCalledWith(expect.any(Function));
     });
+
     it('should remove the correct form when user confirms', () => {
       createFixture('mockPseudomizedKey');
       const openDialogSpy = jest.spyOn(dialog, 'open');
@@ -577,7 +657,7 @@ describe('CreatePrescriptionWebComponent', () => {
 
       const mockUpdateFunction = jest.fn(callback => {
         const updatedForms = callback([form1, form2]);
-        expect(updatedForms).toEqual([form2]); // Expect form1 to be deleted
+        expect(updatedForms).toEqual([form2]);
       });
 
       component.prescriptionForms.update = mockUpdateFunction;
@@ -586,6 +666,7 @@ describe('CreatePrescriptionWebComponent', () => {
 
       expect(mockUpdateFunction).toHaveBeenCalled();
     });
+
     it('should emit clickCancel when all forms are deleted in CancelCreationDialog', () => {
       createFixture('mockPseudomizedKey');
       setMultiplePrescriptions();
@@ -603,6 +684,7 @@ describe('CreatePrescriptionWebComponent', () => {
       expect(openDialogSpy).toHaveBeenCalled();
       expect(componentClickCancelEmit).toHaveBeenCalled();
     });
+
     it('should update prescriptionForms when some forms are deleted in CancelCreationDialog', () => {
       createFixture('mockPseudomizedKey');
       setMultiplePrescriptions();
@@ -619,6 +701,7 @@ describe('CreatePrescriptionWebComponent', () => {
       expect(openDialogSpy).toHaveBeenCalled();
       expect(componentPrescriptionFormsUpdate).toHaveBeenCalledWith(expect.any(Function));
     });
+
     it('should not perform any action when no forms are deleted in CancelCreationDialog', () => {
       createFixture('mockPseudomizedKey');
       setMultiplePrescriptions();
@@ -672,6 +755,7 @@ describe('CreatePrescriptionWebComponent', () => {
 
       consoleErrorMock.mockRestore();
     });
+
     it('should show error card with proposal.create.allFailed when all operations fail and intent is "proposal"', () => {
       const alertServiceSpy = jest.spyOn(mockAlertService, 'showCurrentActiveAlert');
       createFixture('mockPseudomizedKey');
@@ -698,13 +782,14 @@ describe('CreatePrescriptionWebComponent', () => {
       });
 
       expect(prescriptionFormsUpdateSpy).toHaveBeenCalled();
-      expect(consoleErrorMock).toHaveBeenCalledTimes(2); // Expect 2 errors
+      expect(consoleErrorMock).toHaveBeenCalledTimes(2);
       expect(consoleErrorMock).toHaveBeenCalledWith(0, 'Error 1');
       expect(consoleErrorMock).toHaveBeenCalledWith(1, 'Error 2');
       expect(componentLoadingSetSpy).toHaveBeenCalledWith(false);
 
       consoleErrorMock.mockRestore();
     });
+
     it('should handle encryption errors gracefully', done => {
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
       createFixture('mockPseudomizedKey');
@@ -784,27 +869,6 @@ describe('CreatePrescriptionWebComponent', () => {
 
       expect(result).toBe(prescription);
     });
-    it('should return initialPrescription unchanged if responses is undefined', () => {
-      createFixture('mockPseudomizedKey');
-      component.initialValues = {
-        intent: Intent.ORDER,
-        extend: true,
-      };
-      const prescription: ReadRequestResource = {
-        authoredOn: '',
-        patientIdentifier: '',
-        performerTasks: {},
-        period: { end: '', start: '' },
-        referralTask: {} as ReferralTaskResource,
-        templateCode: '',
-        id: '123',
-        responses: undefined as unknown as Record<string, any>,
-        intent: Intent.ORDER,
-        category: 'nursing',
-      };
-      const result = component.updateResponses(prescription);
-      expect(result).toBe(prescription);
-    });
 
     it('should return initialPrescription unchanged if responses is undefined', () => {
       createFixture('mockPseudomizedKey');
@@ -825,30 +889,6 @@ describe('CreatePrescriptionWebComponent', () => {
         category: 'nursing',
       };
       const result = component.updateResponses(prescription);
-      expect(result).toBe(prescription);
-    });
-
-    it('should return initialPrescription unchanged if responses is undefined', () => {
-      createFixture('mockPseudomizedKey');
-      component.initialValues = {
-        intent: Intent.ORDER,
-        extend: true,
-      };
-      const prescription: ReadRequestResource = {
-        authoredOn: '',
-        patientIdentifier: '',
-        performerTasks: {},
-        period: { end: '', start: '' },
-        referralTask: {} as ReferralTaskResource,
-        templateCode: '',
-        id: '123',
-        responses: undefined as unknown as Record<string, any>,
-        intent: Intent.ORDER,
-        category: 'nursing',
-      };
-
-      const result = component.updateResponses(prescription);
-
       expect(result).toBe(prescription);
     });
 
@@ -872,54 +912,6 @@ describe('CreatePrescriptionWebComponent', () => {
       };
 
       const result = component.updateResponses(prescription);
-      expect(result).toBe(prescription);
-    });
-
-    it('should return initialPrescription unchanged if responses is undefined', () => {
-      createFixture('mockPseudomizedKey');
-      component.initialValues = {
-        intent: Intent.ORDER,
-        extend: true,
-      };
-      const prescription: ReadRequestResource = {
-        authoredOn: '',
-        patientIdentifier: '',
-        performerTasks: {},
-        period: { end: '', start: '' },
-        referralTask: {} as ReferralTaskResource,
-        templateCode: '',
-        id: '123',
-        responses: undefined as unknown as Record<string, any>,
-        intent: Intent.ORDER,
-        category: 'nursing',
-      };
-
-      const result = component.updateResponses(prescription);
-
-      expect(result).toBe(prescription);
-    });
-
-    it('should return initialPrescription unchanged if prescriptionOriginId already exists', () => {
-      createFixture('mockPseudomizedKey');
-      component.initialValues = {
-        intent: Intent.ORDER,
-        extend: true,
-      };
-      const prescription: ReadRequestResource = {
-        authoredOn: '',
-        patientIdentifier: '',
-        performerTasks: {},
-        period: { end: '', start: '' },
-        referralTask: {} as ReferralTaskResource,
-        templateCode: '',
-        id: '123',
-        responses: { prescriptionOriginId: '456' },
-        intent: Intent.ORDER,
-        category: 'nursing',
-      };
-
-      const result = component.updateResponses(prescription);
-
       expect(result).toBe(prescription);
     });
 
@@ -970,6 +962,7 @@ describe('CreatePrescriptionWebComponent', () => {
 
       expect(result?.responses?.['prescriptionOriginId']).toBe('123');
     });
+
     it('should return initialPrescription response based on the occurrenceTiming', () => {
       createFixture('mockPseudomizedKey');
       component.initialValues = {
@@ -986,55 +979,6 @@ describe('CreatePrescriptionWebComponent', () => {
         category: 'nursing',
         intent: Intent.ORDER,
         id: '123',
-        responses: {
-          feedback: false,
-          diagnosis: 'test',
-          nbSessions: 42,
-          occurrenceTiming: {
-            repeat: {
-              boundsDuration: {
-                value: 3,
-                system: 'http://unitsofmeasure.org',
-                code: 'wk',
-              },
-              count: 42,
-              frequency: 2,
-              period: 1,
-              periodUnit: 'd',
-              duration: 3,
-              durationUnit: 'wk',
-              dayOfWeek: ['mon'],
-            },
-          },
-          boundsDuration: 3,
-          boundsDurationUnit: 'wk',
-          prescriptionOriginId: 'prescription-origin-id',
-        },
-      };
-
-      const result = component.updateResponses(prescription);
-
-      expect(result?.responses?.['boundsDuration']).toBe(3);
-      expect(result?.responses?.['boundsDurationUnit']).toBe('wk');
-      expect(result?.responses?.['sessionDuration']).toBe(3);
-      expect(result?.responses?.['sessionDurationUnit']).toBe('wk');
-      expect(result?.responses?.['dayOfWeek']).toEqual(['mon']);
-    });
-    it('should return initialPrescription response based on the occurrenceTiming', () => {
-      createFixture('mockPseudomizedKey');
-      component.initialValues = {
-        intent: Intent.ORDER,
-        extend: true,
-      };
-      const prescription: ReadRequestResource = {
-        authoredOn: '',
-        patientIdentifier: '',
-        performerTasks: {},
-        period: { end: '', start: '' },
-        referralTask: {} as ReferralTaskResource,
-        templateCode: '',
-        id: '123',
-        category: 'nursing',
         responses: {
           feedback: false,
           diagnosis: 'test',
@@ -1105,6 +1049,7 @@ describe('CreatePrescriptionWebComponent', () => {
         },
       });
     });
+
     it('should handle errors from encryptFreeTextInResponses', done => {
       createFixture('mockPseudomizedKey');
       const templateCode = 'template123';
@@ -1129,6 +1074,7 @@ describe('CreatePrescriptionWebComponent', () => {
         },
       });
     });
+
     it('should return original responses if template is not found', done => {
       createFixture('mockPseudomizedKey');
       jest.spyOn(component as any, 'getPrescriptionTemplateStream').mockReturnValue(() => null);
@@ -1139,6 +1085,7 @@ describe('CreatePrescriptionWebComponent', () => {
         done();
       });
     });
+
     it('should return original responses if cryptoKey is missing', done => {
       createFixture('mockPseudomizedKey');
       jest.spyOn(component as any, 'getPrescriptionTemplateStream').mockReturnValue(() => ({ data: { elements: [] } }));
@@ -1150,6 +1097,7 @@ describe('CreatePrescriptionWebComponent', () => {
         done();
       });
     });
+
     it('should encrypt only fields marked as freeText', done => {
       createFixture('mockPseudomizedKey');
       mockEncryptionKeyInitializerService.getCryptoKey.mockReturnValue('test-cryptoKey' as unknown as CryptoKey);
@@ -1174,6 +1122,7 @@ describe('CreatePrescriptionWebComponent', () => {
         done();
       });
     });
+
     it('should encrypt multiple freeText fields', done => {
       createFixture('mockPseudomizedKey');
       mockEncryptionKeyInitializerService.getCryptoKey.mockReturnValue('test-cryptoKey' as unknown as CryptoKey);
@@ -1198,11 +1147,12 @@ describe('CreatePrescriptionWebComponent', () => {
         expect(result).toEqual({
           field1: 'encrypted-value1',
           field2: 'encrypted-value2',
-          field3: 'value3', // Not encrypted
+          field3: 'value3',
         });
         done();
       });
     });
+
     it('should encrypt freeText fields within nested objects', done => {
       createFixture('mockPseudomizedKey');
       mockEncryptionKeyInitializerService.getCryptoKey.mockReturnValue('test-cryptoKey' as unknown as CryptoKey);
@@ -1265,6 +1215,7 @@ describe('CreatePrescriptionWebComponent', () => {
       expect(toasterSpy).toHaveBeenCalledWith('prescription.create.allSuccess', { interpolation: { count: 2 } });
       expect(emitPrescriptionCreated).toHaveBeenCalledWith(['123', '234']);
     });
+
     it('should show mixed success message when some succeed and some fail', () => {
       const alertServiceSpy = jest.spyOn(mockAlertService, 'showCurrentActiveAlert');
       createFixture('mockPseudomizedKey');
@@ -1297,6 +1248,7 @@ describe('CreatePrescriptionWebComponent', () => {
 
       consoleErrorMock.mockRestore();
     });
+
     it('should show proposal.create.someSuccessSomeFailed message when some succeed and some fail and intent is "proposal"', () => {
       const alertServiceSpy = jest.spyOn(mockAlertService, 'showCurrentActiveAlert');
       createFixture('mockPseudomizedKey');
@@ -1356,7 +1308,6 @@ describe('CreatePrescriptionWebComponent', () => {
         initialPrescription: { templateCode: 'ANNEX_82' } as ReadRequestResource,
       };
       component.initialValues = mockInitialValues;
-      // On stub loadPssStatus pour ne vérifier que l'appel
       const spy = jest.spyOn(component as any, 'loadPssStatus').mockImplementation(() => {});
       const changes: SimpleChanges = {
         initialValues: {
@@ -1377,7 +1328,6 @@ describe('CreatePrescriptionWebComponent', () => {
         initialPrescription: { templateCode: 'OTHER' } as ReadRequestResource,
       };
       component.initialValues = mockInitialValues;
-      // On stub handlePrescriptionChanges pour éviter le HTTP
       const changeSpy = jest.spyOn(component as any, 'handlePrescriptionChanges').mockImplementation(() => {});
       const loadSpy = jest.spyOn(component as any, 'loadPssStatus');
       const changes: SimpleChanges = {
@@ -1401,7 +1351,6 @@ describe('CreatePrescriptionWebComponent', () => {
       };
       component.initialValues = mockInitialValues;
       const tokenSpy = jest.spyOn(component as any, 'handleTokenChange');
-      // Stub loadPssStatus pour ne pas déclencher le subscribe
       const loadSpy = jest.spyOn(component as any, 'loadPssStatus').mockImplementation(() => {});
       const changes: SimpleChanges = {
         services: {
@@ -1791,6 +1740,23 @@ describe('CreatePrescriptionWebComponent', () => {
     });
   });
 
+  const configureMockConfigService = () => {
+    mockConfigService.getEnvironment.mockReturnValue('test');
+
+    mockConfigService.getEnvironmentVariable.mockImplementation((key: string) => {
+      switch (key) {
+        case 'pseudoApiUrl':
+          return 'https://pseudo-api.test';
+
+        case 'enablePseudo':
+          return false;
+
+        default:
+          return false;
+      }
+    });
+  };
+
   const createFixture = (pseudonymizedKey?: string) => {
     fixture = TestBed.createComponent(CreatePrescriptionExtendedWebComponent);
     component = fixture.componentInstance;
@@ -1799,8 +1765,7 @@ describe('CreatePrescriptionWebComponent', () => {
     (component as any).isEnabled$ = of(true);
 
     if (pseudonymizedKey) {
-      jest.spyOn(pseudoService, 'byteArrayToValue').mockReturnValue({ pseudonymize: jest.fn() } as any);
-      jest.spyOn(pseudoService, 'pseudonymizeValue').mockReturnValue(Promise.resolve('mockPseudomizedKey'));
+      pseudoService.pseudonymizeByteArray.mockResolvedValue('mockPseudomizedKey');
     }
 
     fixture.detectChanges();
@@ -1846,6 +1811,10 @@ describe('CreatePrescriptionWebComponent', () => {
   const setMultiplePrescriptions = () => {
     component.prescriptionForms.set([
       {
+        generatedUUID: 'uuid-1',
+        trackId: 1,
+        templateCode: 'TEMPLATE_1',
+        formTemplateState$: signal({ status: LoadingStatus.SUCCESS }),
         elementGroup: {
           markAllAsTouched: jest.fn(),
           valid: true,
@@ -1854,6 +1823,10 @@ describe('CreatePrescriptionWebComponent', () => {
         submitted: false,
       } as unknown as CreatePrescriptionForm,
       {
+        generatedUUID: 'uuid-2',
+        trackId: 2,
+        templateCode: 'TEMPLATE_2',
+        formTemplateState$: signal({ status: LoadingStatus.SUCCESS }),
         elementGroup: {
           markAllAsTouched: jest.fn(),
           valid: true,

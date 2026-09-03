@@ -20,8 +20,8 @@
     "professions": {
       "NURSE": "Pflegekraft",
       "PHYSICIAN": "Arzt",
-      "PHYSIOTHERAPIST": "",
-      "DENTIST": ""
+      "PHYSIOTHERAPIST": "Physiotherapeut",
+      "DENTIST": "Zahnarzt"
     },
     "professional": {
       "notFound": "Nicht gefunden",
@@ -118,21 +118,26 @@
       "addPrescription": "Zusatzverordnung",
       "publish": "Veröffentlichen",
       "control": {
-        "title": "",
-        "warning": "",
+        "title": "Überprüfen",
+        "warning": "Die unten aufgeführten relevanten Informationen werden in diesen Ergebnissen nicht berücksichtigt:",
         "error": {
-          "required": ""
+          "required": "Angaben sind erforderlich."
         },
         "table": {
-          "title": "",
-          "select": "",
-          "relevance": "",
-          "typesOfImagery": "",
-          "cost": "",
-          "radiationRate": "",
+          "select": "Zeile {row} auswählen",
+          "relevance": "Relevanz",
+          "typesOfImagery": "Arten der medizinischen Bildgebung",
+          "cost": "Kosten",
+          "radiationRate": "Strahlungsrate",
           "radiationLevel": "Strahlungslevel {level}/5",
           "deselectRow": "Zeile {row} abwählen",
           "selectRow": "Zeile {row} auswählen"
+        },
+        "alert": {
+          "relevantInfo": "Element wird von PSS nicht berücksichtigt",
+          "chosenExam": "Die verschriebene Untersuchung entspricht nicht den aktuellen Empfehlungen",
+          "chosenExamScore": "erreicht nur eine Punktzahl von {score}/9",
+          "noDefaultExam": "Keine der verschriebenen Untersuchungen entspricht den PSS-Empfehlungen."
         }
       },
       "deletePrescription": {
@@ -146,7 +151,15 @@
       },
       "cancelCreation": "Möchten Sie diese Überweisung wirklich abbrechen?",
       "prescription": "Überweisung erstellen",
-      "requiredFields": "Pflichtfelder"
+      "requiredFields": "Pflichtfelder",
+      "indication": {
+        "selected": "Ausgewählt:",
+        "name": "Name",
+        "criteria": "Kriterien"
+      },
+      "infoSummary": {
+        "description": "Grundlegende Informationen"
+      }
     },
     "allPrescriptionsFetched": "Alle Vorschriften abgerufen",
     "model": {
@@ -245,8 +258,11 @@
       "noResults": "Keine Gemeinde gefunden",
       "organization": "Organisation",
       "dialog": {
-        "title": "Eine Verordnung einem Leistungserbringer oder einer Pflegeorganisation zuweisen",
-        "description": "Wenn Sie dieser Verordnung einen Leistungserbringer hinzufügen, kann dieser die in dieser Verordnung enthaltenen Informationen einsehen."
+        "title": "Einen Leistungserbringer oder eine Organisation zuweisen: Welche Auswirkungen hat das?",
+        "description": {
+          "other": "Sobald Sie Ihre Suche abgeschlossen haben, können Sie die Person oder Organisation Ihrer Wahl <b>zuweisen</b>.",
+          "patient": "Sobald Sie Ihre Suche abgeschlossen haben, können Sie die Person oder Organisation Ihrer Wahl <b>zuweisen</b>.\n\nNächste Schritte:\n\n<ul>\n<li>Kontaktieren Sie den Leistungserbringer oder die Organisation, um einen Termin zu vereinbaren.</li>\n<li>Durch die Zuweisung erhält der Leistungserbringer oder die Organisation Zugriff auf die Verordnung, um Ihren Bedarf zu beurteilen.</li>\n<li>Haben Sie sich für eine Organisation entschieden? Diese bestimmt den oder die Leistungserbringer, die Sie betreuen werden. Ihre Namen werden der Verordnung hinzugefügt.</li>\n</ul>"
+        }
       },
       "locationsHint": "Nach Postleitzahl oder Gemeindename suchen",
       "performerHint": "Nach Name oder ID suchen"
@@ -304,12 +320,6 @@
       "title": "Ausführung fortsetzen",
       "message": "Sind Sie sicher, dass Sie die Ausführung der Vorschrift „{templateName}“ von {firstName} {lastName} fortsetzen möchten?",
       "success": "Die Ausführung wurde wieder aufgenommen."
-    },
-    "finishExecution": {
-      "action": "abschließen",
-      "title": "Vorschrift abschließen",
-      "endDate": "Enddatum",
-      "success": "Die Vorschrift wurde ausgestellt."
     },
     "frequencyTypes": {
       "iterative": "Iterativ",
@@ -385,7 +395,7 @@
       "extend": "Verlängern",
       "print": "Drucken",
       "cancel": "Ohne weitere Bearbeitung abschließen",
-      "autoAssign": "Zuweisen - intern",
+      "autoAssign": "Zuweisen - extern",
       "assignExternal": "Zuweisen - extern"
     },
     "assignProfessional": {
@@ -411,6 +421,29 @@
     "validityStartDate": "Startdatum der Gültigkeit",
     "autoAssign": {
       "success": "Die Leistungserbringer wurden erfolgreich hinzugefügt."
+    },
+    "finishExecution": {
+      "dialog": {
+        "title": {
+          "close": "{templateName} abschließen",
+          "finishTasks": "Meine Leistungen von {templateName} abschließen",
+          "closePrescription": "Das Rezept von {templateName} abschließen"
+        },
+        "patient": "Patient",
+        "radioGroup": {
+          "label": "Art des Abschlusses",
+          "finishTasks": "Meine Leistungen abschließen",
+          "closePrescription": "Das Rezept abschließen"
+        },
+        "datepicker": {
+          "label": "Abschlussdatum"
+        },
+        "success": {
+          "closePrescription": "Rezept erfolgreich abgeschlossen.",
+          "finishTasks": "Leistungen erfolgreich abgeschlossen."
+        }
+      },
+      "action": "Abschließen"
     }
   },
   "proposal": {
@@ -626,7 +659,8 @@
     "unavailable": {
       "title": "Dienst vorübergehend nicht verfügbar",
       "message": "Der PSS-Dienst (Prescription Search Support) ist derzeit nicht verfügbar.\nSie können die Empfehlungen zur medizinischen Bildgebung derzeit nicht einsehen.\nBitte versuchen Sie es später erneut."
-    }
+    },
+    "link": "Weitere Erläuterungen lesen"
   },
   "professional": {
     "table": {
@@ -638,7 +672,13 @@
       "actions": "Aktionen",
       "tableHasRecords": "{total} Ergebnisse gefunden",
       "noRecords": "Es wurde kein Leistungserbringer gefunden, der Ihrer Suche entspricht.",
-      "select": "Auswählen"
+      "select": "Auswählen",
+      "type": {
+        "professional": "Einzelperson",
+        "organization": "Organisation",
+        "label": "Typ",
+        "all": "Alle"
+      }
     },
     "noProfessionals": "Es wurde kein Leistungserbringer gefunden, der Ihrer Suche entspricht.",
     "allProfessionalsFetched": "Alle Leistungserbringer wurden abgerufen."
@@ -655,138 +695,141 @@
         "default": "Die Ausführung muss bereits laufen, bevor sie abgebrochen werden kann."
       },
       "CANCELLATION_INVALID_STATUS": {
-        "default": "",
-        "in-progress": "",
-        "completed": ""
+        "default": "Das Rezept kann nicht storniert werden.",
+        "in-progress": "Das Rezept kann nicht storniert werden, da die Behandlung bereits läuft.",
+        "completed": "Das Rezept kann nicht storniert werden, da es abgeschlossen ist."
       },
       "CAREGIVER_NOT_FOUND": {
-        "default": ""
+        "default": "Leistungserbringer nicht erkannt."
       },
       "CAREGIVER_NOT_UNASSIGNABLE": {
-        "default": ""
+        "default": "Der Leistungserbringer kann nicht entfernt werden, da er bereits mit der Behandlung begonnen hat."
       },
       "CONSULTRN_NOT_AVAILABLE": {
-        "default": ""
+        "default": "Dieser Dienst ist nicht verfügbar."
       },
       "CREATION_DATE_FUTURE": {
-        "default": ""
+        "default": "Das Erstellungsdatum darf nicht in der Zukunft liegen."
       },
       "DATE_PROVIDED_AFTER_PRESCRIPTION_END_DATE": {
-        "default": ""
+        "default": "Die Behandlung kann nicht mehr erbracht werden, da das Rezept abgelaufen ist."
       },
       "DECISION_ALREADY_TAKEN": {
-        "default": ""
+        "default": "Dieser Vorschlag wurde bereits bearbeitet."
       },
       "END_VALIDITY_DATE_PAST": {
-        "default": ""
+        "default": "Das Gültigkeitsenddatum darf nicht in der Vergangenheit liegen."
       },
       "EXCLUSION_EXISTS": {
-        "default": ""
+        "default": "Sie haben keine Berechtigung, auf dieses Rezept zuzugreifen."
       },
       "EXCLUSION_EXISTS_CAREGIVER_TO_ASSIGN": {
-        "default": "",
-        "healthcare-provider": "",
-        "patient": ""
+        "default": "Diese Aktion ist nicht möglich.",
+        "healthcare-provider": "Diese Aktion ist nicht möglich.",
+        "patient": "Diese Aktion ist nicht möglich, da der Leistungserbringer ausgeschlossen ist."
       },
       "EXECUTION_DATE_FUTURE": {
-        "default": ""
+        "default": "Das Enddatum darf nicht in der Zukunft liegen."
       },
       "EXECUTION_NOT_USABLE": {
-        "default": ""
+        "default": "Diese Aktion ist nicht möglich."
       },
       "FINISH_EXECUTION_NOT_IN_PROGRESS": {
-        "default": ""
+        "default": "Die Behandlung muss laufen, bevor sie beendet werden kann."
       },
       "HEALTHCARE_PROFESSIONAL_ALREADY_ASSIGNED": {
-        "default": "",
-        "caregiver": "",
-        "prescriber": ""
+        "default": "Diese Person ist bereits zugewiesen.",
+        "caregiver": "Dieser Leistungserbringer ist bereits zugewiesen.",
+        "prescriber": "Dieser Verschreiber ist bereits zugewiesen."
       },
       "HEALTHCARE_PROFESSIONAL_NOT_OWNER": {
-        "default": ""
+        "default": "Sie können diese Änderung nicht vornehmen."
       },
       "HEALTHCARE_PROFESSIONAL_NOT_OWNER_EXECUTION": {
-        "default": ""
+        "default": "Diese Aktion ist nicht möglich."
       },
       "HEALTHCARE_PROFESSIONAL_TO_BE_ASSIGNED_MISSING_RIGHT": {
-        "default": ""
+        "default": "Der Leistungserbringer hat keinen Zugriff auf das Rezept."
       },
       "INCORRECT_VALIDITY_DATE": {
-        "default": ""
+        "default": "Das Gültigkeitsdatum des Rezepts darf nicht nach dem Enddatum der Behandlung liegen."
       },
       "INVALID_PATIENT_REPLACEMENT": {
-        "default": ""
+        "default": "Der Patient muss derselbe sein."
       },
       "INVALID_PRESCRIPTION_STATUS": {
-        "default": ""
+        "default": "Diese Aktion ist nicht möglich."
       },
       "INVALID_TOKEN": {
-        "default": ""
+        "default": "Es gibt ein Problem mit der Identifizierung."
       },
       "NO_MANDATE_FOR_PATIENT": {
-        "default": ""
+        "default": "Diese Aktion ist nicht möglich."
       },
       "ORGANIZATION_ALREADY_ASSIGNED": {
-        "default": ""
+        "default": "Die Organisation ist dem Rezept bereits zugewiesen."
       },
       "ORGANIZATION_NOT_ASSIGNABLE": {
-        "default": ""
+        "default": "Kein Ergebnis"
       },
       "ORGANIZATION_NOT_UNASSIGNABLE": {
-        "default": ""
+        "default": "Die Behandlung hat bereits begonnen."
       },
       "ORGANIZATION_TASK_NOT_FOUND": {
-        "default": ""
+        "default": "Diese Aktion ist nicht möglich."
       },
       "PATCH_NOT_APPLIED": {
-        "default": ""
+        "default": "Diese Aktion ist nicht möglich."
       },
       "PRESCRIPTION_NOT_ASSIGNABLE": {
-        "default": ""
+        "default": "Diese Aktion ist nicht möglich."
       },
       "PRESCRIPTION_NOT_READABLE": {
-        "default": ""
+        "default": "Diese Aktion ist nicht möglich."
       },
       "REJECTION_NOT_POSSIBLE": {
-        "default": ""
+        "default": "Diese Aktion ist nicht möglich."
       },
       "REQUEST_PARAMETER_NOT_MATCHING_TOKEN": {
-        "default": ""
+        "default": "Diese Aktion ist nicht möglich."
       },
       "RESOURCE_NOT_FOUND": {
-        "default": ""
+        "default": "Nicht gefunden."
       },
       "SERVICE_REQUEST_NOT_FOUND": {
-        "default": ""
+        "default": "Rezept nicht gefunden."
       },
       "SERVICE_REQUEST_NOT_OWNED": {
-        "default": ""
+        "default": "Diese Aktion ist nicht möglich."
       },
       "SERVICE_REQUEST_NOT_UNASSIGNABLE": {
-        "default": ""
+        "default": "Diese Aktion ist nicht möglich."
       },
       "SERVICE_UNAVAILABLE_AA": {
-        "default": ""
+        "default": "Dieser Dienst ist nicht verfügbar."
       },
       "SSIN_NOT_FOUND": {
-        "default": ""
+        "default": "Patient nicht gefunden."
       },
       "START_EXECUTION_DATE_AFTER_END_EXECUTION_DATE": {
-        "default": ""
+        "default": "Die Behandlung kann nicht mehr erbracht werden."
       },
       "START_VALIDITY_DATE_AFTER_END_VALIDITY_DATE": {
-        "default": ""
+        "default": "Das Rezept ist nicht mehr gültig."
       },
       "START_VALIDITY_DATE_PAST": {
-        "default": ""
+        "default": "Das Gültigkeitsbeginn darf nicht mehr als 5 Tage in der Vergangenheit liegen."
       },
       "USER_SUSPENDED": {
-        "default": ""
+        "default": "Diese Aktion ist nicht möglich."
       },
       "USER_SUSPENDED_ON_DATE_PROVIDED": {
-        "default": ""
+        "default": "Diese Aktion ist nicht möglich."
       },
-      "unknown": "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es in wenigen Augenblicken erneut."
+      "unknown": "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es in wenigen Augenblicken erneut.",
+      "PRESCRIPTION_NOT_COMPLETED": {
+        "default": "Das Rezept kann nicht abgeschlossen werden."
+      }
     }
   },
   "datepicker": {

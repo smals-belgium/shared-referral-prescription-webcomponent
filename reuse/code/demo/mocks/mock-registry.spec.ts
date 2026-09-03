@@ -4,6 +4,8 @@ import {
   CitiesResource,
   Discipline,
   HealthcarePersonResource,
+  HealthCareProviderRequestResource,
+  ProviderType,
   RequestSummaryListResource,
   TemplateVersion,
 } from '@reuse/code/openapi';
@@ -36,6 +38,7 @@ describe('Demo mode', () => {
         '\\/templates\\/READ_[A-Z0-9_]+\\/versions\\/latest$',
         '\\/healthCareProviders',
         '\\/prescriptions\\/[a-z0-9-]+\\/assign\\/[a-z0-9-]+$',
+        '\\/prescriptions\\/[a-z0-9-]+\\/assignOrganization\\/[a-z0-9-]+$',
       ])
     );
   });
@@ -272,18 +275,19 @@ describe('Demo mode', () => {
         pageSize: '10',
       });
 
-      const result = mock.handler!(req, null) as any;
+      const result = mock.handler!(req, null) as HealthCareProviderRequestResource;
 
-      expect(result).toHaveProperty('healthcareOrganizations');
-      expect(result).toHaveProperty('healthcareProfessionals');
+      expect(result).toHaveProperty('healthcarePro');
       expect(result).toHaveProperty('total');
 
-      expect(Array.isArray(result.healthcareOrganizations)).toBe(true);
-      expect(result.healthcareOrganizations.length).toBe(2);
+      const filterdResult = result.healthcarePro?.filter(value => value.type === 'Organization');
+      const resultCheck: HealthCareProviderRequestResource = {
+        total: filterdResult?.length,
+        healthcarePro: filterdResult,
+      };
 
-      expect(Array.isArray(result.healthcareProfessionals)).toBe(true);
-      expect(result.healthcareProfessionals.length).toBe(0);
-
+      expect(Array.isArray(result.healthcarePro)).toBe(true);
+      expect(resultCheck.healthcarePro?.length).toBe(2);
       expect(result.total).toBe(2);
     });
 
@@ -296,13 +300,10 @@ describe('Demo mode', () => {
         pageSize: '10',
       });
 
-      const result = mock.handler!(req, null) as any;
+      const result = mock.handler!(req, null) as HealthCareProviderRequestResource;
 
-      expect(Array.isArray(result.healthcareOrganizations)).toBe(true);
-      expect(result.healthcareOrganizations.length).toBe(1);
-
-      expect(Array.isArray(result.healthcareProfessionals)).toBe(true);
-      expect(result.healthcareProfessionals.length).toBe(0);
+      expect(Array.isArray(result.healthcarePro)).toBe(true);
+      expect(result.healthcarePro?.length).toBe(1);
 
       expect(result.total).toBe(1);
     });
@@ -316,36 +317,42 @@ describe('Demo mode', () => {
         pageSize: '10',
       });
 
-      const result = mock.handler!(req, null) as any;
+      const result = mock.handler!(req, null) as HealthCareProviderRequestResource;
 
-      expect(Array.isArray(result.healthcareOrganizations)).toBe(true);
-      expect(result.healthcareOrganizations.length).toBe(2);
+      const filterdResult = result.healthcarePro?.filter(value => value.type === 'Organization');
+      const resultCheck: HealthCareProviderRequestResource = {
+        total: filterdResult?.length,
+        healthcarePro: filterdResult,
+      };
 
-      expect(Array.isArray(result.healthcareProfessionals)).toBe(true);
-      expect(result.healthcareProfessionals.length).toBe(0);
+      expect(Array.isArray(resultCheck.healthcarePro)).toBe(true);
+      expect(resultCheck.healthcarePro?.length).toBe(2);
 
       expect(result.total).toBe(2);
     });
 
-    it('should return healthcare professionals when discipline is provided', () => {
+    it('should return healthcare professionals when discipline is provided and provider type is professional ', () => {
       const mock = findMockByUrl(/\/healthCareProviders/);
       const req = createHttpRequest('/healthCareProviders', {
         discipline: Discipline.Nurse,
         page: '1',
         pageSize: '10',
+        providerType: ProviderType.Professional,
       });
 
-      const result = mock.handler!(req, null) as any;
+      const result = mock.handler!(req, null) as HealthCareProviderRequestResource;
 
-      expect(result).toHaveProperty('healthcareProfessionals');
-      expect(result).toHaveProperty('healthcareOrganizations');
+      expect(result).toHaveProperty('healthcarePro');
       expect(result).toHaveProperty('total');
 
-      expect(Array.isArray(result.healthcareOrganizations)).toBe(true);
-      expect(result.healthcareOrganizations.length).toBe(0);
+      const filterdResult = result.healthcarePro?.filter(value => value.type === 'Professional');
+      const resultCheck: HealthCareProviderRequestResource = {
+        total: filterdResult?.length,
+        healthcarePro: filterdResult,
+      };
 
-      expect(Array.isArray(result.healthcareProfessionals)).toBe(true);
-      expect(result.healthcareProfessionals.length).toBe(3);
+      expect(Array.isArray(resultCheck.healthcarePro)).toBe(true);
+      expect(resultCheck.healthcarePro?.length).toBe(3);
 
       expect(result.total).toBe(3);
     });
@@ -358,15 +365,12 @@ describe('Demo mode', () => {
         pageSize: '10',
       });
 
-      const result = mock.handler!(req, null) as any;
+      const result = mock.handler!(req, null) as HealthCareProviderRequestResource;
 
-      expect(Array.isArray(result.healthcareOrganizations)).toBe(true);
-      expect(result.healthcareOrganizations.length).toBe(0);
+      expect(Array.isArray(result.healthcarePro)).toBe(true);
+      expect(result.healthcarePro?.length).toBe(5);
 
-      expect(Array.isArray(result.healthcareProfessionals)).toBe(true);
-      expect(result.healthcareProfessionals.length).toBe(3);
-
-      expect(result.total).toBe(3);
+      expect(result.total).toBe(5);
     });
 
     it('should filter professionals by query', () => {
@@ -378,14 +382,10 @@ describe('Demo mode', () => {
         pageSize: '10',
       });
 
-      const result = mock.handler!(req, null) as any;
+      const result = mock.handler!(req, null) as HealthCareProviderRequestResource;
 
-      expect(result).toHaveProperty('healthcareProfessionals');
-      expect(Array.isArray(result.healthcareOrganizations)).toBe(true);
-      expect(result.healthcareOrganizations.length).toBe(0);
-
-      expect(Array.isArray(result.healthcareProfessionals)).toBe(true);
-      expect(result.healthcareProfessionals.length).toBe(1);
+      expect(Array.isArray(result.healthcarePro)).toBe(true);
+      expect(result.healthcarePro?.length).toBe(1);
 
       expect(result.total).toBe(1);
     });
@@ -399,14 +399,11 @@ describe('Demo mode', () => {
         pageSize: '10',
       });
 
-      const result = mock.handler!(req, null) as any;
+      const result = mock.handler!(req, null) as HealthCareProviderRequestResource;
 
-      expect(result).toHaveProperty('healthcareProfessionals');
-      expect(Array.isArray(result.healthcareOrganizations)).toBe(true);
-      expect(result.healthcareOrganizations.length).toBe(0);
-
-      expect(Array.isArray(result.healthcareProfessionals)).toBe(true);
-      expect(result.healthcareProfessionals.length).toBe(1);
+      expect(result).toHaveProperty('healthcarePro');
+      expect(Array.isArray(result.healthcarePro)).toBe(true);
+      expect(result.healthcarePro?.length).toBe(1);
 
       expect(result.total).toBe(1);
     });
@@ -417,11 +414,12 @@ describe('Demo mode', () => {
         institutionType: 'HOSPITAL',
         page: '2',
         pageSize: '2',
+        ProviderType: ProviderType.Organization,
       });
 
-      const result = mock.handler!(req, null) as any;
+      const result = mock.handler!(req, null) as HealthCareProviderRequestResource;
 
-      expect(result.healthcareOrganizations.length).toBeLessThanOrEqual(2);
+      expect(result.healthcarePro?.length).toBeLessThanOrEqual(2);
     });
 
     it('should paginate professional results', () => {
@@ -432,9 +430,9 @@ describe('Demo mode', () => {
         pageSize: '2',
       });
 
-      const result = mock.handler!(req, null) as any;
+      const result = mock.handler!(req, null) as HealthCareProviderRequestResource;
 
-      expect(result.healthcareProfessionals.length).toBeLessThanOrEqual(2);
+      expect(result.healthcarePro?.length).toBeLessThanOrEqual(2);
     });
   });
 

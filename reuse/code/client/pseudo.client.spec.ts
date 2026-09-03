@@ -6,86 +6,81 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 
 const env: Record<string, any> = {
   enablePseudo: true,
-  pseudoApiUrl: 'http://pseudo.com'
-}
+  pseudoApiUrl: 'http://pseudo.com',
+};
 
 const mockConfigService = {
-  getEnvironmentVariable: jest.fn(key => (env)[key])
-}
+  getEnvironmentVariable: jest.fn(key => env[key]),
+};
 
 describe('PseudoClient', () => {
-    let service: PseudoClient;
-    let httpMock: HttpTestingController;
+  let service: PseudoClient;
+  let httpMock: HttpTestingController;
 
-    beforeEach(() => {
-      TestBed.configureTestingModule({
-    imports: [],
-    providers: [
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [],
+      providers: [
         PseudoClient,
         { provide: ConfigurationService, useValue: mockConfigService },
         provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting()
-    ]
-});
-      service = TestBed.inject(PseudoClient);
-      httpMock = TestBed.inject(HttpTestingController);
+        provideHttpClientTesting(),
+      ],
     });
+    service = TestBed.inject(PseudoClient);
+    httpMock = TestBed.inject(HttpTestingController);
+  });
 
-    afterEach(() => {
-      httpMock.verify();
-    });
+  afterEach(() => {
+    httpMock.verify();
+  });
 
   afterAll(() => {
-    mockConfigService.getEnvironmentVariable.mockReset()
-  })
+    mockConfigService.getEnvironmentVariable.mockReset();
+  });
 
-  it('should get the domain', () => {
-    service.getDomain('uhmep').then((response) => {
-      expect(response).toEqual("domain");
-    });
+  it('should get the domain', async () => {
+    const responsePromise = service.getDomain('uhmep');
 
     const req = httpMock.expectOne('http://pseudo.com/domains/uhmep');
     expect(req.request.method).toBe('GET');
-    req.flush("domain");
-  })
+    req.flush('domain');
+    await expect(responsePromise).resolves.toEqual('domain');
+  });
 
-  it('should get the identify', () => {
-    service.identify('uhmep', 'payload').then((response) => {
-      expect(response).toEqual("identify");
-    });
+  it('should get the identify', async () => {
+    const responsePromise = service.identify('uhmep', 'payload');
 
     const req = httpMock.expectOne('http://pseudo.com/domains/uhmep/identify');
     expect(req.request.method).toBe('POST');
-    req.flush("identify");
-  })
+    req.flush('identify');
+    await expect(responsePromise).resolves.toEqual('identify');
+  });
 
-  it('should get the identifyMultiple', () => {
-    service.identifyMultiple('uhmep', 'payload').then((response) => {
-      expect(response).toEqual("identify");
-    });
+  it('should get the identifyMultiple', async () => {
+    const responsePromise = service.identifyMultiple('uhmep', 'payload');
 
     const req = httpMock.expectOne('http://pseudo.com/domains/uhmep/identifyMultiple');
     expect(req.request.method).toBe('POST');
-    req.flush("identify");
-  })
+    req.flush('identify');
+    await expect(responsePromise).resolves.toEqual('identify');
+  });
 
-  it('should get the pseudomize', () => {
-    service.pseudonymize('uhmep', 'payload').then((response) => {
-      expect(response).toEqual("pseudomize");
-    });
+  it('should get the pseudomize', async () => {
+    const responsePromise = service.pseudonymize('uhmep', 'payload');
 
     const req = httpMock.expectOne('http://pseudo.com/domains/uhmep/pseudonymize');
     expect(req.request.method).toBe('POST');
-    req.flush("pseudomize");
-  })
+    req.flush('pseudomize');
+    await expect(responsePromise).resolves.toEqual('pseudomize');
+  });
 
-  it('should get the pseudomizeMultiple', () => {
-    service.pseudonymizeMultiple('uhmep', 'payload').then((response) => {
-      expect(response).toEqual("pseudomize");
-    });
+  it('should get the pseudomizeMultiple', async () => {
+    const responsePromise = service.pseudonymizeMultiple('uhmep', 'payload');
 
     const req = httpMock.expectOne('http://pseudo.com/domains/uhmep/pseudonymizeMultiple');
     expect(req.request.method).toBe('POST');
-    req.flush("pseudomize");
-  })
-})
+    req.flush('pseudomize');
+    await expect(responsePromise).resolves.toEqual('pseudomize');
+  });
+});

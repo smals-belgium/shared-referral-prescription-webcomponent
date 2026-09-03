@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PrescriptionDetailsBottomComponent } from './prescription-details-bottom.component';
 import { PrescriptionDetailsSecondaryService } from '../prescription-details-secondary/services/prescription-details-secondary.service';
 import { By } from '@angular/platform-browser';
-import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { TranslateService } from '@ngx-translate/core';
 import { MatNativeDateModule } from '@angular/material/core';
 import { Observable, of } from 'rxjs';
@@ -11,7 +10,6 @@ import { ALERT_TARGET, ERROR_PRESCRIPTION_DETAILS } from '@reuse/code/constants/
 
 describe('PrescriptionDetailsBottomComponent – final tests', () => {
   let fixture: ComponentFixture<PrescriptionDetailsBottomComponent>;
-  let component: PrescriptionDetailsBottomComponent;
 
   let serviceMock: {
     getPrescription: jest.Mock;
@@ -19,8 +17,6 @@ describe('PrescriptionDetailsBottomComponent – final tests', () => {
     openApproveProposalDialog: jest.Mock;
     openRejectProposalDialog: jest.Mock;
   };
-
-  let accessMatrixStateMock: { hasAtLeastOnePermission: jest.Mock };
 
   let translateServiceMock!: {
     get: jest.Mock;
@@ -43,12 +39,8 @@ describe('PrescriptionDetailsBottomComponent – final tests', () => {
       openRejectProposalDialog: jest.fn(),
     };
 
-    accessMatrixStateMock = {
-      hasAtLeastOnePermission: jest.fn().mockReturnValue(true),
-    };
-
     translateServiceMock = {
-      get: jest.fn((key: string, params?: any) => of(key)),
+      get: jest.fn((key: string) => of(key)),
       onLangChange: of(null),
       onDefaultLangChange: of(null),
       onTranslationChange: of(null),
@@ -58,7 +50,6 @@ describe('PrescriptionDetailsBottomComponent – final tests', () => {
       imports: [PrescriptionDetailsBottomComponent, MatNativeDateModule, MatIconTestingModule],
       providers: [
         { provide: PrescriptionDetailsSecondaryService, useValue: serviceMock },
-        { provide: AccessMatrixState, useValue: accessMatrixStateMock },
         { provide: TranslateService, useValue: translateServiceMock },
         { provide: ALERT_TARGET, useValue: ERROR_PRESCRIPTION_DETAILS },
       ],
@@ -70,7 +61,6 @@ describe('PrescriptionDetailsBottomComponent – final tests', () => {
     serviceMock.getCurrentUser.mockReturnValue({ data: user });
 
     fixture = TestBed.createComponent(PrescriptionDetailsBottomComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
   }
 

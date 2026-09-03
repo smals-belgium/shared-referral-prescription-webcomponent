@@ -20,6 +20,31 @@
         "id": "DEAD0000-0000-4000-0001-000000000001",
         "executionPeriod": null
       },
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canAutoAssignCaregivers": false,
+        "canSelfAssign": false,
+        "canDuplicatePrescription": false,
+        "canExtendPrescription": false,
+        "canCancelPrescriptionOrProposal": true,
+        "canApproveProposal": false,
+        "canCreatePrescription": false,
+        "canRejectProposal": false,
+        "canPrintPrescriptionOrProposal": true
+      },
+      "currentTask": {
+        "taskId": "DEAD0000-0000-4001-0000-000000000001",
+        "taskType": "performerTask",
+        "allowedActions": {
+          "canStartTreatment": false,
+          "canFinishTreatment": false,
+          "canCancelTreatment": false,
+          "canTransferAssignation": false,
+          "canInterruptTreatment": false,
+          "canRestartTreatment": false,
+          "canRejectAssignation": false
+        }
+      },
       "performerTasks": {
         "67120919457": [
           {
@@ -76,6 +101,31 @@
         "id": "DEAD0000-0000-4000-0001-000000000002",
         "executionPeriod": null
       },
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canAutoAssignCaregivers": false,
+        "canSelfAssign": false,
+        "canDuplicatePrescription": false,
+        "canExtendPrescription": false,
+        "canCancelPrescriptionOrProposal": true,
+        "canApproveProposal": false,
+        "canCreatePrescription": false,
+        "canRejectProposal": false,
+        "canPrintPrescriptionOrProposal": true
+      },
+      "currentTask": {
+        "taskId": "DEAD0000-0000-4001-0000-000000000001",
+        "taskType": "performerTask",
+        "allowedActions": {
+          "canStartTreatment": false,
+          "canFinishTreatment": false,
+          "canCancelTreatment": false,
+          "canTransferAssignation": false,
+          "canInterruptTreatment": false,
+          "canRestartTreatment": false,
+          "canRejectAssignation": false
+        }
+      },
       "performerTasks": {
         "67120919457": [
           {
@@ -131,6 +181,31 @@
         "status": "READY",
         "id": "DEAD0000-0000-4000-0001-000000000003",
         "executionPeriod": null
+      },
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canAutoAssignCaregivers": false,
+        "canSelfAssign": false,
+        "canDuplicatePrescription": false,
+        "canExtendPrescription": false,
+        "canCancelPrescriptionOrProposal": true,
+        "canApproveProposal": false,
+        "canCreatePrescription": false,
+        "canRejectProposal": false,
+        "canPrintPrescriptionOrProposal": true
+      },
+      "currentTask": {
+        "taskId": "DEAD0000-0000-4001-0000-000000000003",
+        "taskType": "performerTask",
+        "allowedActions": {
+          "canStartTreatment": false,
+          "canFinishTreatment": false,
+          "canCancelTreatment": false,
+          "canTransferAssignation": false,
+          "canInterruptTreatment": false,
+          "canRestartTreatment": false,
+          "canRejectAssignation": false
+        }
       },
       "performerTasks": {
         "67120919457": [
@@ -192,6 +267,31 @@
         "id": "DEAD0000-0000-4000-0001-000000000004",
         "executionPeriod": null
       },
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canAutoAssignCaregivers": false,
+        "canSelfAssign": false,
+        "canDuplicatePrescription": false,
+        "canExtendPrescription": false,
+        "canCancelPrescriptionOrProposal": true,
+        "canApproveProposal": false,
+        "canCreatePrescription": false,
+        "canRejectProposal": false,
+        "canPrintPrescriptionOrProposal": true
+      },
+      "currentTask": {
+        "taskId": null,
+        "taskType": null,
+        "allowedActions": {
+          "canStartTreatment": false,
+          "canFinishTreatment": false,
+          "canCancelTreatment": false,
+          "canTransferAssignation": false,
+          "canInterruptTreatment": false,
+          "canRestartTreatment": false,
+          "canRejectAssignation": false
+        }
+      },
       "performerTasks": [],
       "organizationTasks": null,
       "responses": {
@@ -237,6 +337,31 @@
         "status": "READY",
         "id": "DEAD0000-0000-4000-0001-000000000005",
         "executionPeriod": null
+      },
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canAutoAssignCaregivers": false,
+        "canSelfAssign": false,
+        "canDuplicatePrescription": false,
+        "canExtendPrescription": false,
+        "canCancelPrescriptionOrProposal": true,
+        "canApproveProposal": false,
+        "canCreatePrescription": false,
+        "canRejectProposal": false,
+        "canPrintPrescriptionOrProposal": true
+      },
+      "currentTask": {
+        "taskId": "DEAD0000-0000-4001-0000-000000000005",
+        "taskType": "performerTask",
+        "allowedActions": {
+          "canStartTreatment": false,
+          "canFinishTreatment": false,
+          "canCancelTreatment": false,
+          "canTransferAssignation": false,
+          "canInterruptTreatment": false,
+          "canRestartTreatment": false,
+          "canRejectAssignation": false
+        }
       },
       "performerTasks": {
         "67120919457": [
@@ -293,6 +418,31 @@
         "status": "READY",
         "id": "DEAD0000-0000-4000-0001-000000000006",
         "executionPeriod": null
+      },
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canAutoAssignCaregivers": false,
+        "canSelfAssign": false,
+        "canDuplicatePrescription": false,
+        "canExtendPrescription": false,
+        "canCancelPrescriptionOrProposal": true,
+        "canApproveProposal": false,
+        "canCreatePrescription": false,
+        "canRejectProposal": false,
+        "canPrintPrescriptionOrProposal": true
+      },
+      "currentTask": {
+        "taskId": "DEAD0000-0000-4001-0000-000000000006",
+        "taskType": "performerTask",
+        "allowedActions": {
+          "canStartTreatment": false,
+          "canFinishTreatment": false,
+          "canCancelTreatment": false,
+          "canTransferAssignation": false,
+          "canInterruptTreatment": false,
+          "canRestartTreatment": false,
+          "canRejectAssignation": false
+        }
       },
       "performerTasks": {
         "10000000009": [
@@ -352,6 +502,31 @@
         "id": "DEAD0000-0000-4000-0001-000000000006",
         "executionPeriod": null
       },
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canAutoAssignCaregivers": false,
+        "canSelfAssign": false,
+        "canDuplicatePrescription": false,
+        "canExtendPrescription": false,
+        "canCancelPrescriptionOrProposal": true,
+        "canApproveProposal": false,
+        "canCreatePrescription": false,
+        "canRejectProposal": false,
+        "canPrintPrescriptionOrProposal": true
+      },
+      "currentTask": {
+        "taskId": "DEAD0000-0000-4001-0000-000000000006",
+        "taskType": "performerTask",
+        "allowedActions": {
+          "canStartTreatment": false,
+          "canFinishTreatment": false,
+          "canCancelTreatment": false,
+          "canTransferAssignation": false,
+          "canInterruptTreatment": false,
+          "canRestartTreatment": false,
+          "canRejectAssignation": false
+        }
+      },
       "performerTasks": {
         "10000000009": [
           {
@@ -408,6 +583,31 @@
         "status": "READY",
         "id": "DEAD0000-0000-4000-0001-000000000005",
         "executionPeriod": null
+      },
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canAutoAssignCaregivers": false,
+        "canSelfAssign": false,
+        "canDuplicatePrescription": false,
+        "canExtendPrescription": false,
+        "canCancelPrescriptionOrProposal": true,
+        "canApproveProposal": false,
+        "canCreatePrescription": false,
+        "canRejectProposal": false,
+        "canPrintPrescriptionOrProposal": true
+      },
+      "currentTask": {
+        "taskId": "DEAD0000-0000-4001-0000-000000000008",
+        "taskType": "performerTask",
+        "allowedActions": {
+          "canStartTreatment": false,
+          "canFinishTreatment": false,
+          "canCancelTreatment": false,
+          "canTransferAssignation": false,
+          "canInterruptTreatment": false,
+          "canRestartTreatment": false,
+          "canRejectAssignation": false
+        }
       },
       "performerTasks": {
         "10000000009": [
@@ -479,6 +679,31 @@
         "id": "DEAD0000-0000-4000-0001-000000000009",
         "executionPeriod": null
       },
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canAutoAssignCaregivers": false,
+        "canSelfAssign": false,
+        "canDuplicatePrescription": false,
+        "canExtendPrescription": false,
+        "canCancelPrescriptionOrProposal": true,
+        "canApproveProposal": false,
+        "canCreatePrescription": false,
+        "canRejectProposal": false,
+        "canPrintPrescriptionOrProposal": true
+      },
+      "currentTask": {
+        "taskId": null,
+        "taskType": null,
+        "allowedActions": {
+          "canStartTreatment": false,
+          "canFinishTreatment": false,
+          "canCancelTreatment": false,
+          "canTransferAssignation": false,
+          "canInterruptTreatment": false,
+          "canRestartTreatment": false,
+          "canRejectAssignation": false
+        }
+      },
       "performerTasks": [],
       "organizationTasks": null,
       "responses": {
@@ -524,6 +749,31 @@
         "status": "READY",
         "id": "DEAD0000-0000-4000-0001-000000000006",
         "executionPeriod": null
+      },
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canAutoAssignCaregivers": false,
+        "canSelfAssign": false,
+        "canDuplicatePrescription": false,
+        "canExtendPrescription": false,
+        "canCancelPrescriptionOrProposal": true,
+        "canApproveProposal": false,
+        "canCreatePrescription": false,
+        "canRejectProposal": false,
+        "canPrintPrescriptionOrProposal": true
+      },
+      "currentTask": {
+        "taskId": null,
+        "taskType": null,
+        "allowedActions": {
+          "canStartTreatment": false,
+          "canFinishTreatment": false,
+          "canCancelTreatment": false,
+          "canTransferAssignation": false,
+          "canInterruptTreatment": false,
+          "canRestartTreatment": false,
+          "canRejectAssignation": false
+        }
       },
       "performerTasks": [],
       "organizationTasks": null,
@@ -583,6 +833,31 @@
         "id": "DEAD0000-0000-4000-0001-000000000009",
         "executionPeriod": null
       },
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canAutoAssignCaregivers": false,
+        "canSelfAssign": false,
+        "canDuplicatePrescription": false,
+        "canExtendPrescription": false,
+        "canCancelPrescriptionOrProposal": true,
+        "canApproveProposal": false,
+        "canCreatePrescription": false,
+        "canRejectProposal": false,
+        "canPrintPrescriptionOrProposal": true
+      },
+      "currentTask": {
+        "taskId": "DEAD0000-0000-4001-0000-000000000003",
+        "taskType": "performerTask",
+        "allowedActions": {
+          "canStartTreatment": false,
+          "canFinishTreatment": false,
+          "canCancelTreatment": false,
+          "canTransferAssignation": false,
+          "canInterruptTreatment": false,
+          "canRestartTreatment": false,
+          "canRejectAssignation": false
+        }
+      },
       "performerTasks": {
         "67120919457": [
           {
@@ -640,6 +915,31 @@
         "id": "DEAD0000-0000-4000-0001-000000000013",
         "executionPeriod": null
       },
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canAutoAssignCaregivers": false,
+        "canSelfAssign": false,
+        "canDuplicatePrescription": false,
+        "canExtendPrescription": false,
+        "canCancelPrescriptionOrProposal": true,
+        "canApproveProposal": false,
+        "canCreatePrescription": false,
+        "canRejectProposal": false,
+        "canPrintPrescriptionOrProposal": true
+      },
+      "currentTask": {
+        "taskId": null,
+        "taskType": null,
+        "allowedActions": {
+          "canStartTreatment": false,
+          "canFinishTreatment": false,
+          "canCancelTreatment": false,
+          "canTransferAssignation": false,
+          "canInterruptTreatment": false,
+          "canRestartTreatment": false,
+          "canRejectAssignation": false
+        }
+      },
       "performerTasks": [],
       "organizationTasks": null,
       "responses": {
@@ -683,6 +983,31 @@
         "status": "READY",
         "id": "DEAD0000-0000-4000-0001-000000000001",
         "executionPeriod": null
+      },
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canAutoAssignCaregivers": false,
+        "canSelfAssign": false,
+        "canDuplicatePrescription": false,
+        "canExtendPrescription": false,
+        "canCancelPrescriptionOrProposal": true,
+        "canApproveProposal": false,
+        "canCreatePrescription": false,
+        "canRejectProposal": false,
+        "canPrintPrescriptionOrProposal": true
+      },
+      "currentTask": {
+        "taskId": "DEAD0000-0000-4001-0000-000000000001",
+        "taskType": "performerTask",
+        "allowedActions": {
+          "canStartTreatment": false,
+          "canFinishTreatment": false,
+          "canCancelTreatment": false,
+          "canTransferAssignation": false,
+          "canInterruptTreatment": false,
+          "canRestartTreatment": false,
+          "canRejectAssignation": false
+        }
       },
       "performerTasks": {
         "67120919457": [

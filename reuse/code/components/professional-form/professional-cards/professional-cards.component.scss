@@ -36,6 +36,16 @@ span.info {
   }
 }
 
+.row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.type-icon {
+  color: mh.$typography-brand-primary-medium;
+}
+
 .mh-mat-card {
   border: 1px solid rgba(0, 0, 0, 0.12);
   cursor: pointer;

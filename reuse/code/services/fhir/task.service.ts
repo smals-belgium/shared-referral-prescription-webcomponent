@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { PrescriptionExecutionFinish, PrescriptionExecutionStart } from '@reuse/code/interfaces';
+import { PrescriptionExecutionStart, TaskExecutionFinish } from '@reuse/code/interfaces';
 import { PeriodResource, PrescriptionService as ApiPrescriptionService } from '@reuse/code/openapi';
 
 @Injectable({ providedIn: 'root' })
@@ -17,7 +17,7 @@ export class TaskService {
     return this.api.restartExecution(performerTaskId, generatedUUID);
   }
 
-  finishExecution(performerTaskId: string, executionEnd: PrescriptionExecutionFinish, generatedUUID: string) {
+  finishExecution(performerTaskId: string, executionEnd: TaskExecutionFinish, generatedUUID: string) {
     const periodResource: PeriodResource = {
       end: executionEnd.endDate,
     };

@@ -1,6 +1,6 @@
 {
   "name": "healix-core",
-  "version": "2.0.5",
+  "version": "2.100.4",
   "dependencies": {
     "tslib": "^2.3.0"
   }

@@ -4,8 +4,8 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "../../out-tsc/spec",
+    "isolatedModules": true,
     "types": ["jest", "node"],
-    "emitDecoratorMetadata": true,
     "typeRoots": ["../../../node_modules/@types", "../../../node_modules/@types/node"],
     "baseUrl": ".",
     "paths": {

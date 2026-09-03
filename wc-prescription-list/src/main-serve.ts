@@ -16,6 +16,7 @@ import { AppPrescriptionDetails } from './app/app';
 import { demoHttpInterceptor } from '@reuse/code/demo/demo-http.interceptor';
 import { provideShadowDom } from '@reuse/code/shadow-dom/shadow-dom.provider';
 import { globalErrorInterceptor } from '@reuse/code/interceptors/global-error.interceptor';
+import { impersonationHeaderInterceptor } from '@reuse/code/interceptors/impersonation-header.interceptor';
 
 try {
   await bootstrapApplication(AppPrescriptionDetails, {
@@ -23,7 +24,14 @@ try {
       provideZonelessChangeDetection(),
       provideBrowserGlobalErrorListeners(),
       provideCore(),
-      provideHttpClient(withInterceptors([demoHttpInterceptor, globalErrorInterceptor, apiUrlInterceptor])),
+      provideHttpClient(
+        withInterceptors([
+          demoHttpInterceptor,
+          globalErrorInterceptor,
+          apiUrlInterceptor,
+          impersonationHeaderInterceptor,
+        ])
+      ),
       providePseudonymisation(),
       {
         provide: ConfigurationService,

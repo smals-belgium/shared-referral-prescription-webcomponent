@@ -1,29 +1,29 @@
-import { Component, computed, inject, Inject, OnDestroy, OnInit, signal, WritableSignal } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { combineLatest, Observable, of, switchMap } from 'rxjs';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { catchError, finalize, map } from 'rxjs/operators';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatInputModule } from '@angular/material/input';
-import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
-import { AlertType, Intent } from '@reuse/code/interfaces';
-import { ToastService } from '@reuse/code/services/helpers/toast.service';
-import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
+import {
+  Component,
+  computed,
+  inject,
+  Inject,
+  linkedSignal,
+  OnDestroy,
+  OnInit,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { toDataState } from '@reuse/code/utils/rxjs.utils';
-import { HealthcareProviderService } from '@reuse/code/services/api/healthcareProvider.service';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { v4 as uuidv4 } from 'uuid';
+import { MatChipsModule } from '@angular/material/chips';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
-import { CityResource, HealthcareOrganizationResource, HealthcareProResource, ProviderType } from '@reuse/code/openapi';
-import { ProposalState } from '@reuse/code/states/api/proposal.state';
-import { getAssignableProfessionalDisciplines, isProfessional } from '@reuse/code/utils/assignment-disciplines.utils';
-import { getTranslationKeyPrefixForPrescriptionOrProposal, isProposal } from '@reuse/code/utils/utils';
+import { ProfessionalSearchChipListComponent } from '@reuse/code/components/professional-form/city-chip-list/professional-search-chip-list.component';
+import { ProfessionalCardsComponent } from '@reuse/code/components/professional-form/professional-cards/professional-cards.component';
 import {
   ProfessionalSearchFormComponent,
   SearchCriteria,
@@ -32,11 +32,22 @@ import {
   ProfessionalTableComponent,
   TranslationType,
 } from '@reuse/code/components/professional-form/table/professional-table.component';
+import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { ResponsiveWrapperComponent } from '@reuse/code/components/responsive-wrapper/responsive-wrapper.component';
-import { ProfessionalCardsComponent } from '@reuse/code/components/professional-form/professional-cards/professional-cards.component';
-import { DeviceService } from '@reuse/code/services/helpers/device.service';
-import { ProfessionalSearchChipListComponent } from '@reuse/code/components/professional-form/city-chip-list/professional-search-chip-list.component';
+import { AlertType, Intent, UserInfo } from '@reuse/code/interfaces';
+import { CityResource, HealthCareProviderResource, ProviderType } from '@reuse/code/openapi';
+import { HealthcareProviderService } from '@reuse/code/services/api/healthcareProvider.service';
 import { AlertService } from '@reuse/code/services/helpers/alert.service';
+import { DeviceService } from '@reuse/code/services/helpers/device.service';
+import { ToastService } from '@reuse/code/services/helpers/toast.service';
+import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
+import { ProposalState } from '@reuse/code/states/api/proposal.state';
+import { getAssignableProfessionalDisciplines, isProfessional } from '@reuse/code/utils/assignment-disciplines.utils';
+import { toDataState } from '@reuse/code/utils/rxjs.utils';
+import { getTranslationKeyPrefixForPrescriptionOrProposal, isProposal } from '@reuse/code/utils/utils';
+import { combineLatest, Observable, of, switchMap } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
+import { v4 as uuidv4 } from 'uuid';
 
 export type AssignOrTransferDialogMode = 'assign' | 'transfer';
 
@@ -47,6 +58,7 @@ export interface AssignOrTransferDialogData {
   performerTaskId?: string; // only used for transfer
   category: string;
   intent: Intent;
+  connectedUser: Partial<UserInfo>;
 }
 
 @Component({
@@ -55,6 +67,7 @@ export interface AssignOrTransferDialogData {
   imports: [
     ReactiveFormsModule,
     MatFormFieldModule,
+    MatSelectModule,
     MatInputModule,
     MatDialogModule,
     MatButtonModule,
@@ -86,9 +99,15 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
   private readonly ERROR_ASSIGN_TRANSFER_DIALOG = 'assign-transfer-dialog';
   protected readonly error = this.alertService.setTarget(this.ERROR_ASSIGN_TRANSFER_DIALOG);
 
+  protected readonly providerTypeOptions: ProviderType[] = [
+    ProviderType.All,
+    ProviderType.Professional,
+    ProviderType.Organization,
+  ];
+
   protected readonly isDesktop = this.deviceService.isDesktop;
 
-  protected translationKeyPrefixIntent = 'prescription';
+  protected translationKeyPrefixIntent: 'prescription' | 'proposal' = 'prescription';
 
   protected readonly AlertType = AlertType;
   readonly searchCriteria$ = signal<SearchCriteria | null>(null);
@@ -98,12 +117,9 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
       .filter((z): z is number => z !== undefined)
   );
   readonly isLoading = signal(false);
-  readonly selectedProfessional = signal<HealthcareProResource | undefined>(undefined);
+  readonly selectedProfessional = signal<HealthCareProviderResource | undefined>(undefined);
 
-  protected readonly pageable = signal({
-    page: 1,
-    pageSize: 10,
-  });
+  protected providerType = signal<ProviderType>(ProviderType.All);
 
   protected readonly isSearchMode: WritableSignal<boolean> = signal(true);
 
@@ -115,9 +131,21 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
     cities: this.cityControl,
   });
 
+  protected readonly pageable = linkedSignal<ProviderType, { page: number; pageSize: number }>({
+    source: () => this.providerType(),
+    computation: (source, previous) => ({
+      page: 1,
+      pageSize: previous?.value.pageSize ?? 10,
+    }),
+  });
+
   readonly healthcareProvidersState$ = toSignal(
-    combineLatest([toObservable(this.searchCriteria$), toObservable(this.pageable)]).pipe(
-      switchMap(([criteria, pagination]) => {
+    combineLatest([
+      toObservable(this.searchCriteria$),
+      toObservable(this.pageable),
+      toObservable(this.providerType),
+    ]).pipe(
+      switchMap(([criteria, pagination, providerType]) => {
         this.isLoading.set(true);
         const disciplines: string[] = getAssignableProfessionalDisciplines(this.data.category, this.data.intent);
         const zipCodes = criteria?.cities.map(c => c.zipCode).filter((z): z is number => z !== undefined) ?? [];
@@ -129,9 +157,10 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
                 zipCodes,
                 disciplines,
                 [],
-                ProviderType.Professional,
+                providerType,
                 this.data.prescriptionId,
                 this.data.intent,
+                this.currentLang,
                 pagination.page,
                 pagination.pageSize
               )
@@ -144,8 +173,8 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
           : of([]);
       }),
       map(healthcareProvider => {
-        if (healthcareProvider && 'healthcareProfessionals' in healthcareProvider) {
-          const allItems: HealthcareProResource[] = healthcareProvider.healthcareProfessionals ?? [];
+        if (healthcareProvider && 'healthcarePro' in healthcareProvider) {
+          const allItems: HealthCareProviderResource[] = healthcareProvider.healthcarePro ?? [];
 
           this.isLoading.set(false);
           return {
@@ -183,7 +212,6 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
   get modeKey() {
     return this.data.mode === 'assign' ? 'assignPerformer' : 'transferPerformer';
   }
-
   onSearch(criteria: SearchCriteria): void {
     this.searchCriteria$.set(criteria);
     this.isSearchMode.set(false);
@@ -195,7 +223,7 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
     this.translationKeyPrefixIntent = getTranslationKeyPrefixForPrescriptionOrProposal(this.data?.intent);
   }
 
-  selectProfessional(healthcareProvider?: HealthcareProResource) {
+  selectProfessional(healthcareProvider?: HealthCareProviderResource) {
     this.selectedProfessional.set(healthcareProvider);
   }
 
@@ -208,7 +236,7 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
     this.executeAction(professional);
   }
 
-  executeAction(professional: HealthcareProResource): void {
+  executeAction(professional: HealthCareProviderResource): void {
     if (this.data.mode === 'assign') {
       this.executeAssign(professional);
     } else {
@@ -216,35 +244,51 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
     }
   }
 
-  private executeService(serviceCall: () => Observable<any>, successKey: string, professional: any) {
+  private executeService(
+    serviceCall: () => Observable<any>,
+    successKey: string,
+    professional: HealthCareProviderResource
+  ) {
     this.loading = true;
     serviceCall()
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: () => {
-          this._toastService.show(successKey, { interpolation: professional.healthcarePerson });
+          const interpolation = isProfessional(professional)
+            ? professional.healthcarePerson
+            : {
+                firstName: professional.organizationName![this.currentLang ?? 'nl'],
+                lastName: '',
+              };
+
+          this._toastService.show(successKey, { interpolation });
           this.dialogRef.close(professional);
         },
       });
   }
 
-  private executeAssign(professional: HealthcareProResource) {
-    if (!this.data.prescriptionId || !isProfessional(professional)) {
+  private extractPerformerIdentifiers(professional: HealthCareProviderResource) {
+    if (isProfessional(professional)) {
+      return {
+        ssinOrNihdi: professional.healthcarePerson?.ssin,
+        role: professional.healthcareQualification?.id?.profession,
+        type: professional.type,
+      };
+    } else {
+      const ho = professional;
+      return {
+        ssinOrNihdi: (ho.nihii8 || ho.nihii11) + (ho.qualificationCode ?? ''),
+        type: ho.typeCode,
+      };
+    }
+  }
+
+  private executeAssign(professional: HealthCareProviderResource) {
+    if (!this.data.prescriptionId) {
       return this.dialogRef.close(professional);
     }
 
-    let ssinOrNihdi: string | undefined;
-    let role: string | undefined;
-    let type: string | undefined;
-    if (professional.type === 'Professional') {
-      ssinOrNihdi = professional.healthcarePerson?.ssin;
-      role = professional.healthcareQualification?.id?.profession;
-      type = professional.type;
-    } else {
-      const ho = professional as HealthcareOrganizationResource;
-      ssinOrNihdi = (ho.nihii8 || ho.nihii11) + (ho.qualificationCode ?? '');
-      type = ho.typeCode;
-    }
+    const { ssinOrNihdi, role, type } = this.extractPerformerIdentifiers(professional);
 
     const serviceCall = isProposal(this.data?.intent)
       ? () =>
@@ -269,18 +313,22 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
     this.executeService(serviceCall, `${this.translationKeyPrefixIntent}.assignPerformer.success`, professional);
   }
 
-  private executeTransfer(professional: HealthcareProResource) {
-    if (!this.data.prescriptionId || !isProfessional(professional)) {
+  private executeTransfer(professional: HealthCareProviderResource) {
+    if (!this.data.prescriptionId) {
       return this.dialogRef.close(professional);
     }
-    const ssinObject = { ssin: professional.id?.ssin || '', discipline: professional.id?.profession || '' };
+
+    const { ssinOrNihdi, role, type } = this.extractPerformerIdentifiers(professional);
+
     const serviceCall = isProposal(this.data?.intent)
       ? () =>
           this._proposalStateService.transferAssignation(
             this.data.prescriptionId!,
             this.data.referralTaskId!,
             this.data.performerTaskId!,
-            ssinObject,
+            ssinOrNihdi || '',
+            role || '',
+            type || '',
             this.generatedUUID
           )
       : () =>
@@ -288,7 +336,9 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
             this.data.prescriptionId!,
             this.data.referralTaskId!,
             this.data.performerTaskId!,
-            ssinObject,
+            ssinOrNihdi || '',
+            role || '',
+            type || '',
             this.generatedUUID
           );
 
@@ -338,6 +388,18 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
   protected dismissError() {
     this.alertService.clear(this.ERROR_ASSIGN_TRANSFER_DIALOG);
   }
+
+  readonly infoAlertDescription = computed(() => {
+    if (this.modeKey === 'assignPerformer' && this.translationKeyPrefixIntent === 'prescription') {
+      if (this.data?.connectedUser?.discipline === 'PATIENT') {
+        return this.translationKeyPrefixIntent + '.assignPerformer.dialog.description.patient';
+      } else {
+        return this.translationKeyPrefixIntent + '.assignPerformer.dialog.description.other';
+      }
+    } else {
+      return this.translationKeyPrefixIntent + '.' + this.modeKey + '.dialog.description';
+    }
+  });
 
   ngOnDestroy() {
     this.clearAlertService();

@@ -44,9 +44,8 @@ export class EncryptionKeyInitializerService {
     try {
       const exportedKey = await this.encryptionService.exportKey(this.cryptoKey);
       const byteArray = new Uint8Array(exportedKey);
-      const byteArrToVal = this.pseudoService.byteArrayToValue(byteArray);
-      if (byteArray && byteArrToVal !== null) {
-        return this.pseudoService.pseudonymizeValue(byteArrToVal);
+      if (byteArray) {
+        return this.pseudoService.pseudonymizeByteArray(byteArray);
       } else {
         return undefined;
       }

@@ -11,6 +11,7 @@ import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { By } from '@angular/platform-browser';
 import { MatIconTestingModule } from '@angular/material/icon/testing';
+import { DialogLayoutComponent } from '@reuse/code/dialogs/dialog-layout/dialog-layout.component';
 
 @Pipe({
   name: 'templateName',
@@ -136,6 +137,21 @@ describe('CancelCreationDialog', () => {
       selectAllCheckbox.change.emit({ checked: false } as any);
 
       expect(deselectAllSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('dialog layout confirm action', () => {
+    it('should call cancelPrescriptions when the visible confirm button is clicked', () => {
+      const cancelPrescriptionsSpy = jest.spyOn(component, 'cancelPrescriptions');
+
+      fixture.detectChanges();
+
+      const dialogLayout = fixture.debugElement.query(By.directive(DialogLayoutComponent))
+        .componentInstance as DialogLayoutComponent;
+
+      dialogLayout.confirm.emit();
+
+      expect(cancelPrescriptionsSpy).toHaveBeenCalled();
     });
   });
 

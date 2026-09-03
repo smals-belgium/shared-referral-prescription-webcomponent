@@ -67,9 +67,22 @@ function MockPseudoHelperFactory() {
 
 const mockConfigService = {
   getEnvironment: jest.fn(),
-  getEnvironmentVariable: jest.fn(() => ({
-    filters: true,
-  })),
+  getEnvironmentVariable: jest.fn((key: string) => {
+    if (key === 'enablePseudo') {
+      return false;
+    }
+    if (key === 'pseudoApiUrl') {
+      return BASE_URL;
+    }
+    return {
+      filters: true,
+    };
+  }),
+};
+
+const mockFeatureFlagService = {
+  features: signal(['ui-filters']),
+  getFeature: jest.fn(() => signal(true)),
 };
 
 class FakeLoader implements TranslateLoader {
@@ -98,7 +111,6 @@ describe('ListPrescriptionsWebComponent', () => {
   let translate: TranslateService;
   let dateAdapter: MockDateAdapter;
   let mockDialog: jest.Mocked<MatDialog>;
-  let featureService: FeatureFlagService;
   let mockIconRegistryService: jest.Mocked<Partial<IconRegistryService>>;
   let mockDeviceService: { isDesktop: WritableSignal<boolean> };
   let mockAlertService: jest.Mocked<Partial<AlertService>>;
@@ -145,6 +157,7 @@ describe('ListPrescriptionsWebComponent', () => {
         { provide: IconRegistryService, useValue: mockIconRegistryService },
         { provide: DeviceService, useValue: mockDeviceService },
         { provide: AlertService, useValue: mockAlertService },
+        { provide: FeatureFlagService, useValue: mockFeatureFlagService },
       ],
     })
       .overrideComponent(PrescriptionsCardComponent, {
@@ -163,8 +176,6 @@ describe('ListPrescriptionsWebComponent', () => {
     translate = TestBed.inject(TranslateService);
     dateAdapter = TestBed.inject(DateAdapter) as unknown as MockDateAdapter;
     mockDialog = TestBed.inject(MatDialog) as jest.Mocked<MatDialog>;
-    featureService = TestBed.inject(FeatureFlagService);
-    featureService.features.set({ filters: true });
   });
 
   afterEach(() => {
@@ -246,6 +257,7 @@ describe('ListPrescriptionsWebComponent', () => {
       createFixture(true);
       const { debugElement } = fixture;
 
+      jest.spyOn(component, 'loadPrescriptions').mockImplementation();
       fixture.componentRef.setInput('patientSsin', 'ssin');
       component.isPrescriptionValue.set(true);
 
@@ -335,6 +347,7 @@ describe('ListPrescriptionsWebComponent', () => {
       };
 
       createFixture(true);
+      jest.spyOn(component, 'loadPrescriptions').mockImplementation();
 
       const { debugElement } = fixture;
 
@@ -471,7 +484,7 @@ describe('ListPrescriptionsWebComponent', () => {
       };
 
       jest.spyOn(component, 'viewStatePrescriptions$').mockReturnValue(expectedState);
-      const loadPrescriptionsSpy = jest.spyOn(component, 'loadPrescriptions');
+      const loadPrescriptionsSpy = jest.spyOn(component, 'loadPrescriptions').mockImplementation();
       jest.spyOn(component, 'onFilterUpdate');
 
       component.isPrescriptionValue.set(true);
@@ -495,6 +508,7 @@ describe('ListPrescriptionsWebComponent', () => {
     });
 
     it('should hide component when templates are undefined on proposals', () => {
+      createFixture();
       const expectedState = {
         data: {
           prescriptions: {} as ReadRequestListResource,

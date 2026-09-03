@@ -23,13 +23,14 @@ import { CUSTOM_ELEMENT_NAME_NIHDI_REFERRAL_PRESCRIPTION_CREATE } from '@reuse/c
 import { globalErrorInterceptor } from '@reuse/code/interceptors/global-error.interceptor';
 import { MatDatepickerIntl } from '@angular/material/datepicker';
 import { CustomMatDatePickerIntlService } from '@reuse/code/components/date-picker/custom-mat-date-picker-intl.service';
+import { impersonationHeaderInterceptor } from '@reuse/code/interceptors/impersonation-header.interceptor';
 
 void (async () => {
   const app = createApplication({
     providers: [
       provideZonelessChangeDetection(),
       provideBrowserGlobalErrorListeners(),
-      provideHttpClient(withInterceptors([globalErrorInterceptor, apiUrlInterceptor])),
+      provideHttpClient(withInterceptors([globalErrorInterceptor, apiUrlInterceptor, impersonationHeaderInterceptor])),
       providePseudonymisation(),
       provideCore(),
       provideEvfForm(),

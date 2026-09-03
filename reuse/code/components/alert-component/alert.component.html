@@ -7,14 +7,15 @@
   [actionButton]="retry()"
   [buttonLabel]="'common.tryAgain' | translate"
   [buttonDisabled]="false"
+  [startExpanded]="startExpanded()"
   (actionButtonClicked)="clickRetry.emit()"
   (closeButtonClicked)="clickClose.emit()">
   @if (resolvedMessage(); as message) {
     <div alert-details>
       @if (message.isTranslated) {
-        {{ message.value }}
+        <span [innerHTML]="message.value"></span>
       } @else {
-        {{ message.value | translate }}
+        <span [innerHTML]="message.value | translate"></span>
       }
     </div>
   }

@@ -1,12 +1,12 @@
 .npm:
-  image: common-docker-central-remote.repo.gcloud.belgium.be/node:22-alpine
+  image: common-docker-central-remote.repo.gcloud.belgium.be/node:24-alpine
   tags:
     - docker
 
 .sonar:
   image:
     name: common-docker-central-remote.repo.gcloud.belgium.be/sonarsource/sonar-scanner-cli:latest
-    entrypoint: [""]
+    entrypoint: ['']
   tags:
     - shared
     - docker
@@ -17,7 +17,6 @@ cache:
       - package-lock.json
   paths:
     - .npm/
-    - node_modules/
 
 stages:
   - open-api
@@ -61,13 +60,13 @@ validate-generated-api:
   extends: .npm
   stage: test
   variables:
-    NODE_OPTIONS: "--max-old-space-size=3072"
-    CI: "true"
+    NODE_OPTIONS: '--max-old-space-size=3072'
+    CI: 'true'
   needs:
     - job: generate-api-client
       optional: true
   script:
-    - npm install
+    - npm ci
     - npm run $TEST_SCRIPT
   only:
     - merge_requests
@@ -76,7 +75,7 @@ validate-generated-api:
 test:reuse:
   extends: .test_base
   variables:
-    TEST_SCRIPT: "test:wc:reuse"
+    TEST_SCRIPT: 'test:wc:reuse'
   artifacts:
     paths:
       - reuse/coverage/
@@ -85,7 +84,7 @@ test:reuse:
 test:list:
   extends: .test_base
   variables:
-    TEST_SCRIPT: "test:wc:list"
+    TEST_SCRIPT: 'test:wc:list'
   artifacts:
     paths:
       - wc-prescription-list/coverage/
@@ -94,7 +93,7 @@ test:list:
 test:details:
   extends: .test_base
   variables:
-    TEST_SCRIPT: "test:wc:details"
+    TEST_SCRIPT: 'test:wc:details'
   artifacts:
     paths:
       - wc-prescription-details/coverage/
@@ -103,7 +102,7 @@ test:details:
 test:create:
   extends: .test_base
   variables:
-    TEST_SCRIPT: "test:wc:create"
+    TEST_SCRIPT: 'test:wc:create'
   artifacts:
     paths:
       - wc-prescription-create/coverage/
@@ -112,7 +111,7 @@ test:create:
 test:mags:list:
   extends: .test_base
   variables:
-    TEST_SCRIPT: "test:mags:list"
+    TEST_SCRIPT: 'test:mags:list'
   artifacts:
     paths:
       - wrappers/components/mags-prescription-list/coverage/
@@ -121,7 +120,7 @@ test:mags:list:
 test:mags:details:
   extends: .test_base
   variables:
-    TEST_SCRIPT: "test:mags:details"
+    TEST_SCRIPT: 'test:mags:details'
   artifacts:
     paths:
       - wrappers/components/mags-prescription-details/coverage/
@@ -138,6 +137,7 @@ merge:coverage:
     - test:mags:list
     - test:mags:details
   script:
+    - npm ci --cache .npm --prefer-offline
     - npm run merge:coverage
     - npm run merge:report
   artifacts:
@@ -154,7 +154,7 @@ sonar-report:
     - merge:coverage
   stage: sonar
   variables:
-    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+    SONAR_USER_HOME: '${CI_PROJECT_DIR}/.sonar'
   script:
     - echo "Starting Sonar Reporting"
     - sonar-scanner -Dsonar.branch.name=$CI_COMMIT_REF_NAME -Dsonar.host.url=$SONAR_URL -Dsonar.projectKey=referral-prescription-web-components -Dsonar.login=$VAS_SONARQUBE_TOKEN -Dsonar.qualitygate.wait=true -Dsonar.sources=. -Dsonar.inclusions=**/*.ts,**/*.scss,**/*.html -Dsonar.exclusions=**/node_modules/**,**/*.spec.ts -Dsonar.tests=. -Dsonar.test.inclusions=**/*.spec.ts -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
