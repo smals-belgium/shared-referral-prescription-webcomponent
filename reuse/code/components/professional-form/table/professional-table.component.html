@@ -1,5 +1,5 @@
 <div class="table_container">
-  <table mat-table [dataSource]="requestData()" class="mat-elevation-z8">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
     <ng-container matColumnDef="icon">
       <th mat-header-cell *matHeaderCellDef>
         {{ 'professional.table.type.label' | translate }}
@@ -54,16 +54,16 @@
         {{ 'professional.table.address' | translate }}
       </th>
       <td data-cy="professional-address-cell" mat-cell *matCellDef="let healthcareProvider">
-        {{ healthcareProvider.address.street | formatMultilingualObject: currentLang() }}
-        {{ healthcareProvider.address.houseNumber || '' }} {{ healthcareProvider.address.box || '' }}
+        {{ healthcareProvider.address?.street | formatMultilingualObject: currentLang() }}
+        {{ healthcareProvider.address?.houseNumber || '' }} {{ healthcareProvider.address?.box || '' }}
       </td>
     </ng-container>
 
     <ng-container matColumnDef="city">
       <th data-cy="professional-city" mat-header-cell *matHeaderCellDef>{{ 'professional.table.city' | translate }}</th>
       <td data-cy="professional-city-cell" mat-cell *matCellDef="let healthcareProvider">
-        {{ healthcareProvider.address.zipCode + ' ' || '' }}
-        {{ healthcareProvider.address.municipality | formatMultilingualObject: currentLang() }}
+        {{ healthcareProvider.address?.zipCode + ' ' || '' }}
+        {{ healthcareProvider.address?.municipality | formatMultilingualObject: currentLang() }}
       </td>
     </ng-container>
 

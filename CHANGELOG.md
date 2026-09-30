@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.2] - 15/Sep/26
+
+- Assign dialog - update the reliably render rows under zoneless CD; handle missing provider address gracefully
+
 ## [2.1.0] - 03/Sep/26
 
 Only changes impacting the integration of the Web Components (inputs, outputs, token contract, runtime requirements) are listed below.
