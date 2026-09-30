@@ -353,6 +353,8 @@ describe('PrescriptionDetailsActionsComponent', () => {
       },
       panelClass: ['mh-dialog-container', 'mh-assign-dialog'],
       maxHeight: '90vh',
+      maxWidth: '90vw',
+      width: '900px',
     });
   });
 

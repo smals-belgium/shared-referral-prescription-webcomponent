@@ -12,6 +12,7 @@ import {
 import { Lang } from '@reuse/code/constants/languages';
 import { MatIconTestingModule } from '@angular/material/icon/testing';
 import { PaginatorComponent } from '@reuse/code/components/paginator/paginator.component';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 const mockHealthcareProviders = [
   { id: { ssin: '123', qualificationCode: 'Q1' }, address: {}, type: 'PROFESSIONAL' } as HealthcareProResource,
@@ -41,6 +42,7 @@ describe('ProfessionalTableComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ProfessionalTableComponent, TranslateModule.forRoot(), MatIconTestingModule],
+      providers: [provideZonelessChangeDetection()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProfessionalTableComponent);
@@ -49,13 +51,20 @@ describe('ProfessionalTableComponent', () => {
     fixture.componentRef.setInput('currentLang', Lang.NL.short);
 
     fixture.componentRef.setInput('providerTypeOptions', mockProviderTypeOptions);
-    fixture.componentRef.setInput('selectedType', ProviderType.All);
 
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('creates and renders without throwing when selectedType is not explicitly bound', async () => {
+    expect(() => fixture.detectChanges()).not.toThrow();
+
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.selectedType()).toBeDefined();
   });
 
   describe('Data rendering', () => {
@@ -161,5 +170,47 @@ describe('ProfessionalTableComponent', () => {
         expect(component.selectedType()).toBe(ProviderType.Professional);
       });
     });
+  });
+
+  it('renders data rows when requestData updates without any extra interaction', async () => {
+    fixture.componentRef.setInput('currentLang', Lang.NL.short);
+
+    fixture.componentRef.setInput('providerTypeOptions', mockProviderTypeOptions);
+    fixture.componentRef.setInput('selectedType', ProviderType.All);
+    fixture.componentRef.setInput('requestData', []);
+    fixture.componentRef.setInput('total', 0);
+
+    // initial render
+    await fixture.whenStable();
+
+    // simulate data arriving later, as if from an async HTTP response
+    fixture.componentRef.setInput('requestData', mockHealthcareProviders);
+    fixture.componentRef.setInput('total', 1);
+
+    // deliberately do NOT call fixture.detectChanges() manually here
+    // whenStable() only waits for whatever the app itself schedules,
+    // which is exactly what would happen in production
+    await fixture.whenStable();
+
+    const rows = fixture.nativeElement.querySelectorAll('tr[data-cy^="professional-row-"]');
+    expect(rows.length).toBe(4);
+  });
+
+  it('renders rows and total correctly even when selectedType binds asynchronously', async () => {
+    fixture.componentRef.setInput('requestData', []);
+    fixture.componentRef.setInput('total', undefined);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    fixture.componentRef.setInput('requestData', mockHealthcareProviders);
+    fixture.componentRef.setInput('total', 1);
+    await fixture.whenStable();
+
+    const rows = fixture.nativeElement.querySelectorAll('tr[data-cy^="professional-row-"]');
+    expect(rows.length).toBe(4);
+
+    const footerRow = fixture.nativeElement.querySelector('tr.no-professionals, tr.no-data');
+    expect(footerRow).not.toBeNull();
+    expect(footerRow.hidden).toBe(true);
   });
 });

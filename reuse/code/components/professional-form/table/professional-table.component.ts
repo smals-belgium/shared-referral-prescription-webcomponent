@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, model, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, input, model, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
@@ -17,6 +17,7 @@ import {
   MatRow,
   MatRowDef,
   MatTable,
+  MatTableDataSource,
 } from '@angular/material/table';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PaginatorComponent } from '@reuse/code/components/paginator/paginator.component';
@@ -83,9 +84,17 @@ export class ProfessionalTableComponent {
   readonly loading = input<boolean>(false);
   readonly currentLang = input.required<TranslationType | undefined>();
   readonly providerTypeOptions = input.required<ProviderType[]>();
-  selectedType = model.required<ProviderType>();
+  selectedType = model<ProviderType>(ProviderType.All);
 
   readonly selectProfessional = output<HealthCareProviderResource>();
 
   readonly changePage = output<{ pageIndex?: number; pageSize?: number }>();
+
+  readonly dataSource = new MatTableDataSource<HealthCareProviderResource>([]);
+
+  constructor() {
+    effect(() => {
+      this.dataSource.data = this.requestData();
+    });
+  }
 }
