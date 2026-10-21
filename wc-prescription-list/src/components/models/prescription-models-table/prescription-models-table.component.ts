@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  input,
+  Input,
+  output,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { DatePipe } from '@reuse/code/pipes/date.pipe';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
@@ -24,6 +33,7 @@ import { ModelEntityDto, RequestStatus } from '@reuse/code/openapi';
 import { FormatEnum, SkeletonComponent } from '@reuse/code/components/progress-indicators/skeleton/skeleton.component';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { AlertType } from '@reuse/code/interfaces';
+import { ResolvedError } from '@reuse/code/interfaces/error.interface';
 
 @Component({
   selector: 'app-prescription-models-table',
@@ -55,13 +65,15 @@ import { AlertType } from '@reuse/code/interfaces';
   ],
 })
 export class PrescriptionModelsTableComponent {
-  @Input() prescriptionModels?: ModelEntityDto[];
-  @Input() page: number = 1;
-  @Input() pageSize: number = 10;
-  @Input() loading: boolean = false;
+  // Input properties
+  readonly loading = input<boolean>(false);
+  readonly prescriptionModels = input<ModelEntityDto[] | undefined>(undefined);
+  readonly pageSize = input<number>(10);
+  readonly page = input<number>(1);
 
-  @Output() openPrescriptionModel = new EventEmitter<ModelEntityDto>();
-  @Output() deletePrescriptionModel = new EventEmitter<ModelEntityDto>();
+  // Output events
+  openPrescriptionModel = output<ModelEntityDto>();
+  deletePrescriptionModel = output<ModelEntityDto>();
 
   protected readonly FormatEnum = FormatEnum;
   protected readonly RequestStatus = RequestStatus;

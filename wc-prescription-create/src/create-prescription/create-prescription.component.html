@@ -1,41 +1,51 @@
 @if (langAlertData()) {
-  @let langValue = langAlertData()!;
-  <app-alert [title]="langValue.title" [message]="langValue.body" [severity]="AlertType.Info" [retry]="false">
-  </app-alert>
+  <div class="wrapper">
+    <div class="create_wrapper">
+      <div class="create_container">
+        @let langValue = langAlertData()!;
+        <app-alert [title]="langValue.title" [message]="langValue.body" [severity]="AlertType.Info" [retry]="false">
+        </app-alert>
+      </div>
+    </div>
+  </div>
 } @else {
   @if (!displaySelectDialog$()) {
     @if (isEnabled$ | async) {
-      <div class="container">
-        @if (isModelValue) {
-          <app-create-prescription-model
-            [prescriptionForm]="prescriptionForms()[0]"
-            [lang]="lang"
-            (modelSaved)="modelSaved()"></app-create-prescription-model>
-        } @else if (patientState$() && initialValues?.intent && patientState$().status === LoadingStatus.SUCCESS) {
-          <app-create-multiple-prescriptions
-            [createPrescriptionForms]="prescriptionForms()"
-            [intent]="initialValues!.intent"
-            [patient]="patientState$().data"
-            [status]="status$.getValue()"
-            [lang]="lang"
-            [services]="services"
-            (clickAddPrescription)="addPrescription()"
-            (clickDeletePrescription)="deletePrescriptionForm($event)"
-            (clickPublish)="publishPrescriptions()"
-            (clickCancel)="cancelCreation()"></app-create-multiple-prescriptions>
-        }
-      </div>
+      @if (isModelValue) {
+        <app-create-prescription-model
+          [prescriptionForm]="prescriptionForms()[0]"
+          [lang]="lang"
+          (modelSaved)="modelSaved()"></app-create-prescription-model>
+      } @else if (patientState$() && initialValues?.intent && patientState$().status === LoadingStatus.SUCCESS) {
+        <app-create-multiple-prescriptions
+          [createPrescriptionForms]="prescriptionForms()"
+          [intent]="initialValues!.intent"
+          [patient]="patientState$().data"
+          [status]="status$.getValue()"
+          [lang]="lang"
+          [services]="services"
+          (clickAddPrescription)="addPrescription()"
+          (clickDeletePrescription)="deletePrescriptionForm($event)"
+          (clickPublish)="publishPrescriptions()"
+          (clickCancel)="cancelCreation()"></app-create-multiple-prescriptions>
+      }
 
       @if (loading() || loadingLang()) {
         <app-overlay-spinner></app-overlay-spinner>
       }
     } @else {
-      <app-alert
-        [severity]="generalError.severity"
-        [title]="generalError.title"
-        [subTitle]="generalError.subTitle"
-        [dismissible]="false"
-        [retry]="false"></app-alert>
+      <div class="wrapper">
+        <div class="create_wrapper">
+          <div class="create_container">
+            <app-alert
+              [severity]="generalError.severity"
+              [title]="generalError.title"
+              [subTitle]="generalError.subTitle"
+              [dismissible]="false"
+              [retry]="false"></app-alert>
+          </div>
+        </div>
+      </div>
     }
   }
 }

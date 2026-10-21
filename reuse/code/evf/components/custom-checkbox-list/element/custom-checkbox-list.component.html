@@ -1,0 +1,181 @@
+<evf-form-element-layout [elementLayout]="elementLayout" [elementControl]="elementControl" [metadata]="metadata">
+  @if (element.labelTranslationId) {
+    <evf-element-label [elementControl]="elementControl" [invalid]="invalid" [for]="id"></evf-element-label>
+  }
+  <evf-element-sub-label [invalid]="invalid">
+    @if (control.touched && control.hasError('required')) {
+      <mat-error>{{ 'FIELD_REQUIRED' | evfLabel }} </mat-error>
+    }
+
+    @if (control.touched && control.hasError('minlength')) {
+      <mat-error
+        >{{
+          'MIN_CHECKBOX_' + (control.getError('minlength').requiredLength > 1 ? 'MULTIPLE' : 'ONE')
+            | evfLabel: control.getError('minlength')
+        }}
+      </mat-error>
+    }
+
+    @if (control.touched && control.hasError('maxlength')) {
+      <mat-error
+        >{{
+          'MAX_CHECKBOX_' + (control.getError('maxlength').requiredLength > 1 ? 'MULTIPLE' : 'ONE')
+            | evfLabel: control.getError('maxlength')
+        }}
+      </mat-error>
+    }
+    @if (control.touched && control.hasError('invalidCombination')) {
+      <mat-error>{{ 'INVALID_COMBINATION' | evfLabel: control.getError('invalidCombination') }} </mat-error>
+    }
+  </evf-element-sub-label>
+
+  @if (element.bodyTranslationId) {
+    <evf-element-body [elementControl]="elementControl"></evf-element-body>
+  }
+
+  @if (element.helpTranslationId) {
+    <evf-element-help [elementControl]="elementControl"></evf-element-help>
+  }
+
+  @if (!columnMode) {
+    <ng-container
+      [ngTemplateOutlet]="checkboxes"
+      [ngTemplateOutletContext]="{ responses: (elementControl.responses$ | async) }"></ng-container>
+  } @else {
+    <ng-container [ngTemplateOutlet]="columns"></ng-container>
+  }
+
+  <!-- Column layout -->
+  <ng-template #columns>
+    <div class="response-columns" [style.columns]="element.custom?.['columnMinWidth']">
+      @for (column of responseColumns$ | async; track column) {
+        <div class="response-column">
+          @for (group of column.groups; track group) {
+            <div class="response-column-group" [style.column-span]="group.columnSpan">
+              <ng-container
+                [ngTemplateOutlet]="checkboxes"
+                [ngTemplateOutletContext]="{ responses: group.items }"></ng-container>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </ng-template>
+
+  <!-- Response group (toggle-group or checkbox-group) -->
+  <ng-template #checkboxes let-responses="responses">
+    @if (buttonToggleMode) {
+      <ng-container
+        [ngTemplateOutlet]="buttonToggle"
+        [ngTemplateOutletContext]="{ responses: responses }"></ng-container>
+    } @else {
+      <div class="checkbox-group" [style.column-count]="element?.custom?.['columnCount']" [id]="id">
+        <ng-container
+          [ngTemplateOutlet]="responseItems"
+          [ngTemplateOutletContext]="{ responses: responses }"></ng-container>
+      </div>
+    }
+  </ng-template>
+
+  <!-- Response items -->
+  <ng-template #responseItems let-responses="responses">
+    @for (response of responses; track response) {
+      @let responseId = 'response-' + response.value;
+      <div [class]="'checkbox-item-wrapper ' + responseId" [attr.data-cy]="responseId">
+        <div class="checkbox-item">
+          <mat-checkbox
+            [checked]="isChecked(response.value)"
+            [disabled]="disabled"
+            (change)="checkChanged($event, response)">
+            <ng-container
+              [ngTemplateOutlet]="responseLabel"
+              [ngTemplateOutletContext]="{ response: response }"></ng-container>
+          </mat-checkbox>
+          @if (response.tooltipTranslationId) {
+            <evf-info-icon [tooltipLabel]="response.tooltipTranslationId | evfLabel"></evf-info-icon>
+          }
+        </div>
+
+        <!-- Shared response content for non-button toggle modes -->
+        <ng-container
+          [ngTemplateOutlet]="responseContent"
+          [ngTemplateOutletContext]="{ response: response }"></ng-container>
+
+        @if (isChecked(response.value) && subElementControls[response.value?.toString()]?.length) {
+          <evf-form-element-group
+            [elementControls]="subElementControls[response.value?.toString()]"
+            [metadata]="metadata"
+            [elementLayout]="elementLayout"
+            [submitted]="submitted"
+            (events)="events.emit($event)"
+            class="sub-group"></evf-form-element-group>
+        }
+      </div>
+    }
+  </ng-template>
+
+  <!-- Button toggle -->
+  <ng-template #buttonToggle let-responses="responses">
+    <mat-button-toggle-group
+      [name]="id"
+      [attr.aria-label]="id"
+      [hideMultipleSelectionIndicator]="hideMultipleSelectionIndicator"
+      [vertical]="vertical"
+      multiple
+      [style.column-count]="element?.custom?.['columnCount']"
+      [id]="id"
+      [class.invalid]="invalid"
+      [disabled]="disabled">
+      @for (response of responses; track response) {
+        <mat-button-toggle
+          [checked]="isChecked(response.value)"
+          [disabled]="disabled"
+          (change)="checkChanged($event, response)">
+          <ng-container
+            [ngTemplateOutlet]="responseLabel"
+            [ngTemplateOutletContext]="{ response: response }"></ng-container>
+
+          @if (response.tooltipTranslationId) {
+            <evf-info-icon [tooltipLabel]="response.tooltipTranslationId | evfLabel"></evf-info-icon>
+          }
+
+          <ng-container
+            [ngTemplateOutlet]="responseContent"
+            [ngTemplateOutletContext]="{ response: response }"></ng-container>
+        </mat-button-toggle>
+      }
+    </mat-button-toggle-group>
+
+    <!-- Sub-elements for button toggle mode - outside the toggle group -->
+    @if (checkIfValueSelected(control.value, responses)) {
+      @for (response of getValuesBasedOnColumns(control.value, responses); track $index) {
+        @if (subElementControls[response.toString()]?.length) {
+          <evf-form-element-group
+            [elementControls]="subElementControls[response.toString()]"
+            [metadata]="metadata"
+            [elementLayout]="elementLayout"
+            [submitted]="submitted"
+            (events)="events.emit($event)"
+            class="sub-group"></evf-form-element-group>
+        }
+      }
+    }
+  </ng-template>
+
+  <!-- Response label template -->
+  <ng-template #responseLabel let-response="response">
+    @if (response.labelTranslationId | evfLabel; as label) {
+      <span class="evf-markdown" markdown [data]="label" [inline]="label | inlineMarkdown"></span>
+    }
+  </ng-template>
+
+  <!-- Response content (body, help) -->
+  <ng-template #responseContent let-response="response">
+    @if (response.bodyTranslationId) {
+      <evf-element-body [response]="response"></evf-element-body>
+    }
+    @if (response.helpTranslationId) {
+      <evf-element-help [response]="response"></evf-element-help>
+    }
+  </ng-template>
+</evf-form-element-layout>

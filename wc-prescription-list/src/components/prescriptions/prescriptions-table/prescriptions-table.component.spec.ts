@@ -82,20 +82,20 @@ describe('PrescriptionsTableComponent', () => {
 
   it('should create component with correct default values', () => {
     expect(component).toBeTruthy();
-    expect(component.loading).toBe(false);
+    expect(component.loading()).toBe(false);
     expect(component.displayedColumns).toEqual(['creationDate', 'status', 'author', 'typeOfCare', 'start', 'end']);
   });
 
   it('should return correct items from getter', () => {
-    component.prescriptions = undefined;
-    expect(component.items).toEqual([]);
+    fixture.componentRef.setInput('prescriptions', undefined);
+    expect((component as any).items()).toEqual([]);
 
-    component.prescriptions = mockPrescriptions;
-    expect(component.items).toEqual(mockPrescriptions.items);
+    fixture.componentRef.setInput('prescriptions', mockPrescriptions);
+    expect((component as any).items()).toEqual(mockPrescriptions.items);
   });
 
   it('should show skeleton when loading is true', () => {
-    component.loading = true;
+    fixture.componentRef.setInput('loading', true);
     fixture.detectChanges();
 
     const skeleton = fixture.debugElement.query(By.css('[data-cy="skeleton"]'));
@@ -109,8 +109,8 @@ describe('PrescriptionsTableComponent', () => {
   });
 
   it('should show table when not loading', () => {
-    component.prescriptions = mockPrescriptions;
-    component.loading = false;
+    fixture.componentRef.setInput('prescriptions', mockPrescriptions);
+    fixture.componentRef.setInput('loadding', false);
     fixture.detectChanges();
 
     const table = fixture.debugElement.query(By.css('table'));
@@ -138,17 +138,17 @@ describe('PrescriptionsTableComponent', () => {
   });
 
   it('should display correct table structure with data', () => {
-    component.prescriptions = mockPrescriptions;
-    component.loading = false;
+    fixture.componentRef.setInput('prescriptions', mockPrescriptions);
+    fixture.componentRef.setInput('loading', false);
     fixture.detectChanges();
 
     const headerCells = fixture.debugElement.queryAll(By.css('th'));
     const rows = fixture.debugElement.queryAll(By.css('tr'));
 
-    expect(headerCells.length).toBe(component.displayedColumns.length);
+    expect(headerCells).toHaveLength(component.displayedColumns.length);
     //header row + 1 element row + footer row
     const rowsLength = 1 + mockPrescriptions.items!.length + 1;
-    expect(rows.length).toBe(rowsLength);
+    expect(rows).toHaveLength(rowsLength);
   });
 
   it('should display a dash when hideEndDate is true', () => {
@@ -169,19 +169,20 @@ describe('PrescriptionsTableComponent', () => {
         },
       ],
     };
-    component.intent = Intent.ORDER;
-    component.prescriptions = mockPrescriptionsWithNullEnd;
+    fixture.componentRef.setInput('intent', Intent.ORDER);
+    fixture.componentRef.setInput('prescriptions', mockPrescriptionsWithNullEnd);
+
     component.ngOnChanges({
       intent: new SimpleChange(null, Intent.ORDER, true),
     });
 
-    const items = component.items;
+    const items = (component as any).items();
     expect(items.length).toBe(1);
     expect(items[0]?.period?.hideEndDate).toBe(true);
   });
 
   it('display the skeleton card AND the table', () => {
-    component.loading = true;
+    fixture.componentRef.setInput('loading', true);
     fixture.detectChanges();
 
     expect(fixture.debugElement.query(By.css('[data-cy="skeleton"]'))).toBeTruthy();
@@ -190,11 +191,11 @@ describe('PrescriptionsTableComponent', () => {
 
   describe('Table footer messages', () => {
     beforeEach(() => {
-      component.prescriptions = { total: 0, items: [] };
+      fixture.componentRef.setInput('prescriptions', { total: 0, items: [] });
     });
 
     it('should show prescription messages when isPrescriptionIntent is true', () => {
-      component.intent = Intent.ORDER;
+      fixture.componentRef.setInput('intent', Intent.ORDER);
       component.ngOnChanges({
         intent: { currentValue: Intent.ORDER, previousValue: undefined, firstChange: true, isFirstChange: () => true },
       });
@@ -209,7 +210,7 @@ describe('PrescriptionsTableComponent', () => {
     });
 
     it('should show proposal messages when isProposalIntent is true', () => {
-      component.intent = Intent.PROPOSAL;
+      fixture.componentRef.setInput('intent', Intent.PROPOSAL);
       component.ngOnChanges({
         intent: {
           currentValue: Intent.PROPOSAL,
@@ -229,7 +230,7 @@ describe('PrescriptionsTableComponent', () => {
     });
 
     it('should render nothing for unknown intent', () => {
-      component.intent = Intent.MODEL;
+      fixture.componentRef.setInput('intent', Intent.MODEL);
       component.ngOnChanges({
         intent: { currentValue: Intent.MODEL, previousValue: undefined, firstChange: true, isFirstChange: () => true },
       });

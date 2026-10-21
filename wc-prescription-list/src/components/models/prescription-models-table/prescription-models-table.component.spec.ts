@@ -5,12 +5,10 @@ import { AlertComponent } from '@myhealth-belgium/myhealth-additional-ui-compone
 import { MatTableModule } from '@angular/material/table';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { By } from '@angular/platform-browser';
-import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { PrescriptionModelsTableComponent } from './prescription-models-table.component';
 import { DateAdapter } from '@angular/material/core';
-import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
 import { MatIconTestingModule } from '@angular/material/icon/testing';
 
 const mockPrescriptionModels: ModelEntityDto[] = [
@@ -70,12 +68,12 @@ describe('PrescriptionModelsTableComponent', () => {
 
   it('should create component with correct default values', () => {
     expect(component).toBeTruthy();
-    expect(component.loading).toBe(false);
+    expect(component.loading()).toBe(false);
     expect(component.displayedColumns).toEqual(['creationDate', 'label', 'template', 'actions']);
   });
 
   it('should show skeleton when loading is true', () => {
-    component.loading = true;
+    fixture.componentRef.setInput('loading', true);
     fixture.detectChanges();
 
     const skeleton = fixture.debugElement.query(By.css('[data-cy="skeleton"]'));
@@ -89,8 +87,8 @@ describe('PrescriptionModelsTableComponent', () => {
   });
 
   it('should show table when not loading', () => {
-    component.prescriptionModels = mockPrescriptionModels;
-    component.loading = false;
+    fixture.componentRef.setInput('prescriptionModels', mockPrescriptionModels);
+    fixture.componentRef.setInput('loading', false);
     fixture.detectChanges();
 
     const table = fixture.debugElement.query(By.css('table'));
@@ -112,8 +110,8 @@ describe('PrescriptionModelsTableComponent', () => {
   });
 
   it('should display correct table structure with data', () => {
-    component.prescriptionModels = mockPrescriptionModels;
-    component.loading = false;
+    fixture.componentRef.setInput('prescriptionModels', mockPrescriptionModels);
+    fixture.componentRef.setInput('loading', false);
     fixture.detectChanges();
 
     const headerCells = fixture.debugElement.queryAll(By.css('th'));
@@ -126,7 +124,7 @@ describe('PrescriptionModelsTableComponent', () => {
   });
 
   it('display the skeleton card', () => {
-    component.loading = true;
+    fixture.componentRef.setInput('loading', true);
     fixture.detectChanges();
 
     expect(fixture.debugElement.query(By.css('[data-cy="skeleton"]'))).toBeTruthy();

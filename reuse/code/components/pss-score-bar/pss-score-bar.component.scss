@@ -1,0 +1,41 @@
+@use '@myhealth-belgium/design-kit' as mh;
+@use 'sass:math';
+
+$pss-max-score: 9;
+
+.support-score {
+  position: relative;
+  height: 20px;
+  width: 180px;
+  border-radius: mh.$border-radius-s;
+  background-color: mh.$surface-brand-neutral-light;
+
+  > div {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: mh.$border-radius-s;
+    color: mh.$typography-brand-neutral-lighter;
+    white-space: nowrap;
+
+    &.pss-error {
+      background-color: mh.$surface-semantic-error-medium;
+    }
+
+    &.pss-warning {
+      color: mh.$typography-brand-neutral-darker;
+      background-color: mh.$surface-brand-tertiary-light;
+    }
+
+    &.pss-success {
+      background-color: mh.$surface-brand-secondary-medium;
+    }
+
+    @for $i from 1 through $pss-max-score {
+      &.pss-score-#{$i} {
+        width: math.percentage(math.div($i, $pss-max-score));
+      }
+    }
+  }
+}

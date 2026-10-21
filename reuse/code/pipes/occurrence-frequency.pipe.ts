@@ -21,9 +21,9 @@ export class OccurrenceFrequencyPipe implements PipeTransform {
   private translated = '';
 
   constructor() {
-    this.language = this._evfTranslate.currentLang as TranslationType;
+    this.language = this._evfTranslate.currentLang;
     this._evfTranslate.currentLang$.pipe(takeUntilDestroyed()).subscribe(() => {
-      this.language = this._evfTranslate.currentLang as TranslationType;
+      this.language = this._evfTranslate.currentLang;
       this.translate();
       this._cdRef.markForCheck();
     });

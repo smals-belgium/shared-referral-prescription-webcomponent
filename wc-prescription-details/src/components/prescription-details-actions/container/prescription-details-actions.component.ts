@@ -1,10 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
+  computed,
   inject,
-  Input,
-  Output,
+  input,
+  output,
   signal,
   WritableSignal,
 } from '@angular/core';
@@ -17,7 +17,6 @@ import { MatIconModule } from '@angular/material/icon';
 import {
   AssignationType,
   AssignCareGiverResource,
-  PerformerTaskIdResource,
   PersonResource,
   ReadRequestResource,
   RequestTaskResource,
@@ -25,11 +24,9 @@ import {
 } from '@reuse/code/openapi';
 import { Intent, UserInfo } from '@reuse/code/interfaces';
 import { isPrescription, normalizePromiseRejectReason } from '@reuse/code/utils/utils';
-import { Observable } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
-import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import { PrescriptionDetailsSecondaryService } from '../../prescription-details-secondary/services/prescription-details-secondary.service';
 import { ViewState } from '../../../prescription-details/prescription-details.component';
 import { PrescriptionsPdfService } from '@reuse/code/services/helpers/prescription-pdf.service';
@@ -71,7 +68,6 @@ export class PrescriptionDetailsActionsComponent {
   private readonly _dialog = inject(MatDialog);
   private readonly _toastService = inject(ToastService);
   private readonly _prescriptionStateService = inject(PrescriptionState);
-  private readonly _proposalStateService = inject(ProposalState);
   private readonly alertService = inject(AlertService);
   private readonly _authService = inject(AuthService);
   protected readonly alertTarget = inject(ALERT_TARGET);
@@ -83,33 +79,33 @@ export class PrescriptionDetailsActionsComponent {
   readonly generatedUUID = this._service.generatedUUID;
   readonly loadingActions: WritableSignal<boolean> = signal(false);
   protected readonly xActorOrganizationNihii11 = toSignal(this._authService.getConnectedOrganizationNihii());
-  private readonly _isOrganizationAndActingForProfessional = toSignal(
-    this._authService.isOrganizationAndActingForProfessional()
-  );
-  private readonly _connectedOrganizationNihii = toSignal(this._authService.getConnectedOrganizationNihii());
 
   protected readonly Intent = Intent;
   protected readonly checkAndConvertToPerformerTask = checkAndConvertToPerformerTask;
   protected readonly Role = Role;
 
-  @Input({ required: true }) data: ViewState | undefined;
-  get prescription() {
-    return this.data?.prescription;
-  }
-  get patient() {
-    return this.data?.patient;
-  }
-  get currentUser() {
-    return this.data?.currentUser;
-  }
+  protected readonly hasActions = computed(() => {
+    const allowedPrescriptionActions = this.prescription()?.allowedActions ?? {};
+    const allowedTaskActions = this.prescription()?.currentTask?.allowedActions ?? {};
+    const allowedActions = { ...allowedPrescriptionActions, ...allowedTaskActions };
+    return Object.entries(allowedActions)
+      .filter(([key]) => key !== 'canCreatePrescription')
+      .some(([_, allowed]) => allowed === true);
+  });
 
-  @Input({ required: true }) currentLang: string | undefined;
+  data = input.required<ViewState>();
 
-  @Output() print = new EventEmitter<Blob>();
-  @Output() download = new EventEmitter<Blob>();
-  @Output() handleDuplicate = new EventEmitter<ReadRequestResource>();
-  @Output() handleExtend = new EventEmitter<ReadRequestResource>();
-  @Output() handleAutoAssign = new EventEmitter<WcDetailsEvent>();
+  prescription = computed(() => this.data()?.prescription);
+  patient = computed(() => this.data()?.patient);
+  currentUser = computed(() => this.data()?.currentUser);
+
+  currentLang = input.required<string>();
+
+  print = output<Blob>();
+  download = output<Blob>();
+  handleDuplicate = output<ReadRequestResource>();
+  handleExtend = output<ReadRequestResource>();
+  handleAutoAssign = output<WcDetailsEvent>();
 
   private dispatchToHost<T>(actionType: WcDetailsEvent['type']): Promise<T> {
     return new Promise<T>((resolve, reject) => {
@@ -121,16 +117,18 @@ export class PrescriptionDetailsActionsComponent {
   }
 
   createPdf(type: 'print' | 'download'): void {
-    if (this.data?.decryptedResponses && this.data.template && this.data.templateVersion && this.currentLang) {
+    if (!this.data()) return;
+    const { decryptedResponses, template, templateVersion, prescription, patient } = this.data();
+    if (decryptedResponses && template && templateVersion && this.currentLang()) {
       this.loading.set(true);
       this._prescriptionsPdfService
         .createCommonPdf(
-          this.data.prescription,
-          this.data.decryptedResponses,
-          this.data.patient,
-          this.data.template,
-          this.data.templateVersion as FormTemplate,
-          this.currentLang
+          prescription,
+          decryptedResponses,
+          patient,
+          template,
+          templateVersion as FormTemplate,
+          this.currentLang()
         )
         .getBlob((blob: Blob) => {
           if (type === 'print') {
@@ -159,8 +157,8 @@ export class PrescriptionDetailsActionsComponent {
   }
 
   handleDuplicateClick() {
-    const prescription = this.data?.prescription;
-    const responses = this.data?.decryptedResponses;
+    const prescription = this.data()?.prescription;
+    const responses = this.data()?.decryptedResponses;
     if (prescription && responses) {
       const duplicatedData = { ...prescription, responses: responses };
       this.handleDuplicate.emit(duplicatedData);
@@ -168,8 +166,8 @@ export class PrescriptionDetailsActionsComponent {
   }
 
   handleExtendClick() {
-    const prescription = this.data?.prescription;
-    const responses = this.data?.decryptedResponses;
+    const prescription = this.data()?.prescription;
+    const responses = this.data()?.decryptedResponses;
     if (prescription && responses) {
       const duplicatedData = { ...prescription, responses: responses };
       this.handleExtend.emit(duplicatedData);
@@ -252,79 +250,6 @@ export class PrescriptionDetailsActionsComponent {
   }
 
   onSelfAssign(prescription: ReadRequestResource, currentUser?: Partial<UserInfo>): void {
-    if (!prescription.id || !prescription.referralTask?.id || !(currentUser?.ssin || currentUser?.organizations)) {
-      this._toastService.showSomethingWentWrong();
-      return;
-    }
-
-    this.loading.set(true);
-    let ssinOrNihii = currentUser.ssin;
-    let discipline = currentUser.discipline || '';
-    let type = 'Professional';
-    let assignationType: AssignationType | undefined = undefined;
-    let xActorOrganizationNihii11 = undefined;
-    if (this._isOrganizationAndActingForProfessional()) {
-      assignationType = AssignationType.Internal;
-      xActorOrganizationNihii11 = this._connectedOrganizationNihii();
-    } else if (currentUser.organizations) {
-      const organizationEntry = Object.entries(currentUser.organizations[0])[0];
-      ssinOrNihii = organizationEntry[1].nihii;
-      type = organizationEntry[0];
-      discipline = '';
-    }
-
-    if (!ssinOrNihii) {
-      this.loading.set(false);
-      this._toastService.showSomethingWentWrong();
-      return;
-    }
-
-    if (isPrescription(prescription.intent)) {
-      this.selfAssign(
-        () =>
-          this._prescriptionStateService.assignPrescriptionPerformer(
-            prescription.id!,
-            prescription.referralTask!.id!,
-            ssinOrNihii,
-            discipline,
-            type,
-            this.generatedUUID(),
-            assignationType,
-            xActorOrganizationNihii11
-          ),
-        'prescription'
-      );
-    } else {
-      this.selfAssign(
-        () =>
-          this._proposalStateService.assignProposalPerformer(
-            prescription.id!,
-            prescription.referralTask!.id!,
-            ssinOrNihii,
-            discipline,
-            type,
-            this.generatedUUID()
-          ),
-        'proposal'
-      );
-    }
-  }
-
-  private selfAssign(
-    serviceCall: () => Observable<PerformerTaskIdResource | PerformerTaskIdResource[]>,
-    successPrefix: string
-  ) {
-    serviceCall().subscribe({
-      next: () => {
-        this.generatedUUID.set(uuidv4());
-        this.loading.set(false);
-        this._toastService.show(successPrefix + '.assignPerformer.meSuccess');
-      },
-      error: () => {
-        this.generatedUUID.set(uuidv4());
-        this.loading.set(false);
-        this._toastService.showSomethingWentWrong();
-      },
-    });
+    this._service.onSelfAssign(prescription, currentUser);
   }
 }

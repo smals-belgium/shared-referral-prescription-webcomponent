@@ -2,11 +2,14 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  computed,
   ElementRef,
   EventEmitter,
+  input,
   Input,
   OnChanges,
   OnDestroy,
+  output,
   Output,
   SimpleChanges,
   ViewChild,
@@ -28,7 +31,7 @@ import { DatePipe } from '@reuse/code/pipes/date.pipe';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { MatIcon } from '@angular/material/icon';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { AlertType, Intent } from '@reuse/code/interfaces';
+import { AlertType, Intent, PatientListFilter } from '@reuse/code/interfaces';
 import { DataLoadConfig, RequestSummaryDataService } from '@reuse/code/services/helpers/request-summary-data.service';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { mapDisplayStatusToColor } from '@reuse/code/utils/request-status-display-map.utils';
@@ -56,23 +59,20 @@ import { ResolvedError } from '@reuse/code/interfaces/error.interface';
 })
 export class PrescriptionsCardComponent implements OnChanges, AfterViewInit, OnDestroy {
   // Input properties
-  @Input() intent?: Intent;
-  @Input() requestSummaryListResource?: RequestSummaryListResource;
-  get itemsLength() {
-    if (this.requestSummaryListResource?.total == null) return -1;
-    return this.requestSummaryListResource?.items?.length ?? -1;
-  }
-  @Input() loading: boolean = false;
-  @Input() historical: boolean = false;
-  @Input() patientSsin?: string;
-  @Input() requesterSsin?: string;
-  @Input() performerSsin?: string;
-  @Input() error?: ResolvedError | null;
+  readonly filter = input.required<PatientListFilter>();
+  readonly intent = input<Intent | undefined>(undefined);
+  readonly requestSummaryListResource = input<RequestSummaryListResource | undefined>(undefined);
+  protected readonly itemsLength = computed(() => {
+    if (this.requestSummaryListResource()?.total == null) return -1;
+    return this.requestSummaryListResource()?.items?.length ?? -1;
+  });
+  readonly loading = input<boolean>(false);
+  readonly error = input<ResolvedError | null>(null);
 
   // Output events
-  @Output() clickPrescription = new EventEmitter<RequestSummaryResource>();
-  @Output() retryOnError = new EventEmitter<void>();
-  @Output() dismissOnError = new EventEmitter<void>();
+  clickPrescription = output<RequestSummaryResource>();
+  retryOnError = output<void>();
+  dismissOnError = output<void>();
 
   @ViewChild('anchor', { static: true }) anchor!: ElementRef<HTMLElement>;
   @ViewChild('scrollframe', { static: true }) scrollframe!: ElementRef<HTMLElement>;
@@ -102,11 +102,11 @@ export class PrescriptionsCardComponent implements OnChanges, AfterViewInit, OnD
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['intent']) {
-      this.isPrescriptionIntent = isPrescription(this.intent);
-      this.isProposalIntent = isProposal(this.intent);
+      this.isPrescriptionIntent = isPrescription(this.intent());
+      this.isProposalIntent = isProposal(this.intent());
     }
 
-    if (changes['requestSummaryListResource'] && this.requestSummaryListResource?.items?.length) {
+    if (changes['requestSummaryListResource'] && this.requestSummaryListResource()?.items?.length) {
       this.initializeDataStream();
     }
   }
@@ -118,7 +118,7 @@ export class PrescriptionsCardComponent implements OnChanges, AfterViewInit, OnD
       entries => {
         if (this.destroyed) return;
         if (entries.some(e => e.isIntersecting)) {
-          if (this.itemsLength <= 0 || !this.canLoadMore() || this.isLoading() || this.loading || this.error) {
+          if (this.itemsLength() <= 0 || !this.canLoadMore() || this.isLoading() || this.loading() || this.error()) {
             return;
           } else {
             this.loadMore();
@@ -128,7 +128,7 @@ export class PrescriptionsCardComponent implements OnChanges, AfterViewInit, OnD
       {
         root,
         rootMargin: '0px',
-        threshold: 1.0,
+        threshold: 1,
       }
     );
 
@@ -157,12 +157,7 @@ export class PrescriptionsCardComponent implements OnChanges, AfterViewInit, OnD
       const currentDataCount = this.requestData()?.length ?? 0;
       this.dataService.retryLoad(currentDataCount);
     } catch (error: unknown) {
-      if (
-        error &&
-        typeof error === 'object' &&
-        'message' in error &&
-        (error as { message: unknown }).message === 'INITIAL_RETRY_REQUIRED'
-      ) {
+      if (error && typeof error === 'object' && 'message' in error && error.message === 'INITIAL_RETRY_REQUIRED') {
         this.retryOnError.emit();
       }
     }
@@ -173,13 +168,14 @@ export class PrescriptionsCardComponent implements OnChanges, AfterViewInit, OnD
   }
 
   private initializeDataStream(): void {
-    const initialData = this.requestSummaryListResource?.items ?? [];
+    const initialData = this.requestSummaryListResource()?.items ?? [];
     const config: DataLoadConfig = {
-      intent: this.intent,
-      patientSsin: this.patientSsin,
-      requesterSsin: this.requesterSsin,
-      performerSsin: this.performerSsin,
-      historical: this.historical,
+      intent: this.intent(),
+      patientSsin: this.filter().patientSsin,
+      requesterSsin: this.filter().requesterSsin,
+      performerSsin: this.filter().performerSsin,
+      organizationNihii: this.filter().organizationNihii,
+      historical: this.filter().historical,
     };
 
     this.dataService.initializeDataStream(initialData, config);
@@ -194,9 +190,9 @@ export class PrescriptionsCardComponent implements OnChanges, AfterViewInit, OnD
   }
 
   canLoadMore(): boolean {
-    if (!this.requestSummaryListResource?.total) return true;
+    if (!this.requestSummaryListResource()?.total) return true;
     const totalItems = this.requestData() ? this.requestData().length : 0;
-    const total = this.requestSummaryListResource.total ?? 0;
+    const total = this.requestSummaryListResource()?.total ?? 0;
     return total > totalItems;
   }
 

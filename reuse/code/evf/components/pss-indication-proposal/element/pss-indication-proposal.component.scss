@@ -1,0 +1,75 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+table.pss-indication-proposal-table thead tr.mat-mdc-header-row th.mat-mdc-header-cell {
+  background-color: mh.$primary-99;
+  border: none;
+}
+
+:host ::ng-deep {
+  .mat-sort-header-arrow {
+    display: none !important;
+  }
+
+  // fixed column widths
+  .mat-column-select {
+    flex: 0 0 44px;
+    width: 44px;
+    max-width: 44px;
+    padding: 0 2px;
+  }
+
+  .mat-column-name {
+    flex: 1 1 535px;
+    min-width: 535px;
+  }
+
+  [class^='mat-column-criteria'] {
+    flex: 0 0 140px;
+    width: 140px;
+    max-width: 140px;
+  }
+
+  .select-table-container {
+    overflow-x: auto;
+    width: 100%;
+  }
+
+  table.pss-indication-proposal-table thead tr.mat-mdc-header-row th.mat-mdc-header-cell {
+    background-color: mh.$primary-99;
+    border: none;
+    .inication-sorting-icon {
+      margin: 0 mh.$spacing-rem-l 0 mh.$spacing-rem-2xs;
+      color: var(--mh-table-icon-color-unsorted, #{mh.$typography-brand-neutral-light});
+    }
+
+    &:not([aria-sort='none']) {
+      .inication-sorting-icon {
+        color: var(--mh-table-icon-color-sorted, #{mh.$surface-brand-primary-medium});
+      }
+    }
+  }
+}
+
+.selected_option_container {
+  display: flex;
+  flex-direction: row;
+  gap: mh.$spacing-rem-s;
+  margin-top: mh.$spacing-rem-l;
+  label {
+    margin-top: mh.$spacing-rem-s;
+    font-weight: bold;
+  }
+  mat-chip-grid {
+    @include mh.override-mat-chips();
+    --mat-chip-with-trailing-icon-trailing-icon-color: #{mh.$surface-brand-primary-medium};
+    mat-chip-row.mh-blue {
+      background-color: #{mh.$surface-brand-primary-light};
+      --mat-chip-outline-color: #{mh.$surface-brand-primary-light};
+    }
+    .mat-mdc-chip-remove .mat-icon {
+      min-height: auto;
+    }
+
+    margin-bottom: 1rem;
+  }
+}

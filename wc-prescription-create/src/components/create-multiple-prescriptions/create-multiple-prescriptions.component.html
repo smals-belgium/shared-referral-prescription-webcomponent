@@ -1,188 +1,202 @@
 <div class="wrapper">
-  <div class="patient">
-    @if (patient) {
-      <app-patient-info-bar [patient]="patient"></app-patient-info-bar>
-    }
+  <div class="create_wrapper create_wrapper_white">
+    <div class="create_container container">
+      <div class="patient">
+        @if (patient) {
+          <app-patient-info-bar [patient]="patient"></app-patient-info-bar>
+        }
+      </div>
+    </div>
   </div>
 
-  @if (pageError(); as resolvedError) {
-    <app-alert
-      [severity]="resolvedError.severity"
-      [title]="resolvedError.title"
-      [subTitle]="resolvedError.subTitle"
-      [message]="
-        resolvedError.message
-          ? (resolvedError.message | translate: resolvedError.translationOptions)
-          : resolvedError.message
-      "
-      [dismissible]="resolvedError.dismissible"
-      [retry]="false"
-      [errorId]="resolvedError.errorId"
-      (clickClose)="dismissError()"></app-alert>
-  }
-
-  <mat-accordion [hideToggle]="createPrescriptionForms.length === 1" togglePosition="after">
-    @for (prescriptionForm of createPrescriptionForms; track prescriptionForm.trackId; let last = $last) {
-      <mat-expansion-panel
-        [expanded]="isPanelExpanded(prescriptionForm.trackId, last)"
-        [id]="`mat-expension-panel-${prescriptionForm.trackId}`">
-        <mat-expansion-panel-header
-          [class.no-toggle]="createPrescriptionForms.length === 1"
-          [tabIndex]="createPrescriptionForms.length === 1 ? -1 : 0">
-          <mat-panel-title
-            [class.invalid]="
-              prescriptionForm.submitted &&
-              (!prescriptionForm.elementGroup?.valid || prescriptionForm.status === 'ERROR')
-            ">
-            <div>
-              <h2 data-cy="template-label">{{ prescriptionForm.templateCode | templateName }}</h2>
-              <p><span class="invalid">* </span>{{ 'prescription.create.requiredFields' | translate }}</p>
-            </div>
-          </mat-panel-title>
-          <mat-panel-description>
-            @if (prescriptionForm.status === LoadingStatus.SUCCESS) {
-              <mat-icon color="accent" svgIcon="check_circle" aria-hidden="true"></mat-icon>
-            } @else if (prescriptionForm.status === LoadingStatus.ERROR) {
-              <mat-icon color="warn" svgIcon="error" aria-hidden="true"></mat-icon>
-            }
-
-            @if (prescriptionForm.templateCode | templateName; as template) {
-              <ng-container>
-                @if (prescriptionForm.status !== LoadingStatus.SUCCESS && createPrescriptionForms.length > 1) {
-                  <button
-                    mat-icon-button
-                    (click)="
-                      $event.stopPropagation();
-                      clickDeletePrescription.emit({ form: prescriptionForm, templateName: template })
-                    "
-                    [attr.aria-label]="'prescription.ariaLabel.delete' | translate">
-                    <mat-icon svgIcon="delete" aria-hidden="true"></mat-icon>
-                  </button>
+  <div class="create_wrapper">
+    <div class="create_container">
+      @if (pageError(); as resolvedError) {
+        <app-alert
+          [severity]="resolvedError.severity"
+          [title]="resolvedError.title"
+          [subTitle]="resolvedError.subTitle"
+          [message]="
+            resolvedError.message
+              ? (resolvedError.message | translate: resolvedError.translationOptions)
+              : resolvedError.message
+          "
+          [dismissible]="resolvedError.dismissible"
+          [retry]="false"
+          [errorId]="resolvedError.errorId"
+          (clickClose)="dismissError()"></app-alert>
+      }
+      <mat-accordion
+        [hideToggle]="createPrescriptionForms.length === 1"
+        togglePosition="after"
+        [class.multiple]="createPrescriptionForms.length > 1">
+        @for (prescriptionForm of createPrescriptionForms; track prescriptionForm.trackId; let last = $last) {
+          <mat-expansion-panel
+            [expanded]="isPanelExpanded(prescriptionForm.trackId, last)"
+            [id]="`mat-expension-panel-${prescriptionForm.trackId}`">
+            <mat-expansion-panel-header
+              [class.no-toggle]="createPrescriptionForms.length === 1"
+              [tabIndex]="createPrescriptionForms.length === 1 ? -1 : 0">
+              <mat-panel-title
+                [class.invalid]="
+                  prescriptionForm.submitted &&
+                  (!prescriptionForm.elementGroup?.valid || prescriptionForm.status === 'ERROR')
+                ">
+                <div>
+                  <h2 data-cy="template-label">{{ prescriptionForm.templateCode | templateName: intent }}</h2>
+                  <p><span class="invalid">* </span>{{ 'prescription.create.requiredFields' | translate }}</p>
+                </div>
+              </mat-panel-title>
+              <mat-panel-description>
+                @if (prescriptionForm.status === LoadingStatus.SUCCESS) {
+                  <mat-icon color="accent" svgIcon="check_circle" aria-hidden="true"></mat-icon>
+                } @else if (prescriptionForm.status === LoadingStatus.ERROR) {
+                  <mat-icon color="warn" svgIcon="error" aria-hidden="true"></mat-icon>
                 }
-              </ng-container>
-            }
-          </mat-panel-description>
-        </mat-expansion-panel-header>
 
-        @let modelState = getModelState(prescriptionForm.trackId);
+                @if (prescriptionForm.templateCode | templateName; as template) {
+                  <ng-container>
+                    @if (prescriptionForm.status !== LoadingStatus.SUCCESS && createPrescriptionForms.length > 1) {
+                      <button
+                        mat-icon-button
+                        (click)="
+                          $event.stopPropagation();
+                          clickDeletePrescription.emit({ form: prescriptionForm, templateName: template })
+                        "
+                        [attr.aria-label]="'prescription.ariaLabel.delete' | translate">
+                        <mat-icon svgIcon="delete" aria-hidden="true"></mat-icon>
+                      </button>
+                    }
+                  </ng-container>
+                }
+              </mat-panel-description>
+            </mat-expansion-panel-header>
 
-        @if (modelState?.state === LoadingStatus.SUCCESS) {
-          <app-alert
-            [severity]="AlertType.Success"
-            [message]="{
-              value: ('prescription.model.create.success' | translate: { name: modelState?.success }),
-              isTranslated: true,
-            }"
-            [retry]="false"></app-alert>
-        } @else if (modelState?.state === LoadingStatus.LOADING) {
-          <app-overlay-spinner mode="inline"></app-overlay-spinner>
-        }
+            @let modelState = getModelState(prescriptionForm.trackId);
 
-        @if (prescriptionForm.formTemplateState$(); as formTemplateState) {
-          <ng-container>
-            @if (
-              formTemplateState.status === LoadingStatus.LOADING || formTemplateState.status === LoadingStatus.UPDATING
-            ) {
+            @if (modelState?.state === LoadingStatus.SUCCESS) {
+              <app-alert
+                [severity]="AlertType.Success"
+                [message]="{
+                  value: ('prescription.model.create.success' | translate: { name: modelState?.success }),
+                  isTranslated: true,
+                }"
+                [retry]="false"></app-alert>
+            } @else if (modelState?.state === LoadingStatus.LOADING) {
               <app-overlay-spinner mode="inline"></app-overlay-spinner>
             }
 
-            @if (prescriptionForm.errors) {
-              <app-alert
-                class="elements-in-error-summary"
-                [severity]="AlertType.Error"
-                [title]="'prescription.errors.errorsInForm.title'"
-                [subTitle]="'prescription.errors.errorsInForm.subTitle'"
-                [retry]="false">
-                <ul #content class="elements-in-error">
-                  @for (
-                    item of prescriptionForm.errors | getErrorMessagesFromForm: formTemplateState.data;
-                    track item.label
-                  ) {
-                    <li>
-                      @if (item.id) {
-                        <a (click)="scrollTo(item.id, prescriptionForm.trackId)">{{
-                          item.label | translateByElement: prescriptionForm.elementGroup : lang
-                        }}</a>
-                      } @else {
-                        {{ item.label | translateByElement: prescriptionForm.elementGroup : lang }}
+            @if (prescriptionForm.formTemplateState$(); as formTemplateState) {
+              <ng-container>
+                @if (
+                  formTemplateState.status === LoadingStatus.LOADING ||
+                  formTemplateState.status === LoadingStatus.UPDATING
+                ) {
+                  <app-overlay-spinner mode="inline"></app-overlay-spinner>
+                }
+
+                @if (prescriptionForm.errors) {
+                  <app-alert
+                    class="elements-in-error-summary"
+                    [severity]="AlertType.Error"
+                    [title]="'prescription.errors.errorsInForm.title'"
+                    [subTitle]="'prescription.errors.errorsInForm.subTitle'"
+                    [retry]="false">
+                    <ul #content class="elements-in-error">
+                      @for (
+                        item of prescriptionForm.errors | getErrorMessagesFromForm: formTemplateState.data;
+                        track item.label
+                      ) {
+                        <li>
+                          @if (item.id) {
+                            <a (click)="scrollTo(item.id, prescriptionForm.trackId)">{{
+                              item.label | translateByElement: prescriptionForm.elementGroup : lang
+                            }}</a>
+                          } @else {
+                            {{ item.label | translateByElement: prescriptionForm.elementGroup : lang }}
+                          }
+                        </li>
                       }
-                    </li>
+                    </ul>
+                  </app-alert>
+                }
+
+                @if (formTemplateState.status === LoadingStatus.SUCCESS) {
+                  <evf-form
+                    [lang]="lang"
+                    [readonly]="prescriptionForm.status === LoadingStatus.SUCCESS"
+                    [submitted]="!!prescriptionForm.submitted"
+                    [template]="formTemplateState.data!"
+                    (changeElementGroup)="setElementGroup(prescriptionForm, $any($event))"
+                    [status]="status"
+                    (events)="handleEvent($event, prescriptionForm.trackId, prescriptionForm.elementGroup)"
+                    [patient]="patient"></evf-form>
+                }
+
+                @if (shouldDisplayModalCheckbox(prescriptionForm) && formTemplateState.data) {
+                  <mat-checkbox
+                    [checked]="modelState?.state === LoadingStatus.SUCCESS"
+                    [disabled]="modelState?.state === LoadingStatus.SUCCESS"
+                    (change)="toggleCheckbox(prescriptionForm.trackId, $event.checked)">
+                    {{ 'prescription.model.create.title' | translate }}
+                  </mat-checkbox>
+                  @if (isChecked(prescriptionForm.trackId) || modelState?.state === LoadingStatus.SUCCESS) {
+                    <create-prescription-model
+                      [disabled]="modelState?.state === LoadingStatus.SUCCESS"
+                      [prescriptionTrackById]="prescriptionForm.trackId"
+                      [template]="formTemplateState.data"
+                      [templateCode]="prescriptionForm.templateCode"
+                      [responses]="getResponses(prescriptionForm)"
+                      (modelSaved)="handleModelSaved($event)"></create-prescription-model>
                   }
-                </ul>
-              </app-alert>
+                }
+              </ng-container>
             }
-
-            @if (formTemplateState.status === LoadingStatus.SUCCESS) {
-              <evf-form
-                [lang]="lang"
-                [readonly]="prescriptionForm.status === LoadingStatus.SUCCESS"
-                [submitted]="!!prescriptionForm.submitted"
-                [template]="formTemplateState.data!"
-                (changeElementGroup)="setElementGroup(prescriptionForm, $any($event))"
-                [status]="status"
-                [patient]="patient"></evf-form>
-            }
-
-            @if (isPrescriptionValue && formTemplateState.data) {
-              <mat-checkbox
-                [checked]="modelState?.state === LoadingStatus.SUCCESS"
-                [disabled]="modelState?.state === LoadingStatus.SUCCESS"
-                (change)="toggleCheckbox(prescriptionForm.trackId, $event.checked)">
-                {{ 'prescription.model.create.title' | translate }}
-              </mat-checkbox>
-              @if (isChecked(prescriptionForm.trackId) || modelState?.state === LoadingStatus.SUCCESS) {
-                <create-prescription-model
-                  [disabled]="modelState?.state === LoadingStatus.SUCCESS"
-                  [prescriptionTrackById]="prescriptionForm.trackId"
-                  [template]="formTemplateState.data"
-                  [templateCode]="prescriptionForm.templateCode"
-                  [responses]="getResponses(prescriptionForm)"
-                  (modelSaved)="handleModelSaved($event)"></create-prescription-model>
-              }
-            }
-          </ng-container>
+          </mat-expansion-panel>
         }
-      </mat-expansion-panel>
-    }
-  </mat-accordion>
-
-  @if (isPrescriptionValue) {
-    <div class="actions">
-      @if (createPrescriptionForms?.[0]?.templateCode !== 'ANNEX_82') {
-        <button
-          type="button"
-          (click)="clickAddPrescription.emit()"
-          mat-stroked-button
-          data-cy="prescription-create-add">
-          <mat-icon svgIcon="add" aria-hidden="true"></mat-icon>
-          {{ 'prescription.create.addPrescription' | translate }}
-        </button>
-      }
+      </mat-accordion>
     </div>
-  }
-  <div class="general-actions">
-    <div>
-      <div class="spacer">&nbsp;</div>
-      <div>
-        <button
-          type="button"
-          (click)="clickPublish.emit()"
-          [disabled]="createPrescriptionForms.length === 0"
-          mat-flat-button
-          data-cy="prescription-create-publish">
-          {{ 'prescription.create.publish' | translate }}
-          @if (createPrescriptionForms.length > 1) {
-            <ng-container>({{ numberOfPrescriptionsToCreate }})</ng-container>
-          }
-        </button>
-        <button
-          type="button"
-          (click)="clickCancel.emit()"
-          mat-button
-          color="error"
-          data-cy="prescription-create-cancel">
-          <mat-icon svgIcon="delete" aria-hidden="true"></mat-icon>{{ 'common.cancel' | translate }}
-        </button>
+  </div>
+
+  <div class="create_wrapper create_wrapper_white">
+    <div class="create_container container">
+      @if (isPrescriptionValue) {
+        <div class="actions">
+          <button
+            type="button"
+            (click)="clickAddPrescription.emit()"
+            mat-stroked-button
+            data-cy="prescription-create-add">
+            <mat-icon svgIcon="add" aria-hidden="true"></mat-icon>
+            {{ 'prescription.create.addPrescription' | translate }}
+          </button>
+        </div>
+      }
+      <div class="general-actions">
+        <div>
+          <div class="spacer">&nbsp;</div>
+          <div>
+            <button
+              type="button"
+              (click)="clickPublish.emit()"
+              [disabled]="createPrescriptionForms.length === 0"
+              mat-flat-button
+              data-cy="prescription-create-publish">
+              {{ 'prescription.create.publish' | translate }}
+              @if (createPrescriptionForms.length > 1) {
+                <ng-container>({{ numberOfPrescriptionsToCreate }})</ng-container>
+              }
+            </button>
+            <button
+              type="button"
+              (click)="clickCancel.emit()"
+              mat-button
+              color="error"
+              data-cy="prescription-create-cancel">
+              {{ 'common.cancel' | translate }}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

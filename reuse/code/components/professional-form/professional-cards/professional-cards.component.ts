@@ -55,7 +55,7 @@ export class ProfessionalCardsComponent implements OnChanges, AfterViewChecked, 
 
   readonly professionals = input<HealthCareProviderResource[]>([]);
   readonly total = input<number | null>(null);
-  readonly prescriptionId = input.required<string>();
+  readonly prescriptionId = input<string>();
   readonly category = input.required<string>();
   readonly intent = input.required<Intent>();
   readonly query = input<string>('');

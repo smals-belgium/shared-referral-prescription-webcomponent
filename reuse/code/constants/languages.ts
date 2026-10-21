@@ -1,8 +1,8 @@
 export const Lang = {
-  NL: { short: 'nl', full: 'nl-BE' },
-  FR: { short: 'fr', full: 'fr-BE' },
-  DE: { short: 'de', full: 'de-BE' },
-  EN: { short: 'en', full: 'en-GB' },
+  NL: { short: 'nl', full: 'nl-BE', capital: 'NL' },
+  FR: { short: 'fr', full: 'fr-BE', capital: 'FR' },
+  DE: { short: 'de', full: 'de-BE', capital: 'DE' },
+  EN: { short: 'en', full: 'en-GB', capital: 'EN' },
 } as const;
 
 /**

@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.2] - 20/Oct/26
+
+Only changes impacting the integration of the Web Components (inputs, outputs, token contract, runtime requirements) are listed below.
+
+### Improvements
+
+- Documentation - Clarified eHealth onboarding and token retrieval in M2M mode: token exchange is only applicable in P2M mode; in M2M mode the host must obtain the required IAM tokens directly and return the appropriate token in `getAccessToken(audience)`.
+
+### Bugfixes
+
+- Prescription details actions - Fixed a duplicate "Execute" action that could be displayed for nurses in details view.
+- Prescription details assignment - Fixed assignment visibility for doctor profiles in the details component.
+- Assignment and form rendering - Improved robustness of assignment/form rendering under zoneless change detection and when provider address data is missing.
+
+## [3.0.1] - 14/Oct/26
+
+### Features
+
+- Proposal flow improvements - Continued redesign of proposal creation and assignment interactions in create/details/list views.
+
+### Bugfixes
+
+- Prescription details layout - Fixed container alignment issues in the details component.
+
+## [3.0.0] - 07/Oct/26
+
+### Features
+
+- Ambulatory assignment targets - Assignment flows now support assigning an organization or an independent physician through the ambulant track. Not available yet.
+- Proposal creation redesign - Updated proposal creation UX and related assignment interactions.
+
+### Improvements
+
+- Proposal assignment filtering - Improved caregiver selection logic in proposal creation so assignment focuses on valid professional candidates.
+
+### Deprecations
+
+- Loading Web Components directly from the acceptance URL (`https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/...`) is now decommissioned. Integrations must use the npm packages and serve the bundled files from their own application. Will officially be removed in version 4.
+
 ## [2.1.2] - 15/Sep/26
 
 - Assign dialog - update the reliably render rows under zoneless CD; handle missing provider address gracefully

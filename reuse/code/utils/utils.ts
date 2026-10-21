@@ -57,7 +57,7 @@ function validateCheckDigit(value: any, modValue: number): boolean {
 
 function bigNumberModulo(checkNumber: string, modulo: number): number {
   return Array.from(checkNumber)
-    .map(c => parseInt(c))
+    .map(c => Number.parseInt(c))
     .reduce((remainder, value) => (remainder * 10 + value) % modulo, 0);
 }
 

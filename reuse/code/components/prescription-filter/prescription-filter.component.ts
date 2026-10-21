@@ -20,7 +20,7 @@ import { Language } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { MultiselectComponent, MultiselectOption } from '../../components/multiselect/multiselect.component';
 import { Subscription } from 'rxjs';
 import { AccessMatrix, RequestStatus, Template } from '@reuse/code/openapi';
-import { Intent } from '@reuse/code/interfaces';
+import { Intent, TemplateCodes } from '@reuse/code/interfaces';
 
 export interface SearchFilter {
   status?: RequestStatus[];
@@ -123,9 +123,9 @@ export class PrescriptionFilterComponent implements OnChanges, OnInit, OnDestroy
 
     switch (this.intent) {
       case Intent.PROPOSAL:
-        return this.templates.filter(e => e.code === 'ANNEX_81' && this.filteredOnAccessMatrix(e));
+        return this.templates.filter(e => e.code === TemplateCodes.ANNEX_81 && this.filteredOnAccessMatrix(e));
       case Intent.ORDER:
-        return this.templates.filter(e => e.code !== 'ANNEX_81' && this.filteredOnAccessMatrix(e));
+        return this.templates.filter(e => e.code !== TemplateCodes.ANNEX_81 && this.filteredOnAccessMatrix(e));
       default:
         return [];
     }

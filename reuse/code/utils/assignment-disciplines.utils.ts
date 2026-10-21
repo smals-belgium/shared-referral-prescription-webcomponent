@@ -10,14 +10,9 @@ export function getAssignableProfessionalDisciplines(category: string, intent: I
       } else {
         return [Discipline.Nurse];
       }
-    case 'physiotherapy':
-      if (isProposal(intent)) {
-        return [Discipline.Physician, Discipline.Dentist];
-      } else {
-        return [Discipline.Physiotherapist];
-      }
     case 'diagnosticImaging':
-      return [Discipline.Physician, Discipline.Dentist];
+    case 'radiology':
+      return [Discipline.Physician];
     default:
       return [];
   }
@@ -27,22 +22,13 @@ export function getAssignableOrganizationInstitutionTypes(category: string, inte
   switch (category) {
     case 'nursing':
       if (isProposal(intent)) {
-        return [];
+        return ['GROUPOFNURSES', 'OTD_PHARMACY', 'HOSPITAL', 'REEDUCATION', 'HOME_SERVICES'];
       } else {
-        return ['THIRD_PARTY_PAYING_GROUP', 'GUARD_POST', 'MEDICAL_HOUSE', 'HOME_SERVICES'];
-      }
-    case 'physiotherapy':
-      if (isProposal(intent)) {
-        return [];
-      } else {
-        return ['MEDICAL_HOUSE'];
+        return ['OFFICE_DOCTORS', 'GROUPOFDOCTORS', 'GUARD_POST', 'MEDICAL_HOUSE'];
       }
     case 'diagnosticImaging':
-      if (isProposal(intent)) {
-        return ['THIRD_PARTY_PAYING_GROUP', 'GUARD_POST', 'MEDICAL_HOUSE', 'HOME_SERVICES'];
-      } else {
-        return ['MEDICAL_HOUSE'];
-      }
+    case 'radiology':
+      return ['OFFICE_DOCTORS', 'GROUPOFDOCTORS', 'GUARD_POST', 'MEDICAL_HOUSE', 'HOSPITAL'];
     default:
       return [];
   }

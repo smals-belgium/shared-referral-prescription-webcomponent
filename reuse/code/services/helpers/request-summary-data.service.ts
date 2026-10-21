@@ -32,6 +32,7 @@ export interface DataLoadConfig {
   patientSsin?: string;
   requesterSsin?: string;
   performerSsin?: string;
+  organizationNihii?: string;
   historical?: boolean;
 }
 
@@ -104,7 +105,7 @@ export class RequestSummaryDataService {
     );
   }
 
-  private calculateNextPage = (currentOffset: number): number => {
+  private readonly calculateNextPage = (currentOffset: number): number => {
     return currentOffset + 1;
   };
 
@@ -194,6 +195,7 @@ export class RequestSummaryDataService {
       patient: config.patientSsin,
       requester: config.requesterSsin,
       performer: config.performerSsin,
+      organization: config.organizationNihii,
       historical: config.historical,
     };
   }

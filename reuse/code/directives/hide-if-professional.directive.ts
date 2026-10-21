@@ -19,10 +19,10 @@ export class HideIfProfessionalDirective implements OnInit {
       .isProfessional()
       .pipe(first())
       .subscribe(isProfessional => {
-        if (!isProfessional) {
-          this.viewContainer.createEmbeddedView(this.templateRef);
-        } else {
+        if (isProfessional) {
           this.viewContainer.clear();
+        } else {
+          this.viewContainer.createEmbeddedView(this.templateRef);
         }
         this.cdRef.markForCheck();
       });

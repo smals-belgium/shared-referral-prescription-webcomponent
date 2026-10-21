@@ -1,11 +1,47 @@
 @use '@myhealth-belgium/design-kit' as mh;
 
 :host {
-  ::ng-deep .highlight {
-    font-weight: mh.$font-weight-bold;
-  }
-  table.mat-mdc-table {
-    margin-bottom: unset;
+  ::ng-deep {
+    .highlight {
+      font-weight: mh.$font-weight-bold;
+    }
+    table.mat-mdc-table {
+      margin-bottom: unset;
+    }
+    .mat-mdc-header-row {
+      background-color: mh.$surface-brand-primary-lighter;
+    }
+    .table_container table {
+      thead {
+        tr {
+          &:first-child {
+            th.mat-mdc-header-cell {
+              vertical-align: bottom;
+              border-bottom-width: 0;
+              border-top-left-radius: 0;
+              border-top-right-radius: 0;
+            }
+          }
+
+          &:last-child {
+            th.mat-mdc-header-cell {
+              padding: 10px;
+              border-top-left-radius: 0;
+              border-top-right-radius: 0;
+            }
+          }
+        }
+
+        .mat-mdc-header-row:not(:has(> th:not(:empty))) {
+          height: 30px;
+        }
+
+        .mat-mdc-header-row:not(:has(> th:not(:empty))) > th {
+          padding-top: 0;
+          padding-bottom: 0;
+        }
+      }
+    }
   }
 }
 

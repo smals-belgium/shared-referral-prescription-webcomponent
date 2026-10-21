@@ -12,8 +12,8 @@ export class AppPrescriptionDetails {
   protected readonly title = signal('uhmep-prescription-create');
   patientSsin = '80222700153';
   initialValues = {
-    intent: 'order',
-    initialPrescriptionType: 'ASSISTING_WITH_PERSONAL_HYGIENE',
+    intent: 'proposal',
+    initialPrescriptionType: 'ANNEX_81',
   };
 
   protected readonly services = {

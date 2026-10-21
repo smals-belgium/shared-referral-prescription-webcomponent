@@ -63,4 +63,11 @@ describe('PrescriptionDetailsSecondaryComponent', () => {
     expect(fixture.debugElement.query(By.css('[data-cy="prescription-assign-to-label"]'))).toBeTruthy();
     expect(fixture.debugElement.query(By.css('[data-cy="prescription-assign-to-list"]'))).toBeNull();
   });
+
+  it('should call service on self assign', () => {
+    const mockSelfAssign = jest.spyOn(prescriptionDetailsSecondaryMockService, 'onSelfAssign');
+    (component as any).onSelfAssign({});
+
+    expect(mockSelfAssign).toHaveBeenCalled();
+  });
 });

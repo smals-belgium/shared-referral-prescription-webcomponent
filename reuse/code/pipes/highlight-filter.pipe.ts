@@ -31,7 +31,7 @@ export class HighlightFilterPipe implements PipeTransform {
       ? [normalizedFilter]
       : normalizedFilter.split(/[^a-z0-9]+/).filter(t => t.length > 0);
 
-    if (searchTerms.length === 0 || searchTerms.every(t => t === '')) {
+    if (searchTerms.every(t => t === '')) {
       return value;
     }
 

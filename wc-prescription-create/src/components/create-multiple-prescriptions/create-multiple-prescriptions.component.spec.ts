@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, signal } from '@angular/core';
+import { Component, ElementRef, EventEmitter, QueryList, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { CreateMultiplePrescriptionsComponent } from './create-multiple-prescriptions.component';
@@ -11,7 +11,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { By } from '@angular/platform-browser';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { QueryList } from '@angular/core';
 import { EvfFormWebComponent } from '../evf-form/evf-form.component';
 import { Lang } from '@reuse/code/constants/languages';
 import { MatIconTestingModule } from '@angular/material/icon/testing';
@@ -224,13 +223,12 @@ describe('CreateMultiplePrescriptionsComponent', () => {
   });
 
   it('should render one expansion panel per form and expand last', () => {
-    const mockSignal = jest.fn().mockReturnValue({ status: LoadingStatus.SUCCESS });
-    (component as any).modelState = mockSignal;
+    (component as any).modelState = jest.fn().mockReturnValue({ status: LoadingStatus.SUCCESS });
 
     setTwoTemplates(LoadingStatus.INITIAL, LoadingStatus.ERROR);
 
     const panels = fixture.debugElement.queryAll(By.css('mat-expansion-panel'));
-    expect(panels.length).toBe(2);
+    expect(panels).toHaveLength(2);
 
     // Last panel expanded
     expect(panels[0].componentInstance.expanded).toBe(false);
@@ -287,16 +285,16 @@ describe('CreateMultiplePrescriptionsComponent', () => {
     setTwoTemplates(LoadingStatus.SUCCESS, LoadingStatus.ERROR);
 
     const matPanel = fixture.debugElement.queryAll(By.css('mat-panel-description'));
-    expect(matPanel.length).toBe(2);
+    expect(matPanel).toHaveLength(2);
 
     const matPanel_1_icons = matPanel[0].queryAll(By.css('mat-icon'));
-    expect(matPanel_1_icons.length).toBe(1);
+    expect(matPanel_1_icons).toHaveLength(1);
 
     const matPanel_1_icon_1 = matPanel_1_icons[0].componentInstance;
     expect(matPanel_1_icon_1.svgIcon).toBe('check_circle');
 
     const matPanel_2_icons = matPanel[1].queryAll(By.css('mat-icon'));
-    expect(matPanel_2_icons.length).toBe(2);
+    expect(matPanel_2_icons).toHaveLength(2);
 
     const matPanel_2_icon_1 = matPanel_2_icons[0].componentInstance;
     expect(matPanel_2_icon_1.svgIcon).toBe('error');
@@ -661,6 +659,97 @@ describe('CreateMultiplePrescriptionsComponent', () => {
       expect(scrollToSpy).toHaveBeenCalledWith('frequency', 123);
       expect(target.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
       expect(shadow.scrollIntoView).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Modal Checkbox Display', () => {
+    it('should show checkbox on last step when form has stepper', () => {
+      component.intent = Intent.ORDER;
+      fixture.detectChanges();
+      component.ngOnChanges({
+        createPrescriptionForms: {
+          currentValue: [],
+          previousValue: undefined,
+          firstChange: true,
+          isFirstChange: () => true,
+        },
+      });
+
+      const mockForm = {
+        trackId: 1,
+        elementGroup: {
+          childElementControls: [{ element: { viewType: 'stepper' } }],
+          getOutputValue: jest.fn().mockReturnValue({}),
+          setValue: jest.fn(),
+        },
+      } as unknown as CreatePrescriptionForm;
+
+      component.setElementGroup(mockForm, mockForm.elementGroup as ElementGroup);
+
+      expect((component as any).formsStepperStatus().get(1)).toBe(true);
+
+      (component as any).formsOnLastStep.update((set: Set<number>) => new Set(set).add(1));
+
+      expect((component as any).formsOnLastStep().has(1)).toBe(true);
+      expect(component['shouldDisplayModalCheckbox'](mockForm)).toBe(true);
+    });
+
+    it('should hide checkbox when not on last step and form has stepper', () => {
+      component.intent = Intent.ORDER;
+      fixture.detectChanges();
+      component.ngOnChanges({
+        createPrescriptionForms: {
+          currentValue: [],
+          previousValue: undefined,
+          firstChange: true,
+          isFirstChange: () => true,
+        },
+      });
+
+      const mockForm = {
+        trackId: 1,
+        elementGroup: {
+          childElementControls: [{ element: { viewType: 'stepper', uniqueId: 'stepper-1' } }],
+          getOutputValue: jest.fn().mockReturnValue({}),
+          setValue: jest.fn(),
+        },
+      } as unknown as CreatePrescriptionForm;
+
+      component.setElementGroup(mockForm, mockForm.elementGroup as ElementGroup);
+
+      const notLastStepEvent = {
+        type: 'STEPPER_STEP_CHANGED',
+        data: { lastStep: false, uniqueId: 'stepper-1' },
+      } as any;
+      component['handleEvent'](notLastStepEvent, mockForm.trackId, mockForm.elementGroup as ElementGroup);
+
+      expect(component['shouldDisplayModalCheckbox'](mockForm)).toBe(false);
+    });
+
+    it('should show checkbox when form has no stepper', () => {
+      component.intent = Intent.ORDER;
+      fixture.detectChanges();
+      component.ngOnChanges({
+        createPrescriptionForms: {
+          currentValue: [],
+          previousValue: undefined,
+          firstChange: true,
+          isFirstChange: () => true,
+        },
+      });
+
+      const mockForm = {
+        trackId: 1,
+        elementGroup: {
+          childElementControls: [{ element: { viewType: 'container' } }],
+          getOutputValue: jest.fn().mockReturnValue({}),
+          setValue: jest.fn(),
+        },
+      } as unknown as CreatePrescriptionForm;
+
+      component.setElementGroup(mockForm, mockForm.elementGroup as ElementGroup);
+
+      expect(component['shouldDisplayModalCheckbox'](mockForm)).toBe(true);
     });
   });
 

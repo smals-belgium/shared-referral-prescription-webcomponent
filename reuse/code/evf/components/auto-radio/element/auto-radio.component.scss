@@ -1,0 +1,14 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+:host {
+  ::ng-deep {
+    mat-radio-group {
+      margin: 0 0 15px;
+      display: block;
+    }
+  }
+
+  .response-unknown {
+    border-top: 1px solid mh.$surface-brand-primary-lighter;
+  }
+}

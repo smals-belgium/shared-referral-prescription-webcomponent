@@ -1,0 +1,72 @@
+<evf-form-element-layout [elementLayout]="elementLayout" [elementControl]="elementControl" [metadata]="metadata">
+  @if (!useMatLabel) {
+    <evf-element-label [elementControl]="elementControl" [invalid]="invalid" [for]="id"></evf-element-label>
+  }
+  @if (element.bodyTranslationId) {
+    <evf-element-body [elementControl]="elementControl"></evf-element-body>
+  }
+  @if (element.helpTranslationId) {
+    <evf-element-help [elementControl]="elementControl"></evf-element-help>
+  }
+
+  <div class="select-table-container">
+    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z1 pss-indication-proposal-table">
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row" (click)="$event.stopPropagation()">
+          <mat-checkbox [checked]="isSelected(row)" [disabled]="disabled" (change)="toggle(row)"></mat-checkbox>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{ 'prescription.create.indication.name' | translate }}
+          <mat-icon class="inication-sorting-icon" svgIcon="{{ getSortIcon('name') }}"></mat-icon>
+        </th>
+        <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+      </ng-container>
+
+      <!-- One column per criteria option -->
+      @for (criteria of criteriaOptions(); track $index) {
+        @let columnId = 'criteria' + ($index + 1);
+        <ng-container [matColumnDef]="'criteria' + ($index + 1)">
+          <th mat-header-cell *matHeaderCellDef [mat-sort-header]="columnId">
+            {{ ('prescription.create.indication.criteria' | translate) + ' ' + ($index + 1) }}
+            <mat-icon class="inication-sorting-icon" svgIcon="{{ getSortIcon(columnId) }}"></mat-icon>
+          </th>
+          <td mat-cell *matCellDef="let row">{{ row.criteriaValues.get(criteria.value) ?? '' }}</td>
+        </ng-container>
+      }
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns()"
+        class="select-row"
+        [class.selected]="isSelected(row)"
+        (click)="toggle(row)"></tr>
+    </table>
+  </div>
+
+  @if (isLoading()) {
+    <app-skeleton data-cy="skeleton" [items]="3" [format]="FormatEnum.LINE"></app-skeleton>
+  }
+
+  <app-paginator [total]="totalRows() || 0" [page]="page" [pageSize]="pageSize" (changePage)="changePage($event)">
+  </app-paginator>
+
+  <!-- Chips representing the actual form control value -->
+  <div class="selected_option_container">
+    <label>{{ 'prescription.create.indication.selected' | translate }}</label>
+    <mat-chip-grid>
+      @for (item of selection.selected; track item) {
+        <mat-chip-row class="mh-blue" [disableRipple]="true" (removed)="remove(item)" [removable]="true">
+          {{ item.name }}
+          <button type="button" matChipRemove [attr.aria-label]="('remove' | translate) + ' ' + item.name">
+            <mat-icon svgIcon="close" [aria-hidden]="true"></mat-icon>
+          </button>
+        </mat-chip-row>
+      }
+    </mat-chip-grid>
+  </div>
+</evf-form-element-layout>

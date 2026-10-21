@@ -6,6 +6,7 @@ import {
   AssignOrganizationResource,
   CompletePrescriptionResource,
   CreateRequestResource,
+  LanguageCode,
   PerformerTaskIdResource,
   PrescriptionService as ApiPrescriptionService,
   ReasonResource,
@@ -25,6 +26,7 @@ export class PrescriptionService {
       criteria?.patient,
       criteria?.requester,
       criteria?.performer,
+      criteria?.organization,
       criteria?.historical,
       page,
       pageSize

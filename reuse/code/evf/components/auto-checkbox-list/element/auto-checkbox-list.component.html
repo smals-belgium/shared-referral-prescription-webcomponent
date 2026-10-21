@@ -1,0 +1,75 @@
+<evf-form-element-layout [elementLayout]="elementLayout" [elementControl]="elementControl" [metadata]="metadata">
+  @if (element.labelTranslationId) {
+    <evf-element-label [elementControl]="elementControl" [invalid]="invalid" [for]="id"></evf-element-label>
+  }
+  <evf-element-sub-label [invalid]="invalid">
+    @if (control.touched && control.hasError('required')) {
+      <mat-error>{{ 'FIELD_REQUIRED' | evfLabel }} </mat-error>
+    }
+
+    @if (control.touched && control.hasError('minlength')) {
+      <mat-error
+        >{{
+          'MIN_CHECKBOX_' + (control.getError('minlength').requiredLength > 1 ? 'MULTIPLE' : 'ONE')
+            | evfLabel: control.getError('minlength')
+        }}
+      </mat-error>
+    }
+
+    @if (control.touched && control.hasError('maxlength')) {
+      <mat-error
+        >{{
+          'MAX_CHECKBOX_' + (control.getError('maxlength').requiredLength > 1 ? 'MULTIPLE' : 'ONE')
+            | evfLabel: control.getError('maxlength')
+        }}
+      </mat-error>
+    }
+
+    @if (control.touched && control.hasError('invalidCombination')) {
+      <mat-error>{{ 'INVALID_COMBINATION' | evfLabel: control.getError('invalidCombination') }} </mat-error>
+    }
+  </evf-element-sub-label>
+
+  @if (element.bodyTranslationId) {
+    <evf-element-body [elementControl]="elementControl"></evf-element-body>
+  }
+
+  @if (element.helpTranslationId) {
+    <evf-element-help [elementControl]="elementControl"></evf-element-help>
+  }
+
+  @if (rawOptions(); as rawOptionsValue) {
+    <div class="checkbox-group" [id]="id">
+      @if (rawOptionsValue.hasOwnProperty('translate')) {
+        <mat-checkbox disabled>
+          <span class="invalid"
+            ><mat-icon svgIcon="warning" [aria-hidden]="true"></mat-icon>
+            {{ toErrorObject(rawOptionsValue).translate | evfLabel }}</span
+          >
+        </mat-checkbox>
+      }
+
+      @if (!rawOptionsValue.hasOwnProperty('translate')) {
+        @for (option of autoCompleteOptions(); track option) {
+          @let responseId = 'response-' + option.value;
+          <div [class]="'checkbox-item-wrapper ' + responseId" [attr.data-cy]="responseId">
+            <div class="checkbox-item">
+              <mat-checkbox
+                [checked]="isChecked(option.value)"
+                [disabled]="disabled"
+                (change)="checkChanged($event, option)">
+                {{ option.label[currentLang()] }}
+              </mat-checkbox>
+
+              @if (autoCompleteOptions()?.length === 0) {
+                <mat-checkbox disabled>
+                  {{ 'NO_OPTION_FOUND' | evfLabel }}
+                </mat-checkbox>
+              }
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+</evf-form-element-layout>

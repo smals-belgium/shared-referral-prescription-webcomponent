@@ -81,15 +81,18 @@
 
     <ng-container matColumnDef="iconFilter">
       <th mat-header-cell *matHeaderCellDef>
-        <mat-form-field appearance="outline">
-          <mat-select [(value)]="selectedType">
-            @for (provider of providerTypeOptions(); track provider) {
-              <mat-option [value]="provider">{{
-                'professional.table.type.' + provider.toLocaleLowerCase() | translate
-              }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+        @let options = providerTypeOptions();
+        @if (options.length > 1) {
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-select [(value)]="selectedType">
+              @for (provider of providerTypeOptions(); track provider) {
+                <mat-option [value]="provider">{{
+                  'professional.table.type.' + provider.toLocaleLowerCase() | translate
+                }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        }
       </th>
     </ng-container>
 

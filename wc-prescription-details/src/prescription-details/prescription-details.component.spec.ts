@@ -1,23 +1,32 @@
-import { PrescriptionDetailsWebComponent } from './prescription-details.component';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideRouter } from '@angular/router';
-import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
-import { firstValueFrom, of, throwError } from 'rxjs';
-import { DateAdapter, MatNativeDateModule } from '@angular/material/core';
-import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
-import { AuthService } from '@reuse/code/services/auth/auth.service';
-import { By } from '@angular/platform-browser';
 import { importProvidersFrom, SimpleChange, SimpleChanges } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { DateAdapter, MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { IdToken, Intent } from '@reuse/code/interfaces';
+import { MatIconTestingModule } from '@angular/material/icon/testing';
+import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
+import { provideRouter } from '@angular/router';
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ALERT_TARGET, ERROR_PRESCRIPTION_DETAILS } from '@reuse/code/constants/error';
+import { Lang } from '@reuse/code/constants/languages';
+import { IdToken, Intent, TemplateCodes } from '@reuse/code/interfaces';
+import { TemplateVersion } from '@reuse/code/openapi';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
+import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
+import { AlertService } from '@reuse/code/services/helpers/alert.service';
+import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
+import { EncryptionService } from '@reuse/code/services/privacy/encryption.service';
 import { PseudoService } from '@reuse/code/services/privacy/pseudo.service';
 import { EncryptionState } from '@reuse/code/states/privacy/encryption.state';
-import { EncryptionService } from '@reuse/code/services/privacy/encryption.service';
+import { mockTestAlertService } from '@reuse/code/utils/test.utils';
+import * as utils from '@reuse/code/utils/utils';
+import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
+import { EvfTranslateService } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
+import { MarkdownService } from 'ngx-markdown';
+import { firstValueFrom, of, throwError } from 'rxjs';
 import {
   BASE_URL,
   encryptionStateService,
@@ -33,16 +42,7 @@ import {
   mockUuid,
   prescriptionResponse,
 } from '../../test.utils';
-import { TemplateVersion } from '@reuse/code/openapi';
-import { Lang } from '@reuse/code/constants/languages';
-import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
-import { MarkdownService } from 'ngx-markdown';
-import { EvfTranslateService } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
-import { MatIconTestingModule } from '@angular/material/icon/testing';
-import * as utils from '@reuse/code/utils/utils';
-import { AlertService } from '@reuse/code/services/helpers/alert.service';
-import { mockTestAlertService } from '@reuse/code/utils/test.utils';
-import { ALERT_TARGET, ERROR_PRESCRIPTION_DETAILS } from '@reuse/code/constants/error';
+import { PrescriptionDetailsWebComponent } from './prescription-details.component';
 
 mockUuid();
 jest.mock('uuid');
@@ -473,20 +473,6 @@ describe('PrescriptionDetailsWebComponent', () => {
     );
   });
 
-  it('should call loadPssStatus for ANNEX_82', () => {
-    createFixture();
-
-    const mockStatus = true;
-
-    jest.spyOn(component['_pssService'], 'getPssStatus').mockReturnValue(of(mockStatus));
-
-    const pssStatusSetSpy = jest.spyOn(component['_prescriptionSecondaryService'].pssStatus, 'set');
-
-    component['loadPssStatus']('ANNEX_82');
-
-    expect(pssStatusSetSpy).toHaveBeenCalledWith(mockStatus);
-  });
-
   it('should call loadPrescriptionByShortCode when conditions are met', async () => {
     createFixture();
 
@@ -526,7 +512,9 @@ describe('PrescriptionDetailsWebComponent', () => {
         'person',
         'warning',
         'tune',
-        'apartment'
+        'apartment',
+        'radiation_active',
+        'radiation_inactive'
       );
     });
   });

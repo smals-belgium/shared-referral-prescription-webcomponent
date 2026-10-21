@@ -276,8 +276,7 @@
             "pattern": "[A-Za-zÀ-ÖØ-öø-ÿĀ-ſ0-9\\w\\d\\s\\t\\n\\r\\.\\,\\;\\?\\!\\:\\'\"\\(\\)\\-\\+@\\<\\>\\=\\%\\°\\µ\\\\\\/\\^\\²\\³\\#\\~&]+",
             "errorTranslationId": "patternErrorSpecificsPointsOfAttention"
           }
-        ],
-        "tags": ["notInModels"]
+        ]
       },
       {
         "id": "medicalReason",
@@ -324,8 +323,7 @@
               ]
             }
           }
-        ],
-        "tags": ["freeText", "notInModels"]
+        ]
       },
       {
         "id": "contraindications",
@@ -354,8 +352,7 @@
             "pattern": "[A-Za-zÀ-ÖØ-öø-ÿĀ-ſ0-9\\w\\d\\s\\t\\n\\r\\.\\,\\;\\?\\!\\:\\'\"\\(\\)\\-\\+@\\<\\>\\=\\%\\°\\µ\\\\\\/\\^\\²\\³\\#\\~&]+",
             "errorTranslationId": "patternErrorSpecificsPointsOfAttention"
           }
-        ],
-        "tags": ["freeText", "notInModels"]
+        ]
       },
       {
         "id": "generalRemarks",
@@ -384,8 +381,7 @@
             "pattern": "[A-Za-zÀ-ÖØ-öø-ÿĀ-ſ0-9\\w\\d\\s\\t\\n\\r\\.\\,\\;\\?\\!\\:\\'\"\\(\\)\\-\\+@\\<\\>\\=\\%\\°\\µ\\\\\\/\\^\\²\\³\\#\\~&]+",
             "errorTranslationId": "patternErrorSpecificsPointsOfAttention"
           }
-        ],
-        "tags": ["freeText", "notInModels"]
+        ]
       },
       {
         "id": "feedback",
@@ -445,8 +441,7 @@
             "maxValue": "${now | transformDate:plus(1,year)}"
           }
         ],
-        "defaultValue": "${now | parseDate}",
-        "tags": ["notInModels"]
+        "defaultValue": "${now | parseDate}"
       }
     ],
     "translations": {
@@ -1390,6 +1385,18 @@
     },
     "elements": [
       {
+        "id": "templateInfo",
+        "viewType": "info",
+        "bodyTranslationId": "templateInfo"
+      },
+      {
+        "id": "assignProfessional",
+        "viewType": "assignProfessionalButton",
+        "dataType": {
+          "type": "object"
+        }
+      },
+      {
         "id": "nursing-diagnosis",
         "dataType": {
           "type": "array",
@@ -1630,6 +1637,2340 @@
         "nl": " Commentaar van de arts",
         "fr": " Commentaire du médecin",
         "de": "Kommentar des Arztes"
+      }
+    }
+  },
+  {
+    "id": "ANNEX_82",
+    "version": "1",
+    "commonTranslationsId": 1,
+    "extraData": {
+      "welcome": {
+        "en": "",
+        "nl": "Template 1 : Radiologie (Bijlage 82)",
+        "fr": "",
+        "de": ""
+      }
+    },
+    "elements": [
+      {
+        "id": "birthdate",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "inputText",
+        "labelTranslationId": "birthdate"
+      },
+      {
+        "id": "gender",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "inputText",
+        "labelTranslationId": "gender",
+        "validations": [
+          {
+            "name": "required"
+          }
+        ]
+      },
+      {
+        "id": "admission",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "inputText",
+        "labelTranslationId": "admission"
+      },
+      {
+        "id": "clinicalIndications",
+        "dataType": {
+          "type": "array"
+        },
+        "viewType": "autocompleteMultiselect",
+        "labelTranslationId": "clinical-indications"
+      },
+      {
+        "id": "pssIndicationProposal",
+        "dataType": {
+          "type": "array"
+        },
+        "viewType": "pssIndicationProposal",
+        "labelTranslationId": "indication-proposal"
+      },
+      {
+        "id": "noIndicationProposal",
+        "dataType": {
+          "type": "boolean"
+        },
+        "viewType": "checkbox",
+        "responses": [
+          {
+            "value": true,
+            "labelTranslationId": "no-indication-proposal"
+          }
+        ]
+      },
+      {
+        "id": "IndicationProposalOther",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "textarea",
+        "labelTranslationId": "indication-proposal-other"
+      },
+      {
+        "id": "proposedImaging",
+        "dataType": {
+          "type": "array"
+        },
+        "viewType": "autocompleteMultiselect",
+        "labelTranslationId": "proposed-imaging"
+      },
+      {
+        "id": "laterality",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "autoRadio",
+        "labelTranslationId": "laterality"
+      },
+      {
+        "id": "diagnostic-request",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "textarea",
+        "labelTranslationId": "diagnostic-request"
+      },
+      {
+        "id": "additional-relevant-information",
+        "dataType": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "viewType": "customCheckboxList",
+        "labelTranslationId": "additional-relevant-information",
+        "responses": [
+          {
+            "value": "tmp-addInfo-impl",
+            "labelTranslationId": "tmp-addInfo-impl"
+          },
+          {
+            "value": "tmp-addInfo-preg",
+            "labelTranslationId": "tmp-addInfo-preg"
+          },
+          {
+            "value": "tmp-addInfo-diab",
+            "labelTranslationId": "tmp-addInfo-diab"
+          },
+          {
+            "value": "tmp-addInfo-all",
+            "labelTranslationId": "tmp-addInfo-all"
+          },
+          {
+            "value": "tmp-addInfo-metdeb",
+            "labelTranslationId": "tmp-addInfo-metdeb"
+          },
+          {
+            "value": "tmp-addInfo-rendys",
+            "labelTranslationId": "tmp-addInfo-rendys"
+          },
+          {
+            "value": "tmp-addInfo",
+            "labelTranslationId": "other"
+          },
+          {
+            "value": "tmp-addInfo-unknown",
+            "labelTranslationId": "tmp-addInfo-unknown"
+          }
+        ],
+        "elements": [
+          {
+            "id": "tmp-addInfo-impl",
+            "dataType": {
+              "type": "object"
+            },
+            "viewType": "section",
+            "showIfParentResponse": ["tmp-addInfo-impl"],
+            "elements": [
+              {
+                "id": "implants",
+                "dataType": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "viewType": "autoCheckboxList",
+                "labelTranslationId": "type-implants"
+              },
+              {
+                "id": "implants-other",
+                "dataType": {
+                  "type": "string"
+                },
+                "viewType": "inputText",
+                "bodyTranslationId": "implants-other"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "tmp-addInfo",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "inputText",
+        "labelTranslationId": "other"
+      },
+      {
+        "id": "previous-relevant-examinations",
+        "dataType": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "viewType": "autoCheckboxList",
+        "labelTranslationId": "previous-relevant-examinations"
+      },
+      {
+        "id": "previous-examination-other",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "inputText",
+        "bodyTranslationId": "previous-examination-other"
+      },
+      {
+        "id": "recommendations",
+        "dataType": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "viewType": "pssRecommendations",
+        "labelTranslationId": "recommendations"
+      },
+      {
+        "id": "selectedRecommendation",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "inputText",
+        "viewMode": "hidden"
+      },
+      {
+        "id": "reasonOfDeviationCode",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "select",
+        "labelTranslationId": "reason-of-deviation-code",
+        "responses": [
+          {
+            "value": "Pregnancy",
+            "labelTranslationId": "pregnancy"
+          },
+          {
+            "value": "ImplantIncompatibility",
+            "labelTranslationId": "implant-incompatibility"
+          },
+          {
+            "value": "ContrastAllergy",
+            "labelTranslationId": "contrast-allergy"
+          },
+          {
+            "value": "IncompleteRecommendation",
+            "labelTranslationId": "incomplete-recommendation"
+          },
+          {
+            "value": "WaitingTimeTooLong",
+            "labelTranslationId": "waiting-time-too-long"
+          },
+          {
+            "value": "Emergency",
+            "labelTranslationId": "emergency"
+          },
+          {
+            "value": "OtherReason",
+            "labelTranslationId": "other"
+          }
+        ]
+      },
+      {
+        "id": "reasonOfDeviationText",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "inputText",
+        "bodyTranslationId": "reason-of-deviation-text"
+      }
+    ],
+    "translations": {
+      "age": {
+        "en": "",
+        "nl": "Leeftijd",
+        "fr": "",
+        "de": ""
+      },
+      "gender": {
+        "en": "",
+        "nl": "Geslacht bij de geboorte",
+        "fr": "Sexe de naissance",
+        "de": ""
+      },
+      "male": {
+        "en": "",
+        "nl": "Man",
+        "fr": "",
+        "de": ""
+      },
+      "female": {
+        "en": "",
+        "nl": "Vrouw",
+        "fr": "",
+        "de": ""
+      },
+      "urgency": {
+        "en": "",
+        "nl": "Urgentie",
+        "fr": "",
+        "de": ""
+      },
+      "patient-conditions": {
+        "en": "",
+        "nl": "Patiëntconditie(s)",
+        "fr": "",
+        "de": ""
+      },
+      "intended-procedure": {
+        "en": "",
+        "nl": "Beoogde procedure",
+        "fr": "",
+        "de": ""
+      },
+      "examinations": {
+        "en": "",
+        "nl": "Onderzoek(en)",
+        "fr": "",
+        "de": ""
+      },
+      "previous-relevant-examinations": {
+        "en": "",
+        "nl": "Relevante voorgaande onderzoek(en)",
+        "fr": "",
+        "de": ""
+      },
+      "ct": {
+        "en": "",
+        "nl": "CT-scan",
+        "fr": "",
+        "de": ""
+      },
+      "mri": {
+        "en": "",
+        "nl": "MRI-scan (NMR)",
+        "fr": "",
+        "de": ""
+      },
+      "x-ray": {
+        "en": "",
+        "nl": "Röntgenfoto (RX)",
+        "fr": "",
+        "de": ""
+      },
+      "ultrasound": {
+        "en": "",
+        "nl": "Echografie",
+        "fr": "",
+        "de": ""
+      },
+      "previous-examination-other": {
+        "en": "",
+        "nl": "Andere",
+        "fr": "",
+        "de": ""
+      },
+      "previous-examination-unknown": {
+        "en": "",
+        "nl": "Onbekend",
+        "fr": "",
+        "de": ""
+      },
+      "diagnostic-request": {
+        "en": "",
+        "nl": "Diagnostisch verzoek",
+        "fr": "",
+        "de": ""
+      },
+      "additional-relevant-information": {
+        "en": "",
+        "nl": "Aanvullende relevante informatie",
+        "fr": "",
+        "de": ""
+      },
+      "implants": {
+        "en": "",
+        "nl": "Implantaten",
+        "fr": "",
+        "de": ""
+      },
+      "endoprosthesis": {
+        "en": "",
+        "nl": "Endoprothese (bv. stent)",
+        "fr": "",
+        "de": ""
+      },
+      "neurostimulator": {
+        "en": "",
+        "nl": "Neurostimulator",
+        "fr": "",
+        "de": ""
+      },
+      "cochlear-implant": {
+        "en": "",
+        "nl": "Cochleair implantaat",
+        "fr": "",
+        "de": ""
+      },
+      "hydrocephalic-shunt": {
+        "en": "",
+        "nl": "Hydrocefalieshunt",
+        "fr": "",
+        "de": ""
+      },
+      "orthopaedic-implant": {
+        "en": "",
+        "nl": "Orthopedisch implantaat",
+        "fr": "",
+        "de": ""
+      },
+      "aesthetic-implant": {
+        "en": "",
+        "nl": "Esthetisch / reconstructief implantaat",
+        "fr": "",
+        "de": ""
+      },
+      "electrode": {
+        "en": "",
+        "nl": "Electrode",
+        "fr": "",
+        "de": ""
+      },
+      "biosensor": {
+        "en": "",
+        "nl": "Biosensor",
+        "fr": "",
+        "de": ""
+      },
+      "mechanical-heart-implant": {
+        "en": "",
+        "nl": "Mechanisch hartimplantaat",
+        "fr": "",
+        "de": ""
+      },
+      "electronic-heart-implant": {
+        "en": "",
+        "nl": "Elektronisch hartimplantaat",
+        "fr": "",
+        "de": ""
+      },
+      "ophthalmic-implant": {
+        "en": "",
+        "nl": "Oogheelkundig implantaat",
+        "fr": "",
+        "de": ""
+      },
+      "implants-other": {
+        "en": "",
+        "nl": "Andere",
+        "fr": "",
+        "de": ""
+      },
+      "pregnancy": {
+        "en": "",
+        "nl": "Zwangerschap",
+        "fr": "",
+        "de": ""
+      },
+      "diabetes": {
+        "en": "",
+        "nl": "Diabetes",
+        "fr": "",
+        "de": ""
+      },
+      "allergy-to-contrast-agent": {
+        "en": "",
+        "nl": "Allergie voor contrastmiddel",
+        "fr": "",
+        "de": ""
+      },
+      "metal-debris": {
+        "en": "",
+        "nl": "Metaaldeeltjes",
+        "fr": "",
+        "de": ""
+      },
+      "renal-dysfunction": {
+        "en": "",
+        "nl": "Nierdisfunctie",
+        "fr": "",
+        "de": ""
+      },
+      "other": {
+        "en": "",
+        "nl": "Andere",
+        "fr": "",
+        "de": ""
+      },
+      "none": {
+        "en": "",
+        "nl": "Geen",
+        "fr": "",
+        "de": ""
+      },
+      "has-implants": {
+        "en": "",
+        "nl": "Implantaten",
+        "fr": "",
+        "de": ""
+      },
+      "type-implants": {
+        "en": "",
+        "nl": "Soort implantaten",
+        "fr": "",
+        "de": ""
+      },
+      "recommendations": {
+        "en": "",
+        "nl": "Aanbevelingen",
+        "fr": "",
+        "de": ""
+      }
+    }
+  },
+  {
+    "id": "TELEMONITORING_CHRONIC_HEART_FAILURE",
+    "extraData": {
+      "welcome": {
+        "en": "Telemonitoring of chronic heart failure",
+        "nl": "Telemonitoring van chronisch hartfalen",
+        "fr": "Telemonitoring de l'insuffisance cardiaque chronique"
+      }
+    },
+    "commonTranslationsId": 1,
+    "elements": [
+      {
+        "id": "ohca",
+        "viewType": "section",
+        "dataType": {
+          "type": "object"
+        },
+        "labelTranslationId": "ohca",
+        "elements": [
+          {
+            "viewType": "row",
+            "elements": [
+              {
+                "id": "code",
+                "viewType": "radio",
+                "dataType": {
+                  "type": "string"
+                },
+                "labelTranslationId": "cardiac-arrest-due-to-heart-condition",
+                "responses": [
+                  {
+                    "value": "http://snomed.info/sct|410429000",
+                    "labelTranslationId": "yes"
+                  },
+                  {
+                    "value": false,
+                    "labelTranslationId": "no"
+                  }
+                ]
+              },
+              {
+                "id": "diagnosis-type",
+                "dataType": {
+                  "type": "string"
+                },
+                "viewType": "radio",
+                "labelTranslationId": "diagnosis-type",
+                "responses": [
+                  {
+                    "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-diagnosis-role|primary",
+                    "labelTranslationId": "primary"
+                  },
+                  {
+                    "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-diagnosis-role|secondary",
+                    "labelTranslationId": "secondary"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "viewType": "row",
+            "elements": [
+              {
+                "id": "status",
+                "dataType": {
+                  "type": "string"
+                },
+                "viewType": "radio",
+                "labelTranslationId": "status",
+                "responses": [
+                  {
+                    "value": "http://terminology.hl7.org/CodeSystem/condition-ver-status|confirmed",
+                    "labelTranslationId": "confirmed"
+                  },
+                  {
+                    "value": "http://terminology.hl7.org/CodeSystem/condition-ver-status|provisional",
+                    "labelTranslationId": "suspected"
+                  },
+                  {
+                    "value": "http://terminology.hl7.org/CodeSystem/condition-ver-status|refuted",
+                    "labelTranslationId": "refuted"
+                  }
+                ]
+              },
+              {
+                "id": "bodyLaterality",
+                "dataType": {
+                  "type": "string"
+                },
+                "viewType": "radio",
+                "labelTranslationId": "bodyLaterality",
+                "responses": [
+                  {
+                    "value": "http://snomed.info/sct|7771000",
+                    "labelTranslationId": "left"
+                  },
+                  {
+                    "value": "http://snomed.info/sct|24028007",
+                    "labelTranslationId": "right"
+                  },
+                  {
+                    "value": "http://snomed.info/sct|51440002",
+                    "labelTranslationId": "bilateral"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "remark",
+            "dataType": {
+              "type": "string"
+            },
+            "viewType": "textArea",
+            "labelTranslationId": "remark",
+            "tags": ["freeText"]
+          }
+        ]
+      },
+      {
+        "id": "valvular-heart-disease",
+        "viewType": "section",
+        "dataType": {
+          "type": "object"
+        },
+        "labelTranslationId": "valvular-heart-disease",
+        "elements": [
+          {
+            "id": "code",
+            "viewType": "select",
+            "dataType": {
+              "type": "string"
+            },
+            "labelTranslationId": "diagnosis",
+            "responses": [
+              {
+                "value": "http://snomed.info/sct|60573004",
+                "labelTranslationId": "aortic-valve-stenosis"
+              },
+              {
+                "value": "http://snomed.info/sct|60234000",
+                "labelTranslationId": "aortic-valve-regurgitation"
+              },
+              {
+                "value": "http://snomed.info/sct|194987006",
+                "labelTranslationId": "aortic-valve-stenosis-with-insufficiency"
+              },
+              {
+                "value": "http://snomed.info/sct|79619009",
+                "labelTranslationId": "mitral-valve-stenosis"
+              },
+              {
+                "value": "http://snomed.info/sct|48724000",
+                "labelTranslationId": "mitral-valve-regurgitation"
+              },
+              {
+                "value": "http://snomed.info/sct|111287006",
+                "labelTranslationId": "tricuspid-valve-regurgitation"
+              },
+              {
+                "value": "http://snomed.info/sct|56819008",
+                "labelTranslationId": "endocarditis"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cardiac-arrhythmia-conduction-disorder",
+        "viewType": "section",
+        "dataType": {
+          "type": "object"
+        },
+        "labelTranslationId": "cardiac-arrhythmia-conduction-disorder",
+        "elements": [
+          {
+            "id": "subcategory",
+            "viewType": "select",
+            "dataType": {
+              "type": "string"
+            },
+            "labelTranslationId": "type",
+            "responses": [
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-rhythm-and-conduction-subcategory|supraventricular-arrhythmia",
+                "labelTranslationId": "supraventricular-arrhythmia"
+              },
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-rhythm-and-conduction-subcategory|ventricular-arrhythmia",
+                "labelTranslationId": "ventricular-arrhythmia"
+              },
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-rhythm-and-conduction-subcategory|conduction-disorder-of-the-heart",
+                "labelTranslationId": "conduction-disorder-of-the-heart"
+              },
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-rhythm-and-conduction-subcategory|cardiac-pacemaker-dysfunction",
+                "labelTranslationId": "cardiac-pacemaker-dysfunction"
+              },
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-rhythm-and-conduction-subcategory|syncope",
+                "labelTranslationId": "syncope"
+              }
+            ]
+          },
+          {
+            "id": "code",
+            "viewType": "select",
+            "dataType": {
+              "type": "string"
+            },
+            "labelTranslationId": "diagnosis",
+            "responses": [
+              {
+                "value": "http://snomed.info/sct|36083008",
+                "labelTranslationId": "sick-sinus-syndrome"
+              },
+              {
+                "value": "http://snomed.info/sct|49436004",
+                "labelTranslationId": "atrial-fibrillation"
+              },
+              {
+                "value": "http://snomed.info/sct|5370000",
+                "labelTranslationId": "atrial-flutter"
+              },
+              {
+                "value": "http://snomed.info/sct|713422000",
+                "labelTranslationId": "atrial-tachycardia"
+              },
+              {
+                "value": "http://snomed.info/sct|233896004",
+                "labelTranslationId": "avnrt"
+              },
+              {
+                "value": "http://snomed.info/sct|233897008",
+                "labelTranslationId": "avrt"
+              },
+              {
+                "value": "http://snomed.info/sct|74615001",
+                "labelTranslationId": "tachycardia-bradycardia-syndrome"
+              },
+              {
+                "value": "http://snomed.info/sct|427989008",
+                "labelTranslationId": "chronotropic-incompetence"
+              },
+              {
+                "value": "http://snomed.info/sct|444658006",
+                "labelTranslationId": "nonsustained-ventricular-tachycardia"
+              },
+              {
+                "value": "http://snomed.info/sct|25569003",
+                "labelTranslationId": "sustained-ventricular-tachycardia"
+              },
+              {
+                "value": "http://snomed.info/sct|71908006",
+                "labelTranslationId": "ventricular-fibrillation"
+              },
+              {
+                "value": "http://snomed.info/sct|17338001",
+                "labelTranslationId": "ventricular-premature-beat"
+              },
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-diagnosis|pocket-hematoma",
+                "labelTranslationId": "pocket-hematoma"
+              },
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-diagnosis|pocket-infection",
+                "labelTranslationId": "pocket-infection"
+              },
+              {
+                "value": "http://snomed.info/sct|234221002",
+                "labelTranslationId": "undersensing-pacemaker"
+              },
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-diagnosis|atrial-pacemaker-lead-dislodgement",
+                "labelTranslationId": "atrial-pacemaker-lead-dislodgement"
+              },
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-diagnosis|decreased-pacemaker-lead-impedance",
+                "labelTranslationId": "decreased-pacemaker-lead-impedance"
+              },
+              {
+                "value": "http://snomed.info/sct|234212003",
+                "labelTranslationId": "pacemaker-lead-fracture"
+              },
+              {
+                "value": "http://snomed.info/sct|195042002",
+                "labelTranslationId": "second-degree-av-block"
+              },
+              {
+                "value": "http://snomed.info/sct|27885002",
+                "labelTranslationId": "third-degree-av-block"
+              },
+              {
+                "value": "http://snomed.info/sct|63467002",
+                "labelTranslationId": "left-bundle-branch-block"
+              },
+              {
+                "value": "http://snomed.info/sct|59118001",
+                "labelTranslationId": "right-bundle-branch-block"
+              },
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-diagnosis|conduction-disorder-other",
+                "labelTranslationId": "other"
+              }
+            ],
+            "elements": [
+              {
+                "id": "other",
+                "dataType": {
+                  "type": "string"
+                },
+                "viewType": "inputText",
+                "labelTranslationId": "other"
+              }
+            ]
+          },
+          {
+            "id": "atrial-fibrillation-classification",
+            "viewType": "radio",
+            "dataType": {
+              "type": "string"
+            },
+            "labelTranslationId": "atrial-fibrillation-classification",
+            "responses": [
+              {
+                "value": "http://snomed.info/sct|282825002",
+                "labelTranslationId": "af-type-paroxysmal"
+              },
+              {
+                "value": "http://snomed.info/sct|440059007",
+                "labelTranslationId": "af-type-persistent"
+              },
+              {
+                "value": "http://snomed.info/sct|440028005",
+                "labelTranslationId": "af-type-permanent"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "congenital-heart-disease",
+        "viewType": "section",
+        "dataType": {
+          "type": "object"
+        },
+        "labelTranslationId": "congenital-heart-disease",
+        "elements": [
+          {
+            "id": "code",
+            "viewType": "select",
+            "dataType": {
+              "type": "string"
+            },
+            "labelTranslationId": "diagnosis",
+            "responses": [
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-diagnosis|univentricular-heart",
+                "labelTranslationId": "univentricular-heart"
+              },
+              {
+                "value": "http://snomed.info/sct|86299006",
+                "labelTranslationId": "tetralogy-of-fallot"
+              },
+              {
+                "value": "http://snomed.info/sct|26146002",
+                "labelTranslationId": "d-transposition-of-great-vessels"
+              },
+              {
+                "value": "http://snomed.info/sct|83799000",
+                "labelTranslationId": "l-transposition-of-great-vessels"
+              },
+              {
+                "value": "http://snomed.info/sct|7305005",
+                "labelTranslationId": "coarctation-of-aorta"
+              },
+              {
+                "value": "http://snomed.info/sct|204357006",
+                "labelTranslationId": "ebstein-anomaly"
+              },
+              {
+                "value": "http://snomed.info/sct|72352009",
+                "labelTranslationId": "bicuspid-aortic-valve"
+              },
+              {
+                "value": "http://snomed.info/sct|30288003",
+                "labelTranslationId": "ventricular-septal-defect"
+              },
+              {
+                "value": "http://snomed.info/sct|70142008",
+                "labelTranslationId": "atrial-septal-defect-type-1"
+              },
+              {
+                "value": "http://snomed.info/sct|204318003",
+                "labelTranslationId": "atrial-septal-defect-type-2"
+              },
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-diagnosis|sinus-venosus-atrial-septal-defect",
+                "labelTranslationId": "sinus-venosus-atrial-septal-defect"
+              },
+              {
+                "value": "http://snomed.info/sct|83330001",
+                "labelTranslationId": "patent-ductus-arteriosus"
+              },
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-diagnosis|syndromic-thoracic-aortic-aneurysm",
+                "labelTranslationId": "syndromic-thoracic-aortic-aneurysm"
+              },
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-diagnosis|non-syndromic-thoracic-aortic-aneurysm",
+                "labelTranslationId": "non-syndromic-thoracic-aortic-aneurysm"
+              },
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-diagnosis|congenital-coronary-artery-anomaly",
+                "labelTranslationId": "congenital-coronary-artery-anomaly"
+              },
+              {
+                "value": "http://snomed.info/sct|204317008",
+                "labelTranslationId": "patent-foramen-ovale"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "shock",
+        "dataType": {
+          "type": "object"
+        },
+        "viewType": "section",
+        "labelTranslationId": "shock",
+        "elements": [
+          {
+            "id": "code",
+            "viewType": "select",
+            "dataType": {
+              "type": "string"
+            },
+            "labelTranslationId": "diagnosis",
+            "responses": [
+              {
+                "value": "http://snomed.info/sct|89138009",
+                "labelTranslationId": "cardiogenic-shock"
+              },
+              {
+                "value": "http://snomed.info/sct|355001",
+                "labelTranslationId": "hemorrhagic-shock"
+              },
+              {
+                "value": "http://snomed.info/sct|76571007",
+                "labelTranslationId": "septic-shock"
+              },
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-diagnosis|obstructive-shock",
+                "labelTranslationId": "obstructive-shock"
+              }
+            ]
+          },
+          {
+            "id": "postoperative",
+            "viewType": "radio",
+            "dataType": {
+              "type": "boolean"
+            },
+            "labelTranslationId": "postoperative",
+            "responses": [
+              {
+                "value": true,
+                "labelTranslationId": "yes"
+              },
+              {
+                "value": false,
+                "labelTranslationId": "no"
+              }
+            ]
+          },
+          {
+            "id": "bacterium",
+            "dataType": {
+              "type": "string"
+            },
+            "viewType": "inputText",
+            "labelTranslationId": "which-bacterium-free-text"
+          }
+        ]
+      },
+      {
+        "id": "pericardial-disease",
+        "dataType": {
+          "type": "object"
+        },
+        "viewType": "section",
+        "labelTranslationId": "pericardial-disease",
+        "elements": [
+          {
+            "id": "code",
+            "viewType": "radio",
+            "dataType": {
+              "type": "string"
+            },
+            "labelTranslationId": "diagnosis",
+            "responses": [
+              {
+                "value": "http://snomed.info/sct|3238004",
+                "labelTranslationId": "acute-pericarditis"
+              },
+              {
+                "value": "http://snomed.info/sct|35304003",
+                "labelTranslationId": "cardiac-tamponade"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ischemic-heart-disease",
+        "viewType": "section",
+        "dataType": {
+          "type": "object"
+        },
+        "labelTranslationId": "ischemic-heart-disease",
+        "elements": [
+          {
+            "id": "code",
+            "viewType": "radio",
+            "dataType": {
+              "type": "string"
+            },
+            "labelTranslationId": "diagnosis",
+            "responses": [
+              {
+                "value": "http://snomed.info/sct|401303003",
+                "labelTranslationId": "stemi"
+              },
+              {
+                "value": "http://snomed.info/sct|401314000",
+                "labelTranslationId": "nstemi"
+              },
+              {
+                "value": "http://snomed.info/sct|441541008",
+                "labelTranslationId": "takotsubo-cardiomyopathy"
+              },
+              {
+                "value": "http://snomed.info/sct|194828000",
+                "labelTranslationId": "angina-pectoris"
+              }
+            ],
+            "elements": [
+              {
+                "id": "topography",
+                "viewType": "radio",
+                "dataType": {
+                  "type": "string"
+                },
+                "labelTranslationId": "stemi-localisation",
+                "responses": [
+                  {
+                    "value": "http://snomed.info/sct|255549009",
+                    "labelTranslationId": "stemi-localisation-anterior"
+                  },
+                  {
+                    "value": "http://snomed.info/sct|261089000",
+                    "labelTranslationId": "stemi-localisation-inferior"
+                  },
+                  {
+                    "value": "http://snomed.info/sct|49370004",
+                    "labelTranslationId": "stemi-localisation-lateral"
+                  },
+                  {
+                    "value": "http://snomed.info/sct|255551008",
+                    "labelTranslationId": "stemi-localisation-posterior"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pulmonary-hypertension",
+        "viewType": "section",
+        "dataType": {
+          "type": "object"
+        },
+        "labelTranslationId": "pulmonary-hypertension",
+        "elements": [
+          {
+            "id": "code",
+            "viewType": "radio",
+            "dataType": {
+              "type": "string"
+            },
+            "labelTranslationId": "diagnosis",
+            "responses": [
+              {
+                "value": "http://snomed.info/sct|11399002",
+                "labelTranslationId": "pulmonary-arterial-hypertension"
+              },
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-diagnosis|ph-associated-with-lung-disease",
+                "labelTranslationId": "ph-associated-with-lung-disease"
+              },
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-diagnosis|post-capillary",
+                "labelTranslationId": "post-capillary"
+              },
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-diagnosis|chronic-thromboembolic-pulmonary-hypertension-cteph",
+                "labelTranslationId": "chronic-thromboembolic-pulmonary-hypertension-cteph"
+              },
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-diagnosis|pulmonary-hypertension-other",
+                "labelTranslationId": "other"
+              }
+            ],
+            "elements": [
+              {
+                "id": "other",
+                "dataType": {
+                  "type": "string"
+                },
+                "viewType": "inputText",
+                "labelTranslationId": "other"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "other",
+        "viewType": "section",
+        "labelTranslationId": "other",
+        "elements": [
+          {
+            "id": "code",
+            "viewType": "radio",
+            "dataType": {
+              "type": "string"
+            },
+            "labelTranslationId": "diagnosis",
+            "responses": [
+              {
+                "value": "http://snomed.info/sct|706882009",
+                "labelTranslationId": "hypertensive-crisis"
+              },
+              {
+                "value": "http://snomed.info/sct|59282003",
+                "labelTranslationId": "pulmonary-embolism"
+              },
+              {
+                "value": "http://snomed.info/sct|233604007",
+                "labelTranslationId": "pneumonia"
+              },
+              {
+                "value": "http://snomed.info/sct|195951007",
+                "labelTranslationId": "aecopd"
+              },
+              {
+                "value": "http://snomed.info/sct|91302008",
+                "labelTranslationId": "sepsis"
+              },
+              {
+                "value": "http://snomed.info/sct|230690007",
+                "labelTranslationId": "cerebrovascular-accident"
+              },
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-diagnosis|cardiac-amyloidosis",
+                "labelTranslationId": "cardiac-amyloidosis"
+              },
+              {
+                "value": "http://snomed.info/sct|14140009",
+                "labelTranslationId": "hyperkalemia"
+              },
+              {
+                "value": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-telemonitoring-diagnosis|other-blank-diagnosis",
+                "labelTranslationId": "other-blank-diagnosis"
+              }
+            ],
+            "elements": [
+              {
+                "id": "other-diagnosis-freetext",
+                "dataType": {
+                  "type": "string"
+                },
+                "viewType": "inputText",
+                "labelTranslationId": "other-diagnosis-freetext"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "description",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "textArea",
+        "labelTranslationId": "diagnosis-description",
+        "tags": ["freeText"]
+      },
+      {
+        "id": "boundsDuration",
+        "dataType": {
+          "type": "object"
+        },
+        "viewType": "boundsDuration",
+        "labelTranslationId": "boundsDurationRow"
+      },
+      {
+        "id": "parameters",
+        "viewType": "section",
+        "bodyTranslationId": "info-parameters",
+        "labelTranslationId": "parameters",
+        "elements": [
+          {
+            "id": "weight",
+            "viewType": "section",
+            "dataType": {
+              "type": "object"
+            },
+            "labelTranslationId": "weight",
+            "elements": [
+              {
+                "id": "weight-conditions-row",
+                "viewType": "row",
+                "elements": [
+                  {
+                    "id": "condition",
+                    "viewType": "radio",
+                    "dataType": {
+                      "type": "string"
+                    },
+                    "labelTranslationId": "condition",
+                    "responses": [
+                      {
+                        "value": "weight-gain",
+                        "labelTranslationId": "weight-gain"
+                      },
+                      {
+                        "value": "weight-loss",
+                        "labelTranslationId": "weight-loss"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "value",
+                    "viewType": "number",
+                    "dataType": {
+                      "type": "number"
+                    },
+                    "labelTranslationId": "weight-value",
+                    "custom": {
+                      "suffixTranslationId": "kg"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "time-window",
+                "viewType": "row",
+                "labelTranslationId": "weight-time-window",
+                "elements": [
+                  {
+                    "id": "frequency",
+                    "viewType": "number",
+                    "dataType": {
+                      "type": "number"
+                    },
+                    "labelTranslationId": "frequency"
+                  },
+                  {
+                    "id": "period",
+                    "dataType": {
+                      "type": "string"
+                    },
+                    "viewType": "radio",
+                    "labelTranslationId": "period",
+                    "responses": [
+                      {
+                        "value": "d",
+                        "labelTranslationId": "day"
+                      },
+                      {
+                        "value": "wk",
+                        "labelTranslationId": "week"
+                      },
+                      {
+                        "value": "mo",
+                        "labelTranslationId": "month"
+                      },
+                      {
+                        "value": "a",
+                        "labelTranslationId": "year"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "systolic-blood-pressure",
+            "viewType": "section",
+            "dataType": {
+              "type": "object"
+            },
+            "labelTranslationId": "systolic-blood-pressure",
+            "elements": [
+              {
+                "id": "systolic-blood-pressure-row",
+                "viewType": "row",
+                "elements": [
+                  {
+                    "id": "condition",
+                    "viewType": "radio",
+                    "dataType": {
+                      "type": "string"
+                    },
+                    "labelTranslationId": "condition",
+                    "responses": [
+                      {
+                        "value": "over-to",
+                        "labelTranslationId": "over-to"
+                      },
+                      {
+                        "value": "under-to",
+                        "labelTranslationId": "under-to"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "threshold",
+                    "viewType": "number",
+                    "dataType": {
+                      "type": "number"
+                    },
+                    "labelTranslationId": "threshold",
+                    "custom": {
+                      "suffixTranslationId": "mmHg"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "diastolic-blood-pressure",
+            "viewType": "section",
+            "dataType": {
+              "type": "object"
+            },
+            "labelTranslationId": "diastolic-blood-pressure",
+            "elements": [
+              {
+                "id": "diastolic-blood-pressure-row",
+                "viewType": "row",
+                "elements": [
+                  {
+                    "id": "condition",
+                    "viewType": "radio",
+                    "dataType": {
+                      "type": "string"
+                    },
+                    "labelTranslationId": "condition",
+                    "responses": [
+                      {
+                        "value": "over-to",
+                        "labelTranslationId": "over-to"
+                      },
+                      {
+                        "value": "under-to",
+                        "labelTranslationId": "under-to"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "threshold",
+                    "viewType": "number",
+                    "dataType": {
+                      "type": "number"
+                    },
+                    "labelTranslationId": "threshold",
+                    "custom": {
+                      "suffixTranslationId": "mmHg"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "heart-rate",
+            "viewType": "section",
+            "dataType": {
+              "type": "object"
+            },
+            "labelTranslationId": "heart-rate",
+            "elements": [
+              {
+                "id": "heart-rate-row",
+                "viewType": "row",
+                "elements": [
+                  {
+                    "id": "condition",
+                    "viewType": "radio",
+                    "dataType": {
+                      "type": "string"
+                    },
+                    "labelTranslationId": "condition",
+                    "responses": [
+                      {
+                        "value": "over-to",
+                        "labelTranslationId": "over-to"
+                      },
+                      {
+                        "value": "under-to",
+                        "labelTranslationId": "under-to"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "threshold",
+                    "viewType": "number",
+                    "dataType": {
+                      "type": "number"
+                    },
+                    "labelTranslationId": "threshold",
+                    "custom": {
+                      "suffixTranslationId": "bpm"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "generalRemarks",
+        "dataType": {
+          "type": "string"
+        },
+        "viewType": "textArea",
+        "labelTranslationId": "generalRemarks",
+        "tags": ["freeText"]
+      },
+      {
+        "id": "row",
+        "viewType": "row",
+        "labelTranslationId": "validityPeriod",
+        "tooltipTranslationId": "validityPeriodTooltip",
+        "elements": [
+          {
+            "id": "validityStartDate",
+            "dataType": {
+              "type": "date",
+              "format": "yearMonthDay"
+            },
+            "viewType": "date",
+            "labelTranslationId": "startDate",
+            "sideEffects": [
+              {
+                "name": "setValue",
+                "target": "validityEndDate",
+                "value": "${responses:validityStartDate | transformDate:plus(1,year)}"
+              }
+            ],
+            "defaultValue": "${now | parseDate}"
+          },
+          {
+            "id": "validityEndDate",
+            "dataType": {
+              "type": "date",
+              "format": "yearMonthDay"
+            },
+            "viewType": "date",
+            "labelTranslationId": "endDate",
+            "defaultValue": "${now | transformDate:plus(1,year)}"
+          }
+        ],
+        "tags": ["notInModels"]
+      }
+    ],
+    "translations": {
+      "ohca": {
+        "en": "Out of hospital cardiac arrest",
+        "nl": "Hartstilstand buiten het ziekenhuis",
+        "fr": "Arrêt cardiaque extrahospitalier"
+      },
+      "cardiac-arrest-due-to-heart-condition": {
+        "en": "Cardiac arrest due to underlying cardiac condition",
+        "nl": "Hartstilstand door aandoening van hart",
+        "fr": "Arrêt cardiaque dû à une affection cardiaque"
+      },
+      "bodyLaterality": {
+        "en": "Side",
+        "nl": "Zijde",
+        "fr": "Côté"
+      },
+      "left": {
+        "en": "Left",
+        "nl": "Links",
+        "fr": "Gauche"
+      },
+      "right": {
+        "en": "Right",
+        "nl": "Rechts",
+        "fr": "Droit"
+      },
+      "bilateral": {
+        "en": "Bilateral",
+        "nl": "Beiderzijds",
+        "fr": "Bilatéral"
+      },
+      "status": {
+        "en": "Status",
+        "nl": "Status",
+        "fr": "Statut"
+      },
+      "confirmed": {
+        "en": "Confirmed",
+        "nl": "Definitief",
+        "fr": "Confirmé"
+      },
+      "suspected": {
+        "en": "Suspected",
+        "nl": "Verdenking op",
+        "fr": "Suspect"
+      },
+      "refuted": {
+        "en": "Refuted",
+        "nl": "Verworpen",
+        "fr": "Écarté"
+      },
+      "type": {
+        "en": "Type",
+        "nl": "Soort",
+        "fr": "Type"
+      },
+      "diagnosis-type": {
+        "en": "Primary or secondary diagnosis",
+        "nl": "Hoofd- of nevendiagnose",
+        "fr": "Diagnostic principal ou secondaire"
+      },
+      "primary": {
+        "en": "Primary diagnosis",
+        "nl": "Hoofddiagnose",
+        "fr": "Diagnostic principal"
+      },
+      "secondary": {
+        "en": "Secondary diagnosis",
+        "nl": "Nevendiagnose",
+        "fr": "Diagnostic secondaire"
+      },
+      "remark": {
+        "en": "Remark",
+        "nl": "Opmerking",
+        "fr": "Remarque"
+      },
+      "patternErrorSpecificsPointsOfAttention": {
+        "en": "Please use only allowed characters.",
+        "nl": "Gebruik enkel toegelaten tekens.",
+        "fr": "Veuillez utiliser uniquement les caractères autorisés."
+      },
+      "valvular-heart-disease": {
+        "en": "Valvular heart disease",
+        "nl": "Kleplijden",
+        "fr": "Valvulopathie (atteinte valvulaire)"
+      },
+      "aortic-valve-stenosis": {
+        "en": "Aortic valve stenosis",
+        "nl": "AS",
+        "fr": "Sténose aortique"
+      },
+      "aortic-valve-regurgitation": {
+        "en": "Aortic valve regurgitation",
+        "nl": "AI",
+        "fr": "Insuffisance aortique"
+      },
+      "aortic-valve-stenosis-with-insufficiency": {
+        "en": "Aortic valve stenosis with insufficiency",
+        "nl": "AS + AI",
+        "fr": "Sténose aortique avec insuffisance"
+      },
+      "mitral-valve-stenosis": {
+        "en": "Mitral valve stenosis",
+        "nl": "MS",
+        "fr": "Sténose mitrale"
+      },
+      "mitral-valve-regurgitation": {
+        "en": "Mitral valve regurgitation",
+        "nl": "MI",
+        "fr": "Insuffisance mitrale"
+      },
+      "tricuspid-valve-regurgitation": {
+        "en": "Tricuspid valve regurgitation",
+        "nl": "TI",
+        "fr": "Insuffisance tricuspide"
+      },
+      "endocarditis": {
+        "en": "Endocarditis",
+        "nl": "Endocarditis",
+        "fr": "Endocardite"
+      },
+      "step_1_label": {
+        "en": "Remote monitoring - Chronic heart failure",
+        "nl": "Monitoring op afstand - Chronisch hartfalen",
+        "fr": "Télésurveillance - Insuffissance cardiaque chronique"
+      },
+      "boundsDurationRowRequired": {
+        "en": "Treatment duration",
+        "nl": "Behandelingsduur",
+        "fr": "Durée du traitement"
+      },
+      "day": {
+        "en": "Day",
+        "nl": "Dag",
+        "fr": "Jour"
+      },
+      "week": {
+        "en": "Week",
+        "nl": "Week",
+        "fr": "Semaine"
+      },
+      "month": {
+        "en": "Month",
+        "nl": "Maand",
+        "fr": "Mois"
+      },
+      "year": {
+        "en": "Year",
+        "nl": "Jaar",
+        "fr": "Année"
+      },
+      "weight": {
+        "en": "Weight",
+        "nl": "Gewicht",
+        "fr": "Poids"
+      },
+      "systolic-blood-pressure": {
+        "en": "Systolic blood pressure",
+        "nl": "Systolische bloeddruk",
+        "fr": "Tension artérielle systolique"
+      },
+      "diastolic-blood-pressure": {
+        "en": "Diastolic blood pressure",
+        "nl": "Diastolische bloeddruk",
+        "fr": "Tension artérielle diastolique"
+      },
+      "heart-rate": {
+        "en": "Heart rate",
+        "nl": "Hartslag",
+        "fr": "Fréquence cardiaque"
+      },
+      "condition": {
+        "en": "Condition",
+        "nl": "Conditie",
+        "fr": "Condition"
+      },
+      "weight-gain": {
+        "en": "Weight gain",
+        "nl": "Gewichtstoename",
+        "fr": "Prise de poids"
+      },
+      "weight-loss": {
+        "en": "Weight loss",
+        "nl": "Gewichtsverlies",
+        "fr": "Perte de poids"
+      },
+      "weight-value": {
+        "en": "Value",
+        "nl": "Waarde",
+        "fr": "Valeur"
+      },
+      "bpm": {
+        "en": "bpm",
+        "nl": "spm",
+        "fr": "bpm"
+      },
+      "mmHg": {
+        "en": "mmHg",
+        "nl": "mmHg",
+        "fr": "mmHg"
+      },
+      "kg": {
+        "en": "kg",
+        "nl": "kg",
+        "fr": "kg"
+      },
+      "weight-time-window": {
+        "en": "Period",
+        "nl": "Periode",
+        "fr": "Période"
+      },
+      "frequency": {
+        "en": "Number",
+        "nl": "Aantal",
+        "fr": "Nombre"
+      },
+      "period": {
+        "en": "Time unit",
+        "nl": "Tijdseenheid",
+        "fr": "Unité de temps"
+      },
+      "over-to": {
+        "en": "Higher than",
+        "nl": "Hoger dan",
+        "fr": "Supérieure à"
+      },
+      "under-to": {
+        "en": "Lower than",
+        "nl": "Lager dan",
+        "fr": "Inférieure à"
+      },
+      "threshold": {
+        "en": "Threshold",
+        "nl": "Drempel",
+        "fr": "Seuil"
+      },
+      "generalRemarks": {
+        "en": "General remarks",
+        "nl": "Algemene opmerkingen",
+        "fr": "Remarques générales"
+      },
+      "validityPeriod": {
+        "en": "Validity period",
+        "nl": "Geldigheidsperiode",
+        "fr": "Période de validité"
+      },
+      "validityPeriodTooltip": {
+        "en": "Start and end date of the prescription validity.",
+        "nl": "Begin- en einddatum van de geldigheid van het voorschrift.",
+        "fr": "Date de début et de fin de validité de la prescription."
+      },
+      "startDate": {
+        "en": "Start date",
+        "nl": "Begindatum",
+        "fr": "Date de début"
+      },
+      "endDate": {
+        "en": "End date",
+        "nl": "Einddatum",
+        "fr": "Date de fin"
+      },
+      "cardiac-arrhythmia-conduction-disorder": {
+        "en": "Cardiac arrhythmia / conduction disorder",
+        "nl": "Ritme- en geleidingsstoornissen",
+        "fr": "Troubles du rythme et de la conduction"
+      },
+      "supraventricular-arrhythmia": {
+        "en": "Supraventricular arrhythmia",
+        "nl": "Supraventriculaire aritmieën",
+        "fr": "Arythmies supraventriculaires"
+      },
+      "ventricular-arrhythmia": {
+        "en": "Ventricular arrhythmia",
+        "nl": "Ventriculaire aritmieën",
+        "fr": "Arythmies ventriculaires"
+      },
+      "conduction-disorder-of-the-heart": {
+        "en": "Conduction disorder of the heart",
+        "nl": "Geleidingsstoornissen",
+        "fr": "Troubles de la conduction"
+      },
+      "cardiac-pacemaker-dysfunction": {
+        "en": "Cardiac pacemaker dysfunction",
+        "nl": "Pacemakerdysfunctie",
+        "fr": "Dysfonction du stimulateur cardiaque"
+      },
+      "syncope": {
+        "en": "Syncope",
+        "nl": "Syncope",
+        "fr": "Syncope"
+      },
+      "syncope-diagnosis": {
+        "en": "Syncope",
+        "nl": "Syncope",
+        "fr": "Syncope"
+      },
+      "congenital-heart-disease": {
+        "en": "Congenital heart disease",
+        "nl": "Congenitaal hartlijden",
+        "fr": "Cardiopathie congénitale"
+      },
+      "shock": {
+        "en": "Shock",
+        "nl": "Shock",
+        "fr": "État de choc"
+      },
+      "pericardial-disease": {
+        "en": "Pericardial disease",
+        "nl": "Pericardaandoening",
+        "fr": "Atteinte péricardique (péricardite)"
+      },
+      "heart-failure": {
+        "en": "Heart failure",
+        "nl": "Hartfalen",
+        "fr": "Insuffisance cardiaque"
+      },
+      "heart-failure-subcategory": {
+        "en": "Sub-category",
+        "nl": "Subcategorie",
+        "fr": "Sous-catégorie"
+      },
+      "ischemic-heart-disease": {
+        "en": "Ischemic heart disease",
+        "nl": "Ischemisch hartlijden",
+        "fr": "Cardiopathie ischémique"
+      },
+      "myocarditis": {
+        "en": "Myocarditis",
+        "nl": "Myocarditis",
+        "fr": "Myocardite"
+      },
+      "myocarditis-diagnosis": {
+        "en": "Myocarditis",
+        "nl": "Myocarditis",
+        "fr": "Myocardite"
+      },
+      "pulmonary-hypertension": {
+        "en": "Pulmonary hypertension",
+        "nl": "Pulmonale hypertensie",
+        "fr": "Hypertension pulmonaire"
+      },
+      "renal-insufficiency": {
+        "en": "Renal insufficiency",
+        "nl": "Nierinsufficiëntie",
+        "fr": "Insuffisance rénale"
+      },
+      "other": {
+        "en": "Other",
+        "nl": "Andere",
+        "fr": "Autre"
+      },
+      "sick-sinus-syndrome": {
+        "en": "Sick sinus syndrome",
+        "nl": "Sick sinus syndroom",
+        "fr": "Maladie du sinus (dysfonction sinusale)"
+      },
+      "atrial-fibrillation": {
+        "en": "Atrial fibrillation",
+        "nl": "VKF (voorkamerfibrillatie)",
+        "fr": "Fibrillation auriculaire"
+      },
+      "atrial-flutter": {
+        "en": "Atrial flutter",
+        "nl": "VK-flutter",
+        "fr": "Flutter auriculaire"
+      },
+      "atrial-tachycardia": {
+        "en": "Atrial tachycardia",
+        "nl": "Atriale tachycardie",
+        "fr": "Tachycardie atriale"
+      },
+      "avnrt": {
+        "en": "AV nodal re-entry tachycardia (AVNRT)",
+        "nl": "AVNRT",
+        "fr": "Tachycardie par réentrée intranodale (AVNRT)"
+      },
+      "avrt": {
+        "en": "AV re-entry tachycardia (AVRT)",
+        "nl": "AVRT",
+        "fr": "Tachycardie par réentrée atrioventriculaire (AVRT)"
+      },
+      "tachycardia-bradycardia-syndrome": {
+        "en": "Tachycardia-bradycardia syndrome",
+        "nl": "Brady-tachysyndroom",
+        "fr": "Syndrome bradycardie-tachycardie"
+      },
+      "chronotropic-incompetence": {
+        "en": "Chronotropic incompetence",
+        "nl": "Chronotrope incompetentie",
+        "fr": "Incompétence chronotrope"
+      },
+      "atrial-fibrillation-classification": {
+        "en": "Atrial fibrillation type",
+        "nl": "Type VKF",
+        "fr": "Type de fibrillation auriculaire"
+      },
+      "af-type-paroxysmal": {
+        "en": "Paroxysmal",
+        "nl": "Paroxysmaal",
+        "fr": "Paroxystique"
+      },
+      "af-type-persistent": {
+        "en": "Persistent",
+        "nl": "Persisterend",
+        "fr": "Persistante"
+      },
+      "af-type-permanent": {
+        "en": "Permanent",
+        "nl": "Permanent",
+        "fr": "Permanente"
+      },
+      "nonsustained-ventricular-tachycardia": {
+        "en": "Nonsustained ventricular tachycardia",
+        "nl": "Niet-aanhoudende ventriculaire tachycardie (nsVT)",
+        "fr": "Tachycardie ventriculaire non soutenue"
+      },
+      "sustained-ventricular-tachycardia": {
+        "en": "Sustained ventricular tachycardia",
+        "nl": "Aanhoudende ventriculaire tachycardie",
+        "fr": "Tachycardie ventriculaire soutenue"
+      },
+      "ventricular-fibrillation": {
+        "en": "Ventricular fibrillation",
+        "nl": "Ventrikelfibrillatie (VF)",
+        "fr": "Fibrillation ventriculaire"
+      },
+      "ventricular-premature-beat": {
+        "en": "Ventricular premature beat",
+        "nl": "Ventriculaire extrasystole (VES)",
+        "fr": "Extrasystole ventriculaire"
+      },
+      "second-degree-av-block": {
+        "en": "Second degree AV block",
+        "nl": "2de graads AV-blok",
+        "fr": "Bloc auriculo-ventriculaire du 2e degré"
+      },
+      "third-degree-av-block": {
+        "en": "Third degree (complete) AV block",
+        "nl": "3de graads AV-blok",
+        "fr": "Bloc auriculo-ventriculaire complet (3e degré)"
+      },
+      "left-bundle-branch-block": {
+        "en": "Left bundle branch block",
+        "nl": "LBBB",
+        "fr": "Bloc de branche gauche"
+      },
+      "right-bundle-branch-block": {
+        "en": "Right bundle branch block",
+        "nl": "RBBB",
+        "fr": "Bloc de branche droit"
+      },
+      "undersensing-pacemaker": {
+        "en": "Undersensing cardiac pacemaker",
+        "nl": "Undersensing pacemaker",
+        "fr": "Sous-détection du stimulateur cardiaque"
+      },
+      "atrial-pacemaker-lead-dislodgement": {
+        "en": "Atrial pacemaker lead dislodgement",
+        "nl": "Loskomen van atriale pacemakerlead",
+        "fr": "Déplacement de la sonde atriale du stimulateur"
+      },
+      "decreased-pacemaker-lead-impedance": {
+        "en": "Decreased pacemaker lead impedance",
+        "nl": "Verminderde pacemakerleadimpedantie",
+        "fr": "Diminution de l'impédance de la sonde de stimulation"
+      },
+      "pacemaker-lead-fracture": {
+        "en": "Pacemaker electrode lead fracture",
+        "nl": "Fractuur pacemakerlead",
+        "fr": "Fracture de la sonde du stimulateur"
+      },
+      "pocket-hematoma": {
+        "en": "Pocket hematoma",
+        "nl": "Pockethematoom",
+        "fr": "Hématome de loge (pocket)"
+      },
+      "pocket-infection": {
+        "en": "Pocket infection",
+        "nl": "Pocketinfectie",
+        "fr": "Infection de loge (pocket)"
+      },
+      "univentricular-heart": {
+        "en": "Univentricular heart",
+        "nl": "Univentriculair hart",
+        "fr": "Cœur univentriculaire"
+      },
+      "tetralogy-of-fallot": {
+        "en": "Tetralogy of Fallot",
+        "nl": "Tetralogie van Fallot",
+        "fr": "Tétralogie de Fallot"
+      },
+      "d-transposition-of-great-vessels": {
+        "en": "D-transposition of the great vessels",
+        "nl": "D-transpositie van de grote arteriën",
+        "fr": "Transposition complète des gros vaisseaux (D-TGA)"
+      },
+      "l-transposition-of-great-vessels": {
+        "en": "L-transposition of the great vessels",
+        "nl": "L-transpositie van de grote arteriën",
+        "fr": "Transposition corrigée des gros vaisseaux (L-TGA)"
+      },
+      "coarctation-of-aorta": {
+        "en": "Coarctation of the aorta",
+        "nl": "Coarctatio aortae",
+        "fr": "Coarctation de l'aorte"
+      },
+      "ebstein-anomaly": {
+        "en": "Ebstein anomaly",
+        "nl": "Ebstein-anomalie",
+        "fr": "Anomalie d'Ebstein"
+      },
+      "bicuspid-aortic-valve": {
+        "en": "Bicuspid aortic valve",
+        "nl": "Bicuspide aortaklep",
+        "fr": "Bicuspidie aortique"
+      },
+      "ventricular-septal-defect": {
+        "en": "Ventricular septal defect (VSD)",
+        "nl": "VSD",
+        "fr": "Communication interventriculaire (CIV)"
+      },
+      "atrial-septal-defect-type-1": {
+        "en": "Atrial septal defect type 1 (partial AVSD)",
+        "nl": "ASD type 1 (partiële AVSD)",
+        "fr": "Communication interauriculaire type 1 (CAV partiel)"
+      },
+      "atrial-septal-defect-type-2": {
+        "en": "Atrial septal defect type 2 (ostium secundum)",
+        "nl": "ASD type 2",
+        "fr": "Communication interauriculaire type 2 (ostium secundum)"
+      },
+      "sinus-venosus-atrial-septal-defect": {
+        "en": "Sinus venosus atrial septal defect",
+        "nl": "Sinus venosus type ASD",
+        "fr": "Communication interauriculaire de type sinus venosus"
+      },
+      "patent-ductus-arteriosus": {
+        "en": "Patent ductus arteriosus",
+        "nl": "Patente ductus arteriosus",
+        "fr": "Persistance du canal artériel"
+      },
+      "syndromic-thoracic-aortic-aneurysm": {
+        "en": "Syndromic thoracic aortic aneurysm",
+        "nl": "Syndromale thoracale aorta-aneurysma",
+        "fr": "Anévrisme thoracique de l'aorte syndromique"
+      },
+      "non-syndromic-thoracic-aortic-aneurysm": {
+        "en": "Non-syndromic thoracic aortic aneurysm",
+        "nl": "Niet-syndromale thoracale aorta-aneurysma",
+        "fr": "Anévrisme thoracique de l'aorte non syndromique"
+      },
+      "congenital-coronary-artery-anomaly": {
+        "en": "Congenital coronary artery anomaly",
+        "nl": "Congenitale coronaire anomalie",
+        "fr": "Anomalie coronaire congénitale"
+      },
+      "patent-foramen-ovale": {
+        "en": "Patent foramen ovale (PFO)",
+        "nl": "PFO",
+        "fr": "Foramen ovale perméable (FOP)"
+      },
+      "cardiogenic-shock": {
+        "en": "Cardiogenic shock",
+        "nl": "Cardiogene shock",
+        "fr": "Choc cardiogénique"
+      },
+      "hemorrhagic-shock": {
+        "en": "Hemorrhagic shock",
+        "nl": "Hemorragische shock",
+        "fr": "Choc hémorragique"
+      },
+      "septic-shock": {
+        "en": "Septic shock",
+        "nl": "Septische shock",
+        "fr": "Choc septique"
+      },
+      "obstructive-shock": {
+        "en": "Obstructive shock",
+        "nl": "Obstructieve shock",
+        "fr": "Choc obstructif"
+      },
+      "shock-postoperative": {
+        "en": "Postoperative?",
+        "nl": "Postoperatief?",
+        "fr": "Postopératoire ?"
+      },
+      "yes": {
+        "en": "Yes",
+        "nl": "Ja",
+        "fr": "Oui"
+      },
+      "no": {
+        "en": "No",
+        "nl": "Nee",
+        "fr": "Non"
+      },
+      "which-bacterium-free-text": {
+        "en": "Which bacterium?",
+        "nl": "Welke bacterie?",
+        "fr": "Quelle bactérie ?"
+      },
+      "acute-pericarditis": {
+        "en": "Acute pericarditis",
+        "nl": "Acute pericarditis",
+        "fr": "Péricardite aiguë"
+      },
+      "cardiac-tamponade": {
+        "en": "Cardiac tamponade",
+        "nl": "Pericardtamponade",
+        "fr": "Tamponnade cardiaque"
+      },
+      "heart-failure-type": {
+        "en": "Type (ejection fraction)",
+        "nl": "Type (ejectiefractie)",
+        "fr": "Type (fraction d'éjection)"
+      },
+      "hfref": {
+        "en": "HFrEF",
+        "nl": "HFrEF",
+        "fr": "Insuffisance cardiaque à fraction d'éjection réduite (ICFEr)"
+      },
+      "hfmref": {
+        "en": "HFmrEF",
+        "nl": "HFmrEF",
+        "fr": "Insuffisance cardiaque à fraction d'éjection légèrement réduite (ICFEmr)"
+      },
+      "hfpef": {
+        "en": "HFpEF",
+        "nl": "HFpEF",
+        "fr": "Insuffisance cardiaque à fraction d'éjection préservée (ICFEp)"
+      },
+      "heart-failure-evolution": {
+        "en": "Course",
+        "nl": "Beloop",
+        "fr": "Évolution"
+      },
+      "de-novo-heart-failure": {
+        "en": "De novo heart failure",
+        "nl": "De novo hartfalen",
+        "fr": "Insuffisance cardiaque de novo"
+      },
+      "chronic-heart-failure": {
+        "en": "Chronic heart failure",
+        "nl": "Chronisch hartfalen",
+        "fr": "Insuffisance cardiaque chronique"
+      },
+      "acute-on-chronic-heart-failure": {
+        "en": "Acute-on-chronic heart failure",
+        "nl": "Acuut op chronisch hartfalen",
+        "fr": "Insuffisance cardiaque aiguë sur chronique"
+      },
+      "heart-failure-localisation": {
+        "en": "Localisation",
+        "nl": "Lokalisatie",
+        "fr": "Localisation"
+      },
+      "left-heart-failure": {
+        "en": "Left heart failure",
+        "nl": "Linkerhartfalen",
+        "fr": "Insuffisance cardiaque gauche"
+      },
+      "right-heart-failure": {
+        "en": "Right heart failure",
+        "nl": "Rechterhartfalen",
+        "fr": "Insuffisance cardiaque droite"
+      },
+      "biventricular-heart-failure": {
+        "en": "Biventricular heart failure",
+        "nl": "Biventriculair hartfalen",
+        "fr": "Insuffisance cardiaque biventriculaire"
+      },
+      "cor-pulmonale": {
+        "en": "Cor pulmonale",
+        "nl": "Cor pulmonale",
+        "fr": "Cœur pulmonaire (cor pulmonale)"
+      },
+      "heart-failure-etiology": {
+        "en": "Etiology",
+        "nl": "Etiologie",
+        "fr": "Étiologie"
+      },
+      "ischemic": {
+        "en": "Ischemic",
+        "nl": "Ischemisch",
+        "fr": "Ischémique"
+      },
+      "non-ischemic": {
+        "en": "Non-ischemic",
+        "nl": "Niet-ischemisch",
+        "fr": "Non ischémique"
+      },
+      "stemi": {
+        "en": "STEMI",
+        "nl": "STEMI",
+        "fr": "Infarctus du myocarde avec sus-décalage du segment ST (STEMI)"
+      },
+      "nstemi": {
+        "en": "NSTEMI",
+        "nl": "NSTEMI",
+        "fr": "Infarctus du myocarde sans sus-décalage du segment ST (NSTEMI)"
+      },
+      "takotsubo-cardiomyopathy": {
+        "en": "Takotsubo cardiomyopathy",
+        "nl": "Takotsubo-cardiomyopathie",
+        "fr": "Cardiomyopathie de Takotsubo"
+      },
+      "angina-pectoris": {
+        "en": "Angina pectoris",
+        "nl": "Angina pectoris",
+        "fr": "Angine de poitrine (angor)"
+      },
+      "stemi-localisation": {
+        "en": "STEMI localisation",
+        "nl": "STEMI-lokalisatie",
+        "fr": "Localisation du STEMI"
+      },
+      "stemi-localisation-anterior": {
+        "en": "Anterior",
+        "nl": "Anterior",
+        "fr": "Antérieur"
+      },
+      "stemi-localisation-inferior": {
+        "en": "Inferior",
+        "nl": "Inferior",
+        "fr": "Inférieur"
+      },
+      "stemi-localisation-lateral": {
+        "en": "Lateral",
+        "nl": "Lateraal",
+        "fr": "Latéral"
+      },
+      "stemi-localisation-posterior": {
+        "en": "Posterior",
+        "nl": "Posterior",
+        "fr": "Postérieur"
+      },
+      "pulmonary-arterial-hypertension": {
+        "en": "Pulmonary arterial hypertension (pre-capillary)",
+        "nl": "PAH (pre-capillair)",
+        "fr": "Hypertension artérielle pulmonaire (pré-capillaire)"
+      },
+      "ph-associated-with-lung-disease": {
+        "en": "PH associated with lung disease",
+        "nl": "PH geassocieerd met longproblemen",
+        "fr": "HTP associée à une maladie pulmonaire"
+      },
+      "post-capillary": {
+        "en": "Post-capillary pulmonary hypertension",
+        "nl": "Post-capillair",
+        "fr": "Post-capillaire"
+      },
+      "chronic-thromboembolic-pulmonary-hypertension-cteph": {
+        "en": "Chronic thromboembolic pulmonary hypertension (CTEPH)",
+        "nl": "CTEPH",
+        "fr": "Hypertension pulmonaire thromboembolique chronique (HTP-TEC)"
+      },
+      "hypertensive-crisis": {
+        "en": "Hypertensive crisis",
+        "nl": "Hypertensieve crisis",
+        "fr": "Crise hypertensive (poussée hypertensive)"
+      },
+      "pulmonary-embolism": {
+        "en": "Pulmonary embolism",
+        "nl": "Longembolen",
+        "fr": "Embolie pulmonaire"
+      },
+      "pneumonia": {
+        "en": "Pneumonia",
+        "nl": "Pneumonie",
+        "fr": "Pneumonie"
+      },
+      "aecopd": {
+        "en": "Acute exacerbation of COPD (AECOPD)",
+        "nl": "AECOPD",
+        "fr": "Exacerbation aiguë de BPCO"
+      },
+      "sepsis": {
+        "en": "Sepsis",
+        "nl": "Sepsis",
+        "fr": "Sepsis (septicémie)"
+      },
+      "cerebrovascular-accident": {
+        "en": "Cerebrovascular accident (CVA)",
+        "nl": "CVA",
+        "fr": "Accident vasculaire cérébral (AVC)"
+      },
+      "cardiac-amyloidosis": {
+        "en": "Cardiac amyloidosis",
+        "nl": "Cardiale amyloïdose",
+        "fr": "Amylose cardiaque"
+      },
+      "hyperkalemia": {
+        "en": "Hyperkalemia",
+        "nl": "Hyperkaliëmie",
+        "fr": "Hyperkaliémie"
+      },
+      "other-blank-diagnosis": {
+        "en": "Other (free-text diagnosis)",
+        "nl": "Andere (blanco diagnose)",
+        "fr": "Autre (diagnostic libre)"
+      },
+      "other-diagnosis-freetext": {
+        "en": "Which diagnosis?",
+        "nl": "Welke diagnose?",
+        "fr": "Quel diagnostic ?"
+      },
+      "diagnosis-description": {
+        "en": "Description",
+        "nl": "Omschrijving",
+        "fr": "Description"
+      },
+      "details-section": {
+        "en": "Order details",
+        "nl": "Bestelgegevens",
+        "fr": "Détails de l'ordre"
+      },
+      "postoperative": {
+        "en": "Postoperative",
+        "nl": "Postoperatief",
+        "fr": "Postopératoire"
+      },
+      "parameters": {
+        "en": "Measure(s) to be transmitted",
+        "nl": "Te verzenden maatregel(en)",
+        "fr": "Mesure(s) à transmettre"
+      },
+      "info-parameters": {
+        "en": "> The parameters and thresholds mentioned here correspond to the initial settings. They may change over time. However, these adjustments will not be reflected in this order.",
+        "nl": "> De hier vermelde parameters en drempelwaarden komen overeen met de oorspronkelijke instellingen. Ze kunnen in de loop van de tijd wijzigen. Deze aanpassingen worden echter niet in deze opdracht overgenomen.",
+        "fr": "> Les paramètres et seuils mentionnés ici correspondent aux réglages initiaux. Ils peuvent évoluer au fil du temps. Ces ajustements ne seront toutefois pas reportés sur cet ordre.",
+        "de": "> Die hier genannten Parameter und Schwellenwerte entsprechen den ursprünglichen Einstellungen. Sie können sich im Laufe der Zeit ändern. Diese Anpassungen werden jedoch nicht in diesen Auftrag übernommen."
       }
     }
   }

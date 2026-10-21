@@ -66,7 +66,7 @@ export class ProposalCheckboxListComponent extends EvfBaseFormDetailComponent im
             subElementsControls: this.elementControl.childElementControls.filter((q: BaseElementControl) =>
               q.element?.showIfParentResponse?.includes(response.value)
             ),
-          })) as unknown as SelectedResponse[];
+          }));
       })
     );
   }

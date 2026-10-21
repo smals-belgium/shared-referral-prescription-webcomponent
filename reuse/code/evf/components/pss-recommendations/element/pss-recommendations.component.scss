@@ -1,0 +1,24 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+.pss-results {
+  border-top: 1px solid mh.$border-semantic-warning-dark;
+  margin-top: 20px;
+  padding: 10px;
+  ::ng-deep {
+    evf-select {
+      &.disabled {
+        display: none;
+      }
+    }
+  }
+}
+.row.align-right {
+  text-align: right;
+}
+
+.relevant-info {
+  p {
+    @include mh.font-small-regular;
+    color: mh.$surface-semantic-warning-dark;
+  }
+}

@@ -1,109 +1,114 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  inject,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
-import { MatDialogModule } from '@angular/material/dialog';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
+import {
+  Component,
+  computed,
+  ContentChild,
+  inject,
+  input,
+  OnChanges,
+  output,
+  signal,
+  SimpleChanges,
+  TemplateRef,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTableModule } from '@angular/material/table';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { EvfTranslateService } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
-import { MatIcon, MatIconRegistry } from '@angular/material/icon';
-import { DomSanitizer } from '@angular/platform-browser';
 import { MatCheckbox } from '@angular/material/checkbox';
-import { CodedValueItem, SupportOption } from '@reuse/code/openapi';
-import { SupportedLanguages } from '@reuse/code/evf/utils/evf-utils';
-
-const radiationIcon = `
-<?xml version="1.0" encoding="utf-8"?>
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 122.88 122.88" style="enable-background:new 0 0 122.88 122.88" xml:space="preserve">
-  <style type="text/css">.st0{fill-rule:evenodd;clip-rule:evenodd;}</style>
-  <g>
-    <path class="st0" d="M86.71,104.87c-16.58,8.49-33.27,8.72-50.08-0.02L54.62,74.2c4.09,2.43,8.89,2.45,14.39,0.01L86.71,104.87 L86.71,104.87z M61.44,0c16.97,0,32.33,6.88,43.44,18c11.12,11.12,18,26.48,18,43.44c0,16.97-6.88,32.33-18,43.44 c-11.12,11.12-26.48,18-43.44,18S29.11,116,18,104.88C6.88,93.77,0,78.41,0,61.44C0,44.47,6.88,29.11,18,18 C29.11,6.88,44.47,0,61.44,0L61.44,0z M101.53,21.35C91.27,11.09,77.1,4.74,61.44,4.74c-15.66,0-29.83,6.35-40.09,16.61 C11.09,31.61,4.74,45.78,4.74,61.44c0,15.66,6.35,29.83,16.61,40.09c10.26,10.26,24.43,16.61,40.09,16.61 c15.66,0,29.83-6.35,40.09-16.61c10.26-10.26,16.61-24.43,16.61-40.09C118.14,45.78,111.79,31.61,101.53,21.35L101.53,21.35z M86.45,17.73c15.64,10.11,24.19,24.45,25.02,43.38l-35.55-0.25c0.06-4.76-2.32-8.92-7.18-12.46L86.45,17.73L86.45,17.73z M61.5,52.41c5.33,0,9.65,4.32,9.65,9.65c0,5.33-4.32,9.65-9.65,9.65c-5.33,0-9.65-4.32-9.65-9.65 C51.85,56.73,56.17,52.41,61.5,52.41L61.5,52.41z M11.53,61.33c0.93-18.6,9.08-33.17,25.06-43.36l17.56,30.91 c-4.15,2.33-6.56,6.47-7.2,12.45H11.53L11.53,61.33z"/>
-  </g>
-</svg>
-`;
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { TranslateModule } from '@ngx-translate/core';
+import { FormatEnum, SkeletonComponent } from '@reuse/code/components/progress-indicators/skeleton/skeleton.component';
+import { PssRadiationRateComponent } from '@reuse/code/components/pss-radiation-rate/pss-radiation-rate.component';
+import { PssScoreBarComponent } from '@reuse/code/components/pss-score-bar/pss-score-bar.component';
+import { PSS_OTHER_REASON, PSS_SUCCESS_SCORE, PSS_ZERO_SCORE } from '@reuse/code/constants/pss.constants';
+import { SupportOption } from '@reuse/code/openapi';
+import { getTranslationFromSupportOptionMetadata } from '@reuse/code/utils/pss-translations-from-support-option-metadata.utils';
+import { AutocompleteOption, EvfTranslateService } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 
 @Component({
-  standalone: true,
-  selector: 'app-pss-radiology-result-dialog',
+  selector: 'app-pss-radiology-result',
   templateUrl: './pss-radiology-result.component.html',
   styleUrls: ['./pss-radiology-result.component.scss'],
-  imports: [CommonModule, MatDialogModule, MatButtonModule, TranslateModule, MatTableModule, MatIcon, MatCheckbox],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    MatDialogModule,
+    MatButtonModule,
+    TranslateModule,
+    MatTableModule,
+    MatCheckbox,
+    SkeletonComponent,
+    PssScoreBarComponent,
+    PssRadiationRateComponent,
+  ],
 })
 export class PssRadiologyResultComponent implements OnChanges {
-  private language: SupportedLanguages = 'nl';
-  protected radiationLevel = Array(5);
-  protected clickedRow: SupportOption | undefined;
-  protected selectedRow: SupportOption | undefined;
+  protected readonly PSS_OTHER_REASON = PSS_OTHER_REASON;
+  protected readonly FormatEnum = FormatEnum;
 
-  @Input() supportOptions: SupportOption[] | undefined;
-  @Input() prescribedExam: string | undefined;
-  @Input() isClickable: boolean = true;
+  private readonly evfTranslate = inject(EvfTranslateService);
+  protected currentLang = toSignal(this.evfTranslate.currentLang$, {
+    initialValue: this.evfTranslate.currentLang,
+  });
+  protected selectedRow = signal<SupportOption | undefined>(undefined);
 
-  @Output() selectSupportOption = new EventEmitter<SupportOption>();
+  dataSource = new MatTableDataSource<SupportOption>([]);
+
+  supportOptions = input<SupportOption[]>();
+  prescribedExam = input<AutocompleteOption[]>();
+  isLoading = input<boolean>(true);
+  hasProposedImaging = input<boolean>(true);
+  selectSupportOption = output<SupportOption>();
+
+  readonly shouldAutoExpand = computed(() => {
+    const row = this.selectedRow();
+    return !row?.score || (row.score < PSS_SUCCESS_SCORE && row.score >= PSS_ZERO_SCORE);
+  });
 
   protected displayedColumns: string[] = ['select', 'relevance', 'typesOfImagery', 'radiationRate'];
+  protected displayedColumnsNoScore = ['select', 'noScore'];
+  protected hasScore = (index: number, row: SupportOption) => (row.score && row.score > PSS_ZERO_SCORE) || false;
+  protected hasNoScore = (index: number, row: SupportOption) =>
+    (row.score != null && row.score <= PSS_ZERO_SCORE) || false;
 
-  constructor(
-    private readonly translate: TranslateService,
-    private readonly evfTranslate: EvfTranslateService
-  ) {
-    this.language = this.evfTranslate.currentLang as SupportedLanguages;
-    this.evfTranslate.currentLang$.pipe(takeUntilDestroyed()).subscribe(() => {
-      this.language = this.evfTranslate.currentLang as SupportedLanguages;
-    });
-
-    this.registerIcon();
-  }
+  @ContentChild(TemplateRef) detailTemplate?: TemplateRef<{ $implicit: SupportOption }>;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['isClickable']) {
-      this.displayedColumns = ['relevance', 'typesOfImagery', 'radiationRate'];
-    }
     if (changes['supportOptions'] || changes['prescribedExam']) {
-      if (this.prescribedExam && this.supportOptions) {
-        this.selectedRow = this.findSupportOptionById(this.supportOptions, this.prescribedExam);
-        if (this.selectedRow) {
-          this.selectSupportOption.next(this.selectedRow);
+      const pescribedExam = this.prescribedExam();
+      const supportOptions = this.supportOptions();
+      if (pescribedExam && supportOptions) {
+        const supportOption = this.findSupportOptionById(supportOptions, pescribedExam);
+        if (supportOption) {
+          this.selectedRow.set(supportOption);
+          this.selectSupportOption.emit(supportOption);
         }
+      }
+
+      if (supportOptions) {
+        this.dataSource.data = supportOptions;
       }
     }
   }
 
-  confirm(supportOption: SupportOption) {
-    this.clickedRow = supportOption;
-    this.selectSupportOption.next(supportOption);
+  toggle(supportOption: SupportOption) {
+    if (!this.hasProposedImaging() && supportOption.id === PSS_OTHER_REASON) return;
+    this.selectedRow.set(supportOption);
+    this.selectSupportOption.emit(supportOption);
   }
 
-  getTranslation(instruction: CodedValueItem) {
-    if (instruction.translations && instruction.translations.length > 0) {
-      const translations = instruction.translations;
-      const lang = this.language.toUpperCase();
-      const translation = translations.find(trans => trans.language === lang);
-      if (!translation) return '';
-      return translation.value;
-    }
-
-    return instruction.code;
+  isSelected(supportOption: SupportOption) {
+    return supportOption.id === this.selectedRow()?.id;
   }
 
-  private registerIcon() {
-    const iconRegistry = inject(MatIconRegistry);
-    const sanitizer = inject(DomSanitizer);
-
-    iconRegistry.addSvgIconLiteral('radiation', sanitizer.bypassSecurityTrustHtml(radiationIcon));
+  getTranslation(supportOption: SupportOption) {
+    return getTranslationFromSupportOptionMetadata(supportOption, this.currentLang(), this.evfTranslate);
   }
 
-  private findSupportOptionById(options: SupportOption[], idToFind: string): SupportOption | undefined {
-    return options.find(option => option.id === idToFind);
+  private findSupportOptionById(
+    options: SupportOption[],
+    prescribedExam: AutocompleteOption[]
+  ): SupportOption | undefined {
+    const idsToFind = new Set(prescribedExam.map(exam => exam.value as string));
+    return options.find(option => idsToFind.has(option.id as string));
   }
 }

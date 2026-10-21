@@ -1,14 +1,23 @@
-@if (supportOptions) {
-  <table mat-table [dataSource]="supportOptions" class="mat-elevation-z1">
+<div class="select-table-container">
+  <table
+    mat-table
+    [dataSource]="dataSource"
+    class="mat-elevation-z1 pss-radiology-result-table"
+    [multiTemplateDataRows]="true">
     <ng-container matColumnDef="select">
-      <th mat-header-cell *matHeaderCellDef>
-        {{ 'prescription.create.control.table.select' | translate }}
-      </th>
-      <td mat-cell *matCellDef="let row">
-        <mat-checkbox (click)="$event.stopPropagation()"
-                      (change)="$event ? confirm(row) : null"
-                      [checked]="clickedRow === row"
-                      [aria-label]="clickedRow === row ? ('prescription.create.control.table.deselectRow' | translate: {row: row.index}) : ('prescription.create.control.table.selectRow' |  translate: {row: row.index})">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let supportOption">
+        @let translation = getTranslation(supportOption);
+        <mat-checkbox
+          [disabled]="!hasProposedImaging() && supportOption.id === PSS_OTHER_REASON"
+          (click)="$event.stopPropagation()"
+          (change)="toggle(supportOption)"
+          [checked]="isSelected(supportOption)"
+          [aria-label]="
+            isSelected(supportOption)
+              ? ('prescription.create.control.table.deselectRow' | translate: { row: translation })
+              : ('prescription.create.control.table.selectRow' | translate: { row: translation })
+          ">
         </mat-checkbox>
       </td>
     </ng-container>
@@ -16,40 +25,74 @@
     <ng-container matColumnDef="relevance">
       <th mat-header-cell *matHeaderCellDef>{{ 'prescription.create.control.table.relevance' | translate }}</th>
       <td mat-cell *matCellDef="let supportOption" class="pss-score">
-        <div
-          [className]="supportOption.score < 4 ? ('pss-error pss-score-' + supportOption.score) : supportOption.score > 6 ? ('pss-success pss-score-' + supportOption.score) : ('pss-warning pss-score-' + supportOption.score)">{{ supportOption.score }}
-        </div>
+        <app-pss-score-bar [score]="supportOption.score"></app-pss-score-bar>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="typesOfImagery">
       <th mat-header-cell *matHeaderCellDef>{{ 'prescription.create.control.table.typesOfImagery' | translate }}</th>
-      <td mat-cell *matCellDef="let supportOption"> {{ getTranslation(supportOption.instruction) }}</td>
+      <td mat-cell *matCellDef="let supportOption">
+        {{ getTranslation(supportOption) }}
+      </td>
     </ng-container>
-
 
     <ng-container matColumnDef="radiationRate">
       <th mat-header-cell *matHeaderCellDef>{{ 'prescription.create.control.table.radiationRate' | translate }}</th>
       <td mat-cell *matCellDef="let supportOption">
-        <slot name="radiation">
-          <div
-            attr.aria-label="{{ 'prescription.create.control.table.radiationLevel' | translate: {level: supportOption.supportOptionMetadata.radiationLevel} }}"
-            role="img"
-          >
-            @for (level of radiationLevel; let i = $index; track level) {
-              <mat-icon
-                svgIcon="radiation"
-                [class]="i < supportOption.supportOptionMetadata.radiationLevel ? 'radiation-active' : 'radiation-inactive'"
-                aria-hidden="true">
-              </mat-icon>
-            }
-          </div>
-        </slot>
+        <app-pss-radiation-rate [level]="supportOption.supportOptionMetadata.radiationLevel"></app-pss-radiation-rate>
       </td>
     </ng-container>
 
+    <ng-container matColumnDef="noScore">
+      <td
+        mat-cell
+        *matCellDef="let supportOption"
+        [colSpan]="displayedColumns.length - displayedColumnsNoScore.length + 1">
+        {{ getTranslation(supportOption) }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="expandedDetail">
+      <td mat-cell *matCellDef="let row" [colSpan]="displayedColumns.length">
+        @if (detailTemplate) {
+          <ng-container *ngTemplateOutlet="detailTemplate; context: { $implicit: row }"></ng-container>
+        }
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="rowGap">
+      <td mat-cell *matCellDef="let row" [attr.colspan]="displayedColumns.length" class="row-gap-cell"></td>
+    </ng-container>
+
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="isClickable ? confirm(row) : false"
-        [class.row-is-clicked]="clickedRow === row" [class.row-is-selected]="selectedRow?.id === row.id" [class.row-is-clickable]="isClickable"></tr>
+
+    <tr
+      mat-row
+      *matRowDef="let row; columns: displayedColumns; when: hasScore"
+      class="select-row"
+      [class.selected]="isSelected(row)"
+      (click)="toggle(row)"></tr>
+
+    <tr
+      mat-row
+      *matRowDef="let row; columns: displayedColumnsNoScore; when: hasNoScore"
+      class="select-row"
+      [class.selected]="isSelected(row)"
+      (click)="toggle(row)"></tr>
+
+    <!-- Detail row -->
+    <tr
+      class="detail-row"
+      mat-row
+      *matRowDef="let row; columns: ['expandedDetail']"
+      [class.detail-row--expanded]="shouldAutoExpand() && row.id === selectedRow()?.id"
+      [hidden]="!shouldAutoExpand() || row.id !== selectedRow()?.id"
+      [id]="'detail-row-' + row.id"></tr>
+
+    <tr mat-row *matRowDef="let row; columns: ['rowGap']" class="row-gap"></tr>
   </table>
+</div>
+
+@if (isLoading()) {
+  <app-skeleton data-cy="skeleton" [items]="3" [format]="FormatEnum.LINE"></app-skeleton>
 }

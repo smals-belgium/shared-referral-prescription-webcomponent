@@ -17,6 +17,7 @@
       "source": "/frontend/app/hcp/showcases/form/create/**",
       "destination": "/contrib/showcase/form/create/index.html"
     },
+    { "source": "/frontend/app/hcp/showcases/form/list", "destination": "/contrib/showcase/form/list/index.html" },
     { "source": "/frontend/app/hcp/showcases/form/list/**", "destination": "/contrib/showcase/form/list/index.html" }
   ],
   "redirects": [

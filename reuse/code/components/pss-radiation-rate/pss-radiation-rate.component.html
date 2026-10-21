@@ -1,0 +1,13 @@
+<slot name="radiation">
+  <div
+    attr.aria-label="{{ 'prescription.create.control.table.radiationLevel' | translate: { level: level() } }}"
+    role="img">
+    @for (item of levels(); let i = $index; track $index) {
+      <mat-icon
+        [svgIcon]="i < level() ? 'radiation_active' : 'radiation_inactive'"
+        [class]="i < level() ? 'radiation-active' : 'radiation-inactive'"
+        aria-hidden="true">
+      </mat-icon>
+    }
+  </div>
+</slot>

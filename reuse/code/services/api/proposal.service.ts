@@ -1,10 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { SearchPrescriptionCriteria } from '@reuse/code/interfaces';
 import {
-  ProposalService as ApiProposalService,
   AssignCareGiverResource,
   AssignOrganizationResource,
   CreateRequestResource,
+  ProposalService as ApiProposalService,
   ReasonResource,
 } from '@reuse/code/openapi';
 
@@ -21,6 +21,7 @@ export class ProposalService {
       criteria?.patient,
       criteria?.requester,
       criteria?.performer,
+      criteria?.organization,
       criteria?.historical,
       page,
       pageSize

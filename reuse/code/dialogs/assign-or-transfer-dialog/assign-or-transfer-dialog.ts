@@ -42,12 +42,17 @@ import { DeviceService } from '@reuse/code/services/helpers/device.service';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
-import { getAssignableProfessionalDisciplines, isProfessional } from '@reuse/code/utils/assignment-disciplines.utils';
+import {
+  getAssignableOrganizationInstitutionTypes,
+  getAssignableProfessionalDisciplines,
+  isProfessional,
+} from '@reuse/code/utils/assignment-disciplines.utils';
 import { toDataState } from '@reuse/code/utils/rxjs.utils';
 import { getTranslationKeyPrefixForPrescriptionOrProposal, isProposal } from '@reuse/code/utils/utils';
 import { combineLatest, Observable, of, switchMap } from 'rxjs';
 import { catchError, finalize, map } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
+import { extractShortLangFromFullLang } from '@reuse/code/utils/translation.utils';
 
 export type AssignOrTransferDialogMode = 'assign' | 'transfer';
 
@@ -59,6 +64,7 @@ export interface AssignOrTransferDialogData {
   category: string;
   intent: Intent;
   connectedUser: Partial<UserInfo>;
+  providerTypeFilter?: ProviderType[];
 }
 
 @Component({
@@ -99,11 +105,11 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
   private readonly ERROR_ASSIGN_TRANSFER_DIALOG = 'assign-transfer-dialog';
   protected readonly error = this.alertService.setTarget(this.ERROR_ASSIGN_TRANSFER_DIALOG);
 
-  protected readonly providerTypeOptions: ProviderType[] = [
+  protected readonly providerTypeOptions: WritableSignal<ProviderType[]> = signal([
     ProviderType.All,
     ProviderType.Professional,
     ProviderType.Organization,
-  ];
+  ]);
 
   protected readonly isDesktop = this.deviceService.isDesktop;
 
@@ -119,8 +125,10 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
   readonly isLoading = signal(false);
   readonly selectedProfessional = signal<HealthCareProviderResource | undefined>(undefined);
 
-  protected providerType = signal<ProviderType>(ProviderType.All);
-
+  protected providerType = linkedSignal({
+    source: this.providerTypeOptions,
+    computation: options => options[0] ?? ProviderType.All,
+  });
   protected readonly isSearchMode: WritableSignal<boolean> = signal(true);
 
   readonly queryControl = new FormControl('', { nonNullable: true });
@@ -132,8 +140,8 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
   });
 
   protected readonly pageable = linkedSignal<ProviderType, { page: number; pageSize: number }>({
-    source: () => this.providerType(),
-    computation: (source, previous) => ({
+    source: this.providerType,
+    computation: (_source, previous) => ({
       page: 1,
       pageSize: previous?.value.pageSize ?? 10,
     }),
@@ -149,6 +157,7 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
         this.isLoading.set(true);
         const disciplines: string[] = getAssignableProfessionalDisciplines(this.data.category, this.data.intent);
         const zipCodes = criteria?.cities.map(c => c.zipCode).filter((z): z is number => z !== undefined) ?? [];
+        const organizations = getAssignableOrganizationInstitutionTypes(this.data.category, this.data.intent);
 
         return criteria
           ? this._healthcareProviderService
@@ -156,7 +165,7 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
                 criteria.query,
                 zipCodes,
                 disciplines,
-                [],
+                organizations,
                 providerType,
                 this.data.prescriptionId,
                 this.data.intent,
@@ -202,7 +211,7 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
     protected dialogRef: MatDialogRef<AssignOrTransferDialog>,
     @Inject(MAT_DIALOG_DATA) protected data: AssignOrTransferDialogData
   ) {
-    this.currentLang = this._translate.currentLang as TranslationType;
+    this.currentLang = extractShortLangFromFullLang(this._translate.currentLang);
   }
 
   get mode() {
@@ -220,6 +229,9 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
   ngOnInit() {
     this.generatedUUID = uuidv4();
     this.alertService.setActive(this.ERROR_ASSIGN_TRANSFER_DIALOG);
+    if (this.data.providerTypeFilter) {
+      this.providerTypeOptions.set(this.data.providerTypeFilter);
+    }
     this.translationKeyPrefixIntent = getTranslationKeyPrefixForPrescriptionOrProposal(this.data?.intent);
   }
 
@@ -378,11 +390,6 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
     this.queryControl.markAsUntouched();
     this.isSearchMode.set(true);
     this.clearAlertService();
-  }
-
-  protected retry() {
-    this.clearAlertService();
-    this.dialogRef.close();
   }
 
   protected dismissError() {

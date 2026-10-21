@@ -3,15 +3,16 @@
 @include mh.override-mat-button();
 @include mh.override-mat-button-icon(false);
 
-.mat-mdc-button.mat-error{
-  &:not(:disabled){
+.mat-mdc-button.mat-error {
+  &:not(:disabled) {
     color: var(--mh-mat-button-error-color, mh.$error-30);
     --mat-text-button-state-layer-color: var(--mh-mat-button-error-color, mh.$error-30);
   }
   text-decoration: var(--mh-mat-button-error-decoration, underline);
 }
 
-.referral-prescription-form, .form-model-group {
+.referral-prescription-form,
+.form-model-group {
   font-family: var(--mat-expansion-container-text-font, var(--mat-sys-body-large-font));
   font-size: var(--mat-expansion-container-text-size, var(--mat-sys-body-large-size));
   font-weight: var(--mat-expansion-container-text-weight, var(--mat-sys-body-large-weight));
@@ -19,10 +20,14 @@
   letter-spacing: var(--mat-expansion-container-text-tracking, var(--mat-sys-body-large-tracking));
 }
 
-.referral-prescription-label{
+.referral-prescription-label {
   display: block;
-  .required{
+  .required {
     color: var(--mdc-outlined-text-field-error-outline-color, mh.$error-30);
   }
 }
 
+.container_content {
+  background-color: var(--mh-accordion-content-bg, #ffffff);
+  padding: 1.25rem 1.875rem;
+}

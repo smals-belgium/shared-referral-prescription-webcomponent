@@ -1,4 +1,4 @@
-{
+﻿{
   "common": {
     "yes": "Oui",
     "no": "Non",
@@ -33,7 +33,7 @@
     },
     "organizations": {
       "THIRD_PARTY_PAYING_GROUP": "Groupement avec un n° INAMI tiers payant (infirmiers, sages-femmes e.a.)",
-      "GROUP_OF_DOCTORS": "Groupement de médecins généralistes au même lieu d'installation",
+      "GROUP_OF_DOCTORS": "Groupement de médecins généralistes au même lieu d\u0027installation",
       "GUARD_POST": "Poste de garde",
       "MEDICAL_HOUSE": "Maison médicale",
       "HOME_SERVICES": "Service de soins intégrés à domicile"
@@ -55,25 +55,26 @@
       "null": "Inconnu",
       "undefined": "Inconnu"
     },
-    "somethingWentWrong": "Une erreur s'est produite. Veuillez réessayer.",
-    "somethingWentWrongWithoutRetry": "Une erreur s'est produite.",
-    "forbiddenAction": "Vous n'êtes pas autorisé(e) à effectuer cette action.",
-    "forbiddenResource": "Vous n'êtes pas autorisé(e) à consulter cette page.",
-    "notFoundResource": "La page demandée n'existe pas.",
+    "somethingWentWrong": "Une erreur s\u0027est produite. Veuillez réessayer.",
+    "somethingWentWrongWithoutRetry": "Une erreur s\u0027est produite.",
+    "forbiddenAction": "Vous n\u0027êtes pas autorisé(e) à effectuer cette action.",
+    "forbiddenResource": "Vous n\u0027êtes pas autorisé(e) à consulter cette page.",
+    "notFoundResource": "La page demandée n\u0027existe pas.",
     "mandatory": "Champ obligatoire",
     "ariaLabel": {
       "loading": "Chargement"
     },
     "errors": {
-      "pseudoDisabled": "Il n'est pas possible de créer une prescription."
+      "pseudoDisabled": "Il n\u0027est pas possible de créer une prescription."
     },
     "prescriptionModel": "Modèle",
     "error": {
       "default": {
         "header": "Problème technique",
-        "subheader": "Une erreur s'est produite. Merci de réessayer dans quelques instants."
+        "subheader": "Une erreur s\u0027est produite. Merci de réessayer dans quelques instants."
       }
-    }
+    },
+    "comment": "Commentaire"
   },
   "pagination": {
     "ariaLabel": {
@@ -113,8 +114,8 @@
       "action": "Nouvelle prescription",
       "success": "Prescription créée avec succès.",
       "allSuccess": "{count} {count, plural, one{prescription créée} other{prescriptions créées}} avec succès.",
-      "allFailed": "Une erreur s'est produite pendant la creation des prescriptions. Veuillez vérifier votre saisie et réessayer.",
-      "someSuccessSomeFailed": "{successCount} {successCount, plural, one{prescription créée} other{prescriptions  créées}} avec succès. {failedCount} {failedCount, plural, one{prescription n'a pas été créée} other{prescriptions n'ont pas été créées}} en raison d'une erreur. Veuillez vérifier votre saisie et réessayer.",
+      "allFailed": "Une erreur s\u0027est produite pendant la creation des prescriptions. Veuillez vérifier votre saisie et réessayer.",
+      "someSuccessSomeFailed": "{successCount} {successCount, plural, one{prescription créée} other{prescriptions  créées}} avec succès. {failedCount} {failedCount, plural, one{prescription n\u0027a pas été créée} other{prescriptions n\u0027ont pas été créées}} en raison d\u0027une erreur. Veuillez vérifier votre saisie et réessayer.",
       "addPrescription": "Prescription additionnelle",
       "publish": "Publier",
       "control": {
@@ -126,7 +127,7 @@
         "table": {
           "select": "Sélectionner la ligne {row}",
           "relevance": "Pertinence",
-          "typesOfImagery": "Types d'imagerie",
+          "typesOfImagery": "Types d\u0027imagerie",
           "cost": "Coût",
           "radiationRate": "Taux de radiation",
           "radiationLevel": "Taux de radiation {level}/5",
@@ -135,9 +136,10 @@
         },
         "alert": {
           "relevantInfo": "Elément non pris en compte par PSS",
-          "chosenExam": "L'examen prescrit ne suit pas les recommandations en vigueur",
-          "chosenExamScore": "n'obtient qu'un score de {score}/9",
-          "noDefaultExam": "Aucun examen prescrit correspond aux recommandations de PSS"
+          "chosenExam": "L\u0027examen prescrit ne suit pas les recommandations en vigueur",
+          "chosenExamScore": "n\u0027obtient qu\u0027un score de {score}/9",
+          "noDefaultExam": "Aucun examen prescrit correspond aux recommandations de PSS",
+          "chosenExamNoScore": ""
         }
       },
       "deletePrescription": {
@@ -147,7 +149,7 @@
       "cancelPrescriptionsCreation": {
         "title": "Annuler une ou plusieurs prescriptions",
         "cancelAll": "Annuler tout",
-        "noSelectionError": "Veuillez choisir une ou plusieurs options avant de confirmer l'annulation"
+        "noSelectionError": "Veuillez choisir une ou plusieurs options avant de confirmer l\u0027annulation"
       },
       "cancelCreation": "Êtes-vous sûr(e) de vouloir annuler la création de cette prescription ?",
       "prescription": "Créer prescription",
@@ -171,7 +173,7 @@
         "dialog": {
           "title": "Voulez-vous enregistrer la prescription comme modèle?",
           "label": "Nom du modèle",
-          "labelNotUnique": "Le nom du modèle n'est pas unique."
+          "labelNotUnique": "Le nom du modèle n\u0027est pas unique."
         },
         "model": "Créer modèle"
       },
@@ -218,7 +220,7 @@
         "patient": "Patient",
         "startDate": "Début",
         "endDate": "Fin",
-        "header": "Données d'identification de la prescription électronique (imprimé le {date})"
+        "header": "Données d\u0027identification de la prescription électronique (imprimé le {date})"
       },
       "alert": "Cette prescription a été classée sans suite et ne peut donc plus être utilisée."
     },
@@ -260,15 +262,15 @@
       "dialog": {
         "title": "Assigner un prestataire ou une organisation : quels impacts ?",
         "description": {
-          "other": "Une fois votre recherche effectuée, vous pourrez <b>assigner</b> la personne ou l’organisation de votre choix.",
-          "patient": "Une fois votre recherche effectuée, vous pourrez <b>assigner</b> la personne ou l’organisation de votre choix.\nProchaines étapes:\n<ul>\n<li>Contactez le prestataire ou l'organisation pour fixer un rendez-vous.</li>\n<li>L’assignation donne accès à la prescription pour évaluer vos besoins.</li>\n<li>Vous avez opté pour une organisation ? elle désignera le ou les prestataires qui vous prendront en charge — leurs noms seront ajoutés à la prescription.</li>\n</ul>"
+          "other": "Une fois votre recherche effectuée, vous pourrez \u003cb\u003eassigner\u003c/b\u003e la personne ou l’organisation de votre choix.",
+          "patient": "Une fois votre recherche effectuée, vous pourrez \u003cb\u003eassigner\u003c/b\u003e la personne ou l’organisation de votre choix.\nProchaines étapes:\n\u003cul\u003e\n\u003cli\u003eContactez le prestataire ou l\u0027organisation pour fixer un rendez-vous.\u003c/li\u003e\n\u003cli\u003eL’assignation donne accès à la prescription pour évaluer vos besoins.\u003c/li\u003e\n\u003cli\u003eVous avez opté pour une organisation ? elle désignera le ou les prestataires qui vous prendront en charge — leurs noms seront ajoutés à la prescription.\u003c/li\u003e\n\u003c/ul\u003e"
         }
       },
       "locationsHint": "Chercher via le code postal ou le nom de la commune",
       "performerHint": "Chercher via nom ou identifiant"
     },
     "transferAssignation": {
-      "title": "Transférer l'assignation",
+      "title": "Transférer l\u0027assignation",
       "success": "{firstName} {lastName} a été assigné comme prestataire.",
       "performer": "Prestataire",
       "searchPerformerPlaceHolder": "N° INAMI, nom",
@@ -288,38 +290,38 @@
       "reason": "Raison",
       "info": "Si un rendez-vous a déjà été fixé, n’oubliez pas de contacter le prestataire de soins. Vous éviterez ainsi que la prestation vous soit facturée.",
       "hint": "La raison sera notifiée au prescripteur",
-      "infoDescription": "Si un rendez-vous a déjà été fixé, n'oubliez pas de contacter le prestataire de soins. Vous éviterez ainsi que la prestation vous soit facturée."
+      "infoDescription": "Si un rendez-vous a déjà été fixé, n\u0027oubliez pas de contacter le prestataire de soins. Vous éviterez ainsi que la prestation vous soit facturée."
     },
     "rejectAssignation": {
       "action": "Rejeter",
-      "title": "Rejeter l'assignation",
-      "message": "Êtes-vous sûr de vouloir rejeter l'assignation à la prescription \"{templateName}\" de {firstName} {lastName} ?",
+      "title": "Rejeter l\u0027assignation",
+      "message": "Êtes-vous sûr de vouloir rejeter l\u0027assignation à la prescription \"{templateName}\" de {firstName} {lastName} ?",
       "success": "Assignation rejetée avec succès."
     },
     "cancelExecution": {
       "action": "Annuler",
-      "title": "Annuler l'exécution",
-      "message": "Êtes-vous sûr de vouloir annuler l'exécution de la prescription \"{templateName}\" de {firstName} {lastName} ?",
+      "title": "Annuler l\u0027exécution",
+      "message": "Êtes-vous sûr de vouloir annuler l\u0027exécution de la prescription \"{templateName}\" de {firstName} {lastName} ?",
       "success": "Exécution annulée avec succès.",
       "reason": "Raison"
     },
     "interruptExecution": {
       "action": "Interrompre",
-      "title": "Interrompre l'exécution",
-      "message": "Êtes-vous sûr de vouloir interrompre l'exécution de la prescription \"{templateName}\" de {firstName} {lastName} ?",
+      "title": "Interrompre l\u0027exécution",
+      "message": "Êtes-vous sûr de vouloir interrompre l\u0027exécution de la prescription \"{templateName}\" de {firstName} {lastName} ?",
       "success": "Exécution interrompue avec succès."
     },
     "startExecution": {
       "action": "Exécuter",
       "title": "Exécuter la prescription",
       "startDate": "Date de début",
-      "success": "L'exécution a commencé."
+      "success": "L\u0027exécution a commencé."
     },
     "restartExecution": {
       "action": "Reprendre",
-      "title": "Reprendre l'exécution",
-      "message": "Êtes-vous sûr de vouloir reprendre l'exécution de la prescription \"{templateName}\" de {firstName} {lastName} ?",
-      "success": "L'exécution a repris."
+      "title": "Reprendre l\u0027exécution",
+      "message": "Êtes-vous sûr de vouloir reprendre l\u0027exécution de la prescription \"{templateName}\" de {firstName} {lastName} ?",
+      "success": "L\u0027exécution a repris."
     },
     "frequencyTypes": {
       "iterative": "Itérative",
@@ -346,8 +348,8 @@
       "STOPPED": "Arrêtée"
     },
     "errors": {
-      "failedToLoadPrescription": "Une erreur s'est produite pendant le chargement de la prescription.",
-      "failedToLoadPrescriptions": "Une erreur s'est produite pendant le chargement des prescriptions.",
+      "failedToLoadPrescription": "Une erreur s\u0027est produite pendant le chargement de la prescription.",
+      "failedToLoadPrescriptions": "Une erreur s\u0027est produite pendant le chargement des prescriptions.",
       "invalidFhirString": "Caractère(s) interdit(s)",
       "invalidMaxLength": "{requiredLength} caractères maximum",
       "invalidMinLength": "{requiredLength} caractères minimum",
@@ -356,10 +358,10 @@
       "dateMustBeEarlierOrEqualTo": "La date ne peut pas être après le {date}",
       "dateMustBeLaterOrEqualTo": "La date ne peut pas être avant le {date}",
       "invalidDateFormat": "Format invalide: jj/mm/aaaa",
-      "invalidSsinChecksum": "Le numéro de registre national / BIS n'est pas valide. Veuillez vérifier et essayer à nouveau.",
-      "invalidShortCode": "L'ID de la prescription n'est pas valide. Veuillez vérifier et essayer à nouveau.",
+      "invalidSsinChecksum": "Le numéro de registre national / BIS n\u0027est pas valide. Veuillez vérifier et essayer à nouveau.",
+      "invalidShortCode": "L\u0027ID de la prescription n\u0027est pas valide. Veuillez vérifier et essayer à nouveau.",
       "decryptionFailed": "Le décodage des champs de texte libre a échoué. Ré-essayer.",
-      "failedToCreateModel": "Le modèle n'a pas pu être créé. Veuillez réessayer plus tard.",
+      "failedToCreateModel": "Le modèle n\u0027a pas pu être créé. Veuillez réessayer plus tard.",
       "failedToLoadTemplate": "Impossible de charger le formulaire de prescription.",
       "errorsInForm": {
         "title": "Il reste des erreurs dans le formulaire.",
@@ -379,9 +381,9 @@
       "delete": "Supprimer",
       "removeCity": "Supprimer la commune",
       "print": "Imprimer",
-      "reject": "Rejeter l'assignation",
-      "interrupt": "Interrompre l'exécution",
-      "restart": "Relancer l'exécution",
+      "reject": "Rejeter l\u0027assignation",
+      "interrupt": "Interrompre l\u0027exécution",
+      "restart": "Relancer l\u0027exécution",
       "removeCriteria": "Supprimer les critères de recherche"
     },
     "tableHasRecords": "Le nombre total de prescriptions est de {total}.",
@@ -399,10 +401,10 @@
       "assignExternal": "Assigner - externe"
     },
     "assignProfessional": {
-      "undefined": "Veuillez d'abord sélectionner un prestataire de soins."
+      "undefined": "Veuillez d\u0027abord sélectionner un prestataire de soins."
     },
     "transferProfessional": {
-      "undefined": "Veuillez d'abord sélectionner un prestataire de soins."
+      "undefined": "Veuillez d\u0027abord sélectionner un prestataire de soins."
     },
     "transferPerformer": {
       "dialog": {
@@ -444,6 +446,21 @@
         }
       },
       "action": "Clôturer"
+    },
+    "detail": {
+      "radio": {
+        "secondaryPanel": {
+          "title": "",
+          "info": ""
+        },
+        "takeInCharge": {
+          "label": "",
+          "action": ""
+        },
+        "validate": {
+          "action": "Valider l\u0027examen"
+        }
+      }
     }
   },
   "proposal": {
@@ -460,13 +477,13 @@
       "action": "Nouvelle proposition",
       "success": "Proposition créée avec succès.",
       "allSuccess": "{count} {count, plural, one{proposition créée} other{propositions créées}} avec succès.",
-      "allFailed": "Une erreur s'est produite pendant la creation des propositions. Veuillez vérifier votre saisie et réessayer.",
-      "someSuccessSomeFailed": "{successCount} {successCount, plural, one{proposition créée} other{propositions  créées}} avec succès. {failedCount} {failedCount, plural, one{proposition n'a pas été créée} other{propositions n'ont pas été créées}} en raison d'une erreur. Veuillez vérifier votre saisie et réessayer.",
+      "allFailed": "Une erreur s\u0027est produite pendant la creation des propositions. Veuillez vérifier votre saisie et réessayer.",
+      "someSuccessSomeFailed": "{successCount} {successCount, plural, one{proposition créée} other{propositions  créées}} avec succès. {failedCount} {failedCount, plural, one{proposition n\u0027a pas été créée} other{propositions n\u0027ont pas été créées}} en raison d\u0027une erreur. Veuillez vérifier votre saisie et réessayer.",
       "addProposal": "Proposition additionnelle",
       "publish": "Publier",
       "deleteProposal": {
         "title": "Annulation de la proposition",
-        "message": "Voulez-vous confirmer l'annulation de la proposition \"{templateName}\" ?"
+        "message": "Voulez-vous confirmer l\u0027annulation de la proposition \"{templateName}\" ?"
       },
       "cancelProposalsCreation": {
         "title": "Annuler une ou plusieurs propositions",
@@ -520,7 +537,7 @@
       "organization": "Organisation",
       "dialog": {
         "title": "Assigner une annexe 81 à un médecin",
-        "description": "Si vous ajoutez un médecin à cette annexe 81, celui-ci pourra consulter les informations contenues dans l'annexe 81."
+        "description": "Si vous ajoutez un médecin à cette annexe 81, celui-ci pourra consulter les informations contenues dans l\u0027annexe 81."
       }
     },
     "transferAssignation": {
@@ -533,14 +550,14 @@
       "noResults": "Aucune commune trouvée",
       "dialog": {
         "title": "Transférer cette annexe 81 à un autre médecin.",
-        "description": "Si vous transférez cette annexe 81 à un autre médecin, celui-ci pourra consulter les informations contenues dans l'annexe 81."
+        "description": "Si vous transférez cette annexe 81 à un autre médecin, celui-ci pourra consulter les informations contenues dans l\u0027annexe 81."
       }
     },
     "approve": {
       "action": "Valider",
       "success": "La proposition a été approuvée.",
       "dialog": {
-        "title": "Motif de l'approbation",
+        "title": "Motif de l\u0027approbation",
         "reason": "Commentaire du médecin"
       }
     },
@@ -561,12 +578,12 @@
       "reason": "Raison",
       "info": "Si un rendez-vous a déjà été fixé, n’oubliez pas de contacter le prestataire de soins. Vous éviterez ainsi que la prestation vous soit facturée.",
       "hint": "La raison sera notifiée au prescripteur",
-      "infoDescription": "Si un rendez-vous a déjà été fixé, n'oubliez pas de contacter le prestataire de soins. Vous éviterez ainsi que la prestation vous soit facturée."
+      "infoDescription": "Si un rendez-vous a déjà été fixé, n\u0027oubliez pas de contacter le prestataire de soins. Vous éviterez ainsi que la prestation vous soit facturée."
     },
     "rejectAssignation": {
       "action": "Rejeter",
-      "title": "Rejeter l'assignation",
-      "message": "Êtes-vous sûr de vouloir rejeter l'assignation à la proposition \"{templateName}\" de {firstName} {lastName} ?",
+      "title": "Rejeter l\u0027assignation",
+      "message": "Êtes-vous sûr de vouloir rejeter l\u0027assignation à la proposition \"{templateName}\" de {firstName} {lastName} ?",
       "success": "Assignation rejetée avec succès."
     },
     "frequencyTypes": {
@@ -595,8 +612,8 @@
       "STOPPED": "Arrêtée"
     },
     "errors": {
-      "failedToLoadProposal": "Une erreur s'est produite pendant le chargement de la proposition.",
-      "failedToLoadProposals": "Une erreur s'est produite pendant le chargement des propositions.",
+      "failedToLoadProposal": "Une erreur s\u0027est produite pendant le chargement de la proposition.",
+      "failedToLoadProposals": "Une erreur s\u0027est produite pendant le chargement des propositions.",
       "invalidFhirString": "Caractère(s) interdit(s)",
       "invalidMaxLength": "{requiredLength} caractères maximum",
       "invalidMinLength": "{requiredLength} caractères minimum",
@@ -605,7 +622,7 @@
       "dateMustBeEarlierOrEqualTo": "La date ne peut pas être après le {date}",
       "dateMustBeLaterOrEqualTo": "La date ne peut pas être avant le {date}",
       "invalidDateFormat": "Format invalide: jj/mm/aaaa",
-      "invalidUUID": "L'ID de la proposal n'est pas valide. Veuillez vérifier et essayer à nouveau."
+      "invalidUUID": "L\u0027ID de la proposal n\u0027est pas valide. Veuillez vérifier et essayer à nouveau."
     },
     "categories": {
       "bandagisterie": "Bandagisterie",
@@ -645,8 +662,8 @@
     },
     "organization": {
       "alert": {
-        "title": "Qu'implique cette partie?",
-        "description": "- Tout prestataire de soins mentionné dans cette liste a accès au contenu de cette prescription.\n- Lorsqu'une organisation est mentionnée, elle prend en charge la prescription et l'attribue en interne à un professionnel de santé. Une fois désigné, celui-ci apparaît également dans cette liste.\n- La présence d'une date indique que le prestataire a déjà exécuté au moins un soin lié à cette prescription."
+        "title": "Qu\u0027implique cette partie?",
+        "description": "- Tout prestataire de soins mentionné dans cette liste a accès au contenu de cette prescription.\n- Lorsqu\u0027une organisation est mentionnée, elle prend en charge la prescription et l\u0027attribue en interne à un professionnel de santé. Une fois désigné, celui-ci apparaît également dans cette liste.\n- La présence d\u0027une date indique que le prestataire a déjà exécuté au moins un soin lié à cette prescription."
       }
     }
   },
@@ -658,7 +675,7 @@
   "pss": {
     "unavailable": {
       "title": "Service temporairement indisponible",
-      "message": "Le service PSS (Prescription Search Support) est momentanément indisponible.\nVous ne pouvez plus consulter les recommandations d'examens en imagerie médicale pour l'instant.\nMerci de réessayer dans quelques minutes."
+      "message": "Le service PSS (Prescription Search Support) est momentanément indisponible.\nVous ne pouvez plus consulter les recommandations d\u0027examens en imagerie médicale pour l\u0027instant.\nMerci de réessayer dans quelques minutes."
     },
     "link": "Read literacy"
   },
@@ -671,7 +688,7 @@
       "city": "Commune",
       "actions": "Actions",
       "tableHasRecords": "{total}  résultats trouvé",
-      "noRecords": "Aucun professionnel correspondant à cette recherche n'a été trouvé.",
+      "noRecords": "Aucun professionnel correspondant à cette recherche n\u0027a été trouvé.",
       "select": "Choisir",
       "type": {
         "professional": "Individu",
@@ -680,7 +697,7 @@
         "all": "Tout"
       }
     },
-    "noProfessionals": "Aucun professionnel correspondant à cette recherche n'a été trouvé.",
+    "noProfessionals": "Aucun professionnel correspondant à cette recherche n\u0027a été trouvé.",
     "allProfessionalsFetched": "Tous les prestataires de soins ont été récupérés."
   },
   "error": {
@@ -692,12 +709,12 @@
         "default": "La proposition mentionnée ne peut pas être approuvée."
       },
       "CANCEL_EXECUTION_NOT_IN_PROGRESS": {
-        "default": "L'exécution doit être en cours avant de pouvoir l'annuler."
+        "default": "L\u0027exécution doit être en cours avant de pouvoir l\u0027annuler."
       },
       "CANCELLATION_INVALID_STATUS": {
-        "default": "Il est impossible d'annuler la prescription.",
-        "in-progress": "Il est impossible d'annuler la prescription car le soin est en cours.",
-        "completed": "Il est impossible d'annuler la prescription car elle est complétée."
+        "default": "Il est impossible d\u0027annuler la prescription.",
+        "in-progress": "Il est impossible d\u0027annuler la prescription car le soin est en cours.",
+        "completed": "Il est impossible d\u0027annuler la prescription car elle est complétée."
       },
       "CAREGIVER_NOT_FOUND": {
         "default": "Prestataire de soins non reconnu."
@@ -706,7 +723,7 @@
         "default": "Le soignant ne peut pas être retiré car il a déjà commencé le soin."
       },
       "CONSULTRN_NOT_AVAILABLE": {
-        "default": "Ce service n'est pas disponible."
+        "default": "Ce service n\u0027est pas disponible."
       },
       "CREATION_DATE_FUTURE": {
         "default": "La date de création ne peut pas être dans le futur."
@@ -724,15 +741,15 @@
         "default": "Vous n’avez pas l’autorisation d’accéder à cette prescription."
       },
       "EXCLUSION_EXISTS_CAREGIVER_TO_ASSIGN": {
-        "default": "Cette action n'est pas possible.",
-        "healthcare-provider": "Cette action n'est pas possible.",
-        "patient": "Cette action n'est pas possible car le soignant est exclu."
+        "default": "Cette action n\u0027est pas possible.",
+        "healthcare-provider": "Cette action n\u0027est pas possible.",
+        "patient": "Cette action n\u0027est pas possible car le soignant est exclu."
       },
       "EXECUTION_DATE_FUTURE": {
         "default": "La date de fin ne peut pas être dans le futur."
       },
       "EXECUTION_NOT_USABLE": {
-        "default": "Cette action n'est pas possible."
+        "default": "Cette action n\u0027est pas possible."
       },
       "FINISH_EXECUTION_NOT_IN_PROGRESS": {
         "default": "Le soin doit être en cours avant de pouvoir le terminer."
@@ -746,10 +763,10 @@
         "default": "Vous ne pouvez pas effectuer cette modification."
       },
       "HEALTHCARE_PROFESSIONAL_NOT_OWNER_EXECUTION": {
-        "default": "Cette action n'est pas possible."
+        "default": "Cette action n\u0027est pas possible."
       },
       "HEALTHCARE_PROFESSIONAL_TO_BE_ASSIGNED_MISSING_RIGHT": {
-        "default": "Le soignant n'a pas le droit d'accéder à la prescription."
+        "default": "Le soignant n\u0027a pas le droit d\u0027accéder à la prescription."
       },
       "INCORRECT_VALIDITY_DATE": {
         "default": "La date de validité de la prescription ne peut pas être postérieure à la date de fin de validation du traitement."
@@ -758,13 +775,13 @@
         "default": "Le patient doit être le même."
       },
       "INVALID_PRESCRIPTION_STATUS": {
-        "default": "Cette action n'est pas possible."
+        "default": "Cette action n\u0027est pas possible."
       },
       "INVALID_TOKEN": {
-        "default": "Il y a un problème avec l'identification."
+        "default": "Il y a un problème avec l\u0027identification."
       },
       "NO_MANDATE_FOR_PATIENT": {
-        "default": "Cette action n'est pas possible."
+        "default": "Cette action n\u0027est pas possible."
       },
       "ORGANIZATION_ALREADY_ASSIGNED": {
         "default": "L’organisation est déjà assignée à la prescription."
@@ -776,22 +793,22 @@
         "default": "Le soin a déjà commencé."
       },
       "ORGANIZATION_TASK_NOT_FOUND": {
-        "default": "Cette action n'est pas possible."
+        "default": "Cette action n\u0027est pas possible."
       },
       "PATCH_NOT_APPLIED": {
-        "default": "Cette action n'est pas possible."
+        "default": "Cette action n\u0027est pas possible."
       },
       "PRESCRIPTION_NOT_ASSIGNABLE": {
-        "default": "Cette action n'est pas possible."
+        "default": "Cette action n\u0027est pas possible."
       },
       "PRESCRIPTION_NOT_READABLE": {
-        "default": "Cette action n'est pas possible."
+        "default": "Cette action n\u0027est pas possible."
       },
       "REJECTION_NOT_POSSIBLE": {
-        "default": "Cette action n'est pas possible."
+        "default": "Cette action n\u0027est pas possible."
       },
       "REQUEST_PARAMETER_NOT_MATCHING_TOKEN": {
-        "default": "Cette action n'est pas possible."
+        "default": "Cette action n\u0027est pas possible."
       },
       "RESOURCE_NOT_FOUND": {
         "default": "Introuvable."
@@ -800,13 +817,13 @@
         "default": "Prescription introuvable."
       },
       "SERVICE_REQUEST_NOT_OWNED": {
-        "default": "Cette action n'est pas possible."
+        "default": "Cette action n\u0027est pas possible."
       },
       "SERVICE_REQUEST_NOT_UNASSIGNABLE": {
-        "default": "Cette action n'est pas possible."
+        "default": "Cette action n\u0027est pas possible."
       },
       "SERVICE_UNAVAILABLE_AA": {
-        "default": "Ce service n'est pas disponible."
+        "default": "Ce service n\u0027est pas disponible."
       },
       "SSIN_NOT_FOUND": {
         "default": "Patient inexistant."
@@ -815,20 +832,26 @@
         "default": "Le soin ne peut plus être fourni."
       },
       "START_VALIDITY_DATE_AFTER_END_VALIDITY_DATE": {
-        "default": "La prescription n'est plus valable."
+        "default": "La prescription n\u0027est plus valable."
       },
       "START_VALIDITY_DATE_PAST": {
         "default": "La date de début de validité ne peut pas être antérieure de plus de 5 jours."
       },
       "USER_SUSPENDED": {
-        "default": "Cette action n'est pas possible."
+        "default": "Cette action n\u0027est pas possible."
       },
       "USER_SUSPENDED_ON_DATE_PROVIDED": {
-        "default": "Cette action n'est pas possible."
+        "default": "Cette action n\u0027est pas possible."
       },
-      "unknown": "Une erreur s'est produite. Merci de réessayer dans quelques instants.",
+      "unknown": "Une erreur s\u0027est produite. Merci de réessayer dans quelques instants.",
       "PRESCRIPTION_NOT_COMPLETED": {
         "default": "La prescription ne peut pas être complétée"
+      },
+      "MISSING_REASON_OF_DEVIATION": {
+        "default": ""
+      },
+      "INVALID_PREFILLED_REASON_OF_DEVIATION": {
+        "default": ""
       }
     }
   },
@@ -843,6 +866,17 @@
     "prevMultiYear": "24 années précédentes",
     "nextMultiYear": "24 années suivantes",
     "switchToMonthView": "Choisir une date",
-    "switchToMultiYearView": "Choisir le mois et l'année"
-  }
+    "switchToMultiYearView": "Choisir le mois et l\u0027année"
+  },
+  "templateName": {
+    "proposalPrefix": "Proposition : "
+  },
+  "ANNEX_82.create.tmp-addInfo-preg": "",
+  "ANNEX_82.create.tmp-addInfo-diab": "",
+  "ANNEX_82.create.tmp-addInfo-all": "",
+  "ANNEX_82.create.tmp-addInfo-metdeb": "",
+  "ANNEX_82.create.tmp-addInfo-rendys": "",
+  "ANNEX_82.create.tmp-addInfo-unknown": "",
+  "ANNEX_82.create.tmp-addInfo-impl": "",
+  "ANNEX_82.create.tmp-addInfo": ""
 }

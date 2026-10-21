@@ -1,41 +1,46 @@
 import { computed, EventEmitter, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { MatDialog } from '@angular/material/dialog';
+import { Lang } from '@reuse/code/constants/languages';
+import { ApproveProposalDialog } from '@reuse/code/dialogs/approve-proposal/approve-proposal.dialog';
+import { AssignOrTransferDialog } from '@reuse/code/dialogs/assign-or-transfer-dialog/assign-or-transfer-dialog';
+import { CancelExecutionPrescriptionDialog } from '@reuse/code/dialogs/cancel-execution-prescription/cancel-execution-prescription.dialog';
+import { FinishExecutionPrescriptionDialog } from '@reuse/code/dialogs/finish-execution-prescription/finish-execution-prescription.dialog';
+import { InterruptExecutionPrescriptionDialog } from '@reuse/code/dialogs/interrupt-execution-prescription/interrupt-execution-prescription.dialog';
+import { RejectAssignationDialog } from '@reuse/code/dialogs/reject-assignation/reject-assignation.dialog';
+import { RejectProposalDialog } from '@reuse/code/dialogs/reject-proposal/reject-proposal.dialog';
+import { RestartExecutionPrescriptionDialog } from '@reuse/code/dialogs/restart-execution-prescription/restart-execution-prescription.dialog';
+import { StartExecutionPrescriptionDialog } from '@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog';
+import { DataState, IdToken, LoadingStatus, TemplateCodes, UserInfo } from '@reuse/code/interfaces';
+import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-responses-state.interface';
 import {
+  AssignationType,
   Discipline,
+  PerformerTaskIdResource,
   OrganizationTaskResource,
   PerformerTaskResource,
   PersonResource,
+  ProviderType,
   ReadRequestResource,
   RequestTaskResource,
   Role,
   Template,
   TemplateVersion,
 } from '@reuse/code/openapi';
-import { RejectAssignationDialog } from '@reuse/code/dialogs/reject-assignation/reject-assignation.dialog';
-import { InterruptExecutionPrescriptionDialog } from '@reuse/code/dialogs/interrupt-execution-prescription/interrupt-execution-prescription.dialog';
-import { RestartExecutionPrescriptionDialog } from '@reuse/code/dialogs/restart-execution-prescription/restart-execution-prescription.dialog';
-import { StartExecutionPrescriptionDialog } from '@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog';
-import { FinishExecutionPrescriptionDialog } from '@reuse/code/dialogs/finish-execution-prescription/finish-execution-prescription.dialog';
-import { CancelExecutionPrescriptionDialog } from '@reuse/code/dialogs/cancel-execution-prescription/cancel-execution-prescription.dialog';
-import { MatDialog } from '@angular/material/dialog';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { AuthService } from '@reuse/code/services/auth/auth.service';
-import { PatientState } from '@reuse/code/states/api/patient.state';
-import { IdentifyState } from '@reuse/code/states/privacy/identify.state';
-import { EncryptionState } from '@reuse/code/states/privacy/encryption.state';
-import { isProposal } from '@reuse/code/utils/utils';
-import { DataState, IdToken, LoadingStatus, UserInfo } from '@reuse/code/interfaces';
-import { ProposalState } from '@reuse/code/states/api/proposal.state';
-import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
-import { TemplateVersionsState } from '@reuse/code/states/api/template-versions.state';
-import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-responses-state.interface';
-import { TemplatesState } from '@reuse/code/states/api/templates.state';
-import { ApproveProposalDialog } from '@reuse/code/dialogs/approve-proposal/approve-proposal.dialog';
-import { RejectProposalDialog } from '@reuse/code/dialogs/reject-proposal/reject-proposal.dialog';
 import { USER_PROFILE_CLAIM_KEY } from '@reuse/code/services/auth/auth-constants';
-import { v4 as uuidv4 } from 'uuid';
-import { AssignOrTransferDialog } from '@reuse/code/dialogs/assign-or-transfer-dialog/assign-or-transfer-dialog';
-import { Lang } from '@reuse/code/constants/languages';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { AlertService } from '@reuse/code/services/helpers/alert.service';
+import { PatientState } from '@reuse/code/states/api/patient.state';
+import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
+import { ProposalState } from '@reuse/code/states/api/proposal.state';
+import { TemplateVersionsState } from '@reuse/code/states/api/template-versions.state';
+import { TemplatesState } from '@reuse/code/states/api/templates.state';
+import { EncryptionState } from '@reuse/code/states/privacy/encryption.state';
+import { IdentifyState } from '@reuse/code/states/privacy/identify.state';
+import { isPrescription, isProposal } from '@reuse/code/utils/utils';
+import { v4 as uuidv4 } from 'uuid';
+import { ToastService } from '@reuse/code/services/helpers/toast.service';
+import { Observable } from 'rxjs';
 import { isPerformerTask } from '@reuse/code/utils/task-type.util';
 
 export interface DetailsServices {
@@ -57,6 +62,7 @@ export class PrescriptionDetailsSecondaryService {
   private readonly templateVersionsStateService: TemplateVersionsState = inject(TemplateVersionsState);
   private readonly templatesStateService: TemplatesState = inject(TemplatesState);
   private readonly alertService = inject(AlertService);
+  private readonly toastService = inject(ToastService);
 
   readonly tokenClaims$ = toSignal(this.authService.getClaims());
   readonly isProfessional$ = toSignal(this.authService.isProfessional());
@@ -68,7 +74,6 @@ export class PrescriptionDetailsSecondaryService {
   readonly currentLang: WritableSignal<string> = signal(Lang.FR.full);
   readonly loading: WritableSignal<boolean> = signal(false);
   readonly generatedUUID: WritableSignal<string> = signal('');
-  readonly pssStatus: WritableSignal<boolean> = signal(false);
   readonly intent: WritableSignal<string | undefined> = signal(undefined);
 
   readonly templateCode$ = computed(() => {
@@ -84,6 +89,11 @@ export class PrescriptionDetailsSecondaryService {
     data: undefined,
     error: undefined,
   });
+
+  private readonly _isOrganizationAndActingForProfessional = toSignal(
+    this.authService.isOrganizationAndActingForProfessional()
+  );
+  private readonly _connectedOrganizationNihii = toSignal(this.authService.getConnectedOrganizationNihii());
 
   // Initialized in prescription-details
   services!: DetailsServices;
@@ -158,7 +168,7 @@ export class PrescriptionDetailsSecondaryService {
     return prescriptionState;
   }
 
-  getDecryptedResponses(): DataState<Record<string, unknown>> {
+  getDecryptedResponses(mainOrSecondaryView: 'main' | 'secondary' = 'main'): DataState<Record<string, unknown>> {
     const intent = this.intent();
     if (!intent) {
       return {
@@ -172,7 +182,7 @@ export class PrescriptionDetailsSecondaryService {
       : this.prescriptionStateService.state();
 
     const needsPseudonymizedKey =
-      (prescriptionState.data?.responses && prescriptionState.data.templateCode != 'ANNEX_81') ||
+      (prescriptionState.data?.responses && prescriptionState.data.templateCode != TemplateCodes.ANNEX_81) ||
       prescriptionState.data?.responses?.['note'];
 
     if (
@@ -191,7 +201,24 @@ export class PrescriptionDetailsSecondaryService {
       return { ...responses, status: LoadingStatus.ERROR };
     }
 
-    return responses ? { status: LoadingStatus.SUCCESS, data: responses.data } : { status: LoadingStatus.LOADING };
+    if (responses) {
+      const { recommendations, selectedRecommendation, ...data } = responses.data ?? {};
+      if (mainOrSecondaryView === 'main') {
+        return {
+          status: LoadingStatus.SUCCESS,
+          data: data,
+        };
+      } else if (mainOrSecondaryView === 'secondary') {
+        const data =
+          recommendations || selectedRecommendation ? { recommendations, selectedRecommendation } : undefined;
+        return {
+          status: LoadingStatus.SUCCESS,
+          data: data,
+        };
+      }
+    }
+
+    return { status: LoadingStatus.LOADING };
   }
 
   getRequestTask(): DataState<RequestTaskResource> {
@@ -476,5 +503,83 @@ export class PrescriptionDetailsSecondaryService {
       .subscribe(() => {
         this.alertService.setActive(alertTarget);
       });
+  }
+
+  onSelfAssign(prescription: ReadRequestResource, currentUser?: Partial<UserInfo>): void {
+    if (!prescription.id || !prescription.referralTask?.id || !(currentUser?.ssin || currentUser?.organizations)) {
+      this.toastService.showSomethingWentWrong();
+      return;
+    }
+
+    this.loading.set(true);
+    let ssinOrNihii = currentUser.ssin;
+    let discipline = currentUser.discipline || '';
+    let type = ProviderType.Professional as string;
+    let assignationType: AssignationType | undefined = undefined;
+    let xActorOrganizationNihii11 = undefined;
+    const templateCode = prescription.templateCode;
+    if (templateCode !== TemplateCodes.ANNEX_82 && this._isOrganizationAndActingForProfessional()) {
+      assignationType = AssignationType.Internal;
+      xActorOrganizationNihii11 = this._connectedOrganizationNihii();
+    } else if (currentUser.organizations) {
+      const organizationEntry = Object.entries(currentUser.organizations[0])[0];
+      ssinOrNihii = organizationEntry[1].nihii;
+      type = organizationEntry[0];
+      discipline = '';
+    }
+
+    if (!ssinOrNihii) {
+      this.loading.set(false);
+      this.toastService.showSomethingWentWrong();
+      return;
+    }
+
+    if (isPrescription(prescription.intent)) {
+      this.selfAssign(
+        () =>
+          this.prescriptionStateService.assignPrescriptionPerformer(
+            prescription.id!,
+            prescription.referralTask!.id!,
+            ssinOrNihii,
+            discipline,
+            type,
+            this.generatedUUID(),
+            assignationType,
+            xActorOrganizationNihii11
+          ),
+        'prescription'
+      );
+    } else {
+      this.selfAssign(
+        () =>
+          this.proposalStateService.assignProposalPerformer(
+            prescription.id!,
+            prescription.referralTask!.id!,
+            ssinOrNihii,
+            discipline,
+            type,
+            this.generatedUUID()
+          ),
+        'proposal'
+      );
+    }
+  }
+
+  private selfAssign(
+    serviceCall: () => Observable<PerformerTaskIdResource | PerformerTaskIdResource[]>,
+    successPrefix: string
+  ) {
+    serviceCall().subscribe({
+      next: () => {
+        this.generatedUUID.set(uuidv4());
+        this.loading.set(false);
+        this.toastService.show(successPrefix + '.assignPerformer.meSuccess');
+      },
+      error: () => {
+        this.generatedUUID.set(uuidv4());
+        this.loading.set(false);
+        this.toastService.showSomethingWentWrong();
+      },
+    });
   }
 }

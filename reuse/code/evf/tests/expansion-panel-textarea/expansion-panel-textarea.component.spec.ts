@@ -7,7 +7,7 @@ import {
   FormTemplate,
   provideEvfCore,
 } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
-import { ExpansionPanelTextareaComponent } from '@reuse/code/evf/components/expansion-panel-textarea/detail/expansion-panel-textarea.component';
+import { ExpansionPanelTextareaComponent } from '@reuse/code/evf/components/expansion-panel-textarea/element/expansion-panel-textarea.component';
 import { By } from '@angular/platform-browser';
 import { MarkdownModule } from 'ngx-markdown';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
