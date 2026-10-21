@@ -92,7 +92,7 @@ export class MultiselectComponent implements OnChanges, OnDestroy, AfterViewInit
 
   updateFormValue(value: string[]): void {
     if (this.formControl) {
-      const defaultSelectedItems = !value ? [] : this.data.filter(option => value.includes(option.value));
+      const defaultSelectedItems = value ? this.data.filter(option => value.includes(option.value)) : [];
       this.selectedItems.set(defaultSelectedItems);
       this.formControl.setValue(defaultSelectedItems);
       this.formControl.markAsDirty();

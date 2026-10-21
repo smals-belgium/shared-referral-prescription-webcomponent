@@ -1,4 +1,4 @@
-{
+﻿{
   "common": {
     "yes": "Ja",
     "no": "Nee",
@@ -73,7 +73,8 @@
         "header": "Technisch probleem",
         "subheader": "Er is een fout opgetreden. Probeer het over enkele ogenblikken opnieuw."
       }
-    }
+    },
+    "comment": "Commentaar"
   },
   "pagination": {
     "ariaLabel": {
@@ -137,7 +138,8 @@
           "relevantInfo": "Elementen niet door PSS in rekening gebracht",
           "chosenExam": "Het voorgeschreven onderzoek voldoet niet aan de huidige aanbevelingen",
           "chosenExamScore": "behaalt slechts een score van {score}/9",
-          "noDefaultExam": "Geen enkele voorgeschreven onderzoek voldoet aan de PSS-aanbevelingen."
+          "noDefaultExam": "Geen enkele voorgeschreven onderzoek voldoet aan de PSS-aanbevelingen.",
+          "chosenExamNoScore": ""
         }
       },
       "deletePrescription": {
@@ -260,8 +262,8 @@
       "dialog": {
         "title": "Een zorgverlener of organisatie toewijzen: wat zijn de gevolgen?",
         "description": {
-          "other": "Zodra u uw zoekopdracht hebt uitgevoerd, kunt u de persoon of organisatie van uw keuze <b>toewijzen</b>.",
-          "patient": "Zodra u uw zoekopdracht hebt uitgevoerd, kunt u de persoon of organisatie van uw keuze <b>toewijzen</b>.\n\nVolgende stappen:\n<ul>\n<li>Neem contact op met de zorgverlener of organisatie om een afspraak te maken.</li>\n<li>Door de toewijzing krijgt de zorgverlener of organisatie toegang tot het voorschrift om uw behoeften te beoordelen.</li>\n<li>Hebt u voor een organisatie gekozen? Deze zal de zorgverlener(s) aanduiden die u zullen begeleiden. Hun namen worden aan het voorschrift toegevoegd.</li>\n</ul>"
+          "other": "Zodra u uw zoekopdracht hebt uitgevoerd, kunt u de persoon of organisatie van uw keuze \u003cb\u003etoewijzen\u003c/b\u003e.",
+          "patient": "Zodra u uw zoekopdracht hebt uitgevoerd, kunt u de persoon of organisatie van uw keuze \u003cb\u003etoewijzen\u003c/b\u003e.\n\nVolgende stappen:\n\u003cul\u003e\n\u003cli\u003eNeem contact op met de zorgverlener of organisatie om een afspraak te maken.\u003c/li\u003e\n\u003cli\u003eDoor de toewijzing krijgt de zorgverlener of organisatie toegang tot het voorschrift om uw behoeften te beoordelen.\u003c/li\u003e\n\u003cli\u003eHebt u voor een organisatie gekozen? Deze zal de zorgverlener(s) aanduiden die u zullen begeleiden. Hun namen worden aan het voorschrift toegevoegd.\u003c/li\u003e\n\u003c/ul\u003e"
         }
       },
       "locationsHint": "Zoeken op postcode of plaatsnaam",
@@ -444,6 +446,21 @@
         }
       },
       "action": "Afsluiten"
+    },
+    "detail": {
+      "radio": {
+        "secondaryPanel": {
+          "title": "",
+          "info": ""
+        },
+        "takeInCharge": {
+          "label": "",
+          "action": ""
+        },
+        "validate": {
+          "action": "Onderzoek goedkeuren"
+        }
+      }
     }
   },
   "proposal": {
@@ -829,6 +846,12 @@
       "unknown": "Er is een fout opgetreden. Probeer het over enkele ogenblikken opnieuw.",
       "PRESCRIPTION_NOT_COMPLETED": {
         "default": "Voorschrift kan niet worden afgesloten."
+      },
+      "MISSING_REASON_OF_DEVIATION": {
+        "default": ""
+      },
+      "INVALID_PREFILLED_REASON_OF_DEVIATION": {
+        "default": ""
       }
     }
   },
@@ -844,5 +867,16 @@
     "nextMultiYear": "Volgende 24 jaren",
     "switchToMonthView": "Kies een datum",
     "switchToMultiYearView": "Kies maand en jaar"
-  }
+  },
+  "templateName": {
+    "proposalPrefix": "Voorstel: "
+  },
+  "ANNEX_82.create.tmp-addInfo-preg": "Zwangerschap",
+  "ANNEX_82.create.tmp-addInfo-diab": "Diabetes",
+  "ANNEX_82.create.tmp-addInfo-all": "Allergie voor contrastmiddel",
+  "ANNEX_82.create.tmp-addInfo-metdeb": "Metaaldeeltjes",
+  "ANNEX_82.create.tmp-addInfo-rendys": "Nierdisfunctie",
+  "ANNEX_82.create.tmp-addInfo-unknown": "Geen",
+  "ANNEX_82.create.tmp-addInfo-impl": "Implantaten",
+  "ANNEX_82.create.tmp-addInfo": "Andere"
 }

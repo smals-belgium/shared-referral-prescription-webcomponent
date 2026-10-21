@@ -1,0 +1,28 @@
+<evf-form-detail-layout [options]="options" class="pss-recommendations-header">
+  <h3>{{ 'prescription.detail.radio.secondaryPanel.title' | translate }}</h3>
+  <p>{{ 'prescription.detail.radio.secondaryPanel.info' | translate }}</p>
+
+  @if (selectedRecommendation(); as recommendation) {
+    <app-pss-recommendation-card [recommendation]="recommendation" />
+  }
+</evf-form-detail-layout>
+
+<evf-form-detail-layout [options]="options" class="pss-recommendations">
+  @if (element.labelTranslationId && options.showLabel) {
+    <evf-detail-label [labelId]="element.labelTranslationId" [interpolationData]="interpolationData" />
+  }
+
+  <div
+    class="pss-recommendations-list"
+    role="radiogroup"
+    [attr.aria-label]="'prescription.create.control.table.recommendationsGroup' | translate">
+    @for (recommendation of recommendations(); track recommendation.id) {
+      <app-pss-recommendation-card
+        [recommendation]="recommendation"
+        [selectable]="true"
+        [name]="radioGroupName"
+        [checked]="isSelected(recommendation)"
+        (selectionChange)="onRecommendationSelected($event)" />
+    }
+  </div>
+</evf-form-detail-layout>

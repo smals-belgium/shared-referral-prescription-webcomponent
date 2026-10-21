@@ -17,7 +17,7 @@
       patient?.lastName ?? '', templateName: prescription.templateCode | templateName} }}
     </div>
   </div>
-  <mat-dialog-actions align="end">
+  <mat-dialog-actions>
     <button type="submit" mat-flat-button (click)="cancelPrescriptionExecution()" data-cy="dialog-confirm-button">
       {{'common.confirm' | translate}}
     </button>

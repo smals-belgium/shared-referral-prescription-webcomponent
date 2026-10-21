@@ -74,7 +74,7 @@ describe('ProfessionalTableComponent', () => {
       fixture.detectChanges();
 
       const rows = fixture.debugElement.queryAll(By.css('tbody tr, mat-row'));
-      expect(rows.length).toBe(4);
+      expect(rows).toHaveLength(4);
     });
   });
 
@@ -86,7 +86,7 @@ describe('ProfessionalTableComponent', () => {
 
     const totalLengthExpected = component['displayedColumns'].length + component['filterColumns'].length;
 
-    expect(headerTexts.length).toBe(totalLengthExpected);
+    expect(headerTexts).toHaveLength(totalLengthExpected);
   });
 
   it('should show no rows when professionals list is empty', () => {
@@ -94,7 +94,7 @@ describe('ProfessionalTableComponent', () => {
 
     const rows = fixture.debugElement.queryAll(By.css('tbody tr, mat-row'));
 
-    expect(rows.length).toBe(0);
+    expect(rows).toHaveLength(0);
   });
 
   it('should show loading state when loading is true', () => {
@@ -160,7 +160,7 @@ describe('ProfessionalTableComponent', () => {
 
         const rows = fixture.debugElement.queryAll(By.css('tbody tr, mat-row'));
 
-        expect(rows.length).toBe(4);
+        expect(rows).toHaveLength(4);
       });
 
       it('should update selectedType model when user selects a new type in mat-select', () => {

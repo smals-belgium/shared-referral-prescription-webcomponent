@@ -1,11 +1,39 @@
 @if (prescriptionServiceData) {
   <div class="secondary_details_container">
-    <h3 data-cy="prescription-assign-to-label">{{ 'prescription.careGivers' | translate }}</h3>
+    @if (canViewSecondaryDetails()) {
+      @if (prescriptionServiceData.templateCode === TemplateCodes.ANNEX_82) {
+        @let allowedActions = prescriptionServiceData?.allowedActions;
+        <div class="row">
+          <h3>
+            {{ 'prescription.detail.radio.takeInCharge.label' | translate }}
+          </h3>
+          @if (allowedActions?.canSelfAssign) {
+            <button
+              type="button"
+              [disabled]="loading()"
+              (click)="onSelfAssign(prescriptionServiceData, currentUserServiceData)"
+              mat-stroked-button
+              data-cy="prescription-self-assign-button">
+              {{ 'prescription.detail.radio.takeInCharge.action' | translate }}
+            </button>
+          }
+        </div>
+      }
 
-    @if (performerTaskEntries.length > 0) {
-      <div data-cy="prescription-assign-to-list">
-        <app-prescription-details-professional-list></app-prescription-details-professional-list>
-      </div>
+      <evf-form-details
+        [lang]="currentLang()"
+        [template]="templateVersion!"
+        [responses]="decryptedResponses().data!"
+        [isProfessional]="isProfessional$()"
+        [intent]="prescriptionServiceData.intent" />
+    } @else {
+      <h3 data-cy="prescription-assign-to-label">{{ 'prescription.careGivers' | translate }}</h3>
+
+      @if (performerTaskEntries.length > 0) {
+        <div data-cy="prescription-assign-to-list">
+          <app-prescription-details-professional-list />
+        </div>
+      }
     }
   </div>
 }

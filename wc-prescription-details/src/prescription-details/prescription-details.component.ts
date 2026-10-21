@@ -31,7 +31,7 @@ import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicat
 import { ALERT_TARGET, ERROR_PRESCRIPTION_DETAILS } from '@reuse/code/constants/error';
 import { Lang } from '@reuse/code/constants/languages';
 import { formatToEvfLangCode } from '@reuse/code/evf/utils/evf-utils';
-import { AlertType, DataState, LoadingStatus, UserInfo } from '@reuse/code/interfaces';
+import { AlertType, DataState, LoadingStatus, TemplateCodes, UserInfo } from '@reuse/code/interfaces';
 import { DecryptedResponsesState } from '@reuse/code/interfaces/decrypted-responses-state.interface';
 import { WcDetailsEvent } from '@reuse/code/interfaces/events.interface';
 import {
@@ -39,6 +39,7 @@ import {
   PerformerTaskResource,
   PersonResource,
   ReadRequestResource,
+  Role,
   Template,
   TemplateVersion,
 } from '@reuse/code/openapi';
@@ -92,6 +93,7 @@ import {
   DetailsServices,
   PrescriptionDetailsSecondaryService,
 } from '../components/prescription-details-secondary/services/prescription-details-secondary.service';
+import { PatientInfoBarComponent } from '@reuse/code/components/patient-info-bar/patient-info-bar.component';
 
 export interface ViewState {
   prescription: ReadRequestResource;
@@ -121,6 +123,7 @@ export interface ViewState {
     PrescriptionDetailsBottomComponent,
     MatMenuModule,
     PrescriptionDetailsActionsComponent,
+    PatientInfoBarComponent,
   ],
   providers: [
     EvfTranslateService,
@@ -182,6 +185,17 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   private readonly decryptedResponses$: WritableSignal<DecryptedResponsesState> =
     this._prescriptionSecondaryService.decryptedResponses$;
 
+  readonly canViewAllowedActions = computed(() => {
+    const isAnnex82 =
+      this._prescriptionSecondaryService.getPrescription().data?.templateCode === TemplateCodes.ANNEX_82;
+
+    if (!isAnnex82) return true; // Always allow if not ANNEX_82
+
+    const isPrescriber =
+      this.isProfessional$() && this._prescriptionSecondaryService.getCurrentUser().data?.role === Role.Prescriber;
+    return !(this.isOrganization$() || isPrescriber); // Block organizations and prescribers on ANNEX_82
+  });
+
   readonly viewState$: Signal<DataState<ViewState>> = combineSignalDataState({
     cryptoKey: computed(() => this._prescriptionSecondaryService.getCryptoKey()),
     prescription: computed(() => this._prescriptionSecondaryService.getPrescription()),
@@ -197,6 +211,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
   generatedUUID = this._prescriptionSecondaryService.generatedUUID;
   currentLang: WritableSignal<string> = this._prescriptionSecondaryService.currentLang;
   protected langAlertData: WritableSignal<{ title: string; body: string } | null> = signal(null);
+  readonly patientState$: Signal<DataState<PersonResource>> = this._patientStateService.state;
 
   private readonly _subscriptions: Subscription = new Subscription();
   private readonly _languageChange = new BehaviorSubject<string>(this._translate.currentLang ?? Lang.FR.full);
@@ -276,7 +291,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       untracked(() => {
         //Futur improvment :  make more generic for proposal with free text (physio) - https://jira.smals.be/browse/UHMEP-2166
         const missingCryptoKey = !cryptoKey;
-        const isAnnex81 = templateCode === 'ANNEX_81';
+        const isAnnex81 = templateCode === TemplateCodes.ANNEX_81;
         const hasNoteResponse = Boolean(prescription?.responses?.['note']);
 
         if (!template || (missingCryptoKey && (!isAnnex81 || hasNoteResponse))) {
@@ -297,14 +312,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
         }
       });
     });
-
-    // Register a new effect based templateCode
-    effect(() => {
-      const templateCode = this.templateCode$();
-      if (templateCode) {
-        this.loadPssStatus(templateCode);
-      }
-    });
   }
 
   ngOnInit() {
@@ -322,7 +329,9 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       'person',
       'warning',
       'tune',
-      'apartment'
+      'apartment',
+      'radiation_active',
+      'radiation_inactive'
     );
 
     this.generatedUUID.set(uuidv4());
@@ -396,19 +405,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
         this.infoElements.push(element);
       }
     });
-  }
-
-  private loadPssStatus(templateCode: string) {
-    if (templateCode === 'ANNEX_82') {
-      this._pssService.getPssStatus().subscribe({
-        next: status => {
-          this._prescriptionSecondaryService.pssStatus.set(status);
-        },
-        error: () => {
-          this._pssService.setStatus(false);
-        },
-      });
-    }
   }
 
   loadProposal() {
@@ -522,7 +518,7 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
       error &&
       typeof error === 'object' &&
       Object.keys(error).length === 1 &&
-      Object.prototype.hasOwnProperty.call(error, 'decryptedResponses')
+      Object.hasOwn(error, 'decryptedResponses')
     );
   }
 
@@ -549,4 +545,6 @@ export class PrescriptionDetailsWebComponent implements OnChanges, OnInit, OnDes
     this._alertService.resetActive();
     this._alertService.remove(this._alertTarget);
   }
+
+  protected readonly TemplateCodes = TemplateCodes;
 }

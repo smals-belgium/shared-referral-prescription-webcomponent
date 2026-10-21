@@ -1,12 +1,13 @@
 import { ChangeDetectorRef, DestroyRef, Pipe, PipeTransform } from '@angular/core';
 import { combineLatest, startWith } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { TemplateId } from '@reuse/code/interfaces';
+import { Intent, TemplateId } from '@reuse/code/interfaces';
 import { templateIdsAreEqual, templateIdToString } from '@reuse/code/utils/template.utils';
 import { TemplatesState } from '@reuse/code/states/api/templates.state';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { Template } from '@reuse/code/openapi';
 import { Lang } from '@reuse/code/constants/languages';
+import { isProposal } from '@reuse/code/utils/utils';
 
 @Pipe({ name: 'templateName', pure: false, standalone: true })
 export class TemplateNamePipe implements PipeTransform {
@@ -15,6 +16,7 @@ export class TemplateNamePipe implements PipeTransform {
   private templates: Template[] = [];
   private templateCodeOrId?: string | TemplateId;
   private translated?: string;
+  private intent?: string | Intent;
 
   constructor(
     private readonly translateService: TranslateService,
@@ -25,7 +27,8 @@ export class TemplateNamePipe implements PipeTransform {
     this.listenForLangChanges();
   }
 
-  transform(templateCodeOrId?: string | TemplateId): string {
+  transform(templateCodeOrId?: string | TemplateId, prescriptionIntent?: string | Intent): string {
+    this.intent = prescriptionIntent;
     if (!templateCodeOrId) return '';
 
     if (!this.translated || this.templateCodeOrId !== templateCodeOrId) {
@@ -47,22 +50,38 @@ export class TemplateNamePipe implements PipeTransform {
   }
 
   private translate(): void {
+    const prefix = this.addPrefix();
     if (this.templateCodeOrId == null) {
-      this.translated = '';
-    } else if (typeof this.templateCodeOrId === 'string') {
-      const template = this.templates.find(t => t.code === this.templateCodeOrId);
-      const lang = (this.translateService.currentLang || this.translateService.defaultLang).substring(0, 2) as Lang;
-
-      this.translated = template?.labelTranslations?.[lang] || this.templateCodeOrId || '';
-    } else {
-      const template = this.templates.find(t => {
-        if (!isTemplateId(t.metadata)) return false;
-        return templateIdsAreEqual(this.templateCodeOrId as TemplateId, t.metadata);
-      });
-      const lang = (this.translateService.currentLang || this.translateService.defaultLang).substring(0, 2) as Lang;
-
-      this.translated = template?.labelTranslations?.[lang] || templateIdToString(this.templateCodeOrId) || '';
+      this.translated = prefix;
+      return;
     }
+
+    const template = this.findTemplate();
+    const lang = this.getCurrentLang();
+    const fallback =
+      typeof this.templateCodeOrId === 'string' ? this.templateCodeOrId : templateIdToString(this.templateCodeOrId);
+
+    this.translated = template?.labelTranslations?.[lang]
+      ? prefix + template.labelTranslations[lang]
+      : prefix + fallback;
+  }
+
+  private findTemplate(): Template | undefined {
+    if (typeof this.templateCodeOrId === 'string') {
+      return this.templates.find(t => t.code === this.templateCodeOrId);
+    }
+    return this.templates.find(
+      t => isTemplateId(t.metadata) && templateIdsAreEqual(this.templateCodeOrId as TemplateId, t.metadata)
+    );
+  }
+
+  private getCurrentLang(): Lang {
+    return (this.translateService.currentLang || this.translateService.defaultLang).substring(0, 2) as Lang;
+  }
+
+  private addPrefix() {
+    if (isProposal(this.intent)) return this.translateService.instant('templateName.proposalPrefix');
+    return '';
   }
 }
 

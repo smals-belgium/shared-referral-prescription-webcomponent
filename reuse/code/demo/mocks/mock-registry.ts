@@ -69,8 +69,8 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
       demoStorage.clear();
       const params = req.params;
       const historical = params.get('historical') === 'true';
-      const page = parseInt(params.get('page') || '1', 10);
-      const pageSize = parseInt(params.get('pageSize') || '10', 10);
+      const page = Number.parseInt(params.get('page') || '1', 10);
+      const pageSize = Number.parseInt(params.get('pageSize') || '10', 10);
 
       let items = prescriptions.items || [];
 
@@ -101,8 +101,8 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
       demoStorage.clear();
       const params = req.params;
       const historical = params.get('historical') === 'true';
-      const page = parseInt(params.get('page') || '1', 10);
-      const pageSize = parseInt(params.get('pageSize') || '10', 10);
+      const page = Number.parseInt(params.get('page') || '1', 10);
+      const pageSize = Number.parseInt(params.get('pageSize') || '10', 10);
 
       const findProposals = proposals;
       let items = findProposals.items || [];
@@ -150,8 +150,7 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
               const careIndex = performerTask.careGiverIndex as number;
               const orgIndex = performerTask.organizationIndex as number;
               if (careIndex != null) {
-                const requester = professionals[careIndex];
-                (performerTask as PerformerTaskResource).careGiver = requester as unknown as HealthcareProResource;
+                (performerTask as PerformerTaskResource).careGiver = professionals[careIndex];
               }
 
               if (orgIndex != null) {
@@ -200,8 +199,7 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
               const careIndex = performerTask.careGiverIndex as number;
               const orgIndex = performerTask.organizationIndex as number;
               if (careIndex != null) {
-                const requester = professionals[careIndex];
-                (performerTask as PerformerTaskResource).careGiver = requester as unknown as HealthcareProResource;
+                (performerTask as PerformerTaskResource).careGiver = professionals[careIndex];
               }
 
               if (orgIndex != null) {
@@ -252,8 +250,7 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
               const careIndex = performerTask.careGiverIndex as number;
               const orgIndex = performerTask.organizationIndex as number;
               if (careIndex != null) {
-                const requester = professionals[careIndex];
-                (performerTask as PerformerTaskResource).careGiver = requester as unknown as HealthcareProResource;
+                (performerTask as PerformerTaskResource).careGiver = professionals[careIndex];
               }
 
               if (orgIndex != null) {
@@ -320,8 +317,8 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
 
       const providerType = params.get('providerType');
       const discipline = params.get('discipline');
-      const page = parseInt(params.get('page') || '1', 10);
-      const pageSize = parseInt(params.get('pageSize') || '10', 10);
+      const page = Number.parseInt(params.get('page') || '1', 10);
+      const pageSize = Number.parseInt(params.get('pageSize') || '10', 10);
 
       let pros: (HealthcareOrganizationResource | HealthcareProResource)[] = [];
 
@@ -420,9 +417,7 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
 
         const savedPrescription = demoStorage.get<ReadRequestResourceExtended>('demoPrescription') || {};
 
-        if (!savedPrescription.performerTasks) {
-          savedPrescription.performerTasks = {};
-        }
+        savedPrescription.performerTasks ??= {};
 
         const ssin = performerTaskResource.careGiverSsin;
         if (ssin) {
@@ -461,9 +456,7 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
 
         const savedProposal = demoStorage.get<ReadRequestResourceExtended>('demoProposal') || {};
 
-        if (!savedProposal.performerTasks) {
-          savedProposal.performerTasks = {};
-        }
+        savedProposal.performerTasks ??= {};
 
         const ssin = performerTaskResource.careGiverSsin;
         if (ssin) {
@@ -496,16 +489,14 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
       if (organization) {
         const organizationTaskResource: OrganizationTaskResource = {
           organizationNihii: nihii,
-          organization: organization as unknown as HealthcareOrganizationResource,
+          organization: organization,
           performerTasks: [],
           status: FhirR4TaskStatus.Ready,
         };
 
         const savedPrescription = demoStorage.get<ReadRequestResourceExtended>('demoPrescription') || {};
 
-        if (!savedPrescription.performerTasks) {
-          savedPrescription.performerTasks = {};
-        }
+        savedPrescription.performerTasks ??= {};
 
         const organizationNihii = organizationTaskResource.organizationNihii;
         if (organizationNihii) {
@@ -545,9 +536,7 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
 
         const savedProposal = demoStorage.get<ReadRequestResourceExtended>('demoProposal') || {};
 
-        if (!savedProposal.performerTasks) {
-          savedProposal.performerTasks = {};
-        }
+        savedProposal.performerTasks ??= {};
 
         const organizationNihii = organizationTaskResource.organizationNihii;
         if (organizationNihii) {
@@ -574,9 +563,7 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
       const query = params.get('query');
       const allCities = cities as CityResource[];
 
-      if (!query) {
-        return { items: allCities };
-      } else {
+      if (query) {
         const filteredCities = allCities.filter(c => {
           const q = String(query).toLowerCase(); // normalize query
           return (
@@ -589,6 +576,8 @@ export const DEMO_MOCKS: DemoMockEntry[] = [
         });
 
         return { items: filteredCities };
+      } else {
+        return { items: allCities };
       }
     },
   },

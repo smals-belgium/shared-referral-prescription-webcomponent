@@ -1,6 +1,6 @@
 {
   "name": "@smals/nihdi-uhmep-healix-web-components",
-  "version": "2.102.0",
+  "version": "3.0.2",
   "scripts": {
     "ng": "ng",
     "start": "npm run serve:wc:details",
@@ -115,7 +115,8 @@
     "ts-node": "^10.9.2",
     "typescript": "~6.0.0",
     "vite": "^6.2.2",
-    "vite-plugin-node-polyfills": "^0.23.0"
+    "vite-plugin-node-polyfills": "^0.23.0",
+    "serve": "^14.2.6"
   },
   "lint-staged": {
     "*.{ts,js,html,css,scss,json,md}": [

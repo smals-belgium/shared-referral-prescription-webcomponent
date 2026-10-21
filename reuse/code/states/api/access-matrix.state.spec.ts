@@ -45,9 +45,26 @@ describe('AccessMatrixState', () => {
     });
   });
 
-  it('should return true if the matrix has at least one permission for the given template', () => {
-    const permissions: Permissions[] = ['createPrescription' as Permissions];
-    const templateCode = 'template1';
+  it.each([
+    {
+      description: 'returns true if the matrix has at least one permission for the given template',
+      permissions: ['createPrescription' as Permissions],
+      templateCode: 'template1',
+      expected: true,
+    },
+    {
+      description: 'returns false if the matrix does not have the given permission for the template',
+      permissions: ['createProposal' as Permissions],
+      templateCode: 'template1',
+      expected: false,
+    },
+    {
+      description: 'returns false if no matrix matches the templateCode',
+      permissions: ['createPrescription' as Permissions],
+      templateCode: 'template3',
+      expected: false,
+    },
+  ])('should $description', ({ permissions, templateCode, expected }) => {
     const mockMatrices: AccessMatrix[] = [
       { templateName: 'template1', createPrescription: true } as AccessMatrix,
       { templateName: 'template2', createPrescription: false } as AccessMatrix,
@@ -57,37 +74,7 @@ describe('AccessMatrixState', () => {
 
     const result = accessMatrixState.hasAtLeastOnePermission(permissions, templateCode);
 
-    expect(result).toBe(true);
-  });
-
-  it('should return false if the matrix does not have the given permission for the template', () => {
-    const permissions: Permissions[] = ['createProposal' as Permissions];
-    const templateCode = 'template1';
-    const mockMatrices: AccessMatrix[] = [
-      { templateName: 'template1', createPrescription: true } as AccessMatrix,
-      { templateName: 'template2', createPrescription: false } as AccessMatrix,
-    ];
-
-    jest.spyOn(accessMatrixState, 'state').mockReturnValue({ data: mockMatrices, status: LoadingStatus.SUCCESS });
-
-    const result = accessMatrixState.hasAtLeastOnePermission(permissions, templateCode);
-
-    expect(result).toBe(false);
-  });
-
-  it('should return false if no matrix matches the templateCode', () => {
-    const permissions: Permissions[] = ['createPrescription' as Permissions];
-    const templateCode = 'template3';
-    const mockMatrices: AccessMatrix[] = [
-      { templateName: 'template1', createPrescription: true } as AccessMatrix,
-      { templateName: 'template2', createPrescription: false } as AccessMatrix,
-    ];
-
-    jest.spyOn(accessMatrixState, 'state').mockReturnValue({ data: mockMatrices, status: LoadingStatus.SUCCESS });
-
-    const result = accessMatrixState.hasAtLeastOnePermission(permissions, templateCode);
-
-    expect(result).toBe(false);
+    expect(result).toBe(expected);
   });
 
   it('should return true if at least one permission exists for any template', () => {

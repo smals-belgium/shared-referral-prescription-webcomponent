@@ -1,0 +1,116 @@
+@if (showAlert()) {
+  <app-alert
+    [severity]="AlertType.Warning"
+    [retry]="false"
+    [dismissible]="false"
+    [expandable]="true"
+    [subTitle]="alertTitle()"
+    [startExpanded]="true">
+    <div #content>
+      <div class="selected-exam">
+        @if (control.value && control.value.score < PSS_SUCCESS_SCORE && control.value.score > PSS_ZERO_SCORE) {
+          <ul>
+            <li>
+              {{ getTranslationFromSupportOption(control.value) }}
+              {{
+                ' ' + ('prescription.create.control.alert.chosenExamScore' | translate: { score: control.value.score })
+              }}
+            </li>
+          </ul>
+        } @else if (control.value && control.value.score < PSS_ONE_SCORE) {
+          <ul>
+            <li>
+              {{ getTranslationFromSupportOption(control.value) }}
+              {{ ' ' + ('prescription.create.control.alert.chosenExamNoScore' | translate) }}
+            </li>
+          </ul>
+        } @else if (defaultOption() && controlIndications() && scoreLowerThanSeven()) {
+          <ul>
+            @for (option of defaultOption(); track option) {
+              @let supportOption = findSupportOptionById(option);
+              @if (supportOption && supportOption.score !== undefined && supportOption.score < PSS_SUCCESS_SCORE) {
+                <li>
+                  {{ option.label[currentLang()] }}
+                  {{
+                    supportOption
+                      ? ' ' +
+                        ('prescription.create.control.alert.chosenExamScore'
+                          | translate: { score: supportOption.score })
+                      : ''
+                  }}
+                </li>
+              }
+            }
+          </ul>
+        } @else if (!control.value && !defaultOption() && controlIndications()) {
+          <ul>
+            <li>{{ 'prescription.create.control.alert.noDefaultExam' | translate }}</li>
+          </ul>
+        }
+      </div>
+
+      @if (hasAdditionalRelevantInformation()) {
+        <div class="relevant-info">
+          @if (hasExam()) {
+            <p>
+              {{ 'prescription.create.control.alert.relevantInfo' | translate }}
+            </p>
+          }
+
+          <ul>
+            @for (option of getRelevantInfo(); track option) {
+              <li>{{ 'ANNEX_82.create.' + option | translate }}</li>
+            }
+            @for (option of getImplants(); track option) {
+              <li>{{ option.label[currentLang()] }}</li>
+            }
+            @for (option of getPreviuosExams(); track option) {
+              <li>{{ option.label[currentLang()] }}</li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  </app-alert>
+}
+
+<evf-form-element-layout [elementLayout]="elementLayout" [elementControl]="elementControl" [metadata]="metadata">
+  <section class="pss-results">
+    <div class="row align-right">
+      @let url = evidenceUrl();
+      @if (url && url.code) {
+        <a target="_blank" rel="noopener noreferrer" [href]="url.code">
+          {{ getTranslation(url) }}
+          <mat-icon svgIcon="open_in_new" aria-hidden="true" iconPositionEnd></mat-icon>
+        </a>
+      }
+    </div>
+    @if (!useMatLabel) {
+      <evf-element-label [elementControl]="elementControl" [invalid]="invalid" [for]="id"></evf-element-label>
+    }
+    @if (element.bodyTranslationId) {
+      <evf-element-body [elementControl]="elementControl"></evf-element-body>
+    }
+    @if (element.helpTranslationId) {
+      <evf-element-help [elementControl]="elementControl"></evf-element-help>
+    }
+    <app-pss-radiology-result
+      [supportOptions]="controlIndications()"
+      [prescribedExam]="defaultOption()"
+      [isLoading]="isLoading()"
+      [hasProposedImaging]="hasProposedImaging()"
+      (selectSupportOption)="selectSupportOption($event)">
+      <ng-template let-row>
+        @if (subElementControls().length) {
+          <evf-form-element-group
+            [elementControls]="subElementControls()"
+            [elementLayout]="elementLayout"
+            [metadata]="metadata"
+            [submitted]="submitted"
+            (events)="events.emit($event)"
+            class="sub-group"></evf-form-element-group>
+        }
+      </ng-template>
+    </app-pss-radiology-result>
+  </section>
+</evf-form-element-layout>

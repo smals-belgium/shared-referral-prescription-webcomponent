@@ -22,6 +22,7 @@ export interface SearchPrescriptionCriteria {
   patient?: string;
   requester?: string;
   performer?: string;
+  organization?: string;
   historical?: boolean;
   status?: RequestStatus[];
   template?: string[];
@@ -44,4 +45,12 @@ export enum Intent {
 export interface SearchHealthcareProviderCriteria {
   query: string;
   zipCodes: number[];
+}
+
+export interface PatientListFilter {
+  patientSsin?: string;
+  requesterSsin?: string;
+  performerSsin?: string;
+  organizationNihii?: string;
+  historical?: boolean;
 }

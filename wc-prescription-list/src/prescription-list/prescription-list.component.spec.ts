@@ -11,7 +11,7 @@ import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
 import { PrescriptionListWebComponent } from './prescription-list.component';
 import { BehaviorSubject, of } from 'rxjs';
-import { Intent, LoadingStatus } from '@reuse/code/interfaces';
+import { Intent, LoadingStatus, TemplateCodes } from '@reuse/code/interfaces';
 import { By } from '@angular/platform-browser';
 import {
   AccessMatrix,
@@ -24,8 +24,6 @@ import {
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatDialog } from '@angular/material/dialog';
 import { PrescriptionFilterComponent } from '@reuse/code/components/prescription-filter/prescription-filter.component';
-import { FeatureFlagService } from '@reuse/code/services/helpers/feature-flag.service';
-import { FeatureFlagDirective } from '@reuse/code/directives/feature-flag.directive';
 import { PrescriptionsCardComponent } from '../components/prescriptions/prescriptions-card/prescriptions-card.component';
 import { RequestSummaryDataService } from '@reuse/code/services/helpers/request-summary-data.service';
 import { Lang } from '@reuse/code/constants/languages';
@@ -80,11 +78,6 @@ const mockConfigService = {
   }),
 };
 
-const mockFeatureFlagService = {
-  features: signal(['ui-filters']),
-  getFeature: jest.fn(() => signal(true)),
-};
-
 class FakeLoader implements TranslateLoader {
   getTranslation() {
     return of({});
@@ -136,7 +129,6 @@ describe('ListPrescriptionsWebComponent', () => {
         }),
         MatDatepickerModule,
         MatNativeDateModule,
-        FeatureFlagDirective,
       ],
       providers: [
         provideHttpClient(),
@@ -157,7 +149,6 @@ describe('ListPrescriptionsWebComponent', () => {
         { provide: IconRegistryService, useValue: mockIconRegistryService },
         { provide: DeviceService, useValue: mockDeviceService },
         { provide: AlertService, useValue: mockAlertService },
-        { provide: FeatureFlagService, useValue: mockFeatureFlagService },
       ],
     })
       .overrideComponent(PrescriptionsCardComponent, {
@@ -184,6 +175,40 @@ describe('ListPrescriptionsWebComponent', () => {
     jest.restoreAllMocks();
   });
 
+  describe('deprecated filter inputs', () => {
+    let warnSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      createFixture();
+      warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    it('should give `filter` precedence over legacy inputs and warn about the conflict', () => {
+      fixture.componentRef.setInput('filter', { requesterSsin: 'from-filter' });
+      fixture.componentRef.setInput('patientSsin', 'from-legacy');
+      fixture.detectChanges();
+
+      expect(component.effectiveFilter).toEqual({ requesterSsin: 'from-filter' });
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Both `filter` and deprecated filter inputs are set')
+      );
+    });
+
+    it('should resolve to an empty object and warn nothing when no inputs are set', () => {
+      fixture.detectChanges();
+
+      expect(component.effectiveFilter).toEqual({});
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+
+    it('should resolve to an empty object and warn nothing when no inputs are set', () => {
+      fixture.detectChanges();
+
+      expect(component.effectiveFilter).toEqual({});
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('default behaviour with prescriptions', () => {
     it('should create the app', () => {
       createFixture();
@@ -198,9 +223,9 @@ describe('ListPrescriptionsWebComponent', () => {
       const loadPrescriptionsSpy = jest.spyOn(component, 'loadPrescriptions');
 
       const intent = Intent.ORDER;
-      component.intent = intent;
+      fixture.componentRef.setInput('intent', intent);
       component.isPrescriptionValue.set(true);
-      component.patientSsin = undefined;
+      fixture.componentRef.setInput('patientSsin', undefined);
 
       const simpleChanges: SimpleChanges = { intent: new SimpleChange('', intent, true) };
       component.ngOnChanges(simpleChanges);
@@ -221,31 +246,31 @@ describe('ListPrescriptionsWebComponent', () => {
       const loadDataSpy = jest.spyOn(component, 'loadData');
       const loadPrescriptionsSpy = jest.spyOn(component, 'loadPrescriptions');
       const ssin = 'ssin';
-      component.intent = Intent.ORDER;
+      fixture.componentRef.setInput('intent', Intent.ORDER);
       component.isPrescriptionValue.set(true);
 
       const simpleChanges: SimpleChanges = { patientSsin: new SimpleChange('', ssin, true) };
-      component.patientSsin = ssin;
+      fixture.componentRef.setInput('patientSsin', ssin);
       component.ngOnChanges(simpleChanges);
 
       expect(loadDataSpy).toHaveBeenCalledWith();
       expect(loadPrescriptionsSpy).toHaveBeenCalledWith(undefined, undefined);
 
-      jest.spyOn(component['prescriptionsState'], 'loadPrescriptions').mockReturnValue();
+      jest.spyOn(component['_prescriptionsState'], 'loadPrescriptions').mockReturnValue();
     });
 
     it('should switch from prescription to proposal correctly', () => {
       createFixture();
       // Start with prescription
       (global as any).isPrescription = jest.fn().mockReturnValue(true);
-      component.intent = Intent.ORDER;
+      fixture.componentRef.setInput('intent', Intent.ORDER);
       component.loadData();
       expect(component.isPrescriptionValue()).toBe(true);
 
       // Switch to proposal
       (global as any).isPrescription = jest.fn().mockReturnValue(false);
       (global as any).isProposal = jest.fn().mockReturnValue(true);
-      component.intent = Intent.PROPOSAL;
+      fixture.componentRef.setInput('intent', Intent.PROPOSAL);
       component.loadData();
 
       expect(component.isPrescriptionValue()).toBe(false);
@@ -379,170 +404,41 @@ describe('ListPrescriptionsWebComponent', () => {
     });
   });
 
-  describe('filter', () => {
-    it('should render and pass correct inputs when templates exist on prescriptions', async () => {
-      createFixture(true);
-
-      const template: Template = {
-        code: 'template1',
-        id: 1,
-        labelTranslations: {} as Translation,
-        metadata: {
-          code: {},
-          category: [] as SystemCodes[],
-        },
-      };
-      const accessMatrix = { view: true, edit: false } as unknown as AccessMatrix;
-      const expectedState = {
-        data: {
-          prescriptions: {} as ReadRequestListResource,
-          templates: [template],
-          proposals: {} as ReadRequestListResource,
-          models: {} as PageModelEntityDto,
-          accessMatrix: [accessMatrix],
-        },
-        error: {
-          prescriptions: undefined,
-          proposals: undefined,
-          models: undefined,
-          templates: undefined,
-          accessMatrix: undefined,
-        },
-        params: {
-          prescriptions: {
-            criteria: {
-              patient: 'ssin',
-              performer: undefined,
-              requester: undefined,
-            },
-            page: 1,
-            pageSize: 10,
+  it('should hide component when templates are undefined on proposals', () => {
+    createFixture();
+    const expectedState = {
+      data: {
+        prescriptions: {} as ReadRequestListResource,
+        templates: undefined as unknown as Template[],
+        proposals: {} as ReadRequestListResource,
+        models: {} as PageModelEntityDto,
+        accessMatrix: { view: true, edit: false } as unknown as AccessMatrix[],
+      },
+      error: {
+        prescriptions: undefined,
+        proposals: undefined,
+        models: undefined,
+        templates: undefined,
+        accessMatrix: undefined,
+      },
+      params: {
+        prescriptions: {
+          criteria: {
+            patient: 'ssin',
+            performer: undefined,
+            requester: undefined,
           },
+          page: 1,
+          pageSize: 10,
         },
-        status: LoadingStatus.SUCCESS,
-      };
-      component.isPrescriptionValue.set(true);
+      },
+      status: LoadingStatus.SUCCESS,
+    };
 
-      jest.spyOn(component, 'viewStatePrescriptions$').mockReturnValue(expectedState);
-
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      expect(mockDeviceService.isDesktop()).toBe(true);
-
-      const filterComponent = fixture.debugElement.query(By.directive(PrescriptionFilterComponent));
-      expect(filterComponent).toBeTruthy();
-      expect(filterComponent.componentInstance.templates).toEqual([template]);
-      expect(filterComponent.componentInstance.accessMatrix).toEqual([accessMatrix]);
-    });
-
-    it('should emit onFilterChange', () => {
-      createFixture();
-      const template: Template = {
-        code: 'template1',
-        id: 1,
-        labelTranslations: {} as Translation,
-        metadata: {
-          code: {},
-          category: [{}] as SystemCodes[],
-        },
-      };
-
-      const accessMatrix = {
-        templateName: 'template1',
-        consultProposal: true,
-        consultPrescription: false,
-      } as unknown as AccessMatrix;
-
-      const expectedState = {
-        data: {
-          prescriptions: {} as ReadRequestListResource,
-          templates: [template],
-          proposals: {} as ReadRequestListResource,
-          models: {} as PageModelEntityDto,
-          accessMatrix: [accessMatrix],
-        },
-        error: {
-          prescriptions: undefined,
-          proposals: undefined,
-          models: undefined,
-          templates: undefined,
-          accessMatrix: undefined,
-        },
-        params: {
-          prescriptions: {
-            criteria: {
-              patient: 'ssin',
-              performer: undefined,
-              requester: undefined,
-            },
-            page: 1,
-            pageSize: 10,
-          },
-        },
-        status: LoadingStatus.SUCCESS,
-      };
-
-      jest.spyOn(component, 'viewStatePrescriptions$').mockReturnValue(expectedState);
-      const loadPrescriptionsSpy = jest.spyOn(component, 'loadPrescriptions').mockImplementation();
-      jest.spyOn(component, 'onFilterUpdate');
-
-      component.isPrescriptionValue.set(true);
-
-      fixture.componentRef.setInput('patientSsin', 'ssin');
-
-      fixture.detectChanges();
-
-      const filterComponent = fixture.debugElement.query(By.directive(PrescriptionFilterComponent));
-      expect(filterComponent).toBeTruthy();
-
-      filterComponent.triggerEventHandler('filterChange', {
-        newCriteria: 'Updated',
-      });
-      fixture.detectChanges();
-      expect(component.onFilterUpdate).toHaveBeenCalledWith({
-        newCriteria: 'Updated',
-      });
-
-      expect(loadPrescriptionsSpy).toHaveBeenCalledWith(undefined, undefined);
-    });
-
-    it('should hide component when templates are undefined on proposals', () => {
-      createFixture();
-      const expectedState = {
-        data: {
-          prescriptions: {} as ReadRequestListResource,
-          templates: undefined as unknown as Template[],
-          proposals: {} as ReadRequestListResource,
-          models: {} as PageModelEntityDto,
-          accessMatrix: { view: true, edit: false } as unknown as AccessMatrix[],
-        },
-        error: {
-          prescriptions: undefined,
-          proposals: undefined,
-          models: undefined,
-          templates: undefined,
-          accessMatrix: undefined,
-        },
-        params: {
-          prescriptions: {
-            criteria: {
-              patient: 'ssin',
-              performer: undefined,
-              requester: undefined,
-            },
-            page: 1,
-            pageSize: 10,
-          },
-        },
-        status: LoadingStatus.SUCCESS,
-      };
-
-      jest.spyOn(component, 'viewStateProposals$').mockReturnValue(expectedState);
-      fixture.detectChanges();
-      const hiddenComponent = fixture.debugElement.query(By.directive(PrescriptionFilterComponent));
-      expect(hiddenComponent).toBeFalsy();
-    });
+    jest.spyOn(component, 'viewStateProposals$').mockReturnValue(expectedState);
+    fixture.detectChanges();
+    const hiddenComponent = fixture.debugElement.query(By.directive(PrescriptionFilterComponent));
+    expect(hiddenComponent).toBeFalsy();
   });
 
   describe('load proposals or models', () => {
@@ -551,17 +447,17 @@ describe('ListPrescriptionsWebComponent', () => {
       const loadDataSpy = jest.spyOn(component, 'loadData');
       const loadProposalsSpy = jest.spyOn(component, 'loadProposals');
       const ssin = 'ssin';
-      component.intent = Intent.PROPOSAL;
+      fixture.componentRef.setInput('intent', Intent.PROPOSAL);
       component.isProposalValue.set(true);
 
       const simpleChanges: SimpleChanges = { patientSsin: new SimpleChange('', ssin, true) };
-      component.patientSsin = ssin;
+      fixture.componentRef.setInput('patientSsin', ssin);
       component.ngOnChanges(simpleChanges);
 
       expect(loadDataSpy).toHaveBeenCalledWith();
       expect(loadProposalsSpy).toHaveBeenCalledWith(undefined, undefined);
 
-      jest.spyOn(component['proposalsState'], 'loadProposals').mockReturnValue();
+      jest.spyOn(component['_proposalsState'], 'loadProposals').mockReturnValue();
     });
 
     it('should call loadModals if intent is Model', () => {
@@ -569,17 +465,17 @@ describe('ListPrescriptionsWebComponent', () => {
       const loadDataSpy = jest.spyOn(component, 'loadData');
       const loadProposalsSpy = jest.spyOn(component, 'loadProposals');
       const ssin = 'ssin';
-      component.intent = Intent.PROPOSAL;
+      fixture.componentRef.setInput('intent', Intent.PROPOSAL);
       component.isProposalValue.set(true);
 
       const simpleChanges: SimpleChanges = { patientSsin: new SimpleChange('', ssin, true) };
-      component.patientSsin = ssin;
+      fixture.componentRef.setInput('patientSsin', ssin);
       component.ngOnChanges(simpleChanges);
 
       expect(loadDataSpy).toHaveBeenCalledWith();
       expect(loadProposalsSpy).toHaveBeenCalledWith(undefined, undefined);
 
-      jest.spyOn(component['proposalsState'], 'loadProposals').mockReturnValue();
+      jest.spyOn(component['_proposalsState'], 'loadProposals').mockReturnValue();
     });
   });
 
@@ -737,7 +633,7 @@ describe('ListPrescriptionsWebComponent', () => {
         beforeClosed: jest.fn().mockReturnValue(of(true)),
       };
       mockDialog.open.mockReturnValue(mockDialogRef as any);
-      const spyOnPrescriptionModalService = jest.spyOn((component as any).prescriptionModelService, 'deleteModel');
+      const spyOnPrescriptionModalService = jest.spyOn((component as any)._prescriptionModelService, 'deleteModel');
       const spyOnLoadModels = jest.spyOn(component, 'loadModels');
 
       spyOnPrescriptionModalService.mockReturnValue(of({}));
@@ -758,7 +654,7 @@ describe('ListPrescriptionsWebComponent', () => {
         beforeClosed: jest.fn().mockReturnValue(of(false)),
       };
       mockDialog.open.mockReturnValue(mockDialogRef as any);
-      const spyOnPrescriptionModalService = jest.spyOn((component as any).prescriptionModelService, 'deleteModel');
+      const spyOnPrescriptionModalService = jest.spyOn((component as any)._prescriptionModelService, 'deleteModel');
 
       component.openDeleteModelDialog(mockModel);
 
@@ -773,7 +669,7 @@ describe('ListPrescriptionsWebComponent', () => {
         beforeClosed: jest.fn().mockReturnValue(of(true)),
       };
       mockDialog.open.mockReturnValue(mockDialogRef as any);
-      const spyOnPrescriptionModalService = jest.spyOn((component as any).prescriptionModelService, 'deleteModel');
+      const spyOnPrescriptionModalService = jest.spyOn((component as any)._prescriptionModelService, 'deleteModel');
 
       component.openDeleteModelDialog(modelWithoutId);
 
@@ -834,7 +730,7 @@ describe('ListPrescriptionsWebComponent', () => {
       component.openAnnex81ProposalForm();
 
       expect(spyOnLoadData).toHaveBeenCalledWith({
-        templateCode: 'ANNEX_81',
+        templateCode: TemplateCodes.ANNEX_81,
       });
     });
 
@@ -859,7 +755,7 @@ describe('ListPrescriptionsWebComponent', () => {
     it('should return true on canCreatePrescription when user has permission', () => {
       createFixture();
       const mockAccessMatrixState = jest.spyOn(
-        (component as any).accessMatrixState,
+        (component as any)._accessMatrixState,
         'hasAtLeastOnePermissionForAnyTemplate'
       );
       mockAccessMatrixState.mockReturnValue(true);
@@ -873,7 +769,7 @@ describe('ListPrescriptionsWebComponent', () => {
     it('should return false on canCreatePrescription when user does not have permission', () => {
       createFixture();
       const mockAccessMatrixState = jest.spyOn(
-        (component as any).accessMatrixState,
+        (component as any)._accessMatrixState,
         'hasAtLeastOnePermissionForAnyTemplate'
       );
       mockAccessMatrixState.mockReturnValue(false);
@@ -886,7 +782,7 @@ describe('ListPrescriptionsWebComponent', () => {
     it('should return true on canCreateProposal when user has permission', () => {
       createFixture();
       const mockAccessMatrixState = jest.spyOn(
-        (component as any).accessMatrixState,
+        (component as any)._accessMatrixState,
         'hasAtLeastOnePermissionForAnyTemplate'
       );
       mockAccessMatrixState.mockReturnValue(true);
@@ -900,7 +796,7 @@ describe('ListPrescriptionsWebComponent', () => {
     it('should return false on canCreateProposal when user does not have permission', () => {
       createFixture();
       const mockAccessMatrixState = jest.spyOn(
-        (component as any).accessMatrixState,
+        (component as any)._accessMatrixState,
         'hasAtLeastOnePermissionForAnyTemplate'
       );
       mockAccessMatrixState.mockReturnValue(false);

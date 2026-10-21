@@ -6,48 +6,78 @@
 
 //current component and all its descendants
 :host ::ng-deep {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   .mat-expansion-panel-body {
     padding: 0 0 mh.$spacing-m;
   }
-}
-
-.patient {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: mh.$spacing-l;
-}
-
-.mat-accordion > .mat-expansion-panel {
-  box-shadow: var(--mh-accordion-box-shadow, unset);
-  border-bottom: var(--mh-accordion-border-bottom, 1px solid var(--mdc-outlined-text-field-outline-color));
-}
-
-mat-expansion-panel-header {
-  padding: 0;
-  &.mat-expansion-panel-header {
-    padding: 0 8px 0 0;
+  .mat-accordion > .mat-expansion-panel {
+    > .mat-expansion-panel-content-wrapper {
+      padding: 0;
+      margin-top: 0;
+    }
+    &.mat-expanded {
+      > .mat-expansion-panel-content-wrapper {
+        background-color: var(--mh-accordion-content-bg, mh.$color-white);
+        padding: mh.$spacing-rem-l mh.$spacing-rem-xl;
+        margin-top: mh.$spacing-rem-xl;
+      }
+    }
   }
-  &.no-toggle {
-    pointer-events: none;
+}
+
+.mat-accordion {
+  > mat-expansion-panel-header {
+    padding: 0;
+    &.mat-expansion-panel-header {
+      padding: 0 8px 0 0;
+    }
+    &.no-toggle {
+      pointer-events: none;
+    }
+  }
+  &.multiple {
+    > mat-expansion-panel-header {
+      &.mat-expansion-panel-header {
+        padding: 8px 16px;
+        background-color: var(--mh-accordion-multiple-header-collapsed, mh.$color-white);
+      }
+    }
+    > .mat-expansion-panel {
+      border-bottom: var(--mh-accordion-border-bottom, 1px solid var(--mdc-outlined-text-field-outline-color));
+      &.mat-expanded {
+        border-bottom: var(--mh-accordion-border-bottom, 0);
+        mat-expansion-panel-header {
+          &.mat-expansion-panel-header {
+            background-color: var(--mh-accordion-multiple-header-expanded, transparent);
+          }
+        }
+      }
+    }
+  }
+
+  > .mat-expansion-panel {
+    background-color: var(--mh-accordion-container-bg, transparent);
+    box-shadow: var(--mh-accordion-box-shadow, unset);
   }
 }
 
 .mat-expansion-panel-header-title {
   flex-grow: 4;
-  h2 {
+  > h2 {
     @include mh.font-heading-2();
     & {
       margin-bottom: 0;
     }
   }
-  p {
+  > p {
     @include mh.font-body-1();
     & {
       margin-top: 0;
       margin-bottom: 0;
     }
-    .invalid {
+    > .invalid {
       color: var(--mh-label-invalid-color, mh.$typography-semantic-error-medium);
     }
   }
@@ -69,6 +99,13 @@ mat-expansion-panel-header {
       }
     }
   }
+}
+
+.patient {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: mh.$spacing-l;
 }
 
 button + button {
@@ -94,7 +131,7 @@ mat-accordion.mat-accordion mat-expansion-panel.mat-expansion-panel:first-of-typ
 }
 
 mat-accordion.mat-accordion {
-  gap: var(--mh-mat-expansion-gap, 0);
+  gap: var(--mh-mat-expansion-gap, mh.$spacing-s);
 }
 
 .elements-in-error-summary {

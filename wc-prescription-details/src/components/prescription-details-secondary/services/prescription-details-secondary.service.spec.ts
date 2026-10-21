@@ -1,12 +1,39 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { PersonResource, ReadRequestResource, RequestTaskResource } from '@reuse/code/openapi';
-import { StartExecutionPrescriptionDialog } from '@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog';
-import { RestartExecutionPrescriptionDialog } from '@reuse/code/dialogs/restart-execution-prescription/restart-execution-prescription.dialog';
-import { FinishExecutionPrescriptionDialog } from '@reuse/code/dialogs/finish-execution-prescription/finish-execution-prescription.dialog';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { ERROR_PRESCRIPTION_DETAILS } from '@reuse/code/constants/error';
+import { ApproveProposalDialog } from '@reuse/code/dialogs/approve-proposal/approve-proposal.dialog';
+import { AssignOrTransferDialog } from '@reuse/code/dialogs/assign-or-transfer-dialog/assign-or-transfer-dialog';
 import { CancelExecutionPrescriptionDialog } from '@reuse/code/dialogs/cancel-execution-prescription/cancel-execution-prescription.dialog';
+import { FinishExecutionPrescriptionDialog } from '@reuse/code/dialogs/finish-execution-prescription/finish-execution-prescription.dialog';
 import { InterruptExecutionPrescriptionDialog } from '@reuse/code/dialogs/interrupt-execution-prescription/interrupt-execution-prescription.dialog';
 import { RejectAssignationDialog } from '@reuse/code/dialogs/reject-assignation/reject-assignation.dialog';
+import { RejectProposalDialog } from '@reuse/code/dialogs/reject-proposal/reject-proposal.dialog';
+import { RestartExecutionPrescriptionDialog } from '@reuse/code/dialogs/restart-execution-prescription/restart-execution-prescription.dialog';
+import { StartExecutionPrescriptionDialog } from '@reuse/code/dialogs/start-execution-prescription/start-execution-prescription.dialog';
+import { DataState, Intent, LoadingStatus, Params, TemplateCodes, UserInfo } from '@reuse/code/interfaces';
+import {
+  AssignationType,
+  Discipline,
+  PersonResource,
+  ReadRequestResource,
+  RequestTaskResource,
+  Template,
+} from '@reuse/code/openapi';
+import { PersonService } from '@reuse/code/services/api/person.service';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
+import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
+import { PatientState } from '@reuse/code/states/api/patient.state';
+import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
+import { ProposalState } from '@reuse/code/states/api/proposal.state';
+import { TemplateVersionsState } from '@reuse/code/states/api/template-versions.state';
+import { TemplatesState } from '@reuse/code/states/api/templates.state';
+import { EncryptionState } from '@reuse/code/states/privacy/encryption.state';
+import { IdentifyState } from '@reuse/code/states/privacy/identify.state';
+import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
+import { of, throwError } from 'rxjs';
 import {
   FakeLoader,
   mockAuthService,
@@ -20,45 +47,40 @@ import {
   referralTask,
 } from '../../../../test.utils';
 import { PrescriptionDetailsSecondaryService } from './prescription-details-secondary.service';
-import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
-import { AuthService } from '@reuse/code/services/auth/auth.service';
-import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
-import { PersonService } from '@reuse/code/services/api/person.service';
-import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { Intent, LoadingStatus } from '@reuse/code/interfaces';
-import { IdentifyState } from '@reuse/code/states/privacy/identify.state';
-import { PatientState } from '@reuse/code/states/api/patient.state';
-import { of } from 'rxjs';
-import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
-import { TemplateVersionsState } from '@reuse/code/states/api/template-versions.state';
-import { TemplatesState } from '@reuse/code/states/api/templates.state';
-import { ApproveProposalDialog } from '@reuse/code/dialogs/approve-proposal/approve-proposal.dialog';
-import { EncryptionState } from '@reuse/code/states/privacy/encryption.state';
-import { AssignOrTransferDialog } from '@reuse/code/dialogs/assign-or-transfer-dialog/assign-or-transfer-dialog';
-import { RejectProposalDialog } from '@reuse/code/dialogs/reject-proposal/reject-proposal.dialog';
-import { ERROR_PRESCRIPTION_DETAILS } from '@reuse/code/constants/error';
-import { ProposalState } from '@reuse/code/states/api/proposal.state';
+import { Signal, signal } from '@angular/core';
+import { ToastService } from '@reuse/code/services/helpers/toast.service';
 
 jest.mock('@reuse/code/utils/idToken.utils', () => ({
   ...jest.requireActual('@reuse/code/utils/idToken.utils'),
   getConnectedOrganizationNihii: jest.fn(),
 }));
 
+type StateMock<T extends { state: Signal<unknown> }> = Partial<Omit<jest.Mocked<T>, 'state'>> & { state: T['state'] };
+const UserNurse: Partial<UserInfo> = { ssin: 'user-ssin', discipline: Discipline.Nurse };
+
 describe('PrescriptionDetailsSecondaryService', () => {
   let service: PrescriptionDetailsSecondaryService;
   let dialog: MatDialog;
   let consoleSpy: jest.SpyInstance;
-  let mockIdentifyState: any;
-  let mockPatientState: any;
-  let mockEncryptionState: any;
-  let mockPrescriptionState: any;
-  let mockTemplateVersionsState: any;
-  let mockTemplatesState: any;
+  let mockPatientState: StateMock<PatientState>;
+  let mockIdentifyState: StateMock<IdentifyState>;
+  let mockEncryptionState: StateMock<EncryptionState>;
+  let mockPrescriptionState: StateMock<PrescriptionState>;
+  let mockProposalState: StateMock<ProposalState>;
+  let mockTemplatesState: StateMock<TemplatesState>;
+
   let mockDialogRef: { beforeClosed: jest.Mock };
   let mockDialog: jest.Mocked<MatDialog>;
-  let mockProposalState: any;
+
+  let mockTemplateVersionsState: Partial<jest.Mocked<TemplateVersionsState>>;
+  let mockToastService: jest.Mocked<Partial<ToastService>>;
+
+  let patientState: ReturnType<typeof createStateSignal<PersonResource>>;
+  let identifyState: ReturnType<typeof createStateSignal<string>>;
+  let encryptionState: ReturnType<typeof createStateSignal<CryptoKey>>;
+  let prescriptionState: ReturnType<typeof createStateSignal<ReadRequestResource>>;
+  let templatesState: ReturnType<typeof createStateSignal<Template[]>>;
+  let proposalState: ReturnType<typeof createStateSignal<ReadRequestResource>>;
 
   const prescription = prescriptionResponse(null, [mockPerformerTask]) as unknown as ReadRequestResource;
 
@@ -71,13 +93,31 @@ describe('PrescriptionDetailsSecondaryService', () => {
   });
 
   beforeEach(() => {
-    mockPatientState = { state: jest.fn() } as any;
-    mockIdentifyState = { state: jest.fn() } as any;
-    mockEncryptionState = { state: jest.fn() } as any;
-    mockPrescriptionState = { state: jest.fn(), loadPrescription: jest.fn() } as any;
-    mockTemplateVersionsState = { state: jest.fn(), getState: jest.fn() } as any;
-    mockTemplatesState = { state: jest.fn() } as any;
-    mockProposalState = { state: jest.fn() } as any;
+    patientState = createStateSignal<PersonResource>();
+    identifyState = createStateSignal<string>();
+    encryptionState = createStateSignal<CryptoKey>();
+    prescriptionState = createStateSignal<ReadRequestResource>();
+    templatesState = createStateSignal<Template[]>();
+    proposalState = createStateSignal<ReadRequestResource>();
+
+    mockIdentifyState = { state: identifyState };
+    mockEncryptionState = { state: encryptionState };
+    mockPatientState = {
+      state: patientState,
+      loadPatient: jest.fn(),
+      setPatient: jest.fn(),
+    };
+
+    mockPrescriptionState = {
+      state: prescriptionState,
+      loadPrescription: jest.fn(),
+      assignPrescriptionPerformer: jest.fn(),
+    };
+    mockTemplatesState = { state: templatesState };
+    mockProposalState = { state: proposalState, assignProposalPerformer: jest.fn() };
+    mockToastService = { show: jest.fn(), showSomethingWentWrong: jest.fn() };
+
+    mockTemplateVersionsState = { getState: jest.fn() };
 
     mockDialogRef = {
       beforeClosed: jest.fn().mockReturnValue(of(true)),
@@ -110,6 +150,7 @@ describe('PrescriptionDetailsSecondaryService', () => {
         { provide: TemplateVersionsState, useValue: mockTemplateVersionsState },
         { provide: TemplatesState, useValue: mockTemplatesState },
         { provide: ProposalState, useValue: mockProposalState },
+        { provide: ToastService, useValue: mockToastService },
       ],
     });
 
@@ -288,60 +329,68 @@ describe('PrescriptionDetailsSecondaryService', () => {
 
   describe('getPatient', () => {
     it('should return connected user informations when user is patient', () => {
-      mockPatientState.state.mockReturnValue({
+      const patientSpy = jest.spyOn(mockPatientState, 'state');
+      const identifySpy = jest.spyOn(mockIdentifyState, 'state');
+
+      patientState.set({
         data: mockPerson,
         status: LoadingStatus.SUCCESS,
       });
 
-      mockIdentifyState.state.mockReturnValue({
+      identifyState.set({
         data: '85011300242',
         status: LoadingStatus.SUCCESS,
       });
 
       const result = service.getPatient();
 
-      expect(mockPatientState.state).toHaveBeenCalled();
-      expect(mockIdentifyState.state).toHaveBeenCalled();
+      expect(patientSpy).toHaveBeenCalled();
+      expect(identifySpy).toHaveBeenCalled();
       expect(result.data?.ssin).toBe('85011300242');
       expect(result.status).toBe(LoadingStatus.SUCCESS);
     });
 
     it('should return patient informations with SSIN when user is a professional', () => {
+      const patientSpy = jest.spyOn(mockPatientState, 'state');
+      const identifySpy = jest.spyOn(mockIdentifyState, 'state');
+
       mockAuthService.isProfessional.mockReturnValue(of(true));
-      mockPatientState.state.mockReturnValue({
+      patientState.set({
         data: mockPerson,
         status: LoadingStatus.SUCCESS,
       });
 
-      mockIdentifyState.state.mockReturnValue({
+      identifyState.set({
         data: '85011300242',
         status: LoadingStatus.SUCCESS,
       });
 
       const result = service.getPatient();
 
-      expect(mockPatientState.state).toHaveBeenCalled();
-      expect(mockIdentifyState.state).toHaveBeenCalled();
+      expect(patientSpy).toHaveBeenCalled();
+      expect(identifySpy).toHaveBeenCalled();
       expect(result.data?.ssin).toBe('85011300242');
       expect(result.status).toBe(LoadingStatus.SUCCESS);
     });
   });
 
   it('should return LOADING when crypto key is missing', () => {
-    mockPrescriptionState.state.mockReturnValue({
+    prescriptionState.set({
       data: prescription,
       status: LoadingStatus.SUCCESS,
     });
 
-    mockEncryptionState.state.mockReturnValue({
+    encryptionState.set({
       data: undefined,
       status: LoadingStatus.SUCCESS,
     });
 
-    mockTemplateVersionsState.getState.mockReturnValue(() => ({
-      data: { code: 'READ_BLEEDING' },
-      status: LoadingStatus.SUCCESS,
-    }));
+    mockTemplateVersionsState.getState?.mockReturnValue(
+      signal({
+        data: { version: 'READ_BLEEDING', templateId: 1 },
+        status: LoadingStatus.SUCCESS,
+      })
+    );
 
     const result = service.getPrescription();
 
@@ -355,20 +404,22 @@ describe('PrescriptionDetailsSecondaryService', () => {
   });
 
   it('should return SUCCESS when everything is ready', () => {
-    mockPrescriptionState.state.mockReturnValue({
+    prescriptionState.set({
       data: prescription,
       status: LoadingStatus.SUCCESS,
     });
 
-    mockEncryptionState.state.mockReturnValue({
-      data: { key: 'crypto-key' },
+    encryptionState.set({
+      data: { key: 'crypto-key' } as unknown as CryptoKey,
       status: LoadingStatus.SUCCESS,
     });
 
-    mockTemplateVersionsState.getState.mockReturnValue(() => ({
-      data: { code: 'BLEEDING' },
-      status: LoadingStatus.SUCCESS,
-    }));
+    mockTemplateVersionsState.getState?.mockReturnValue(
+      signal({
+        data: { version: 'BLEEDING', templateId: 1 },
+        status: LoadingStatus.SUCCESS,
+      })
+    );
 
     const result_no_intent = service.getPrescription();
     // no intent
@@ -381,32 +432,110 @@ describe('PrescriptionDetailsSecondaryService', () => {
     expect(result.status).toBe(LoadingStatus.SUCCESS);
   });
 
-  it('should return ERROR when pseudonymized key is missing', () => {
-    const prescription = {
-      ...prescriptionResponse(null, [mockPerformerTask]),
-      pseudonymizedKey: null,
-    } as any;
+  describe('getDecryptedResponses', () => {
+    it('should return ERROR when pseudonymized key is missing', () => {
+      const prescription = {
+        ...prescriptionResponse(null, [mockPerformerTask]),
+        pseudonymizedKey: null as any,
+      } as Partial<ReadRequestResource>;
 
-    const prescriptionState = {
-      data: prescription,
-      status: LoadingStatus.SUCCESS,
-    };
-    mockPrescriptionState.state.mockReturnValue(prescriptionState);
+      const prescriptionDefaultState = {
+        data: prescription,
+        status: LoadingStatus.SUCCESS,
+      };
+      prescriptionState.set(prescriptionDefaultState);
 
-    mockTemplateVersionsState.getState.mockReturnValue(() => ({
-      data: mockTemplate,
-      status: LoadingStatus.SUCCESS,
-    }));
+      mockTemplateVersionsState.getState?.mockReturnValue(
+        signal({
+          data: mockTemplate,
+          status: LoadingStatus.SUCCESS,
+        })
+      );
 
-    const result_no_intent = service.getDecryptedResponses();
-    // no intent
-    expect(result_no_intent.status).toBe(LoadingStatus.INITIAL);
+      const result_no_intent = service.getDecryptedResponses();
+      // no intent
+      expect(result_no_intent.status).toBe(LoadingStatus.INITIAL);
 
-    service.intent.set(Intent.ORDER);
+      service.intent.set(Intent.ORDER);
 
-    const result = service.getDecryptedResponses();
-    expect(result.status).toBe(LoadingStatus.ERROR);
-    expect(result.error).toEqual({ decryptedResponses: 'Pseudonymized key missing' });
+      const result = service.getDecryptedResponses();
+      expect(result.status).toBe(LoadingStatus.ERROR);
+      expect(result.error).toEqual({ decryptedResponses: 'Pseudonymized key missing' });
+    });
+    it('should split recommendations from the main data for ANNEX_82 templates', () => {
+      prescriptionState.set({
+        data: { ...prescriptionResponse(null, [mockPerformerTask]), templateCode: TemplateCodes.ANNEX_82 },
+        status: LoadingStatus.SUCCESS,
+      });
+
+      service.decryptedResponses$.set({
+        data: { foo: 'bar', recommendations: ['rec1'], selectedRecommendation: 'rec1' },
+      });
+
+      service.intent.set(Intent.ORDER);
+
+      const mainResult = service.getDecryptedResponses('main');
+      expect(mainResult.status).toBe(LoadingStatus.SUCCESS);
+      expect(mainResult.data).toEqual({ foo: 'bar' });
+
+      const secondaryResult = service.getDecryptedResponses('secondary');
+      expect(secondaryResult.status).toBe(LoadingStatus.SUCCESS);
+      expect(secondaryResult.data).toEqual({ recommendations: ['rec1'], selectedRecommendation: 'rec1' });
+    });
+    it('should return SUCCESS with the full data for non ANNEX_82 templates', () => {
+      prescriptionState.set({
+        data: prescriptionResponse(null, [mockPerformerTask]),
+        status: LoadingStatus.SUCCESS,
+      });
+
+      service.decryptedResponses$.set({ data: { foo: 'bar' } });
+
+      service.intent.set(Intent.ORDER);
+
+      const result = service.getDecryptedResponses();
+      expect(result.status).toBe(LoadingStatus.SUCCESS);
+      expect(result.data).toEqual({ foo: 'bar' });
+    });
+    it('should return undefined when both recommendations and selectedRecommendation are missing', () => {
+      service.intent.set(Intent.PROPOSAL);
+
+      proposalState.set({
+        data: { ...prescriptionResponse(null, [mockPerformerTask]), templateCode: TemplateCodes.ANNEX_81 },
+        status: LoadingStatus.SUCCESS,
+      });
+
+      service.decryptedResponses$.set({
+        data: {},
+      });
+
+      const result = service.getDecryptedResponses('secondary');
+      expect(result.status).toBe(LoadingStatus.SUCCESS);
+      expect(result.data).toBeUndefined();
+    });
+
+    test.each([
+      { recommendations: ['rec1'], selectedRecommendation: undefined },
+      { recommendations: undefined, selectedRecommendation: 'rec1' },
+      { recommendations: ['rec1'], selectedRecommendation: 'rec1' },
+    ])(
+      'should return SUCCESS with the correct data when recommendations and/or selectedRecommendation are present',
+      ({ recommendations, selectedRecommendation }) => {
+        service.intent.set(Intent.PROPOSAL);
+
+        proposalState.set({
+          data: { ...prescriptionResponse(null, [mockPerformerTask]), templateCode: TemplateCodes.ANNEX_82 },
+          status: LoadingStatus.SUCCESS,
+        });
+
+        service.decryptedResponses$.set({
+          data: { recommendations, selectedRecommendation },
+        });
+
+        const result = service.getDecryptedResponses('secondary');
+        expect(result.status).toBe(LoadingStatus.SUCCESS);
+        expect(result.data).toEqual({ recommendations, selectedRecommendation });
+      }
+    );
   });
 
   it('should find performer task by currentTask.taskId', () => {
@@ -423,7 +552,7 @@ describe('PrescriptionDetailsSecondaryService', () => {
       allowedActions: {},
     };
 
-    mockPrescriptionState.state.mockReturnValue({
+    prescriptionState.set({
       data: prescription,
       status: LoadingStatus.SUCCESS,
     });
@@ -493,4 +622,225 @@ describe('PrescriptionDetailsSecondaryService', () => {
       expect(spyLoadPrescription).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('onSelfAssign', () => {
+    it('should show error when onSelfAssign validation fails', () => {
+      const prescriptionSpy = jest.spyOn(mockPrescriptionState, 'assignPrescriptionPerformer');
+      const toastSpy = jest.spyOn(mockToastService, 'showSomethingWentWrong');
+
+      const validUser = UserNurse;
+
+      const invalidCases = [
+        {
+          prescription: { referralTask: { id: 'referral-task-id' }, intent: Intent.ORDER } as ReadRequestResource,
+          user: validUser,
+        },
+        { prescription: { id: 'prescription-id', intent: Intent.ORDER } as ReadRequestResource, user: validUser },
+        {
+          prescription: {
+            id: 'prescription-id',
+            referralTask: { id: 'referral-task-id' },
+            intent: Intent.ORDER,
+          } as ReadRequestResource,
+          user: undefined,
+        },
+        {
+          prescription: {
+            id: 'prescription-id',
+            referralTask: { id: 'referral-task-id' },
+            intent: Intent.ORDER,
+          } as ReadRequestResource,
+          user: {},
+        },
+      ];
+
+      invalidCases.forEach(({ prescription, user }) => {
+        service.onSelfAssign(prescription, user);
+      });
+
+      expect(toastSpy).toHaveBeenCalledTimes(4);
+      expect(prescriptionSpy).not.toHaveBeenCalled();
+    });
+
+    it('should assign prescription successfully and show success toast', () => {
+      const generatedUUIDSetSpy = jest.spyOn(service.generatedUUID, 'set');
+      const prescription = {
+        id: 'prescription-id',
+        referralTask: { id: 'referral-task-id' },
+        intent: Intent.ORDER,
+      } as ReadRequestResource;
+      const user = UserNurse;
+      mockPrescriptionState.assignPrescriptionPerformer?.mockReturnValue(of({ id: 'task-1' }));
+
+      service.generatedUUID.set('mocked-uuid');
+
+      service.onSelfAssign(prescription, user);
+
+      expect(mockPrescriptionState.assignPrescriptionPerformer).toHaveBeenCalledWith(
+        'prescription-id',
+        'referral-task-id',
+        'user-ssin',
+        'NURSE',
+        'PROFESSIONAL',
+        'mocked-uuid',
+        undefined,
+        undefined
+      );
+
+      expect(generatedUUIDSetSpy).toHaveBeenCalledWith('mocked-uuid');
+      expect(mockToastService.show).toHaveBeenCalledWith('prescription.assignPerformer.meSuccess');
+      expect(service.loading()).toBe(false);
+    });
+
+    it('should assign proposal successfully and show success toast', () => {
+      const generatedUUIDSetSpy = jest.spyOn(service.generatedUUID, 'set');
+      const prescription = {
+        id: 'prescription-id',
+        referralTask: { id: 'referral-task-id' },
+        intent: Intent.PROPOSAL,
+      } as ReadRequestResource;
+      const user = UserNurse;
+      mockProposalState.assignProposalPerformer?.mockReturnValue(of({ id: 'task-1' }));
+
+      service.generatedUUID.set('mocked-uuid');
+      service.onSelfAssign(prescription, user);
+
+      expect(mockProposalState.assignProposalPerformer).toHaveBeenCalledWith(
+        'prescription-id',
+        'referral-task-id',
+        'user-ssin',
+        'NURSE',
+        'PROFESSIONAL',
+        'mocked-uuid'
+      );
+      expect(generatedUUIDSetSpy).toHaveBeenCalledWith('mocked-uuid');
+      expect(mockToastService.show).toHaveBeenCalledWith('proposal.assignPerformer.meSuccess');
+    });
+    it('should handle assignment error and show error toast', () => {
+      const generatedUUIDSetSpy = jest.spyOn(service.generatedUUID, 'set');
+
+      const prescription = {
+        id: 'prescription-id',
+        referralTask: { id: 'referral-task-id' },
+        intent: Intent.ORDER,
+      } as ReadRequestResource;
+      const user = UserNurse;
+      mockPrescriptionState.assignPrescriptionPerformer?.mockReturnValue(throwError(() => new Error('API Error')));
+
+      service.generatedUUID.set('mocked-uuid');
+      service.onSelfAssign(prescription, user);
+
+      expect(generatedUUIDSetSpy).toHaveBeenCalledWith('mocked-uuid');
+      expect(mockToastService.showSomethingWentWrong).toHaveBeenCalled();
+      expect(service.loading()).toBe(false);
+    });
+
+    it('should assign with internal assignation type when organization is acting for a professional', () => {
+      (service as any)._isOrganizationAndActingForProfessional = signal(true);
+
+      const prescription: ReadRequestResource = {
+        id: 'prescription-id',
+        referralTask: { id: 'referral-task-id' },
+        intent: Intent.ORDER,
+      };
+      const user = UserNurse;
+
+      mockPrescriptionState.assignPrescriptionPerformer?.mockReturnValue(of({ id: 'task-1' }));
+
+      service.generatedUUID.set('mocked-uuid');
+      service.onSelfAssign(prescription, user);
+
+      expect(mockPrescriptionState.assignPrescriptionPerformer).toHaveBeenCalledWith(
+        'prescription-id',
+        'referral-task-id',
+        'user-ssin',
+        'NURSE',
+        'PROFESSIONAL',
+        'mocked-uuid',
+        AssignationType.Internal,
+        'mock-nihii'
+      );
+    });
+
+    it('should assign with organization when organization is acting for a professional, but the template is an Annex_82', () => {
+      (service as any)._isOrganizationAndActingForProfessional = signal(true);
+
+      const prescription: ReadRequestResource = {
+        id: 'prescription-id',
+        referralTask: { id: 'referral-task-id' },
+        intent: Intent.ORDER,
+        templateCode: TemplateCodes.ANNEX_82,
+      };
+      const user = { organizations: [{ hospital: { nihii: 'mock-nihii' } }] };
+
+      mockPrescriptionState.assignPrescriptionPerformer?.mockReturnValue(of({ id: 'task-1' }));
+
+      service.generatedUUID.set('mocked-uuid');
+      service.onSelfAssign(prescription, user);
+
+      expect(mockPrescriptionState.assignPrescriptionPerformer).toHaveBeenCalledWith(
+        'prescription-id',
+        'referral-task-id',
+        'mock-nihii',
+        '',
+        'hospital',
+        'mocked-uuid',
+        undefined,
+        undefined
+      );
+    });
+
+    it('should extract organization details when currentUser has organizations and is not acting for professional', () => {
+      const prescription: ReadRequestResource = {
+        id: 'prescription-id',
+        referralTask: { id: 'referral-task-id' },
+        intent: Intent.ORDER,
+      };
+
+      const user: Partial<UserInfo> = {
+        organizations: [{ hospital: { nihii: '12345678910' } }],
+      };
+
+      mockPrescriptionState.assignPrescriptionPerformer?.mockReturnValue(of({ id: 'task-1' }));
+
+      service.generatedUUID.set('mocked-uuid');
+      service.onSelfAssign(prescription, user);
+
+      expect(mockPrescriptionState.assignPrescriptionPerformer).toHaveBeenCalledWith(
+        'prescription-id',
+        'referral-task-id',
+        '12345678910',
+        '',
+        'hospital',
+        'mocked-uuid',
+        undefined,
+        undefined
+      );
+    });
+
+    it('should stop loading and show error if ssinOrNihii resolves to empty after checking organizations', () => {
+      const prescription: ReadRequestResource = {
+        id: 'prescription-id',
+        referralTask: { id: 'referral-task-id' },
+        intent: Intent.ORDER,
+      };
+
+      const user: Partial<UserInfo> = {
+        organizations: [{ hospital: { nihii: '' } }], // Missing NIHII
+      };
+
+      service.onSelfAssign(prescription, user);
+
+      expect(service.loading()).toBe(false);
+      expect(mockToastService.showSomethingWentWrong).toHaveBeenCalled();
+      expect(mockPrescriptionState.assignPrescriptionPerformer).not.toHaveBeenCalled();
+    });
+  });
+
+  function createStateSignal<TData, TError = unknown, TParams = Params>() {
+    return signal<DataState<TData, TError, TParams>>({
+      data: undefined,
+      status: LoadingStatus.INITIAL,
+    });
+  }
 });

@@ -1,0 +1,7 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+:host {
+  .response-unknown {
+    border-top: 1px solid mh.$surface-brand-primary-lighter;
+  }
+}

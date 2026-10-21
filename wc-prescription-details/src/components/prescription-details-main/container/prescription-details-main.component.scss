@@ -6,13 +6,6 @@
   display: flex;
   flex-direction: column;
   gap: mh.$spacing-rem-l;
-  border-right: var(--mh-main-details-container-border-right, 1px solid mh.$border-brand-neutral-light);
-
-  @media (max-width: mh.$media-breakpoint-s) {
-    border-right: unset;
-    border-bottom: var(--mh-main-details-container-border-bottom, 1px solid mh.$border-brand-neutral-light);
-    padding-bottom: mh.$spacing-rem-l;
-  }
 
   .row {
     .info-item {

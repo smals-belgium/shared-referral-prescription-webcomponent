@@ -23,7 +23,7 @@ import { DateAdapter, MatOptionModule } from '@angular/material/core';
 import { DateTime } from 'luxon';
 import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
-import { AlertType, DataState, Intent, LoadingStatus } from '@reuse/code/interfaces';
+import { AlertType, DataState, Intent, LoadingStatus, PatientListFilter, TemplateCodes } from '@reuse/code/interfaces';
 import { PaginatorComponent } from '@reuse/code/components/paginator/paginator.component';
 import { PrescriptionsTableComponent } from '../components/prescriptions/prescriptions-table/prescriptions-table.component';
 import { MatSelectModule } from '@angular/material/select';
@@ -57,12 +57,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { PrescriptionsModelsCardComponent } from '../components/models/prescriptions-models-card/prescriptions-models-card.component';
 import { ConfirmDialog } from '@reuse/code/dialogs/confirm/confirm.dialog';
 import { PrescriptionModelService } from '@reuse/code/services/api/prescriptionModel.service';
-import {
-  PrescriptionFilterComponent,
-  SearchFilter,
-} from '@reuse/code/components/prescription-filter/prescription-filter.component';
-import { FeatureFlagDirective } from '@reuse/code/directives/feature-flag.directive';
-import { FeatureFlagService } from '@reuse/code/services/helpers/feature-flag.service';
 import { AlertComponent } from '@reuse/code/components/alert-component/alert.component';
 import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
 import { BehaviorSubject, catchError, EMPTY, Subscription, switchMap } from 'rxjs';
@@ -82,7 +76,7 @@ interface ViewState {
   accessMatrix: AccessMatrix[];
 }
 
-interface SearchCriteria extends SearchFilter {
+interface SearchCriteria {
   historical: boolean;
 }
 
@@ -106,50 +100,65 @@ interface SearchCriteria extends SearchFilter {
     MatButton,
     MatIcon,
     PrescriptionsModelsCardComponent,
-    PrescriptionFilterComponent,
-    FeatureFlagDirective,
   ],
   providers: [{ provide: ALERT_TARGET, useFactory: () => `${ERROR_PRESCRIPTION_LIST}-${crypto.randomUUID()}` }],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestroy {
-  private readonly _cdr = inject(ChangeDetectorRef);
-  private readonly alertService = inject(AlertService);
-  private readonly alertTarget = inject(ALERT_TARGET);
+  // Services
+  private readonly _activeHostService = inject(ActiveOverlayHostService);
+  private readonly _alertService = inject(AlertService);
+  private readonly _authService = inject(AuthService);
+  private readonly _iconRegistryService = inject(IconRegistryService);
+  private readonly _prescriptionModelService = inject(PrescriptionModelService);
+  private readonly _pseudoService = inject(PseudoService);
+  private readonly _translate = inject(TranslateService);
 
-  protected readonly error = this.alertService.setTarget(this.alertTarget);
+  // States
+  private readonly _accessMatrixState = inject(AccessMatrixState);
+  private readonly _modelsState = inject(ModelsState);
+  private readonly _prescriptionsState = inject(PrescriptionsState);
+  private readonly _proposalsState = inject(ProposalsState);
+  private readonly _templatesState = inject(TemplatesState);
+
+  // Other injections
+  private readonly alertTarget = inject(ALERT_TARGET);
+  private readonly _cdr = inject(ChangeDetectorRef);
+  private readonly _dateAdapter = inject(DateAdapter<DateTime>);
+  private readonly _dialog = inject(MatDialog);
+  private readonly _el = inject(ElementRef<HTMLElement>);
+
+  protected readonly error = this._alertService.setTarget(this.alertTarget);
 
   // Protected signals from service
   protected readonly searchCriteria$ = signal<SearchCriteria>({
     historical: false,
-    status: undefined,
-    prescriptionType: undefined,
   });
-  protected readonly discipline$ = toSignal(this.authService.discipline());
+  protected readonly discipline$ = toSignal(this._authService.discipline());
   protected readonly LoadingStatus = LoadingStatus;
   protected readonly AlertType = AlertType;
 
   protected langAlertData: WritableSignal<{ title: string; body: string } | null> = signal(null);
 
   readonly viewStateProposals$: Signal<DataState<ViewState>> = combineSignalDataState({
-    proposals: this.proposalsState.state,
-    templates: this.templatesState.state,
-    accessMatrix: this.accessMatrixState.state,
+    proposals: this._proposalsState.state,
+    templates: this._templatesState.state,
+    accessMatrix: this._accessMatrixState.state,
   });
 
   readonly viewStatePrescriptions$: Signal<DataState<ViewState>> = combineSignalDataState({
-    prescriptions: this.prescriptionsState.state,
-    templates: this.templatesState.state,
-    accessMatrix: this.accessMatrixState.state,
+    prescriptions: this._prescriptionsState.state,
+    templates: this._templatesState.state,
+    accessMatrix: this._accessMatrixState.state,
   });
 
   readonly viewStateModels$: Signal<DataState<ViewState>> = combineSignalDataState({
-    models: this.modelsState.state,
-    templates: this.templatesState.state,
-    accessMatrix: this.accessMatrixState.state,
+    models: this._modelsState.state,
+    templates: this._templatesState.state,
+    accessMatrix: this._accessMatrixState.state,
   });
 
-  private _subscriptions: Subscription = new Subscription();
+  private readonly _subscriptions: Subscription = new Subscription();
 
   isPrescriptionValue: WritableSignal<boolean> = signal(false);
   isProposalValue: WritableSignal<boolean> = signal(false);
@@ -158,52 +167,54 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
   @HostBinding('attr.lang')
   @Input()
   lang = Lang.FR.full;
+
+  /** @deprecated use `filter.patientSsin` instead. Will be removed in v4.0.0. */
   @Input() patientSsin?: string;
+  /** @deprecated use `filter.requesterSsin` instead. Will be removed in v4.0.0. */
   @Input() requesterSsin?: string;
+  /** @deprecated use `filter.performerSsin` instead. Will be removed in v4.0.0. */
   @Input() performerSsin?: string;
+  /** @deprecated use `filter.organizationNihii` instead. Will be removed in v4.0.0. */
+  @Input() organizationNihii?: string;
+
+  @Input() filter?: PatientListFilter;
+
+  effectiveFilter: PatientListFilter = {};
+
+  protected readonly childFilter = computed(() => {
+    const base = this.effectiveFilter;
+    return {
+      ...base,
+      historical: base.historical ?? this.searchCriteria$().historical,
+    };
+  });
   @Input() services!: { getAccessToken: (audience?: string) => Promise<string | null> };
   @Input() intent?: Intent;
 
   @Output() clickOpenDetail = new EventEmitter<ReadRequestResource | ModelEntityDto>();
   @Output() clickCreateDetail = new EventEmitter<SelectedTemplate>();
 
-  private readonly _languageChange = new BehaviorSubject<string>(this.translate.currentLang ?? Lang.FR.full);
+  private readonly _languageChange = new BehaviorSubject<string>(this._translate.currentLang ?? Lang.FR.full);
 
-  constructor(
-    private readonly translate: TranslateService,
-    private readonly pseudoService: PseudoService,
-    private readonly dateAdapter: DateAdapter<DateTime>,
-    private readonly authService: AuthService,
-    private readonly accessMatrixState: AccessMatrixState,
-    private readonly prescriptionsState: PrescriptionsState,
-    private readonly proposalsState: ProposalsState,
-    private readonly templatesState: TemplatesState,
-    private readonly modelsState: ModelsState,
-    private readonly prescriptionModelService: PrescriptionModelService,
-    private readonly dialog: MatDialog,
-    private readonly featureFlagService: FeatureFlagService,
-    private readonly iconRegistryService: IconRegistryService,
-    private readonly el: ElementRef<HTMLElement>,
-    private readonly activeHostService: ActiveOverlayHostService
-  ) {
-    const currentLang = this.translate.currentLang;
+  constructor() {
+    const currentLang = this._translate.currentLang;
     if (!currentLang) {
-      this.translate.use(Lang.FR.full);
-      this.dateAdapter.setLocale(Lang.FR.full);
+      this._translate.use(Lang.FR.full);
+      this._dateAdapter.setLocale(Lang.FR.full);
     }
   }
 
   ngOnInit(): void {
-    this.iconRegistryService.init('error', 'more_vert', 'add', 'delete', 'keyboard_arrow_right', 'close', 'warning');
+    this._iconRegistryService.init('error', 'more_vert', 'add', 'delete', 'keyboard_arrow_right', 'close', 'warning');
 
     this._subscriptions.add(
       this._languageChange
         .pipe(
           tap(lang => {
-            this.dateAdapter.setLocale(lang);
+            this._dateAdapter.setLocale(lang);
           }),
           switchMap(lang => {
-            return this.translate.use(lang).pipe(
+            return this._translate.use(lang).pipe(
               catchError(() => {
                 handleMissingTranslationFile(this.langAlertData, lang);
                 return EMPTY;
@@ -218,24 +229,31 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
         })
     );
 
-    this.activeHostService.set(this.el.nativeElement);
-    this.alertService.setActive(this.alertTarget);
+    this._activeHostService.set(this._el.nativeElement);
+    this._alertService.setActive(this.alertTarget);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['services']) {
-      this.authService.init(this.services.getAccessToken);
-      this.accessMatrixState.loadAccessMatrix();
-      this.templatesState.loadTemplates();
+    const filterInputsChanged = ['patientSsin', 'requesterSsin', 'performerSsin', 'organizationNihii', 'filter'].some(
+      k => k in changes
+    );
+
+    if (filterInputsChanged) {
+      this.effectiveFilter = this.resolveFilter();
     }
+
+    if (changes['services']) {
+      this._authService.init(this.services.getAccessToken);
+      this._accessMatrixState.loadAccessMatrix();
+      this._templatesState.loadTemplates();
+    }
+
     if (changes['lang']) {
-      const currentLang: string = (changes['lang'].currentValue ?? '') as string;
+      const currentLang = (changes['lang'].currentValue ?? '') as string;
       this._languageChange.next(currentLang);
     }
-    if (
-      (changes['patientSsin'] || changes['requesterSsin'] || changes['performerSsin'] || changes['intent']) &&
-      this.intent
-    ) {
+
+    if ((filterInputsChanged || changes['intent']) && this.intent) {
       this.loadData();
       this._cdr.markForCheck();
     }
@@ -245,7 +263,7 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
     const { pageIndex, pageSize } = pageValues ?? {};
 
     if (!this.intent) {
-      this.alertService.showGeneralError(this.alertTarget);
+      this._alertService.showGeneralError(this.alertTarget);
       return;
     }
 
@@ -271,37 +289,35 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
   }
 
   loadPrescriptions(page?: number, pageSize?: number) {
-    if (this.patientSsin) {
-      void this.getPatientIdentifier(this.patientSsin).then(identifier => {
-        this.prescriptionsState.loadPrescriptions(
+    if (this.effectiveFilter.patientSsin) {
+      void this.getPatientIdentifier(this.effectiveFilter.patientSsin).then(identifier => {
+        this._prescriptionsState.loadPrescriptions(
           {
-            requester: this.requesterSsin,
-            performer: this.performerSsin,
+            requester: this.effectiveFilter.requesterSsin,
+            performer: this.effectiveFilter.performerSsin,
+            organization: this.effectiveFilter.organizationNihii,
             historical: this.searchCriteria$().historical,
-            status: this.searchCriteria$().status,
-            template: this.searchCriteria$().prescriptionType,
             patient: identifier,
           },
           page,
           pageSize,
-          this.patientSsin
+          this.effectiveFilter.patientSsin
         );
       });
     } else {
-      this.alertService.showGeneralError(this.alertTarget, 'error.prescription.noPatientSsin');
+      this._alertService.showGeneralError(this.alertTarget, 'error.prescription.noPatientSsin');
     }
   }
 
   loadProposals(page?: number, pageSize?: number) {
-    if (this.patientSsin) {
-      void this.getPatientIdentifier(this.patientSsin).then(identifier => {
-        this.proposalsState.loadProposals(
+    if (this.effectiveFilter.patientSsin) {
+      void this.getPatientIdentifier(this.effectiveFilter.patientSsin).then(identifier => {
+        this._proposalsState.loadProposals(
           {
-            requester: this.requesterSsin,
-            performer: this.performerSsin,
+            requester: this.effectiveFilter.requesterSsin,
+            performer: this.effectiveFilter.performerSsin,
+            organization: this.effectiveFilter.organizationNihii,
             historical: this.searchCriteria$().historical,
-            status: this.searchCriteria$().status,
-            template: this.searchCriteria$().prescriptionType,
             patient: identifier,
           },
           page,
@@ -310,20 +326,20 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
         );
       });
     } else {
-      this.alertService.showGeneralError(this.alertTarget, 'error.prescription.noPatientSsin');
+      this._alertService.showGeneralError(this.alertTarget, 'error.prescription.noPatientSsin');
     }
   }
 
   loadModels(page?: number, pageSize?: number) {
     const pg = page ? page - 1 : 0;
-    this.modelsState.loadModels(pg, pageSize || 10);
+    this._modelsState.loadModels(pg, pageSize || 10);
   }
 
   retryFailedCalls(error: Record<keyof ViewState, unknown> | undefined) {
     this.dismissError();
 
     if (!error) {
-      this.alertService.showGeneralError(this.alertTarget);
+      this._alertService.showGeneralError(this.alertTarget);
       return;
     }
 
@@ -331,12 +347,12 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
       this.loadData();
     }
     if (error.templates) {
-      this.templatesState.loadTemplates();
+      this._templatesState.loadTemplates();
     }
   }
 
   private getPatientIdentifier(identifier: string): Promise<string> {
-    return this.pseudoService.pseudonymize(identifier);
+    return this._pseudoService.pseudonymize(identifier);
   }
 
   handleHistoricPrescriptions(showHistoricPrescriptions: boolean) {
@@ -344,15 +360,6 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
       ...this.searchCriteria$(),
       historical: showHistoricPrescriptions,
     });
-    this.loadData({ pageIndex: 1 });
-  }
-
-  onFilterUpdate(e: SearchFilter) {
-    this.searchCriteria$.set({
-      historical: this.searchCriteria$().historical,
-      ...e,
-    });
-
     this.loadData({ pageIndex: 1 });
   }
 
@@ -382,7 +389,7 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
   }
 
   openCreateDialog(intent: Intent) {
-    this.dialog
+    this._dialog
       .open<ChooseTemplateDialog, unknown, SelectedTemplate>(ChooseTemplateDialog, {
         maxWidth: '100vw',
         width: '500px',
@@ -401,7 +408,7 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
   }
 
   openDeleteModelDialog(model: ModelEntityDto) {
-    this.dialog
+    this._dialog
       .open(ConfirmDialog, {
         panelClass: 'mh-dialog-container',
         data: {
@@ -417,7 +424,7 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
       .beforeClosed()
       .subscribe(accepted => {
         if (accepted === true && model.id) {
-          this.prescriptionModelService.deleteModel(model.id).subscribe({
+          this._prescriptionModelService.deleteModel(model.id).subscribe({
             next: () => {
               const page = this.viewStateModels$().data?.models?.number || 0;
               const pageSize = this.viewStateModels$().data?.models?.size || 10;
@@ -430,7 +437,7 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
 
   openAnnex81ProposalForm() {
     const newPrescriptionDialogResult: SelectedTemplate = {
-      templateCode: 'ANNEX_81',
+      templateCode: TemplateCodes.ANNEX_81,
     };
     this.clickCreateDetail.emit(newPrescriptionDialogResult);
   }
@@ -440,11 +447,11 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
   }
 
   canCreatePrescription() {
-    return this.accessMatrixState.hasAtLeastOnePermissionForAnyTemplate(['createPrescription']);
+    return this._accessMatrixState.hasAtLeastOnePermissionForAnyTemplate(['createPrescription']);
   }
 
   canCreateProposal() {
-    return this.accessMatrixState.hasAtLeastOnePermissionForAnyTemplate(['createProposal']);
+    return this._accessMatrixState.hasAtLeastOnePermissionForAnyTemplate(['createProposal']);
   }
 
   protected readonly showStandaloneError = computed<ResolvedError | null>(() => {
@@ -464,25 +471,58 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
   });
 
   protected dismissError() {
-    this.alertService.clear(this.alertTarget);
+    this._alertService.clear(this.alertTarget);
   }
 
   ngOnDestroy() {
     this.searchCriteria$.set({
       historical: false,
-      status: undefined,
-      prescriptionType: undefined,
     });
 
     this._subscriptions.unsubscribe();
 
-    this.activeHostService.clear(this.el.nativeElement);
+    this._activeHostService.clear(this._el.nativeElement);
 
     this.clearAlertService();
   }
 
   clearAlertService() {
-    this.alertService.resetActive();
-    this.alertService.remove(this.alertTarget);
+    this._alertService.resetActive();
+    this._alertService.remove(this.alertTarget);
+  }
+
+  private resolveFilter(): PatientListFilter {
+    if (this.filter) {
+      if (this.patientSsin || this.requesterSsin || this.performerSsin || this.organizationNihii) {
+        console.warn(
+          '[PatientListComponent] Both `filter` and deprecated filter inputs are set; ' +
+            '`filter` takes precedence and the individual inputs are ignored.'
+        );
+      }
+      return this.filter;
+    }
+
+    const legacy: PatientListFilter = {};
+    if (this.patientSsin) {
+      legacy.patientSsin = this.patientSsin;
+      this.warnDeprecated('patientSsin', 'filter.patientSsin');
+    }
+    if (this.requesterSsin) {
+      legacy.requesterSsin = this.requesterSsin;
+      this.warnDeprecated('requesterSsin', 'filter.requesterSsin');
+    }
+    if (this.performerSsin) {
+      legacy.performerSsin = this.performerSsin;
+      this.warnDeprecated('performerSsin', 'filter.performerSsin');
+    }
+    if (this.organizationNihii) {
+      legacy.organizationNihii = this.organizationNihii;
+      this.warnDeprecated('organizationNihii', 'filter.organizationNihii');
+    }
+    return legacy;
+  }
+
+  private warnDeprecated(oldInput: string, newInput: string): void {
+    console.warn(`[ListComponent] \`${oldInput}\` input is deprecated, use \`${newInput}\` instead.`);
   }
 }

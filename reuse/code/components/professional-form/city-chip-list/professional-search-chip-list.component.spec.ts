@@ -49,7 +49,7 @@ describe('CityChipListComponent', () => {
     expect(removeBtn).toBeTruthy();
     removeBtn.click();
 
-    expect(formGroup.controls.cities.value.length).toBe(0);
+    expect(formGroup.controls.cities.value).toHaveLength(0);
     expect(spyEmit).toHaveBeenCalledTimes(1);
   });
 

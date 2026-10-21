@@ -65,7 +65,7 @@ describe('PrescriptionButtonGroupComponent', () => {
     fixture.detectChanges();
     const { debugElement } = fixture;
     const buttons = debugElement.queryAll(By.css('button'));
-    expect(buttons.length).toBe(0);
+    expect(buttons).toHaveLength(0);
   });
 
   it('should display the start execution button when current task allows start treatment', () => {
@@ -84,7 +84,7 @@ describe('PrescriptionButtonGroupComponent', () => {
 
     const { debugElement } = fixture;
     const buttons = debugElement.queryAll(By.css('button'));
-    expect(buttons.length).toBe(1);
+    expect(buttons).toHaveLength(1);
     expect(buttons[0].nativeElement.textContent).toContain('prescription.startExecution.action');
   });
 
@@ -103,7 +103,7 @@ describe('PrescriptionButtonGroupComponent', () => {
 
     const { debugElement } = fixture;
     const buttons = debugElement.queryAll(By.css('button'));
-    expect(buttons.length).toBe(1);
+    expect(buttons).toHaveLength(1);
     expect(buttons[0].nativeElement.textContent).toContain('prescription.finishExecution.action');
   });
 
@@ -128,7 +128,7 @@ describe('PrescriptionButtonGroupComponent', () => {
 
     const { debugElement } = fixture;
     const buttons = debugElement.queryAll(By.css('button'));
-    expect(buttons.length).toBe(4);
+    expect(buttons).toHaveLength(4);
     expect(buttons[0].nativeElement.textContent).toContain('prescription.finishExecution.action');
     expect(buttons[1].nativeElement.textContent).toContain('prescription.cancelExecution.action');
     expect(buttons[2].nativeElement.textContent).toContain('prescription.transfer');

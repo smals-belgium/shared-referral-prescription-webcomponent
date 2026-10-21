@@ -54,10 +54,9 @@
     <div class="prescriber_actions">
       @if (allowedActions?.canApproveProposal) {
         <button
-          (click)="service.openApproveProposalDialog(alertTarget, prescription)"
-          mat-raised-button
           type="button"
-          color="success"
+          (click)="service.openApproveProposalDialog(alertTarget, prescription)"
+          mat-flat-button
           data-cy="approve-proposal-action-button">
           <mat-icon svgIcon="done" aria-hidden="true"></mat-icon>
           {{ 'proposal.approve.action' | translate }}
@@ -65,10 +64,9 @@
       }
       @if (allowedActions?.canRejectProposal) {
         <button
-          (click)="service.openRejectProposalDialog(alertTarget, prescription)"
-          mat-raised-button
           type="button"
-          color="reject"
+          (click)="service.openRejectProposalDialog(alertTarget, prescription)"
+          mat-stroked-button
           data-cy="reject-proposal-action-button">
           <mat-icon svgIcon="close" aria-hidden="true"></mat-icon>
           {{ 'proposal.reject.action' | translate }}

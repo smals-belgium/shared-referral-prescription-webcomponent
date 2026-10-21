@@ -20,42 +20,43 @@
       matInput
       type="text"
       [formControl]="searchControl"
+      [errorStateMatcher]="customErrorMatcher"
       [placeholder]="(element.placeholderTranslationId && (element.placeholderTranslationId | evfLabel)) || ''"
       #itemInput
       [matAutocomplete]="auto"
       [id]="id"
       (keyup)="updateQuery($event)"
       (paste)="updateQueryOnPaste($event)" />
+    <mat-icon matSuffix svgIcon="search"></mat-icon>
 
     <mat-autocomplete
+      class="evf-multiselect-autocomplete"
       #auto="matAutocomplete"
       [displayWith]="displayWith"
+      [autoActiveFirstOption]="true"
       (optionSelected)="selected($event); itemInput.value = ''">
       @if (options$ | async; as options) {
-        <ng-container>
-          @if (options.hasOwnProperty('translate')) {
-            <mat-option [value]="null">
-              <span class="invalid"
-                ><mat-icon svgIcon="warning" [aria-hidden]="true"></mat-icon>
-                {{ toErrorObject(options).translate | evfLabel }}</span
-              >
+        @if (options.hasOwnProperty('translate')) {
+          <mat-option [value]="null">
+            <span class="invalid"
+              ><mat-icon svgIcon="warning" [aria-hidden]="true"></mat-icon>
+              {{ toErrorObject(options).translate | evfLabel }}</span
+            >
+          </mat-option>
+        }
+        @if (!options.hasOwnProperty('translate')) {
+          @let autocompleteOptionList = toAutocompleteOptionList(options);
+          @for (option of autocompleteOptionList; track option) {
+            <mat-option [value]="option">
+              {{ option.label[currentLang] }}
             </mat-option>
           }
-          @if (!options.hasOwnProperty('translate')) {
-            <ng-container>
-              @for (option of toAutocompleteOptionList(options); track option) {
-                <mat-option [value]="option">
-                  {{ option.label[currentLang] }}
-                </mat-option>
-              }
-              @if (toAutocompleteOptionList(options).length === 0) {
-                <mat-option [value]="null">
-                  {{ 'NO_OPTION_FOUND' | evfLabel }}
-                </mat-option>
-              }
-            </ng-container>
+          @if (autocompleteOptionList.length === 0) {
+            <mat-option [value]="null">
+              {{ 'NO_OPTION_FOUND' | evfLabel }}
+            </mat-option>
           }
-        </ng-container>
+        }
       }
     </mat-autocomplete>
 
@@ -83,15 +84,20 @@
   </mat-form-field>
 
   <!-- Chips representing the actual form control value -->
-  <div [class]="selectedItems().length > 0 ? 'mh-chips mh-margin-bottom' : 'mh-chips'">
-    @for (item of selectedItems(); track item) {
-      <mat-chip (removed)="remove(item)" [removable]="true">
-        {{ item.label[currentLang] }}
-        <button matChipRemove [attr.aria-label]="'remove ' + item.label[currentLang]">
-          <mat-icon svgIcon="cancel" [aria-hidden]="true">cancel</mat-icon>
-        </button>
-      </mat-chip>
-    }
+  <div class="selected_option_container">
+    <mat-chip-grid>
+      @for (item of selectedItems(); track item) {
+        <mat-chip-row class="mh-blue" [disableRipple]="true" (removed)="remove(item)" [removable]="true">
+          {{ item.label[currentLang] }}
+          <button
+            type="button"
+            matChipRemove
+            [attr.aria-label]="('remove' | translate) + ' ' + item.label[currentLang]">
+            <mat-icon svgIcon="close" [aria-hidden]="true"></mat-icon>
+          </button>
+        </mat-chip-row>
+      }
+    </mat-chip-grid>
   </div>
 
   <!-- Hidden input that holds the actual form control value -->

@@ -28,7 +28,7 @@ const config: Config = {
       'jest-preset-angular',
       {
         isolatedModules: false,
-        stringifyContentPathRegex: '\\.(html|svg)$',
+        stringifyContentPathRegex: String.raw`\.(html|svg)$`,
         tsconfig: `${workspaceRoot}/wc-prescription-create/tsconfig.spec.json`,
       },
     ],

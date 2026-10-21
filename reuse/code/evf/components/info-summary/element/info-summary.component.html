@@ -1,0 +1,27 @@
+<evf-form-element-layout [elementLayout]="elementLayout" [elementControl]="elementControl" [metadata]="metadata">
+  @if (!useMatLabel) {
+    <evf-element-label [elementControl]="elementControl" [invalid]="invalid" [for]="id"></evf-element-label>
+  }
+
+  @if (element.bodyTranslationId) {
+    <evf-element-body [elementControl]="elementControl"></evf-element-body>
+  }
+
+  @if (element.helpTranslationId) {
+    <evf-element-help [elementControl]="elementControl"></evf-element-help>
+  }
+
+  <div class="infoblock">
+    <div class="flexBox">
+      <div class="info">
+        <p class="description">{{ 'prescription.create.infoSummary.description' | translate }}</p>
+        <p class="values">{{ formValues() }}</p>
+      </div>
+      <div class="action">
+        <button class="dark-button" mat-icon-button aria-label="{{ 'PREVIOUS' | evfLabel }}" (click)="previousStep()">
+          <mat-icon svgIcon="edit"></mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</evf-form-element-layout>

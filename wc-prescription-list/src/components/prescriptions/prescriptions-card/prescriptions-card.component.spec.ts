@@ -131,6 +131,7 @@ describe('PrescriptionsCardComponent', () => {
 
     fixture = TestBed.createComponent(PrescriptionsCardComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('filter', {});
     fixture.detectChanges();
   });
 
@@ -138,25 +139,32 @@ describe('PrescriptionsCardComponent', () => {
     jest.clearAllMocks();
   });
 
+  it('should throw NG0950 when filter is never set', () => {
+    const freshFixture = TestBed.createComponent(PrescriptionsCardComponent);
+    freshFixture.detectChanges();
+
+    expect(() => freshFixture.componentInstance.filter()).toThrow(/NG0950/);
+  });
+
   it('should create and initialize with default values', () => {
     expect(component).toBeTruthy();
-    expect(component.loading).toBe(false);
-    expect(component.historical).toBe(false);
-    expect(component.error).toBe(undefined);
+    expect(component.loading()).toBe(false);
+    expect(component.filter().historical).toBe(undefined);
+    expect(component.error()).toBe(null);
   });
 
   it('should calculate itemsLength correctly', () => {
     fixture.componentRef.setInput('requestSummaryListResource', undefined);
 
-    expect(component.itemsLength).toBe(-1);
+    expect((component as any).itemsLength()).toBe(-1);
 
     fixture.componentRef.setInput('requestSummaryListResource', { items: [], total: undefined });
 
-    expect(component.itemsLength).toBe(-1);
+    expect((component as any).itemsLength()).toBe(-1);
 
     fixture.componentRef.setInput('requestSummaryListResource', mockRequestSummaryListResource);
 
-    expect(component.itemsLength).toBe(1);
+    expect((component as any).itemsLength()).toBe(1);
   });
 
   it('should initialize data stream when requestSummaryListResource changes with items', () => {
@@ -170,12 +178,11 @@ describe('PrescriptionsCardComponent', () => {
   });
 
   it('should trigger loadMore when anchor element intersects', () => {
-    component.requestSummaryListResource = mockRequestSummaryListResource10;
     fixture.componentRef.setInput('requestSummaryListResource', mockRequestSummaryListResource10);
     fixture.componentRef.setInput('loading', false);
     fixture.componentRef.setInput('error', false);
 
-    expect(component.itemsLength).toBe(10);
+    expect((component as any).itemsLength()).toBe(10);
 
     jest.spyOn(component, 'loadMore');
     jest.spyOn(component, 'canLoadMore').mockReturnValue(true);
@@ -202,7 +209,7 @@ describe('PrescriptionsCardComponent', () => {
     fixture.componentRef.setInput('loading', true);
     fixture.componentRef.setInput('error', false);
 
-    expect(component.itemsLength).toBe(10);
+    expect((component as any).itemsLength()).toBe(10);
 
     jest.spyOn(component, 'loadMore');
     jest.spyOn(component, 'canLoadMore').mockReturnValue(true);
@@ -227,7 +234,7 @@ describe('PrescriptionsCardComponent', () => {
     fixture.componentRef.setInput('loading', false);
     fixture.componentRef.setInput('error', false);
 
-    expect(component.itemsLength).toBe(10);
+    expect((component as any).itemsLength()).toBe(10);
 
     jest.spyOn(component, 'loadMore');
     jest.spyOn(component, 'canLoadMore').mockReturnValue(true);
@@ -275,7 +282,7 @@ describe('PrescriptionsCardComponent', () => {
 
     component.onErrorRetryClick();
 
-    expect(component.error).toBe(undefined);
+    expect(component.error()).toBe(null);
     expect(mockDataService.retryLoad).toHaveBeenCalledWith(1);
   });
 
@@ -311,7 +318,7 @@ describe('PrescriptionsCardComponent', () => {
 
     it('should render prescription cards when items are available', () => {
       const cardElements = fixture.debugElement.nativeElement.querySelectorAll('mat-card');
-      expect(cardElements.length).toBe(1);
+      expect(cardElements).toHaveLength(1);
 
       const statusChip = fixture.debugElement.nativeElement.querySelector('[data-cy="prescription-status"]');
       expect(statusChip).toBeTruthy();

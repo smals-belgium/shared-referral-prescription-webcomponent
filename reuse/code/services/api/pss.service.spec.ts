@@ -1,7 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { PssService } from './pss.service';
-import { PssService as ApiPssService, ControlRequest } from '@reuse/code/openapi';
+import {
+  PssService as ApiPssService,
+  CodedValueItem,
+  ControlRequest,
+  RequestIndicationsRadiology,
+  LanguageCode,
+} from '@reuse/code/openapi';
 import { AutocompleteOption } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { of, skip } from 'rxjs';
 
@@ -76,38 +82,6 @@ describe('PssService', () => {
     });
   });
 
-  describe('sessionStorage management', () => {
-    it('should set pssSessionId in sessionStorage', () => {
-      const sessionId = 'session-123';
-      service.setPssSessionId(sessionId);
-      expect(sessionStorageMock.setItem).toHaveBeenCalledWith('pssSessionId', sessionId);
-    });
-
-    it('should get pssSessionId from sessionStorage', () => {
-      const sessionId = 'session-456';
-      sessionStorageMock.getItem.mockReturnValue(sessionId);
-
-      const result = service.getPssSessionId();
-      expect(sessionStorageMock.getItem).toHaveBeenCalledWith('pssSessionId');
-      expect(result).toBe(sessionId);
-    });
-
-    it('should return null when pssSessionId does not exist', () => {
-      sessionStorageMock.getItem.mockReturnValue(null);
-      expect(service.getPssSessionId()).toBeNull();
-    });
-
-    it('should preserve sessionId after multiple operations', () => {
-      const sessionId = 'final-session';
-
-      service.setPssSessionId('initial-session');
-      service.setPssSessionId(sessionId);
-
-      sessionStorageMock.getItem.mockReturnValue(sessionId);
-      expect(service.getPssSessionId()).toBe(sessionId);
-    });
-  });
-
   describe('geDefault', () => {
     it('should return observable from geDefault', done => {
       const url = 'http://example.com/api';
@@ -123,31 +97,25 @@ describe('PssService', () => {
     });
   });
 
-  describe('PSS API calls', () => {
-    it('should call api.control with ControlRequest', () => {
-      const controlRequest: ControlRequest = { id: '123' } as any;
-      service.getPssRecommendations(controlRequest);
-      expect(apiPssServiceMock.control).toHaveBeenCalledWith(controlRequest);
-    });
-
-    it('should call api.controlByPssExchangeId with exchangeId', () => {
-      const exchangeId = 'exchange-789';
-      service.getPssRecommendationsByExchangeId(exchangeId);
-      expect(apiPssServiceMock.controlByPssExchangeId).toHaveBeenCalledWith(exchangeId);
-    });
-  });
-
   describe('Radiology API calls', () => {
     it('should call api.findAllIndicationsRadiology with params', () => {
-      const params = ['param1', 'param2'];
+      const codedValueItem1: CodedValueItem = {
+        system: 'snomed',
+        code: 'param1',
+      };
+      const codedValueItem2: CodedValueItem = {
+        system: 'snomed',
+        code: 'param2',
+      };
+
+      const params: RequestIndicationsRadiology = {
+        age: 30,
+        gender: 'female',
+        indicationProposal: [codedValueItem1, codedValueItem2],
+        intention: codedValueItem1,
+      };
       service.getIndications(params);
       expect(apiPssServiceMock.findAllIndicationsRadiology).toHaveBeenCalledWith(params);
-    });
-
-    it('should call api.findAllProcedures with params', () => {
-      const params = 'procedure-123';
-      service.getIntentions(params);
-      expect(apiPssServiceMock.findAllProcedures).toHaveBeenCalledWith(params);
     });
   });
 });

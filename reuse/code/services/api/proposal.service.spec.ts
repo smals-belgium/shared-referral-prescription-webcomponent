@@ -54,6 +54,7 @@ describe('ProposalService', () => {
         patient: 'patient-123',
         requester: 'requester-456',
         performer: 'performer-789',
+        organization: 'organization-123',
         historical: true,
       };
       const page = 0;
@@ -65,6 +66,7 @@ describe('ProposalService', () => {
         'patient-123',
         'requester-456',
         'performer-789',
+        'organization-123',
         true,
         page,
         pageSize
@@ -78,6 +80,7 @@ describe('ProposalService', () => {
       service.findAll(undefined, page, pageSize);
 
       expect(apiProposalServiceMock.getAllProposals).toHaveBeenCalledWith(
+        undefined,
         undefined,
         undefined,
         undefined,
@@ -97,7 +100,7 @@ describe('ProposalService', () => {
       expect(apiProposalServiceMock.getProposal).toHaveBeenCalledWith(proposalId, undefined);
     });
 
-    it('should call api.getProposal with proposalId', () => {
+    it('should call api.getProposal with proposalId when xActorCaregiverSsin is provided', () => {
       const proposalId = 'proposal-123';
       const xActorCaregiverSsin = 'xActorCaregiverSsin';
 

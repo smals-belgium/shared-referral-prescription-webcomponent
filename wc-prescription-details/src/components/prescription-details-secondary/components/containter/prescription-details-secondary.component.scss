@@ -14,4 +14,10 @@
     @include mh.font-heading-4();
     color: var(--mh-secondary-details-container-care-giver-title, mh.$typography-brand-primary-darker);
   }
+
+  .row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
 }

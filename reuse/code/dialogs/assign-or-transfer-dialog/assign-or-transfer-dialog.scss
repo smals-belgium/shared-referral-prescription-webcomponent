@@ -8,6 +8,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  .mat-mdc-dialog-title {
+    padding: var(--mat-dialog-large-headline-padding, 0 0 10px);
+  }
+}
+
+.mat-mdc-dialog-content {
+  padding: var(--mat-dialog-large-content-padding, 20px 0);
+  max-height: var(--mat-dialog-large-content-max-height, unset);
+}
+
+.mb-1 {
+  margin-bottom: 10px;
 }
 
 .search-form {

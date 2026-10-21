@@ -1,4 +1,4 @@
-{
+﻿{
   "common": {
     "yes": "Yes",
     "no": "No",
@@ -73,7 +73,8 @@
         "header": "Technical issue",
         "subheader": "An error occurred. Please try again in a few moments."
       }
-    }
+    },
+    "comment": "Comment"
   },
   "pagination": {
     "ariaLabel": {
@@ -137,7 +138,8 @@
           "relevantInfo": "Element not taken into account by PSS",
           "chosenExam": "The prescribed examination does not follow the current recommendations",
           "chosenExamScore": "only achieves a score of {score}/9",
-          "noDefaultExam": "No prescribed examination complies with the PSS recommendations."
+          "noDefaultExam": "No prescribed examination complies with the PSS recommendations.",
+          "chosenExamNoScore": ""
         }
       },
       "deletePrescription": {
@@ -260,8 +262,8 @@
       "dialog": {
         "title": "Assigning a healthcare provider or an organization: what are the impacts?",
         "description": {
-          "other": "Once you have completed your search, you can <b>assign</b> the person or organization of your choice.",
-          "patient": "Once you have completed your search, you can <b>assign</b> the person or organization of your choice.\n\nNext steps:\n<ul>\n<li>Contact the healthcare provider or organization to schedule an appointment.</li>\n<li>The assignment gives the healthcare provider or organization access to the prescription so that they can assess your needs.</li>\n<li>Have you chosen an organization? It will appoint the healthcare provider or providers who will take care of you. Their names will be added to the prescription.</li>\n</ul>"
+          "other": "Once you have completed your search, you can \u003cb\u003eassign\u003c/b\u003e the person or organization of your choice.",
+          "patient": "Once you have completed your search, you can \u003cb\u003eassign\u003c/b\u003e the person or organization of your choice.\n\nNext steps:\n\u003cul\u003e\n\u003cli\u003eContact the healthcare provider or organization to schedule an appointment.\u003c/li\u003e\n\u003cli\u003eThe assignment gives the healthcare provider or organization access to the prescription so that they can assess your needs.\u003c/li\u003e\n\u003cli\u003eHave you chosen an organization? It will appoint the healthcare provider or providers who will take care of you. Their names will be added to the prescription.\u003c/li\u003e\n\u003c/ul\u003e"
         }
       },
       "locationsHint": "Search by postal code or city name",
@@ -444,6 +446,21 @@
         }
       },
       "action": "Close"
+    },
+    "detail": {
+      "radio": {
+        "secondaryPanel": {
+          "title": "",
+          "info": ""
+        },
+        "takeInCharge": {
+          "label": "",
+          "action": ""
+        },
+        "validate": {
+          "action": ""
+        }
+      }
     }
   },
   "proposal": {
@@ -506,7 +523,7 @@
     "careGivers": "Care provider(s)",
     "assigned": "Assigned",
     "noProposalsForPatient": "This patient has not yet received any proposals.",
-    "noProposalsForUser": "You don't have any proposals yet.",
+    "noProposalsForUser": "You don\u0027t have any proposals yet.",
     "assignPerformer": {
       "title": "Find a doctor",
       "success": "{firstName} {lastName} has been assigned as your care provider.",
@@ -829,6 +846,12 @@
       "unknown": "An error occurred. Please try again in a few moments.",
       "PRESCRIPTION_NOT_COMPLETED": {
         "default": "Prescription cannot be closed"
+      },
+      "MISSING_REASON_OF_DEVIATION": {
+        "default": ""
+      },
+      "INVALID_PREFILLED_REASON_OF_DEVIATION": {
+        "default": ""
       }
     }
   },
@@ -844,5 +867,16 @@
     "nextMultiYear": "Next 24 years",
     "switchToMonthView": "Choose date",
     "switchToMultiYearView": "Choose month and year"
-  }
+  },
+  "templateName": {
+    "proposalPrefix": ""
+  },
+  "ANNEX_82.create.tmp-addInfo-preg": "",
+  "ANNEX_82.create.tmp-addInfo-diab": "",
+  "ANNEX_82.create.tmp-addInfo-all": "",
+  "ANNEX_82.create.tmp-addInfo-metdeb": "",
+  "ANNEX_82.create.tmp-addInfo-rendys": "",
+  "ANNEX_82.create.tmp-addInfo-unknown": "",
+  "ANNEX_82.create.tmp-addInfo-impl": "",
+  "ANNEX_82.create.tmp-addInfo": ""
 }

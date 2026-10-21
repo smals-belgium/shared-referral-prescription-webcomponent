@@ -47,8 +47,9 @@ those changes. ⚠️
 Before you start using the Web Components, you must first complete the onboarding process with eHealth. The Web
 Components require a valid access token issued specifically for your personal **public Client ID**.
 
-In addition, the components rely on token exchange operations to function properly. As such, this part of the onboarding
-process is mandatory and **must** also be completed.
+In a **P2M** context, token exchange is required and must be configured during onboarding.
+In an **M2M** context, token exchange is not supported; required IAM tokens must be obtained directly
+(see [M2M integration](#m2m-machine-to-machine-integration)).
 
 ## 🧩 Available Web Component
 
@@ -63,7 +64,7 @@ Three Web Components are available :
 
 The webcomponents are available through npm install. The acceptance URLs below are only provided to
 view a running example and must not be used to load the components in your application (see the
-deprecation notice below the table).
+decommission notice below the table).
 
 |      Component       | Component name                      | npm package                                                                    |                                                                 Acceptance URL                                                                 |
 | :------------------: | ----------------------------------- | ------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------: |
@@ -71,15 +72,14 @@ deprecation notice below the table).
 | Prescription details | nihdi-referral-prescription-details | https://www.npmjs.com/package/@smals-belgium-shared/uhmep-prescription-details | [wc-prescription-details](https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/prescription-details/wc-prescription-details.js) |
 |  List prescriptions  | nihdi-referral-prescription-list    | https://www.npmjs.com/package/@smals-belgium-shared/uhmep-prescription-list    |     [wc-list-prescriptions](https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/prescription-list/wc-prescription-list.js)     |
 
-> ⚠️ **Deprecation notice — direct loading from the acceptance URL**
+> ⚠️ **Decommission notice — direct loading from the acceptance URL**
 >
 > Referencing the Web Components directly from the acceptance URL
-> (`https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/...`) is **deprecated**.
-> This way of consuming the Web Components will be **decommissioned as from version 3.0.0**.
+> (`https://wwwacc.referral-prescription.ehealth.fgov.be/web-components/...`) is **no longer supported**.
+> This consumption mode has been **decommissioned since version 3.0.0** and will disappear in version 4.
 >
-> As from that version, the only supported integration is the **npm package**: install the package,
-> bundle it with your application and serve the resulting files from your own infrastructure. Please
-> plan this migration before upgrading to version 3.0.0.
+> The only supported integration is via the **npm packages**: install the package,
+> bundle it with your application and serve the resulting files from your own infrastructure.
 
 ### 🔌 Wrapper Integration
 
@@ -272,10 +272,31 @@ M2M is not a separate build or a dedicated input flag: the components automatica
 
 #### Prerequisites
 
-- Complete the eHealth onboarding for your organization, including the **token exchange**
-  configuration (see [Prerequisite](#-prerequisite)).
-- Obtain a valid access token for your organization's system account and be able to exchange it for
-  the audiences requested by the components (via the `getAccessToken(audience)` callback).
+Note : all information regarding the required scopes and their configuration as part of the eHealth onboarding process is documented in the [UHMEP eReferral Integration Guide](https://www.ehealth.fgov.be/ehealthplatform/fr/service-ereferral)
+
+In an M2M context, IAM token exchange is not supported. Token exchange is only applicable in a P2M authentication context.
+The integrating application must therefore obtain the required access tokens directly from IAM:
+
+For **pseudonymisation-related operations**, request a token with the following scopes:
+
+- pseudo:api:pseudonymize
+- pseudo:api:identify
+- nihdi:uhmep:pseudo
+- openid
+- iam:authz
+
+For **organization-related operations**, request a token with the following scopes:
+
+- nihdi:uhmep:organization
+- openid
+- iam:authz
+
+The Web Components request the appropriate token through the getAccessToken(audience) callback:
+
+- when `audience` is empty, `getAccessToken(audience)` must return the access token with the `pseudonymization` scopes;
+- when `audience` is provided, `getAccessToken(audience)` must return the access token with the `organisation` scopes.
+
+The integrating application is responsible for requesting and orchestrating these tokens.
 
 #### Providing the organization identity
 
@@ -614,7 +635,8 @@ are shown in the following sample code) :
 
 ℹ️ The script **must** be served by your own application, from the bundle installed through the npm
 package. Pointing the `src` attribute to the acceptance URL is deprecated and will no longer be
-possible as from version 3.0.0 (see the [deprecation notice](#-available-web-component)).
+possible as from version 3.0.0 (see the [deprecation notice](#-available-web-component)) and will
+disappear in version 4.
 
 ### Web Component creation
 
@@ -955,6 +977,12 @@ Below is a complete list of the variables that can be overridden:
 
 - --mh-multiselect-overlay-min-height
 
+### Container
+
+- --mh-prescription-create-container-max-width-s
+- --mh-prescription-create-container-max-width-m
+- --mh-prescription-create-container-max-width-l
+
 ---
 
 ## Nihdi Referral Prescription Details
@@ -1146,11 +1174,27 @@ Below is a complete list of the variables that can be overridden:
 - --mh-evf-disc-list-margin
 - --mh-evf-disc-list-padding-inline-start
 
+### Spacing
+
+- --mh-spacing-extra-large
+- --mh-spacing-larger
+- --mh-spacing-large
+- --mh-spacing-medium
+- --mh-spacing-small
+- --mh-spacing-smaller
+- --mh-spacing-extra-small
+- --mh-spacing-extra-extra-small
+
+### Container
+
+- --mh-prescription-details-container-max-width-s
+- --mh-prescription-details-container-max-width-m
+- --mh-prescription-details-container-max-width-l
+
 ## 🚀 Getting started
 
-1. Install the Web Component you need from npm (see the [table above](#-available-web-component)), or
-   reference the bundle directly from the acceptance URL.
-2. Complete the eHealth onboarding, including the token exchange (see [Prerequisite](#-prerequisite)).
+1. Install the Web Component you need from npm (see the [table above](#-available-web-component)).
+2. Complete the eHealth onboarding (for P2M: including token exchange; for M2M: request the required IAM scopes directly) (see [Prerequisite](#-prerequisite)).
 3. Provide the required inputs, in particular the `services` object returning the access and id tokens.
 4. Start from the [showcase examples](#showcase) and adapt them to your own stack.
 

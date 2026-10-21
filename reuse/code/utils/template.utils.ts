@@ -29,3 +29,6 @@ export function flattenElements(elements?: FormElement[]): FormElement[] {
     return acc;
   }, [] as FormElement[]);
 }
+
+export const isCodeIn = <T extends Record<string, string>>(group: T, code: string): code is T[keyof T] =>
+  (Object.values(group) as string[]).includes(code);

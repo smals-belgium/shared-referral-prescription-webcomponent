@@ -1,5 +1,5 @@
 <div #scrollframe>
-  @if (itemsLength > 0) {
+  @if (itemsLength() > 0) {
     <div class="grid-container mh-margin-top-bottom">
       @for (model of modelData(); track trackById(model)) {
         <mat-card appearance="raised" (click)="openPrescriptionModel.emit(model)">
@@ -49,7 +49,7 @@
         </mat-card>
       }
     </div>
-  } @else if (itemsLength === 0) {
+  } @else if (itemsLength() === 0) {
     <div class="mh-margin-top-bottom">
       <app-alert
         [severity]="AlertType.Info"
@@ -67,20 +67,21 @@
     </div>
   }
 
-  @if (loading || isLoading()) {
+  @let err = error();
+  @if (loading() || isLoading()) {
     <div class="mh-margin-top-bottom">
       <app-skeleton [items]="3" [format]="FormatEnum.CARD"></app-skeleton>
     </div>
-  } @else if (error) {
+  } @else if (err) {
     <div class="mh-margin-top-bottom">
       <app-alert
-        [severity]="error.severity"
-        [title]="error.title"
-        [subTitle]="error.subTitle"
-        [message]="error.message"
-        [dismissible]="error.dismissible"
-        [retry]="error.retry"
-        [errorId]="error.errorId"
+        [severity]="err.severity"
+        [title]="err.title"
+        [subTitle]="err.subTitle"
+        [message]="err.message"
+        [dismissible]="err.dismissible"
+        [retry]="err.retry"
+        [errorId]="err.errorId"
         (clickClose)="dismissOnError.emit()"
         (clickRetry)="onErrorRetryClick()"></app-alert>
     </div>

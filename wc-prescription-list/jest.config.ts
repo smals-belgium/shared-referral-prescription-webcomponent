@@ -7,7 +7,7 @@ import type { Config } from 'jest';
 import { resolve } from 'node:path';
 import { config as jestBaseConfig } from '../jest.base.config';
 
-const workspaceRoot = resolve(__dirname, '..').replace(/\\/g, '/');
+const workspaceRoot = resolve(__dirname, '..').replaceAll('\\', '/');
 
 const config: Config = {
   ...jestBaseConfig,
@@ -32,7 +32,7 @@ const config: Config = {
       'jest-preset-angular',
       {
         isolatedModules: false,
-        stringifyContentPathRegex: '\\.(html|svg)$',
+        stringifyContentPathRegex: String.raw`\.(html|svg)$`,
         tsconfig: `${workspaceRoot}/wc-prescription-list/tsconfig.spec.json`,
       },
     ],

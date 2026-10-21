@@ -1,0 +1,31 @@
+<div class="pss-recommendation-card" [class.selectable]="selectable()" (click)="onCardClick()">
+  <div class="pss-recommendation-card-row">
+    @if (selectable()) {
+      <mat-radio-button
+        [name]="name()"
+        [disabled]="disabled()"
+        [checked]="checked()"
+        (click)="$event.stopPropagation()"
+        (change)="onCardClick()" />
+    }
+
+    <div class="pss-recommendation-card-content">
+      @if (hasScore() && selectable()) {
+        <app-pss-score-bar [score]="recommendation().score!" />
+      }
+
+      <p class="exam-name">{{ examName() }}</p>
+
+      @if (hasScore() && !selectable()) {
+        <app-pss-score-bar [score]="recommendation().score!" />
+      }
+    </div>
+  </div>
+
+  @if (hasScore() && selectable()) {
+    <div class="pss-recommendation-card-row radiation">
+      <p class="label">{{ 'prescription.create.control.table.radiationRate' | translate }}</p>
+      <app-pss-radiation-rate [level]="radiationLevel()" />
+    </div>
+  }
+</div>

@@ -1,0 +1,13 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+:host {
+  form {
+    margin-top: mh.$spacing-rem-l;
+    margin-bottom: mh.$spacing-rem-l;
+  }
+  ::ng-deep {
+    evf-radio.form-element {
+      padding: 0;
+    }
+  }
+}

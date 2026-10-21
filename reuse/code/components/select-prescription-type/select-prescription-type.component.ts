@@ -23,6 +23,7 @@ import { toSearchString } from '@reuse/code/utils/utils';
 import { HighlightFilterPipe } from '@reuse/code/pipes/highlight-filter.pipe';
 import { ModelEntityDto, Template } from '@reuse/code/openapi';
 import { NURSING_CODES, PHYSIOTHERAPY_CODES, RADIOLOGY_CODES, TemplateCategory } from '@reuse/code/interfaces';
+import { isCodeIn } from '@reuse/code/utils/template.utils';
 
 @Component({
   selector: 'app-select-prescription-type',
@@ -210,11 +211,11 @@ const getFilteredTemplates = (templates: Template[], category: unknown): Templat
 
   switch (category.code) {
     case 'nursingCare':
-      return templates.filter(e => e.code && NURSING_CODES.includes(e.code));
+      return templates.filter(e => e.code && isCodeIn(NURSING_CODES, e.code));
     case 'radiology':
-      return templates.filter(e => e.code && RADIOLOGY_CODES.includes(e.code));
+      return templates.filter(e => e.code && isCodeIn(RADIOLOGY_CODES, e.code));
     case 'physiotherapy':
-      return templates.filter(e => e.code && PHYSIOTHERAPY_CODES.includes(e.code));
+      return templates.filter(e => e.code && isCodeIn(PHYSIOTHERAPY_CODES, e.code));
     default:
       return [];
   }

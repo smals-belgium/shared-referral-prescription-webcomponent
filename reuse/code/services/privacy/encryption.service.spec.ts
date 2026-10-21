@@ -11,7 +11,7 @@ describe('EncryptionService', () => {
   it('crypto check', async () => {
     const data = new Uint8Array([1, 2, 3]);
 
-    expect(data instanceof Uint8Array).toBe(true);
+    expect(data).toBeInstanceOf(Uint8Array);
 
     const key = await crypto.subtle.generateKey(
       {

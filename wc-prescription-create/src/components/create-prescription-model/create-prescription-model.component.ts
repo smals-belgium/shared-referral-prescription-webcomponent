@@ -33,9 +33,9 @@ import {
 import { isOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
 import { FormDataType, FormElement, TemplateVersion } from '@reuse/code/openapi';
 import { EvfFormWebComponent } from '../evf-form/evf-form.component';
-import TypeEnum = FormDataType.TypeEnum;
 import { AlertService } from '@reuse/code/services/helpers/alert.service';
 import { ALERT_TARGET } from '@reuse/code/constants/error';
+import TypeEnum = FormDataType.TypeEnum;
 
 @Component({
   selector: 'app-create-prescription-model',
@@ -255,8 +255,7 @@ export class CreatePrescriptionModelComponent implements OnDestroy, OnChanges {
           element.validations = element.validations.filter(validation => validation.name !== 'required');
         }
 
-        const shouldInclude =
-          element.dataType?.type !== TypeEnum.Date && !(element.elements && element.elements.length === 0);
+        const shouldInclude = element.dataType?.type !== TypeEnum.Date && !(element.elements?.length === 0);
 
         if (shouldInclude) {
           filteredElements.push(element);

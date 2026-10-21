@@ -39,6 +39,9 @@ describe('AlertComponent', () => {
 
     fixture.componentRef.setInput('dismissible', false);
     expect((component as any).dismissMode()).toBe('pinned');
+
+    fixture.componentRef.setInput('expandable', true);
+    expect((component as any).dismissMode()).toBe('expandable');
   });
 
   it('should emit clickRetry event', () => {

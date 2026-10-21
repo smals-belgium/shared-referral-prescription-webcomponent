@@ -20,7 +20,7 @@
   @if (viewStatePrescriptions$(); as prescriptionState) {
     @if (viewStatePrescriptions$(); as prescriptionState) {
       <div class="container">
-        <div class="flex-container align-right">
+        <div class="flex align-center justify-between-align-right mb-3">
           @if (canCreatePrescription()) {
             <button
               type="button"
@@ -31,24 +31,12 @@
               {{ 'prescription.create.prescription' | translate }}
             </button>
           }
-          <div *featureFlag="'ui-filters'">
-            @if (prescriptionState.data?.templates) {
-              <app-responsive-wrapper>
-                <ng-template #desktopTemplate>
-                  <app-prescription-filter
-                    intent="order"
-                    [templates]="prescriptionState.data!.templates!"
-                    [accessMatrix]="prescriptionState.data!.accessMatrix!"
-                    [initialFilter]="searchCriteria$()"
-                    (filterChange)="onFilterUpdate($event)"></app-prescription-filter>
-                </ng-template>
-              </app-responsive-wrapper>
-            }
-          </div>
 
-          <app-toggle-historic-prescriptions
-            (toggleChanged)="handleHistoricPrescriptions($event)"
-            [isChecked]="searchCriteria$().historical"></app-toggle-historic-prescriptions>
+          @if (effectiveFilter.historical === undefined) {
+            <app-toggle-historic-prescriptions
+              (toggleChanged)="handleHistoricPrescriptions($event)"
+              [isChecked]="searchCriteria$().historical"></app-toggle-historic-prescriptions>
+          }
         </div>
 
         <app-responsive-wrapper>
@@ -92,10 +80,7 @@
                 prescriptionState.status === LoadingStatus.LOADING ||
                 prescriptionState.status === LoadingStatus.UPDATING
               "
-              [historical]="searchCriteria$().historical"
-              [patientSsin]="patientSsin"
-              [requesterSsin]="requesterSsin"
-              [performerSsin]="performerSsin"
+              [filter]="childFilter()"
               [error]="error()"
               (retryOnError)="retryFailedCalls(prescriptionState.error)"
               (dismissOnError)="dismissError()"
@@ -120,7 +105,7 @@
 @if (isProposalValue()) {
   @if (viewStateProposals$(); as proposalState) {
     <div class="container">
-      <div class="flex-container align-right">
+      <div class="flex align-center justify-between-align-right mb-3">
         @if (canCreateProposal()) {
           <button
             type="button"
@@ -131,23 +116,12 @@
             {{ 'proposal.create.proposal' | translate }}
           </button>
         }
-        <div *featureFlag="'ui-filters'">
-          @if (proposalState.data?.templates) {
-            <app-responsive-wrapper>
-              <ng-template #desktopTemplate>
-                <app-prescription-filter
-                  intent="proposal"
-                  [templates]="proposalState.data!.templates!"
-                  [accessMatrix]="proposalState.data!.accessMatrix!"
-                  [initialFilter]="searchCriteria$()"
-                  (filterChange)="onFilterUpdate($event)"></app-prescription-filter>
-              </ng-template>
-            </app-responsive-wrapper>
-          }
-        </div>
-        <app-toggle-historic-prescriptions
-          (toggleChanged)="handleHistoricPrescriptions($event)"
-          [isChecked]="searchCriteria$().historical"></app-toggle-historic-prescriptions>
+
+        @if (effectiveFilter.historical === undefined) {
+          <app-toggle-historic-prescriptions
+            (toggleChanged)="handleHistoricPrescriptions($event)"
+            [isChecked]="searchCriteria$().historical"></app-toggle-historic-prescriptions>
+        }
       </div>
 
       <app-responsive-wrapper>
@@ -185,10 +159,7 @@
             [loading]="
               proposalState.status === LoadingStatus.LOADING || proposalState.status === LoadingStatus.UPDATING
             "
-            [historical]="searchCriteria$().historical"
-            [patientSsin]="patientSsin"
-            [requesterSsin]="requesterSsin"
-            [performerSsin]="performerSsin"
+            [filter]="childFilter()"
             [error]="error()"
             (retryOnError)="retryFailedCalls(proposalState.error)"
             (dismissOnError)="dismissError()"
@@ -212,7 +183,7 @@
 @if (isModelValue()) {
   @if (viewStateModels$(); as modelState) {
     <div class="container">
-      <div class="flex-container">
+      <div class="flex align-center justify-between-align-right mb-3">
         @if (canCreatePrescription()) {
           <button type="button" mat-flat-button data-cy="create-model-button" (click)="openNewModelDialog()">
             <mat-icon svgIcon="add" aria-hidden="true"></mat-icon>

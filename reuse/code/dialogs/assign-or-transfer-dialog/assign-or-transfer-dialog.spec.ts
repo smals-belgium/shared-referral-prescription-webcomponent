@@ -1,13 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { AssignOrTransferDialog, AssignOrTransferDialogData } from './assign-or-transfer-dialog';
-
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { PrescriptionState } from '@reuse/code/states/api/prescription.state';
 import { ProposalState } from '@reuse/code/states/api/proposal.state';
 import { HealthcareProviderService } from '@reuse/code/services/api/healthcareProvider.service';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
 import * as uuid from 'uuid';
 import { Intent } from '@reuse/code/interfaces';
@@ -16,6 +14,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import {
+  Discipline,
   HealthcareProResource,
   HealthCareProviderRequestResource,
   HealthCareProviderResource,
@@ -82,14 +81,9 @@ describe('AssignOrTransferDialog', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        AssignOrTransferDialog,
-        ReactiveFormsModule,
-        NoopAnimationsModule,
-        TranslateModule.forRoot(),
-        MatIconTestingModule,
-      ],
+      imports: [AssignOrTransferDialog, ReactiveFormsModule, NoopAnimationsModule, MatIconTestingModule],
       providers: [
+        provideTranslateService(),
         { provide: MAT_DIALOG_DATA, useValue: dialogData },
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: ToastService, useValue: mockToastService },
@@ -100,6 +94,9 @@ describe('AssignOrTransferDialog', () => {
         provideHttpClientTesting(),
       ],
     }).compileComponents();
+
+    const translateService = TestBed.inject(TranslateService);
+    translateService.currentLang = 'en';
 
     fixture = TestBed.createComponent(AssignOrTransferDialog);
     component = fixture.componentInstance;
@@ -279,7 +276,6 @@ describe('AssignOrTransferDialog', () => {
             type: ProviderType.Professional,
           },
         ],
-
         total: 1,
       };
 
@@ -388,6 +384,31 @@ describe('AssignOrTransferDialog', () => {
         10
       );
     });
+
+    it('should call findAll with category radiology and set organizations and disciplines', () => {
+      component['data'] = { ...dialogData, category: 'radiology' };
+
+      const response: HealthCareProviderRequestResource = { healthcarePro: [], total: 0 };
+      healthcareProviderServiceMock.findAll.mockReturnValue(of(response));
+
+      component.onSearch({ query: 'John', cities: [{ zipCode: 1000 }] });
+
+      component['providerType'].set(ProviderType.Organization);
+      fixture.detectChanges();
+
+      expect(healthcareProviderServiceMock.findAll).toHaveBeenCalledWith(
+        'John',
+        [1000],
+        [Discipline.Physician],
+        ['OFFICE_DOCTORS', 'GROUPOFDOCTORS', 'GUARD_POST', 'MEDICAL_HOUSE', 'HOSPITAL'],
+        ProviderType.Organization,
+        '123',
+        Intent.ORDER,
+        component.currentLang,
+        1,
+        10
+      );
+    });
   });
   describe('goBackToSearch', () => {
     it('should reset pagination and reset query field when professional form is about to be displayed', () => {
@@ -472,7 +493,36 @@ describe('AssignOrTransferDialog', () => {
       expect(UndefinedComponent.infoAlertDescription()).toBe(`prescription.assignPerformer.dialog.description.other`);
     });
   });
+  describe('providerTypeOptions', () => {
+    it('should use all provider types by default when no filter is supplied', () => {
+      expect(component['providerTypeOptions']()).toEqual([
+        ProviderType.All,
+        ProviderType.Professional,
+        ProviderType.Organization,
+      ]);
+    });
+
+    it('should use the provider type filter supplied in dialog data', () => {
+      const providerTypeFilter = [ProviderType.Professional];
+      component['data'] = { ...dialogData, providerTypeFilter };
+
+      component.ngOnInit();
+
+      expect(component['providerTypeOptions']()).toEqual(providerTypeFilter);
+    });
+  });
+
   describe('providerType', () => {
+    it('should select ProviderType.All by default', () => {
+      expect(component['providerType']()).toBe(ProviderType.All);
+    });
+
+    it('should select the first value when provider type options are customized', () => {
+      component['providerTypeOptions'].set([ProviderType.Organization, ProviderType.Professional]);
+
+      expect(component['providerType']()).toBe(ProviderType.Organization);
+    });
+
     it('should initialize pageable with default page 1 and pageSize 10', () => {
       expect(component['pageable']()).toEqual({ page: 1, pageSize: 10 });
     });

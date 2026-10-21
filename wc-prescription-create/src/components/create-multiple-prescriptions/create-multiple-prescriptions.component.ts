@@ -15,7 +15,7 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
-import { ElementGroup, isObject, removeNulls } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
+import { ElementGroup, EvfEvent, isObject, removeNulls } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { MatAccordion, MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
@@ -29,7 +29,7 @@ import { CreatePrescriptionModelComponent } from '@reuse/code/components/create-
 import { isOccurrenceTiming } from '@reuse/code/utils/occurrence-timing.utils';
 import { isPrescription, isProposal } from '@reuse/code/utils/utils';
 import { PersonResource } from '@reuse/code/openapi';
-import { PatientInfoBarComponent } from '../patient-info-bar/patient-info-bar.component';
+import { PatientInfoBarComponent } from '@reuse/code/components/patient-info-bar/patient-info-bar.component';
 import { EvfFormWebComponent } from '../evf-form/evf-form.component';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { TranslateByElementPipe } from '@reuse/code/pipes/translate-by-element.pipe';
@@ -37,6 +37,7 @@ import { MarkdownModule } from 'ngx-markdown';
 import { GetErrorMessagesFromFormPipe } from '@reuse/code/pipes/get-error-messages-from-form.pipe';
 import { AlertService } from '@reuse/code/services/helpers/alert.service';
 import { ALERT_TARGET } from '@reuse/code/constants/error';
+import { isStepperStepChangedData } from '@reuse/code/evf/utils/evf-utils';
 
 @Component({
   selector: 'app-create-multiple-prescriptions',
@@ -77,6 +78,12 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
   expandedTrackId?: number;
 
   isPrescriptionValue = false;
+
+  // Track which forms are on their last step (when they have a stepper)
+  private readonly formsOnLastStep = signal<Set<number>>(new Set());
+
+  // Track which forms have been initialized and their stepper status
+  private readonly formsStepperStatus = signal<Map<number, boolean>>(new Map());
 
   @Input() lang!: string;
   @Input() intent!: string;
@@ -154,12 +161,22 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
   }
 
   setElementGroup(prescriptionForm: CreatePrescriptionForm, elementGroup: ElementGroup) {
-    if (!prescriptionForm.elementGroup) {
-      prescriptionForm.elementGroup = elementGroup;
-    } else {
+    if (prescriptionForm.elementGroup) {
       const currentValues = prescriptionForm.elementGroup.getOutputValue() as Record<string, unknown>;
       elementGroup.setValue(currentValues);
+    } else {
+      prescriptionForm.elementGroup = elementGroup;
     }
+
+    // Track the stepper status for this form
+    const hasStepper = this.hasStepper(elementGroup);
+    this.formsStepperStatus.update(map => new Map(map).set(prescriptionForm.trackId, hasStepper));
+
+    // If it doesn't have a stepper, add it to formsOnLastStep (so checkbox shows)
+    if (!hasStepper) {
+      this.formsOnLastStep.update(set => new Set(set).add(prescriptionForm.trackId));
+    }
+
     if (prescriptionForm.initialPrescription || prescriptionForm.modelResponses) {
       const initialResponses = prescriptionForm.initialPrescription?.responses || prescriptionForm.modelResponses;
       let responses: Record<string, unknown> = removeNulls(initialResponses || {}) as Record<string, unknown>;
@@ -261,7 +278,7 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
 
   scrollToTop() {
     const lastFormWithErrors = this.getLastPrescriptionWithErrors();
-    if (lastFormWithErrors && lastFormWithErrors.errors) {
+    if (lastFormWithErrors?.errors) {
       this.openPanelByTrackId(lastFormWithErrors.trackId);
       const messages = this.getErrorMessagesPipe.transform(
         lastFormWithErrors.errors,
@@ -306,8 +323,62 @@ export class CreateMultiplePrescriptionsComponent implements OnChanges, OnDestro
     this.alertService.clear(this.alertTarget);
   }
 
+  protected handleEvent(event: EvfEvent, trackId: number, elementGroup?: ElementGroup) {
+    const uniqueId = elementGroup?.childElementControls[0]?.element?.uniqueId;
+    if (
+      event.type === 'STEPPER_STEP_CHANGED' &&
+      isStepperStepChangedData(event.data) &&
+      event.data.lastStep &&
+      event.data.uniqueId === uniqueId
+    ) {
+      this.formsOnLastStep.update(set => new Set(set).add(trackId));
+    } else if (
+      event.type === 'STEPPER_STEP_CHANGED' &&
+      isStepperStepChangedData(event.data) &&
+      !event.data.lastStep &&
+      event.data.uniqueId === uniqueId
+    ) {
+      // Remove from lastStep set if not on last step anymore
+      this.formsOnLastStep.update(set => {
+        const updated = new Set(set);
+        updated.delete(trackId);
+        return updated;
+      });
+    }
+  }
+
+  protected shouldDisplayModalCheckbox(prescriptionForm: CreatePrescriptionForm) {
+    if (!this.isPrescriptionValue) {
+      return false;
+    }
+
+    const trackId = prescriptionForm.trackId;
+    const stepperStatusMap = this.formsStepperStatus();
+
+    // If form hasn't been initialized yet, hide checkbox (safer to hide than show)
+    if (!stepperStatusMap.has(trackId)) {
+      return false;
+    }
+
+    const hasStepper = stepperStatusMap.get(trackId);
+
+    // If it has a stepper, only show on last step
+    if (hasStepper) {
+      return this.formsOnLastStep().has(trackId);
+    }
+
+    // If no stepper, show the checkbox
+    return true;
+  }
+
+  private hasStepper(elementGroup: ElementGroup): boolean {
+    return elementGroup.childElementControls?.[0]?.element?.viewType?.toLowerCase().includes('stepper') ?? false;
+  }
+
   ngOnDestroy() {
     this.prescriptionModelState.resetAll();
+    this.formsOnLastStep.set(new Set());
+    this.formsStepperStatus.set(new Map());
     this.clearAlertService();
   }
 

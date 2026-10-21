@@ -1,9 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   EventEmitter,
+  input,
   Input,
   OnChanges,
+  output,
   Output,
   SimpleChanges,
 } from '@angular/core';
@@ -34,7 +37,12 @@ import {
 } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProfessionalDisplayComponent } from '@reuse/code/components/professional-display/professional-display.component';
-import { ReadRequestListResource, ReadRequestResource, RequestStatus } from '@reuse/code/openapi';
+import {
+  ReadRequestListResource,
+  ReadRequestResource,
+  RequestStatus,
+  RequestSummaryResource,
+} from '@reuse/code/openapi';
 import { FormatEnum, SkeletonComponent } from '@reuse/code/components/progress-indicators/skeleton/skeleton.component';
 import { AlertType, Intent } from '@reuse/code/interfaces';
 import { MatChip } from '@angular/material/chips';
@@ -78,14 +86,15 @@ import { isPrescription, isProposal } from '@reuse/code/utils/utils';
 })
 export class PrescriptionsTableComponent implements OnChanges {
   // Input properties
-  @Input() intent?: Intent;
+  readonly intent = input<Intent | undefined>(undefined);
+  readonly prescriptions = input<ReadRequestListResource | undefined>(undefined);
+  protected readonly items = computed(() => {
+    return this.prescriptions()?.items ?? [];
+  });
+  readonly loading = input<boolean>(false);
 
-  @Input() prescriptions?: ReadRequestListResource;
-  get items() {
-    return this.prescriptions?.items ?? [];
-  }
-  @Input() loading: boolean = false;
-  @Output() clickPrescription = new EventEmitter<ReadRequestResource>();
+  // Output events
+  clickPrescription = output<RequestSummaryResource>();
 
   protected readonly FormatEnum = FormatEnum;
   protected readonly AlertType = AlertType;
@@ -102,8 +111,8 @@ export class PrescriptionsTableComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['intent']) {
-      this.isPrescriptionIntent = isPrescription(this.intent);
-      this.isProposalIntent = isProposal(this.intent);
+      this.isPrescriptionIntent = isPrescription(this.intent());
+      this.isProposalIntent = isProposal(this.intent());
     }
   }
 }

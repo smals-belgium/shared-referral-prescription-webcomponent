@@ -1,4 +1,4 @@
-{
+﻿{
   "common": {
     "yes": "Ja",
     "no": "Nein",
@@ -73,7 +73,8 @@
         "header": "Technisches Problem",
         "subheader": "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es in wenigen Augenblicken erneut."
       }
-    }
+    },
+    "comment": ""
   },
   "pagination": {
     "ariaLabel": {
@@ -137,7 +138,8 @@
           "relevantInfo": "Element wird von PSS nicht berücksichtigt",
           "chosenExam": "Die verschriebene Untersuchung entspricht nicht den aktuellen Empfehlungen",
           "chosenExamScore": "erreicht nur eine Punktzahl von {score}/9",
-          "noDefaultExam": "Keine der verschriebenen Untersuchungen entspricht den PSS-Empfehlungen."
+          "noDefaultExam": "Keine der verschriebenen Untersuchungen entspricht den PSS-Empfehlungen.",
+          "chosenExamNoScore": ""
         }
       },
       "deletePrescription": {
@@ -260,8 +262,8 @@
       "dialog": {
         "title": "Einen Leistungserbringer oder eine Organisation zuweisen: Welche Auswirkungen hat das?",
         "description": {
-          "other": "Sobald Sie Ihre Suche abgeschlossen haben, können Sie die Person oder Organisation Ihrer Wahl <b>zuweisen</b>.",
-          "patient": "Sobald Sie Ihre Suche abgeschlossen haben, können Sie die Person oder Organisation Ihrer Wahl <b>zuweisen</b>.\n\nNächste Schritte:\n\n<ul>\n<li>Kontaktieren Sie den Leistungserbringer oder die Organisation, um einen Termin zu vereinbaren.</li>\n<li>Durch die Zuweisung erhält der Leistungserbringer oder die Organisation Zugriff auf die Verordnung, um Ihren Bedarf zu beurteilen.</li>\n<li>Haben Sie sich für eine Organisation entschieden? Diese bestimmt den oder die Leistungserbringer, die Sie betreuen werden. Ihre Namen werden der Verordnung hinzugefügt.</li>\n</ul>"
+          "other": "Sobald Sie Ihre Suche abgeschlossen haben, können Sie die Person oder Organisation Ihrer Wahl \u003cb\u003ezuweisen\u003c/b\u003e.",
+          "patient": "Sobald Sie Ihre Suche abgeschlossen haben, können Sie die Person oder Organisation Ihrer Wahl \u003cb\u003ezuweisen\u003c/b\u003e.\n\nNächste Schritte:\n\n\u003cul\u003e\n\u003cli\u003eKontaktieren Sie den Leistungserbringer oder die Organisation, um einen Termin zu vereinbaren.\u003c/li\u003e\n\u003cli\u003eDurch die Zuweisung erhält der Leistungserbringer oder die Organisation Zugriff auf die Verordnung, um Ihren Bedarf zu beurteilen.\u003c/li\u003e\n\u003cli\u003eHaben Sie sich für eine Organisation entschieden? Diese bestimmt den oder die Leistungserbringer, die Sie betreuen werden. Ihre Namen werden der Verordnung hinzugefügt.\u003c/li\u003e\n\u003c/ul\u003e"
         }
       },
       "locationsHint": "Nach Postleitzahl oder Gemeindename suchen",
@@ -444,6 +446,21 @@
         }
       },
       "action": "Abschließen"
+    },
+    "detail": {
+      "radio": {
+        "secondaryPanel": {
+          "title": "",
+          "info": ""
+        },
+        "takeInCharge": {
+          "label": "",
+          "action": ""
+        },
+        "validate": {
+          "action": ""
+        }
+      }
     }
   },
   "proposal": {
@@ -829,6 +846,12 @@
       "unknown": "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es in wenigen Augenblicken erneut.",
       "PRESCRIPTION_NOT_COMPLETED": {
         "default": "Das Rezept kann nicht abgeschlossen werden."
+      },
+      "MISSING_REASON_OF_DEVIATION": {
+        "default": ""
+      },
+      "INVALID_PREFILLED_REASON_OF_DEVIATION": {
+        "default": ""
       }
     }
   },
@@ -844,5 +867,16 @@
     "nextMultiYear": "Nächste 24 Jahre",
     "switchToMonthView": "Datum auswählen",
     "switchToMultiYearView": "Monat und Jahr auswählen"
-  }
+  },
+  "templateName": {
+    "proposalPrefix": ""
+  },
+  "ANNEX_82.create.tmp-addInfo-preg": "",
+  "ANNEX_82.create.tmp-addInfo-diab": "",
+  "ANNEX_82.create.tmp-addInfo-all": "",
+  "ANNEX_82.create.tmp-addInfo-metdeb": "",
+  "ANNEX_82.create.tmp-addInfo-rendys": "",
+  "ANNEX_82.create.tmp-addInfo-unknown": "",
+  "ANNEX_82.create.tmp-addInfo-impl": "",
+  "ANNEX_82.create.tmp-addInfo": ""
 }

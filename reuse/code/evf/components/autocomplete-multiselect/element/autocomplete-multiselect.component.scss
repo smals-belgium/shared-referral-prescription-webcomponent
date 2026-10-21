@@ -1,11 +1,18 @@
-@use "@myhealth-belgium/design-kit" as mh;
+@use '@myhealth-belgium/design-kit' as mh;
 
-.mh-chips {
-  gap: mh.$spacing-xs;
+.selected_option_container {
   display: flex;
-  flex-wrap: wrap;
-}
+  mat-chip-grid {
+    @include mh.override-mat-chips();
+    --mat-chip-with-trailing-icon-trailing-icon-color: #{mh.$surface-brand-primary-medium};
+    mat-chip-row.mh-blue {
+      background-color: #{mh.$surface-brand-primary-light};
+      --mat-chip-outline-color: #{mh.$surface-brand-primary-light};
+    }
+    .mat-mdc-chip-remove .mat-icon {
+      min-height: auto;
+    }
 
-.mh-margin-bottom {
-  margin-bottom: 22px;
+    margin-bottom: 1rem;
+  }
 }

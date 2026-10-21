@@ -127,121 +127,107 @@ describe('OccurrenceTimingUtils', () => {
 });
 
 describe('OccurrenceTimingUtils - Segmented Tests', () => {
-  it('should handle frequency = 1 and period = 1 correctly (masculine)', () => {
-    const occ: OccurrenceTiming = {
-      repeat: {
-        frequency: 1,
-        period: 1,
-        periodUnit: 'd', // masculine
-      },
-    };
-    const fr = translateOccurrenceTiming(occ, Lang.FR.short);
-    const nl = translateOccurrenceTiming(occ, Lang.NL.short);
-    expect(fr).toBe('Tous les jours');
-    expect(nl).toBe('Elke dag');
-  });
-
-  it('should handle frequency = 1 and period > 1 correctly (e.g. every 2 weeks)', () => {
-    const occ: OccurrenceTiming = {
-      repeat: {
-        frequency: 1,
-        period: 2,
-        periodUnit: 'wk',
-      },
-    };
-    const fr = translateOccurrenceTiming(occ, Lang.FR.short);
-    const nl = translateOccurrenceTiming(occ, Lang.NL.short);
-    expect(fr).toBe('Toutes les 2 semaines');
-    expect(nl).toBe('Elke 2 weken');
-  });
-
-  it('should handle frequency = 1 and period = 1 with feminine unit (week)', () => {
-    const occ: OccurrenceTiming = {
-      repeat: {
-        frequency: 1,
-        period: 1,
-        periodUnit: 'wk',
-      },
-    };
-
-    const fr = translateOccurrenceTiming(occ, Lang.FR.short);
-    const nl = translateOccurrenceTiming(occ, Lang.NL.short);
-
-    expect(fr).toBe('Toutes les semaines');
-    expect(nl).toBe('Elke week');
-  });
-
-  it('should handle frequency > 1 and period > 1', () => {
-    const occ: OccurrenceTiming = {
-      repeat: {
-        frequency: 4,
-        period: 2,
-        periodUnit: 'wk',
-      },
-    };
-
-    const fr = translateOccurrenceTiming(occ, Lang.FR.short);
-    const nl = translateOccurrenceTiming(occ, Lang.NL.short);
-
-    expect(fr).toBe('4 fois par 2 semaines');
-    expect(nl).toBe('4 keer per 2 weken');
-  });
-
-  it('should handle frequency = 1 and period = 1 with masculine unit (month)', () => {
-    const occ: OccurrenceTiming = {
-      repeat: {
-        frequency: 1,
-        period: 1,
-        periodUnit: 'mo',
-      },
-    };
-
-    const fr = translateOccurrenceTiming(occ, Lang.FR.short);
-    const nl = translateOccurrenceTiming(occ, Lang.NL.short);
-
-    expect(fr).toBe('Tous les mois');
-    expect(nl).toBe('Elke maand');
-  });
-
-  it('should return only dayOfWeek', () => {
-    const occ: OccurrenceTiming = {
-      repeat: {
-        dayOfWeek: ['mon', 'thu'],
-      },
-    };
-    const fr = translateOccurrenceTiming(occ, Lang.FR.short);
-    const nl = translateOccurrenceTiming(occ, Lang.NL.short);
-    expect(fr).toBe('le lundi et jeudi');
-    expect(nl).toBe('op maandag en donderdag');
-  });
-
-  it('should return only session duration', () => {
-    const occ: OccurrenceTiming = {
-      repeat: {
-        duration: 45,
-        durationUnit: 'min',
-      },
-    };
-    const fr = translateOccurrenceTiming(occ, Lang.FR.short);
-    const nl = translateOccurrenceTiming(occ, Lang.NL.short);
-    expect(fr).toBe('une séance de 45 minutes');
-    expect(nl).toBe('een sessie van 45 minuten');
-  });
-
-  it('should return only bounds duration', () => {
-    const occ: OccurrenceTiming = {
-      repeat: {
-        boundsDuration: {
-          value: 6,
-          code: 'mo',
-          system: '',
+  it.each([
+    {
+      description: 'handles frequency = 1 and period = 1 correctly (masculine)',
+      timing: {
+        repeat: {
+          frequency: 1,
+          period: 1,
+          periodUnit: 'd' as UnitsOfTime,
         },
       },
-    };
-    const fr = translateOccurrenceTiming(occ, Lang.FR.short);
-    const nl = translateOccurrenceTiming(occ, Lang.NL.short);
-    expect(fr).toBe('durant 6 mois');
-    expect(nl).toBe('gedurende 6 maanden');
+      expectedFr: 'Tous les jours',
+      expectedNl: 'Elke dag',
+    },
+    {
+      description: 'handles frequency = 1 and period > 1 correctly (e.g. every 2 weeks)',
+      timing: {
+        repeat: {
+          frequency: 1,
+          period: 2,
+          periodUnit: 'wk',
+        },
+      } as OccurrenceTiming,
+      expectedFr: 'Toutes les 2 semaines',
+      expectedNl: 'Elke 2 weken',
+    },
+    {
+      description: 'handles frequency = 1 and period = 1 with feminine unit (week)',
+      timing: {
+        repeat: {
+          frequency: 1,
+          period: 1,
+          periodUnit: 'wk' as UnitsOfTime,
+        },
+      } as OccurrenceTiming,
+      expectedFr: 'Toutes les semaines',
+      expectedNl: 'Elke week',
+    },
+    {
+      description: 'handles frequency > 1 and period > 1',
+      timing: {
+        repeat: {
+          frequency: 4,
+          period: 2,
+          periodUnit: 'wk' as UnitsOfTime,
+        },
+      } as OccurrenceTiming,
+      expectedFr: '4 fois par 2 semaines',
+      expectedNl: '4 keer per 2 weken',
+    },
+    {
+      description: 'handles frequency = 1 and period = 1 with masculine unit (month)',
+      timing: {
+        repeat: {
+          frequency: 1,
+          period: 1,
+          periodUnit: 'mo' as UnitsOfTime,
+        },
+      } as OccurrenceTiming,
+      expectedFr: 'Tous les mois',
+      expectedNl: 'Elke maand',
+    },
+    {
+      description: 'returns only dayOfWeek',
+      timing: {
+        repeat: {
+          dayOfWeek: ['mon', 'thu'],
+        },
+      } as OccurrenceTiming,
+      expectedFr: 'le lundi et jeudi',
+      expectedNl: 'op maandag en donderdag',
+    },
+    {
+      description: 'returns only session duration',
+      timing: {
+        repeat: {
+          duration: 45,
+          durationUnit: 'min' as UnitsOfTime,
+        },
+      } as OccurrenceTiming,
+      expectedFr: 'une séance de 45 minutes',
+      expectedNl: 'een sessie van 45 minuten',
+    },
+    {
+      description: 'returns only bounds duration',
+      timing: {
+        repeat: {
+          boundsDuration: {
+            value: 6,
+            code: 'mo' as UnitsOfTime,
+            system: '',
+          },
+        },
+      } as OccurrenceTiming,
+      expectedFr: 'durant 6 mois',
+      expectedNl: 'gedurende 6 maanden',
+    },
+  ])('should $description', ({ timing, expectedFr, expectedNl }) => {
+    const fr = translateOccurrenceTiming(timing, Lang.FR.short);
+    const nl = translateOccurrenceTiming(timing, Lang.NL.short);
+    expect(fr).toBe(expectedFr);
+    expect(nl).toBe(expectedNl);
   });
 });
 
@@ -315,14 +301,6 @@ describe('OccurrenceTimingUtils - Invalid or Unsupported Cases', () => {
     const nl = translateOccurrenceTiming(occ, Lang.NL.short);
     expect(fr).toBe('durant  mois');
     expect(nl).toBe('gedurende  maand');
-  });
-
-  it('should return empty string if repeat is empty object', () => {
-    const occ: OccurrenceTiming = {
-      repeat: {},
-    };
-    expect(translateOccurrenceTiming(occ, Lang.FR.short)).toBe('');
-    expect(translateOccurrenceTiming(occ, Lang.NL.short)).toBe('');
   });
 
   it('should return empty string if repeat is empty object', () => {

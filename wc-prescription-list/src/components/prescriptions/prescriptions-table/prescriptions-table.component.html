@@ -1,4 +1,4 @@
-<table mat-table [dataSource]="items" class="mat-elevation-z8">
+<table mat-table [dataSource]="items()" class="mat-elevation-z8">
   <ng-container matColumnDef="author">
     <th data-cy="overview-author-title" mat-header-cell *matHeaderCellDef>{{ 'prescription.author' | translate }}</th>
     <td
@@ -67,12 +67,12 @@
 
   <ng-container matColumnDef="tableStatus">
     <td mat-footer-cell *matFooterCellDef colspan="6">
-      @if ((prescriptions?.total ?? 0) > 0) {
+      @if ((prescriptions()?.total ?? 0) > 0) {
         <span class="sr-only">
-          {{ 'prescription.tableHasRecords' | translate: { total: prescriptions?.total } }}
+          {{ 'prescription.tableHasRecords' | translate: { total: prescriptions()?.total } }}
         </span>
       }
-      @if (prescriptions?.total === 0) {
+      @if (prescriptions()?.total === 0) {
         @if (isPrescriptionIntent) {
           <span *hideIfProfessional>{{ 'prescription.noPrescriptionsForUser' | translate }}</span>
           <span *showIfProfessional>{{ 'prescription.noPrescriptionsForPatient' | translate }}</span>
@@ -95,11 +95,11 @@
     *matRowDef="let row; columns: displayedColumns"></tr>
 
   <tr
-    [class]="prescriptions?.total === 0 ? 'no-prescriptions' : 'no-data'"
+    [class]="prescriptions()?.total === 0 ? 'no-prescriptions' : 'no-data'"
     mat-footer-row
     *matFooterRowDef="['tableStatus']"></tr>
 </table>
 
-@if (loading) {
+@if (loading()) {
   <app-skeleton data-cy="skeleton" [items]="3" [format]="FormatEnum.LINE"></app-skeleton>
 }

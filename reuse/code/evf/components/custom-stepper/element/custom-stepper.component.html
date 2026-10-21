@@ -1,0 +1,33 @@
+@if (stepElementControls$ | async; as stepElementControls) {
+  @for (stepElementControl of stepElementControls; track stepElementControl.element?.uniqueId; let stepIndex = $index) {
+    @if (currentStep.includes(stepIndex)) {
+      <form
+        #formElement
+        [attr.data-cy]="'form-step-' + (stepElementControl.id || stepElementControl.uniqueId)"
+        (ngSubmit)="nextStep(stepElementControl.uniqueId, formElement, stepIndex, $event)">
+        <evf-form-element-group
+          [elementControls]="stepElementControl.childElementControls"
+          [metadata]="metadata"
+          [elementLayout]="elementLayout"
+          [submitted]="isStepElementSubmitted(stepElementControl)"
+          (events)="handleEvent($event, stepElementControl, formElement)"></evf-form-element-group>
+        <div class="buttons-group">
+          @if (shouldShowNextButton(stepIndex, stepElementControl, stepElementControls)) {
+            <button
+              [color]="buttonColor"
+              matButton="filled"
+              type="submit"
+              data-cy="form-step-next"
+              [disabled]="getDisabledState(stepElementControl.uniqueId)">
+              {{
+                element.custom?.['nextButtonTranslationId']
+                  ? (element.custom?.['nextButtonTranslationId'] | evfLabel)
+                  : ('NEXT' | evfLabel)
+              }}
+            </button>
+          }
+        </div>
+      </form>
+    }
+  }
+}

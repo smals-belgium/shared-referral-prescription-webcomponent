@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   AutocompleteOption,
   EvfExternalSourceServiceInterface,
@@ -6,16 +6,16 @@ import {
   ExternalValidationResult,
 } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { Observable, of, throwError } from 'rxjs';
-import { HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
-import { PssService } from '@reuse/code/services/api/pss.service';
 import { mapAutocompleteOptions } from '@reuse/code/utils/autocomplete.utils';
+import { TerminologyService } from './terminology.service';
+import { EvfExternalSource } from '@reuse/code/interfaces';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ExternalSourceService implements EvfExternalSourceServiceInterface {
-  constructor(private readonly pssService: PssService) {}
+  private readonly terminologyService = inject(TerminologyService);
 
   handleAutocomplete(externalSource: ExternalSource, value: string): Observable<AutocompleteOption[]> {
     value = value.toLowerCase();
@@ -27,43 +27,44 @@ export class ExternalSourceService implements EvfExternalSourceServiceInterface 
       return throwError(() => 'No external source provided!');
     }
 
-    if (externalSource.dataUrl.includes('pss/radiology/indications')) {
-      const formObject = JSON.parse(value);
-      const query = formObject.query;
+    const formObject = JSON.parse(value) as EvfExternalSource;
+    const searchValue = formObject.query;
 
-      const indications: string[] = [query];
+    if (externalSource.dataUrl.includes('terminology/valueSet/')) {
+      const match = externalSource.dataUrl.match(/terminology\/valueSet\/([^/?]+)/);
+      const valueSetId = match ? match[1] : null;
+      if (!valueSetId) {
+        return throwError(() => 'No value set id provided!');
+      }
 
-      return this.pssService
-        .getIndications(indications)
-        .pipe(map(result => mapAutocompleteOptions(result.indications)));
+      return this.terminologyService
+        .getValueSet(valueSetId, searchValue)
+        .pipe(map(result => mapAutocompleteOptions(result)));
     }
 
-    if (externalSource.dataUrl.includes('/pss/radiology/procedures')) {
-      return this.pssService.getIntentions(value).pipe(
-        map(result => {
-          return mapAutocompleteOptions(result.intentions);
-        })
-      );
-    }
-
-    const params = new HttpParams().set('query', value);
-
-    return this.pssService.geDefault(externalSource.dataUrl, params).pipe(
-      map(result => {
-        return result;
-      })
-    );
+    return throwError(() => 'No correct path provided!');
   }
 
-  handleValidation(externalSource: ExternalSource, value: any): Observable<ExternalValidationResult> {
+  handleSelectOptions(externalSource: ExternalSource): Observable<AutocompleteOption[]> {
+    if (!externalSource.dataUrl) {
+      return throwError(() => 'No external source provided!');
+    }
+
+    if (externalSource.dataUrl.includes('terminology/valueSet/')) {
+      const match = externalSource.dataUrl.match(/terminology\/valueSet\/([^/?]+)/);
+      const valueSetId = match ? match[1] : null;
+      if (!valueSetId) {
+        return throwError(() => 'No value set id provided!');
+      }
+
+      return this.terminologyService.getValueSet(valueSetId).pipe(map(result => mapAutocompleteOptions(result)));
+    }
+
+    return throwError(() => 'No correct path provided!');
+  }
+
+  handleValidation(_externalSource: ExternalSource, _value: any): Observable<ExternalValidationResult> {
     // implement when needed
     return of({ valid: true });
-  }
-
-  getGender(gender: string | undefined) {
-    if (gender?.toLowerCase() === 'f') {
-      return 'female';
-    }
-    return 'male';
   }
 }

@@ -1,0 +1,45 @@
+<evf-form-element-layout [elementLayout]="elementLayout" [elementControl]="elementControl" [metadata]="metadata">
+  <evf-element-label [elementControl]="elementControl" [invalid]="invalid" [for]="id"></evf-element-label>
+  <evf-element-sub-label [invalid]="invalid">
+    @if (control.hasError('required')) {
+      <mat-error>{{ 'FIELD_REQUIRED' | evfLabel }} </mat-error>
+    }
+  </evf-element-sub-label>
+  @if (element.bodyTranslationId) {
+    <evf-element-body [elementControl]="elementControl"></evf-element-body>
+  }
+  @if (element.helpTranslationId) {
+    <evf-element-help [elementControl]="elementControl"></evf-element-help>
+  }
+
+  @if (rawOptions()) {
+    <mat-radio-group [formControl]="control" [id]="id" (change)="userChangeOption($event)">
+      @if (rawOptions()?.hasOwnProperty('translate')) {
+        <mat-radio-button [value]="null">
+          <span class="invalid"
+            ><mat-icon svgIcon="warning" [aria-hidden]="true"></mat-icon>
+            {{ toErrorObject(rawOptions()!).translate | evfLabel }}</span
+          >
+        </mat-radio-button>
+      }
+      @if (!rawOptions()?.hasOwnProperty('translate')) {
+        @for (option of autoCompleteOptions(); track option) {
+          @let responseId = 'response-' + option.value;
+          <div [class]="'radio-item-wrapper ' + responseId" [attr.data-cy]="responseId">
+            <div class="radio-item">
+              <mat-radio-button [color]="radioColor" [value]="option.value" (click)="clickRadio(option)">
+                {{ option.label[currentLang()] }}
+              </mat-radio-button>
+
+              @if (autoCompleteOptions()?.length === 0) {
+                <mat-radio-button [color]="radioColor" [value]="null" disabled>
+                  {{ 'NO_OPTION_FOUND' | evfLabel }}
+                </mat-radio-button>
+              }
+            </div>
+          </div>
+        }
+      }
+    </mat-radio-group>
+  }
+</evf-form-element-layout>

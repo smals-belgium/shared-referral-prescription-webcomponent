@@ -2,11 +2,14 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  computed,
   ElementRef,
   EventEmitter,
+  input,
   Input,
   OnChanges,
   OnDestroy,
+  output,
   Output,
   SimpleChanges,
   ViewChild,
@@ -14,7 +17,12 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { ModelEntityDto, PageModelEntityDto, RequestSummaryResource } from '@reuse/code/openapi';
+import {
+  ModelEntityDto,
+  PageModelEntityDto,
+  ReadRequestListResource,
+  RequestSummaryResource,
+} from '@reuse/code/openapi';
 import { AlertType, Intent } from '@reuse/code/interfaces';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DataLoadConfig, RequestSummaryDataService } from '@reuse/code/services/helpers/request-summary-data.service';
@@ -46,19 +54,19 @@ import { ResolvedError } from '@reuse/code/interfaces/error.interface';
 })
 export class PrescriptionsModelsCardComponent implements OnChanges, AfterViewInit, OnDestroy {
   // Input properties
-  @Input() intent?: Intent;
-  @Input() modelEntityPage?: PageModelEntityDto;
-  get itemsLength() {
-    return this.modelEntityPage?.numberOfElements ?? -1;
-  }
-  @Input() loading: boolean = false;
-  @Input() error?: ResolvedError | null;
+  readonly intent = input<Intent | undefined>(undefined);
+  readonly modelEntityPage = input<PageModelEntityDto | undefined>(undefined);
+  protected readonly itemsLength = computed(() => {
+    return this.modelEntityPage()?.numberOfElements ?? -1;
+  });
+  readonly loading = input<boolean>(false);
+  readonly error = input<ResolvedError | null>(null);
 
   // Output events
-  @Output() openPrescriptionModel = new EventEmitter<ModelEntityDto>();
-  @Output() deletePrescriptionModel = new EventEmitter<ModelEntityDto>();
-  @Output() retryOnError = new EventEmitter<void>();
-  @Output() dismissOnError = new EventEmitter<void>();
+  openPrescriptionModel = output<ModelEntityDto>();
+  deletePrescriptionModel = output<ModelEntityDto>();
+  retryOnError = output<void>();
+  dismissOnError = output<void>();
 
   protected readonly FormatEnum = FormatEnum;
   protected readonly AlertType = AlertType;
@@ -77,7 +85,7 @@ export class PrescriptionsModelsCardComponent implements OnChanges, AfterViewIni
   constructor(private readonly dataService: RequestSummaryDataService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['modelEntityPage'] && this.modelEntityPage?.content?.length) {
+    if (changes['modelEntityPage'] && this.modelEntityPage()?.content?.length) {
       this.initializeDataStream();
     }
   }
@@ -89,7 +97,7 @@ export class PrescriptionsModelsCardComponent implements OnChanges, AfterViewIni
       entries => {
         if (this.destroyed) return;
         if (entries.some(e => e.isIntersecting)) {
-          if (this.itemsLength <= 0 || !this.canLoadMore() || this.isLoading() || this.loading || this.error) {
+          if (this.itemsLength() <= 0 || !this.canLoadMore() || this.isLoading() || this.loading() || this.error()) {
             return;
           } else {
             this.loadMore();
@@ -128,12 +136,7 @@ export class PrescriptionsModelsCardComponent implements OnChanges, AfterViewIni
       const currentDataCount = this.modelData()?.length ?? 0;
       this.dataService.retryLoad(currentDataCount);
     } catch (error: unknown) {
-      if (
-        error &&
-        typeof error === 'object' &&
-        'message' in error &&
-        (error as { message: unknown }).message === 'INITIAL_RETRY_REQUIRED'
-      ) {
+      if (error && typeof error === 'object' && 'message' in error && error.message === 'INITIAL_RETRY_REQUIRED') {
         this.retryOnError.emit();
       }
     }
@@ -144,9 +147,9 @@ export class PrescriptionsModelsCardComponent implements OnChanges, AfterViewIni
   }
 
   private initializeDataStream(): void {
-    const initialData = this.modelEntityPage?.content ?? [];
+    const initialData = this.modelEntityPage()?.content ?? [];
     const config: DataLoadConfig = {
-      intent: this.intent,
+      intent: this.intent(),
     };
 
     this.dataService.initializeDataStream(initialData, config);
@@ -161,9 +164,9 @@ export class PrescriptionsModelsCardComponent implements OnChanges, AfterViewIni
   }
 
   canLoadMore(): boolean {
-    if (!this.modelEntityPage?.totalElements) return true;
+    if (!this.modelEntityPage()?.totalElements) return true;
     const totalItems = this.modelData() ? this.modelData().length : 0;
-    const total = this.modelEntityPage.totalElements ?? 0;
+    const total = this.modelEntityPage()?.totalElements ?? 0;
     return total > totalItems;
   }
 

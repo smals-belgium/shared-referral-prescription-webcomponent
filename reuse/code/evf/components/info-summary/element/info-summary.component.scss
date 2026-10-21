@@ -1,0 +1,37 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+.infoblock {
+  background-color: mh.$surface-brand-primary-lighter;
+  padding: mh.$spacing-l;
+  width: max-content;
+  .flexBox {
+    display: flex;
+    flex-direction: row;
+    max-width: 539px;
+    gap: 12px;
+    .action {
+      flex: 0 0 40px;
+      width: 40px;
+      max-width: 40px;
+    }
+  }
+  .description {
+    @include mh.font-body-4();
+    margin: 0;
+  }
+  .values {
+    @include mh.font-body-2();
+    margin: 0;
+    &:first-letter {
+      text-transform: capitalize;
+    }
+  }
+
+  button.mat-mdc-icon-button.dark-button {
+    @include mh.dark-mat-icon-button();
+
+    ::ng-deep svg {
+      fill: mh.$typography-brand-primary-lighter;
+    }
+  }
+}

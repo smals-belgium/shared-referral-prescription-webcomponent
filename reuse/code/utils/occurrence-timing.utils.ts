@@ -290,18 +290,19 @@ export function translateBoundsDuration(boundsDuration: BoundsDuration, language
 
 export function translateDuration(occurrenceTiming: OccurrenceTiming, language: TranslationType): string {
   const words = [];
-  if (!occurrenceTiming.repeat.duration) return '';
-  else {
+  if (occurrenceTiming.repeat.duration) {
     words.push(translations.sessionDuration[language], occurrenceTiming.repeat.duration);
     if (occurrenceTiming.repeat.durationUnit) {
       words.push(translateTimeUnit(occurrenceTiming.repeat.duration, occurrenceTiming.repeat.durationUnit, language));
     }
+  } else {
+    return '';
   }
   return words.join(' ');
 }
 
 export function translateTimeUnit(unit = 1, unitOfTime?: UnitsOfTime, language: TranslationType = 'nl'): string {
-  const oneOrMultiple = unit !== 1 ? 'multiple' : 'one';
+  const oneOrMultiple = unit === 1 ? 'one' : 'multiple';
   return unitOfTime ? translations.unitsOfTime[oneOrMultiple][unitOfTime]?.[language] || unitOfTime : '';
 }
 

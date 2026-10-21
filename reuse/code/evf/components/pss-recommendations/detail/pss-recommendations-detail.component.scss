@@ -1,0 +1,27 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+.pss-recommendations-header {
+  h3 {
+    @include mh.font-heading-4();
+    margin: 0 0 mh.$spacing-xs;
+  }
+
+  p {
+    @include mh.font-default-medium();
+    margin: 0;
+    margin-bottom: mh.$spacing-m;
+  }
+}
+
+.pss-recommendations {
+  evf-detail-label {
+    margin-top: mh.$spacing-2xl;
+    margin-bottom: mh.$spacing-s;
+  }
+
+  .pss-recommendations-list {
+    display: flex;
+    flex-direction: column;
+    gap: mh.$spacing-s;
+  }
+}
