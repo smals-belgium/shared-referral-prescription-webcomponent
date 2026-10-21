@@ -18,6 +18,7 @@ import {
   CreatePrescriptionInitialValues,
   Intent,
   LoadingStatus,
+  TemplateCodes,
   UserProfile,
 } from '@reuse/code/interfaces';
 import { EncryptionService } from '@reuse/code/services/privacy/encryption.service';
@@ -414,9 +415,9 @@ describe('CreatePrescriptionWebComponent', () => {
       await Promise.resolve();
 
       expect(openDialogSpy).not.toHaveBeenCalled();
-      expect(addPrescriptionFormSpy).toHaveBeenCalledWith('ANNEX_81');
+      expect(addPrescriptionFormSpy).toHaveBeenCalledWith(TemplateCodes.ANNEX_81);
 
-      getTemplate('ANNEX_81');
+      getTemplate(TemplateCodes.ANNEX_81);
     });
 
     it('should open the confirmation dialog with correct data', () => {
@@ -1734,7 +1735,20 @@ describe('CreatePrescriptionWebComponent', () => {
           'keyboard_arrow_down',
           'warning',
           'emergency_home',
-          'notifications'
+          'notifications',
+          'cancel',
+          'search',
+          'swap_vert',
+          'arrow_upward',
+          'arrow_downward',
+          'edit',
+          'radiation_active',
+          'radiation_inactive',
+          'arrow_forward_ios',
+          'open_in_new',
+          'tune',
+          'person',
+          'apartment'
         );
       });
     });

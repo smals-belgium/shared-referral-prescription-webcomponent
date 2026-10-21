@@ -126,24 +126,24 @@ describe('PrescriptionsModelsCardComponent', () => {
 
   it('should create and initialize with default values', () => {
     expect(component).toBeTruthy();
-    expect(component.loading).toBe(false);
-    expect(component.error).toBe(undefined);
+    expect(component.loading()).toBe(false);
+    expect(component.error()).toBe(null);
     expect((component as any).FormatEnum).toBe(FormatEnum);
   });
 
   it('should calculate itemsLength correctly', () => {
-    component.modelEntityPage = undefined;
-    expect(component.itemsLength).toBe(-1);
+    fixture.componentRef.setInput('modelEntityPage', undefined);
+    expect((component as any).itemsLength()).toBe(-1);
 
-    component.modelEntityPage = { numberOfElements: undefined } as any;
-    expect(component.itemsLength).toBe(-1);
+    fixture.componentRef.setInput('modelEntityPage', { numberOfElements: undefined } as any);
+    expect((component as any).itemsLength()).toBe(-1);
 
-    component.modelEntityPage = mockModelEntityPage;
-    expect(component.itemsLength).toBe(1);
+    fixture.componentRef.setInput('modelEntityPage', mockModelEntityPage);
+    expect((component as any).itemsLength()).toBe(1);
   });
 
   it('should initialize data stream when modelEntityPage changes with content', () => {
-    component.modelEntityPage = mockModelEntityPage;
+    fixture.componentRef.setInput('modelEntityPage', mockModelEntityPage);
 
     const changes: SimpleChanges = {
       modelEntityPage: {
@@ -161,10 +161,10 @@ describe('PrescriptionsModelsCardComponent', () => {
   });
 
   it('should trigger loadMore when anchor element intersects', () => {
-    component.modelEntityPage = mockModelEntityPage10;
-    component.loading = false;
-    component.error = undefined;
-    expect(component.itemsLength).toBe(10);
+    fixture.componentRef.setInput('modelEntityPage', mockModelEntityPage10);
+    fixture.componentRef.setInput('loading', false);
+    fixture.componentRef.setInput('error', undefined);
+    expect((component as any).itemsLength()).toBe(10);
 
     jest.spyOn(component, 'loadMore');
     jest.spyOn(component, 'canLoadMore').mockReturnValue(true);
@@ -186,10 +186,10 @@ describe('PrescriptionsModelsCardComponent', () => {
   });
 
   it('should not trigger loadMore when conditions are not met', () => {
-    component.modelEntityPage = mockModelEntityPage10;
-    component.loading = true;
-    component.error = undefined;
-    expect(component.itemsLength).toBe(10);
+    fixture.componentRef.setInput('modelEntityPage', mockModelEntityPage10);
+    fixture.componentRef.setInput('loading', true);
+    fixture.componentRef.setInput('error', null);
+    expect((component as any).itemsLength()).toBe(10);
 
     jest.spyOn(component, 'loadMore');
     jest.spyOn(component, 'canLoadMore').mockReturnValue(true);
@@ -209,10 +209,10 @@ describe('PrescriptionsModelsCardComponent', () => {
   });
 
   it('should not trigger loadMore when not intersecting', () => {
-    component.modelEntityPage = mockModelEntityPage10;
-    component.loading = false;
-    component.error = undefined;
-    expect(component.itemsLength).toBe(10);
+    fixture.componentRef.setInput('modelEntityPage', mockModelEntityPage10);
+    fixture.componentRef.setInput('loading', false);
+    fixture.componentRef.setInput('error', undefined);
+    expect((component as any).itemsLength()).toBe(10);
 
     jest.spyOn(component, 'loadMore');
     jest.spyOn(component, 'canLoadMore').mockReturnValue(true);
@@ -233,18 +233,18 @@ describe('PrescriptionsModelsCardComponent', () => {
 
   it('should determine if more items can be loaded', () => {
     // No page - should return true
-    component.modelEntityPage = undefined;
+    fixture.componentRef.setInput('modelEntityPage', undefined);
     expect(component.canLoadMore()).toBe(true);
 
     // Has more items to load
-    component.modelEntityPage = { content: [mockModelEntityDto], totalElements: 10 };
+    fixture.componentRef.setInput('modelEntityPage', { content: [mockModelEntityDto], totalElements: 10 });
     mockDataService.modelEntityData$.next([mockModelEntityDto]);
     expect(component.canLoadMore()).toBe(true);
 
     // All items loaded
     const allItems = Array(10).fill(mockModelEntityDto);
-    component.modelEntityPage = { content: allItems, numberOfElements: 10, totalElements: 10 };
-    expect(component.itemsLength).toBe(10);
+    fixture.componentRef.setInput('modelEntityPage', { content: allItems, numberOfElements: 10, totalElements: 10 });
+    expect((component as any).itemsLength()).toBe(10);
     mockDataService.modelEntityData$.next(allItems);
     expect(component.canLoadMore()).toBe(false);
   });
@@ -271,7 +271,7 @@ describe('PrescriptionsModelsCardComponent', () => {
 
     component.onErrorRetryClick();
 
-    expect(component.error).toBe(undefined);
+    expect(component.error()).toBe(null);
     expect(mockDataService.retryLoad).toHaveBeenCalledWith(1);
   });
 
@@ -298,8 +298,8 @@ describe('PrescriptionsModelsCardComponent', () => {
     expect(resultWithoutId).toBe(0);
 
     // Test initializeDataStream
-    component.intent = Intent.MODEL;
-    component.modelEntityPage = mockModelEntityPage;
+    fixture.componentRef.setInput('intent', Intent.MODEL);
+    fixture.componentRef.setInput('modelEntityPage', mockModelEntityPage);
 
     component['initializeDataStream']();
 
@@ -321,7 +321,7 @@ describe('PrescriptionsModelsCardComponent', () => {
 
     it('should render model cards when items are available', () => {
       const cardElements = fixture.debugElement.nativeElement.querySelectorAll('mat-card');
-      expect(cardElements.length).toBe(1);
+      expect(cardElements).toHaveLength(1);
     });
 
     it('should display no models, but alert when no items available', () => {

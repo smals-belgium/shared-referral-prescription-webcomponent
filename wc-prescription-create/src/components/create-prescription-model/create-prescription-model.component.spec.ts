@@ -116,19 +116,19 @@ describe('CreatePrescriptionModelComponent', () => {
   });
 
   describe('Component Initialization', () => {
-    it('should not render wrapper when prescriptionForm is undefined', () => {
+    it('should not render title when prescriptionForm is undefined', () => {
       component.prescriptionForm = undefined as any;
       fixture.detectChanges();
 
-      const wrapper = fixture.debugElement.query(By.css('.wrapper'));
+      const wrapper = fixture.debugElement.query(By.css('h3'));
       expect(wrapper).toBeFalsy();
     });
 
-    it('should render wrapper when prescriptionForm is provided', () => {
+    it('should render title when prescriptionForm is provided', () => {
       component.prescriptionForm = createMockPrescriptionForm();
       fixture.detectChanges();
 
-      const wrapper = fixture.debugElement.query(By.css('.wrapper'));
+      const wrapper = fixture.debugElement.query(By.css('h3'));
       expect(wrapper).toBeTruthy();
     });
   });
@@ -274,7 +274,7 @@ describe('CreatePrescriptionModelComponent', () => {
       fixture.detectChanges();
 
       const alerts = fixture.debugElement.queryAll(By.css('app-alert'));
-      expect(alerts.length).toBe(0);
+      expect(alerts).toHaveLength(0);
     });
   });
 
@@ -290,7 +290,7 @@ describe('CreatePrescriptionModelComponent', () => {
       fixture.detectChanges();
 
       const spinners = fixture.debugElement.queryAll(By.css('app-overlay-spinner'));
-      expect(spinners.length).toBe(1);
+      expect(spinners).toHaveLength(1);
     });
 
     it('should show spinner when formTemplateState is UPDATING', () => {
@@ -304,7 +304,7 @@ describe('CreatePrescriptionModelComponent', () => {
       fixture.detectChanges();
 
       const spinners = fixture.debugElement.queryAll(By.css('app-overlay-spinner'));
-      expect(spinners.length).toBe(1);
+      expect(spinners).toHaveLength(1);
     });
 
     it('should render evf-form when formTemplateState is SUCCESS', () => {
@@ -1089,7 +1089,7 @@ describe('CreatePrescriptionModelComponent', () => {
 
       const result = (component as any).filterElements(elements);
 
-      expect(result.length).toBe(2);
+      expect(result).toHaveLength(2);
       expect(result[0].id).toBe('2');
       expect(result[1].id).toBe('3');
     });
@@ -1104,7 +1104,7 @@ describe('CreatePrescriptionModelComponent', () => {
 
       const result = (component as any).filterElements(elements);
 
-      expect(result.length).toBe(0);
+      expect(result).toHaveLength(0);
     });
 
     it('should filter out Date type elements', () => {
@@ -1116,7 +1116,7 @@ describe('CreatePrescriptionModelComponent', () => {
 
       const result = (component as any).filterElements(elements);
 
-      expect(result.length).toBe(2);
+      expect(result).toHaveLength(2);
       expect(result[0].id).toBe('2');
       expect(result[1].id).toBe('3');
     });
@@ -1174,7 +1174,7 @@ describe('CreatePrescriptionModelComponent', () => {
 
       const result = (component as any).filterElements(elements);
 
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0].id).toBe('2');
     });
 
@@ -1183,7 +1183,7 @@ describe('CreatePrescriptionModelComponent', () => {
 
       const result = (component as any).filterElements(elements);
 
-      expect(result.length).toBe(2);
+      expect(result).toHaveLength(2);
     });
 
     it('should handle elements without validations', () => {
@@ -1194,7 +1194,7 @@ describe('CreatePrescriptionModelComponent', () => {
 
       const result = (component as any).filterElements(elements);
 
-      expect(result.length).toBe(2);
+      expect(result).toHaveLength(2);
     });
 
     it('should apply all filters simultaneously', () => {
@@ -1217,7 +1217,7 @@ describe('CreatePrescriptionModelComponent', () => {
 
       const result = (component as any).filterElements(elements);
 
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0].id).toBe('3');
       expect(result[0].validations?.length).toBe(1);
       expect(result[0].validations?.[0].name).toBe('minLength');

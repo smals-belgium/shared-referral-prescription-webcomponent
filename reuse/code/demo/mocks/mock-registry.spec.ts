@@ -22,7 +22,6 @@ function createHttpRequest(url: string, params: Record<string, string> = {}): Ht
     params: new URLSearchParams(params) as any,
   });
 }
-
 describe('Demo mode', () => {
   it('should contain all required mock entries', () => {
     const urls = DEMO_MOCKS.map(m => m.url.source);
@@ -472,7 +471,7 @@ describe('Demo mode', () => {
       const savedPrescription = demoStorage.get('demoPrescription') as ReadRequestResourceExtended;
       expect(savedPrescription).toBeDefined();
       expect(savedPrescription.performerTasks).toBeDefined();
-      expect(Object.keys(savedPrescription.performerTasks!).length).toBe(1);
+      expect(Object.keys(savedPrescription.performerTasks!)).toHaveLength(1);
     });
   });
 
@@ -525,7 +524,7 @@ describe('Demo mode', () => {
 
       const saved = demoStorage.get('demoPrescription') as ReadRequestResourceExtended;
       if (saved && saved.performerTasks) {
-        expect(Object.keys(saved.performerTasks).length).toBe(1);
+        expect(Object.keys(saved.performerTasks)).toHaveLength(1);
       }
     });
   });
@@ -556,60 +555,42 @@ describe('Demo mode', () => {
 
       expect(result).toHaveProperty('items');
       expect(Array.isArray(result.items)).toBe(true);
-      expect(result.items!.length).toBe(51);
+      expect(result.items!).toHaveLength(51);
       expect(mock.method).toContain('GET');
     });
 
-    it('should filter cities by name query', () => {
-      const mock = findMockByUrl(/\/geography\/cities(\?.*)?$/);
-      const req = createHttpRequest('/geography/cities', {
+    it.each([
+      {
+        description: 'filter cities by name query',
         query: 'brussels',
-      });
-
-      const result = mock.handler!(req, null) as CitiesResource;
-
-      expect(result).toHaveProperty('items');
-      expect(Array.isArray(result.items)).toBe(true);
-      expect(result.items!.length).toBe(1);
-    });
-
-    it('should filter cities by zipCode', () => {
-      const mock = findMockByUrl(/\/geography\/cities(\?.*)?$/);
-      const req = createHttpRequest('/geography/cities', {
+        expectedLength: 1,
+      },
+      {
+        description: 'filter cities by zipCode',
         query: '1000',
-      });
-
-      const result = mock.handler!(req, null) as CitiesResource;
-
-      expect(result).toHaveProperty('items');
-      expect(Array.isArray(result.items)).toBe(true);
-      expect(result.items!.length).toBe(1);
-    });
-
-    it('should handle case-insensitive search', () => {
-      const mock = findMockByUrl(/\/geography\/cities(\?.*)?$/);
-      const req = createHttpRequest('/geography/cities', {
+        expectedLength: 1,
+      },
+      {
+        description: 'handle case-insensitive search',
         query: 'BRUssELS',
-      });
-
-      const result = mock.handler!(req, null) as CitiesResource;
-
-      expect(result).toHaveProperty('items');
-      expect(Array.isArray(result.items)).toBe(true);
-      expect(result.items!.length).toBe(1);
-    });
-
-    it('should search across all language fields', () => {
+        expectedLength: 1,
+      },
+      {
+        description: 'search across all language fields',
+        query: 'Ixelles',
+        expectedLength: 1,
+      },
+    ])('should $description', ({ query, expectedLength }) => {
       const mock = findMockByUrl(/\/geography\/cities(\?.*)?$/);
       const req = createHttpRequest('/geography/cities', {
-        query: 'Ixelles',
+        query,
       });
 
       const result = mock.handler!(req, null) as CitiesResource;
 
       expect(result).toHaveProperty('items');
       expect(Array.isArray(result.items)).toBe(true);
-      expect(result.items!.length).toBe(1);
+      expect(result.items!).toHaveLength(expectedLength);
     });
   });
 });

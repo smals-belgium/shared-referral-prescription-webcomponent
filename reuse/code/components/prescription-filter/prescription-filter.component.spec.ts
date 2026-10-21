@@ -51,8 +51,8 @@ describe('PrescriptionFilterComponent', () => {
   it('should create the component with properly initialized form', () => {
     fixture.detectChanges();
     expect(component).toBeTruthy();
-    expect(component.formGroup.get('status')?.value).toEqual(null);
-    expect(component.formGroup.get('prescriptionType')?.value).toEqual(null);
+    expect(component.formGroup.get('status')?.value).toBeNull();
+    expect(component.formGroup.get('prescriptionType')?.value).toBeNull();
   });
 
   it('should create the component with initialValue', () => {
@@ -141,8 +141,8 @@ describe('PrescriptionFilterComponent', () => {
 
     component.resetForm();
 
-    expect(component.formGroup.get('status')?.value).toEqual(null);
-    expect(component.formGroup.get('prescriptionType')?.value).toEqual(null);
+    expect(component.formGroup.get('status')?.value).toBeNull();
+    expect(component.formGroup.get('prescriptionType')?.value).toBeNull();
     expect(component.formGroup.pristine).toBe(true);
 
     expect(component.filterChange.emit).toHaveBeenCalledWith({

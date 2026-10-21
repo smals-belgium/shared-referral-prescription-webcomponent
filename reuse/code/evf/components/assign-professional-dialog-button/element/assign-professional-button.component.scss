@@ -1,0 +1,28 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+.physician_title {
+  font-weight: bold;
+}
+.assigned_professional_container {
+  max-width: fit-content;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid mh.$border-brand-neutral-medium;
+  padding: mh.$spacing-rem-xs mh.$spacing-rem-xs mh.$spacing-rem-2xs;
+  border-radius: mh.$border-radius-s;
+  p {
+    margin: 0;
+  }
+  .fullname {
+    color: mh.$typography-brand-neutral-darker;
+  }
+  .nihii {
+    @include mh.font-small-regular();
+    color: mh.$typography-brand-neutral-dark;
+  }
+  button {
+    @include mh.font-default-medium();
+    color: mh.$typography-brand-primary-medium;
+    text-decoration: underline;
+  }
+}

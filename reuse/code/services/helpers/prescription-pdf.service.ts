@@ -14,6 +14,7 @@ import {
   translateOccurrenceTiming,
 } from '@reuse/code/utils/occurrence-timing.utils';
 import * as pdfMake from 'pdfmake/build/pdfmake.js';
+import { TCreatedPdf } from 'pdfmake/build/pdfmake.js';
 import {
   HealthcareProResource,
   PersonResource,
@@ -22,10 +23,8 @@ import {
   Template,
 } from '@reuse/code/openapi';
 import { BoundsDuration, OccurrenceTiming, Repeat } from '@reuse/code/interfaces';
-import { TCreatedPdf } from 'pdfmake/build/pdfmake.js';
 import { FormatSsinPipe } from '@reuse/code/pipes/format-ssin.pipe';
 import { FormatNihdiPipe } from '@reuse/code/pipes/format-nihdi.pipe';
-import { SupportedLanguages } from '@reuse/code/evf/utils/evf-utils';
 
 @Injectable({ providedIn: 'root' })
 export class PrescriptionsPdfService {
@@ -502,13 +501,11 @@ export class PrescriptionsPdfService {
     language: keyof FormTranslation
   ) {
     if (element.viewType === 'occurrenceTiming') {
-      return [
-        translateOccurrenceTiming(responses['occurrenceTiming'] as OccurrenceTiming, language as SupportedLanguages),
-      ];
+      return [translateOccurrenceTiming(responses['occurrenceTiming'] as OccurrenceTiming, language)];
     } else if (element.viewType === 'occurrences') {
-      return [translateFrequencyAndPeriod(responses['occurrences'] as Repeat, language as SupportedLanguages)];
+      return [translateFrequencyAndPeriod(responses['occurrences'] as Repeat, language)];
     } else if (element.viewType === 'boundsDuration') {
-      return [translateBoundsDuration(responses['boundsDuration'] as BoundsDuration, language as SupportedLanguages)];
+      return [translateBoundsDuration(responses['boundsDuration'] as BoundsDuration, language)];
     } else if (element.responses?.length) {
       if (Array.isArray(value)) {
         return value.map(v => {

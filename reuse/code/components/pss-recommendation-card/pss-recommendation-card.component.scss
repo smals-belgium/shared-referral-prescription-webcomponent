@@ -1,0 +1,66 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+.pss-recommendation-card {
+  max-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  gap: mh.$spacing-xs;
+  padding: mh.$spacing-m;
+  border: mh.$border-width-s solid mh.$border-brand-neutral-medium;
+  border-radius: mh.$border-radius-s;
+
+  &.selectable {
+    cursor: pointer;
+  }
+
+  &.selectable &-row {
+    flex-direction: row;
+    align-items: center;
+
+    .pss-recommendation-card-content {
+      display: flex;
+      flex: 1;
+      flex-direction: row;
+      align-items: center;
+      gap: mh.$spacing-xs;
+    }
+    .exam-name {
+      font-weight: mh.$font-weight-regular;
+    }
+  }
+
+  &:not(.selectable) &-row {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .pss-recommendation-card-content {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: mh.$spacing-xs;
+    }
+    .exam-name {
+      font-weight: mh.$font-weight-bold;
+    }
+  }
+
+  &-row {
+    display: flex;
+    align-items: center;
+    gap: mh.$spacing-xs;
+
+    &.radiation {
+      flex-wrap: wrap;
+    }
+
+    .exam-name {
+      margin: 0;
+    }
+
+    .label {
+      width: 100%;
+      margin: 0;
+      color: mh.$typography-brand-neutral-medium;
+    }
+  }
+}

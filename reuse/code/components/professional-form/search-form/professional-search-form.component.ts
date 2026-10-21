@@ -50,6 +50,7 @@ export interface SearchCriteria {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfessionalSearchFormComponent implements OnInit {
+  readonly translationKeyPrefixIntent = input.required<'prescription' | 'proposal'>();
   private readonly geographyService = inject(GeographyService);
   private readonly nameValidators = [Validators.minLength(2), CaregiverNamePatternValidator];
 
@@ -103,9 +104,9 @@ export class ProfessionalSearchFormComponent implements OnInit {
     this.queryControl.addValidators(this.nameValidators);
 
     this.citiesControl.setValidators((control: AbstractControl) =>
-      Validators.required(this.queryControl) != null
-        ? Validators.required(control) || Validators.minLength(1)(control)
-        : null
+      Validators.required(this.queryControl) == null
+        ? null
+        : Validators.required(control) || Validators.minLength(1)(control)
     );
   }
 

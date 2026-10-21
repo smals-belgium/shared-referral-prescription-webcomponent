@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { AutocompleteMultiselectComponent as Wrapper } from './autocomplete-multiselect.component';
 import {
   AutocompleteOption,
@@ -13,12 +13,12 @@ import { BrowserModule, By } from '@angular/platform-browser';
 import { MarkdownModule } from 'ngx-markdown';
 import { of } from 'rxjs';
 import { AutocompleteMultiselectComponent } from '../../components/autocomplete-multiselect/element/autocomplete-multiselect.component';
-import { ExternalSourceService } from '@reuse/code/services/api/externalSourceService.service';
 import { MatFormField } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { NgControl } from '@angular/forms';
 import { MatChipRow } from '@angular/material/chips';
 import { MatIconTestingModule } from '@angular/material/icon/testing';
+import { TranslateModule } from '@ngx-translate/core';
 
 const mockAutocompleteOptions: AutocompleteOption[] = [
   { label: { en: 'Option 1', fr: 'Option 1', nl: 'Option 1', de: 'Option 1' }, value: 'opt1' },
@@ -54,6 +54,23 @@ const formTemplate: FormTemplate = {
   },
 };
 
+const formTemplateWithMinLength: FormTemplate = {
+  ...formTemplate,
+  elements: [
+    {
+      ...formTemplate.elements[0],
+      custom: {
+        minLengthExternalSource: 3,
+      },
+      validations: [
+        {
+          name: 'required',
+        },
+      ],
+    },
+  ],
+};
+
 const disableAnimations =
   !('animate' in document.documentElement) || (navigator && /iPhone OS (8|9|10|11|12|13)_/.test(navigator.userAgent));
 
@@ -76,6 +93,7 @@ describe('AutocompleteMultiselectComponent', () => {
         BrowserAnimationsModule.withConfig({ disableAnimations }),
         MarkdownModule.forRoot(),
         MatIconTestingModule,
+        TranslateModule.forRoot({}),
       ],
       providers: [
         provideEvfCore(
@@ -84,7 +102,7 @@ describe('AutocompleteMultiselectComponent', () => {
             element: AutocompleteMultiselectComponent,
           })
         ),
-        { provide: ExternalSourceService, useValue: evfExternalSourceServiceMock },
+        { provide: EvfExternalSourceService, useValue: evfExternalSourceServiceMock },
       ],
     }).compileComponents();
 
@@ -116,7 +134,7 @@ describe('AutocompleteMultiselectComponent', () => {
     // Is text with id
     const input = inputDe.nativeElement as HTMLInputElement;
     expect(input.type).toBe('text');
-    expect(input.id).toBe('evf-autocomplete-0');
+    expect(input.id).toBe('evf-multiselect-autocomplete-0');
 
     // Is bind to a form
     const ngControl = inputDe.injector.get(NgControl);
@@ -124,7 +142,7 @@ describe('AutocompleteMultiselectComponent', () => {
 
     // Has no chip present
     const chips = fixture.debugElement.queryAll(By.directive(MatChipRow));
-    expect(chips.length).toBe(0);
+    expect(chips).toHaveLength(0);
   });
 
   it('should type in input and update form control value', () => {
@@ -156,8 +174,7 @@ describe('AutocompleteMultiselectComponent', () => {
 
     const testText = 'opt';
     for (let i = 0; i < testText.length; i++) {
-      const currentText = testText.substring(0, i + 1);
-      inputElement.value = currentText;
+      inputElement.value = testText.substring(0, i + 1);
 
       // Trigger input event
       inputElement.dispatchEvent(new Event('input'));
@@ -209,6 +226,37 @@ describe('AutocompleteMultiselectComponent', () => {
     }
   });
 
+  it('should exclude already selected options from autocomplete results', fakeAsync(() => {
+    fixture.componentRef.setInput('demoTemplate', formTemplate);
+    fixture.detectChanges();
+
+    const autocompleteFormDebugElement = fixture.debugElement.query(By.directive(AutocompleteMultiselectComponent));
+    const componentInstance = autocompleteFormDebugElement.componentInstance;
+
+    const selectedOption: AutocompleteOption = {
+      label: { en: 'Existing Item', fr: 'Article Existant', nl: 'Existing Item', de: 'Article Existant' },
+      value: 'existing_item',
+    };
+    const newOption: AutocompleteOption = {
+      label: { en: 'New Item', fr: 'Nouvel Article', nl: 'New Item', de: 'Nouvel Article' },
+      value: 'new_item',
+    };
+
+    componentInstance.selectedItems.set([selectedOption]);
+    evfExternalSourceServiceMock.handleAutocomplete.mockReturnValue(of([selectedOption, newOption]));
+
+    const emittedOptions: AutocompleteOption[] = [];
+    componentInstance.options$.subscribe((options: AutocompleteOption) => emittedOptions.push(options));
+
+    componentInstance.queryTrigger$.next('Item');
+
+    tick(300); // flush debounceTime
+    fixture.detectChanges();
+
+    const latestOptions = emittedOptions[emittedOptions.length - 1];
+    expect(latestOptions).toEqual([newOption]);
+  }));
+
   it('should call updateQuery on keyup event', () => {
     fixture.componentRef.setInput('demoTemplate', formTemplate);
 
@@ -223,6 +271,43 @@ describe('AutocompleteMultiselectComponent', () => {
     input.nativeElement.dispatchEvent(event);
 
     expect(updateQuerySpy).toHaveBeenCalledWith(event);
+  });
+
+  it('should not query autocomplete before the minLengthExternalSource character threshold is reached', async () => {
+    fixture.componentRef.setInput('demoTemplate', formTemplateWithMinLength);
+    fixture.detectChanges();
+
+    evfExternalSourceServiceMock.handleAutocomplete.mockClear();
+
+    const autocompleteFormDebugElement = fixture.debugElement.query(By.directive(AutocompleteMultiselectComponent));
+
+    autocompleteFormDebugElement.componentInstance.updateQuery({
+      target: { value: 'ab' },
+    } as unknown as Event);
+
+    await new Promise(resolve => setTimeout(resolve, 350));
+    fixture.detectChanges();
+
+    expect(evfExternalSourceServiceMock.handleAutocomplete).not.toHaveBeenCalled();
+  });
+
+  it('should query autocomplete once the minLengthExternalSource character threshold is reached', async () => {
+    fixture.componentRef.setInput('demoTemplate', formTemplateWithMinLength);
+    fixture.detectChanges();
+
+    evfExternalSourceServiceMock.handleAutocomplete.mockClear();
+
+    const autocompleteFormDebugElement = fixture.debugElement.query(By.directive(AutocompleteMultiselectComponent));
+
+    autocompleteFormDebugElement.componentInstance.updateQuery({
+      target: { value: 'abc' },
+    } as unknown as Event);
+
+    await new Promise(resolve => setTimeout(resolve, 350));
+    fixture.detectChanges();
+
+    expect(evfExternalSourceServiceMock.handleAutocomplete).toHaveBeenCalledTimes(1);
+    expect(evfExternalSourceServiceMock.handleAutocomplete.mock.calls[0][1]).toContain('"query":"abc"');
   });
 
   it('should display autocomplete options', async () => {
@@ -240,7 +325,7 @@ describe('AutocompleteMultiselectComponent', () => {
     await fixture.whenStable();
 
     const options = fixture.debugElement.queryAll(By.css('mat-option'));
-    expect(options.length).toBe(mockAutocompleteOptions.length);
+    expect(options).toHaveLength(mockAutocompleteOptions.length);
   });
 
   it('should call selected method when option is selected', async () => {

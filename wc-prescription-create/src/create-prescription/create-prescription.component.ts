@@ -48,6 +48,7 @@ import {
   DataState,
   IdToken,
   LoadingStatus,
+  TemplateCodes,
 } from '@reuse/code/interfaces';
 import { CreateMultiplePrescriptionsComponent } from '../components/create-multiple-prescriptions/create-multiple-prescriptions.component';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
@@ -83,7 +84,7 @@ import { ChooseTemplateDialog, SelectedTemplate } from '@reuse/code/dialogs/choo
 import { getTranslationKeyPrefixForPrescriptionOrProposal, isModel, isPrescription } from '@reuse/code/utils/utils';
 import { EncryptionKeyInitializerService } from '@reuse/code/states/privacy/encryption-key-initializer.service';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
+import { extractShortLangFromFullLang, handleMissingTranslationFile } from '@reuse/code/utils/translation.utils';
 import { FullLang, Lang } from '@reuse/code/constants/languages';
 import { IconRegistryService } from '@reuse/code/services/helpers/icon-registry.service';
 import { ActiveOverlayHostService } from '@reuse/code/services/helpers/active-host.service';
@@ -208,7 +209,20 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
       'keyboard_arrow_down',
       'warning',
       'emergency_home',
-      'notifications'
+      'notifications',
+      'cancel',
+      'search',
+      'swap_vert',
+      'arrow_upward',
+      'arrow_downward',
+      'edit',
+      'radiation_active',
+      'radiation_inactive',
+      'arrow_forward_ios',
+      'open_in_new',
+      'tune',
+      'person',
+      'apartment'
     );
 
     this._subscriptions.add(
@@ -280,7 +294,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
   async openSelectDialog() {
     if (await this.isNurse()) {
       this.displaySelectDialog$.set(false);
-      this.addPrescriptionForm('ANNEX_81');
+      this.addPrescriptionForm(TemplateCodes.ANNEX_81);
     } else {
       this.addPrescription();
     }
@@ -316,11 +330,11 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
   findModelById(templateCode: string, modelId: number) {
     this.prescriptionModelService.findById(modelId).subscribe({
       next: prescriptionModel => {
-        if (prescriptionModel !== null) {
-          this.addPrescriptionFormByModel(templateCode, prescriptionModel);
+        if (prescriptionModel === null) {
+          this.toastService.showSomethingWentWrong();
           this.loading.set(false);
         } else {
-          this.toastService.showSomethingWentWrong();
+          this.addPrescriptionFormByModel(templateCode, prescriptionModel);
           this.loading.set(false);
         }
       },
@@ -346,6 +360,18 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
       .pipe(filter(result => result?.templateCode != null))
       .subscribe(result => {
         this.displaySelectDialog$.set(false);
+
+        if (result?.templateCode === 'ANNEX_82' && this.status$.getValue() === false) {
+          this.pssService.getPssStatus().subscribe({
+            next: status => {
+              this.status$.next(status);
+            },
+            error: () => {
+              this.pssService.setStatus(false);
+            },
+          });
+        }
+
         if (result?.model?.id && result?.templateCode) {
           this.findModelById(result.templateCode, result.model.id);
         } else if (result?.templateCode) {
@@ -384,7 +410,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
         templateCode: templateCode,
         formTemplateState$: this.templateVersionsStateService.getStateForInstance(instanceId, templateCode),
         initialPrescription: undefined,
-        modelResponses: model.modelData as unknown as Record<string, unknown>,
+        modelResponses: model.modelData,
         modelName: model.label,
         modelId: model.id,
       },
@@ -504,8 +530,13 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
       )
       .subscribe({
         next: readRequestIdResource => {
+          const interpolation = readRequestIdResource.id
+            ? undefined
+            : { interpolation: { warning: 'prescriptionNotCreated' } };
+
           this.toastService.show(
-            isPrescription(this.initialValues?.intent) ? 'prescription.create.success' : 'proposal.create.success'
+            isPrescription(this.initialValues?.intent) ? 'prescription.create.success' : 'proposal.create.success',
+            interpolation
           );
           const ids = readRequestIdResource.id ? [readRequestIdResource.id] : [];
           this.prescriptionsCreated.emit(ids);
@@ -691,13 +722,6 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
     subject: string,
     idToken?: IdToken | null
   ): Observable<CreateRequestResource> {
-    if (templateCode === 'ANNEX_82') {
-      const pssSessionId = this.pssService.getPssSessionId();
-      if (pssSessionId != null) {
-        responses['exchangeId'] = pssSessionId;
-      }
-    }
-
     return this.encryptFreeTextInResponses(templateCode, responses).pipe(
       map(encryptedResponses => {
         if (!this.encryptionKeyInitializer.getPseudonymizedKey()) {
@@ -710,7 +734,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
           pseudonymizedKey: this.encryptionKeyInitializer.getPseudonymizedKey(),
           subject,
           prescriber: mapIdTokenToPrescriber(idToken, this.discipline$(), this.oidc$()),
-        } as CreateRequestResource;
+        };
       }),
       catchError(error => {
         console.error('Failed to create prescription request:', error);
@@ -725,9 +749,13 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
     const successCount = results.filter(r => r.status === LoadingStatus.SUCCESS).length;
     const failedCount = results.filter(r => r.status === LoadingStatus.ERROR).length;
     if (failedCount === 0) {
+      const noIdIndex = results.find(result => !result.responseId && result.status === LoadingStatus.SUCCESS);
+      const interpolation = noIdIndex
+        ? { interpolation: { warning: 'prescriptionNotCreated', count: successCount } }
+        : { interpolation: { count: successCount } };
       this.toastService.show(
         isPrescription(this.initialValues?.intent) ? 'prescription.create.allSuccess' : 'proposal.create.allSuccess',
-        { interpolation: { count: successCount } }
+        interpolation
       );
       const ids = results.map(r => r.responseId).filter((id): id is string => !!id);
       this.prescriptionsCreated.emit(ids);

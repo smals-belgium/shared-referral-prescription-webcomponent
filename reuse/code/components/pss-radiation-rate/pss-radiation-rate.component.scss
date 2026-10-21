@@ -1,0 +1,33 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+mat-icon.radiation-active,
+mat-icon.radiation-inactive {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  vertical-align: middle;
+  margin-right: 3px;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+}
+
+mat-icon.radiation-active {
+  background-color: mh.$surface-brand-neutral-darker;
+  color: #fff;
+}
+
+mat-icon.radiation-inactive {
+  background-color: transparent;
+  color: mh.$border-brand-neutral-darker;
+
+  ::ng-deep svg {
+    fill: none;
+  }
+}

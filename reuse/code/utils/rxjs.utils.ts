@@ -30,7 +30,7 @@ export function combineSignalDataState<T>(states: Record<string, Signal<DataStat
       {
         status: LoadingStatus.INITIAL,
         data: {} as Record<string, any>,
-        params: {} as Record<string, any>,
+        params: {},
         error: {} as Record<string, any>,
       } as DataState<T>
     )

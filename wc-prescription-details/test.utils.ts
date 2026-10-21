@@ -1,3 +1,6 @@
+import { signal } from '@angular/core';
+import { TranslateLoader } from '@ngx-translate/core';
+import { UserInfo } from '@reuse/code/interfaces';
 import {
   Discipline,
   FhirR4TaskStatus,
@@ -9,17 +12,14 @@ import {
   Role,
   TemplateVersion,
 } from '@reuse/code/openapi';
-import { TranslateLoader } from '@ngx-translate/core';
-import { Observable, of } from 'rxjs';
-import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
-import { UserInfo } from '@reuse/code/interfaces';
-import { signal } from '@angular/core';
 import {
   asOrganizationTask,
   asPerformerTask,
   isOrganizationTask,
   isPerformerTask,
 } from '@reuse/code/utils/task-type.util';
+import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
+import { Observable, of } from 'rxjs';
 import TaskTypeEnum = RequestTaskResource.TaskTypeEnum;
 
 export const mockPro: UserInfo = {
@@ -143,6 +143,8 @@ export const mockAuthService = {
   discipline: jest.fn(() => of(Discipline.Nurse)),
   role: jest.fn(() => of(Role.Prescriber)),
   oidc: jest.fn(() => of(OIDC.Homecareservices)),
+  isOrganizationAndActingForProfessional: jest.fn(() => of(false)),
+  getConnectedOrganizationNihii: jest.fn(() => of('mock-nihii')),
 };
 
 export const mockPersonService = {
@@ -175,8 +177,9 @@ export const prescriptionDetailsSecondaryMockService = {
   loading: signal(false),
   generatedUUID: jest.fn().mockReturnValue('generated-uuid'),
   currentLang: jest.fn().mockReturnValue('BE-fr'),
-  pssStatus: jest.fn(),
   isProfessional$: jest.fn(),
+  isOrganization$: jest.fn(),
+  onSelfAssign: jest.fn(),
 };
 
 export const mockPseudoClient = {

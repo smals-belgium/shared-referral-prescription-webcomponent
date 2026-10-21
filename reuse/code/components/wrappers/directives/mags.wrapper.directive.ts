@@ -1,4 +1,4 @@
-import { Directive, ElementRef, inject, input, output, OnInit } from '@angular/core';
+import { Directive, ElementRef, inject, input, OnInit, output } from '@angular/core';
 import {
   AuthenticationStatus,
   ConfigName,
@@ -57,7 +57,7 @@ export abstract class MagsComponent implements WebComponentWithSignals, OnInit {
   }
 
   private get envHost(): typeof globalThis & { referralPrescriptionEnv?: ReferralEnv } {
-    return globalThis as typeof globalThis & { referralPrescriptionEnv?: ReferralEnv };
+    return globalThis;
   }
 
   ngOnInit() {
@@ -96,7 +96,7 @@ export abstract class MagsComponent implements WebComponentWithSignals, OnInit {
 
   protected async getAccessToken(audience?: string) {
     if (this.hostSettings.configName === ConfigName.DEMO) {
-      return Promise.resolve(ConfigName.DEMO);
+      return ConfigName.DEMO;
     } else {
       return this.hostServices.getAccessToken(audience);
     }

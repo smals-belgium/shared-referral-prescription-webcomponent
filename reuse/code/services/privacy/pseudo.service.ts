@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
+import { pseudonymInTransitMock, Uint8ArrayMock } from '@reuse/code/demo/mocks/pseudonymInTransit';
 import { ConfigurationService } from '@reuse/code/services/config/configuration.service';
-import { PseudonymizationService } from './pseudo.service.abstract';
+import { PseudonymisationHelper } from '@smals-belgium-shared/pseudo-helper';
 import { PseudoService as EnhancedPseudoService } from '@smals-belgium/shared-pseudo-tools-js';
 import { firstValueFrom } from 'rxjs';
-import { pseudonymInTransitMock, Uint8ArrayMock } from '@reuse/code/demo/mocks/pseudonymInTransit';
+import { PseudonymizationService } from './pseudo.service.abstract';
 
 @Injectable({ providedIn: 'root' })
 export class PseudoService implements PseudonymizationService {

@@ -1,5 +1,5 @@
 {
-  "total": 13,
+  "total": 14,
   "items": [
     {
       "id": "DEAD0000-0000-4000-A000-000000000001",
@@ -19,18 +19,6 @@
         "status": "READY",
         "id": "DEAD0000-0000-4000-0001-000000000001",
         "executionPeriod": null
-      },
-      "allowedActions": {
-        "canAssignCaregiver": true,
-        "canAutoAssignCaregivers": false,
-        "canSelfAssign": false,
-        "canDuplicatePrescription": false,
-        "canExtendPrescription": false,
-        "canCancelPrescriptionOrProposal": true,
-        "canApproveProposal": false,
-        "canCreatePrescription": false,
-        "canRejectProposal": false,
-        "canPrintPrescriptionOrProposal": true
       },
       "currentTask": {
         "taskId": "DEAD0000-0000-4001-0000-000000000001",
@@ -80,7 +68,11 @@
       "pseudonymizedKey": "TEST-pseudonymizedKey",
       "kid": null,
       "note": null,
-      "extendedShortId": "1FAKE4"
+      "extendedShortId": "1FAKE4",
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canPrintPrescriptionOrProposal": true
+      }
     },
     {
       "id": "DEAD0000-0000-4000-A000-000000000002",
@@ -100,18 +92,6 @@
         "status": "READY",
         "id": "DEAD0000-0000-4000-0001-000000000002",
         "executionPeriod": null
-      },
-      "allowedActions": {
-        "canAssignCaregiver": true,
-        "canAutoAssignCaregivers": false,
-        "canSelfAssign": false,
-        "canDuplicatePrescription": false,
-        "canExtendPrescription": false,
-        "canCancelPrescriptionOrProposal": true,
-        "canApproveProposal": false,
-        "canCreatePrescription": false,
-        "canRejectProposal": false,
-        "canPrintPrescriptionOrProposal": true
       },
       "currentTask": {
         "taskId": "DEAD0000-0000-4001-0000-000000000001",
@@ -161,7 +141,11 @@
       "pseudonymizedKey": "TEST-pseudonymizedKey",
       "kid": null,
       "note": null,
-      "extendedShortId": null
+      "extendedShortId": null,
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canPrintPrescriptionOrProposal": true
+      }
     },
     {
       "id": "DEAD0000-0000-4000-A000-000000000003",
@@ -181,18 +165,6 @@
         "status": "READY",
         "id": "DEAD0000-0000-4000-0001-000000000003",
         "executionPeriod": null
-      },
-      "allowedActions": {
-        "canAssignCaregiver": true,
-        "canAutoAssignCaregivers": false,
-        "canSelfAssign": false,
-        "canDuplicatePrescription": false,
-        "canExtendPrescription": false,
-        "canCancelPrescriptionOrProposal": true,
-        "canApproveProposal": false,
-        "canCreatePrescription": false,
-        "canRejectProposal": false,
-        "canPrintPrescriptionOrProposal": true
       },
       "currentTask": {
         "taskId": "DEAD0000-0000-4001-0000-000000000003",
@@ -246,7 +218,11 @@
       "pseudonymizedKey": "TEST-pseudonymizedKey",
       "kid": null,
       "note": null,
-      "extendedShortId": null
+      "extendedShortId": null,
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canPrintPrescriptionOrProposal": true
+      }
     },
     {
       "id": "DEAD0000-0000-4000-A000-000000000004",
@@ -267,18 +243,7 @@
         "id": "DEAD0000-0000-4000-0001-000000000004",
         "executionPeriod": null
       },
-      "allowedActions": {
-        "canAssignCaregiver": true,
-        "canAutoAssignCaregivers": false,
-        "canSelfAssign": false,
-        "canDuplicatePrescription": false,
-        "canExtendPrescription": false,
-        "canCancelPrescriptionOrProposal": true,
-        "canApproveProposal": false,
-        "canCreatePrescription": false,
-        "canRejectProposal": false,
-        "canPrintPrescriptionOrProposal": true
-      },
+
       "currentTask": {
         "taskId": null,
         "taskType": null,
@@ -317,7 +282,11 @@
       "pseudonymizedKey": "TEST-pseudonymizedKey",
       "kid": null,
       "note": null,
-      "extendedShortId": null
+      "extendedShortId": null,
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canPrintPrescriptionOrProposal": true
+      }
     },
     {
       "id": "DEAD0000-0000-4000-A000-000000000005",
@@ -337,18 +306,6 @@
         "status": "READY",
         "id": "DEAD0000-0000-4000-0001-000000000005",
         "executionPeriod": null
-      },
-      "allowedActions": {
-        "canAssignCaregiver": true,
-        "canAutoAssignCaregivers": false,
-        "canSelfAssign": false,
-        "canDuplicatePrescription": false,
-        "canExtendPrescription": false,
-        "canCancelPrescriptionOrProposal": true,
-        "canApproveProposal": false,
-        "canCreatePrescription": false,
-        "canRejectProposal": false,
-        "canPrintPrescriptionOrProposal": true
       },
       "currentTask": {
         "taskId": "DEAD0000-0000-4001-0000-000000000005",
@@ -398,7 +355,11 @@
       "pseudonymizedKey": "TEST-pseudonymizedKey",
       "kid": null,
       "note": null,
-      "extendedShortId": null
+      "extendedShortId": null,
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canPrintPrescriptionOrProposal": true
+      }
     },
     {
       "id": "DEAD0000-0000-4000-A000-000000000006",
@@ -418,18 +379,6 @@
         "status": "READY",
         "id": "DEAD0000-0000-4000-0001-000000000006",
         "executionPeriod": null
-      },
-      "allowedActions": {
-        "canAssignCaregiver": true,
-        "canAutoAssignCaregivers": false,
-        "canSelfAssign": false,
-        "canDuplicatePrescription": false,
-        "canExtendPrescription": false,
-        "canCancelPrescriptionOrProposal": true,
-        "canApproveProposal": false,
-        "canCreatePrescription": false,
-        "canRejectProposal": false,
-        "canPrintPrescriptionOrProposal": true
       },
       "currentTask": {
         "taskId": "DEAD0000-0000-4001-0000-000000000006",
@@ -481,7 +430,11 @@
       "pseudonymizedKey": "TEST-pseudonymizedKey",
       "kid": null,
       "note": null,
-      "extendedShortId": null
+      "extendedShortId": null,
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canPrintPrescriptionOrProposal": true
+      }
     },
     {
       "id": "DEAD0000-0000-4000-A000-000000000007",
@@ -501,18 +454,6 @@
         "status": "READY",
         "id": "DEAD0000-0000-4000-0001-000000000006",
         "executionPeriod": null
-      },
-      "allowedActions": {
-        "canAssignCaregiver": true,
-        "canAutoAssignCaregivers": false,
-        "canSelfAssign": false,
-        "canDuplicatePrescription": false,
-        "canExtendPrescription": false,
-        "canCancelPrescriptionOrProposal": true,
-        "canApproveProposal": false,
-        "canCreatePrescription": false,
-        "canRejectProposal": false,
-        "canPrintPrescriptionOrProposal": true
       },
       "currentTask": {
         "taskId": "DEAD0000-0000-4001-0000-000000000006",
@@ -563,7 +504,11 @@
       "pseudonymizedKey": "TEST-pseudonymizedKey",
       "kid": null,
       "note": null,
-      "extendedShortId": null
+      "extendedShortId": null,
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canPrintPrescriptionOrProposal": true
+      }
     },
     {
       "id": "DEAD0000-0000-4000-A000-000000000008",
@@ -583,18 +528,6 @@
         "status": "READY",
         "id": "DEAD0000-0000-4000-0001-000000000005",
         "executionPeriod": null
-      },
-      "allowedActions": {
-        "canAssignCaregiver": true,
-        "canAutoAssignCaregivers": false,
-        "canSelfAssign": false,
-        "canDuplicatePrescription": false,
-        "canExtendPrescription": false,
-        "canCancelPrescriptionOrProposal": true,
-        "canApproveProposal": false,
-        "canCreatePrescription": false,
-        "canRejectProposal": false,
-        "canPrintPrescriptionOrProposal": true
       },
       "currentTask": {
         "taskId": "DEAD0000-0000-4001-0000-000000000008",
@@ -655,7 +588,11 @@
       "pseudonymizedKey": "TEST-pseudonymizedKey",
       "kid": null,
       "note": null,
-      "extendedShortId": null
+      "extendedShortId": null,
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canPrintPrescriptionOrProposal": true
+      }
     },
     {
       "id": "DEAD0000-0000-4000-A000-000000000009",
@@ -678,18 +615,6 @@
         "status": "READY",
         "id": "DEAD0000-0000-4000-0001-000000000009",
         "executionPeriod": null
-      },
-      "allowedActions": {
-        "canAssignCaregiver": true,
-        "canAutoAssignCaregivers": false,
-        "canSelfAssign": false,
-        "canDuplicatePrescription": false,
-        "canExtendPrescription": false,
-        "canCancelPrescriptionOrProposal": true,
-        "canApproveProposal": false,
-        "canCreatePrescription": false,
-        "canRejectProposal": false,
-        "canPrintPrescriptionOrProposal": true
       },
       "currentTask": {
         "taskId": null,
@@ -729,7 +654,11 @@
       "pseudonymizedKey": "TEST-pseudonymizedKey",
       "kid": null,
       "note": null,
-      "extendedShortId": null
+      "extendedShortId": null,
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canPrintPrescriptionOrProposal": true
+      }
     },
     {
       "id": "DEAD0000-0000-4000-A000-000000000010",
@@ -749,18 +678,6 @@
         "status": "READY",
         "id": "DEAD0000-0000-4000-0001-000000000006",
         "executionPeriod": null
-      },
-      "allowedActions": {
-        "canAssignCaregiver": true,
-        "canAutoAssignCaregivers": false,
-        "canSelfAssign": false,
-        "canDuplicatePrescription": false,
-        "canExtendPrescription": false,
-        "canCancelPrescriptionOrProposal": true,
-        "canApproveProposal": false,
-        "canCreatePrescription": false,
-        "canRejectProposal": false,
-        "canPrintPrescriptionOrProposal": true
       },
       "currentTask": {
         "taskId": null,
@@ -798,7 +715,11 @@
       "pseudonymizedKey": "TEST-pseudonymizedKey",
       "kid": null,
       "note": null,
-      "extendedShortId": null
+      "extendedShortId": null,
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canPrintPrescriptionOrProposal": true
+      }
     },
     {
       "id": "DEAD0000-0000-4000-A000-000000000011",
@@ -832,18 +753,6 @@
         "status": "READY",
         "id": "DEAD0000-0000-4000-0001-000000000009",
         "executionPeriod": null
-      },
-      "allowedActions": {
-        "canAssignCaregiver": true,
-        "canAutoAssignCaregivers": false,
-        "canSelfAssign": false,
-        "canDuplicatePrescription": false,
-        "canExtendPrescription": false,
-        "canCancelPrescriptionOrProposal": true,
-        "canApproveProposal": false,
-        "canCreatePrescription": false,
-        "canRejectProposal": false,
-        "canPrintPrescriptionOrProposal": true
       },
       "currentTask": {
         "taskId": "DEAD0000-0000-4001-0000-000000000003",
@@ -894,7 +803,11 @@
       "pseudonymizedKey": "TEST-pseudonymizedKey",
       "kid": null,
       "note": null,
-      "extendedShortId": null
+      "extendedShortId": null,
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canPrintPrescriptionOrProposal": true
+      }
     },
     {
       "id": "DEAD0000-0000-4000-A000-000000000013",
@@ -914,18 +827,6 @@
         "status": "READY",
         "id": "DEAD0000-0000-4000-0001-000000000013",
         "executionPeriod": null
-      },
-      "allowedActions": {
-        "canAssignCaregiver": true,
-        "canAutoAssignCaregivers": false,
-        "canSelfAssign": false,
-        "canDuplicatePrescription": false,
-        "canExtendPrescription": false,
-        "canCancelPrescriptionOrProposal": true,
-        "canApproveProposal": false,
-        "canCreatePrescription": false,
-        "canRejectProposal": false,
-        "canPrintPrescriptionOrProposal": true
       },
       "currentTask": {
         "taskId": null,
@@ -963,7 +864,11 @@
       "pseudonymizedKey": "TEST-pseudonymizedKey",
       "kid": null,
       "note": null,
-      "extendedShortId": null
+      "extendedShortId": null,
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canPrintPrescriptionOrProposal": true
+      }
     },
     {
       "id": "DEAD0000-0000-4000-A000-000000000014",
@@ -983,18 +888,6 @@
         "status": "READY",
         "id": "DEAD0000-0000-4000-0001-000000000001",
         "executionPeriod": null
-      },
-      "allowedActions": {
-        "canAssignCaregiver": true,
-        "canAutoAssignCaregivers": false,
-        "canSelfAssign": false,
-        "canDuplicatePrescription": false,
-        "canExtendPrescription": false,
-        "canCancelPrescriptionOrProposal": true,
-        "canApproveProposal": false,
-        "canCreatePrescription": false,
-        "canRejectProposal": false,
-        "canPrintPrescriptionOrProposal": true
       },
       "currentTask": {
         "taskId": "DEAD0000-0000-4001-0000-000000000001",
@@ -1044,7 +937,161 @@
       "pseudonymizedKey": "TEST-pseudonymizedKey",
       "kid": null,
       "note": null,
-      "extendedShortId": null
+      "extendedShortId": null,
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canPrintPrescriptionOrProposal": true
+      }
+    },
+    {
+      "id": "DEAD0000-0000-4000-A000-000000000015",
+      "templateCode": "ANNEX_82",
+      "authoredOn": "2026-09-15T22:00:00.000+00:00",
+      "requesterIndex": 0,
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": { "start": "2026-09-15", "end": "2027-09-15" },
+      "assigned": false,
+      "shortCode": "1FAKE5",
+      "intent": "order",
+      "patientIdentifier": "00000000098",
+      "category": "unknown",
+      "referralTask": {
+        "status": "READY",
+        "id": "DEAD0000-0000-4000-0001-000000000002",
+        "executionPeriod": null
+      },
+      "performerTasks": null,
+      "organizationTasks": null,
+      "responses": {
+        "additional-relevant-information": ["tmp-addInfo-diab", "tmp-addInfo-rendys"],
+        "admission": "ambulatory",
+        "birthdate": "1984-11-20",
+        "clinicalIndications": [
+          {
+            "value": "788938006",
+            "label": {
+              "de": "Fracture of head of humerus (disorder)",
+              "en": "Fracture of head of humerus (disorder)",
+              "fr": "Fracture of head of humerus (disorder)",
+              "nl": "Fracture of head of humerus (disorder)"
+            }
+          }
+        ],
+        "gender": "male",
+        "laterality": {
+          "value": "264217000",
+          "label": {
+            "de": "Upper",
+            "en": "Upper",
+            "fr": "Upper",
+            "nl": "Upper"
+          }
+        },
+        "previous-relevant-examinations": ["ultrasound", "x-ray"],
+        "recommendations": [
+          {
+            "id": "000000001",
+            "score": 9,
+            "instruction": {
+              "code": "Computed tomography of shoulder without contrast (procedure)"
+            },
+            "supportOptionMetadata": {
+              "radiationLevel": 0
+            }
+          },
+          {
+            "id": "000000002",
+            "score": 6,
+            "instruction": {
+              "code": "Magnetic resonance imaging of shoulder (procedure)"
+            },
+            "supportOptionMetadata": {
+              "radiationLevel": 2
+            }
+          },
+          {
+            "id": "000000003",
+            "score": 2,
+            "instruction": {
+              "code": "Magnetic resonance imaging arthrography of shoulder (procedure)"
+            },
+            "supportOptionMetadata": {
+              "radiationLevel": 4
+            }
+          }
+        ],
+        "selectedRecommendation": "000000002"
+      },
+      "pseudonymizedKey": "TEST-pseudonymizedKey",
+      "kid": null,
+      "note": null,
+      "extendedShortId": null,
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canPrintPrescriptionOrProposal": true
+      }
+    },
+    {
+      "id": "DEAD0000-0000-4000-A000-000000000016",
+      "templateCode": "TELEMONITORING_CHRONIC_HEART_FAILURE",
+      "authoredOn": "2026-09-23T22:00:00.000+00:00",
+      "requesterIndex": 0,
+      "careGivers": null,
+      "organizations": null,
+      "status": "OPEN",
+      "period": {
+        "start": "2026-09-15T22:00:00.000+00:00",
+        "end": "2027-09-15T22:00:00.000+00:00",
+        "hideEndDate": false
+      },
+      "shortCode": "NC0V77",
+      "intent": "order",
+      "patientIdentifier": "00000000097",
+      "category": "unknown",
+      "referralTask": {
+        "status": "READY",
+        "id": "DEAD0000-0000-4000-0001-000000000002",
+        "executionPeriod": null
+      },
+      "performerTasks": [],
+      "treatmentValidityEndDate": null,
+      "responses": {
+        "boundsDuration": {
+          "value": 2,
+          "system": "http://unitsofmeasure.org",
+          "code": "d"
+        },
+        "weight": {
+          "frequency": 2,
+          "condition": "weight-gain",
+          "period": "d",
+          "value": 2
+        },
+        "occurrenceTiming": {
+          "repeat": {
+            "boundsDuration": {
+              "value": 2,
+              "system": "http://unitsofmeasure.org",
+              "code": "d"
+            }
+          }
+        },
+        "valvular-heart-disease": {
+          "code": "http://snomed.info/sct|60573004"
+        },
+        "parameters": ["http://snomed.info/sct:27113001"],
+        "diagnosis-category": ["valvular-heart-disease"]
+      },
+      "pseudonymizedKey": "TEST-pseudonymizedKey",
+      "kid": null,
+      "note": null,
+      "extendedShortId": null,
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canPrintPrescriptionOrProposal": true
+      }
     }
   ]
 }

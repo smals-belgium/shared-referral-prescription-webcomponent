@@ -70,14 +70,14 @@ describe('MultiselectComponent', () => {
   });
 
   it('should filter options based on input', () => {
-    expect(multiselect.filteredItems().length).toBe(3);
+    expect(multiselect.filteredItems()).toHaveLength(3);
 
     const input = fixture.debugElement.query(By.css('input')).nativeElement;
     input.value = 'Option 1';
     input.dispatchEvent(new Event('input'));
     fixture.detectChanges();
 
-    expect(multiselect.filteredItems().length).toBe(1);
+    expect(multiselect.filteredItems()).toHaveLength(1);
     expect(multiselect.filteredItems()[0].value).toBe('value1');
   });
 
@@ -91,7 +91,7 @@ describe('MultiselectComponent', () => {
     multiselect.selected(event);
     fixture.detectChanges();
 
-    expect(multiselect.selectedItems().length).toBe(1);
+    expect(multiselect.selectedItems()).toHaveLength(1);
     expect(multiselect.selectedItems()[0].value).toBe('value1');
 
     expect(multiselect.formControl?.value).toEqual(multiselect.selectedItems());
@@ -111,7 +111,7 @@ describe('MultiselectComponent', () => {
     multiselect.remove(multiselect.selectedItems()[0]);
     fixture.detectChanges();
 
-    expect(multiselect.selectedItems().length).toBe(0);
+    expect(multiselect.selectedItems()).toHaveLength(0);
 
     expect(announcerSpy).toHaveBeenCalledWith(expect.stringContaining('Removed'));
 
@@ -137,7 +137,7 @@ describe('MultiselectComponent', () => {
     multiselect.formControl?.setValue('Option 2');
     fixture.detectChanges();
 
-    expect(multiselect.filteredItems().length).toBe(1);
+    expect(multiselect.filteredItems()).toHaveLength(1);
     expect(multiselect.filteredItems()[0].value).toBe('value2');
   });
 
@@ -167,7 +167,7 @@ describe('MultiselectComponent', () => {
     fixture.detectChanges();
 
     expect(multiselect.filteredItems().some(item => item.value === 'value1')).toBe(false);
-    expect(multiselect.filteredItems().length).toBe(2);
+    expect(multiselect.filteredItems()).toHaveLength(2);
   });
 
   it('should mark form control as dirty when items are added or removed', () => {

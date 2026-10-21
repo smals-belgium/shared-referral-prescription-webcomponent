@@ -8,7 +8,7 @@
 </div>
 
 <div mat-dialog-content class="dialog-content">
-  @if (data.prescriptionId) { @if (error(); as resolvedError) {
+  @if (error(); as resolvedError) {
   <app-alert
     [severity]="resolvedError.severity"
     [title]="resolvedError.title"
@@ -32,12 +32,13 @@
           [startExpanded]="true"
           [retry]="false"></app-alert>
         <professional-search-form
+          [translationKeyPrefixIntent]="translationKeyPrefixIntent"
           (searchCriteria)="onSearch($event)"
           [formGroup]="formGroup"></professional-search-form>
       </section>
 
       } @else {
-      <div>
+      <div class="mb-1">
         <city-chip-list
           [formGroup]="formGroup"
           [hideUpdateSearchButton]="isSearchMode()"
@@ -54,7 +55,7 @@
           [pageSize]="pageable().pageSize"
           [loading]="isLoading()"
           [currentLang]="currentLang"
-          [providerTypeOptions]="providerTypeOptions"
+          [providerTypeOptions]="providerTypeOptions()"
           [(selectedType)]="providerType"
           (selectProfessional)="executeAction($event)"
           (changePage)="loadData($event)"></professional-table>
@@ -72,7 +73,10 @@
           [expandable]="true"
           [startExpanded]="true"
           [retry]="false"></app-alert>
-        <professional-search-form (searchCriteria)="onSearch($event)" [formGroup]="formGroup">
+        <professional-search-form
+          (searchCriteria)="onSearch($event)"
+          [formGroup]="formGroup"
+          [translationKeyPrefixIntent]="translationKeyPrefixIntent">
         </professional-search-form>
       </section>
 
@@ -80,8 +84,8 @@
         <h2>{{ 'professional.table.results' | translate:{ results: healthcareProviderState.data?.total ?? 0 } }}</h2>
 
         <mat-form-field appearance="outline">
-          <mat-select [(value)]="providerType">
-            @for (provider of providerTypeOptions; track provider) {
+          <mat-select [value]="providerType()">
+            @for (provider of providerTypeOptions(); track provider) {
             <mat-option [value]="provider"
               >{{ ('professional.table.type.'+provider.toLocaleLowerCase()) | translate }}</mat-option
             >
@@ -104,14 +108,6 @@
       </section>
     </ng-template>
   </app-responsive-wrapper>
-  } @if (loading) {
-  <app-overlay-spinner mode="dialog"></app-overlay-spinner>
-  } } @else {
-  <app-alert
-    [severity]="AlertType.Warning"
-    [message]="'common.somethingWentWrong'"
-    [retry]="true"
-    (clickRetry)="retry()"></app-alert>
   } @if (loading) {
   <app-overlay-spinner mode="dialog"></app-overlay-spinner>
   }

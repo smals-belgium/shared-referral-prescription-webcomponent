@@ -34,28 +34,28 @@ describe('assignment-disciplines.utils', () => {
       expect(result).toEqual([Discipline.Nurse]);
     });
 
-    it('should return PHYSICIAN and DENTIST for physiotherapy + proposal', () => {
+    it('should return empty array for physiotherapy + proposal (NOT DEVELOPED)', () => {
       mockIsProposal.mockReturnValue(true);
 
       const result = getAssignableProfessionalDisciplines('physiotherapy', Intent.PROPOSAL);
 
-      expect(result).toEqual(['PHYSICIAN', 'DENTIST']);
+      expect(result).toEqual([]);
     });
 
-    it('should return PHYSIOTHERAPIST for physiotherapy + prescription', () => {
+    it('should return EMPTY ARRAY for physiotherapy + prescription (NOT DEVELOPED)', () => {
       mockIsProposal.mockReturnValue(false);
 
       const result = getAssignableProfessionalDisciplines('physiotherapy', Intent.ORDER);
 
-      expect(result).toEqual(['PHYSIOTHERAPIST']);
+      expect(result).toEqual([]);
     });
 
-    it('should return PHYSICIAN and DENTIST for diagnosticImagingl', () => {
+    it('should return Physician for diagnosticImaging + proposal', () => {
       mockIsProposal.mockReturnValue(true);
 
       const result = getAssignableProfessionalDisciplines('diagnosticImaging', Intent.PROPOSAL);
 
-      expect(result).toEqual(['PHYSICIAN', 'DENTIST']);
+      expect(result).toEqual([Discipline.Physician]);
     });
 
     it('should return empty array for unknown category', () => {
@@ -68,20 +68,20 @@ describe('assignment-disciplines.utils', () => {
   });
 
   describe('getAssignableOrganizationInstitutionTypes', () => {
-    it('should return empty array for nursing + proposal', () => {
+    it('should return GROUPOFNURSES, OTD_PHARMACY, HOSPITAL, REEDUCATION and HOME_SERVICES for nursing + proposal', () => {
       mockIsProposal.mockReturnValue(true);
 
       const result = getAssignableOrganizationInstitutionTypes('nursing', Intent.PROPOSAL);
 
-      expect(result).toEqual([]);
+      expect(result).toEqual(['GROUPOFNURSES', 'OTD_PHARMACY', 'HOSPITAL', 'REEDUCATION', 'HOME_SERVICES']);
     });
 
-    it('should return institution types for nursing + prescription', () => {
+    it('should return OFFICE_DOCTORS, GROUPOFDOCTORS, GUARD_POST and MEDICAL_HOUSE for nursing + prescription', () => {
       mockIsProposal.mockReturnValue(false);
 
       const result = getAssignableOrganizationInstitutionTypes('nursing', Intent.ORDER);
 
-      expect(result).toEqual(['THIRD_PARTY_PAYING_GROUP', 'GUARD_POST', 'MEDICAL_HOUSE', 'HOME_SERVICES']);
+      expect(result).toEqual(['OFFICE_DOCTORS', 'GROUPOFDOCTORS', 'GUARD_POST', 'MEDICAL_HOUSE']);
     });
 
     it('should return empty array for physiotherapy + proposal', () => {
@@ -92,28 +92,28 @@ describe('assignment-disciplines.utils', () => {
       expect(result).toEqual([]);
     });
 
-    it('should return MEDICAL_HOUSE for physiotherapy + prescription', () => {
+    it('should return empty array for physiotherapy + prescription (NOT DEVELOPED)', () => {
       mockIsProposal.mockReturnValue(false);
 
       const result = getAssignableOrganizationInstitutionTypes('physiotherapy', Intent.ORDER);
 
-      expect(result).toEqual(['MEDICAL_HOUSE']);
+      expect(result).toEqual([]);
     });
 
-    it('should return institution types for diagnosticImaging + proposal', () => {
+    it('should return OFFICE_DOCTORS, GROUPOFDOCTORS, GUARD_POST, MEDICAL_HOUSE and HOSPITAL for diagnosticImaging + proposal', () => {
       mockIsProposal.mockReturnValue(true);
 
       const result = getAssignableOrganizationInstitutionTypes('diagnosticImaging', Intent.PROPOSAL);
 
-      expect(result).toEqual(['THIRD_PARTY_PAYING_GROUP', 'GUARD_POST', 'MEDICAL_HOUSE', 'HOME_SERVICES']);
+      expect(result).toEqual(['OFFICE_DOCTORS', 'GROUPOFDOCTORS', 'GUARD_POST', 'MEDICAL_HOUSE', 'HOSPITAL']);
     });
 
-    it('should return MEDICAL_HOUSE for diagnosticImaging + prescription', () => {
+    it('should return OFFICE_DOCTORS, GROUPOFDOCTORS, GUARD_POST, MEDICAL_HOUSE and HOSPITAL for diagnosticImaging + prescription', () => {
       mockIsProposal.mockReturnValue(false);
 
       const result = getAssignableOrganizationInstitutionTypes('diagnosticImaging', Intent.ORDER);
 
-      expect(result).toEqual(['MEDICAL_HOUSE']);
+      expect(result).toEqual(['OFFICE_DOCTORS', 'GROUPOFDOCTORS', 'GUARD_POST', 'MEDICAL_HOUSE', 'HOSPITAL']);
     });
 
     it('should return empty array for unknown category', () => {

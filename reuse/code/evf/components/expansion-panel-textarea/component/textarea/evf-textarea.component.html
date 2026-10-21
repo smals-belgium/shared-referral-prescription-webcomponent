@@ -1,0 +1,51 @@
+<evf-form-element-layout [elementLayout]="elementLayout" [elementControl]="elementControl" [metadata]="metadata">
+  @if (!useMatLabel) {
+    <evf-element-label [elementControl]="elementControl" [invalid]="invalid" [for]="id"></evf-element-label>
+  }
+  @if (element.bodyTranslationId) {
+    <evf-element-body [elementControl]="elementControl"></evf-element-body>
+  }
+  @if (element.helpTranslationId) {
+    <evf-element-help [elementControl]="elementControl"></evf-element-help>
+  }
+  @if ({ maxLength: (elementControl | activeValidation: 'maxLength')?.maxLength }; as validation) {
+    <ng-container>
+      <mat-form-field [appearance]="appearance ?? 'outline'">
+        @if (useMatLabel) {
+          <mat-label>{{ element.labelTranslationId | evfLabel: elementControl.elementGroup }}</mat-label>
+        }
+        @let maxLengthValidation = validation.maxLength;
+        @let valueLength = control.value?.length ?? 0;
+        <textarea
+          matInput
+          [style.min-height.px]="maxLengthValidation > 0 ? 76 : 94"
+          [formControl]="control"
+          [placeholder]="(element.placeholderTranslationId && (element.placeholderTranslationId | evfLabel)) ?? ''"
+          [maxlength]="maxLengthValidation"
+          [id]="id"
+          noWhiteSpace></textarea>
+        @if (maxLengthValidation > 0) {
+          <mat-hint align="end">{{ valueLength }}/{{ maxLengthValidation }}</mat-hint>
+        }
+        @if (control.errors) {
+          <mat-error>
+            @if (control.hasError('required')) {
+              <span>{{ 'FIELD_REQUIRED' | evfLabel }}</span>
+            }
+            @if (control.hasError('minlength')) {
+              <span>{{ 'MIN_LENGTH_NOT_MET' | evfLabel: control.errors['minlength'] }}</span>
+            }
+            @if (control.hasError('maxlength')) {
+              <span>{{ 'MAX_LENGTH_EXCEEDED' | evfLabel: control.errors['maxlength'] }}</span>
+            }
+            @if (control.hasError('pattern')) {
+              <span>
+                {{ control.getError('pattern').errorTranslationId || 'WRONG_FORMAT' | evfLabel }}
+              </span>
+            }
+          </mat-error>
+        }
+      </mat-form-field>
+    </ng-container>
+  }
+</evf-form-element-layout>

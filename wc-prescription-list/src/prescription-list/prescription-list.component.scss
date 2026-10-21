@@ -1,4 +1,5 @@
 @use '@myhealth-belgium/design-kit' as mh;
+@use '@angular/material' as mat;
 
 .material-icons,
 .material-symbols {
@@ -54,16 +55,28 @@ a {
   @return mh.calculateRem($font-size * 1.25);
 }
 
-.flex-container {
+.flex {
   display: flex;
-  justify-content: flex-end;
   gap: mh.$spacing-rem-m;
-  align-items: center;
-  margin-bottom: 1rem;
 }
 
-.flex-container.align-right > :only-child {
-  margin-left: auto;
+.align-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-between-align-right {
+  justify-content: space-between;
+  &:has(> :only-child) {
+    justify-content: flex-end;
+  }
+}
+
+.mb-3 {
+  margin-bottom: 1rem;
 }
 
 .mat-mdc-paginator-outer-container {
@@ -205,3 +218,55 @@ mat-icon {
 .highlight {
   font-weight: mh.$font-weight-bold;
 }
+
+// Modal/Dialog
+//
+// We define Material CSS variables and we override design system
+:root {
+  @include mat.dialog-overrides(
+    (
+      actions-alignment: flex-start,
+      headline-padding: #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l},
+      content-padding: 0 #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-2xl},
+      with-actions-content-padding: 0 #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l},
+      actions-padding: #{mh.$spacing-rem-2xs} #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-2xl},
+      container-min-width: 400px,
+      container-max-width: 600px,
+    )
+  );
+
+  @media (max-width: mh.$media-breakpoint-xs) {
+    @include mat.dialog-overrides(
+      (
+        headline-padding: #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l} #{mh.$spacing-rem-l},
+        content-padding: 0 #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l},
+        with-actions-content-padding: 0 #{mh.$spacing-rem-l} #{mh.$spacing-rem-l},
+        actions-padding: #{mh.$spacing-rem-2xs} #{mh.$spacing-rem-l} #{mh.$spacing-rem-2xl},
+        container-min-width: 300px,
+        container-max-width: 300px,
+      )
+    );
+  }
+}
+
+.mh-dialog-container mat-dialog-container div.mat-mdc-dialog-surface.mdc-dialog__surface {
+  padding: 0;
+
+  @media (max-width: mh.$media-breakpoint-xs) {
+    mat-dialog-content {
+      &:has(+ mat-dialog-actions) {
+        padding: var(--mat-dialog-with-actions-content-padding);
+      }
+      &:not(:has(+ mat-dialog-actions)) {
+        padding: var(--mat-dialog-content-padding);
+      }
+    }
+  }
+}
+
+.mat-mdc-dialog-title {
+  &::before {
+    height: auto;
+  }
+}
+// End

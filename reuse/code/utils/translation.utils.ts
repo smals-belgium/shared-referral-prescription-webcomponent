@@ -51,3 +51,22 @@ export function handleMissingTranslationFile(
       break;
   }
 }
+
+export function extractShortLangFromFullLang(fullLang: string): Lang {
+  const normalizedFullLang = fullLang.toLowerCase();
+
+  if (normalizedFullLang.includes(Lang.DE.short.toLowerCase())) {
+    return Lang.DE.short;
+  }
+  if (normalizedFullLang.includes(Lang.EN.short.toLowerCase())) {
+    return Lang.EN.short;
+  }
+  if (normalizedFullLang.includes(Lang.NL.short.toLowerCase())) {
+    return Lang.NL.short;
+  }
+  if (normalizedFullLang.includes(Lang.FR.short.toLowerCase())) {
+    return Lang.FR.short;
+  }
+
+  return Lang.FR.short;
+}

@@ -1,0 +1,6 @@
+<evf-form-detail-layout [options]="options">
+  @if (element.labelTranslationId && options.showLabel) {
+    <evf-detail-label [labelId]="element.labelTranslationId" [interpolationData]="interpolationData" />
+  }
+  <div class="value">{{ elementControl.value.label?.[currentLang] || elementControl.value.value }}</div>
+</evf-form-detail-layout>

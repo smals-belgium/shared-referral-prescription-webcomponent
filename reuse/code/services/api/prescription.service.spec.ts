@@ -5,6 +5,7 @@ import {
   AssignCareGiverResource,
   AssignOrganizationResource,
   CreateRequestResource,
+  LanguageCode,
   PerformerTaskIdResource,
   PrescriptionService as ApiPrescriptionService,
   ReadRequestIdResource,
@@ -60,6 +61,7 @@ describe('PrescriptionService', () => {
 
       const response = await firstValueFrom(service.create(mockRequestResource, mockUUID));
 
+      // no translation given
       expect(mockApi.createPrescription).toHaveBeenCalledWith(mockUUID, mockRequestResource);
       expect(response).toEqual(expectedResponse);
     });
@@ -71,6 +73,7 @@ describe('PrescriptionService', () => {
         patient: 'patient-123',
         requester: 'requester-456',
         performer: 'performer-789',
+        organization: 'organization-123',
         historical: false,
       };
 
@@ -82,6 +85,7 @@ describe('PrescriptionService', () => {
         mockCriteria.patient,
         mockCriteria.requester,
         mockCriteria.performer,
+        mockCriteria.organization,
         mockCriteria.historical,
         0,
         10
@@ -93,7 +97,15 @@ describe('PrescriptionService', () => {
 
       await firstValueFrom(service.findAll(undefined, 1, 25));
 
-      expect(mockApi.getAllPrescriptions).toHaveBeenCalledWith(undefined, undefined, undefined, undefined, 1, 25);
+      expect(mockApi.getAllPrescriptions).toHaveBeenCalledWith(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        1,
+        25
+      );
     });
   });
 

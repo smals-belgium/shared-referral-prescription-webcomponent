@@ -13,6 +13,7 @@ import {
 import {
   BaseElementControl,
   ElementGroup,
+  EvfEvent,
   EvfTranslateService,
   FormTemplate,
   SupportedLocales,
@@ -26,6 +27,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { TemplateVersion } from '@reuse/code/openapi';
 import { Lang } from '@reuse/code/constants/languages';
 import { formatToEvfLangCode } from '@reuse/code/evf/utils/evf-utils';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'evf-form',
@@ -40,6 +43,9 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
   private readonly dateAdapter = inject(DateAdapter<DateTime>);
   private readonly pssService = inject(PssService);
   private readonly translate = inject(TranslateService);
+  private readonly authService = inject(AuthService);
+
+  protected readonly isOrganization$ = toSignal(this.authService.isOrganization());
 
   private elementGroup?: ElementGroup;
 
@@ -58,6 +64,7 @@ export class EvfFormWebComponent implements OnChanges, OnInit {
   @Input() status: boolean | undefined;
 
   @Output() changeElementGroup = new EventEmitter<ElementGroup>();
+  @Output() events = new EventEmitter<EvfEvent>();
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['lang']) {

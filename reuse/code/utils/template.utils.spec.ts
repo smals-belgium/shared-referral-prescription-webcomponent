@@ -1,4 +1,4 @@
-import { flattenElements, templateIdsAreEqual, templateIdToString } from './template.utils';
+import { flattenElements, isCodeIn, templateIdsAreEqual, templateIdToString } from './template.utils';
 import { FormElement } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 
 const parametersTemplate = {
@@ -82,5 +82,15 @@ describe('TemplateUtils', () => {
     ];
     const flatteredElement = flattenElements(formElement);
     expect(flatteredElement).toEqual(flatteredResponse);
+  });
+
+  it('should check if code is in codes', () => {
+    const code = 'annex_81';
+    const codes = {
+      annex_81: 'annex_81',
+      annex_82: 'annex_82',
+    };
+    expect(isCodeIn(codes, code)).toBe(true);
+    expect(isCodeIn(codes, 'notInCodes')).toBe(false);
   });
 });

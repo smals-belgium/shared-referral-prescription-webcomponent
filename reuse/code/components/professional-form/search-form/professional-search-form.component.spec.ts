@@ -43,6 +43,7 @@ describe('ProfessionalSearchFormComponent', () => {
     component = fixture.componentInstance;
 
     fixture.componentRef.setInput('formGroup', formGroup);
+    fixture.componentRef.setInput('translationKeyPrefixIntent', 'prescription');
 
     fixture.detectChanges();
   });
@@ -192,6 +193,15 @@ describe('ProfessionalSearchFormComponent', () => {
       expect(component.queryIsNumeric).toBe(false);
       component.queryControl.updateValueAndValidity();
       expect(component.queryControl.hasError('minlength')).toBe(false);
+    });
+  });
+  describe('Input translationKeyPrefixIntent', () => {
+    it('should use the provided translationKeyPrefixIntent for label', () => {
+      fixture.componentRef.setInput('translationKeyPrefixIntent', 'proposal');
+      fixture.detectChanges();
+
+      const label = fixture.nativeElement.querySelector('label[for="prescription-assign-performer"]');
+      expect(label.textContent).toContain('proposal.assignPerformer.performer');
     });
   });
 });

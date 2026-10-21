@@ -5,7 +5,6 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   ElementRef,
   inject,
-  output,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';

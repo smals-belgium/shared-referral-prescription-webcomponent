@@ -272,10 +272,31 @@ M2M is not a separate build or a dedicated input flag: the components automatica
 
 #### Prerequisites
 
-- Complete the eHealth onboarding for your organization, including the **token exchange**
-  configuration (see [Prerequisite](#-prerequisite)).
-- Obtain a valid access token for your organization's system account and be able to exchange it for
-  the audiences requested by the components (via the `getAccessToken(audience)` callback).
+Note : all information regarding the required scopes and their configuration as part of the eHealth onboarding process is documented in the [UHMEP eReferral Integration Guide](https://www.ehealth.fgov.be/ehealthplatform/fr/service-ereferral)
+
+In an M2M context, IAM token exchange is not supported. Token exchange is only applicable in a P2M authentication context.
+The integrating application must therefore obtain the required access tokens directly from IAM:
+
+For **pseudonymisation-related operations**, request a token with the following scopes:
+
+- pseudo:api:pseudonymize
+- pseudo:api:identify
+- nihdi:uhmep:pseudo
+- openid
+- iam:authz
+
+For **organization-related operations**, request a token with the following scopes:
+
+- nihdi:uhmep:organization
+- openid
+- iam:authz
+
+The Web Components request the appropriate token through the getAccessToken(audience) callback:
+
+- when `audience` is empty, `getAccessToken(audience)` must return the access token with the `pseudonymization` scopes;
+- when `audience` is provided, `getAccessToken(audience)` must return the access token with the `organisation` scopes.
+
+The integrating application is responsible for requesting and orchestrating these tokens.
 
 #### Providing the organization identity
 
@@ -955,6 +976,12 @@ Below is a complete list of the variables that can be overridden:
 
 - --mh-multiselect-overlay-min-height
 
+### Container
+
+- --mh-prescription-create-container-max-width-s
+- --mh-prescription-create-container-max-width-m
+- --mh-prescription-create-container-max-width-l
+
 ---
 
 ## Nihdi Referral Prescription Details
@@ -1145,6 +1172,23 @@ Below is a complete list of the variables that can be overridden:
 
 - --mh-evf-disc-list-margin
 - --mh-evf-disc-list-padding-inline-start
+
+### Spacing
+
+- --mh-spacing-extra-large
+- --mh-spacing-larger
+- --mh-spacing-large
+- --mh-spacing-medium
+- --mh-spacing-small
+- --mh-spacing-smaller
+- --mh-spacing-extra-small
+- --mh-spacing-extra-extra-small
+
+### Container
+
+- --mh-prescription-details-container-max-width-s
+- --mh-prescription-details-container-max-width-m
+- --mh-prescription-details-container-max-width-l
 
 ## 🚀 Getting started
 

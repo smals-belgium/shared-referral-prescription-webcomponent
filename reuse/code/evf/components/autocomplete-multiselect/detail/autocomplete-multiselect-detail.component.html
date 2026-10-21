@@ -1,0 +1,13 @@
+<evf-form-detail-layout [options]="options">
+  @if (element.labelTranslationId && options.showLabel) {
+    <evf-detail-label [labelId]="element.labelTranslationId" [interpolationData]="interpolationData" />
+  }
+  <div class="value">
+    @for (item of elementControl.value; track item) {
+      {{ item.label[currentLang] }}
+      @if (!$last) {
+        <br />
+      }
+    }
+  </div>
+</evf-form-detail-layout>

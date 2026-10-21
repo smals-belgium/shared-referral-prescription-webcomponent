@@ -9,7 +9,7 @@ import { ReferralEnv } from '@reuse/code/interfaces/environment.interface';
 })
 export class WcConfigurationService implements ConfigurationService {
   private get envHost(): typeof globalThis & { referralPrescriptionEnv?: ReferralEnv } {
-    return globalThis as typeof globalThis & { referralPrescriptionEnv?: ReferralEnv };
+    return globalThis;
   }
 
   get referralPrescriptionEnvironment(): ReferralEnv {

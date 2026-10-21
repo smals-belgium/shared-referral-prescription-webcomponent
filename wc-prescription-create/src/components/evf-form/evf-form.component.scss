@@ -18,14 +18,23 @@ evf-dynamic-form {
     &.invalid {
       color: var(--mat-form-field-error-text-color, mh.$error-30);
     }
+
+    & > label {
+      font-weight: 600;
+    }
   }
 }
 
 // Needed to override default styling applied by material for icons in evf template
 :host ::ng-deep {
   mat-form-field {
-    &.ng-invalid button.mat-mdc-icon-button svg {
-      fill: var(--mat-form-field-error-icon-color, mh.$error-30);
+    &.mat-form-field-invalid button.mat-mdc-icon-button {
+      svg {
+        fill: var(--mat-form-field-error-icon-color, mh.$error-30);
+      }
+      &:hover {
+        background-color: var(--mat-form-field-error-icon-background-color, mh.$error-95);
+      }
     }
   }
 }

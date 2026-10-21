@@ -1,0 +1,29 @@
+@use '@myhealth-belgium/design-kit' as mh;
+
+:host ::ng-deep {
+  mat-expansion-panel.mat-expansion-panel {
+    border-bottom: 1px solid var(--mh-expansion-text-area-border-bottom, mh.$border-brand-primary-light);
+
+    mat-expansion-panel-header {
+      padding: 0;
+      .mat_expansion_panel_header_container {
+        display: flex;
+        gap: mh.$spacing-rem-s;
+      }
+    }
+    .mat-expansion-panel-content-wrapper {
+      padding: 0;
+      margin-top: 0;
+      .mat-expansion-panel-content {
+        display: block;
+      }
+      .mat-expansion-panel-body {
+        padding: 0;
+      }
+    }
+
+    evf-textarea {
+      margin-right: var(--evf-textarea-margin-right, mh.$spacing-rem-m);
+    }
+  }
+}

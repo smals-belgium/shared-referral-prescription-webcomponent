@@ -19,22 +19,24 @@ export function withNbSessionsSideEffect() {
   });
 }
 
+type PeriodUnit = 'd' | 'wk' | 'mo' | 'a';
+
 function nbSessionsSideEffect(params: NbSessionsSideEffect, elementGroup: ElementGroupLike) {
   const getTypedValue = <T>(key: string): T | undefined => {
     return elementGroup.get(key)?.value as T | undefined;
   };
 
   const frequency = getTypedValue<number>(params.frequency) || 0;
-  const periodUnit = getTypedValue<'d' | 'wk' | 'mo' | 'a'>(params.periodUnit);
+  const periodUnit = getTypedValue<PeriodUnit>(params.periodUnit);
   const boundsDuration = getTypedValue<number>(params.boundsDuration) || 0;
-  const boundsDurationUnit = getTypedValue<'d' | 'wk' | 'mo' | 'a'>(params.boundsDurationUnit);
+  const boundsDurationUnit = getTypedValue<PeriodUnit>(params.boundsDurationUnit);
 
   if (!periodUnit || !boundsDurationUnit) {
     elementGroup.get(params.target)?.setValue(null);
     return;
   }
 
-  const periodToDays: Record<'d' | 'wk' | 'mo' | 'a', number> = {
+  const periodToDays: Record<PeriodUnit, number> = {
     d: 1,
     wk: 7,
     mo: 30,

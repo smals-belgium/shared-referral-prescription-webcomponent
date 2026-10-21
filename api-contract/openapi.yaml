@@ -2,7 +2,7 @@ openapi: "3.0.3"
 info:
   title: "backend API"
   description: "backend API"
-  version: "2.100.2"
+  version: "1.200.0"
 servers:
   - url: "/" # this acts as the “base path”
     description: |
@@ -52,58 +52,10 @@ tags:
     description: Pss related operations
   - name: FeatureFlag
     description: Feature flag related operations
+  - name: Terminology
+    description: Terminology service related operations
 paths:
   /prescriptions:
-    get:
-      summary: "GET prescriptions"
-      tags:
-        - Prescription
-      operationId: "getPrescriptionList"
-      security:
-        - OAuth2: [ ]
-      parameters:
-        - name: "patient"
-          in: "query"
-          required: false
-          schema:
-            type: "string"
-        - name: "requester"
-          in: "query"
-          required: false
-          schema:
-            type: "string"
-        - name: "performer"
-          in: "query"
-          required: false
-          schema:
-            type: "string"
-        - name: "historical"
-          in: "query"
-          required: false
-          schema:
-            type: "boolean"
-            default: false
-        - name: "page"
-          in: "query"
-          required: false
-          schema:
-            type: "integer"
-            format: "int32"
-            default: 1
-        - name: "pageSize"
-          in: "query"
-          required: false
-          schema:
-            type: "integer"
-            format: "int32"
-            default: 10
-      responses:
-        "200":
-          description: "OK"
-          content:
-            'application/json':
-              schema:
-                $ref: "#/components/schemas/ReadRequestListResource"
     post:
       summary: "POST prescriptions"
       tags:
@@ -704,6 +656,11 @@ paths:
           required: false
           schema:
             type: "string"
+        - name: "organization"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
         - name: historical
           in: query
           required: false
@@ -738,56 +695,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/RequestSummaryListResource"
   /proposals:
-    get:
-      summary: "GET proposals"
-      tags:
-        - Proposal
-      operationId: "getProposalList"
-      security:
-        - OAuth2: [ ]
-      parameters:
-        - name: "patient"
-          in: "query"
-          required: false
-          schema:
-            type: "string"
-        - name: "requester"
-          in: "query"
-          required: false
-          schema:
-            type: "string"
-        - name: "performer"
-          in: "query"
-          required: false
-          schema:
-            type: "string"
-        - name: "historical"
-          in: "query"
-          required: false
-          schema:
-            default: false
-            type: "boolean"
-        - name: "page"
-          in: "query"
-          required: false
-          schema:
-            type: "integer"
-            format: "int32"
-            default: 1
-        - name: "pageSize"
-          in: "query"
-          required: false
-          schema:
-            type: "integer"
-            format: "int32"
-            default: 10
-      responses:
-        "200":
-          description: "OK"
-          content:
-            'application/json':
-              schema:
-                $ref: "#/components/schemas/ReadRequestListResource"
     post:
       summary: "POST proposals"
       tags:
@@ -1159,6 +1066,11 @@ paths:
           schema:
             type: "string"
         - name: "performer"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "organization"
           in: "query"
           required: false
           schema:
@@ -1572,25 +1484,6 @@ paths:
             'application/json':
               schema:
                 $ref: "#/components/schemas/TemplateVersion"
-  /pss/radiology/control:
-    post:
-      tags:
-        - Pss
-      summary: POST PSS control
-      operationId: control
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ControlRequest"
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SupportResponseRadiology"
   /pss/status:
     get:
       tags:
@@ -1604,65 +1497,44 @@ paths:
             application/json:
               schema:
                 type: boolean
-  /pss/radiology/procedures:
-    get:
-      tags:
-        - Pss
-      summary: GET findAllProcedures
-      operationId: findAllProcedures
-      parameters:
-        - name: intention
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Intentions"
   /pss/radiology/indications:
-    get:
+    post:
       tags:
         - Pss
       summary: GET findAllIndicationsRadiology
+      description: Get available indications for a specific core within PSS
       operationId: findAllIndicationsRadiology
-      parameters:
-        - name: indications
-          in: query
-          required: true
-          schema:
-            type: array
-            items:
-              type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestIndicationsRadiology"
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Indications"
-  /pss/radiology/control/{exchangeId}:
-    get:
+                $ref: "#/components/schemas/IndicationsResponse"
+  /pss/radiology/supportRequests:
+    post:
       tags:
         - Pss
-      summary: GET controlByPssExchangeId
-      operationId: controlByPssExchangeId
-      parameters:
-        - name: exchangeId
-          in: path
-          required: true
-          schema:
-            type: string
+      summary: Create support request for radiology domain
+      description: Create a support request radiology entity and get support options back
+      operationId: getSupportRadiology
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupportRequestRadiology'
       responses:
-        "200":
-          description: OK
+        '201':
+          description: Successfully created request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SupportResponseRadiology"
+                $ref: '#/components/schemas/SupportResponseRadiology'
   /feature-flags:
     get:
       summary: "GET feature-flags"
@@ -1678,6 +1550,34 @@ paths:
                 type: array
                 items:
                   type: string
+  /terminology/valueSet/{valueSetId}:
+    get:
+      tags:
+        - terminology
+      summary: Get the value set options for a given value set id
+      operationId: getValueSet
+      parameters:
+        - in: path
+          name: valueSetId
+          required: true
+          schema:
+            $ref: "#/components/schemas/ValueSetId"
+          description: The value set identifier
+        - in: query
+          name: filter
+          required: false
+          schema:
+            type: string
+          description: Optional search/filter string.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AutocompleteOption"
   /users/connected:
     get:
       summary: "GET users/connected"
@@ -2565,6 +2465,9 @@ components:
             $ref: "#/components/schemas/AutocompleteOption"
     CodedValueItem:
       type: object
+      required:
+        - code
+        - system
       properties:
         id:
           type: string
@@ -2580,11 +2483,20 @@ components:
           type: string
     IndicationRadiology:
       type: object
+      required:
+        - id
+        - translations
       properties:
         id:
           type: string
-        name:
-          type: string
+        snomedcodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodedValueItem'
+        translations:
+          type: array
+          items:
+            $ref: '#/components/schemas/TranslatedFieldItem'
     MedicationItem:
       type: object
       properties:
@@ -2594,6 +2506,30 @@ components:
           $ref: "#/components/schemas/CodedValueItem"
         vmpGroup:
           type: string
+    RequestIndicationsRadiology:
+      type: object
+      required:
+        - age
+        - gender
+      properties:
+        age:
+          type: integer
+        gender:
+          type: string
+        indicationProposal:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodedValueItem'
+        freetextIndication:
+          type: array
+          items:
+            type: string
+        intention:
+          $ref: '#/components/schemas/CodedValueItem'
+        exchangeId:
+          type: string
+        emergency:
+          type: boolean
     SupportOption:
       type: object
       properties:
@@ -2624,6 +2560,9 @@ components:
           type: string
     SupportRequestRadiology:
       type: object
+      required:
+        - indications
+        - exchangeId
       properties:
         exchangeId:
           type: string
@@ -2631,6 +2570,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/IndicationRadiology"
+        emergency:
+          type: boolean
     SupportResponseRadiology:
       type: object
       properties:
@@ -2650,6 +2591,9 @@ components:
           $ref: "#/components/schemas/CodedValueItem"
     TranslatedFieldItem:
       type: object
+      required:
+        - language
+        - value
       properties:
         language:
           type: string
@@ -2662,13 +2606,24 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/AutocompleteOption"
-    Indications:
+    IndicationsResponse:
       type: object
       properties:
+        exchangeId:
+          type: string
         indications:
           type: array
           items:
-            $ref: "#/components/schemas/AutocompleteOption"
+            $ref: '#/components/schemas/IndicationRadiology'
+    ValueSetId:
+      type: string
+      enum:
+        - be-vs-diagnostic-imaging-condition
+        - be-vs-diagnostic-imaging-procedure
+        - be-vs-request-track
+        - be-vs-laterality
+        - be-vs-imaging-modality
+        - be-vs-implant-type
     # EVF all
     CommonTranslations:
       type: "object"

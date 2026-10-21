@@ -1,9 +1,16 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { DateAdapter, MatNativeDateModule, NativeDateAdapter } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { PrescriptionDetailsMainComponent } from './prescription-details-main.component';
 import { By } from '@angular/platform-browser';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { RequestStatus } from '@reuse/code/openapi';
+import { EvfTranslateService } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
+import { MarkdownService } from 'ngx-markdown';
 import {
   FakeLoader,
   markdownServiceMock,
@@ -11,17 +18,10 @@ import {
   prescriptionDetailsSecondaryMockService,
   prescriptionResponse,
 } from '../../../../test.utils';
+import { EvfFormDetailsWebComponent } from '../../evf-details/evf-form-details.component';
 import { PrescriptionDetailsSecondaryService } from '../../prescription-details-secondary/services/prescription-details-secondary.service';
-import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { DateAdapter, MatNativeDateModule, NativeDateAdapter } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { Component, signal } from '@angular/core';
-import { EvfFormDetailsWebComponent } from '../evf-details/evf-form-details.component';
-import { RequestStatus } from '@reuse/code/openapi';
-import { MarkdownService } from 'ngx-markdown';
-import { EvfTranslateService } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { PrescriptionDetailsBeneficiaryComponent } from '../beneficiary/prescription-details-beneficiary.component';
+import { PrescriptionDetailsMainComponent } from './prescription-details-main.component';
 
 @Component({
   selector: 'evf-form-details',

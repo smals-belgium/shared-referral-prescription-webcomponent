@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { firstValueFrom, of } from 'rxjs';
+import { firstValueFrom, of, Subject } from 'rxjs';
+import { EvfTranslateService } from '@smals-belgium-shared/vas-evaluation-form-ui-core';
 import { PrescriptionState } from './prescription.state';
 import { PrescriptionService } from '@reuse/code/services/api/prescription.service';
 import { TaskService } from '@reuse/code/services/fhir/task.service';
@@ -31,8 +32,9 @@ describe('PrescriptionState', () => {
   const mockUUID = 'mock-uuid-12345';
   const mockActorCaregiverSsin = 'mock_actor_ssin';
   const mockPrescriptionData = { id: mockPrescriptionId, status: RequestStatus.Open };
+  const currentLangSubject = new Subject<string>();
 
-  beforeAll(() => {
+  beforeEach(() => {
     const wcAuthServiceMock = {
       isOrganization: jest.fn().mockReturnValue(of(true)),
       isProfessional: jest.fn().mockReturnValue(of(true)),

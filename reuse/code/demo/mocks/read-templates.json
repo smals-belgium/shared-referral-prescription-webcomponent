@@ -749,5 +749,35 @@
         }
       ]
     }
+  },
+  {
+    "id": 55,
+    "code": "TELEMONITORING_CHRONIC_HEART_FAILURE",
+    "label": "TELEMONITORING_CHRONIC_HEART_FAILURE",
+    "labelTranslations": {
+      "en": "Telemonitoring of chronic heart failure",
+      "nl": "Telemonitoring van chronisch hartfalen",
+      "fr": "Telemonitoring de l'insuffisance cardiaque chronique"
+    },
+    "shortLabelTranslations": {},
+    "metadata": {
+      "code": [
+        {
+          "code": ["879780004"],
+          "system": "http://snomed.info/sct"
+        }
+      ],
+      "create": true,
+      "category": [
+        {
+          "code": ["394579002"],
+          "system": "http://snomed.info/sct"
+        },
+        {
+          "code": ["telemonitoring-chronic-heart-failure"],
+          "system": "https://www.ehealth.fgov.be/standards/fhir/terminology/CodeSystem/be-cs-prescription-type"
+        }
+      ]
+    }
   }
 ]

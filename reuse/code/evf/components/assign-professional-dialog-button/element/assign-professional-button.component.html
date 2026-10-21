@@ -1,0 +1,24 @@
+<p class="physician_title">{{ 'common.professions.PHYSICIAN' | translate }}</p>
+@if (!selectedProfessional()) {
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="openAssignProfessionalDialog()"
+    data-cy="assign-professional-dialog-button">
+    {{ 'proposal.assign' | translate }}
+  </button>
+} @else {
+  <div class="assigned_professional_container">
+    <span class="fullname"
+      >{{ selectedProfessional()?.healthcarePerson?.firstName }}
+      {{ selectedProfessional()?.healthcarePerson?.lastName }}</span
+    >
+    <span class="nihii"
+      >{{ selectedProfessional()?.nihii11 | formatNihdi: selectedProfessional()?.healthcareQualification?.id?.code }}
+    </span>
+    <button matButton (click)="removeSelectedProfessional()">
+      <mat-icon svgIcon="delete"></mat-icon>
+      {{ 'common.delete' | translate }}
+    </button>
+  </div>
+}

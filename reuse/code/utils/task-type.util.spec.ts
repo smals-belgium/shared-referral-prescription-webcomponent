@@ -51,7 +51,7 @@ describe('TaskTypeUtils', () => {
   });
 
   it('should return PerformerTask From OrganizationTask', () => {
-    expect(getPerformerTaskFromOrganizationTask(organizationTask)).toBe(undefined);
+    expect(getPerformerTaskFromOrganizationTask(organizationTask)).toBeUndefined();
     expect(getPerformerTaskFromOrganizationTask(orgWithPerformerTask)).toEqual([performerTask]);
     expect(getPerformerTaskFromOrganizationTask(orgWithEmptyPerformerTask)).toEqual([]);
   });
