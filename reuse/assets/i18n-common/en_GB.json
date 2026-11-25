@@ -455,12 +455,24 @@
         },
         "takeInCharge": {
           "label": "",
-          "action": ""
+          "action": "Take in charge"
         },
         "validate": {
           "action": ""
+        },
+        "execute": {
+          "action": ""
+        },
+        "substitude": {
+          "action": ""
         }
       }
+    },
+    "radio": {
+      "taskStatus": {
+        "COMPLETED": ""
+      },
+      "traskList": ""
     }
   },
   "proposal": {
@@ -592,7 +604,7 @@
     },
     "status": "Status",
     "proposalDate": "Prescribed on",
-    "proposalInfoTitle": "Requested on {date} by {firstName} {lastName}.",
+    "proposalInfoTitle": "Requested on {date} by {firstName} {lastName}",
     "pagination": {
       "proposals": "{count, plural, one{proposal} other{proposals}}",
       "pageSize": "Number per page"
@@ -658,7 +670,8 @@
       "FAILED": "Failed",
       "INPROGRESS": "Active",
       "COMPLETED": "Inactive",
-      "null": "Unknown"
+      "null": "Unknown",
+      "REJECTED ": ""
     },
     "organization": {
       "alert": {
@@ -878,5 +891,5 @@
   "ANNEX_82.create.tmp-addInfo-rendys": "",
   "ANNEX_82.create.tmp-addInfo-unknown": "",
   "ANNEX_82.create.tmp-addInfo-impl": "",
-  "ANNEX_82.create.tmp-addInfo": ""
+  "ANNEX_82.create.tmp-addInfo": "Additional Relevant Information"
 }

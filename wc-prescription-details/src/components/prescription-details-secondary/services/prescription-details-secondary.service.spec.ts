@@ -18,6 +18,7 @@ import {
   AssignationType,
   Discipline,
   PersonResource,
+  ProviderType,
   ReadRequestResource,
   RequestTaskResource,
   Template,
@@ -168,7 +169,7 @@ describe('PrescriptionDetailsSecondaryService', () => {
       data: mockPerson,
     } as any);
 
-    const mockResponse: ReadRequestResource = prescriptionResponse(referralTask, [mockPerformerTask]);
+    const mockResponse: ReadRequestResource = prescriptionResponse(referralTask, [mockPerformerTask], Intent.ORDER);
 
     const prescriptionTaskPatient = {
       prescription: mockResponse,
@@ -205,11 +206,9 @@ describe('PrescriptionDetailsSecondaryService', () => {
         intent: mockResponse.intent,
         category: mockResponse.category,
         mode: 'transfer',
+        providerTypeFilter: undefined,
       },
-      panelClass: ['mh-dialog-container', 'mh-assign-dialog'],
-      maxHeight: '90vh',
-      maxWidth: '90vw',
-      width: '900px',
+      panelClass: ['mh-dialog-container', 'mh-assign-dialog', 'mh-dialog-container-large'],
     };
 
     expect(openDialogSpy).toHaveBeenCalledTimes(1);
@@ -224,7 +223,7 @@ describe('PrescriptionDetailsSecondaryService', () => {
         performerTask: undefined,
         startExecutionDate: undefined,
       },
-      panelClass: 'mh-dialog-container',
+      panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
     };
 
     expect(openDialogSpy).toHaveBeenCalledTimes(2);
@@ -235,7 +234,7 @@ describe('PrescriptionDetailsSecondaryService', () => {
 
     const paramsStartExecutionWithTask = {
       data: prescriptionTaskExecutionDate,
-      panelClass: 'mh-dialog-container',
+      panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
     };
 
     expect(openDialogSpy).toHaveBeenCalledTimes(3);
@@ -246,7 +245,7 @@ describe('PrescriptionDetailsSecondaryService', () => {
 
     const paramsRestartExecution = {
       data: prescriptionTaskPatient,
-      panelClass: 'mh-dialog-container',
+      panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
     };
 
     expect(openDialogSpy).toHaveBeenCalledTimes(4);
@@ -257,8 +256,7 @@ describe('PrescriptionDetailsSecondaryService', () => {
 
     const paramsFinishExecution = {
       data: prescriptionFinishTask,
-      panelClass: 'mh-dialog-container',
-      minWidth: 'fit-content',
+      panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
     };
 
     expect(openDialogSpy).toHaveBeenCalledTimes(5);
@@ -269,7 +267,7 @@ describe('PrescriptionDetailsSecondaryService', () => {
 
     const paramsCancelExecution = {
       data: prescriptionTaskPatient,
-      panelClass: 'mh-dialog-container',
+      panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
     };
 
     expect(openDialogSpy).toHaveBeenCalledTimes(6);
@@ -280,7 +278,7 @@ describe('PrescriptionDetailsSecondaryService', () => {
 
     const paramsInterruptExecution = {
       data: prescriptionTaskPatient,
-      panelClass: 'mh-dialog-container',
+      panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
     };
 
     expect(openDialogSpy).toHaveBeenCalledTimes(7);
@@ -301,7 +299,7 @@ describe('PrescriptionDetailsSecondaryService', () => {
           requestTask: task,
           patient,
         },
-        panelClass: 'mh-dialog-container',
+        panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
       });
     });
 
@@ -583,7 +581,7 @@ describe('PrescriptionDetailsSecondaryService', () => {
 
     expect(openSpy).toHaveBeenCalledWith(ApproveProposalDialog, {
       data: { proposal: proposal },
-      panelClass: 'mh-dialog-container',
+      panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
     });
 
     expect(emitSpy).toHaveBeenCalledWith({ prescriptionId: prescriptionId });
@@ -602,7 +600,7 @@ describe('PrescriptionDetailsSecondaryService', () => {
 
       expect(dialogOpenSpy).toHaveBeenCalledWith(RejectProposalDialog, {
         data: { proposal: mockProposal },
-        panelClass: 'mh-dialog-container',
+        panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
       });
     });
   });
@@ -834,6 +832,40 @@ describe('PrescriptionDetailsSecondaryService', () => {
       expect(service.loading()).toBe(false);
       expect(mockToastService.showSomethingWentWrong).toHaveBeenCalled();
       expect(mockPrescriptionState.assignPrescriptionPerformer).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('openTransferAssignationDialog', () => {
+    it('should set providerTypeFilter as professional when intent is a proposal', () => {
+      const openDialogSpy = jest.spyOn(dialog, 'open');
+      const mockResponse: ReadRequestResource = prescriptionResponse(
+        referralTask,
+        [mockPerformerTask],
+        Intent.PROPOSAL
+      );
+
+      const prescriptionTaskCaregiver = {
+        prescriptionId: mockResponse.id,
+        referralTaskId: referralTask.id,
+        assignedCareGivers: [mockPerformerTask.careGiverSsin],
+      };
+
+      service.openTransferAssignationDialog(ERROR_PRESCRIPTION_DETAILS, mockResponse, mockPerformerTask);
+
+      const paramsTransfer = {
+        data: {
+          ...prescriptionTaskCaregiver,
+          performerTaskId: mockPerformerTask.id,
+          intent: mockResponse.intent,
+          category: mockResponse.category,
+          mode: 'transfer',
+          providerTypeFilter: [ProviderType.Professional],
+        },
+        panelClass: ['mh-dialog-container', 'mh-assign-dialog', 'mh-dialog-container-large'],
+      };
+
+      expect(openDialogSpy).toHaveBeenCalledTimes(1);
+      expect(openDialogSpy).toHaveBeenCalledWith(AssignOrTransferDialog, paramsTransfer);
     });
   });
 

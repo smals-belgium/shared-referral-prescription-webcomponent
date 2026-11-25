@@ -18,14 +18,20 @@ export function getAssignableProfessionalDisciplines(category: string, intent: I
   }
 }
 
-export function getAssignableOrganizationInstitutionTypes(category: string, intent: Intent): string[] {
+export function getAssignableOrganizationInstitutionTypes(category: string): string[] {
   switch (category) {
     case 'nursing':
-      if (isProposal(intent)) {
-        return ['GROUPOFNURSES', 'OTD_PHARMACY', 'HOSPITAL', 'REEDUCATION', 'HOME_SERVICES'];
-      } else {
-        return ['OFFICE_DOCTORS', 'GROUPOFDOCTORS', 'GUARD_POST', 'MEDICAL_HOUSE'];
-      }
+      return [
+        'OTD_PHARMACY',
+        'OFFICE_DOCTORS',
+        'GROUPOFDOCTORS',
+        'GUARD_POST',
+        'MEDICAL_HOUSE',
+        'HOSPITAL',
+        'REEDUCATION',
+        'GROUPOFNURSES',
+        'HOME_SERVICES',
+      ];
     case 'diagnosticImaging':
     case 'radiology':
       return ['OFFICE_DOCTORS', 'GROUPOFDOCTORS', 'GUARD_POST', 'MEDICAL_HOUSE', 'HOSPITAL'];
@@ -36,4 +42,11 @@ export function getAssignableOrganizationInstitutionTypes(category: string, inte
 
 export function isProfessional(object: HealthCareProviderResource): object is HealthcareProResource {
   return object.type?.toLowerCase() === ProviderType.Professional.toLowerCase();
+}
+
+export function getProviderTypeFilter(intent: string | undefined): ProviderType[] | undefined {
+  if (intent === Intent.PROPOSAL) {
+    return [ProviderType.Professional];
+  }
+  return undefined;
 }

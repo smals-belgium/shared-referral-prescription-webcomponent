@@ -1,7 +1,7 @@
-import { Component, computed, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, computed, effect, inject, OnDestroy, OnInit, Signal, signal, untracked } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
 import { DataState, Intent, LoadingStatus } from '@reuse/code/interfaces';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
@@ -9,9 +9,11 @@ import { SelectPrescriptionTypeComponent } from '@reuse/code/components/select-p
 import { combineSignalDataState } from '@reuse/code/utils/rxjs.utils';
 import { AccessMatrixState } from '@reuse/code/states/api/access-matrix.state';
 import { TemplatesState } from '@reuse/code/states/api/templates.state';
-import { distinctUntilChanged, Subject, takeUntil } from 'rxjs';
+import { catchError, distinctUntilChanged, map, of, Subject, take, takeUntil } from 'rxjs';
 import { ModelsState } from '@reuse/code/states/api/models.state';
 import { AccessMatrix, ModelEntityDto, PageModelEntityDto, Template } from '@reuse/code/openapi';
+import { DialogLayoutComponent } from '@reuse/code/dialogs/dialog-layout/dialog-layout.component';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
 
 export interface SelectedTemplate {
   templateCode?: string;
@@ -27,23 +29,59 @@ interface ViewState {
 
 @Component({
   templateUrl: './choose-template.dialog.html',
-  styleUrls: ['./choose-template.dialog.scss'],
   imports: [
     TranslateModule,
     ReactiveFormsModule,
-    MatDialogModule,
-    MatButtonModule,
     OverlaySpinnerComponent,
     SelectPrescriptionTypeComponent,
+    DialogLayoutComponent,
   ],
 })
 export class ChooseTemplateDialog implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
+  private readonly data = inject<{ intent: Intent }>(MAT_DIALOG_DATA);
+  private readonly authService = inject(AuthService);
+  private readonly accessMatrixStateService = inject(AccessMatrixState);
+  private readonly templatesStateService = inject(TemplatesState);
+  private readonly modelStateService = inject(ModelsState);
+  private readonly dialogRef = inject(MatDialogRef<ChooseTemplateDialog, SelectedTemplate>);
+
+  // null while the organization check is pending; models are only offered for ORDER intents
+  readonly showModelField: Signal<boolean | null> =
+    this.data.intent === Intent.ORDER
+      ? toSignal(
+          this.authService.isOrganization().pipe(
+            take(1),
+            map(isOrganization => !isOrganization),
+            catchError(() => of(true))
+          ),
+          { initialValue: null }
+        )
+      : signal(false);
+
+  private readonly loadModelsEffect = effect(() => {
+    if (this.showModelField()) {
+      untracked(() => this.modelStateService.loadModels(0, -1));
+    }
+  });
+
+  private readonly modelsState$ = computed<DataState<PageModelEntityDto>>(() => {
+    switch (this.showModelField()) {
+      case null:
+        return { status: LoadingStatus.LOADING };
+      case false:
+        // Models are not used: mirror the templates status so it doesn't affect the combined status
+        return { status: this.templatesStateService.state().status };
+      default:
+        return this.modelStateService.state();
+    }
+  });
+
   private readonly sourceState$ = combineSignalDataState<ViewState>({
     accessMatrices: this.accessMatrixStateService.state,
     templates: this.templatesStateService.state,
-    models: this.modelStateService.state,
+    models: this.modelsState$,
   });
 
   readonly viewState$ = computed<DataState<ViewState>>(() => {
@@ -98,21 +136,7 @@ export class ChooseTemplateDialog implements OnInit, OnDestroy {
     model: new FormControl<ModelEntityDto | null>(null),
   });
 
-  constructor(
-    private readonly accessMatrixStateService: AccessMatrixState,
-    private readonly templatesStateService: TemplatesState,
-    private readonly modelStateService: ModelsState,
-    private readonly dialogRef: MatDialogRef<ChooseTemplateDialog, SelectedTemplate>,
-    @Inject(MAT_DIALOG_DATA)
-    private readonly data: {
-      intent: Intent;
-    }
-  ) {}
-
   ngOnInit() {
-    if (this.data.intent === Intent.ORDER) {
-      this.modelStateService.loadModels(0, -1);
-    }
     this.onCreateGroupFormValueChange();
   }
 

@@ -574,10 +574,8 @@ describe('ListPrescriptionsWebComponent', () => {
       component.openCreateDialog(Intent.ORDER);
 
       expect(mockDialog.open).toHaveBeenCalledWith(expect.any(Function), {
-        maxWidth: '100vw',
-        width: '500px',
         autoFocus: false,
-        panelClass: 'mh-dialog-container',
+        panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
         data: {
           intent: Intent.ORDER,
         },
@@ -623,7 +621,7 @@ describe('ListPrescriptionsWebComponent', () => {
             templateName: mockModel.label,
           },
         },
-        panelClass: 'mh-dialog-container',
+        panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
       });
     });
 

@@ -536,5 +536,32 @@ describe('AssignOrTransferDialog', () => {
 
       expect(component['pageable']()).toEqual({ page: 1, pageSize: 25 });
     });
+
+    it('should not update providerTypeOptions when providerTypeFilter is empty', () => {
+      const providerTypeFilter: ProviderType[] = [];
+      component['data'] = { ...dialogData, providerTypeFilter };
+
+      component.ngOnInit();
+      const expectedProviderTypeOptions: ProviderType[] = [
+        ProviderType.All,
+        ProviderType.Professional,
+        ProviderType.Organization,
+      ];
+
+      expect(component['providerTypeOptions']()).toEqual(expectedProviderTypeOptions);
+    });
+    it('should not update providerTypeOptions when providerTypeFilter is undefined', () => {
+      const providerTypeFilter: ProviderType[] = undefined as any;
+      component['data'] = { ...dialogData, providerTypeFilter };
+
+      component.ngOnInit();
+      const expectedProviderTypeOptions: ProviderType[] = [
+        ProviderType.All,
+        ProviderType.Professional,
+        ProviderType.Organization,
+      ];
+
+      expect(component['providerTypeOptions']()).toEqual(expectedProviderTypeOptions);
+    });
   });
 });

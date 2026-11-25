@@ -1,6 +1,8 @@
-<form (ngSubmit)="startExecution()" [formGroup]="formGroup">
-  <h1 mat-dialog-title>{{'prescription.startExecution.title' | translate}}</h1>
-  <div mat-dialog-content>
+<app-dialog-layout
+  [title]="'prescription.startExecution.title' | translate"
+  [confirmDisabled]="formGroup.invalid"
+  (confirm)="startExecution()">
+  <form dialog-content (ngSubmit)="startExecution()" [formGroup]="formGroup">
     @if (error(); as resolvedError) {
     <app-alert
       [severity]="resolvedError.severity"
@@ -37,23 +39,8 @@
         }
       </mat-form-field>
     </div>
-
+    } @if (loading) {
+    <app-overlay-spinner mode="dialog"></app-overlay-spinner>
     }
-  </div>
-  <mat-dialog-actions>
-    <button
-      type="submit"
-      mat-flat-button
-      [disabled]="formGroup.get('startDate')?.invalid"
-      data-cy="dialog-confirm-button">
-      {{'common.confirm' | translate}}
-    </button>
-    <button type="button" mat-stroked-button [mat-dialog-close]="undefined" data-cy="dialog-cancel-button">
-      {{'common.cancel' | translate}}
-    </button>
-  </mat-dialog-actions>
-</form>
-
-@if (loading){
-<app-overlay-spinner mode="dialog"></app-overlay-spinner>
-}
+  </form>
+</app-dialog-layout>

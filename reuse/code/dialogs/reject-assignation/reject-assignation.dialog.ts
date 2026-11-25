@@ -16,6 +16,7 @@ import { AlertType } from '@reuse/code/interfaces';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
 import { AlertService } from '@reuse/code/services/helpers/alert.service';
 import { finalize } from 'rxjs/operators';
+import { DialogLayoutComponent } from '@reuse/code/dialogs/dialog-layout/dialog-layout.component';
 
 interface RejectAssignationDialogData {
   prescription: ReadRequestResource;
@@ -34,6 +35,7 @@ interface RejectAssignationDialogData {
     TemplateNamePipe,
     AlertComponent,
     TranslateByIntentPipe,
+    DialogLayoutComponent,
   ],
 })
 export class RejectAssignationDialog implements OnInit, OnDestroy {

@@ -1,6 +1,8 @@
-<form (ngSubmit)="rejectProposal()" [formGroup]="formGroup">
-  <h1 mat-dialog-title>{{ 'proposal.reject.dialog.title' | translate }}</h1>
-  <div mat-dialog-content>
+<app-dialog-layout
+  [title]="'proposal.reject.dialog.title' | translate"
+  [confirmDisabled]="formGroup.get('reason')?.invalid ?? false"
+  (confirm)="rejectProposal()">
+  <form dialog-content (ngSubmit)="rejectProposal()" [formGroup]="formGroup">
     @if (error(); as resolvedError) {
     <app-alert
       [severity]="resolvedError.severity"
@@ -26,20 +28,8 @@
         }
       </mat-form-field>
     </div>
-  </div>
-  <mat-dialog-actions>
-    <button
-      type="submit"
-      mat-raised-button
-      [disabled]="formGroup.get('reason')?.invalid"
-      data-cy="dialog-confirm-button">
-      {{'common.confirm' | translate}}
-    </button>
-    <button type="button" mat-flat-button [mat-dialog-close]="undefined" data-cy="dialog-cancel-button">
-      {{'common.cancel' | translate}}
-    </button>
-  </mat-dialog-actions>
-  @if (loading){
-  <app-overlay-spinner mode="dialog"></app-overlay-spinner>
-  }
-</form>
+    @if (loading) {
+    <app-overlay-spinner mode="dialog"></app-overlay-spinner>
+    }
+  </form>
+</app-dialog-layout>

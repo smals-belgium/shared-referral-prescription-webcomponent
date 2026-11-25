@@ -179,6 +179,9 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
     private readonly el: ElementRef<HTMLElement>,
     private readonly activeHostService: ActiveOverlayHostService
   ) {
+    // Registered here because ngOnChanges (which runs before ngOnInit) may already open the template dialog
+    this.activeHostService.set(this.el.nativeElement);
+
     const currentLang = this.translate.currentLang;
     if (!currentLang) {
       this.translate.use(Lang.FR.full);
@@ -247,7 +250,6 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
         })
     );
 
-    this.activeHostService.set(this.el.nativeElement);
     this.alertService.setActive(this.alertTarget);
   }
 
@@ -348,10 +350,8 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
   addPrescription(): void {
     this.dialog
       .open<ChooseTemplateDialog, unknown, SelectedTemplate>(ChooseTemplateDialog, {
-        maxWidth: '100vw',
-        width: '500px',
         autoFocus: false,
-        panelClass: 'mh-dialog-container',
+        panelClass: ['mh-dialog-container', 'mh-dialog-container-small', 'mh-dialog-choose-template'],
         data: {
           intent: this.initialValues?.intent,
         },
@@ -449,7 +449,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
             templateName,
           },
         },
-        panelClass: 'mh-dialog-container',
+        panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
       })
       .beforeClosed()
       .subscribe(accepted => {
@@ -807,7 +807,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
       this.dialog
         .open<CancelCreationDialog, CancelCreationDialogData, CancelCreationDialogResult>(CancelCreationDialog, {
           data: { prescriptionForms: this.prescriptionForms() },
-          panelClass: 'mh-dialog-container',
+          panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
         })
         .beforeClosed()
         .subscribe(result => {
@@ -839,7 +839,7 @@ export class CreatePrescriptionWebComponent implements OnChanges, OnInit, OnDest
             cancelLabel: 'common.close',
             okLabel: 'common.confirm',
           },
-          panelClass: 'mh-dialog-container',
+          panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
         })
         .beforeClosed()
         .pipe(filter(result => result === true))

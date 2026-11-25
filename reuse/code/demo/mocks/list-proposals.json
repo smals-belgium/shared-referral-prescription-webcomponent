@@ -3,6 +3,10 @@
   "items": [
     {
       "id": "DEAD0000-0000-4000-A000-000000000021",
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canPrintPrescriptionOrProposal": true
+      },
       "templateCode": "ANNEX_81",
       "intent": "proposal",
       "authoredOn": "2025-09-23T09:29:58.000+00:00",
@@ -57,6 +61,10 @@
     },
     {
       "id": "DEAD0000-0000-4000-A000-000000000022",
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canPrintPrescriptionOrProposal": true
+      },
       "templateCode": "ANNEX_81",
       "authoredOn": "2025-09-21T08:01:09.000+00:00",
       "requesterIndex": 2,
@@ -98,6 +106,10 @@
     },
     {
       "id": "DEAD0000-0000-4000-A000-000000000023",
+      "allowedActions": {
+        "canAssignCaregiver": true,
+        "canPrintPrescriptionOrProposal": true
+      },
       "templateCode": "ANNEX_81",
       "authoredOn": "2025-08-20T06:58:43.000+00:00",
       "requesterIndex": 2,

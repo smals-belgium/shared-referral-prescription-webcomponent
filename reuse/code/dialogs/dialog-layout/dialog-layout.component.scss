@@ -1,60 +1,23 @@
 @use '@myhealth-belgium/design-kit' as mh;
-
-:host {
-  font-family: #{mh.$font-stack};
-  --mdc-dialog-supporting-text-color: #{mh.$color-black};
-
-  ::ng-deep .mat-mdc-dialog-actions {
-    padding-top: mh.$spacing-l;
-    padding-right: mh.$spacing-m;
-    padding-bottom: mh.$spacing-m;
-    padding-left: mh.$spacing-m;
-  }
-
-  ::ng-deep .mat-mdc-dialog-title::before {
-    display: none;
-  }
-}
-
-.dialog-header {
-  box-sizing: border-box;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding-left: mh.$spacing-m;
-  padding-top: mh.$spacing-xs;
-
-  .dialog-title-wrapper {
-    width: 100%;
-    .dialog-tittle-inner-container {
-      display: flex;
-      align-items: center;
-      .dialog-title {
-        padding-left: 0;
-      }
-    }
-
-    p {
-      margin: 0 0 10px;
-      .required {
-        color: var(--mh-label-invalid-color, mh.$typography-semantic-error-medium);
-      }
-    }
-  }
-
-  button {
-    background: unset;
-    border: none;
-    cursor: pointer;
-    box-sizing: unset;
-    width: min-content;
-  }
-}
-
-.mat-dialog-content {
-  padding-left: mh.$spacing-m;
-}
+@use '@angular/material' as mat;
 
 .dialog-title {
-  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .mat-mdc-dialog-title {
+    padding: var(--mat-dialog-large-headline-padding, 0 0 10px);
+  }
+}
+
+.mat-mdc-dialog-content {
+  padding: var(--mat-dialog-large-content-padding, 20px 0);
+  max-height: var(--mat-dialog-large-content-max-height, unset);
+
+  p.validation {
+    margin: 0 0 10px;
+    .required {
+      color: var(--mh-label-invalid-color, mh.$typography-semantic-error-medium);
+    }
+  }
 }

@@ -18,6 +18,7 @@ import {
   AssignationType,
   AssignCareGiverResource,
   PersonResource,
+  ProviderType,
   ReadRequestResource,
   RequestTaskResource,
   Role,
@@ -41,6 +42,7 @@ import { checkAndConvertToPerformerTask } from '@reuse/code/utils/task-type.util
 import { ALERT_TARGET } from '@reuse/code/constants/error';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
+import { getProviderTypeFilter } from '@reuse/code/utils/assignment-disciplines.utils';
 
 @Component({
   selector: 'app-prescription-details-actions',
@@ -148,7 +150,7 @@ export class PrescriptionDetailsActionsComponent {
           prescription,
           patient,
         },
-        panelClass: 'mh-dialog-container',
+        panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
       })
       .beforeClosed()
       .subscribe(() => {
@@ -175,6 +177,8 @@ export class PrescriptionDetailsActionsComponent {
   }
 
   openAssignDialog(prescription: ReadRequestResource): void {
+    const providerTypeFilter = getProviderTypeFilter(prescription.intent);
+
     this._dialog
       .open(AssignOrTransferDialog, {
         data: {
@@ -184,11 +188,9 @@ export class PrescriptionDetailsActionsComponent {
           intent: prescription.intent,
           connectedUser: this.prescriptionSecondaryService.getCurrentUser(),
           mode: 'assign',
+          providerTypeFilter: providerTypeFilter,
         },
-        panelClass: ['mh-dialog-container', 'mh-assign-dialog'],
-        maxHeight: '90vh',
-        maxWidth: '90vw',
-        width: '900px',
+        panelClass: ['mh-dialog-container', 'mh-assign-dialog', 'mh-dialog-container-large'],
       })
       .beforeClosed()
       .subscribe(() => {
@@ -251,5 +253,12 @@ export class PrescriptionDetailsActionsComponent {
 
   onSelfAssign(prescription: ReadRequestResource, currentUser?: Partial<UserInfo>): void {
     this._service.onSelfAssign(prescription, currentUser);
+  }
+
+  private getProviderTypeFilter(intent: string | undefined): ProviderType[] | undefined {
+    if (intent === Intent.PROPOSAL) {
+      return [ProviderType.Professional];
+    }
+    return undefined;
   }
 }

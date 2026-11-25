@@ -12,6 +12,7 @@ import { AlertComponent } from '@reuse/code/components/alert-component/alert.com
 import { AlertType } from '@reuse/code/interfaces';
 import { AlertService } from '@reuse/code/services/helpers/alert.service';
 import { finalize } from 'rxjs/operators';
+import { DialogLayoutComponent } from '@reuse/code/dialogs/dialog-layout/dialog-layout.component';
 
 interface CancelExecutionPrescriptionDialogData {
   prescription: ReadRequestResource;
@@ -29,6 +30,7 @@ interface CancelExecutionPrescriptionDialogData {
     OverlaySpinnerComponent,
     TemplateNamePipe,
     AlertComponent,
+    DialogLayoutComponent,
   ],
 })
 export class CancelExecutionPrescriptionDialog implements OnInit, OnDestroy {

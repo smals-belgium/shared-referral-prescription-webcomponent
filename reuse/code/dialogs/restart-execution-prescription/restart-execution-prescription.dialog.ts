@@ -1,6 +1,5 @@
 import { Component, inject, Inject, OnDestroy, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
 import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
@@ -12,6 +11,7 @@ import { PerformerTaskResource, PersonResource, ReadRequestResource } from '@reu
 import { AlertType } from '@reuse/code/interfaces';
 import { AlertService } from '@reuse/code/services/helpers/alert.service';
 import { finalize } from 'rxjs/operators';
+import { DialogLayoutComponent } from '@reuse/code/dialogs/dialog-layout/dialog-layout.component';
 
 interface RejectAssignationDialogData {
   prescription: ReadRequestResource;
@@ -22,14 +22,7 @@ interface RejectAssignationDialogData {
 @Component({
   templateUrl: './restart-execution-prescription.dialog.html',
   styleUrls: ['./restart-execution-prescription.dialog.scss'],
-  imports: [
-    TranslateModule,
-    MatDialogModule,
-    MatButtonModule,
-    OverlaySpinnerComponent,
-    TemplateNamePipe,
-    AlertComponent,
-  ],
+  imports: [TranslateModule, OverlaySpinnerComponent, TemplateNamePipe, AlertComponent, DialogLayoutComponent],
 })
 export class RestartExecutionPrescriptionDialog implements OnInit, OnDestroy {
   private readonly alertService = inject(AlertService);

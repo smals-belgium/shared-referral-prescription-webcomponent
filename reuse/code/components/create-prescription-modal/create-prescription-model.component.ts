@@ -22,10 +22,20 @@ import { TemplateNamePipe } from '@reuse/code/pipes/template-name.pipe';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormDataType, ReadRequestIdResource, TemplateVersion } from '@reuse/code/openapi';
 import TypeEnum = FormDataType.TypeEnum;
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'create-prescription-model',
-  imports: [ReactiveFormsModule, MatFormField, TranslateModule, OverlaySpinnerComponent, MatInput, MatButton, MatError],
+  imports: [
+    ReactiveFormsModule,
+    MatFormField,
+    TranslateModule,
+    OverlaySpinnerComponent,
+    MatInput,
+    MatButton,
+    MatError,
+    MatIcon,
+  ],
   providers: [TemplateNamePipe],
   templateUrl: './create-prescription-model.component.html',
   styleUrl: './create-prescription-model.component.scss',

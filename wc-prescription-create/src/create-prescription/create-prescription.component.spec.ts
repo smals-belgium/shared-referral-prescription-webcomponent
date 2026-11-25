@@ -440,7 +440,7 @@ describe('CreatePrescriptionWebComponent', () => {
           okLabel: 'common.delete',
           params: { templateName },
         },
-        panelClass: 'mh-dialog-container',
+        panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
       });
     });
 
@@ -461,7 +461,7 @@ describe('CreatePrescriptionWebComponent', () => {
         data: {
           prescriptionForms,
         },
-        panelClass: 'mh-dialog-container',
+        panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
       });
     });
 
@@ -531,7 +531,7 @@ describe('CreatePrescriptionWebComponent', () => {
           cancelLabel: 'common.close',
           okLabel: 'common.confirm',
         },
-        panelClass: 'mh-dialog-container',
+        panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
       });
       expect(componentClickCancelEmitSpy).toHaveBeenCalled();
     });

@@ -99,10 +99,7 @@ describe('AssignProfessionalButtonComponent', () => {
         intent: Intent.PROPOSAL,
         providerTypeFilter: [ProviderType.Professional],
       },
-      maxHeight: '90vh',
-      maxWidth: '90vw',
-      panelClass: ['mh-dialog-container', 'mh-assign-dialog'],
-      width: '900px',
+      panelClass: ['mh-dialog-container', 'mh-assign-dialog', 'mh-dialog-container-large'],
     });
   });
 

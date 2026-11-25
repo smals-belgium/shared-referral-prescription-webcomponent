@@ -20,6 +20,7 @@ import { AssignationType, FhirR4TaskStatus, PerformerTaskResource, ReadRequestRe
 import { SSIN_CLAIM_KEY, USER_PROFILE_CLAIM_KEY } from '@reuse/code/services/auth/auth-constants';
 import { AlertService } from '@reuse/code/services/helpers/alert.service';
 import { finalize, tap } from 'rxjs/operators';
+import { DialogLayoutComponent } from '@reuse/code/dialogs/dialog-layout/dialog-layout.component';
 
 interface StartExecutionPrescriptionDialogData {
   prescription: ReadRequestResource;
@@ -41,6 +42,7 @@ interface StartExecutionPrescriptionDialogData {
     OverlaySpinnerComponent,
     DatePipe,
     AlertComponent,
+    DialogLayoutComponent,
   ],
 })
 export class StartExecutionPrescriptionDialog implements OnInit, OnDestroy {

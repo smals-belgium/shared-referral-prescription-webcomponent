@@ -391,10 +391,8 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
   openCreateDialog(intent: Intent) {
     this._dialog
       .open<ChooseTemplateDialog, unknown, SelectedTemplate>(ChooseTemplateDialog, {
-        maxWidth: '100vw',
-        width: '500px',
         autoFocus: false,
-        panelClass: 'mh-dialog-container',
+        panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
         data: {
           intent: intent,
         },
@@ -410,7 +408,7 @@ export class PrescriptionListWebComponent implements OnChanges, OnInit, OnDestro
   openDeleteModelDialog(model: ModelEntityDto) {
     this._dialog
       .open(ConfirmDialog, {
-        panelClass: 'mh-dialog-container',
+        panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
         data: {
           titleLabel: 'prescription.model.delete.title',
           messageLabel: 'prescription.model.delete.message',

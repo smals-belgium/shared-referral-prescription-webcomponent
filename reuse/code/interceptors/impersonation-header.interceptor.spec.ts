@@ -133,4 +133,28 @@ describe('impersonationHeaderInterceptor', () => {
     expect(mockAuthService.getClaims).not.toHaveBeenCalled();
     expect(mockAuthService.discipline).not.toHaveBeenCalled();
   });
+
+  it('should not add impersonation header when SSIN is not provided', async () => {
+    mockAuthService.isOrganization.mockReturnValue(of(true));
+    mockAuthService.getClaims.mockReturnValue(
+      of({
+        [USER_PROFILE_CLAIM_KEY]: {
+          ssin: null,
+        },
+      } as never)
+    );
+    mockAuthService.discipline.mockReturnValue(of('PHYSICIAN'));
+
+    const responsePromise = firstValueFrom(httpClient.get(`${API_URL}/api/test`));
+    const req = httpMock.expectOne(`${API_URL}/api/test`);
+
+    expect(req.request.headers.has('X-Impersonation-Context')).toBe(false);
+
+    req.flush({ ok: true });
+    await responsePromise;
+
+    expect(mockAuthService.isOrganization).toHaveBeenCalledTimes(1);
+    expect(mockAuthService.getClaims).toHaveBeenCalledTimes(1);
+    expect(mockAuthService.discipline).toHaveBeenCalledTimes(1);
+  });
 });

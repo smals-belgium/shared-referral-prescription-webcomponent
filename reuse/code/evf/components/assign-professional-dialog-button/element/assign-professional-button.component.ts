@@ -34,20 +34,19 @@ export class AssignProfessionalButtonComponent extends EvfBaseFormElementCompone
           intent: Intent.PROPOSAL,
           providerTypeFilter: [ProviderType.Professional],
         },
-        panelClass: ['mh-dialog-container', 'mh-assign-dialog'],
-        maxHeight: '90vh',
-        maxWidth: '90vw',
-        width: '900px',
+        panelClass: ['mh-dialog-container', 'mh-assign-dialog', 'mh-dialog-container-large'],
       })
       .beforeClosed()
       .subscribe((professional: HealthcareProResource) => {
-        this.selectedProfessional.set(professional);
-        if (professional.healthcarePerson?.ssin && professional.healthcareQualification?.id?.profession) {
-          const professionalToAssign: AssignCareGiverResource = {
-            ssin: professional.healthcarePerson?.ssin,
-            role: professional.healthcareQualification?.id?.profession,
-          };
-          this.control.setValue(professionalToAssign);
+        if (professional) {
+          this.selectedProfessional.set(professional);
+          if (professional.healthcarePerson?.ssin && professional.healthcareQualification?.id?.profession) {
+            const professionalToAssign: AssignCareGiverResource = {
+              ssin: professional.healthcarePerson?.ssin,
+              role: professional.healthcareQualification?.id?.profession,
+            };
+            this.control.setValue(professionalToAssign);
+          }
         }
       });
   }

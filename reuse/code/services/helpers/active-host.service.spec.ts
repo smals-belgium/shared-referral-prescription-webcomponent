@@ -21,6 +21,14 @@ describe('ActiveOverlayHostService', () => {
     expect(service.get()).toBeNull();
   });
 
+  it('should make the first registered element active without interaction', () => {
+    const el1 = document.createElement('div');
+    const el2 = document.createElement('div');
+    service.set(el1);
+    service.set(el2);
+    expect(service.get()).toBe(el1);
+  });
+
   it('should become active when a registered element receives a pointerdown event', () => {
     const el = document.createElement('div');
     service.set(el);

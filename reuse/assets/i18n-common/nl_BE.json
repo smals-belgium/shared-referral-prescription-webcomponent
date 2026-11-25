@@ -147,7 +147,7 @@
         "message": "Bent u zeker dat u het voorschrift \"{templateName}\" wilt verwijderen?"
       },
       "cancelPrescriptionsCreation": {
-        "title": "Annuleer een of meerdere voorschriften",
+        "title": "Annuleer één of meerdere voorschriften",
         "cancelAll": "Alles annuleren",
         "noSelectionError": "Kies een of meer opties voordat u de annulering bevestigt."
       },
@@ -455,12 +455,24 @@
         },
         "takeInCharge": {
           "label": "",
-          "action": ""
+          "action": "Mezelf toewijzen"
         },
         "validate": {
           "action": "Onderzoek goedkeuren"
+        },
+        "execute": {
+          "action": "Uitvoeren"
+        },
+        "substitude": {
+          "action": "Wijzigen"
         }
       }
+    },
+    "radio": {
+      "taskStatus": {
+        "COMPLETED": "Uitgevoerd op {date}"
+      },
+      "traskList": "Opvolging"
     }
   },
   "proposal": {
@@ -486,7 +498,7 @@
         "message": "Bent u zeker dat u het voorstel \"{templateName}\" wilt verwijderen?"
       },
       "cancelProposalsCreation": {
-        "title": "Annuleer een of meerdere voorstellen",
+        "title": "Annuleer één of meerdere voorstellen",
         "cancelAll": "Alles annuleren"
       },
       "cancelCreation": "Bent u zeker dat u het aanmaken van dit voorstel wil annuleren?",
@@ -592,7 +604,7 @@
     },
     "status": "Status",
     "proposalDate": "Voorgeschreven op",
-    "proposalInfoTitle": "Aangevraagd op {date} door {firstName} {lastName}.",
+    "proposalInfoTitle": "Aangevraagd op {date} door {firstName} {lastName}",
     "pagination": {
       "proposals": "{count, plural, one{voorstel} other{voorstellen}}",
       "pageSize": "Aantal per pagina"
@@ -658,7 +670,8 @@
       "FAILED": "Mislukt",
       "INPROGRESS": "Actief",
       "COMPLETED": "Inactief",
-      "null": "Niet gekend"
+      "null": "Niet gekend",
+      "REJECTED ": "Geweigerd"
     },
     "organization": {
       "alert": {
@@ -878,5 +891,5 @@
   "ANNEX_82.create.tmp-addInfo-rendys": "Nierdisfunctie",
   "ANNEX_82.create.tmp-addInfo-unknown": "Geen",
   "ANNEX_82.create.tmp-addInfo-impl": "Implantaten",
-  "ANNEX_82.create.tmp-addInfo": "Andere"
+  "ANNEX_82.create.tmp-addInfo": "Aanvullende relevante informatie"
 }

@@ -1,6 +1,16 @@
 @use '@angular/material' as mat;
 @use '@myhealth-belgium/design-kit' as mh;
 
+:host {
+  border-right: var(--mh-main-details-container-border-right, 1px solid mh.$border-brand-neutral-light);
+
+  @media (max-width: mh.$media-breakpoint-s) {
+    border-right: unset;
+    border-bottom: var(--mh-main-details-container-border-bottom, 1px solid mh.$border-brand-neutral-light);
+    padding-bottom: mh.$spacing-rem-l;
+  }
+}
+
 .main_details_container {
   flex: 2;
   display: flex;

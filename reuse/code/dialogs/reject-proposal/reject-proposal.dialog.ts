@@ -1,8 +1,7 @@
 import { Component, inject, Inject, OnDestroy, OnInit } from '@angular/core';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatButton } from '@angular/material/button';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
@@ -19,22 +18,21 @@ import { finalize } from 'rxjs/operators';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { mapIdTokenToPrescriber } from '@reuse/code/utils/idToken.utils';
+import { DialogLayoutComponent } from '@reuse/code/dialogs/dialog-layout/dialog-layout.component';
 
 @Component({
   imports: [
     OverlaySpinnerComponent,
-    MatDialogModule,
     TranslateModule,
-    MatButton,
     ReactiveFormsModule,
     MatFormField,
     MatInput,
     MatError,
     FormsModule,
     AlertComponent,
+    DialogLayoutComponent,
   ],
   templateUrl: './reject-proposal.dialog.html',
-  styleUrl: './reject-proposal.dialog.scss',
 })
 export class RejectProposalDialog implements OnInit, OnDestroy {
   private readonly _authService = inject(AuthService);
