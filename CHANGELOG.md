@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.2.1] - 18/Nov/26
+
+### Improvements
+
+- Organization acting on behalf of a healthcare professional - The impersonation context is now only sent to the backend when the ID token returned by `getIdToken` contains the professional's SSIN (`userProfile.ssin`) next to the `organizations` entry. If no SSIN is provided, the components act as the organization itself (M2M behaviour), even if a discipline is present in the token. Hosts that want to act on behalf of a professional must therefore provide that SSIN.
+- Translations - Added/completed NL, FR and EN labels for the "Take in charge", "Execute" and "Modify" actions and for the task follow-up panel.
+
+### Improvements
+
+- Prescription creation in organization context - When the connected user is an organization, the template selection dialog no longer loads nor offers prescription models; only templates are proposed. For healthcare professionals, models remain available for prescriptions (`ORDER` intent).
+
+### Bugfixes
+
+- Create component dialogs - Fixed the template selection dialog not being rendered correctly inside the Web Component (shadow DOM) when it is opened immediately when the component is loaded, before any user interaction.
+
 ## [3.0.2] - 20/Oct/26
 
 Only changes impacting the integration of the Web Components (inputs, outputs, token contract, runtime requirements) are listed below.

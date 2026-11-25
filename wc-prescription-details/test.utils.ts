@@ -1,6 +1,6 @@
 import { signal } from '@angular/core';
 import { TranslateLoader } from '@ngx-translate/core';
-import { UserInfo } from '@reuse/code/interfaces';
+import { Intent, UserInfo } from '@reuse/code/interfaces';
 import {
   Discipline,
   FhirR4TaskStatus,
@@ -63,7 +63,8 @@ export const id = 'DEAD0000-0000-4000-A000-000000000021';
 
 export function prescriptionResponse(
   referralTask: any = null,
-  performerTask: RequestTaskResource[] | null = null
+  performerTask: RequestTaskResource[] | null = null,
+  intent: Intent | undefined = undefined
 ): ReadRequestResource {
   const performerTasks: Record<string, PerformerTaskResource[]> = {};
 
@@ -101,7 +102,7 @@ export function prescriptionResponse(
       hideEndDate: false,
     },
     responses: {},
-    intent: undefined,
+    intent: intent,
     category: 'nursing',
     shortCode: 'CAF4FE',
   };

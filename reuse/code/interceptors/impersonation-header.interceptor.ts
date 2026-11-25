@@ -29,5 +29,5 @@ function getImpersonationContext(authService: AuthService): Observable<{ ssin?: 
   return combineLatest({
     ssin: authService.getClaims().pipe(map(claims => claims?.[USER_PROFILE_CLAIM_KEY].ssin)),
     discipline: authService.discipline(),
-  });
+  }).pipe(map(context => (context.ssin ? context : null)));
 }

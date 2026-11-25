@@ -1,28 +1,15 @@
-@if (titleLabel){
-  <h1 mat-dialog-title>{{titleLabel! | translate: params}}</h1>
-}
+<app-dialog-layout [title]="titleLabel ? (titleLabel | translate: params) : ''">
+  <div dialog-content class="confirm-message">@if (messageLabel) { {{ messageLabel | translate: params }} }</div>
 
-@if (messageLabel){
-  <mat-dialog-content>
-    {{ messageLabel! | translate: params }}
-  </mat-dialog-content>
-}
-
-<mat-dialog-actions>
-  @if (okLabel){
-    <button
-      type="button"
-      mat-raised-button
-      (click)="confirm()"
-    >{{  okLabel! | translate: params  }}</button>
-  }
-
-  @if (cancelLabel){
-    <button
-      type="button"
-      mat-stroked-button
-      mat-dialog-close
-    >{{cancelLabel! | translate: params}}</button>
-  }
-
-</mat-dialog-actions>
+  <div #overrideActions dialog-actions-override class="confirm-actions">
+    @if (okLabel) {
+    <button type="button" matButton="filled" (click)="confirm()" data-cy="dialog-confirm-button">
+      {{ okLabel | translate: params }}
+    </button>
+    } @if (cancelLabel) {
+    <button type="button" matButton="outlined" mat-dialog-close data-cy="dialog-cancel-button">
+      {{ cancelLabel | translate: params }}
+    </button>
+    }
+  </div>
+</app-dialog-layout>

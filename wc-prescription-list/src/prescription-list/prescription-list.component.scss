@@ -220,53 +220,46 @@ mat-icon {
 }
 
 // Modal/Dialog
-//
-// We define Material CSS variables and we override design system
-:root {
-  @include mat.dialog-overrides(
-    (
-      actions-alignment: flex-start,
-      headline-padding: #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l},
-      content-padding: 0 #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-2xl},
-      with-actions-content-padding: 0 #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l},
-      actions-padding: #{mh.$spacing-rem-2xs} #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-2xl},
-      container-min-width: 400px,
-      container-max-width: 600px,
-    )
-  );
-
-  @media (max-width: mh.$media-breakpoint-xs) {
+.cdk-overlay-pane {
+  &.mh-dialog-container {
     @include mat.dialog-overrides(
       (
-        headline-padding: #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l} #{mh.$spacing-rem-l},
-        content-padding: 0 #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l},
-        with-actions-content-padding: 0 #{mh.$spacing-rem-l} #{mh.$spacing-rem-l},
-        actions-padding: #{mh.$spacing-rem-2xs} #{mh.$spacing-rem-l} #{mh.$spacing-rem-2xl},
-        container-min-width: 300px,
-        container-max-width: 300px,
+        actions-alignment: flex-start,
+        actions-padding: 0,
+        headline-padding: #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l},
+        content-padding: 0 #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-2xl},
+        with-actions-content-padding: 0 #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l},
       )
     );
+
+    @media (max-width: mh.$media-breakpoint-xs) {
+      @include mat.dialog-overrides(
+        (
+          headline-padding: #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l} #{mh.$spacing-rem-l},
+          content-padding: 0 #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l},
+          with-actions-content-padding: 0 #{mh.$spacing-rem-l} #{mh.$spacing-rem-l},
+        )
+      );
+    }
   }
-}
 
-.mh-dialog-container mat-dialog-container div.mat-mdc-dialog-surface.mdc-dialog__surface {
-  padding: 0;
+  &.mh-dialog-container-small {
+    @include mat.dialog-overrides(
+      (
+        container-min-width: 400px,
+        container-max-width: 600px,
+      )
+    );
 
-  @media (max-width: mh.$media-breakpoint-xs) {
-    mat-dialog-content {
-      &:has(+ mat-dialog-actions) {
-        padding: var(--mat-dialog-with-actions-content-padding);
-      }
-      &:not(:has(+ mat-dialog-actions)) {
-        padding: var(--mat-dialog-content-padding);
-      }
+    @media (max-width: mh.$media-breakpoint-xs) {
+      @include mat.dialog-overrides(
+        (
+          container-min-width: 300px,
+          container-max-width: 300px,
+        )
+      );
     }
   }
 }
 
-.mat-mdc-dialog-title {
-  &::before {
-    height: auto;
-  }
-}
 // End

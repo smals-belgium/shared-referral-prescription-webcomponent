@@ -46,11 +46,6 @@ a {
 @include mh.override-mat-chips();
 @include mh.override-mat-table();
 
-.mat-mdc-dialog-inner-container .mat-mdc-dialog-surface {
-  max-height: 100vh;
-  overflow-y: unset;
-}
-
 mat-icon {
   svg {
     fill: currentColor;
@@ -247,7 +242,7 @@ mat-icon {
         padding-inline: 0;
       }
     }
-    &:last-child {
+    &.last_details_wrapper {
       margin-top: auto;
     }
   }
@@ -431,39 +426,6 @@ evf-form-detail-group {
     }
   }
 }
-
-/* Dialogs */
-.mh-action-menu {
-  &.mat-mdc-menu-panel {
-    min-width: 200px;
-    max-width: 250px;
-
-    div.mat-mdc-menu-content {
-      padding: var(--mh-action-menu-content-padding, mh.$spacing-rem-s 0);
-
-      button.mat-mdc-menu-item {
-        border-radius: var(--mh-action-menu-item-border-radius, 0);
-        &:not([disabled]):hover {
-          background-color: var(--mh-action-menu-item-background-color, mh.$surface-brand-primary-light);
-        }
-        &.destructive-action {
-          color: var(--mh-action-menu-item-destructive-action-color, mh.$typography-semantic-error-medium);
-        }
-        .mat-icon-no-color {
-          color: var(--mh-action-menu-item-icon-color, mh.$typography-semantic-error-medium);
-        }
-        .mat-mdc-menu-item-text {
-          font-weight: var(--mh-action-menu-item-text-font-weight, mh.$font-weight-regular);
-        }
-      }
-    }
-  }
-}
-.no-dialog-scroll {
-  .mat-mdc-dialog-surface {
-    overflow: hidden;
-  }
-}
 evf-info-detail .infoblock,
 .professional_row .infoblock {
   &.evf-infoblock-summary {
@@ -561,83 +523,6 @@ evf-info-detail .infoblock,
   }
 }
 
-@media (min-width: 960px) {
-  .mh-assign-dialog {
-    .mat-mdc-dialog-content {
-      max-height: calc(90vh - 120px);
-    }
-  }
-}
-
-app-prescription-details-main {
-  border-right: var(--mh-main-details-container-border-right, 1px solid mh.$border-brand-neutral-light);
-
-  @media (max-width: mh.$media-breakpoint-s) {
-    border-right: unset;
-    border-bottom: var(--mh-main-details-container-border-bottom, 1px solid mh.$border-brand-neutral-light);
-    padding-bottom: mh.$spacing-rem-l;
-  }
-}
-
-// Modal/Dialog
-//
-// We define Material CSS variables and we override design system
-:root {
-  @include mat.dialog-overrides(
-    (
-      actions-alignment: flex-start,
-      headline-padding: #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l},
-      content-padding: 0 #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-2xl},
-      with-actions-content-padding: 0 #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l},
-      actions-padding: #{mh.$spacing-rem-2xs} #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-2xl},
-      container-min-width: 400px,
-      container-max-width: 600px,
-    )
-  );
-
-  @media (max-width: mh.$media-breakpoint-xs) {
-    @include mat.dialog-overrides(
-      (
-        headline-padding: #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l} #{mh.$spacing-rem-l},
-        content-padding: 0 #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l},
-        with-actions-content-padding: 0 #{mh.$spacing-rem-l} #{mh.$spacing-rem-l},
-        actions-padding: #{mh.$spacing-rem-2xs} #{mh.$spacing-rem-l} #{mh.$spacing-rem-2xl},
-        container-min-width: 300px,
-        container-max-width: 300px,
-      )
-    );
-  }
-}
-
-//cdk-overlay-pane mh-dialog-container mh-assign-dialog mat-mdc-dialog-panel
-.mh-dialog-container {
-  &.mh-assign-dialog {
-    mat-dialog-container div.mat-mdc-dialog-surface.mdc-dialog__surface {
-      padding: 20px;
-    }
-  }
-  mat-dialog-container div.mat-mdc-dialog-surface.mdc-dialog__surface {
-    padding: 0;
-
-    @media (max-width: mh.$media-breakpoint-xs) {
-      mat-dialog-content {
-        &:has(+ mat-dialog-actions) {
-          padding: var(--mat-dialog-with-actions-content-padding);
-        }
-        &:not(:has(+ mat-dialog-actions)) {
-          padding: var(--mat-dialog-content-padding);
-        }
-      }
-    }
-  }
-}
-
-.mat-mdc-dialog-title {
-  &::before {
-    height: auto;
-  }
-}
-
 .form-element {
   margin-bottom: mh.$spacing-rem-s;
   mat-select {
@@ -652,5 +537,100 @@ app-prescription-details-main {
   }
 }
 
-//@todo check showcases
+/* Dialogs */
+.mat-mdc-dialog-inner-container .mat-mdc-dialog-surface {
+  overflow-y: unset;
+}
+
+/* Action menu */
+.mh-action-menu {
+  &.mat-mdc-menu-panel {
+    min-width: 200px;
+    max-width: 250px;
+
+    div.mat-mdc-menu-content {
+      padding: var(--mh-action-menu-content-padding, mh.$spacing-rem-s 0);
+
+      button.mat-mdc-menu-item {
+        border-radius: var(--mh-action-menu-item-border-radius, 0);
+        &:not([disabled]):hover {
+          background-color: var(--mh-action-menu-item-background-color, mh.$surface-brand-primary-light);
+        }
+        &.destructive-action {
+          color: var(--mh-action-menu-item-destructive-action-color, mh.$typography-semantic-error-medium);
+        }
+        .mat-icon-no-color {
+          color: var(--mh-action-menu-item-icon-color, mh.$typography-semantic-error-medium);
+        }
+        .mat-mdc-menu-item-text {
+          font-weight: var(--mh-action-menu-item-text-font-weight, mh.$font-weight-regular);
+        }
+      }
+    }
+  }
+}
+
+// Modal/Dialog
+.cdk-overlay-pane {
+  &.mh-dialog-container {
+    @include mat.dialog-overrides(
+      (
+        actions-alignment: flex-start,
+        actions-padding: 0,
+        headline-padding: #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l},
+        content-padding: 0 #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-2xl},
+        with-actions-content-padding: 0 #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l},
+      )
+    );
+
+    @media (max-width: mh.$media-breakpoint-xs) {
+      @include mat.dialog-overrides(
+        (
+          headline-padding: #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l} #{mh.$spacing-rem-l},
+          content-padding: 0 #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l},
+          with-actions-content-padding: 0 #{mh.$spacing-rem-l} #{mh.$spacing-rem-l},
+        )
+      );
+    }
+  }
+
+  &.mh-dialog-container-large {
+    @include mat.dialog-overrides(
+      (
+        container-min-width: 90vw,
+        container-max-width: 900px,
+      )
+    );
+
+    max-height: 90vh;
+    @media (min-width: 960px) {
+      max-height: calc(90vh - 120px);
+    }
+  }
+
+  &.mh-dialog-container-small {
+    @include mat.dialog-overrides(
+      (
+        container-min-width: 400px,
+        container-max-width: 600px,
+      )
+    );
+
+    @media (max-width: mh.$media-breakpoint-xs) {
+      @include mat.dialog-overrides(
+        (
+          container-min-width: 300px,
+          container-max-width: 300px,
+        )
+      );
+    }
+  }
+}
+
+.no-dialog-scroll {
+  .mat-mdc-dialog-surface {
+    overflow: hidden;
+  }
+}
+
 // End

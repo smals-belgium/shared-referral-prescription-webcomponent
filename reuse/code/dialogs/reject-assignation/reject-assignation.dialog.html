@@ -1,6 +1,5 @@
-<div class="wrapper">
-  <h1 mat-dialog-title>{{'prescription.rejectAssignation.title' | translate}}</h1>
-  <div mat-dialog-content>
+<app-dialog-layout [title]="'prescription.rejectAssignation.title' | translate" (confirm)="onReject()">
+  <div dialog-content>
     @if (error(); as resolvedError) {
     <app-alert
       [severity]="resolvedError.severity"
@@ -17,18 +16,8 @@
       'proposal.rejectAssignation.message' }:{ firstName: patient?.firstName ?? '', lastName: patient?.lastName ?? '',
       templateName: prescription.templateCode | templateName} }}
     </div>
+    } @if (loading) {
+    <app-overlay-spinner mode="dialog"></app-overlay-spinner>
     }
   </div>
-  <mat-dialog-actions>
-    <button mat-flat-button type="submit" (click)="onReject()" data-cy="dialog-confirm-button">
-      {{'common.confirm' | translate}}
-    </button>
-    <button mat-stroked-button type="button" [mat-dialog-close]="undefined" data-cy="dialog-cancel-button">
-      {{'common.cancel' | translate}}
-    </button>
-  </mat-dialog-actions>
-
-  @if(loading){
-  <app-overlay-spinner mode="dialog"></app-overlay-spinner>
-  }
-</div>
+</app-dialog-layout>

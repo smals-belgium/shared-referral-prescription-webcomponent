@@ -118,12 +118,11 @@ describe('DialogLayoutComponent - content projection', () => {
     expect(content.nativeElement.textContent).toContain('Main content');
   });
 
-  it('should project display default buttons if nothing overrides it', () => {
-    const elements = fixture.debugElement.queryAll(By.css('mat-dialog-actions button'));
-    expect(elements).toBeTruthy();
+  it('should display default buttons when no actions override is provided', () => {
+    const elements = fixture.debugElement.queryAll(By.css('[mat-dialog-actions] button'));
     expect(elements).toHaveLength(2);
-    expect(elements[0]?.nativeElement?.textContent).toContain('common.confirm');
-    expect(elements[1]?.nativeElement?.textContent).toContain('common.cancel');
+    expect(elements[0].nativeElement.textContent).toContain('common.confirm');
+    expect(elements[1].nativeElement.textContent).toContain('common.cancel');
   });
 
   describe('Custom implementation of actions', () => {
@@ -142,10 +141,12 @@ describe('DialogLayoutComponent - content projection', () => {
       overrideFixture = TestBed.createComponent(TestHostFullComponent);
       overrideFixture.detectChanges();
     });
-    it('should project display override content if something is defined', () => {
-      const elements = overrideFixture.debugElement.query(By.css('mat-dialog-actions button'));
-      expect(elements).toBeTruthy();
-      expect(elements.nativeElement.textContent.trim()).toBe('test1');
+    it('should display projected actions instead of default buttons when an override is provided', () => {
+      const elements = overrideFixture.debugElement.queryAll(By.css('[mat-dialog-actions] button'));
+      expect(elements).toHaveLength(1);
+      expect(elements[0].nativeElement.textContent.trim()).toBe('test1');
+      expect(overrideFixture.debugElement.query(By.css('[data-cy="dialog-confirm-button"]'))).toBeNull();
+      expect(overrideFixture.debugElement.query(By.css('[data-cy="dialog-cancel-button"]'))).toBeNull();
     });
   });
 });

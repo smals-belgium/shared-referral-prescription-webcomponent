@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
+import { DialogLayoutComponent } from '@reuse/code/dialogs/dialog-layout/dialog-layout.component';
 
 export interface ConfirmDialogData {
   titleLabel?: string;
@@ -13,19 +14,13 @@ export interface ConfirmDialogData {
 }
 
 @Component({
-    selector: 'app-confirm-dialog',
-    templateUrl: './confirm.dialog.html',
-    styleUrls: ['./confirm.dialog.scss'],
-    imports: [
-        CommonModule,
-        MatDialogModule,
-        MatButtonModule,
-        TranslateModule
-    ],
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'app-confirm-dialog',
+  templateUrl: './confirm.dialog.html',
+  styleUrls: ['./confirm.dialog.scss'],
+  imports: [CommonModule, MatDialogModule, MatButtonModule, TranslateModule, DialogLayoutComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmDialog {
-
   titleLabel?: string;
   messageLabel?: string;
   cancelLabel?: string;

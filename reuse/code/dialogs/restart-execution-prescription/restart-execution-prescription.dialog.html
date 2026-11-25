@@ -1,6 +1,5 @@
-<div class="wrapper">
-  <h1 mat-dialog-title>{{'prescription.restartExecution.title' | translate}}</h1>
-  <div mat-dialog-content>
+<app-dialog-layout [title]="'prescription.restartExecution.title' | translate" (confirm)="restartExecution()">
+  <div dialog-content>
     @if (error(); as resolvedError) {
     <app-alert
       [severity]="resolvedError.severity"
@@ -16,17 +15,8 @@
       {{'prescription.restartExecution.message' | translate: { firstName: patient.firstName, lastName: patient.lastName,
       templateName: prescription.templateCode | templateName} }}
     </div>
+    @if (loading) {
+    <app-overlay-spinner mode="dialog"></app-overlay-spinner>
+    }
   </div>
-  <mat-dialog-actions>
-    <button type="submit" mat-flat-button (click)="restartExecution()" data-cy="dialog-confirm-button">
-      {{'common.confirm' | translate}}
-    </button>
-    <button type="button" mat-stroked-button [mat-dialog-close]="undefined" data-cy="dialog-cancel-button">
-      {{'common.cancel' | translate}}
-    </button>
-  </mat-dialog-actions>
-
-  @if (loading){
-  <app-overlay-spinner mode="dialog"></app-overlay-spinner>
-  }
-</div>
+</app-dialog-layout>

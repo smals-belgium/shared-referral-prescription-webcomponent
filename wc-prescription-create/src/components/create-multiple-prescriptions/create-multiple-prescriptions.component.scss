@@ -4,7 +4,7 @@
 @include mh.override-mat-button-icon(false);
 @include mh.override-mat-expansion();
 
-//current component and all its descendants
+//current component and all its direct descendants
 :host ::ng-deep {
   display: flex;
   flex-direction: column;
@@ -21,7 +21,6 @@
       > .mat-expansion-panel-content-wrapper {
         background-color: var(--mh-accordion-content-bg, mh.$color-white);
         padding: mh.$spacing-rem-l mh.$spacing-rem-xl;
-        margin-top: mh.$spacing-rem-xl;
       }
     }
   }

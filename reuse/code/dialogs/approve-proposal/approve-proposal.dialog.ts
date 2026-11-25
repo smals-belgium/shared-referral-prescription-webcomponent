@@ -1,16 +1,8 @@
 import { Component, inject, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
-import {
-  MAT_DIALOG_DATA,
-  MatDialogActions,
-  MatDialogClose,
-  MatDialogContent,
-  MatDialogRef,
-  MatDialogTitle,
-} from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { v4 as uuidv4 } from 'uuid';
-import { MatButton } from '@angular/material/button';
 import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { OverlaySpinnerComponent } from '@reuse/code/components/progress-indicators/overlay-spinner/overlay-spinner.component';
@@ -26,26 +18,22 @@ import { finalize } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '@reuse/code/services/auth/auth.service';
 import { mapIdTokenToPrescriber } from '@reuse/code/utils/idToken.utils';
+import { DialogLayoutComponent } from '@reuse/code/dialogs/dialog-layout/dialog-layout.component';
 
 @Component({
   selector: 'approve-proposal',
   imports: [
     FormsModule,
-    MatButton,
-    MatDialogActions,
-    MatDialogContent,
-    MatDialogTitle,
     MatError,
     MatFormField,
     MatInput,
     OverlaySpinnerComponent,
     TranslateModule,
     ReactiveFormsModule,
-    MatDialogClose,
     AlertComponent,
+    DialogLayoutComponent,
   ],
   templateUrl: './approve-proposal.dialog.html',
-  styleUrl: './approve-proposal.dialog.scss',
 })
 export class ApproveProposalDialog implements OnInit, OnDestroy {
   private readonly _authService = inject(AuthService);

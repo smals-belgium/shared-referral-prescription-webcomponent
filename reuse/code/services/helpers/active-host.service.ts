@@ -7,6 +7,10 @@ export class ActiveOverlayHostService {
   set(el: HTMLElement): void {
     el.addEventListener('focusin', this.onActivate);
     el.addEventListener('pointerdown', this.onActivate);
+    // Overlays opened before any user interaction (e.g. on init) must still render inside a shadow root
+    if (!this.activeHost()) {
+      this.activeHost.set(el);
+    }
   }
 
   get(): HTMLElement | null {

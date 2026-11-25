@@ -157,7 +157,7 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
         this.isLoading.set(true);
         const disciplines: string[] = getAssignableProfessionalDisciplines(this.data.category, this.data.intent);
         const zipCodes = criteria?.cities.map(c => c.zipCode).filter((z): z is number => z !== undefined) ?? [];
-        const organizations = getAssignableOrganizationInstitutionTypes(this.data.category, this.data.intent);
+        const organizations = getAssignableOrganizationInstitutionTypes(this.data.category);
 
         return criteria
           ? this._healthcareProviderService
@@ -229,7 +229,7 @@ export class AssignOrTransferDialog implements OnInit, OnDestroy {
   ngOnInit() {
     this.generatedUUID = uuidv4();
     this.alertService.setActive(this.ERROR_ASSIGN_TRANSFER_DIALOG);
-    if (this.data.providerTypeFilter) {
+    if (this.data.providerTypeFilter && this.data.providerTypeFilter.length > 0) {
       this.providerTypeOptions.set(this.data.providerTypeFilter);
     }
     this.translationKeyPrefixIntent = getTranslationKeyPrefixForPrescriptionOrProposal(this.data?.intent);

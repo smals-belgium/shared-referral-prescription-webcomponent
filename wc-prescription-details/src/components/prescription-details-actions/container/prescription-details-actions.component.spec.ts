@@ -13,6 +13,7 @@ import {
   AssignCareGiverResource,
   PerformerTaskResource,
   PersonResource,
+  ProviderType,
   ReadRequestResource,
   RequestTaskResource,
   Role,
@@ -300,7 +301,7 @@ describe('PrescriptionDetailsActionsComponent', () => {
 
     expect(mockDialog.open).toHaveBeenCalledWith(CancelPrescriptionDialog, {
       data: { prescription, patient },
-      panelClass: 'mh-dialog-container',
+      panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
     });
   });
 
@@ -346,37 +347,68 @@ describe('PrescriptionDetailsActionsComponent', () => {
     });
   });
 
-  it('should open assign dialog with correctly mapped data', () => {
-    const prescription = {
-      id: 'prescription-123',
-      referralTask: { id: 'referral-456' },
-      performerTasks: {
-        'ssin-1': [{ careGiverSsin: 'ssin-1' } as RequestTaskResource],
-        'ssin-2': [{ careGiverSsin: 'ssin-2' } as RequestTaskResource],
-      },
-      category: 'physiotherapy',
-      intent: Intent.ORDER,
-    } as ReadRequestResource;
-
-    component.openAssignDialog(prescription);
-
-    expect(mockDialog.open).toHaveBeenCalledWith(AssignOrTransferDialog, {
-      data: {
-        prescriptionId: 'prescription-123',
-        referralTaskId: 'referral-456',
+  describe('dialog data', () => {
+    it('should open assign dialog with correctly mapped data when intent is ORDER', () => {
+      const prescription = {
+        id: 'prescription-123',
+        referralTask: { id: 'referral-456' },
+        performerTasks: {
+          'ssin-1': [{ careGiverSsin: 'ssin-1' } as RequestTaskResource],
+          'ssin-2': [{ careGiverSsin: 'ssin-2' } as RequestTaskResource],
+        },
         category: 'physiotherapy',
         intent: Intent.ORDER,
-        mode: 'assign',
-        connectedUser: {
-          data: {
-            ssin: 'current-user-ssin',
+      } as ReadRequestResource;
+
+      component.openAssignDialog(prescription);
+
+      expect(mockDialog.open).toHaveBeenCalledWith(AssignOrTransferDialog, {
+        data: {
+          prescriptionId: 'prescription-123',
+          referralTaskId: 'referral-456',
+          category: 'physiotherapy',
+          intent: Intent.ORDER,
+          mode: 'assign',
+          connectedUser: {
+            data: {
+              ssin: 'current-user-ssin',
+            },
           },
+          providerTypeFilter: undefined,
         },
-      },
-      panelClass: ['mh-dialog-container', 'mh-assign-dialog'],
-      maxHeight: '90vh',
-      maxWidth: '90vw',
-      width: '900px',
+        panelClass: ['mh-dialog-container', 'mh-assign-dialog', 'mh-dialog-container-large'],
+      });
+    });
+    it('should open assign dialog with correctly mapped data when intent is Proposal', () => {
+      const prescription = {
+        id: 'prescription-123',
+        referralTask: { id: 'referral-456' },
+        performerTasks: {
+          'ssin-1': [{ careGiverSsin: 'ssin-1' } as RequestTaskResource],
+          'ssin-2': [{ careGiverSsin: 'ssin-2' } as RequestTaskResource],
+        },
+        category: 'physiotherapy',
+        intent: Intent.PROPOSAL,
+      } as ReadRequestResource;
+
+      component.openAssignDialog(prescription);
+
+      expect(mockDialog.open).toHaveBeenCalledWith(AssignOrTransferDialog, {
+        data: {
+          prescriptionId: 'prescription-123',
+          referralTaskId: 'referral-456',
+          category: 'physiotherapy',
+          intent: Intent.PROPOSAL,
+          mode: 'assign',
+          connectedUser: {
+            data: {
+              ssin: 'current-user-ssin',
+            },
+          },
+          providerTypeFilter: [ProviderType.Professional],
+        },
+        panelClass: ['mh-dialog-container', 'mh-assign-dialog', 'mh-dialog-container-large'],
+      });
     });
   });
 

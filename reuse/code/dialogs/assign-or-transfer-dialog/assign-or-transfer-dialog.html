@@ -1,5 +1,5 @@
 <div class="dialog-title">
-  <h1 mat-dialog-title [attr.data-cy]="'prescription-' + mode + '-performer-title'">
+  <h1 mat-dialog-title [attr.data-cy]="'prescription-' + mode + '-performer-title'" cdkFocusInitial tabindex="-1">
     {{ translationKeyPrefixIntent + '.' + modeKey + '.title' | translate }}
   </h1>
   <button mat-icon-button mat-dialog-close [aria-label]="'common.close' | translate">

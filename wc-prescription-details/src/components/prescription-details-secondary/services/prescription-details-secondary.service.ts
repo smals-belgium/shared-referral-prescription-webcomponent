@@ -42,6 +42,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ToastService } from '@reuse/code/services/helpers/toast.service';
 import { Observable } from 'rxjs';
 import { isPerformerTask } from '@reuse/code/utils/task-type.util';
+import { getProviderTypeFilter } from '@reuse/code/utils/assignment-disciplines.utils';
 
 export interface DetailsServices {
   getAccessToken: (audience?: string) => Promise<string | null>;
@@ -322,7 +323,7 @@ export class PrescriptionDetailsSecondaryService {
           requestTask: task,
           patient: patient,
         },
-        panelClass: 'mh-dialog-container',
+        panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
       })
       .beforeClosed()
       .subscribe((data?: boolean) => {
@@ -346,7 +347,7 @@ export class PrescriptionDetailsSecondaryService {
           performerTask: task,
           patient: patient,
         },
-        panelClass: 'mh-dialog-container',
+        panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
       })
       .beforeClosed()
       .subscribe(() => {
@@ -367,7 +368,7 @@ export class PrescriptionDetailsSecondaryService {
           performerTask: task,
           patient: patient,
         },
-        panelClass: 'mh-dialog-container',
+        panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
       })
       .beforeClosed()
       .subscribe(() => {
@@ -383,7 +384,7 @@ export class PrescriptionDetailsSecondaryService {
           performerTask: task,
           startExecutionDate: task?.executionPeriod?.start,
         },
-        panelClass: 'mh-dialog-container',
+        panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
       })
       .beforeClosed()
       .subscribe(() => {
@@ -400,8 +401,7 @@ export class PrescriptionDetailsSecondaryService {
           startExecutionDate: task.executionPeriod?.start,
           connectedUser: this.getCurrentUser().data,
         },
-        panelClass: 'mh-dialog-container',
-        minWidth: 'fit-content',
+        panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
       })
       .beforeClosed()
       .subscribe((data: { reload: boolean }) => {
@@ -425,7 +425,7 @@ export class PrescriptionDetailsSecondaryService {
           performerTask: task,
           patient: patient,
         },
-        panelClass: 'mh-dialog-container',
+        panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
       })
       .beforeClosed()
       .subscribe(() => {
@@ -438,6 +438,8 @@ export class PrescriptionDetailsSecondaryService {
     prescription: ReadRequestResource,
     task: PerformerTaskResource
   ): void {
+    const providerTypeFilter = getProviderTypeFilter(prescription.intent);
+
     this._dialog
       .open(AssignOrTransferDialog, {
         data: {
@@ -447,12 +449,10 @@ export class PrescriptionDetailsSecondaryService {
           assignedCareGivers: Object.keys(prescription.performerTasks ?? {}),
           category: prescription.category,
           intent: prescription.intent,
+          providerTypeFilter: providerTypeFilter,
           mode: 'transfer',
         },
-        panelClass: ['mh-dialog-container', 'mh-assign-dialog'],
-        maxHeight: '90vh',
-        maxWidth: '90vw',
-        width: '900px',
+        panelClass: ['mh-dialog-container', 'mh-assign-dialog', 'mh-dialog-container-large'],
       })
       .beforeClosed()
       .subscribe(() => {
@@ -480,7 +480,7 @@ export class PrescriptionDetailsSecondaryService {
         data: {
           proposal: proposal,
         },
-        panelClass: 'mh-dialog-container',
+        panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
       })
       .beforeClosed()
       .subscribe((data?: { prescriptionId: string }) => {
@@ -497,7 +497,7 @@ export class PrescriptionDetailsSecondaryService {
         data: {
           proposal: proposal,
         },
-        panelClass: 'mh-dialog-container',
+        panelClass: ['mh-dialog-container', 'mh-dialog-container-small'],
       })
       .beforeClosed()
       .subscribe(() => {

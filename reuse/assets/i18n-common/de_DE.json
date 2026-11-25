@@ -459,8 +459,20 @@
         },
         "validate": {
           "action": ""
+        },
+        "execute": {
+          "action": ""
+        },
+        "substitude": {
+          "action": ""
         }
       }
+    },
+    "radio": {
+      "taskStatus": {
+        "COMPLETED": ""
+      },
+      "traskList": ""
     }
   },
   "proposal": {
@@ -592,7 +604,7 @@
     },
     "status": "Status",
     "proposalDate": "Ausgestellt am",
-    "proposalInfoTitle": "Beantragt am {date} von {firstName} {lastName}.",
+    "proposalInfoTitle": "Beantragt am {date} von {firstName} {lastName}",
     "pagination": {
       "proposals": "{count, plural, one{Vorschlag} other{Vorschläge}}",
       "pageSize": "Anzahl pro Seite"
@@ -658,7 +670,8 @@
       "FAILED": "Fehlgeschlagen",
       "INPROGRESS": "Aktiv",
       "COMPLETED": "Inaktiv",
-      "null": "Unbekannt"
+      "null": "Unbekannt",
+      "REJECTED ": ""
     },
     "organization": {
       "alert": {
@@ -878,5 +891,5 @@
   "ANNEX_82.create.tmp-addInfo-rendys": "",
   "ANNEX_82.create.tmp-addInfo-unknown": "",
   "ANNEX_82.create.tmp-addInfo-impl": "",
-  "ANNEX_82.create.tmp-addInfo": ""
+  "ANNEX_82.create.tmp-addInfo": "Zusätzliche relevante Informationen"
 }

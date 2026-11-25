@@ -12,6 +12,9 @@ import { DataState, Intent, LoadingStatus } from '@reuse/code/interfaces';
 import { AccessMatrix, ModelEntityDto, PageModelEntityDto, Template } from '@reuse/code/openapi';
 import { SelectPrescriptionTypeComponent } from '@reuse/code/components/select-prescription-type/select-prescription-type.component';
 import { Lang } from '@reuse/code/constants/languages';
+import { AuthService } from '@reuse/code/services/auth/auth.service';
+import { NEVER, Observable, of, throwError } from 'rxjs';
+import { By } from '@angular/platform-browser';
 
 /**
  * Mock du composant enfant
@@ -65,8 +68,25 @@ describe('ChooseTemplateDialog', () => {
 
   const mockDialogRef = { close: jest.fn() };
   const mockDialogData = { intent: Intent.ORDER };
+  const mockAuthService = { isOrganization: jest.fn() };
+
+  const createDialog = (isOrganization$: Observable<boolean>) => {
+    mockModelsState.loadModels.mockClear();
+
+    mockAuthService.isOrganization.mockReturnValue(isOrganization$);
+    const dialogFixture = TestBed.createComponent(ChooseTemplateDialog);
+    dialogFixture.detectChanges();
+    return dialogFixture;
+  };
+
+  const getModelsInput = (dialogFixture: ComponentFixture<ChooseTemplateDialog>) =>
+    dialogFixture.debugElement.query(By.directive(MockSelectPrescriptionTypeComponent))?.componentInstance.models as
+      ModelEntityDto[] | undefined;
 
   beforeEach(async () => {
+    mockModelsState.state.set({ data: { content: [] }, status: LoadingStatus.SUCCESS, error: undefined });
+    mockDialogRef.close.mockClear();
+
     await TestBed.configureTestingModule({
       imports: [
         ChooseTemplateDialog,
@@ -78,6 +98,7 @@ describe('ChooseTemplateDialog', () => {
         { provide: AccessMatrixState, useValue: mockAccessMatrixState },
         { provide: TemplatesState, useValue: mockTemplatesState },
         { provide: ModelsState, useValue: mockModelsState },
+        { provide: AuthService, useValue: mockAuthService },
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
       ],
@@ -92,14 +113,61 @@ describe('ChooseTemplateDialog', () => {
       })
       .compileComponents();
 
-    fixture = TestBed.createComponent(ChooseTemplateDialog);
+    fixture = createDialog(of(false));
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
-  it('should load models on init for ORDER intent', () => {
-    component.ngOnInit();
+  it('should load models and show the model field for non-organizations', () => {
     expect(mockModelsState.loadModels).toHaveBeenCalledWith(0, -1);
+    expect(getModelsInput(fixture)).toEqual([]);
+  });
+
+  it('should show templates without loading models nor the model field for an organization', () => {
+    const organizationFixture = createDialog(of(true));
+
+    expect(mockModelsState.loadModels).not.toHaveBeenCalled();
+    expect(organizationFixture.componentInstance.viewState$().status).toBe(LoadingStatus.SUCCESS);
+    expect(organizationFixture.componentInstance.viewState$().data?.templates).toHaveLength(1);
+    expect(getModelsInput(organizationFixture)).toBeUndefined();
+
+    organizationFixture.destroy();
+  });
+
+  it('should show a spinner while the organization check is pending', () => {
+    const pendingFixture = createDialog(NEVER);
+
+    expect(pendingFixture.componentInstance.viewState$().status).toBe(LoadingStatus.LOADING);
+    expect(mockModelsState.loadModels).not.toHaveBeenCalled();
+
+    pendingFixture.destroy();
+  });
+
+  it('should fall back to loading models when the organization check fails', () => {
+    const errorFixture = createDialog(throwError(() => new Error('auth error')));
+
+    expect(mockModelsState.loadModels).toHaveBeenCalledWith(0, -1);
+    expect(getModelsInput(errorFixture)).toEqual([]);
+
+    errorFixture.destroy();
+  });
+
+  it('should ignore the models state and skip the organization check for a proposal', () => {
+    mockDialogData.intent = Intent.PROPOSAL;
+    mockAuthService.isOrganization.mockClear();
+    mockModelsState.state.set({ status: LoadingStatus.LOADING });
+    try {
+      const proposalFixture = createDialog(NEVER);
+
+      expect(mockAuthService.isOrganization).not.toHaveBeenCalled();
+      expect(mockModelsState.loadModels).not.toHaveBeenCalled();
+      expect(proposalFixture.componentInstance.viewState$().status).toBe(LoadingStatus.SUCCESS);
+      expect(proposalFixture.componentInstance.viewState$().data?.templates?.map(t => t.code)).toEqual(['TPL_002']);
+      expect(getModelsInput(proposalFixture)).toBeUndefined();
+
+      proposalFixture.destroy();
+    } finally {
+      mockDialogData.intent = Intent.ORDER;
+    }
   });
 
   it('should submit with template code', () => {

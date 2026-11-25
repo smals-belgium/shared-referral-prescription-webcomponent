@@ -1,6 +1,7 @@
 import {
   getAssignableOrganizationInstitutionTypes,
   getAssignableProfessionalDisciplines,
+  getProviderTypeFilter,
   isProfessional,
 } from './assignment-disciplines.utils';
 import { Intent } from '@reuse/code/interfaces';
@@ -57,71 +58,41 @@ describe('assignment-disciplines.utils', () => {
 
       expect(result).toEqual([Discipline.Physician]);
     });
-
-    it('should return empty array for unknown category', () => {
-      mockIsProposal.mockReturnValue(true);
-
-      const result = getAssignableProfessionalDisciplines('unknown-category', Intent.PROPOSAL);
-
-      expect(result).toEqual([]);
-    });
   });
 
   describe('getAssignableOrganizationInstitutionTypes', () => {
-    it('should return GROUPOFNURSES, OTD_PHARMACY, HOSPITAL, REEDUCATION and HOME_SERVICES for nursing + proposal', () => {
-      mockIsProposal.mockReturnValue(true);
-
-      const result = getAssignableOrganizationInstitutionTypes('nursing', Intent.PROPOSAL);
-
-      expect(result).toEqual(['GROUPOFNURSES', 'OTD_PHARMACY', 'HOSPITAL', 'REEDUCATION', 'HOME_SERVICES']);
-    });
-
     it('should return OFFICE_DOCTORS, GROUPOFDOCTORS, GUARD_POST and MEDICAL_HOUSE for nursing + prescription', () => {
       mockIsProposal.mockReturnValue(false);
 
-      const result = getAssignableOrganizationInstitutionTypes('nursing', Intent.ORDER);
+      const result = getAssignableOrganizationInstitutionTypes('nursing');
 
-      expect(result).toEqual(['OFFICE_DOCTORS', 'GROUPOFDOCTORS', 'GUARD_POST', 'MEDICAL_HOUSE']);
-    });
-
-    it('should return empty array for physiotherapy + proposal', () => {
-      mockIsProposal.mockReturnValue(true);
-
-      const result = getAssignableOrganizationInstitutionTypes('physiotherapy', Intent.PROPOSAL);
-
-      expect(result).toEqual([]);
+      expect(result).toEqual([
+        'OTD_PHARMACY',
+        'OFFICE_DOCTORS',
+        'GROUPOFDOCTORS',
+        'GUARD_POST',
+        'MEDICAL_HOUSE',
+        'HOSPITAL',
+        'REEDUCATION',
+        'GROUPOFNURSES',
+        'HOME_SERVICES',
+      ]);
     });
 
     it('should return empty array for physiotherapy + prescription (NOT DEVELOPED)', () => {
       mockIsProposal.mockReturnValue(false);
 
-      const result = getAssignableOrganizationInstitutionTypes('physiotherapy', Intent.ORDER);
+      const result = getAssignableOrganizationInstitutionTypes('physiotherapy');
 
       expect(result).toEqual([]);
-    });
-
-    it('should return OFFICE_DOCTORS, GROUPOFDOCTORS, GUARD_POST, MEDICAL_HOUSE and HOSPITAL for diagnosticImaging + proposal', () => {
-      mockIsProposal.mockReturnValue(true);
-
-      const result = getAssignableOrganizationInstitutionTypes('diagnosticImaging', Intent.PROPOSAL);
-
-      expect(result).toEqual(['OFFICE_DOCTORS', 'GROUPOFDOCTORS', 'GUARD_POST', 'MEDICAL_HOUSE', 'HOSPITAL']);
     });
 
     it('should return OFFICE_DOCTORS, GROUPOFDOCTORS, GUARD_POST, MEDICAL_HOUSE and HOSPITAL for diagnosticImaging + prescription', () => {
       mockIsProposal.mockReturnValue(false);
 
-      const result = getAssignableOrganizationInstitutionTypes('diagnosticImaging', Intent.ORDER);
+      const result = getAssignableOrganizationInstitutionTypes('diagnosticImaging');
 
       expect(result).toEqual(['OFFICE_DOCTORS', 'GROUPOFDOCTORS', 'GUARD_POST', 'MEDICAL_HOUSE', 'HOSPITAL']);
-    });
-
-    it('should return empty array for unknown category', () => {
-      mockIsProposal.mockReturnValue(true);
-
-      const result = getAssignableOrganizationInstitutionTypes('unknown-category', Intent.PROPOSAL);
-
-      expect(result).toEqual([]);
     });
   });
 
@@ -145,6 +116,17 @@ describe('assignment-disciplines.utils', () => {
       if (isProfessional(object)) {
         expect(object.type).toBe(ProviderType.Professional);
       }
+    });
+  });
+
+  describe('getProviderTypeFilter', () => {
+    it('should return PROFESSIONAL for proposal intent', () => {
+      expect(getProviderTypeFilter(Intent.PROPOSAL)).toEqual([ProviderType.Professional]);
+    });
+
+    it('should return undefined for non-proposal and missing intents', () => {
+      expect(getProviderTypeFilter(Intent.ORDER)).toBeUndefined();
+      expect(getProviderTypeFilter(undefined)).toBeUndefined();
     });
   });
 });

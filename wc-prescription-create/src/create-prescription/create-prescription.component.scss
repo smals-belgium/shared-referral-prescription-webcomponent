@@ -199,10 +199,12 @@ mat-icon.material-icons.mat-warn {
 }
 
 .cdk-overlay-container {
-  [role='listbox'] {
-    min-height: var(--mh-multiselect-overlay-min-height, 200px);
-    &.evf-multiselect-autocomplete {
-      min-height: var(--mh-multiselect-overlay-min-height, 0);
+  &:not(:has(.cdk-overlay-pane.mh-dialog-choose-template)) {
+    [role='listbox'] {
+      min-height: var(--mh-multiselect-overlay-min-height, 200px);
+      &.evf-multiselect-autocomplete {
+        min-height: var(--mh-multiselect-overlay-min-height, 0);
+      }
     }
   }
 
@@ -563,4 +565,61 @@ mat-radio-group + evf-element-sub-label,
     --max-width: var(--mh-prescription-create-container-max-width-l, 1300px);
   }
 }
+
+// Modal/Dialog
+.cdk-overlay-pane {
+  &.mh-dialog-container {
+    @include mat.dialog-overrides(
+      (
+        actions-alignment: flex-start,
+        actions-padding: 0,
+        headline-padding: #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l},
+        content-padding: 0 #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-2xl},
+        with-actions-content-padding: 0 #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l},
+      )
+    );
+
+    @media (max-width: mh.$media-breakpoint-xs) {
+      @include mat.dialog-overrides(
+        (
+          headline-padding: #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l} #{mh.$spacing-rem-l},
+          content-padding: 0 #{mh.$spacing-rem-2xl} #{mh.$spacing-rem-l},
+          with-actions-content-padding: 0 #{mh.$spacing-rem-l} #{mh.$spacing-rem-l},
+        )
+      );
+    }
+  }
+
+  &.mh-dialog-container-large {
+    @include mat.dialog-overrides(
+      (
+        container-min-width: 90vw,
+        container-max-width: 900px,
+      )
+    );
+    max-height: 90vh;
+    @media (min-width: 960px) {
+      max-height: calc(90vh - 120px);
+    }
+  }
+
+  &.mh-dialog-container-small {
+    @include mat.dialog-overrides(
+      (
+        container-min-width: 400px,
+        container-max-width: 600px,
+      )
+    );
+
+    @media (max-width: mh.$media-breakpoint-xs) {
+      @include mat.dialog-overrides(
+        (
+          container-min-width: 300px,
+          container-max-width: 300px,
+        )
+      );
+    }
+  }
+}
+
 // End

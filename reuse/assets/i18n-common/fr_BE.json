@@ -455,12 +455,24 @@
         },
         "takeInCharge": {
           "label": "",
-          "action": ""
+          "action": "Prendre en charge"
         },
         "validate": {
           "action": "Valider l\u0027examen"
+        },
+        "execute": {
+          "action": "Exécuter"
+        },
+        "substitude": {
+          "action": "Modifier"
         }
       }
+    },
+    "radio": {
+      "taskStatus": {
+        "COMPLETED": "Exécutée le {date}"
+      },
+      "traskList": "Panneau de suivi"
     }
   },
   "proposal": {
@@ -592,7 +604,7 @@
     },
     "status": "Statut",
     "proposalDate": "Rédigé le",
-    "proposalInfoTitle": "Demandé le {date} par {firstName} {lastName}.",
+    "proposalInfoTitle": "Demandé le {date} par {firstName} {lastName}",
     "pagination": {
       "proposals": "{count, plural, one{proposition} other{propositions}}",
       "pageSize": "Nbr/page"
@@ -658,7 +670,8 @@
       "FAILED": "Echoué",
       "INPROGRESS": "Actif",
       "COMPLETED": "Inactif",
-      "null": "Inconnu"
+      "null": "Inconnu",
+      "REJECTED ": "Refusée"
     },
     "organization": {
       "alert": {
@@ -878,5 +891,5 @@
   "ANNEX_82.create.tmp-addInfo-rendys": "",
   "ANNEX_82.create.tmp-addInfo-unknown": "",
   "ANNEX_82.create.tmp-addInfo-impl": "",
-  "ANNEX_82.create.tmp-addInfo": ""
+  "ANNEX_82.create.tmp-addInfo": "Informations supplémentaires pertinentes"
 }
